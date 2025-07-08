@@ -1,0 +1,5 @@
+# gitignore
+# ignore .pyc .csv .png files in this directory
+*.pyc
+*.csv
+*.png
