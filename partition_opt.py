@@ -41,8 +41,8 @@ def get_class_wise_stat(y_true, y_pred, y_group, mode = MODE, onehot = ONEHOT):
     if len(y_true.shape)==1:
       # y_true = tf.one_hot(y_true, NUM_CLASS)
       # y_pred = tf.one_hot(y_pred, NUM_CLASS)
-      y_true = np.eye(NUM_CLASS)[y_true].astype(int)
-      y_pred = np.eye(NUM_CLASS)[y_pred].astype(int)
+      y_true = np.eye(NUM_CLASS)[y_true.astype(int)].astype(int)
+      y_pred = np.eye(NUM_CLASS)[y_pred.astype(int)].astype(int)
     # else:
     # #this is to make coding consistent (tf functions might be used in this function when implementing the RF version)
     #   y_true = tf.convert_to_tensor(y_true)
