@@ -28,7 +28,8 @@ def get_prf(true_class, total_class, pred_class, nan_option = 'mean', nan_value 
     rec_fix = np.nan_to_num(rec)
 
   f1 = 2/(pre_fix**(-1) + rec_fix**(-1))
-  f1[(pre_fix) == 0 & (rec_fix == 0)] = 0
+  # Ensure logical comparison uses proper precedence
+  f1[(pre_fix == 0) & (rec_fix == 0)] = 0
 
   if nan_option == 'value':
     f1[total_class==0] = np.nan
