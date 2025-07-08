@@ -3,3 +3,6 @@
 *.pyc
 *.csv
 *.png
+
+# ignore everything under result_*
+result_*
