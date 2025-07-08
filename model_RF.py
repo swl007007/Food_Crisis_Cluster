@@ -253,10 +253,10 @@ class RFmodel():
 
 
 def save_single(model, path, name = 'single'):
-    #only saves the current new forest (newly added one)
+    """Save a single RandomForest model to disk."""
     filename = 'rf_' + name
     with open(path + '/' + filename, 'wb') as file:
-      pickle.dump(self.model, file)
+        pickle.dump(model, file)
     # pickle.dump(model, open(path + '/' + filename, 'wb'))
 
 
