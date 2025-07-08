@@ -93,14 +93,14 @@ class RFmodel():
     # else:
 
   def predict(self, X, prob = False):
-    #prob here is aggregated probability (does not sum to 1 without normalizing)
+    """Return predicted labels or probabilities."""
 
-    y_pred = self.model.predict_proba(X)
+    y_pred_prob = self.model.predict_proba(X)
 
-    if not prob:
-      y_pred = np.argmax(y_pred, axis=1)
+    if prob:
+      return y_pred_prob
 
-    return y_pred
+    return self.model.predict(X)
 
   def load(self, branch_id, fresh = True):
     '''
