@@ -393,3 +393,201 @@ class GeoRF():
 			np.save(self.dir_space + '/' + 'grid_count' + ext + '.npy', grid_count)
 
 		return
+
+	# Add this method to your GeoRF class in GeoRF.py    
+	def fit_2layer(self, X_L1, X_L2, y, X_group, val_ratio=VAL_RATIO):
+		"""
+		Train a 2-layer GeoRF model.
+		
+		Parameters
+		----------
+		X_L1 : array-like
+			Input features for Layer 1 (main prediction)
+		X_L2 : array-like  
+			Input features for Layer 2 (error correction)
+		y : array-like
+			Output targets
+		X_group : array-like
+			Group assignments for spatial partitioning
+		val_ratio : float
+			Validation ratio for internal evaluation
+			
+		Returns
+		-------
+		self : GeoRF object
+		"""
+		print("Training 2-Layer GeoRF...")
+		
+		# Step 1: Train Layer 1 (main prediction model)
+		print("Training Layer 1 (main prediction)...")
+		self.georf_l1 = GeoRF(
+			min_model_depth=self.min_model_depth,
+			max_model_depth=self.max_model_depth,
+			n_jobs=self.n_jobs,
+			max_depth=self.max_depth
+		)
+		self.georf_l1.fit(X_L1, y, X_group, val_ratio=val_ratio)
+		
+		# Step 2: Get Layer 1 predictions for training error model
+		y_pred_l1 = self.georf_l1.predict(X_L1, X_group)
+		error_targets = (y != y_pred_l1).astype(int)  # Binary error indicator
+		
+		# Step 3: Train Layer 2 (error correction model)
+		print("Training Layer 2 (error correction)...")
+		self.georf_l2 = GeoRF(
+			min_model_depth=self.min_model_depth,
+			max_model_depth=self.max_model_depth,
+			n_jobs=self.n_jobs,
+			max_depth=self.max_depth
+		)
+		self.georf_l2.fit(X_L2, error_targets, X_group, val_ratio=val_ratio)
+		
+		# Store feature indices for prediction
+		self.is_2layer = True
+		
+		return self
+		
+	def predict_2layer(self, X_L1, X_L2, X_group, correction_strategy='flip'):
+		"""
+		Make predictions using 2-layer GeoRF model.
+		
+		Parameters
+		----------
+		X_L1 : array-like
+			Layer 1 features
+		X_L2 : array-like
+			Layer 2 features  
+		X_group : array-like
+			Group assignments
+		correction_strategy : str
+			How to apply error correction ('flip', 'confidence', etc.)
+			
+		Returns
+		-------
+		y_pred : array-like
+			Combined predictions from both layers
+		"""
+		if not hasattr(self, 'is_2layer') or not self.is_2layer:
+			raise ValueError("Model was not trained as 2-layer. Use fit_2layer() first.")
+			
+		# Get Layer 1 predictions
+		y_pred_l1 = self.georf_l1.predict(X_L1, X_group)
+		
+		# Get Layer 2 error predictions
+		error_pred = self.georf_l2.predict(X_L2, X_group)
+		
+		# Apply correction strategy
+		if correction_strategy == 'flip':
+			# Simple flip for binary classification
+			y_pred_combined = y_pred_l1.copy()
+			y_pred_combined[error_pred == 1] = 1 - y_pred_combined[error_pred == 1]
+		else:
+			# Add other strategies as needed
+			y_pred_combined = y_pred_l1  # Default: no correction
+			
+		return y_pred_combined
+	
+	def evaluate_2layer(self, X_L1_test, X_L2_test, y_test, X_group_test, 
+						X_L1_train=None, X_L2_train=None, y_train=None, X_group_train=None,
+						correction_strategy='flip', print_to_file=True):
+		"""
+		Evaluate 2-layer GeoRF model against 2-layer base RF model.
+		
+		Parameters
+		----------
+		X_L1_test, X_L2_test : array-like
+			Test features for both layers
+		y_test : array-like
+			Test targets
+		X_group_test : array-like
+			Test group assignments
+		X_L1_train, X_L2_train : array-like, optional
+			Training features (needed for base model training)
+		y_train : array-like, optional
+			Training targets (needed for base model training)
+		X_group_train : array-like, optional
+			Training group assignments (needed for base model training)
+		correction_strategy : str
+			Error correction strategy
+		print_to_file : bool
+			Whether to print results to file
+			
+		Returns
+		-------
+		pre, rec, f1 : array-like
+			Precision, recall, F1 for 2-layer GeoRF
+		pre_base, rec_base, f1_base : array-like  
+			Precision, recall, F1 for 2-layer base RF
+		"""
+		
+		if print_to_file:
+			print('Evaluating 2-Layer Models...')
+			print_file = self.model_dir + '/' + 'log_print_eval_2layer.txt'
+			original_stdout = sys.stdout
+			sys.stdout = open(print_file, "w")
+		
+		# ============================================================
+		# 2-Layer GeoRF Evaluation
+		# ============================================================
+		print("Evaluating 2-Layer GeoRF...")
+		y_pred_georf = self.predict_2layer(X_L1_test, X_L2_test, X_group_test, correction_strategy)
+		
+		# Calculate GeoRF metrics
+		true_georf, total_georf, pred_total_georf = get_class_wise_accuracy(y_test, y_pred_georf, prf=True)
+		pre, rec, f1, total_class = get_prf(true_georf, total_georf, pred_total_georf)
+		
+		print('2-Layer GeoRF F1:', f1)
+		
+		# ============================================================
+		# 2-Layer Base RF Evaluation  
+		# ============================================================
+		print("Training and evaluating 2-Layer Base RF...")
+		
+		if any(x is None for x in [X_L1_train, X_L2_train, y_train]):
+			raise ValueError("Training data required for base model evaluation")
+		
+		# Train base Layer 1 (global RF, no partitioning)
+
+		base_l1 = RandomForestClassifier(
+			n_estimators=self.n_trees_unit,
+			max_depth=self.max_depth,
+			random_state=self.random_state,
+			n_jobs=self.n_jobs
+		)
+		base_l1.fit(X_L1_train, y_train)
+		
+		# Get base Layer 1 predictions
+		y_pred_base_l1_train = base_l1.predict(X_L1_train)
+		y_pred_base_l1_test = base_l1.predict(X_L1_test)
+		
+		# Train base Layer 2 (global RF for error correction)
+		error_targets_base = (y_train != y_pred_base_l1_train).astype(int)
+		base_l2 = RandomForestClassifier(
+			n_estimators=self.n_trees_unit,
+			max_depth=self.max_depth,
+			random_state=self.random_state,
+			n_jobs=self.n_jobs
+		)
+		base_l2.fit(X_L2_train, error_targets_base)
+		
+		# Get base Layer 2 predictions and combine
+		error_pred_base = base_l2.predict(X_L2_test)
+		
+		# Apply same correction strategy
+		if correction_strategy == 'flip':
+			y_pred_base = y_pred_base_l1_test.copy()
+			y_pred_base[error_pred_base == 1] = 1 - y_pred_base[error_pred_base == 1]
+		else:
+			y_pred_base = y_pred_base_l1_test
+		
+		# Calculate base model metrics
+		true_base, total_base, pred_total_base = get_class_wise_accuracy(y_test, y_pred_base, prf=True)
+		pre_base, rec_base, f1_base, total_class = get_prf(true_base, total_base, pred_total_base)
+		
+		print('2-Layer Base RF F1:', f1_base)
+		
+		if print_to_file:
+			sys.stdout.close()
+			sys.stdout = original_stdout
+			
+		return pre, rec, f1, pre_base, rec_base, f1_base
