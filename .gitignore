@@ -3,6 +3,7 @@
 *.pyc
 *.csv
 *.png
+CLAUDE.md
 
 # ignore everything under result_*
 result_*
