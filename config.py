@@ -101,7 +101,7 @@ if multi:
   #used locations marked by "#select_class"
 else:
   #binary: one crop
-  SELECT_CLASS = np.array([1])#select one class from the list
+  SELECT_CLASS = None
   NUM_CLASS = 2
 
 #For improved spatial contiguity of partitions
