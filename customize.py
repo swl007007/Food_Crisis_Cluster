@@ -541,3 +541,172 @@ def generate_groups_counties(X_loc):
   # np.save('X_group_debug.npy', X_group)
   return X_group
 
+
+def generate_kmeans_groups_from_admin_codes(df, features_for_clustering=None, n_clusters=50, random_state=42):
+    """
+    Generate K-means clustering groups based on FEWSNET_admin_code and associated features.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing FEWSNET_admin_code and other features
+    features_for_clustering : list, optional
+        List of feature columns to use for clustering. If None, will use latitude and longitude.
+        Default features could include: ['latitude', 'longitude', 'mean_feature1', 'mean_feature2', ...]
+    n_clusters : int, default=50
+        Number of clusters for K-means
+    random_state : int, default=42
+        Random state for reproducibility
+        
+    Returns:
+    --------
+    admin_to_group_map : dict
+        Dictionary mapping FEWSNET_admin_code to cluster group_id
+    cluster_info : dict
+        Additional information about clusters (centroids, feature stats, etc.)
+    """
+    from sklearn.cluster import KMeans
+    from sklearn.preprocessing import StandardScaler
+    import pandas as pd
+    import numpy as np
+    
+    # Get unique admin codes and their characteristics
+    admin_features = df.groupby('FEWSNET_admin_code').agg({
+        'lat': 'mean',
+        'lon': 'mean'
+    }).reset_index()
+    
+    # Add other aggregated features if available
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    numeric_cols = [col for col in numeric_cols if col not in ['FEWSNET_admin_code', 'lat', 'lon']]
+    
+    if len(numeric_cols) > 0:
+        additional_features = df.groupby('FEWSNET_admin_code')[numeric_cols].agg(['mean', 'std']).reset_index()
+        additional_features.columns = ['FEWSNET_admin_code'] + [f"{col}_{stat}" for col, stat in additional_features.columns[1:]]
+        admin_features = admin_features.merge(additional_features, on='FEWSNET_admin_code')
+    
+    # Select features for clustering
+    if features_for_clustering is None:
+        features_for_clustering = ['lat', 'lon']
+    
+    # Ensure all requested features are available
+    available_features = [f for f in features_for_clustering if f in admin_features.columns]
+    if not available_features:
+        raise ValueError(f"None of the requested features {features_for_clustering} are available in the data")
+    
+    print(f"Using features for clustering: {available_features}")
+    
+    # Prepare clustering data
+    clustering_data = admin_features[available_features].fillna(0)
+    
+    # Standardize features
+    scaler = StandardScaler()
+    clustering_data_scaled = scaler.fit_transform(clustering_data)
+    
+    # Perform K-means clustering
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
+    cluster_labels = kmeans.fit_predict(clustering_data_scaled)
+    
+    # Create mapping from admin code to group id
+    admin_to_group_map = dict(zip(admin_features['FEWSNET_admin_code'], cluster_labels))
+    
+    # Calculate cluster statistics
+    admin_features['cluster_id'] = cluster_labels
+    cluster_stats = {}
+    
+    for cluster_id in range(n_clusters):
+        cluster_mask = admin_features['cluster_id'] == cluster_id
+        cluster_data = admin_features[cluster_mask]
+        
+        if len(cluster_data) > 0:
+            cluster_stats[cluster_id] = {
+                'n_admin_codes': len(cluster_data),
+                'admin_codes': cluster_data['FEWSNET_admin_code'].tolist(),
+                'centroid_lat': cluster_data['lat'].mean(),
+                'centroid_lon': cluster_data['lon'].mean(),
+                'lat_range': [cluster_data['lat'].min(), cluster_data['lat'].max()],
+                'lon_range': [cluster_data['lon'].min(), cluster_data['lon'].max()]
+            }
+    
+    cluster_info = {
+        'n_clusters': n_clusters,
+        'features_used': available_features,
+        'cluster_stats': cluster_stats,
+        'kmeans_model': kmeans,
+        'scaler': scaler,
+        'admin_features': admin_features
+    }
+    
+    print(f"Created {n_clusters} clusters from {len(admin_features)} unique admin codes")
+    print(f"Cluster sizes range from {min(len(stats['admin_codes']) for stats in cluster_stats.values())} to {max(len(stats['admin_codes']) for stats in cluster_stats.values())} admin codes")
+    
+    return admin_to_group_map, cluster_info
+
+
+def assign_groups_from_admin_codes(df, admin_to_group_map):
+    """
+    Assign group IDs to dataframe rows based on FEWSNET_admin_code using the mapping from K-means clustering.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing FEWSNET_admin_code column
+    admin_to_group_map : dict
+        Dictionary mapping FEWSNET_admin_code to group_id (from generate_kmeans_groups_from_admin_codes)
+        
+    Returns:
+    --------
+    X_group : numpy.ndarray
+        Array of group IDs corresponding to each row in df
+    """
+    import numpy as np
+    
+    # Map admin codes to group IDs
+    X_group = np.array([admin_to_group_map.get(admin_code, -1) for admin_code in df['FEWSNET_admin_code']])
+    
+    # Check for unmapped admin codes
+    unmapped_count = np.sum(X_group == -1)
+    if unmapped_count > 0:
+        print(f"Warning: {unmapped_count} rows have admin codes not found in the clustering mapping")
+        unique_unmapped = df[X_group == -1]['FEWSNET_admin_code'].unique()
+        print(f"Unmapped admin codes: {unique_unmapped[:10]}{'...' if len(unique_unmapped) > 10 else ''}")
+    
+    return X_group
+
+
+def create_kmeans_groupgenerator_from_admin_codes(df, features_for_clustering=None, n_clusters=50, random_state=42):
+    """
+    Complete workflow to create K-means based groups from FEWSNET_admin_code.
+    This function combines clustering and group assignment.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing FEWSNET_admin_code and other features
+    features_for_clustering : list, optional
+        List of feature columns to use for clustering
+    n_clusters : int, default=50
+        Number of clusters for K-means
+    random_state : int, default=42
+        Random state for reproducibility
+        
+    Returns:
+    --------
+    X_group : numpy.ndarray
+        Array of group IDs for each row in df
+    cluster_info : dict
+        Information about the clustering results
+    admin_to_group_map : dict
+        Mapping from admin codes to group IDs
+    """
+    
+    # Generate K-means clustering
+    admin_to_group_map, cluster_info = generate_kmeans_groups_from_admin_codes(
+        df, features_for_clustering, n_clusters, random_state
+    )
+    
+    # Assign groups to all rows
+    X_group = assign_groups_from_admin_codes(df, admin_to_group_map)
+    
+    return X_group, cluster_info, admin_to_group_map
+
