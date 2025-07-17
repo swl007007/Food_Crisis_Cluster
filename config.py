@@ -105,7 +105,7 @@ else:
   NUM_CLASS = 2
 
 #For improved spatial contiguity of partitions
-#This is only for cases where groups are based on a grid (i.e., each group is a grid cell).
+#This supports both grid-based and polygon-based contiguity
 # CONTIGUITY = False
 # REFINE_TIMES = 0
 CONTIGUITY = True
@@ -113,9 +113,16 @@ REFINE_TIMES = 3
 #MIN_COMPONENT_SIZE = 10
 MIN_COMPONENT_SIZE = 5
 
+#Contiguity type: 'grid' or 'polygon'
+CONTIGUITY_TYPE = 'polygon'  # Default to polygon-based contiguity
+
+#Polygon contiguity parameters (used when CONTIGUITY_TYPE = 'polygon')
+POLYGON_NEIGHBOR_DISTANCE_THRESHOLD = 0.8  # Auto-calculate if None
+POLYGON_CONTIGUITY_INFO = None  # Set this to polygon contiguity info dict when using polygon contiguity
+
 #predefined groups such as US counties
 #unused here
-PREDEFINED_GROUPS = True
+PREDEFINED_GROUPS = False
 #PREDEFINED_GROUPS = False
 if PREDEFINED_GROUPS:
   CONTIGUITY = False

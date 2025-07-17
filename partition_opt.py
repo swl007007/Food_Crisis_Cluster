@@ -321,12 +321,36 @@ def grid_to_partitions(loc_grid, null_value = -1):
 
 
 #customized spatial contiguity check, optional
-def get_refined_partitions(s0, s1, y_val_gid, g_loc, dir = None, branch_id = None):
+def get_refined_partitions(s0, s1, y_val_gid, g_loc, dir = None, branch_id = None, 
+                          contiguity_type='grid', polygon_centroids=None, 
+                          polygon_group_mapping=None, neighbor_distance_threshold=None):
   '''This will refine partitions based on specific user needs, i.e., this function is problem-specific.
      This example will improve the spatial contiguity of the obtained partitions, by swapping partition assignments for an element that is surrounded by elements belonging to another partition.
      s0 and s1 contains group_ids
      g_loc contains locations of groups (can be represented by row id and column id)
+     
+     Parameters:
+     -----------
+     contiguity_type : str, default='grid'
+         Type of contiguity refinement: 'grid' or 'polygon'
+     polygon_centroids : array-like, shape (n_polygons, 2), optional
+         Centroid coordinates for polygon-based contiguity
+     polygon_group_mapping : dict, optional
+         Mapping from polygon indices to group IDs for polygon-based contiguity
+     neighbor_distance_threshold : float, optional
+         Distance threshold for polygon neighbors
   '''
+  
+  # Use polygon-based contiguity if specified
+  if contiguity_type == 'polygon':
+    if polygon_centroids is None or polygon_group_mapping is None:
+      print("Warning: polygon_centroids and polygon_group_mapping required for polygon contiguity. Falling back to grid contiguity.")
+    else:
+      return get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids, 
+                                          polygon_group_mapping, neighbor_distance_threshold, 
+                                          dir, branch_id)
+  
+  # Original grid-based contiguity implementation
 
   #s0, s1 do not contain gid directly
   s0_group = get_s_list_group_ids(s0.astype(int), y_val_gid).astype(int)
@@ -363,9 +387,237 @@ def get_refined_partitions(s0, s1, y_val_gid, g_loc, dir = None, branch_id = Non
 
   return s0.astype(int), s1.astype(int)
 
+
+def get_polygon_neighbors(centroids, neighbor_distance_threshold=None):
+  '''Find neighboring polygons based on centroid distances.
+  
+  Parameters:
+  -----------
+  centroids : array-like, shape (n_polygons, 2)
+      Centroid coordinates (lat, lon) for each polygon
+  neighbor_distance_threshold : float, optional
+      Maximum distance to consider polygons as neighbors.
+      If None, uses adaptive threshold based on median distance.
+      
+  Returns:
+  --------
+  neighbor_dict : dict
+      Dictionary where keys are polygon indices and values are lists of neighbor indices
+  '''
+  from scipy.spatial.distance import cdist
+  import numpy as np
+  
+  # Calculate pairwise distances between centroids
+  distances = cdist(centroids, centroids, metric='euclidean')
+  
+  # Set distance threshold if not provided
+  if neighbor_distance_threshold is None:
+    # Use median of non-zero distances as threshold
+    non_zero_distances = distances[distances > 0]
+    neighbor_distance_threshold = np.median(non_zero_distances) * 1.5
+  
+  # Build neighbor dictionary
+  neighbor_dict = {}
+  for i in range(len(centroids)):
+    # Find neighbors within threshold distance (excluding self)
+    neighbors = np.where((distances[i] <= neighbor_distance_threshold) & (distances[i] > 0))[0]
+    neighbor_dict[i] = neighbors.tolist()
+  
+  return neighbor_dict
+
+
+def swap_partition_polygon(partition_assignments, polygon_neighbors, centroids=None):
+  '''Polygon version of swap_partition_general using majority voting among neighbors.
+  
+  Parameters:
+  -----------
+  partition_assignments : array-like, shape (n_polygons,)
+      Current partition assignments (0 or 1) for each polygon
+  polygon_neighbors : dict
+      Dictionary where keys are polygon indices and values are lists of neighbor indices
+  centroids : array-like, shape (n_polygons, 2), optional
+      Centroid coordinates for debugging/visualization
+      
+  Returns:
+  --------
+  partition_assignments_new : array-like, shape (n_polygons,)
+      Refined partition assignments after majority voting
+  '''
+  import numpy as np
+  
+  partition_assignments_new = np.copy(partition_assignments)
+  
+  for poly_idx in range(len(partition_assignments)):
+    current_partition = partition_assignments[poly_idx]
+    
+    # Skip if polygon has no neighbors
+    if poly_idx not in polygon_neighbors or len(polygon_neighbors[poly_idx]) == 0:
+      continue
+    
+    # Get neighbor partition assignments
+    neighbor_indices = polygon_neighbors[poly_idx]
+    neighbor_partitions = partition_assignments[neighbor_indices]
+    
+    # Include current polygon in the voting
+    all_partitions = np.append(neighbor_partitions, current_partition)
+    
+    # Count partition assignments
+    unique_partitions, counts = np.unique(all_partitions, return_counts=True)
+    
+    if len(unique_partitions) == 1:
+      # All neighbors have same partition
+      majority_partition = unique_partitions[0]
+    elif len(unique_partitions) == 2:
+      # Binary case: use threshold similar to grid-based (4/9)
+      partition_0_count = counts[unique_partitions == 0][0] if 0 in unique_partitions else 0
+      partition_1_count = counts[unique_partitions == 1][0] if 1 in unique_partitions else 0
+      total_count = partition_0_count + partition_1_count
+      
+      current_partition_count = partition_0_count if current_partition == 0 else partition_1_count
+      
+      # Use same threshold as grid-based: if current partition < 4/9 of total, switch
+      if current_partition_count / total_count < 4/9:
+        majority_partition = 1 - current_partition
+      else:
+        majority_partition = current_partition
+    else:
+      # Multi-partition case: use simple majority
+      majority_partition = unique_partitions[np.argmax(counts)]
+    
+    partition_assignments_new[poly_idx] = majority_partition
+  
+  return partition_assignments_new
+
+
+def polygon_partitions_to_groups(partition_assignments, polygon_to_group_map):
+  '''Convert polygon partition assignments back to group-level partitions.
+  
+  Parameters:
+  -----------
+  partition_assignments : array-like, shape (n_polygons,)
+      Partition assignments (0 or 1) for each polygon
+  polygon_to_group_map : dict
+      Dictionary mapping polygon indices to group IDs
+      
+  Returns:
+  --------
+  s0_group : array-like
+      Group IDs assigned to partition 0
+  s1_group : array-like
+      Group IDs assigned to partition 1
+  '''
+  import numpy as np
+  
+  s0_groups = []
+  s1_groups = []
+  
+  for poly_idx, partition in enumerate(partition_assignments):
+    if poly_idx in polygon_to_group_map:
+      group_ids = polygon_to_group_map[poly_idx]
+      if isinstance(group_ids, (list, np.ndarray)):
+        # Multiple groups per polygon
+        if partition == 0:
+          s0_groups.extend(group_ids)
+        else:
+          s1_groups.extend(group_ids)
+      else:
+        # Single group per polygon
+        if partition == 0:
+          s0_groups.append(group_ids)
+        else:
+          s1_groups.append(group_ids)
+  
+  return np.array(s0_groups), np.array(s1_groups)
+
+
+def get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids, 
+                                  polygon_group_mapping, neighbor_distance_threshold=None,
+                                  dir=None, branch_id=None):
+  '''Polygon version of get_refined_partitions using centroid-based neighbors.
+  
+  Parameters:
+  -----------
+  s0, s1 : array-like
+      Partition assignments (indices in y_val_gid)
+  y_val_gid : array-like
+      Group IDs for validation data
+  polygon_centroids : array-like, shape (n_polygons, 2)
+      Centroid coordinates (lat, lon) for each polygon
+  polygon_group_mapping : dict
+      Dictionary mapping polygon indices to group IDs or lists of group IDs
+  neighbor_distance_threshold : float, optional
+      Distance threshold for determining neighbors
+  dir : str, optional
+      Directory for saving visualizations
+  branch_id : str, optional
+      Branch identifier for visualization files
+      
+  Returns:
+  --------
+  s0_refined, s1_refined : array-like
+      Refined partition assignments
+  '''
+  import numpy as np
+  from helper import get_gid_to_s_map
+  
+  # Get group IDs for each partition
+  s0_group = get_s_list_group_ids(s0.astype(int), y_val_gid).astype(int)
+  s1_group = get_s_list_group_ids(s1.astype(int), y_val_gid).astype(int)
+  
+  # Create reverse mapping from group IDs to polygon indices
+  group_to_polygon_map = {}
+  for poly_idx, group_ids in polygon_group_mapping.items():
+    if isinstance(group_ids, (list, np.ndarray)):
+      for group_id in group_ids:
+        if group_id not in group_to_polygon_map:
+          group_to_polygon_map[group_id] = []
+        group_to_polygon_map[group_id].append(poly_idx)
+    else:
+      if group_ids not in group_to_polygon_map:
+        group_to_polygon_map[group_ids] = []
+      group_to_polygon_map[group_ids].append(poly_idx)
+  
+  # Initialize polygon partition assignments
+  n_polygons = len(polygon_centroids)
+  polygon_partitions = np.full(n_polygons, -1, dtype=int)
+  
+  # Assign partitions to polygons based on group memberships
+  for group_id in s0_group:
+    if group_id in group_to_polygon_map:
+      for poly_idx in group_to_polygon_map[group_id]:
+        polygon_partitions[poly_idx] = 0
+  
+  for group_id in s1_group:
+    if group_id in group_to_polygon_map:
+      for poly_idx in group_to_polygon_map[group_id]:
+        polygon_partitions[poly_idx] = 1
+  
+  # Find polygon neighbors
+  polygon_neighbors = get_polygon_neighbors(polygon_centroids, neighbor_distance_threshold)
+  
+  # Apply majority voting refinement
+  polygon_partitions_refined = swap_partition_polygon(polygon_partitions, polygon_neighbors, polygon_centroids)
+  
+  # Convert back to group-level partitions
+  s0_group_refined, s1_group_refined = polygon_partitions_to_groups(polygon_partitions_refined, polygon_group_mapping)
+  
+  # Convert back to original indices
+  gid_to_s_map = get_gid_to_s_map(y_val_gid, s0, s1)
+  s0_refined, s1_refined = s_group_to_s(s0_group_refined, s1_group_refined, gid_to_s_map)
+  
+  return s0_refined.astype(int), s1_refined.astype(int)
+
+
 def s_group_to_s(s0_group, s1_group, gid_to_s_map):
-  s0 = gid_to_s_map[s0_group]
-  s1 = gid_to_s_map[s1_group]
+  # Handle both dictionary and array-based mapping
+  if isinstance(gid_to_s_map, dict):
+    # Dictionary-based mapping (for non-contiguous group IDs)
+    s0 = np.array([gid_to_s_map[gid] for gid in s0_group if gid in gid_to_s_map])
+    s1 = np.array([gid_to_s_map[gid] for gid in s1_group if gid in gid_to_s_map])
+  else:
+    # Array-based mapping (for contiguous group IDs - legacy)
+    s0 = gid_to_s_map[s0_group]
+    s1 = gid_to_s_map[s1_group]
   return s0, s1
 
 def get_top_cells(g, flex = FLEX_OPTION, flex_ratio = FLEX_RATIO, flex_type = FLEX_TYPE, cnt = None):

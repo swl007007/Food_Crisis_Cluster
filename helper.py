@@ -153,11 +153,16 @@ def get_gid_to_s_map(y_val_gid, s0, s1):
   '''
   s_group back to s indices for continued steps in partitioning
   '''
-  n_gid = int(np.max(y_val_gid)) + 1
-  gid_to_s_map = np.zeros((n_gid,))
-  gid_to_s_map[y_val_gid[s0.astype(int)].astype(int)] = s0
-  gid_to_s_map[y_val_gid[s1.astype(int)].astype(int)] = s1
-
+  # Use dictionary to handle non-contiguous group IDs
+  gid_to_s_map = {}
+  
+  # Map group IDs to their s indices
+  for i, gid in enumerate(y_val_gid):
+    if i in s0:
+      gid_to_s_map[gid] = i
+    elif i in s1:
+      gid_to_s_map[gid] = i
+  
   return gid_to_s_map
 
 def get_branch_data_by_group(X, y, X_group, train_list, val_list, s0_group, s1_group):#, s0, s1; #from grid to group: X_loc, train_list, val_list, grid

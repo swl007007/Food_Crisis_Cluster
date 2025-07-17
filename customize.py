@@ -710,3 +710,121 @@ def create_kmeans_groupgenerator_from_admin_codes(df, features_for_clustering=No
     
     return X_group, cluster_info, admin_to_group_map
 
+
+class PolygonGroupGenerator():
+  '''
+  Generate groups for polygon-based spatial partitioning with contiguity support.
+  This generator creates groups from polygon assignments and stores centroid information
+  for spatial contiguity refinement.
+  '''
+  def __init__(self, polygon_centroids, polygon_group_mapping=None, neighbor_distance_threshold=None):
+    '''
+    Initialize PolygonGroupGenerator.
+    
+    Parameters:
+    -----------
+    polygon_centroids : array-like, shape (n_polygons, 2)
+        Centroid coordinates (lat, lon) for each polygon
+    polygon_group_mapping : dict, optional
+        Mapping from polygon indices to group IDs. If None, each polygon becomes one group.
+    neighbor_distance_threshold : float, optional
+        Distance threshold for determining polygon neighbors in contiguity refinement
+    '''
+    self.polygon_centroids = np.array(polygon_centroids)
+    self.neighbor_distance_threshold = neighbor_distance_threshold
+    
+    # Create polygon to group mapping if not provided
+    if polygon_group_mapping is None:
+      self.polygon_group_mapping = {i: i for i in range(len(polygon_centroids))}
+    else:
+      self.polygon_group_mapping = polygon_group_mapping
+    
+    # Create reverse mapping from group IDs to polygon indices
+    self.group_to_polygon_mapping = {}
+    for poly_idx, group_ids in self.polygon_group_mapping.items():
+      if isinstance(group_ids, (list, np.ndarray)):
+        for group_id in group_ids:
+          if group_id not in self.group_to_polygon_mapping:
+            self.group_to_polygon_mapping[group_id] = []
+          self.group_to_polygon_mapping[group_id].append(poly_idx)
+      else:
+        if group_ids not in self.group_to_polygon_mapping:
+          self.group_to_polygon_mapping[group_ids] = []
+        self.group_to_polygon_mapping[group_ids].append(poly_idx)
+    
+    print(f"PolygonGroupGenerator initialized with {len(polygon_centroids)} polygons and {len(self.group_to_polygon_mapping)} groups")
+  
+  def get_groups(self, X_polygon_ids):
+    '''
+    Generate group assignments from polygon IDs.
+    
+    Parameters:
+    -----------
+    X_polygon_ids : array-like, shape (n_samples,)
+        Polygon IDs for each data point
+        
+    Returns:
+    --------
+    X_group : array-like, shape (n_samples,)
+        Group ID assignment for each data point
+    '''
+    X_group = np.zeros(len(X_polygon_ids), dtype=int)
+    
+    for i, poly_id in enumerate(X_polygon_ids):
+      if poly_id in self.polygon_group_mapping:
+        group_id = self.polygon_group_mapping[poly_id]
+        if isinstance(group_id, (list, np.ndarray)):
+          # If multiple groups per polygon, use the first one
+          X_group[i] = group_id[0]
+        else:
+          X_group[i] = group_id
+      else:
+        # If polygon not in mapping, assign to polygon ID itself
+        X_group[i] = poly_id
+    
+    return X_group
+  
+  def get_contiguity_info(self):
+    '''
+    Get information needed for polygon-based contiguity refinement.
+    
+    Returns:
+    --------
+    contiguity_info : dict
+        Dictionary containing centroids, group mapping, and neighbor threshold
+    '''
+    return {
+      'polygon_centroids': self.polygon_centroids,
+      'polygon_group_mapping': self.polygon_group_mapping,
+      'neighbor_distance_threshold': self.neighbor_distance_threshold
+    }
+
+
+def generate_polygon_groups_from_centroids(X_polygon_ids, polygon_centroids, 
+                                          polygon_group_mapping=None, neighbor_distance_threshold=None):
+  '''
+  Convenience function to generate polygon-based groups.
+  
+  Parameters:
+  -----------
+  X_polygon_ids : array-like, shape (n_samples,)
+      Polygon IDs for each data point
+  polygon_centroids : array-like, shape (n_polygons, 2)
+      Centroid coordinates (lat, lon) for each polygon
+  polygon_group_mapping : dict, optional
+      Mapping from polygon indices to group IDs
+  neighbor_distance_threshold : float, optional
+      Distance threshold for determining polygon neighbors
+      
+  Returns:
+  --------
+  X_group : array-like, shape (n_samples,)
+      Group ID assignment for each data point
+  polygon_generator : PolygonGroupGenerator
+      Generator instance for further use
+  '''
+  polygon_generator = PolygonGroupGenerator(polygon_centroids, polygon_group_mapping, neighbor_distance_threshold)
+  X_group = polygon_generator.get_groups(X_polygon_ids)
+  
+  return X_group, polygon_generator
+

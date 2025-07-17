@@ -29,6 +29,8 @@ def partition(model, X, y,
                      min_depth = MIN_DEPTH,
                      max_depth = MAX_DEPTH,
                      refine_times = REFINE_TIMES,
+                     contiguity_type = 'grid',
+                     polygon_contiguity_info = None,
                      **paras):
 
   '''
@@ -123,12 +125,23 @@ def partition(model, X, y,
       # s1_prev = s1
 
       if CONTIGUITY:
-        group_loc = generate_groups_loc(X_DIM, STEP_SIZE)
-        #group_loc = generate_groups_loc(X_loc, STEP_SIZE)
-        # refine_times = REFINE_TIMES
-        for i_refine in range(refine_times):
-          #!!!s0 and s1 do not contain gid; instead, they contain indices from y_val_true (for gid need to use y_val_gid)
-          s0, s1 = get_refined_partitions(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id)
+        if contiguity_type == 'polygon' and polygon_contiguity_info is not None:
+          # Use polygon-based contiguity refinement
+          for i_refine in range(refine_times):
+            s0, s1 = get_refined_partitions(s0, s1, y_val_gid, None, 
+                                          dir = model.path, branch_id = branch_id,
+                                          contiguity_type = 'polygon',
+                                          polygon_centroids = polygon_contiguity_info['polygon_centroids'],
+                                          polygon_group_mapping = polygon_contiguity_info['polygon_group_mapping'],
+                                          neighbor_distance_threshold = polygon_contiguity_info['neighbor_distance_threshold'])
+        else:
+          # Use grid-based contiguity refinement (original implementation)
+          group_loc = generate_groups_loc(X_DIM, STEP_SIZE)
+          #group_loc = generate_groups_loc(X_loc, STEP_SIZE)
+          # refine_times = REFINE_TIMES
+          for i_refine in range(refine_times):
+            #!!!s0 and s1 do not contain gid; instead, they contain indices from y_val_true (for gid need to use y_val_gid)
+            s0, s1 = get_refined_partitions(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id)
 
       #debug
       # group_loc = generate_groups_loc(X_DIM, STEP_SIZE)

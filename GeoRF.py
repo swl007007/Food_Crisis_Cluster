@@ -107,7 +107,8 @@ class GeoRF():
 		
 
 	#Train GeoRF
-	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True):#X_loc is unused
+	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True, 
+	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -139,6 +140,11 @@ class GeoRF():
 				but their evaluations are used in the GeoRF branching process.
 		val_ratio: float
 				Optional. Used if X_set is not provided to assign samples to the validation set.
+		contiguity_type: str
+				Optional. Type of contiguity refinement: 'grid' or 'polygon'. Default uses CONTIGUITY_TYPE from config.
+		polygon_contiguity_info: dict
+				Optional. Dictionary containing polygon contiguity information (centroids, group mapping, neighbor threshold).
+				Required when contiguity_type='polygon'. Default uses POLYGON_CONTIGUITY_INFO from config.
     Returns
     -------
 		georf: GeoRF class object
@@ -213,7 +219,8 @@ class GeoRF():
 		#branch_table: shows which branches are further split and which are not.
 		X_branch_id, self.branch_table, self.s_branch = partition(self.model, X, y,
 		                   X_group , X_set, X_id, X_branch_id,
-		                   min_depth = self.min_model_depth, max_depth = self.max_model_depth)#X_loc = X_loc is unused
+		                   min_depth = self.min_model_depth, max_depth = self.max_model_depth,
+		                   contiguity_type = contiguity_type, polygon_contiguity_info = polygon_contiguity_info)#X_loc = X_loc is unused
 
 		#Save s_branch
 		print(self.s_branch)
@@ -395,7 +402,8 @@ class GeoRF():
 		return
 
 	# Add this method to your GeoRF class in GeoRF.py    
-	def fit_2layer(self, X_L1, X_L2, y, X_group, val_ratio=VAL_RATIO):
+	def fit_2layer(self, X_L1, X_L2, y, X_group, val_ratio=VAL_RATIO, 
+	               contiguity_type=CONTIGUITY_TYPE, polygon_contiguity_info=POLYGON_CONTIGUITY_INFO):
 		"""
 		Train a 2-layer GeoRF model.
 		
@@ -411,6 +419,10 @@ class GeoRF():
 			Group assignments for spatial partitioning
 		val_ratio : float
 			Validation ratio for internal evaluation
+		contiguity_type : str
+			Type of contiguity refinement: 'grid' or 'polygon' (default: uses CONTIGUITY_TYPE from config)
+		polygon_contiguity_info : dict
+			Dictionary containing polygon contiguity information (required when contiguity_type='polygon')
 			
 		Returns
 		-------
@@ -426,7 +438,8 @@ class GeoRF():
 			n_jobs=self.n_jobs,
 			max_depth=self.max_depth
 		)
-		self.georf_l1.fit(X_L1, y, X_group, val_ratio=val_ratio)
+		self.georf_l1.fit(X_L1, y, X_group, val_ratio=val_ratio, 
+		                  contiguity_type=contiguity_type, polygon_contiguity_info=polygon_contiguity_info)
 		
 		# Step 2: Get Layer 1 predictions for training error model
 		y_pred_l1 = self.georf_l1.predict(X_L1, X_group)
@@ -440,7 +453,8 @@ class GeoRF():
 			n_jobs=self.n_jobs,
 			max_depth=self.max_depth
 		)
-		self.georf_l2.fit(X_L2, error_targets, X_group, val_ratio=val_ratio)
+		self.georf_l2.fit(X_L2, error_targets, X_group, val_ratio=val_ratio, 
+		                  contiguity_type=contiguity_type, polygon_contiguity_info=polygon_contiguity_info)
 		
 		# Store feature indices for prediction
 		self.is_2layer = True
@@ -489,7 +503,8 @@ class GeoRF():
 	
 	def evaluate_2layer(self, X_L1_test, X_L2_test, y_test, X_group_test, 
 						X_L1_train=None, X_L2_train=None, y_train=None, X_group_train=None,
-						correction_strategy='flip', print_to_file=True):
+						correction_strategy='flip', print_to_file=True,
+						contiguity_type=CONTIGUITY_TYPE, polygon_contiguity_info=POLYGON_CONTIGUITY_INFO):
 		"""
 		Evaluate 2-layer GeoRF model against 2-layer base RF model.
 		
@@ -511,6 +526,10 @@ class GeoRF():
 			Error correction strategy
 		print_to_file : bool
 			Whether to print results to file
+		contiguity_type : str
+			Type of contiguity refinement: 'grid' or 'polygon' (default: uses CONTIGUITY_TYPE from config)
+		polygon_contiguity_info : dict
+			Dictionary containing polygon contiguity information (for consistency with other methods)
 			
 		Returns
 		-------

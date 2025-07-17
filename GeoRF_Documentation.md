@@ -116,7 +116,7 @@ class GeoRF():
 
 #### Primary Methods
 
-##### **fit(X, y, X_group, X_set=None, val_ratio=0.2, print_to_file=True)**
+##### **fit(X, y, X_group, X_set=None, val_ratio=0.2, print_to_file=True, contiguity_type='grid', polygon_contiguity_info=None)**
 Train the GeoRF model with spatial partitioning.
 
 **Parameters:**
@@ -126,6 +126,8 @@ Train the GeoRF model with spatial partitioning.
 - `X_set` (array-like, optional): Train/validation split (0=train, 1=validation)
 - `val_ratio` (float): Validation ratio if X_set not provided (default: 0.2)
 - `print_to_file` (bool): Save training logs to file (default: True)
+- `contiguity_type` (str): Type of contiguity refinement: 'grid' or 'polygon' (default: uses CONTIGUITY_TYPE from config)
+- `polygon_contiguity_info` (dict, optional): Dictionary containing polygon contiguity information (required when contiguity_type='polygon')
 
 **Returns:**
 - `self`: Trained GeoRF instance
@@ -134,6 +136,10 @@ Train the GeoRF model with spatial partitioning.
 ```python
 georf = GeoRF(max_model_depth=3, n_jobs=16)
 georf.fit(X_train, y_train, X_group_train, val_ratio=0.2)
+
+# With polygon contiguity
+georf.fit(X_train, y_train, X_group_train, val_ratio=0.2,
+          contiguity_type='polygon', polygon_contiguity_info=contiguity_info)
 ```
 
 ##### **predict(X, X_group, save_full_predictions=False)**
@@ -169,7 +175,7 @@ Generate spatial visualizations of partitions and performance (for grid-based gr
 
 ### 4.2 2-Layer GeoRF Methods
 
-##### **fit_2layer(X_L1, X_L2, y, X_group, val_ratio=0.2)**
+##### **fit_2layer(X_L1, X_L2, y, X_group, val_ratio=0.2, contiguity_type='grid', polygon_contiguity_info=None)**
 Train 2-layer GeoRF: main prediction + error correction.
 
 **Parameters:**
@@ -177,6 +183,8 @@ Train 2-layer GeoRF: main prediction + error correction.
 - `X_L2` (array-like): Layer 2 features (error correction)
 - `y, X_group`: Labels and group assignments
 - `val_ratio`: Validation split ratio
+- `contiguity_type` (str): Type of contiguity refinement: 'grid' or 'polygon' (default: uses CONTIGUITY_TYPE from config)
+- `polygon_contiguity_info` (dict, optional): Dictionary containing polygon contiguity information (required when contiguity_type='polygon')
 
 ##### **predict_2layer(X_L1, X_L2, X_group, correction_strategy='flip')**
 Make predictions using 2-layer model.
@@ -186,8 +194,21 @@ Make predictions using 2-layer model.
 - `X_group`: Test group assignments
 - `correction_strategy`: Error correction method ('flip' for binary)
 
-##### **evaluate_2layer(...)**
+##### **evaluate_2layer(X_L1_test, X_L2_test, y_test, X_group_test, X_L1_train=None, X_L2_train=None, y_train=None, X_group_train=None, correction_strategy='flip', print_to_file=True, contiguity_type='grid', polygon_contiguity_info=None)**
 Evaluate 2-layer GeoRF against 2-layer base RF.
+
+**Parameters:**
+- `X_L1_test, X_L2_test`: Test features for both layers
+- `y_test, X_group_test`: Test labels and group assignments
+- `X_L1_train, X_L2_train, y_train, X_group_train` (optional): Training data for base model comparison
+- `correction_strategy` (str): Error correction method ('flip' for binary)
+- `print_to_file` (bool): Save evaluation logs to file
+- `contiguity_type` (str): Type of contiguity refinement (for consistency)
+- `polygon_contiguity_info` (dict, optional): Polygon contiguity information (for consistency)
+
+**Returns:**
+- `pre, rec, f1`: Precision, recall, F1 scores for 2-layer GeoRF
+- `pre_base, rec_base, f1_base`: Precision, recall, F1 scores for 2-layer base RF
 
 ### 4.3 GroupGenerator Class
 
@@ -228,7 +249,55 @@ Create K-means based groups from administrative codes.
 - `admin_to_group_map` (dict): Mapping from admin codes to group IDs
 - `cluster_info` (dict): Clustering statistics and information
 
-### 4.5 Data Imputation
+### 4.5 Polygon-Based Grouping
+
+##### **PolygonGroupGenerator Class**
+Generate groups for polygon-based spatial partitioning with contiguity support.
+
+```python
+class PolygonGroupGenerator():
+    def __init__(self, polygon_centroids, polygon_group_mapping=None, 
+                 neighbor_distance_threshold=None)
+```
+
+**Parameters:**
+- `polygon_centroids` (array-like): Centroid coordinates (lat, lon) for each polygon
+- `polygon_group_mapping` (dict, optional): Mapping from polygon indices to group IDs
+- `neighbor_distance_threshold` (float, optional): Distance threshold for neighbors
+
+**Methods:**
+- `get_groups(X_polygon_ids)`: Generate group assignments from polygon IDs
+- `get_contiguity_info()`: Get information needed for contiguity refinement
+
+**Example:**
+```python
+# Create polygon group generator
+polygon_gen = PolygonGroupGenerator(
+    polygon_centroids=polygon_centroids,  # Shape: (n_polygons, 2)
+    neighbor_distance_threshold=0.8
+)
+
+# Generate groups
+X_group = polygon_gen.get_groups(X_polygon_ids)
+
+# Get contiguity info for GeoRF
+contiguity_info = polygon_gen.get_contiguity_info()
+```
+
+##### **generate_polygon_groups_from_centroids(X_polygon_ids, polygon_centroids, ...)**
+Convenience function for polygon-based grouping.
+
+**Parameters:**
+- `X_polygon_ids` (array-like): Polygon IDs for each data point
+- `polygon_centroids` (array-like): Centroid coordinates for each polygon
+- `polygon_group_mapping` (dict, optional): Mapping from polygon indices to group IDs
+- `neighbor_distance_threshold` (float, optional): Distance threshold for neighbors
+
+**Returns:**
+- `X_group` (array-like): Group assignments
+- `polygon_generator` (PolygonGroupGenerator): Generator instance
+
+### 4.6 Data Imputation
 
 ##### **impute_missing_values(X, strategy='max_plus', multiplier=100.0)**
 Handle missing values using out-of-range imputation for decision trees.
@@ -335,8 +404,13 @@ MD_THRD = 0.001                 # Mean difference threshold
 ```python
 STEP_SIZE = 0.1                 # Grid cell size (degrees)
 CONTIGUITY = True               # Enable spatial contiguity refinement
+CONTIGUITY_TYPE = 'grid'        # Type of contiguity: 'grid' or 'polygon'
 REFINE_TIMES = 3                # Number of contiguity refinement iterations
 MIN_COMPONENT_SIZE = 5          # Minimum component size for refinement
+
+# Polygon contiguity parameters (when CONTIGUITY_TYPE = 'polygon')
+POLYGON_NEIGHBOR_DISTANCE_THRESHOLD = None  # Auto-calculate if None
+POLYGON_CONTIGUITY_INFO = None  # Set to contiguity info dict when using polygon contiguity
 ```
 
 ### 6.2 Parameter Tuning Guidelines
@@ -404,7 +478,44 @@ georf = GeoRF(max_model_depth=4, n_jobs=16)
 georf.fit(X, y, X_group)
 ```
 
-### 7.3 2-Layer GeoRF Example
+### 7.3 Polygon-Based Grouping with Contiguity
+
+```python
+# Using polygon-based grouping with contiguity refinement
+from customize import PolygonGroupGenerator
+
+# Example: Administrative boundaries with centroids
+polygon_centroids = np.array([
+    [40.0, -100.0],  # Polygon 0 centroid (lat, lon)
+    [40.0, -99.5],   # Polygon 1 centroid
+    [40.5, -100.0],  # Polygon 2 centroid
+    # ... more centroids
+])
+
+# Create polygon group generator
+polygon_gen = PolygonGroupGenerator(
+    polygon_centroids=polygon_centroids,
+    neighbor_distance_threshold=0.8  # 0.8 degrees for neighbor detection
+)
+
+# Generate groups from polygon IDs
+X_polygon_ids = np.array([0, 0, 1, 1, 2, 2, ...])  # Polygon ID for each data point
+X_group = polygon_gen.get_groups(X_polygon_ids)
+
+# Get contiguity info
+contiguity_info = polygon_gen.get_contiguity_info()
+
+# Train with polygon contiguity
+georf = GeoRF(max_model_depth=3, n_jobs=16)
+georf.fit(X_train, y_train, X_group_train,
+          contiguity_type='polygon',
+          polygon_contiguity_info=contiguity_info)
+
+# Predict
+y_pred = georf.predict(X_test, X_group_test)
+```
+
+### 7.4 2-Layer GeoRF Example
 
 ```python
 # Prepare separate feature sets for each layer
@@ -415,6 +526,10 @@ X_L2 = X[:, 10:]  # Remaining features for error correction
 georf = GeoRF(max_model_depth=3)
 georf.fit_2layer(X_L1_train, X_L2_train, y_train, X_group_train)
 
+# Train 2-layer model with polygon contiguity
+georf.fit_2layer(X_L1_train, X_L2_train, y_train, X_group_train,
+                 contiguity_type='polygon', polygon_contiguity_info=contiguity_info)
+
 # Predict with both layers
 y_pred = georf.predict_2layer(X_L1_test, X_L2_test, X_group_test)
 
@@ -424,7 +539,7 @@ pre, rec, f1, pre_base, rec_base, f1_base = georf.evaluate_2layer(
     X_L1_train, X_L2_train, y_train, X_group_train)
 ```
 
-### 7.4 Missing Value Handling
+### 7.5 Missing Value Handling
 
 ```python
 from customize import impute_missing_values
@@ -437,7 +552,7 @@ X_imputed, imputer = impute_missing_values(
 georf.fit(X_imputed_train, y_train, X_group_train)
 ```
 
-### 7.5 Time-Based Splitting
+### 7.6 Time-Based Splitting
 
 ```python
 from customize import train_test_split_by_year
@@ -454,17 +569,56 @@ from customize import train_test_split_by_year
 
 ### 8.1 Spatial Contiguity Refinement
 
-GeoRF can improve spatial contiguity of partitions using majority voting in local neighborhoods (for grid-based groups):
+GeoRF can improve spatial contiguity of partitions using majority voting in local neighborhoods. Two types of contiguity are supported:
+
+#### 8.1.1 Grid-Based Contiguity (Default)
+
+For grid-based groups, uses 8-neighbor majority voting:
 
 ```python
 # Enable in config.py
 CONTIGUITY = True
+CONTIGUITY_TYPE = 'grid'  # Default
 REFINE_TIMES = 3
 MIN_COMPONENT_SIZE = 5
 
 # Automatic during training
 georf.fit(X_train, y_train, X_group_train)  # Refinement applied automatically
 ```
+
+#### 8.1.2 Polygon-Based Contiguity
+
+For polygon-based groups (administrative boundaries, watersheds, etc.), uses centroid-based neighbor detection:
+
+```python
+# Enable polygon contiguity in config.py
+CONTIGUITY = True
+CONTIGUITY_TYPE = 'polygon'
+POLYGON_NEIGHBOR_DISTANCE_THRESHOLD = 0.8  # or None for auto-calculation
+REFINE_TIMES = 3
+
+# Create polygon group generator
+from customize import PolygonGroupGenerator
+polygon_gen = PolygonGroupGenerator(
+    polygon_centroids=polygon_centroids,  # Shape: (n_polygons, 2)
+    neighbor_distance_threshold=0.8
+)
+
+# Generate groups and get contiguity info
+X_group = polygon_gen.get_groups(X_polygon_ids)
+contiguity_info = polygon_gen.get_contiguity_info()
+
+# Train with polygon contiguity
+georf.fit(X_train, y_train, X_group_train,
+          contiguity_type='polygon',
+          polygon_contiguity_info=contiguity_info)
+```
+
+**Key Features of Polygon Contiguity:**
+- **Centroid-based neighbors**: Uses polygon centroids to determine spatial neighbors
+- **Adaptive thresholds**: Automatically calculates neighbor distance if not specified
+- **Majority voting**: Same 4/9 threshold as grid-based system for consistency
+- **Flexible mapping**: Supports one-to-one or one-to-many polygon-to-group mappings
 
 ### 8.2 Partition Visualization
 
@@ -589,6 +743,13 @@ Results compared between:
 - Verify `STEP_SIZE` creates reasonable number of groups
 - For custom groups, ensure group IDs are consecutive integers starting from 0
 
+#### **Polygon Contiguity Issues**
+- **No neighbors found**: Check `neighbor_distance_threshold` - may be too small
+- **Too many neighbors**: Increase `neighbor_distance_threshold` or use auto-calculation (None)
+- **Contiguity not improving**: Verify polygon centroids are correctly calculated
+- **Memory issues**: Reduce number of polygons or use larger distance threshold
+- **Inconsistent results**: Ensure polygon_group_mapping is consistent across train/test
+
 ### 10.2 Debugging Tips
 
 #### **Check Data Integrity**
@@ -623,6 +784,27 @@ if len(small_groups) > 0:
     print(f"Warning: {len(small_groups)} groups have <10 samples")
 ```
 
+#### **Validate Polygon Contiguity**
+```python
+# Check polygon neighbor relationships
+from partition_opt import get_polygon_neighbors
+
+neighbors = get_polygon_neighbors(polygon_centroids, neighbor_distance_threshold=0.8)
+neighbor_counts = [len(n) for n in neighbors.values()]
+
+print(f"Neighbor stats: min={min(neighbor_counts)}, max={max(neighbor_counts)}, "
+      f"mean={np.mean(neighbor_counts):.1f}")
+
+# Check for isolated polygons (no neighbors)
+isolated_polygons = [poly_id for poly_id, neighs in neighbors.items() if len(neighs) == 0]
+if len(isolated_polygons) > 0:
+    print(f"Warning: {len(isolated_polygons)} isolated polygons: {isolated_polygons}")
+
+# Check centroids
+print(f"Centroid range: lat {polygon_centroids[:, 0].min():.2f}-{polygon_centroids[:, 0].max():.2f}, "
+      f"lon {polygon_centroids[:, 1].min():.2f}-{polygon_centroids[:, 1].max():.2f}")
+```
+
 ### 10.3 Performance Optimization
 
 #### **For Large Datasets**
@@ -645,7 +827,8 @@ GeoRF provides a powerful framework for spatial machine learning that goes beyon
 Key strengths:
 - **Spatial Awareness**: Explicitly handles spatial non-stationarity
 - **Automatic Partitioning**: Data-driven determination of optimal spatial regions
-- **Flexible Grouping**: Supports various spatial aggregation strategies
+- **Flexible Grouping**: Supports various spatial aggregation strategies (grid-based, polygon-based, K-means clustering)
+- **Dual Contiguity Systems**: Both grid-based and polygon-based contiguity refinement
 - **Statistical Rigor**: Significance testing for partition validation
 - **Scalable Design**: Parallel processing for large datasets
 
