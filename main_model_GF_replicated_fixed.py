@@ -466,8 +466,10 @@ def prepare_features(df, X_group, X_loc):
     # Get target variable
     y = df['fews_ipc_crisis'].values
     
-    # Save correspondence table
-    correspondence_table = df[['FEWSNET_admin_code', 'AEZ_group', 'AEZ_country_group', 'ISO_encoded']].drop_duplicates()
+    # Create comprehensive correspondence table with X_group mapping
+    correspondence_df = df[['FEWSNET_admin_code', 'AEZ_group', 'AEZ_country_group', 'ISO_encoded']].copy()
+    correspondence_df['X_group'] = X_group
+    correspondence_table = correspondence_df.drop_duplicates()
     correspondence_table.to_csv('correspondence_table.csv', index=False)
     
     # Sort by admin code and date
@@ -546,8 +548,49 @@ def validate_polygon_contiguity(contiguity_info, X_group):
     
     print("=== End Polygon Validation ===")
 
+def create_correspondence_table(df, years, train_year, X_branch_id, result_dir):
+    """
+    Create correspondence table mapping FEWSNET_admin_code to partition_id.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        Original dataframe with FEWSNET_admin_code
+    years : numpy.ndarray
+        Year values for all data
+    train_year : int
+        Year for which training was done
+    X_branch_id : numpy.ndarray
+        Branch IDs (partition IDs) from trained model
+    result_dir : str
+        Directory to save correspondence table
+    """
+    print(f"Creating correspondence table for year {train_year}...")
+    
+    # Get training data mask (same logic as train_test_split_by_year)
+    train_mask = (years < train_year) & (years >= (train_year - 5))
+    
+    # Get training subset of dataframe
+    df_train = df[train_mask].copy()
+    
+    # Add partition IDs to training data
+    df_train['partition_id'] = X_branch_id
+    
+    # Extract unique FEWSNET_admin_code and partition_id pairs
+    correspondence_table = df_train[['FEWSNET_admin_code', 'partition_id']].drop_duplicates()
+    
+    # Sort by admin code for better readability
+    correspondence_table = correspondence_table.sort_values('FEWSNET_admin_code')
+    
+    # Save to result directory
+    output_path = os.path.join(result_dir, f'correspondence_table_{train_year}.csv')
+    correspondence_table.to_csv(output_path, index=False)
+    
+    print(f"Correspondence table saved to: {output_path}")
+    print(f"Table contains {len(correspondence_table)} unique admin_code-partition_id pairs")
+
 def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index, 
-                           assignment, contiguity_info, nowcasting=False, max_depth=None):
+                           assignment, contiguity_info, df, nowcasting=False, max_depth=None):
     """
     Run temporal evaluation for multiple years.
     
@@ -571,6 +614,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
         Spatial assignment method
     contiguity_info : dict or None
         Contiguity information
+    df : pandas.DataFrame
+        Original dataframe with FEWSNET_admin_code
     nowcasting : bool
         Whether to use 2-layer model
     max_depth : int or None
@@ -660,6 +705,15 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
             
             print(f"Year {year} - 2-Layer GeoRF F1: {f1}, 2-Layer Base RF F1: {f1_base}")
             
+            # Extract and save correspondence table for 2-layer model
+            try:
+                X_branch_id_path = os.path.join(georf_2layer.dir_space, 'X_branch_id.npy')
+                if os.path.exists(X_branch_id_path):
+                    X_branch_id = np.load(X_branch_id_path)
+                    create_correspondence_table(df, years, year, X_branch_id, georf_2layer.model_dir)
+            except Exception as e:
+                print(f"Warning: Could not create correspondence table for year {year}: {e}")
+            
         else:
             # Single-layer model
             georf = GeoRF(
@@ -686,6 +740,15 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
             )
             
             print(f"Year {year} - GeoRF F1: {f1}, Base RF F1: {f1_base}")
+            
+            # Extract and save correspondence table for single-layer model
+            try:
+                X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
+                if os.path.exists(X_branch_id_path):
+                    X_branch_id = np.load(X_branch_id_path)
+                    create_correspondence_table(df, years, year, X_branch_id, georf.model_dir)
+            except Exception as e:
+                print(f"Warning: Could not create correspondence table for year {year}: {e}")
         
         # Store results
         nsample_class = np.bincount(ytest)
@@ -753,13 +816,13 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
     results_df_name = 'results_df_g'
     
     assignment_suffixes = {
-        'polygons': 'pn',
-        'grid': 'gn',
-        'country': 'cn',
-        'AEZ': 'aen',
-        'country_AEZ': 'caen',
-        'geokmeans': 'gkn',
-        'all_kmeans': 'akn'
+        'polygons': 'p',
+        'grid': 'g',
+        'country': 'c',
+        'AEZ': 'ae',
+        'country_AEZ': 'cae',
+        'geokmeans': 'gk',
+        'all_kmeans': 'ak'
     }
     
     if assignment in assignment_suffixes:
@@ -815,7 +878,7 @@ def main():
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(
             X, y, X_loc, X_group, years, l1_index, l2_index,
-            assignment, contiguity_info, nowcasting, max_depth
+            assignment, contiguity_info, df, nowcasting, max_depth
         )
         
         # Step 6: Save results
