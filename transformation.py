@@ -46,6 +46,15 @@ def partition(model, X, y,
   #dict #rows must be consistent
   s_branch, max_size_needed = init_s_branch(n_groups = N_GROUPS)#grid_dim = GRID_DIM
 
+  # Train and save initial base model for the root branch (branch_id = '')
+  print("Training initial base model for root branch...")
+  train_list = get_id_list(X_branch_id, X_set, '', set_id = 0)
+  X_train_base = X[train_list]
+  y_train_base = y[train_list]
+  model.train(X_train_base, y_train_base, branch_id='')
+  model.save('')
+  print(f"Initial base model trained with {len(y_train_base)} samples")
+  
   for i in range(max_depth-1):
 
     num_branches = 2**i
