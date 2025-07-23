@@ -471,7 +471,7 @@ class GeoRF_XGB():
         print('Precision: ', pre)
         print('Recall: ', rec)
         print('F1-score: ', f1)
-        
+        #TODO:evaluate_2layer with XGBoost base model not yet implemented
         # Compare with base 2-layer model (no spatial partitioning)
         # ... (similar implementation as single layer)
         

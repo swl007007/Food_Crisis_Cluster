@@ -325,48 +325,64 @@ def impute_missing_values(X, strategy='max_plus', multiplier=100.0, verbose=True
 
 
 
-def train_test_split_by_year(X, y, X_loc, X_group, years, test_year):
-  '''Time-based splitting using a date column.
+def train_test_split_by_year(X, y, X_loc, X_group, years, test_year, input_terms=None,need_terms = None):
+    '''Time-based splitting using a date column.
 
-  Parameters
-  ----------
-  X : array-like
-    Feature matrix.
-  y : array-like
-    Labels.
-  X_loc : array-like
-    Location information for each sample.
-  X_group : array-like
-    Group ID for each sample.
-  dates : array-like
-    1-D array containing a datetime64 dtype or year values.
-  test_year : int
-    Year used for the test set. All samples with year < test_year form the
-    training set and samples with year == test_year form the test set.
+    Parameters
+    ----------
+    X : array-like
+        Feature matrix.
+    y : array-like
+        Labels.
+    X_loc : array-like
+        Location information for each sample.
+    X_group : array-like
+        Group ID for each sample.
+    dates : array-like
+        1-D array containing a datetime64 dtype or year values.
+    test_year : int
+        Year used for the test set. All samples with year < test_year form the
+        training set and samples with year == test_year form the test set.
 
-  Returns
-  -------
-  Tuple containing train and test splits in the same format as
-  ``train_test_split_all``.
-  '''
+    Returns
+    -------
+    Tuple containing train and test splits in the same format as
+    ``train_test_split_all``.
+    '''
+    if need_terms is None:
+        # train mask is five years before the test year
+        train_mask = (years < test_year) & (years >= (test_year - 5))
+        test_mask = years == test_year
+
+        Xtrain = X[train_mask]
+        ytrain = y[train_mask]
+        Xtrain_loc = X_loc[train_mask]
+        Xtrain_group = X_group[train_mask]
+
+        Xtest = X[test_mask]
+        ytest = y[test_mask]
+        Xtest_loc = X_loc[test_mask]
+        Xtest_group = X_group[test_mask]
+    else:
+        # select the first k terms for each year as test set
+        train_mask = (years < test_year) & (years >= (test_year - 5))
+        test_year_mask = years == test_year
+
+        Xtrain = X[train_mask]
+        ytrain = y[train_mask]
+        Xtrain_loc = X_loc[train_mask]
+        Xtrain_group = X_group[train_mask]
+
+        test_terms_mask = input_terms <= need_terms
+        test_mask = test_year_mask & test_terms_mask
+        Xtest = X[test_mask]
+        ytest = y[test_mask]
+        Xtest_loc = X_loc[test_mask]
+        Xtest_group = X_group[test_mask]
+        
 
 
-  # train mask is five years before the test year
-  train_mask = (years < test_year) & (years >= (test_year - 5))
-  test_mask = years == test_year
-
-  Xtrain = X[train_mask]
-  ytrain = y[train_mask]
-  Xtrain_loc = X_loc[train_mask]
-  Xtrain_group = X_group[train_mask]
-
-  Xtest = X[test_mask]
-  ytest = y[test_mask]
-  Xtest_loc = X_loc[test_mask]
-  Xtest_group = X_group[test_mask]
-
-
-  return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
+    return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
 class GroupGenerator():
   '''
   Generate groups (minimum spatial units) for partitioning in GeoRF.

@@ -13,7 +13,7 @@ Key features:
 5. Single-layer and 2-layer GeoRF models
 6. Comprehensive evaluation and result saving
 
-Date: 2024-07-17
+Date: 2025-07-23
 """
 
 import numpy as np
@@ -499,10 +499,18 @@ def prepare_features(df, X_group, X_loc):
     
     # Get years for temporal splitting
     years = df_sorted['years'].values
+    # get terms within each year:group by FESNET_admin_code and year, set first month as 1, second months as 2
+    months = df_sorted['date'].dt.month.values
+    # if months = 1,2,3 then terms =1, if months = 4,5,6 then terms = 2, if months = 7,8,9 then terms = 3, if months = 10,11,12 then terms = 4
+    terms = np.zeros_like(months)
+    terms[months <= 3] = 1
+    terms[(months > 3) & (months <= 6)] = 2
+    terms[(months > 6) & (months <= 9)] = 3
+    terms[(months > 9) & (months <= 12)] = 4
     
     print(f"Feature preparation complete: {X.shape[1]} features, {len(l1_index)} L1 features, {len(l2_index)} L2 features")
     
-    return X, y, l1_index, l2_index, years
+    return X, y, l1_index, l2_index, years, terms
 
 def validate_polygon_contiguity(contiguity_info, X_group):
     """
@@ -590,7 +598,7 @@ def create_correspondence_table(df, years, train_year, X_branch_id, result_dir):
     print(f"Table contains {len(correspondence_table)} unique admin_code-partition_id pairs")
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index, 
-                           assignment, contiguity_info, df, nowcasting=False, max_depth=None):
+                           assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None):
     """
     Run temporal evaluation for multiple years.
     
@@ -654,7 +662,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
         # Train-test split
         (Xtrain, ytrain, Xtrain_loc, Xtrain_group,
          Xtest, ytest, Xtest_loc, Xtest_group) = train_test_split_by_year(
-            X, y, X_loc, X_group, years, test_year=year)
+            X, y, X_loc, X_group, years, test_year=year,input_terms = input_terms,need_terms=desire_terms)
         
         ytrain = ytrain.astype(int)
         ytest = ytest.astype(int)
@@ -794,7 +802,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
     
     return results_df, y_pred_test
 
-def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None):
+def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms = None):
     """
     Save evaluation results to CSV files.
     
@@ -834,6 +842,11 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
         pred_test_name += f'_d{max_depth}'
         results_df_name += f'_d{max_depth}'
     
+    if desire_terms is not None:
+        pred_test_name += f'_t{desire_terms}'
+        results_df_name += f'_t{desire_terms}'
+    
+    
     # Add nowcasting suffix
     if nowcasting:
         pred_test_name += '_nowcast'
@@ -859,7 +872,8 @@ def main():
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
-    max_depth = None         # Set to integer for specific RF depth
+    max_depth = None  # Set to integer for specific RF depth
+    desire_terms = 1
     
     try:
         # Step 1: Load and preprocess data
@@ -869,7 +883,7 @@ def main():
         X_group, X_loc, contiguity_info = setup_spatial_groups(df, assignment)
         
         # Step 3: Prepare features
-        X, y, l1_index, l2_index, years = prepare_features(df, X_group, X_loc)
+        X, y, l1_index, l2_index, years, terms= prepare_features(df, X_group, X_loc)
         
         # Step 4: Validate polygon contiguity (if applicable)
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
@@ -878,11 +892,11 @@ def main():
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(
             X, y, X_loc, X_group, years, l1_index, l2_index,
-            assignment, contiguity_info, df, nowcasting, max_depth
+            assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms
         )
         
         # Step 6: Save results
-        save_results(results_df, y_pred_test, assignment, nowcasting, max_depth)
+        save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms=desire_terms)
         
         # Step 7: Display summary
         print("\n=== Evaluation Summary ===")
