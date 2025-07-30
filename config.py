@@ -49,7 +49,7 @@ MD_THRD = 0.001#0.005#mean_diff thrd
 #Train-val-test split
 #Used as default function inputs
 TRAIN_RATIO = 0.6
-VAL_RATIO = 0.20#subset from training, e.g., 0.2 means 20% of training data will be set as validation
+VAL_RATIO = 0.20#subset from training, e.g., 0.2 means 20% of training data will be set as validation ## validation set
 TEST_RATIO = 1 - TRAIN_RATIO
 #*********************************************************************************
 
