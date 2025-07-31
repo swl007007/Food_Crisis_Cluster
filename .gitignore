@@ -10,3 +10,5 @@ result_*
 trial_*
 .claude/settings.local.json
 PARTITION_METRICS_INTEGRATION.md
+
+*.ipynb
