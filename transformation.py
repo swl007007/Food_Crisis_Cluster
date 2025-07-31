@@ -31,12 +31,22 @@ def partition(model, X, y,
                      refine_times = REFINE_TIMES,
                      contiguity_type = 'grid',
                      polygon_contiguity_info = None,
+                     track_partition_metrics = False,
+                     correspondence_table_path = None,
+                     model_dir = None,  # Add model_dir parameter
                      **paras):
 
   '''
   **paras is for model-specific parameters (could be different for deep learning and traditional ML)
   maybe create two different versions?
   '''
+  # Initialize metrics tracker if requested
+  metrics_tracker = None
+  if track_partition_metrics:
+    from metrics import PartitionMetricsTracker
+    metrics_tracker = PartitionMetricsTracker(correspondence_table_path)
+    print("Partition metrics tracking enabled")
+  
   #branch_table is also something that can be returned if needed
   branch_table = np.zeros([2**max_depth, max_depth])
   branch_table[:,0:min_depth] = 1 #-1
@@ -49,11 +59,80 @@ def partition(model, X, y,
   # Train and save initial base model for the root branch (branch_id = '')
   print("Training initial base model for root branch...")
   train_list = get_id_list(X_branch_id, X_set, '', set_id = 0)
+  val_list = get_id_list(X_branch_id, X_set, '', set_id = 1)
   X_train_base = X[train_list]
   y_train_base = y[train_list]
   model.train(X_train_base, y_train_base, branch_id='')
   model.save('')
   print(f"Initial base model trained with {len(y_train_base)} samples")
+  
+  # Generate baseline visualization for the root model (before any partitioning)
+  if metrics_tracker is not None and correspondence_table_path:
+    try:
+      # Get validation data for baseline visualization
+      X_val_base = X[val_list]
+      y_val_base = y[val_list]
+      X_group_base = X_group[val_list]
+      
+      # Get baseline predictions (same for before and after since no partitioning yet)
+      y_pred_base = base_eval_using_merged_branch_data(model, X_val_base, '')
+      
+      # Record baseline metrics for round -1 (pre-partitioning)
+      metrics_tracker.record_partition_metrics(
+          partition_round=-1,
+          branch_id='baseline',
+          y_true=y_val_base,
+          y_pred_before=y_pred_base,
+          y_pred_after=y_pred_base,  # Same as before since no partitioning
+          X_group=X_group_base,
+          partition_type="baseline"
+      )
+      
+      # Generate baseline visualization
+      import os
+      from visualization import plot_metrics_improvement_map
+      
+      vis_dir = os.path.join(model.model_dir, 'vis')
+      os.makedirs(vis_dir, exist_ok=True)
+      metrics_dir = os.path.join(model_dir, 'partition_metrics')
+      os.makedirs(metrics_dir, exist_ok=True)
+      
+      # Save baseline metrics to CSV
+      baseline_csv = os.path.join(metrics_dir, "partition_metrics_baseline.csv")
+      baseline_metrics = []
+      if hasattr(metrics_tracker, 'all_metrics') and metrics_tracker.all_metrics:
+        for record in metrics_tracker.all_metrics:
+          if record['partition_round'] == -1 and record['branch_id'] == 'baseline':
+            baseline_metrics.append(record)
+      
+      if baseline_metrics:
+        import pandas as pd
+        baseline_df = pd.DataFrame(baseline_metrics)
+        baseline_df.to_csv(baseline_csv, index=False)
+        
+        # Create baseline performance maps (will show current performance levels)
+        baseline_f1_path = os.path.join(vis_dir, "baseline_f1_performance_map.png")
+        plot_metrics_improvement_map(
+            baseline_csv,
+            metric_type='f1_before',  # Show current F1 performance
+            correspondence_table_path=correspondence_table_path,
+            save_path=baseline_f1_path,
+            title="Baseline F1 Performance (Before Partitioning)"
+        )
+        
+        baseline_acc_path = os.path.join(vis_dir, "baseline_accuracy_performance_map.png")
+        plot_metrics_improvement_map(
+            baseline_csv,
+            metric_type='accuracy_before',  # Show current accuracy performance
+            correspondence_table_path=correspondence_table_path,
+            save_path=baseline_acc_path,
+            title="Baseline Accuracy Performance (Before Partitioning)"
+        )
+        
+        print("Generated baseline performance maps in /vis/ directory")
+        
+    except Exception as e:
+      print(f"Warning: Could not generate baseline visualization: {e}")
   
   for i in range(max_depth-1):
 
@@ -279,6 +358,95 @@ def partition(model, X, y,
         #only DL model may reach here
         print("Smaller than MIN_DEPTH, split directly...")
 
+      # Track metrics before and after partition decision
+      if metrics_tracker is not None:
+        # Get validation data for this branch
+        X_val_combined = auto_hv_stack(X0_val, X1_val)
+        y_val_combined = auto_hv_stack(y0_val, y1_val)
+        # Get X_group values for validation samples in each partition
+        val_indices_s0 = val_list[0][s0_val] if len(s0_val) > 0 else np.array([])
+        val_indices_s1 = val_list[0][s1_val] if len(s1_val) > 0 else np.array([])
+        
+        X_group_s0 = X_group[val_indices_s0] if len(val_indices_s0) > 0 else np.array([])
+        X_group_s1 = X_group[val_indices_s1] if len(val_indices_s1) > 0 else np.array([])
+        
+        X_group_combined = np.hstack([X_group_s0, X_group_s1])
+        
+        # Predictions before partition (from parent branch)
+        y_pred_before_combined = base_eval_using_merged_branch_data(model, X_val_combined, branch_id)
+        
+        # Predictions after partition (concatenate from both child branches)
+        y_pred_after_combined = np.hstack([y0_pred, y1_pred])
+        
+        # Record metrics for this partition round
+        partition_type = "binary_split" if sig == 1 else "no_split"
+        metrics_tracker.record_partition_metrics(
+            partition_round=i,
+            branch_id=branch_id,
+            y_true=y_val_combined,
+            y_pred_before=y_pred_before_combined,
+            y_pred_after=y_pred_after_combined,
+            X_group=X_group_combined,
+            partition_type=partition_type
+        )
+        
+        # Generate per-round visualization immediately after recording metrics
+        # Save to /vis/ directory for debugging purposes
+        if correspondence_table_path:
+          try:
+            import os
+            from visualization import plot_metrics_improvement_map
+            
+            # Use vis directory instead of partition_metrics for easier access
+            vis_dir = os.path.join(model_dir, 'vis')
+            os.makedirs(vis_dir, exist_ok=True)
+            
+            # Also create partition_metrics directory for CSV files
+            metrics_dir = os.path.join(model_dir, 'partition_metrics')
+            os.makedirs(metrics_dir, exist_ok=True)
+            
+            # Save current round metrics to CSV for visualization
+            branch_suffix = f"branch{branch_id}" if branch_id else "branchroot"
+            temp_csv_file = f"partition_metrics_round{i}_{branch_suffix}.csv"
+            temp_csv_path = os.path.join(metrics_dir, temp_csv_file)
+            
+            # Get current partition data for this specific round and branch
+            current_metrics = []
+            if hasattr(metrics_tracker, 'all_metrics') and metrics_tracker.all_metrics:
+              for record in metrics_tracker.all_metrics:
+                if record['partition_round'] == i and record['branch_id'] == branch_id:
+                  current_metrics.append(record)
+            
+            if current_metrics:
+              import pandas as pd
+              current_df = pd.DataFrame(current_metrics)
+              current_df.to_csv(temp_csv_path, index=False)
+              
+              # Generate F1 improvement map in /vis/ directory  
+              f1_map_path = os.path.join(vis_dir, f"round{i}_{branch_suffix}_f1_improvement_map.png")
+              f1_map_file = plot_metrics_improvement_map(
+                  temp_csv_path,
+                  metric_type='f1_improvement',
+                  correspondence_table_path=correspondence_table_path,
+                  save_path=f1_map_path,
+                  title=f"F1 Improvement - Round {i}, Branch {branch_id if branch_id else 'root'}"
+              )
+              
+              # Generate accuracy improvement map in /vis/ directory
+              acc_map_path = os.path.join(vis_dir, f"round{i}_{branch_suffix}_accuracy_improvement_map.png")  
+              acc_map_file = plot_metrics_improvement_map(
+                  temp_csv_path,
+                  metric_type='accuracy_improvement', 
+                  correspondence_table_path=correspondence_table_path,
+                  save_path=acc_map_path,
+                  title=f"Accuracy Improvement - Round {i}, Branch {branch_id if branch_id else 'root'}"
+              )
+              
+              print(f"Generated per-round maps in /vis/ for Round {i}, Branch {branch_id}: F1 and Accuracy improvement maps")
+              
+          except Exception as e:
+            print(f"Warning: Could not generate per-round visualization for Round {i}, Branch {branch_id}: {e}")
+
       #decision
       if sig == 1:
         print("+ Split %s into %s, %s" % (branch_id, branch_id+'0', branch_id+'1') )
@@ -353,4 +521,94 @@ def partition(model, X, y,
       else:
         print("= Branch %s not split" % (branch_id) )
 
-  return X_branch_id, branch_table, s_branch
+  # Save and return metrics if tracking was enabled
+  if metrics_tracker is not None:
+    # Save metrics to the model directory
+    try:
+      import os
+      metrics_dir = os.path.join(model_dir, 'partition_metrics')
+      os.makedirs(metrics_dir, exist_ok=True)
+      metrics_tracker.save_metrics_to_csv(metrics_dir)
+      
+      # Create visualization dashboard if correspondence table is available
+      if correspondence_table_path:
+        from visualization import plot_partition_metrics_dashboard
+        dashboard_outputs = plot_partition_metrics_dashboard(
+          metrics_tracker, 
+          metrics_dir,
+          correspondence_table_path=correspondence_table_path
+        )
+        print(f"Partition metrics dashboard created in: {metrics_dir}")
+        print(f"Created files: {dashboard_outputs}")
+        
+        # Generate comprehensive summary maps in /vis/ directory for debugging
+        try:
+          vis_dir = os.path.join(model_dir, 'vis')
+          os.makedirs(vis_dir, exist_ok=True)
+          
+          # Create overall performance summary maps from all collected metrics
+          if hasattr(metrics_tracker, 'all_metrics') and metrics_tracker.all_metrics:
+            import pandas as pd
+            all_metrics_df = pd.DataFrame(metrics_tracker.all_metrics)
+            
+            # Save comprehensive metrics CSV
+            comprehensive_csv = os.path.join(vis_dir, "comprehensive_partition_metrics.csv")
+            all_metrics_df.to_csv(comprehensive_csv, index=False)
+            
+            # Generate comprehensive improvement maps
+            if len(all_metrics_df) > 0:
+              from visualization import plot_metrics_improvement_map
+              
+              # Overall F1 improvement map across all rounds
+              overall_f1_path = os.path.join(vis_dir, "overall_f1_improvement_map.png")
+              plot_metrics_improvement_map(
+                  comprehensive_csv,
+                  metric_type='f1_improvement',
+                  correspondence_table_path=correspondence_table_path,
+                  save_path=overall_f1_path,
+                  title="Overall F1 Improvement Across All Partition Rounds"
+              )
+              
+              # Overall accuracy improvement map across all rounds  
+              overall_acc_path = os.path.join(vis_dir, "overall_accuracy_improvement_map.png")
+              plot_metrics_improvement_map(
+                  comprehensive_csv,
+                  metric_type='accuracy_improvement',
+                  correspondence_table_path=correspondence_table_path,
+                  save_path=overall_acc_path,
+                  title="Overall Accuracy Improvement Across All Partition Rounds"
+              )
+              
+              # Final performance maps (after all partitioning)
+              final_f1_path = os.path.join(vis_dir, "final_f1_performance_map.png")
+              plot_metrics_improvement_map(
+                  comprehensive_csv,
+                  metric_type='f1_after',
+                  correspondence_table_path=correspondence_table_path,
+                  save_path=final_f1_path,
+                  title="Final F1 Performance (After All Partitioning)"
+              )
+              
+              final_acc_path = os.path.join(vis_dir, "final_accuracy_performance_map.png")
+              plot_metrics_improvement_map(
+                  comprehensive_csv,
+                  metric_type='accuracy_after',
+                  correspondence_table_path=correspondence_table_path,
+                  save_path=final_acc_path,
+                  title="Final Accuracy Performance (After All Partitioning)"
+              )
+              
+              print(f"Generated comprehensive performance maps in /vis/ directory")
+              print(f"Maps include: baseline, per-round, overall, and final performance visualizations")
+              
+        except Exception as vis_e:
+          print(f"Warning: Could not create comprehensive /vis/ visualizations: {vis_e}")
+        
+    except Exception as e:
+      print(f"ERROR: Could not save partition metrics: {e}")
+      import traceback
+      traceback.print_exc()
+    
+    return X_branch_id, branch_table, s_branch, metrics_tracker
+  else:
+    return X_branch_id, branch_table, s_branch

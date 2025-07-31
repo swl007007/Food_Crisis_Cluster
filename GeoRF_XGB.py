@@ -167,7 +167,8 @@ class GeoRF_XGB():
         self.original_stdout = sys.stdout
 
     def fit(self, X, y, X_group, X_set=None, val_ratio=VAL_RATIO, print_to_file=True,
-            contiguity_type=CONTIGUITY_TYPE, polygon_contiguity_info=POLYGON_CONTIGUITY_INFO):
+            contiguity_type=CONTIGUITY_TYPE, polygon_contiguity_info=POLYGON_CONTIGUITY_INFO,
+            track_partition_metrics=False, correspondence_table_path=None):
         """
         Train the geo-aware XGBoost (Geo-XGB).
 
@@ -251,15 +252,25 @@ class GeoRF_XGB():
             early_stopping_rounds=self.early_stopping_rounds
         )
 
-        # Spatial partitioning (same as original GeoRF)
-        X_branch_id, self.branch_table, self.s_branch = partition(
+        # Spatial partitioning (same as original GeoRF, with optional metrics tracking)
+        partition_result = partition(
             self.model, X, y,
             X_group, X_set, X_id, X_branch_id,
-            min_model_depth=self.min_model_depth,
-            max_model_depth=self.max_model_depth,
-            min_branch_sample_size=MIN_BRANCH_SAMPLE_SIZE,
-            path=self.dir_ckpt
+            min_depth=self.min_model_depth,
+            max_depth=self.max_model_depth,
+            contiguity_type=contiguity_type,
+            polygon_contiguity_info=polygon_contiguity_info,
+            track_partition_metrics=track_partition_metrics,
+            correspondence_table_path=correspondence_table_path,
+            model_dir=self.model_dir
         )
+        
+        # Handle different return formats (with/without metrics tracker)
+        if track_partition_metrics:
+            X_branch_id, self.branch_table, self.s_branch, self.metrics_tracker = partition_result
+        else:
+            X_branch_id, self.branch_table, self.s_branch = partition_result
+            self.metrics_tracker = None
 
         # Save results
         print(self.s_branch)

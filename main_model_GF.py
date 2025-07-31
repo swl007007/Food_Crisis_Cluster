@@ -598,7 +598,8 @@ def create_correspondence_table(df, years, train_year, X_branch_id, result_dir):
     print(f"Table contains {len(correspondence_table)} unique admin_code-partition_id pairs")
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index, 
-                           assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None):
+                           assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
+                           track_partition_metrics=False, enable_metrics_maps=True):
     """
     Run temporal evaluation for multiple years.
     
@@ -628,6 +629,10 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
         Whether to use 2-layer model
     max_depth : int or None
         Maximum depth for RF models
+    track_partition_metrics : bool
+        Whether to enable partition metrics tracking and visualization
+    enable_metrics_maps : bool
+        Whether to create maps showing F1/accuracy improvements
         
     Returns:
     --------
@@ -646,6 +651,120 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
     ])
     
     y_pred_test = pd.DataFrame(columns=['year', 'month', 'adm_code', 'fews_ipc_crisis_pred', 'fews_ipc_crisis_true'])
+    
+    # Setup correspondence table path for partition metrics tracking
+    correspondence_table_path = None
+    if track_partition_metrics:
+        print("Setting up partition metrics tracking...")
+        
+        # Create base correspondence table from the data
+        correspondence_table_path = 'correspondence_table_metrics.csv'
+        try:
+            # Create correspondence table that properly maps X_group to FEWSNET_admin_code
+            if not os.path.exists(correspondence_table_path):
+                print("Creating correspondence table for partition metrics...")
+                
+                # Create proper correspondence table based on assignment method
+                if assignment == 'polygons':
+                    # For polygon assignment, X_group contains FEWSNET_admin_code values directly
+                    # Create a direct mapping, but we need to verify the relationship
+                    print(f"Debug: Creating polygon correspondence table")
+                    print(f"X_group type: {type(X_group[0])}, sample values: {X_group[:5]}")
+                    print(f"FEWSNET_admin_code sample values: {df['FEWSNET_admin_code'].head().tolist()}")
+                    
+                    # For polygon assignment, X_group should already BE the admin codes
+                    # So we create a simple identity mapping
+                    unique_admin_codes = df['FEWSNET_admin_code'].dropna().unique()
+                    unique_groups = np.unique(X_group)
+                    
+                    print(f"Unique admin codes count: {len(unique_admin_codes)}")
+                    print(f"Unique X_group values count: {len(unique_groups)}")
+                    
+                    # Check if X_group values are actually admin codes
+                    admin_codes_set = set(unique_admin_codes)
+                    group_codes_set = set(unique_groups)
+                    
+                    if admin_codes_set == group_codes_set:
+                        print("X_group contains admin codes directly - creating identity mapping")
+                        corr_df = pd.DataFrame({
+                            'FEWSNET_admin_code': unique_admin_codes,
+                            'X_group': unique_admin_codes
+                        })
+                    else:
+                        print("X_group doesn't match admin codes - creating index-based mapping")
+                        # Create mapping based on actual data relationships
+                        unique_entries = []
+                        for i in range(len(df)):
+                            admin_code = df.iloc[i]['FEWSNET_admin_code']
+                            group_id = X_group[i]
+                            if not pd.isna(admin_code):
+                                unique_entries.append({
+                                    'FEWSNET_admin_code': admin_code,
+                                    'X_group': group_id
+                                })
+                        
+                        # Remove duplicates and create DataFrame
+                        corr_df = pd.DataFrame(unique_entries).drop_duplicates()
+                
+                elif assignment in ['country', 'AEZ', 'country_AEZ']:
+                    # For these assignments, create mapping from admin codes to group IDs
+                    mapping_data = []
+                    for i in range(len(df)):
+                        admin_code = df.iloc[i]['FEWSNET_admin_code']
+                        group_id = X_group[i]
+                        if not pd.isna(admin_code):
+                            mapping_data.append({
+                                'FEWSNET_admin_code': admin_code,
+                                'X_group': group_id
+                            })
+                    
+                    corr_df = pd.DataFrame(mapping_data).drop_duplicates()
+                
+                elif assignment in ['geokmeans', 'all_kmeans']:
+                    # For kmeans assignments, use the existing correspondence table if available
+                    kmeans_table_path = f'correspondence_table_{assignment.replace("_", "")}.csv'
+                    if os.path.exists(kmeans_table_path):
+                        print(f"Using existing kmeans correspondence table: {kmeans_table_path}")
+                        correspondence_table_path = kmeans_table_path
+                        corr_df = None  # Don't create new table
+                    else:
+                        print(f"Warning: Expected kmeans correspondence table not found: {kmeans_table_path}")
+                        correspondence_table_path = None
+                        corr_df = None
+                
+                else:
+                    # For grid assignment, create a simple mapping
+                    mapping_data = []
+                    for i in range(len(df)):
+                        admin_code = df.iloc[i]['FEWSNET_admin_code']
+                        group_id = X_group[i]
+                        if not pd.isna(admin_code):
+                            mapping_data.append({
+                                'FEWSNET_admin_code': admin_code,
+                                'X_group': group_id
+                            })
+                    
+                    corr_df = pd.DataFrame(mapping_data).drop_duplicates()
+                
+                # Save the correspondence table if we created one
+                if corr_df is not None and len(corr_df) > 0:
+                    corr_df.to_csv(correspondence_table_path, index=False)
+                    print(f"Created correspondence table with {len(corr_df)} entries: {correspondence_table_path}")
+                    print(f"Sample entries:")
+                    print(corr_df.head())
+                else:
+                    if corr_df is not None:  # Empty DataFrame
+                        print("Warning: Could not create correspondence table - no valid data found")
+                        correspondence_table_path = None
+                    # else: using existing kmeans table, so correspondence_table_path is already set
+                        
+            else:
+                print(f"Using existing correspondence table: {correspondence_table_path}")
+                
+        except Exception as e:
+            print(f"Warning: Could not create correspondence table: {e}")
+            print("Maps will not be generated, but CSV metrics will still be saved.")
+            correspondence_table_path = None
     
     # Determine contiguity settings
     if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans']:
@@ -684,7 +803,12 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
                 max_depth=max_depth
             )
             
-            # Train 2-layer model
+            # Train 2-layer model with optional metrics tracking
+            if track_partition_metrics:
+                # Note: 2-layer fit doesn't support partition metrics yet, 
+                # but we can extend it later if needed
+                print("Note: Partition metrics tracking not yet supported for 2-layer models")
+                
             georf_2layer.fit_2layer(
                 Xtrain_L1, Xtrain_L2, ytrain, Xtrain_group,
                 val_ratio=VAL_RATIO,
@@ -731,13 +855,88 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, l1_index, l2_index,
                 max_depth=max_depth
             )
             
-            # Train model
+            # Train model with optional partition metrics tracking
+            if track_partition_metrics:
+                print(f"Training GeoRF with partition metrics tracking enabled")
+                print(f"Correspondence table path: {correspondence_table_path}")
+                print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
+                print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
+                
+                # Verify correspondence table exists and is readable
+                if correspondence_table_path and os.path.exists(correspondence_table_path):
+                    test_df = pd.read_csv(correspondence_table_path)
+                    print(f"Correspondence table loaded successfully with {len(test_df)} entries")
+                    print(f"Columns: {test_df.columns.tolist()}")
+                    print(f"Sample entries:\n{test_df.head()}")
+                else:
+                    print(f"Warning: Correspondence table not found at {correspondence_table_path}")
+                
             georf.fit(
                 Xtrain, ytrain, Xtrain_group,
                 val_ratio=VAL_RATIO,
                 contiguity_type=contiguity_type,
-                polygon_contiguity_info=polygon_contiguity_info
+                polygon_contiguity_info=polygon_contiguity_info,
+                track_partition_metrics=track_partition_metrics,
+                correspondence_table_path=correspondence_table_path
             )
+            
+            # Check if metrics were tracked
+            if track_partition_metrics and hasattr(georf, 'metrics_tracker'):
+                if georf.metrics_tracker is not None:
+                    print(f"\nPartition metrics tracker found for year {year}")
+                    
+                    # Check if any metrics were actually recorded
+                    if hasattr(georf.metrics_tracker, 'all_metrics') and georf.metrics_tracker.all_metrics:
+                        print(f"Number of metric records: {len(georf.metrics_tracker.all_metrics)}")
+                        
+                        # Show some sample metrics
+                        for i, record in enumerate(georf.metrics_tracker.all_metrics[:3]):
+                            print(f"  Record {i}: Round {record.get('partition_round', 'N/A')}, "
+                                  f"Branch {record.get('branch_id', 'N/A')}, "
+                                  f"F1 improvement: {record.get('f1_improvement', 'N/A'):.4f}")
+                    else:
+                        print("No metrics records found in tracker")
+                    
+                    # Try to get summary
+                    try:
+                        summary = georf.metrics_tracker.get_improvement_summary()
+                        if summary:
+                            print(f"\nPartition Metrics Summary for Year {year}:")
+                            print(f"  Total partitions tracked: {summary['total_partitions']}")
+                            print(f"  Average F1 improvement: {summary['avg_f1_improvement']:.4f}")
+                            print(f"  Average accuracy improvement: {summary['avg_accuracy_improvement']:.4f}")
+                            print(f"  Positive F1 improvements: {summary['positive_f1_improvements']}")
+                            print(f"  Positive accuracy improvements: {summary['positive_accuracy_improvements']}")
+                        else:
+                            print("Warning: No partition metrics summary available")
+                    except Exception as e:
+                        print(f"Error getting metrics summary: {e}")
+                        
+                    # Check if visualization files were created
+                    if hasattr(georf, 'model_dir'):
+                        vis_dir = os.path.join(georf.model_dir, 'vis')
+                        metrics_dir = os.path.join(georf.model_dir, 'partition_metrics')
+                        
+                        if os.path.exists(vis_dir):
+                            vis_files = [f for f in os.listdir(vis_dir) if f.endswith('.png')]
+                            print(f"Visualization files created: {len(vis_files)}")
+                            if vis_files:
+                                print(f"  Sample files: {vis_files[:3]}")
+                        else:
+                            print("No visualization directory found")
+                            
+                        if os.path.exists(metrics_dir):
+                            csv_files = [f for f in os.listdir(metrics_dir) if f.endswith('.csv')]
+                            print(f"Metrics CSV files created: {len(csv_files)}")
+                            if csv_files:
+                                print(f"  Sample files: {csv_files[:3]}")
+                        else:
+                            print("No metrics directory found")
+                else:
+                    print("Warning: Metrics tracker is None")
+            else:
+                if track_partition_metrics:
+                    print("Warning: Metrics tracker not found on georf object")
             
             # Get predictions
             ypred = georf.predict(Xtest, Xtest_group)
@@ -875,6 +1074,18 @@ def main():
     max_depth = None  # Set to integer for specific RF depth
     desire_terms = 1
     
+    # Partition Metrics Tracking Configuration
+    track_partition_metrics = True  # Enable partition metrics tracking and visualization
+    enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
+    
+    print(f"Configuration:")
+    print(f"  - Assignment method: {assignment}")
+    print(f"  - Nowcasting (2-layer): {nowcasting}")
+    print(f"  - Max depth: {max_depth}")
+    print(f"  - Desired terms: {desire_terms}")
+    print(f"  - Track partition metrics: {track_partition_metrics}")
+    print(f"  - Enable metrics maps: {enable_metrics_maps}")
+    
     try:
         # Step 1: Load and preprocess data
         df = load_and_preprocess_data(DATA_PATH)
@@ -892,7 +1103,8 @@ def main():
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(
             X, y, X_loc, X_group, years, l1_index, l2_index,
-            assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms
+            assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
+            track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps
         )
         
         # Step 6: Save results

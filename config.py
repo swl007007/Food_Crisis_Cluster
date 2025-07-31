@@ -22,14 +22,14 @@ MODE = 'classification'#'regression'
 #**************************ATTENTION NEEDED [1, total 3]**************************
 #GeoRF structure parameters
 #min and max depth for partitioning (actual number between min-max is auto-determined by significance testing)
-MIN_DEPTH = 1
-MAX_DEPTH = 4
+MIN_DEPTH = 1  # Reduced to allow more splitting opportunities
+MAX_DEPTH = 6  # Increased to allow deeper partitioning for more figures
 N_JOBS = 32#parallel computing for RF
 #*********************************************************************************
 
 #Detailed ***Optional*** specifications
-MIN_BRANCH_SAMPLE_SIZE = 5#minimum number of samples needed to continue partitioning
-MIN_SCAN_CLASS_SAMPLE = 10#minimum number of samples needed for a class to be considered during partitioning optimization
+MIN_BRANCH_SAMPLE_SIZE = 3  # Reduced to allow more partitioning
+MIN_SCAN_CLASS_SAMPLE = 5   # Reduced to allow more partitioning opportunities
 FLEX_RATIO = 0.025#affects max size difference between two partitions in each split
 FLEX_OPTION = True
 #FLEX_TYPE = 'n_sample'
@@ -39,9 +39,9 @@ FLEX_TYPE = 'n_group'
 MIN_GROUP_POS_SAMPLE_SIZE_FLEX = 0
 #For significance testing
 #SIGLVL = 0.01#significance level. #0.05
-SIGLVL = 0.05
-ES_THRD = 0.8#effect size threshold#1.4#0.01
-MD_THRD = 0.001#0.005#mean_diff thrd
+SIGLVL = 0.1  # More lenient significance level to allow more splits
+ES_THRD = 0.5  # Reduced effect size threshold to allow more splits
+MD_THRD = 0.0005  # Reduced mean difference threshold
 
 
 #------------------Training data related parameters------------------

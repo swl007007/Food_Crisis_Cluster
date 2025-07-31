@@ -108,7 +108,8 @@ class GeoRF():
 
 	#Train GeoRF
 	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True, 
-	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO):#X_loc is unused
+	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
+	        track_partition_metrics = False, correspondence_table_path = None):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -145,6 +146,13 @@ class GeoRF():
 		polygon_contiguity_info: dict
 				Optional. Dictionary containing polygon contiguity information (centroids, group mapping, neighbor threshold).
 				Required when contiguity_type='polygon'. Default uses POLYGON_CONTIGUITY_INFO from config.
+		track_partition_metrics: bool
+				Optional. If True, tracks F1 and accuracy metrics before/after each partition round for debugging.
+				Saves CSV files and creates maps showing performance improvements by X_group. Default: False.
+		correspondence_table_path: str
+				Optional. Path to correspondence table CSV mapping X_group to FEWSNET_admin_code.
+				Required when track_partition_metrics=True for map visualization. Should have columns:
+				'X_group' or 'FEWSNET_admin_code', 'partition_id'.
     Returns
     -------
 		georf: GeoRF class object
@@ -217,10 +225,20 @@ class GeoRF():
 		#s_branch: another key output, that stores the group ids for all branches.
 		#X_branch_id: contains the branch_id for each data point.
 		#branch_table: shows which branches are further split and which are not.
-		X_branch_id, self.branch_table, self.s_branch = partition(self.model, X, y,
+		partition_result = partition(self.model, X, y,
 		                   X_group , X_set, X_id, X_branch_id,
 		                   min_depth = self.min_model_depth, max_depth = self.max_model_depth,
-		                   contiguity_type = contiguity_type, polygon_contiguity_info = polygon_contiguity_info)#X_loc = X_loc is unused
+		                   contiguity_type = contiguity_type, polygon_contiguity_info = polygon_contiguity_info,
+		                   track_partition_metrics = track_partition_metrics, 
+		                   correspondence_table_path = correspondence_table_path,
+		                   model_dir = self.model_dir)#X_loc = X_loc is unused
+		
+		# Handle different return formats (with/without metrics tracker)
+		if track_partition_metrics:
+			X_branch_id, self.branch_table, self.s_branch, self.metrics_tracker = partition_result
+		else:
+			X_branch_id, self.branch_table, self.s_branch = partition_result
+			self.metrics_tracker = None
 
 		#Save s_branch
 		print(self.s_branch)

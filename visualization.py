@@ -338,3 +338,506 @@ def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = N
   # cbar.ax.set_yticklabels(unique_branch.tolist())#list(s_branch.keys())
 
   fig.savefig(dir + '/' + 'result_group' + ext + '.png')
+
+
+def plot_partition_map(correspondence_table_path, 
+                      shapefile_path=None, 
+                      save_path=None, 
+                      title="GeoRF Partition Map", 
+                      figsize=(12, 10), 
+                      dpi=300,
+                      add_basemap=True,
+                      basemap_source=None):
+    """
+    Plot GeoRF partitions on a map using correspondence table and shapefiles.
+    
+    This function visualizes spatial partitions created by GeoRF by mapping partition IDs
+    back to administrative boundaries using the correspondence table that links 
+    X_group/partition_id to FEWSNET_admin_code.
+    
+    Args:
+        correspondence_table_path (str): Path to CSV file containing partition assignments.
+                                       Expected columns: 'FEWSNET_admin_code', 'partition_id'
+        shapefile_path (str, optional): Path to shapefile with admin boundaries.
+                                      If None, uses default FEWS NET boundaries
+        save_path (str, optional): Output path for saved map. If None, uses default naming
+        title (str): Title for the map
+        figsize (tuple): Figure size as (width, height)
+        dpi (int): Resolution for saved figure
+        add_basemap (bool): Whether to add contextily basemap
+        basemap_source: Contextily basemap source (e.g., ctx.providers.CartoDB.Positron)
+        
+    Returns:
+        matplotlib.figure.Figure: The created figure object
+        
+    Raises:
+        FileNotFoundError: If correspondence table or shapefile cannot be found
+        ValueError: If required columns are missing from correspondence table
+    """
+    try:
+        import geopandas as gpd
+        import contextily as ctx
+        import matplotlib.colors as mcolors
+        from matplotlib.patches import Patch
+    except ImportError as e:
+        raise ImportError(f"Required packages missing: {e}. Install with: pip install geopandas contextily")
+    
+    # Default paths
+    if shapefile_path is None:
+        shapefile_path = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
+    
+    if save_path is None:
+        save_path = correspondence_table_path.replace('.csv', '_partition_map.png')
+    
+    # Load and validate correspondence table
+    try:
+        df = pd.read_csv(correspondence_table_path)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Correspondence table not found: {correspondence_table_path}")
+    
+    # Validate required columns
+    required_cols = ['FEWSNET_admin_code', 'partition_id']
+    missing_cols = [col for col in required_cols if col not in df.columns]
+    if missing_cols:
+        raise ValueError(f"Missing required columns in correspondence table: {missing_cols}")
+    
+    # Clean data: remove rows with empty partition_id
+    df_clean = df.dropna(subset=['partition_id'])
+    df_clean = df_clean[df_clean['partition_id'] != '']
+    
+    if len(df_clean) == 0:
+        print("Warning: No valid partition assignments found in correspondence table")
+        return None
+    
+    # Load shapefile
+    try:
+        gdf = gpd.read_file(shapefile_path)
+    except Exception as e:
+        raise FileNotFoundError(f"Cannot load shapefile: {shapefile_path}. Error: {e}")
+    
+    # Keep only necessary columns and merge
+    gdf = gdf[['admin_code', 'geometry']].copy()
+    
+    # Merge correspondence table with geometries
+    # Convert FEWSNET_admin_code to int first, then to string to remove decimal points
+    df_clean['admin_code'] = df_clean['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
+    gdf['admin_code'] = gdf['admin_code'].astype(str)
+    
+    merged_gdf = df_clean.merge(gdf, on='admin_code', how='left')
+    
+    # Check for missing geometries
+    missing_geom = merged_gdf['geometry'].isna().sum()
+    if missing_geom > 0:
+        print(f"Warning: {missing_geom} administrative units have no matching geometry")
+    
+    # Convert to GeoDataFrame
+    merged_gdf = gpd.GeoDataFrame(merged_gdf, geometry='geometry')
+    merged_gdf = merged_gdf.dropna(subset=['geometry'])
+    
+    if len(merged_gdf) == 0:
+        raise ValueError("No valid geometries found after merging")
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Get unique partition IDs and create color map
+    unique_partitions = merged_gdf['partition_id'].unique()
+    n_partitions = len(unique_partitions)
+    
+    # Use a colormap with good distinction between partitions
+    if n_partitions <= 10:
+        cmap = plt.get_cmap('tab10')
+    elif n_partitions <= 20:
+        cmap = plt.get_cmap('tab20')
+    else:
+        cmap = plt.get_cmap('viridis')
+    
+    # Plot partitions
+    merged_gdf.plot(
+        ax=ax,
+        column='partition_id',
+        cmap=cmap,
+        legend=False,
+        alpha=0.8,
+        edgecolor='black',
+        linewidth=0.2
+    )
+    
+    # Add basemap if requested
+    if add_basemap:
+        try:
+            if basemap_source is None:
+                basemap_source = ctx.providers.CartoDB.Positron
+            
+            ctx.add_basemap(
+                ax,
+                crs=merged_gdf.crs.to_string(),
+                source=basemap_source,
+                zoom='auto',
+                alpha=0.7
+            )
+        except Exception as e:
+            print(f"Could not add basemap: {e}")
+    
+    # Create custom legend
+    legend_elements = []
+    colors = [cmap(i/max(1, n_partitions-1)) for i in range(n_partitions)]
+    
+    for i, partition_id in enumerate(sorted(unique_partitions)):
+        count = len(merged_gdf[merged_gdf['partition_id'] == partition_id])
+        label = f"Partition {partition_id} ({count} units)"
+        legend_elements.append(Patch(facecolor=colors[i], label=label))
+    
+    # Add legend
+    ax.legend(handles=legend_elements, 
+             loc='center left', 
+             bbox_to_anchor=(1, 0.5), 
+             fontsize=10,
+             title="Partitions")
+    
+    # Set labels and title
+    ax.set_xlabel('Longitude', fontsize=12)
+    ax.set_ylabel('Latitude', fontsize=12)
+    ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+    
+    # Add summary statistics as text
+    stats_text = f"Total partitions: {n_partitions}\nAdmin units: {len(merged_gdf)}"
+    ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, 
+           verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    # Adjust layout and save
+    plt.tight_layout()
+    plt.subplots_adjust(right=0.85)
+    
+    try:
+        plt.savefig(save_path, dpi=dpi, bbox_inches='tight',
+                   facecolor='white', edgecolor='none')
+        print(f"Partition map saved to: {save_path}")
+    except Exception as e:
+        print(f"Could not save figure: {e}")
+    
+    return fig
+
+
+def plot_partition_map_from_result_dir(result_dir, year=None, model_type='GeoRF', **kwargs):
+    """
+    Convenience function to plot partition map from a result directory.
+    
+    Args:
+        result_dir (str): Path to result directory (e.g., 'result_GeoRF_27/')
+        year (str, optional): Specific year to plot (e.g., '2021'). If None, uses any available
+        model_type (str): Model type for file naming ('GeoRF' or 'GeoXGB')
+        **kwargs: Additional arguments passed to plot_partition_map()
+        
+    Returns:
+        matplotlib.figure.Figure: The created figure object
+    """
+    import os
+    import glob
+    
+    # Find correspondence table
+    if year:
+        if model_type == 'GeoXGB':
+            pattern = f"correspondence_table_xgb_{year}.csv"
+        else:
+            pattern = f"correspondence_table_{year}.csv"
+    else:
+        if model_type == 'GeoXGB':
+            pattern = "correspondence_table_xgb_*.csv"
+        else:
+            pattern = "correspondence_table_*.csv"
+    
+    correspondence_files = glob.glob(os.path.join(result_dir, pattern))
+    
+    if not correspondence_files:
+        raise FileNotFoundError(f"No correspondence table found in {result_dir} with pattern {pattern}")
+    
+    correspondence_path = correspondence_files[0]  # Use first match
+    
+    # Set default title
+    if 'title' not in kwargs:
+        dir_name = os.path.basename(result_dir.rstrip('/'))
+        file_name = os.path.basename(correspondence_path)
+        kwargs['title'] = f"{dir_name} - {file_name}"
+    
+    return plot_partition_map(correspondence_path, **kwargs)
+
+
+def plot_metrics_improvement_map(metrics_csv_path, 
+                                metric_type='f1_improvement',
+                                correspondence_table_path=None,
+                                shapefile_path=None,
+                                save_path=None,
+                                title=None,
+                                figsize=(12, 10),
+                                dpi=300,
+                                add_basemap=True,
+                                colormap='RdBu',
+                                center_colormap=True):
+    """
+    Plot F1/accuracy improvement on a map using partition metrics and correspondence table.
+    
+    Args:
+        metrics_csv_path (str): Path to CSV with partition metrics 
+                               (output from PartitionMetricsTracker.save_metrics_to_csv)
+        metric_type (str): Metric to plot ('f1_improvement', 'accuracy_improvement', 
+                          'f1_before', 'f1_after', 'accuracy_before', 'accuracy_after')
+        correspondence_table_path (str, optional): Path to correspondence table CSV
+        shapefile_path (str, optional): Path to admin boundaries shapefile  
+        save_path (str, optional): Output path for saved map
+        title (str, optional): Map title
+        figsize (tuple): Figure size
+        dpi (int): Resolution for saved figure
+        add_basemap (bool): Whether to add contextily basemap
+        colormap (str): Matplotlib colormap name
+        center_colormap (bool): Whether to center colormap at zero (for improvements)
+        
+    Returns:
+        matplotlib.figure.Figure: The created figure object
+    """
+    try:
+        import geopandas as gpd
+        import contextily as ctx
+        import matplotlib.colors as mcolors
+        from matplotlib.patches import Patch
+    except ImportError as e:
+        raise ImportError(f"Required packages missing: {e}. Install with: pip install geopandas contextily")
+    
+    # Default paths
+    if shapefile_path is None:
+        shapefile_path = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
+    
+    if save_path is None:
+        save_path = metrics_csv_path.replace('.csv', f'_{metric_type}_map.png')
+        
+    if title is None:
+        title = f"GeoRF {metric_type.replace('_', ' ').title()} by Administrative Unit"
+    
+    # Load metrics data
+    try:
+        metrics_df = pd.read_csv(metrics_csv_path)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Metrics CSV not found: {metrics_csv_path}")
+    
+    # Validate metric type
+    if metric_type not in metrics_df.columns:
+        available_metrics = [col for col in metrics_df.columns if any(x in col for x in ['f1', 'accuracy', 'improvement'])]
+        raise ValueError(f"Metric '{metric_type}' not found. Available metrics: {available_metrics}")
+    
+    # If no correspondence table provided, try to infer from metrics data structure
+    if correspondence_table_path is None:
+        # Look for correspondence table in same directory or result directory
+        import os
+        metrics_dir = os.path.dirname(metrics_csv_path)
+        
+        # Try to find correspondence table
+        possible_paths = [
+            os.path.join(metrics_dir, 'correspondence_table_2021.csv'),
+            os.path.join(metrics_dir, 'correspondence_table_2022.csv'), 
+            os.path.join(metrics_dir, 'correspondence_table_2023.csv'),
+            os.path.join(metrics_dir, 'correspondence_table_2024.csv'),
+            os.path.join(metrics_dir, '..', 'correspondence_table.csv')
+        ]
+        
+        for path in possible_paths:
+            if os.path.exists(path):
+                correspondence_table_path = path
+                break
+                
+        if correspondence_table_path is None:
+            raise FileNotFoundError("No correspondence table found. Please provide correspondence_table_path parameter.")
+    
+    # Load correspondence table to map X_group to FEWSNET_admin_code
+    try:
+        corr_df = pd.read_csv(correspondence_table_path)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Correspondence table not found: {correspondence_table_path}")
+    
+    # Merge metrics with correspondence table
+    if 'X_group' in metrics_df.columns and 'X_group' in corr_df.columns:
+        merged_metrics = metrics_df.merge(corr_df, on='X_group', how='left')
+    elif 'X_group' in metrics_df.columns and 'FEWSNET_admin_code' in corr_df.columns:
+        # If X_group maps to FEWSNET_admin_code directly
+        corr_df_renamed = corr_df.rename(columns={'FEWSNET_admin_code': 'X_group'})
+        merged_metrics = metrics_df.merge(corr_df_renamed, on='X_group', how='left')
+    else:
+        # Try direct merge if X_group is actually admin codes
+        merged_metrics = metrics_df.copy()
+        merged_metrics['FEWSNET_admin_code'] = merged_metrics['X_group']
+    
+    # Load shapefile
+    try:
+        gdf = gpd.read_file(shapefile_path)
+    except Exception as e:
+        raise FileNotFoundError(f"Cannot load shapefile: {shapefile_path}. Error: {e}")
+    
+    # Merge with geometries
+    gdf = gdf[['admin_code', 'geometry']].copy()
+    gdf['admin_code'] = gdf['admin_code'].astype(str)
+    
+    if 'FEWSNET_admin_code' in merged_metrics.columns:
+        # Convert FEWSNET_admin_code to int first, then to string to remove decimal points
+        merged_metrics['admin_code'] = merged_metrics['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
+        final_gdf = merged_metrics.merge(gdf, on='admin_code', how='left')
+    else:
+        # Fallback: try using X_group as admin_code  
+        merged_metrics['admin_code'] = merged_metrics['X_group'].astype(float).astype(int).astype(str)
+        final_gdf = merged_metrics.merge(gdf, on='admin_code', how='left')
+    
+    # Convert to GeoDataFrame
+    final_gdf = gpd.GeoDataFrame(final_gdf, geometry='geometry')
+    final_gdf = final_gdf.dropna(subset=['geometry', metric_type])
+    
+    if len(final_gdf) == 0:
+        raise ValueError("No valid geometries found after merging. Check correspondence table and admin codes.")
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Get metric values for colormap
+    metric_values = final_gdf[metric_type].values
+    vmin, vmax = metric_values.min(), metric_values.max()
+    
+    # Center colormap at zero for improvement metrics
+    if center_colormap and 'improvement' in metric_type:
+        abs_max = max(abs(vmin), abs(vmax))
+        vmin, vmax = -abs_max, abs_max
+        norm = mcolors.TwoSlopeNorm(vmin=vmin, vcenter=0, vmax=vmax)
+    else:
+        norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
+    
+    # Plot metric values
+    final_gdf.plot(
+        ax=ax,
+        column=metric_type,
+        cmap=colormap,
+        norm=norm,
+        legend=False,
+        alpha=0.8,
+        edgecolor='black',
+        linewidth=0.2
+    )
+    
+    # Add basemap if requested
+    if add_basemap:
+        try:
+            ctx.add_basemap(
+                ax,
+                crs=final_gdf.crs.to_string(),
+                source=ctx.providers.CartoDB.Positron,
+                zoom='auto',
+                alpha=0.7
+            )
+        except Exception as e:
+            print(f"Could not add basemap: {e}")
+    
+    # Add colorbar
+    sm = plt.cm.ScalarMappable(cmap=colormap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax, shrink=0.8, aspect=20)
+    cbar.set_label(metric_type.replace('_', ' ').title(), fontsize=12)
+    
+    # Set labels and title
+    ax.set_xlabel('Longitude', fontsize=12)
+    ax.set_ylabel('Latitude', fontsize=12)
+    ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+    
+    # Add summary statistics
+    stats_text = f"""
+    Mean: {metric_values.mean():.4f}
+    Std: {metric_values.std():.4f}
+    Min: {metric_values.min():.4f}
+    Max: {metric_values.max():.4f}
+    """
+    
+    ax.text(0.02, 0.98, stats_text.strip(), transform=ax.transAxes,
+           verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8),
+           fontsize=10)
+    
+    # Adjust layout and save
+    plt.tight_layout()
+    
+    try:
+        plt.savefig(save_path, dpi=dpi, bbox_inches='tight',
+                   facecolor='white', edgecolor='none')
+        print(f"Metrics improvement map saved to: {save_path}")
+    except Exception as e:
+        print(f"Could not save figure: {e}")
+    
+    return fig
+
+
+def plot_partition_metrics_dashboard(metrics_tracker, output_dir, 
+                                   correspondence_table_path=None,
+                                   shapefile_path=None,
+                                   create_maps=True):
+    """
+    Create a comprehensive dashboard of partition metrics including maps and summaries.
+    
+    Args:
+        metrics_tracker: PartitionMetricsTracker instance with recorded metrics
+        output_dir: Directory to save outputs
+        correspondence_table_path: Path to correspondence table
+        shapefile_path: Path to admin boundaries shapefile
+        create_maps: Whether to create map visualizations
+        
+    Returns:
+        dict: Summary of created outputs
+    """
+    import os
+    
+    # Save CSV files
+    metrics_tracker.save_metrics_to_csv(output_dir)
+    
+    # Get summary statistics
+    summary = metrics_tracker.get_improvement_summary()
+    if summary:
+        print("\n=== PARTITION METRICS SUMMARY ===")
+        for key, value in summary.items():
+            print(f"{key}: {value}")
+    
+    outputs_created = {
+        'csv_files': [],
+        'map_files': [],
+        'summary': summary
+    }
+    
+    # Find created CSV files
+    csv_files = [f for f in os.listdir(output_dir) if f.startswith('partition_metrics_') and f.endswith('.csv')]
+    outputs_created['csv_files'] = csv_files
+    
+    # Create maps if requested and possible
+    if create_maps and correspondence_table_path:
+        for csv_file in csv_files:
+            csv_path = os.path.join(output_dir, csv_file)
+            
+            try:
+                # Create F1 improvement map
+                f1_map = plot_metrics_improvement_map(
+                    csv_path, 
+                    metric_type='f1_improvement',
+                    correspondence_table_path=correspondence_table_path,
+                    shapefile_path=shapefile_path,
+                    colormap='RdBu'
+                )
+                plt.close(f1_map)
+                
+                # Create accuracy improvement map
+                acc_map = plot_metrics_improvement_map(
+                    csv_path,
+                    metric_type='accuracy_improvement', 
+                    correspondence_table_path=correspondence_table_path,
+                    shapefile_path=shapefile_path,
+                    colormap='RdBu'
+                )
+                plt.close(acc_map)
+                
+                # Track created map files
+                f1_map_file = csv_file.replace('.csv', '_f1_improvement_map.png')
+                acc_map_file = csv_file.replace('.csv', '_accuracy_improvement_map.png')
+                outputs_created['map_files'].extend([f1_map_file, acc_map_file])
+                
+            except Exception as e:
+                print(f"Warning: Could not create maps for {csv_file}: {e}")
+    
+    return outputs_created
