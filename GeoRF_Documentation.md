@@ -364,8 +364,8 @@ Split all data components maintaining spatial consistency.
 **Returns:**
 - `(X_train, y_train, X_train_loc, X_train_group, X_test, y_test, X_test_loc, X_test_group)`
 
-##### **train_test_split_by_year(X, y, X_loc, X_group, years, test_year)**
-Time-based splitting for temporal validation.
+##### **train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_year, input_terms, need_terms)**
+Rolling window temporal splitting for quarterly evaluation with 5-year training windows.
 
 ---
 
@@ -555,11 +555,11 @@ georf.fit(X_imputed_train, y_train, X_group_train)
 ### 7.6 Time-Based Splitting
 
 ```python
-from customize import train_test_split_by_year
+from customize import train_test_split_rolling_window
 
-# Split data by year for temporal validation
+# Rolling window split for quarterly temporal validation
 (X_train, y_train, X_train_loc, X_train_group,
- X_test, y_test, X_test_loc, X_test_group) = train_test_split_by_year(
+ X_test, y_test, X_test_loc, X_test_group) = train_test_split_rolling_window(
     X, y, X_loc, X_group, years=year_array, test_year=2020)
 ```
 

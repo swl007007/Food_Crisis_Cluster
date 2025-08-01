@@ -325,8 +325,13 @@ def impute_missing_values(X, strategy='max_plus', multiplier=100.0, verbose=True
 
 
 
-def train_test_split_by_year(X, y, X_loc, X_group, years, test_year, input_terms=None,need_terms = None):
-    '''Time-based splitting using a date column.
+def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_year=2024, input_terms=None, need_terms=None):
+    '''Rolling window temporal splitting for 2024 quarterly evaluation.
+
+    This function implements a rolling window approach where:
+    - For each 2024 quarter, uses 5 years of data before that quarter's end as training
+    - Tests on the specific quarter of 2024
+    - Enables more realistic temporal validation than fixed year-based splitting
 
     Parameters
     ----------
@@ -338,20 +343,30 @@ def train_test_split_by_year(X, y, X_loc, X_group, years, test_year, input_terms
         Location information for each sample.
     X_group : array-like
         Group ID for each sample.
+    years : array-like
+        1-D array containing year values.
     dates : array-like
-        1-D array containing a datetime64 dtype or year values.
-    test_year : int
-        Year used for the test set. All samples with year < test_year form the
-        training set and samples with year == test_year form the test set.
+        1-D array containing datetime values for precise temporal filtering.
+    test_year : int, default=2024
+        Year used for the test set. Currently fixed to 2024.
+    input_terms : array-like, optional
+        Terms within each year (1-4 corresponding to quarters).
+    need_terms : int, optional
+        Specific quarter to use as test set (1=Q1, 2=Q2, 3=Q3, 4=Q4).
+        If None, uses traditional year-based splitting.
 
     Returns
     -------
     Tuple containing train and test splits in the same format as
     ``train_test_split_all``.
     '''
+    # Force test_year to be 2024 as per requirements
+    test_year = 2024
+    
     if need_terms is None:
-        # train mask is five years before the test year
-        train_mask = (years < test_year) & (years >= (test_year - 5))
+        # Training set: all years before 2024
+        train_mask = years < test_year
+        # Test set: only 2024
         test_mask = years == test_year
 
         Xtrain = X[train_mask]
@@ -364,21 +379,52 @@ def train_test_split_by_year(X, y, X_loc, X_group, years, test_year, input_terms
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
     else:
-        # select the first k terms for each year as test set
-        train_mask = (years < test_year) & (years >= (test_year - 5))
+        # Rolling window approach: 5 years before test term → test on specific 2024 term
+        import pandas as pd
+        
+        # Convert dates to pandas datetime if not already
+        if not isinstance(dates, pd.Series):
+            dates = pd.to_datetime(dates)
+        
+        # Define quarter end dates for 2024
+        quarter_ends = {
+            1: pd.Timestamp('2024-03-31'),
+            2: pd.Timestamp('2024-06-30'),
+            3: pd.Timestamp('2024-09-30'),
+            4: pd.Timestamp('2024-12-31')
+        }
+        
+        # Get the end date for the test quarter
+        test_quarter_end = quarter_ends[need_terms]
+        
+        # Training set: 5 years of data before the test quarter end date
+        train_end_date = test_quarter_end
+        train_start_date = train_end_date - pd.DateOffset(years=5)
+        
+        train_mask = (dates >= train_start_date) & (dates < train_end_date)
+        
+        # Test set: only the specific quarter of 2024
         test_year_mask = years == test_year
+        test_terms_mask = input_terms == need_terms
+        test_mask = test_year_mask & test_terms_mask
 
         Xtrain = X[train_mask]
         ytrain = y[train_mask]
         Xtrain_loc = X_loc[train_mask]
         Xtrain_group = X_group[train_mask]
 
-        test_terms_mask = input_terms <= need_terms
-        test_mask = test_year_mask & test_terms_mask
         Xtest = X[test_mask]
         ytest = y[test_mask]
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
+        
+        print(f"Rolling Window Split for Q{need_terms} 2024:")
+        print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()}")
+        print(f"  Test: {len(ytest)} samples from Q{need_terms} 2024")
+        
+        return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
+        
+    print(f"Train/Test split: {len(ytrain)} training samples (years < {test_year}), {len(ytest)} test samples (year = {test_year})")
         
 
 
