@@ -302,6 +302,26 @@ def generate_diff_grid(grid, groups, step_size = STEP_SIZE, X_dim = X_DIM):
 
 
 
+def get_colors(n_partitions):
+    """
+    Get optimized color palette for partition visualization based on number of partitions.
+    
+    Args:
+        n_partitions (int): Number of partitions to color
+        
+    Returns:
+        list: List of colors suitable for the given number of partitions
+    """
+    if n_partitions <= 10:
+        return sns.color_palette("tab10", n_partitions)
+    elif n_partitions <= 20:
+        return sns.color_palette("tab20", n_partitions)
+    elif n_partitions <= 30:
+        return sns.color_palette("hls", n_partitions)
+    else:
+        cmap = plt.get_cmap('turbo', n_partitions)
+        return cmap.colors
+
 def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = None):
   '''This generates visualization images for all groups.
   Args:
@@ -444,13 +464,12 @@ def plot_partition_map(correspondence_table_path,
     unique_partitions = merged_gdf['partition_id'].unique()
     n_partitions = len(unique_partitions)
     
-    # Use a colormap with good distinction between partitions
-    if n_partitions <= 10:
-        cmap = plt.get_cmap('tab10')
-    elif n_partitions <= 20:
-        cmap = plt.get_cmap('tab20')
-    else:
-        cmap = plt.get_cmap('viridis')
+    # Use optimized color palette for better distinction
+    colors = get_colors(n_partitions)
+    
+    # Create a custom colormap from the selected colors
+    from matplotlib.colors import ListedColormap
+    cmap = ListedColormap(colors)
     
     # Plot partitions
     merged_gdf.plot(
@@ -481,12 +500,13 @@ def plot_partition_map(correspondence_table_path,
     
     # Create custom legend
     legend_elements = []
-    colors = [cmap(i/max(1, n_partitions-1)) for i in range(n_partitions)]
+    # Use the same colors from get_colors function for legend consistency
+    legend_colors = colors  # colors is already defined from get_colors(n_partitions)
     
     for i, partition_id in enumerate(sorted(unique_partitions)):
         count = len(merged_gdf[merged_gdf['partition_id'] == partition_id])
         label = f"Partition {partition_id} ({count} units)"
-        legend_elements.append(Patch(facecolor=colors[i], label=label))
+        legend_elements.append(Patch(facecolor=legend_colors[i], label=label))
     
     # Add legend
     ax.legend(handles=legend_elements, 

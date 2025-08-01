@@ -490,6 +490,55 @@ def partition(model, X, y,
           next_level_row_ids_for_new_branches = [branch_id_to_loop_id(branch_id+'0'), branch_id_to_loop_id(branch_id+'1')]
           branch_table[next_level_row_ids_for_new_branches, i+1] = 1
 
+        # Generate partition map visualization after each partition round
+        try:
+          import os
+          from visualization import plot_partition_map
+          
+          # Create vis directory if it doesn't exist
+          vis_dir = os.path.join(model_dir, 'vis')
+          os.makedirs(vis_dir, exist_ok=True)
+          
+          # Create temporary correspondence table for current partition state
+          current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}.csv')
+          
+          # Create correspondence table from current X_branch_id state
+          import pandas as pd
+          partition_data = []
+          
+          for idx in range(len(X)):
+            # Map data point to its X_group (admin code) and current partition (branch_id)
+            current_branch = X_branch_id[idx]
+            admin_code = X_group[idx]
+            
+            partition_data.append({
+              'FEWSNET_admin_code': admin_code,
+              'partition_id': current_branch if current_branch != '' else 'root'
+            })
+          
+          # Create DataFrame and save
+          partition_df = pd.DataFrame(partition_data)
+          partition_df = partition_df.drop_duplicates()
+          partition_df.to_csv(current_correspondence_path, index=False)
+          
+          # Generate partition map
+          partition_map_path = os.path.join(vis_dir, f'partition_map_round_{i}_branch_{branch_id or "root"}.png')
+          
+          plot_partition_map(
+            correspondence_table_path=current_correspondence_path,
+            save_path=partition_map_path,
+            title=f'GeoRF Partitions - Round {i}, Branch {branch_id if branch_id else "root"} (After Split)',
+            figsize=(14, 12)
+          )
+          
+          print(f"Generated partition map: {partition_map_path}")
+          
+          # Clean up temporary correspondence table
+          os.remove(current_correspondence_path)
+          
+        except Exception as e:
+          print(f"Warning: Could not generate partition map for Round {i}, Branch {branch_id}: {e}")
+
         # vis_partition_training(grid, branch_id)
         # !!!the generate_vis_image() and generate_vis_image_for_all_groups() in the following can be added back to motinor partitioning in the training process
         #generate_vis_image(s_branch, X_branch_id, max_depth = max_depth, dir = model.path, step_size = STEP_SIZE, file_name = branch_id + '_split')
