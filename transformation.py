@@ -215,21 +215,288 @@ def partition(model, X, y,
       if CONTIGUITY:
         if contiguity_type == 'polygon' and polygon_contiguity_info is not None:
           # Use polygon-based contiguity refinement
+          
+          # Store initial state for epoch 0 (before any refinement)
+          s0_prev, s1_prev = s0.copy(), s1.copy()
+          
           for i_refine in range(refine_times):
+            print(f"Contiguity refinement epoch {i_refine + 1}/{refine_times} for branch {branch_id}")
             s0, s1 = get_refined_partitions(s0, s1, y_val_gid, None, 
                                           dir = model.path, branch_id = branch_id,
                                           contiguity_type = 'polygon',
                                           polygon_centroids = polygon_contiguity_info['polygon_centroids'],
                                           polygon_group_mapping = polygon_contiguity_info['polygon_group_mapping'],
                                           neighbor_distance_threshold = polygon_contiguity_info['neighbor_distance_threshold'])
+            
+            # Generate partition map visualization for each refinement epoch
+            try:
+              import os
+              from visualization import plot_partition_map, plot_partition_swaps
+              
+              # Create vis directory if it doesn't exist
+              vis_dir = os.path.join(model_dir, 'vis')
+              os.makedirs(vis_dir, exist_ok=True)
+              
+              # Create temporary partition mapping for current refinement state
+              s0_group_refined = get_s_list_group_ids(s0, y_val_gid)
+              s1_group_refined = get_s_list_group_ids(s1, y_val_gid)
+              
+              # Create temporary correspondence table for current refinement state
+              current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine + 1}.csv')
+              
+              # Create a temporary X_branch_id state for this refinement epoch
+              import pandas as pd
+              partition_data = []
+              
+              # Map current s0 and s1 groups to partition assignments
+              for idx in range(len(X)):
+                current_branch = X_branch_id[idx]
+                admin_code = X_group[idx]
+                
+                # If this data point is in the current branch being refined
+                if current_branch == branch_id:
+                  # Check if this admin_code (X_group) is in s0 or s1 after refinement
+                  if admin_code in s0_group_refined:
+                    refined_partition = branch_id + '0'
+                  elif admin_code in s1_group_refined:
+                    refined_partition = branch_id + '1'
+                  else:
+                    refined_partition = current_branch  # Keep original if not in either partition
+                else:
+                  refined_partition = current_branch if current_branch != '' else 'root'
+                
+                partition_data.append({
+                  'FEWSNET_admin_code': admin_code,
+                  'partition_id': refined_partition
+                })
+              
+              # Create DataFrame and save
+              partition_df = pd.DataFrame(partition_data)
+              partition_df = partition_df.drop_duplicates()
+              partition_df.to_csv(current_correspondence_path, index=False)
+              
+              # Generate partition map
+              partition_map_path = os.path.join(vis_dir, f'contiguity_refinement_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine + 1}.png')
+              
+              plot_partition_map(
+                correspondence_table_path=current_correspondence_path,
+                save_path=partition_map_path,
+                title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
+                figsize=(14, 12)
+              )
+              
+              print(f"Generated contiguity refinement map: {partition_map_path}")
+              
+              # Generate swap visualization (compare with previous epoch)
+              if i_refine > 0 or True:  # Always generate, even for first epoch (compare with initial scan)
+                # Create previous state correspondence table
+                s0_group_prev = get_s_list_group_ids(s0_prev, y_val_gid)
+                s1_group_prev = get_s_list_group_ids(s1_prev, y_val_gid)
+                
+                prev_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine}.csv')
+                
+                prev_partition_data = []
+                for idx in range(len(X)):
+                  current_branch = X_branch_id[idx]
+                  admin_code = X_group[idx]
+                  
+                  if current_branch == branch_id:
+                    if admin_code in s0_group_prev:
+                      prev_partition = branch_id + '0'
+                    elif admin_code in s1_group_prev:
+                      prev_partition = branch_id + '1'
+                    else:
+                      prev_partition = current_branch
+                  else:
+                    prev_partition = current_branch if current_branch != '' else 'root'
+                  
+                  prev_partition_data.append({
+                    'FEWSNET_admin_code': admin_code,
+                    'partition_id': prev_partition
+                  })
+                
+                prev_partition_df = pd.DataFrame(prev_partition_data)
+                prev_partition_df = prev_partition_df.drop_duplicates()
+                prev_partition_df.to_csv(prev_correspondence_path, index=False)
+                
+                # Generate swap visualization
+                swap_map_path = os.path.join(vis_dir, f'contiguity_swaps_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine}_to_{i_refine + 1}.png')
+                
+                try:
+                  swap_fig = plot_partition_swaps(
+                    correspondence_before_path=prev_correspondence_path,
+                    correspondence_after_path=current_correspondence_path,
+                    save_path=swap_map_path,
+                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
+                    figsize=(14, 12)
+                  )
+                  
+                  if swap_fig is not None:
+                    print(f"Generated contiguity swap map: {swap_map_path}")
+                  else:
+                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
+                    
+                except Exception as swap_error:
+                  print(f"ERROR: Failed to create swap visualization: {swap_error}")
+                  import traceback
+                  traceback.print_exc()
+                
+                # Clean up previous correspondence table
+                try:
+                  os.remove(prev_correspondence_path)
+                except:
+                  pass
+              
+              # Clean up current correspondence table
+              os.remove(current_correspondence_path)
+              
+              # Update previous state for next iteration
+              s0_prev, s1_prev = s0.copy(), s1.copy()
+              
+            except Exception as e:
+              print(f"Warning: Could not generate contiguity refinement map for Round {i}, Branch {branch_id}, Epoch {i_refine + 1}: {e}")
+              
         else:
           # Use grid-based contiguity refinement (original implementation)
           group_loc = generate_groups_loc(X_DIM, STEP_SIZE)
           #group_loc = generate_groups_loc(X_loc, STEP_SIZE)
           # refine_times = REFINE_TIMES
+          
+          # Store initial state for epoch 0 (before any refinement)
+          s0_prev, s1_prev = s0.copy(), s1.copy()
+          
           for i_refine in range(refine_times):
+            print(f"Contiguity refinement epoch {i_refine + 1}/{refine_times} for branch {branch_id}")
             #!!!s0 and s1 do not contain gid; instead, they contain indices from y_val_true (for gid need to use y_val_gid)
             s0, s1 = get_refined_partitions(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id)
+            
+            # Generate partition map visualization for each refinement epoch (grid-based)
+            try:
+              import os
+              from visualization import plot_partition_map, plot_partition_swaps
+              
+              # Create vis directory if it doesn't exist
+              vis_dir = os.path.join(model_dir, 'vis')
+              os.makedirs(vis_dir, exist_ok=True)
+              
+              # Create temporary partition mapping for current refinement state
+              s0_group_refined = get_s_list_group_ids(s0, y_val_gid)
+              s1_group_refined = get_s_list_group_ids(s1, y_val_gid)
+              
+              # Create temporary correspondence table for current refinement state
+              current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine + 1}.csv')
+              
+              # Create a temporary X_branch_id state for this refinement epoch
+              import pandas as pd
+              partition_data = []
+              
+              # Map current s0 and s1 groups to partition assignments
+              for idx in range(len(X)):
+                current_branch = X_branch_id[idx]
+                admin_code = X_group[idx]
+                
+                # If this data point is in the current branch being refined
+                if current_branch == branch_id:
+                  # Check if this admin_code (X_group) is in s0 or s1 after refinement
+                  if admin_code in s0_group_refined:
+                    refined_partition = branch_id + '0'
+                  elif admin_code in s1_group_refined:
+                    refined_partition = branch_id + '1'
+                  else:
+                    refined_partition = current_branch  # Keep original if not in either partition
+                else:
+                  refined_partition = current_branch if current_branch != '' else 'root'
+                
+                partition_data.append({
+                  'FEWSNET_admin_code': admin_code,
+                  'partition_id': refined_partition
+                })
+              
+              # Create DataFrame and save
+              partition_df = pd.DataFrame(partition_data)
+              partition_df = partition_df.drop_duplicates()
+              partition_df.to_csv(current_correspondence_path, index=False)
+              
+              # Generate partition map
+              partition_map_path = os.path.join(vis_dir, f'contiguity_refinement_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine + 1}.png')
+              
+              plot_partition_map(
+                correspondence_table_path=current_correspondence_path,
+                save_path=partition_map_path,
+                title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
+                figsize=(14, 12)
+              )
+              
+              print(f"Generated contiguity refinement map: {partition_map_path}")
+              
+              # Generate swap visualization (compare with previous epoch)
+              if i_refine > 0 or True:  # Always generate, even for first epoch (compare with initial scan)
+                # Create previous state correspondence table
+                s0_group_prev = get_s_list_group_ids(s0_prev, y_val_gid)
+                s1_group_prev = get_s_list_group_ids(s1_prev, y_val_gid)
+                
+                prev_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine}.csv')
+                
+                prev_partition_data = []
+                for idx in range(len(X)):
+                  current_branch = X_branch_id[idx]
+                  admin_code = X_group[idx]
+                  
+                  if current_branch == branch_id:
+                    if admin_code in s0_group_prev:
+                      prev_partition = branch_id + '0'
+                    elif admin_code in s1_group_prev:
+                      prev_partition = branch_id + '1'
+                    else:
+                      prev_partition = current_branch
+                  else:
+                    prev_partition = current_branch if current_branch != '' else 'root'
+                  
+                  prev_partition_data.append({
+                    'FEWSNET_admin_code': admin_code,
+                    'partition_id': prev_partition
+                  })
+                
+                prev_partition_df = pd.DataFrame(prev_partition_data)
+                prev_partition_df = prev_partition_df.drop_duplicates()
+                prev_partition_df.to_csv(prev_correspondence_path, index=False)
+                
+                # Generate swap visualization
+                swap_map_path = os.path.join(vis_dir, f'contiguity_swaps_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine}_to_{i_refine + 1}.png')
+                
+                try:
+                  swap_fig = plot_partition_swaps(
+                    correspondence_before_path=prev_correspondence_path,
+                    correspondence_after_path=current_correspondence_path,
+                    save_path=swap_map_path,
+                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
+                    figsize=(14, 12)
+                  )
+                  
+                  if swap_fig is not None:
+                    print(f"Generated contiguity swap map: {swap_map_path}")
+                  else:
+                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
+                    
+                except Exception as swap_error:
+                  print(f"ERROR: Failed to create swap visualization: {swap_error}")
+                  import traceback
+                  traceback.print_exc()
+                
+                # Clean up previous correspondence table
+                try:
+                  os.remove(prev_correspondence_path)
+                except:
+                  pass
+              
+              # Clean up current correspondence table
+              os.remove(current_correspondence_path)
+              
+              # Update previous state for next iteration
+              s0_prev, s1_prev = s0.copy(), s1.copy()
+              
+            except Exception as e:
+              print(f"Warning: Could not generate contiguity refinement map for Round {i}, Branch {branch_id}, Epoch {i_refine + 1}: {e}")
 
       #debug
       # group_loc = generate_groups_loc(X_DIM, STEP_SIZE)

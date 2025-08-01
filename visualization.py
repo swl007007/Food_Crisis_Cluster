@@ -322,6 +322,202 @@ def get_colors(n_partitions):
         cmap = plt.get_cmap('turbo', n_partitions)
         return cmap.colors
 
+def plot_partition_swaps(correspondence_before_path, correspondence_after_path,
+                        shapefile_path=None, 
+                        save_path=None, 
+                        title="Partition Assignment Swaps", 
+                        figsize=(12, 10), 
+                        dpi=300,
+                        add_basemap=True,
+                        basemap_source=None):
+    """
+    Plot only the areas that changed partition assignments between two states.
+    
+    This function highlights administrative units that were reassigned to different 
+    partitions during contiguity refinement, making it easy to see what areas 
+    were swapped to improve spatial contiguity.
+    
+    Args:
+        correspondence_before_path (str): Path to CSV with partition assignments before refinement
+        correspondence_after_path (str): Path to CSV with partition assignments after refinement
+        shapefile_path (str, optional): Path to shapefile with admin boundaries
+        save_path (str, optional): Output path for saved map
+        title (str): Title for the map
+        figsize (tuple): Figure size as (width, height)
+        dpi (int): Resolution for saved figure
+        add_basemap (bool): Whether to add contextily basemap
+        basemap_source: Contextily basemap source
+        
+    Returns:
+        matplotlib.figure.Figure: The created figure object, or None if no swaps detected
+    """
+    try:
+        import geopandas as gpd
+        import contextily as ctx
+        import matplotlib.colors as mcolors
+        from matplotlib.patches import Patch
+    except ImportError as e:
+        raise ImportError(f"Required packages missing: {e}. Install with: pip install geopandas contextily")
+    
+    # Default paths
+    if shapefile_path is None:
+        shapefile_path = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
+    
+    if save_path is None:
+        save_path = correspondence_after_path.replace('.csv', '_swaps_map.png')
+    
+    # Load correspondence tables
+    try:
+        df_before = pd.read_csv(correspondence_before_path)
+        df_after = pd.read_csv(correspondence_after_path)
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Correspondence table not found: {e}")
+    
+    # Validate required columns
+    required_cols = ['FEWSNET_admin_code', 'partition_id']
+    for df, name in [(df_before, 'before'), (df_after, 'after')]:
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            raise ValueError(f"Missing required columns in {name} correspondence table: {missing_cols}")
+    
+    # Clean data
+    df_before = df_before.dropna(subset=['partition_id'])
+    df_before = df_before[df_before['partition_id'] != '']
+    df_after = df_after.dropna(subset=['partition_id'])
+    df_after = df_after[df_after['partition_id'] != '']
+    
+    # Merge to find differences
+    df_before['admin_code'] = df_before['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
+    df_after['admin_code'] = df_after['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
+    
+    # Find swapped areas by comparing partition_id for same admin_code
+    merged = df_before.merge(df_after, on='admin_code', suffixes=('_before', '_after'), how='inner')
+    
+    # Identify areas that changed partition assignment
+    swapped_areas = merged[merged['partition_id_before'] != merged['partition_id_after']].copy()
+    
+    if len(swapped_areas) == 0:
+        print("No partition swaps detected between the two states.")
+        return None
+    
+    print(f"Found {len(swapped_areas)} administrative units that changed partition assignment")
+    
+    # Load shapefile
+    try:
+        gdf = gpd.read_file(shapefile_path)
+    except Exception as e:
+        raise FileNotFoundError(f"Cannot load shapefile: {shapefile_path}. Error: {e}")
+    
+    # Keep only necessary columns and merge with swapped areas
+    gdf = gdf[['admin_code', 'geometry']].copy()
+    gdf['admin_code'] = gdf['admin_code'].astype(str)
+    
+    swapped_gdf = swapped_areas.merge(gdf, on='admin_code', how='left')
+    
+    # Check for missing geometries
+    missing_geom = swapped_gdf['geometry'].isna().sum()
+    if missing_geom > 0:
+        print(f"Warning: {missing_geom} swapped areas have no matching geometry")
+    
+    # Convert to GeoDataFrame
+    swapped_gdf = gpd.GeoDataFrame(swapped_gdf, geometry='geometry')
+    swapped_gdf = swapped_gdf.dropna(subset=['geometry'])
+    
+    if len(swapped_gdf) == 0:
+        print("No valid geometries found for swapped areas")
+        return None
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Load full admin boundaries for context (light gray background)
+    try:
+        full_gdf = gpd.read_file(shapefile_path)
+        full_gdf = full_gdf[['admin_code', 'geometry']].copy()
+        full_gdf.plot(ax=ax, color='lightgray', alpha=0.3, edgecolor='white', linewidth=0.1)
+    except:
+        pass  # Continue without background if shapefile loading fails
+    
+    # Create swap direction mapping for colors
+    # Convert partition IDs to strings to avoid data type issues
+    swapped_gdf['swap_direction'] = (swapped_gdf['partition_id_before'].astype(str) + 
+                                    ' → ' + 
+                                    swapped_gdf['partition_id_after'].astype(str))
+    unique_swaps = swapped_gdf['swap_direction'].unique()
+    n_swaps = len(unique_swaps)
+    
+    # Use distinct colors for different swap directions
+    swap_colors = get_colors(n_swaps)
+    
+    # Create a custom colormap from the selected colors
+    from matplotlib.colors import ListedColormap
+    cmap = ListedColormap(swap_colors)
+    
+    # Plot swapped areas with distinct colors based on swap direction
+    swapped_gdf.plot(
+        ax=ax,
+        column='swap_direction',
+        cmap=cmap,
+        legend=False,
+        alpha=0.8,
+        edgecolor='black',
+        linewidth=0.5
+    )
+    
+    # Add basemap if requested
+    if add_basemap:
+        try:
+            if basemap_source is None:
+                basemap_source = ctx.providers.CartoDB.Positron
+            
+            ctx.add_basemap(
+                ax,
+                crs=swapped_gdf.crs.to_string(),
+                source=basemap_source,
+                zoom='auto',
+                alpha=0.7
+            )
+        except Exception as e:
+            print(f"Could not add basemap: {e}")
+    
+    # Create custom legend
+    legend_elements = []
+    
+    for i, swap_direction in enumerate(sorted(unique_swaps)):
+        count = len(swapped_gdf[swapped_gdf['swap_direction'] == swap_direction])
+        label = f"{swap_direction} ({count} units)"
+        legend_elements.append(Patch(facecolor=swap_colors[i], label=label))
+    
+    # Add legend
+    ax.legend(handles=legend_elements, 
+             loc='center left', 
+             bbox_to_anchor=(1, 0.5), 
+             fontsize=10,
+             title="Partition Swaps")
+    
+    # Set labels and title
+    ax.set_xlabel('Longitude', fontsize=12)
+    ax.set_ylabel('Latitude', fontsize=12)
+    ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+    
+    # Add summary statistics as text
+    stats_text = f"Total swapped units: {len(swapped_gdf)}\nSwap directions: {n_swaps}"
+    ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, 
+           verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    # Adjust layout and save
+    plt.tight_layout()
+    plt.subplots_adjust(right=0.85)
+    
+    try:
+        plt.savefig(save_path, dpi=dpi, bbox_inches='tight',
+                   facecolor='white', edgecolor='none')
+        print(f"Partition swaps map saved to: {save_path}")
+    except Exception as e:
+        print(f"Could not save figure: {e}")
+    
+    return fig
+
 def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = None):
   '''This generates visualization images for all groups.
   Args:
