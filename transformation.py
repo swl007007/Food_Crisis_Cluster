@@ -847,7 +847,7 @@ def partition(model, X, y,
       metrics_tracker.save_metrics_to_csv(metrics_dir)
       
       # Create visualization dashboard if correspondence table is available
-      if correspondence_table_path:
+      if correspondence_table_path and VIS_DEBUG_MODE:
         from visualization import plot_partition_metrics_dashboard
         dashboard_outputs = plot_partition_metrics_dashboard(
           metrics_tracker, 

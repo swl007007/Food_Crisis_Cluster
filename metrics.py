@@ -291,6 +291,10 @@ class PartitionMetricsTracker:
         """
         Save all recorded metrics to CSV files.
         """
+        from config import VIS_DEBUG_MODE
+        if not VIS_DEBUG_MODE:
+            return
+            
         import os
         
         for partition_round, branches in self.partition_history.items():

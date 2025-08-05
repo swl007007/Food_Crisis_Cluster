@@ -229,12 +229,12 @@ class GeoRF():
 		                   X_group , X_set, X_id, X_branch_id,
 		                   min_depth = self.min_model_depth, max_depth = self.max_model_depth,
 		                   contiguity_type = contiguity_type, polygon_contiguity_info = polygon_contiguity_info,
-		                   track_partition_metrics = track_partition_metrics, 
+		                   track_partition_metrics = track_partition_metrics and VIS_DEBUG_MODE, 
 		                   correspondence_table_path = correspondence_table_path,
 		                   model_dir = self.model_dir)#X_loc = X_loc is unused
 		
 		# Handle different return formats (with/without metrics tracker)
-		if track_partition_metrics:
+		if track_partition_metrics and VIS_DEBUG_MODE:
 			X_branch_id, self.branch_table, self.s_branch, self.metrics_tracker = partition_result
 		else:
 			X_branch_id, self.branch_table, self.s_branch = partition_result

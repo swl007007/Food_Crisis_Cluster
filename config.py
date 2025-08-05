@@ -120,6 +120,9 @@ CONTIGUITY_TYPE = 'polygon'  # Default to polygon-based contiguity
 POLYGON_NEIGHBOR_DISTANCE_THRESHOLD = 0.8  # Auto-calculate if None
 POLYGON_CONTIGUITY_INFO = None  # Set this to polygon contiguity info dict when using polygon contiguity
 
+#Visualization debug control
+VIS_DEBUG_MODE = True  # Set to False to disable all debug visualizations and metric tables to speed up execution
+
 #predefined groups such as US counties
 #unused here
 PREDEFINED_GROUPS = False

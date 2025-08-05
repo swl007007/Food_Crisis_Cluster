@@ -166,6 +166,9 @@ def vis_partition_group(s_branch, unique_branch, step_size, max_depth = MAX_DEPT
     return grid
 
 def generate_vis_image(s_branch, X_branch_id, max_depth, dir, step_size = STEP_SIZE, file_name='all'):
+  if not VIS_DEBUG_MODE:
+    return
+    
   print(list(s_branch.keys()))
 
   unique_branch = np.unique(X_branch_id)
@@ -193,6 +196,9 @@ def generate_vis_image(s_branch, X_branch_id, max_depth, dir, step_size = STEP_S
 
 
 def generate_vis_image_from_grid(grid, dir, file_name='all'):
+  if not VIS_DEBUG_MODE:
+    return
+    
   from PIL import ImageOps
   VIS_SIZE = 1000
   resized_img = ImageOps.flip(Image.fromarray(grid)).resize((VIS_SIZE, int(VIS_SIZE*(xmax/ymax))), Image.NEAREST)
@@ -526,6 +532,8 @@ def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = N
     vmin: min value for clim in matplotlib
     vmax: max value for clim in matplotlib
   '''
+  if not VIS_DEBUG_MODE:
+    return
 
   # if vmin is None:
   #   vmin = np.min(grid)
@@ -550,7 +558,7 @@ def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = N
     im.set_clim(vmin,vmax)
   cbar = plt.colorbar(im)
   # cbar = plt.colorbar(im, ticks = np.arange(s_branch.shape[1]))
-  #the following line has issues with .py in some environments (might be version issues)
+  #the following line has issues with .py in some environments (might be version versions)
   # cbar.ax.set_yticklabels(unique_branch.tolist())#list(s_branch.keys())
 
   fig.savefig(dir + '/' + 'result_group' + ext + '.png')
@@ -1000,6 +1008,9 @@ def plot_partition_metrics_dashboard(metrics_tracker, output_dir,
     Returns:
         dict: Summary of created outputs
     """
+    if not VIS_DEBUG_MODE:
+        return {'csv_files': [], 'map_files': [], 'summary': {}}
+        
     import os
     
     # Save CSV files

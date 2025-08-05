@@ -782,9 +782,10 @@ def get_refined_partitions_all(X_branch_id, s_branch, X_group, dir = None, min_c
   # print('grid min: ', np.min(grid))
   # print('grid.shape', grid.shape)
 
-  generate_vis_image_from_grid(grid, dir, file_name = 'all_refined_before')
+  if VIS_DEBUG_MODE:
+    generate_vis_image_from_grid(grid, dir, file_name = 'all_refined_before')
 
-  if dir is not None:
+  if dir is not None and VIS_DEBUG_MODE:
     np.save(dir + '/' + 'grid' + '_before' + '.npy', grid)#ext
 
   locs = generate_groups_loc(X_DIM, STEP_SIZE)
@@ -792,7 +793,7 @@ def get_refined_partitions_all(X_branch_id, s_branch, X_group, dir = None, min_c
     # grid = swap_partition_general(grid, locs, null_value = 0)
   grid = swap_small_components(grid, min_component_size)
 
-  if dir is not None:
+  if dir is not None and VIS_DEBUG_MODE:
     generate_vis_image_from_grid(grid, dir, file_name = 'all_refined')
     np.save(dir + '/' + 'grid' + '_after' + '.npy', grid)
 
