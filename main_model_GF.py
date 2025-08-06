@@ -1916,7 +1916,7 @@ def main():
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific RF depth
     desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
-    forecasting_scope = 1    # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+    forecasting_scope = 4    # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
     
     # Partition Metrics Tracking Configuration
     track_partition_metrics = False  # Enable partition metrics tracking and visualization
@@ -1926,7 +1926,7 @@ def main():
     enable_checkpoint_recovery = True  # Enable automatic checkpoint detection and resume
     
     # start year and end year
-    start_year = 2015
+    start_year = 2020
     end_year = 2024
     
     print(f"Configuration:")
