@@ -360,13 +360,12 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
     Tuple containing train and test splits in the same format as
     ``train_test_split_all``.
     '''
-    # Force test_year to be 2024 as per requirements
-    test_year = 2024
+    # Use the provided test_year parameter
     
     if need_terms is None:
-        # Training set: all years before 2024
+        # Training set: all years before test_year (fallback when need_terms is None)
         train_mask = years < test_year
-        # Test set: only 2024
+        # Test set: only test_year
         test_mask = years == test_year
 
         Xtrain = X[train_mask]
@@ -386,21 +385,31 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         if not isinstance(dates, pd.Series):
             dates = pd.to_datetime(dates)
         
-        # Define quarter end dates for 2024
-        quarter_ends = {
-            1: pd.Timestamp('2024-03-31'),
-            2: pd.Timestamp('2024-06-30'),
-            3: pd.Timestamp('2024-09-30'),
-            4: pd.Timestamp('2024-12-31')
+        # Define quarter start and end dates for the test year
+        quarter_starts = {
+            1: pd.Timestamp(f'{test_year}-01-01'),
+            2: pd.Timestamp(f'{test_year}-04-01'),
+            3: pd.Timestamp(f'{test_year}-07-01'),
+            4: pd.Timestamp(f'{test_year}-10-01')
         }
         
-        # Get the end date for the test quarter
+        quarter_ends = {
+            1: pd.Timestamp(f'{test_year}-03-31'),
+            2: pd.Timestamp(f'{test_year}-06-30'),
+            3: pd.Timestamp(f'{test_year}-09-30'),
+            4: pd.Timestamp(f'{test_year}-12-31')
+        }
+        
+        # Get the start date for the test quarter (this is when test quarter begins)
+        test_quarter_start = quarter_starts[need_terms]
         test_quarter_end = quarter_ends[need_terms]
         
-        # Training set: 5 years of data before the test quarter end date
-        train_end_date = test_quarter_end
+        # Training set: 5 years of data ENDING BEFORE the test quarter starts
+        # This ensures NO OVERLAP between training and test
+        train_end_date = test_quarter_start  # Training ends when test quarter begins
         train_start_date = train_end_date - pd.DateOffset(years=5)
         
+        # Training mask: includes data from 5 years ago UP TO (but not including) test quarter start
         train_mask = (dates >= train_start_date) & (dates < train_end_date)
         
         # Test set: only the specific quarter of 2024
@@ -418,9 +427,10 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
         
-        print(f"Rolling Window Split for Q{need_terms} 2024:")
-        print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()}")
-        print(f"  Test: {len(ytest)} samples from Q{need_terms} 2024")
+        print(f"Rolling Window Split for Q{need_terms} {test_year}:")
+        print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()} (5 years BEFORE test quarter)")
+        print(f"  Test: {len(ytest)} samples from Q{need_terms} {test_year} ({test_quarter_start.date()} to {test_quarter_end.date()})")
+        print(f"  No overlap: Training ends {train_end_date.date()}, Test starts {test_quarter_start.date()}")
         
         return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
         

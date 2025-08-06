@@ -24,14 +24,47 @@ from helper import *
 from config import *
 
 def groupby_sum(y, y_group, onehot = ONEHOT):
-  y = y.astype(int)
-  y_group = y_group.reshape([-1,1])
-  y = np.hstack([y_group, y])
+  try:
+    y = y.astype(int)
+    y_group = y_group.reshape([-1,1])
+    
+    # Ensure y has the right shape for hstack
+    if len(y.shape) == 1:
+        y = y.reshape([-1, 1])
+    
+    y = np.hstack([y_group, y])
 
-  y = pd.DataFrame(y)
-  y = y.groupby([0]).sum()
+    # CRITICAL FIX: Create DataFrame with explicit dtypes to prevent hashtable corruption
+    y_df = pd.DataFrame(y, dtype=np.int64)  # Force int64 to avoid int32 hashtable issues
+    
+    # Use explicit column naming to avoid groupby issues
+    y_df.columns = ['group_id'] + [f'col_{i}' for i in range(y_df.shape[1]-1)]
+    
+    # Perform groupby with explicit handling
+    try:
+      y_grouped = y_df.groupby('group_id', sort=False).sum()
+    except KeyError as e:
+      if 'int32' in str(e):
+        print("Warning: Pandas hashtable issue detected, using numpy-based groupby fallback")
+        # Fallback to numpy-based groupby
+        unique_groups, indices = np.unique(y_group.flatten(), return_inverse=True)
+        grouped_sums = []
+        for i, group_id in enumerate(unique_groups):
+          mask = (indices == i)
+          group_sum = y[mask, 1:].sum(axis=0)
+          grouped_sums.append(group_sum)
+        
+        return unique_groups, np.array(grouped_sums)
+      else:
+        raise
 
-  return y.index.to_numpy(), y.to_numpy()
+    return y_grouped.index.to_numpy(), y_grouped.to_numpy()
+    
+  except Exception as e:
+    print(f"Error in groupby_sum: {e}")
+    print(f"Input shapes: y={y.shape}, y_group={y_group.shape}")
+    print(f"Input dtypes: y={y.dtype}, y_group={y_group.dtype}")
+    raise
 
 def get_class_wise_stat(y_true, y_pred, y_group, mode = MODE, onehot = ONEHOT):
 

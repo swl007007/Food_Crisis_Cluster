@@ -12,3 +12,5 @@ trial_*
 PARTITION_METRICS_INTEGRATION.md
 
 *.ipynb
+
+test_*.py

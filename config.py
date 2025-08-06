@@ -24,7 +24,41 @@ MODE = 'classification'#'regression'
 #min and max depth for partitioning (actual number between min-max is auto-determined by significance testing)
 MIN_DEPTH = 1  # Reduced to allow more splitting opportunities
 MAX_DEPTH = 6  # Increased to allow deeper partitioning for more figures
-N_JOBS = 32#parallel computing for RF
+# CRITICAL FIX 4: Adaptive N_JOBS to prevent memory fragmentation and bitmap allocation failures
+# High n_jobs (32) can cause memory fragmentation and bitmap allocation errors
+try:
+    import psutil
+    memory_gb = psutil.virtual_memory().total / (1024**3)
+    cpu_count = psutil.cpu_count()
+    
+    if memory_gb < 8:
+        N_JOBS = 1  # Very low memory systems - single threaded
+        print(f"Low memory system ({memory_gb:.1f}GB): Using N_JOBS=1")
+    elif memory_gb < 16:
+        N_JOBS = 2  # Low memory systems 
+        print(f"Limited memory system ({memory_gb:.1f}GB): Using N_JOBS=2")
+    elif memory_gb < 32:
+        N_JOBS = 4  # Medium memory systems
+        print(f"Medium memory system ({memory_gb:.1f}GB): Using N_JOBS=4")
+    elif memory_gb < 64:
+        N_JOBS = 8  # Higher memory systems
+        print(f"Higher memory system ({memory_gb:.1f}GB): Using N_JOBS=8")
+    else:
+        # Cap at 16 even for high-memory systems to prevent bitmap allocation issues
+        N_JOBS = min(16, max(1, cpu_count // 2))
+        print(f"High memory system ({memory_gb:.1f}GB): Using N_JOBS={N_JOBS}")
+        
+except ImportError:
+    # Fallback if psutil is not available
+    N_JOBS = 4  # Safe default to prevent memory issues
+    print("psutil not available: Using safe default N_JOBS=4")
+except Exception as e:
+    # Fallback for any other error
+    N_JOBS = 4  # Safe default
+    print(f"Error detecting system specs: Using safe default N_JOBS=4. Error: {e}")
+
+print(f"Final N_JOBS configuration: {N_JOBS}")
+# Note: This will be further dynamically adjusted based on real-time memory pressure during RF training
 #*********************************************************************************
 
 #Detailed ***Optional*** specifications
@@ -121,7 +155,7 @@ POLYGON_NEIGHBOR_DISTANCE_THRESHOLD = 0.8  # Auto-calculate if None
 POLYGON_CONTIGUITY_INFO = None  # Set this to polygon contiguity info dict when using polygon contiguity
 
 #Visualization debug control
-VIS_DEBUG_MODE = True  # Set to False to disable all debug visualizations and metric tables to speed up execution
+VIS_DEBUG_MODE = False  # Set to False to disable all debug visualizations and metric tables to speed up execution
 
 #predefined groups such as US counties
 #unused here

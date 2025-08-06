@@ -35,6 +35,7 @@ from customize import train_test_split_rolling_window
 from config import *
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import precision_score, recall_score, f1_score
+from tqdm import tqdm
 
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
@@ -865,220 +866,233 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         contiguity_type = 'grid'
         polygon_contiguity_info = None
     
-    # Run evaluation for each quarter of 2024 using rolling window
-    print(f"\nEvaluating 2024 using rolling window approach...")
+    # Run evaluation for all quarters from 2015 to 2024 using rolling window
+    start_year = 2015
+    end_year = 2024
+    print(f"\nEvaluating all quarters from {start_year} to {end_year} using rolling window approach...")
     
     # Determine which quarters to evaluate based on desire_terms
     if desire_terms is None:
         quarters_to_evaluate = [1, 2, 3, 4]  # Evaluate all quarters
-        print("Evaluating all quarters of 2024")
+        print(f"Evaluating all quarters (Q1-Q4) for each year from {start_year} to {end_year}")
     else:
         quarters_to_evaluate = [desire_terms]  # Evaluate only specific quarter
-        print(f"Evaluating only Q{desire_terms} of 2024")
+        print(f"Evaluating only Q{desire_terms} for each year from {start_year} to {end_year}")
     
-    # Loop through quarters
-    for quarter in quarters_to_evaluate:
-        print(f"\n--- Evaluating Q{quarter} 2024 ---")
-        
-        # Train-test split with rolling window (5 years before quarter end)
-        (Xtrain, ytrain, Xtrain_loc, Xtrain_group,
-         Xtest, ytest, Xtest_loc, Xtest_group) = train_test_split_rolling_window(
-            X, y, X_loc, X_group, years, dates, test_year=2024, input_terms=input_terms, need_terms=quarter)
-        
-        ytrain = ytrain.astype(int)
-        ytest = ytest.astype(int)
-        
-        print(f"Train samples: {len(ytrain)}, Test samples: {len(ytest)}")
-        
-        # Skip evaluation if no test samples
-        if len(ytest) == 0:
-            print(f"Warning: No test samples for Q{quarter} 2024. Skipping this quarter.")
-            continue
-        
-        if nowcasting:
-            # 2-layer model with XGBoost
-            Xtrain_L1 = Xtrain[:, l1_index]
-            Xtrain_L2 = Xtrain[:, l2_index]
-            Xtest_L1 = Xtest[:, l1_index]
-            Xtest_L2 = Xtest[:, l2_index]
+    # Create progress bar for quarterly evaluation
+    total_evaluations = len(range(start_year, end_year + 1)) * len(quarters_to_evaluate)
+    progress_bar = tqdm(
+        total=total_evaluations, 
+        desc="GeoXGB Quarterly Evaluation", 
+        unit="quarter",
+        bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
+    )
+    
+    # Loop through years and quarters
+    for test_year in range(start_year, end_year + 1):
+        for quarter in quarters_to_evaluate:
+            progress_bar.set_description(f"GeoXGB Q{quarter} {test_year}")
+            print(f"\n--- Evaluating Q{quarter} {test_year} ---")
             
-            # Create and train 2-layer GeoXGB model
-            geoxgb_2layer = GeoRF_XGB(
-                min_model_depth=MIN_DEPTH,
-                max_model_depth=MAX_DEPTH,
-                n_jobs=N_JOBS,
-                max_depth=max_depth,
-                learning_rate=learning_rate,
-                reg_alpha=reg_alpha,
-                reg_lambda=reg_lambda,
-                subsample=subsample,
-                colsample_bytree=colsample_bytree
-            )
+            # Train-test split with rolling window (5 years before quarter end)
+            (Xtrain, ytrain, Xtrain_loc, Xtrain_group,
+             Xtest, ytest, Xtest_loc, Xtest_group) = train_test_split_rolling_window(
+                X, y, X_loc, X_group, years, dates, test_year=test_year, input_terms=input_terms, need_terms=quarter)
             
-            # Train 2-layer model with optional metrics tracking
-            if track_partition_metrics:
-                # Note: 2-layer fit doesn't support partition metrics yet, 
-                # but we can extend it later if needed
-                print("Note: Partition metrics tracking not yet supported for 2-layer models")
+            ytrain = ytrain.astype(int)
+            ytest = ytest.astype(int)
+            
+            print(f"Train samples: {len(ytrain)}, Test samples: {len(ytest)}")
+            
+            # Skip evaluation if no test samples
+            if len(ytest) == 0:
+                print(f"Warning: No test samples for Q{quarter} {test_year}. Skipping this quarter.")
+                continue
+            
+            if nowcasting:
+                # 2-layer model with XGBoost
+                Xtrain_L1 = Xtrain[:, l1_index]
+                Xtrain_L2 = Xtrain[:, l2_index]
+                Xtest_L1 = Xtest[:, l1_index]
+                Xtest_L2 = Xtest[:, l2_index]
                 
-            geoxgb_2layer.fit_2layer(
-                Xtrain_L1, Xtrain_L2, ytrain, Xtrain_group,
-                val_ratio=VAL_RATIO,
-                contiguity_type=contiguity_type,
-                polygon_contiguity_info=polygon_contiguity_info
-            )
-            
-            # Get predictions
-            ypred = geoxgb_2layer.predict_2layer(Xtest_L1, Xtest_L2, Xtest_group, correction_strategy='flip')
-            
-            # Evaluate
-            (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb_2layer.evaluate_2layer(
-                X_L1_test=Xtest_L1,
-                X_L2_test=Xtest_L2,
-                y_test=ytest,
-                X_group_test=Xtest_group,
-                X_L1_train=Xtrain_L1,
-                X_L2_train=Xtrain_L2,
-                y_train=ytrain,
-                X_group_train=Xtrain_group,
-                correction_strategy='flip',
-                print_to_file=True,
-                contiguity_type=contiguity_type,
-                polygon_contiguity_info=polygon_contiguity_info
-            )
-            
-            print(f"Q{quarter} 2024 Test - 2-Layer GeoXGB F1: {f1}, 2-Layer Base XGB F1: {f1_base}")
-            
-            # Extract and save correspondence table for 2-layer model
-            try:
-                X_branch_id_path = os.path.join(geoxgb_2layer.dir_space, 'X_branch_id.npy')
-                if os.path.exists(X_branch_id_path):
-                    X_branch_id = np.load(X_branch_id_path)
-                    create_correspondence_table(df, years, dates, 2024, quarter, X_branch_id, geoxgb_2layer.model_dir)
-            except Exception as e:
-                print(f"Warning: Could not create correspondence table for Q{quarter} 2024: {e}")
-        
-        else:
-            # Single-layer model with XGBoost
-            geoxgb = GeoRF_XGB(
-                min_model_depth=MIN_DEPTH,
-                max_model_depth=MAX_DEPTH,
-                n_jobs=N_JOBS,
-                max_depth=max_depth,
-                learning_rate=learning_rate,
-                reg_alpha=reg_alpha,
-                reg_lambda=reg_lambda,
-                subsample=subsample,
-                colsample_bytree=colsample_bytree
-            )
-            
-            # Train model with optional partition metrics tracking
-            if track_partition_metrics:
-                print(f"Training GeoXGB with partition metrics tracking enabled")
-                print(f"Correspondence table path: {correspondence_table_path}")
-                print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
-                print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
+                # Create and train 2-layer GeoXGB model
+                geoxgb_2layer = GeoRF_XGB(
+                    min_model_depth=MIN_DEPTH,
+                    max_model_depth=MAX_DEPTH,
+                    n_jobs=N_JOBS,
+                    max_depth=max_depth,
+                    learning_rate=learning_rate,
+                    reg_alpha=reg_alpha,
+                    reg_lambda=reg_lambda,
+                    subsample=subsample,
+                    colsample_bytree=colsample_bytree
+                )
                 
-                # Verify correspondence table exists and is readable
-                if correspondence_table_path and os.path.exists(correspondence_table_path):
-                    test_df = pd.read_csv(correspondence_table_path)
-                    print(f"Correspondence table loaded successfully with {len(test_df)} entries")
-                    print(f"Columns: {test_df.columns.tolist()}")
-                    print(f"Sample entries:\n{test_df.head()}")
-                else:
-                    print(f"Warning: Correspondence table not found at {correspondence_table_path}")
-                
-            geoxgb.fit(
-                Xtrain, ytrain, Xtrain_group,
-                val_ratio=VAL_RATIO,
-                contiguity_type=contiguity_type,
-                polygon_contiguity_info=polygon_contiguity_info,
-                track_partition_metrics=track_partition_metrics,
-                correspondence_table_path=correspondence_table_path
-            )
-            
-            # Check if metrics were tracked
-            if track_partition_metrics and hasattr(geoxgb, 'metrics_tracker'):
-                if geoxgb.metrics_tracker is not None:
-                    print(f"\nPartition metrics tracker found for Q{quarter} 2024")
-                    
-                    # Check if any metrics were actually recorded
-                    if hasattr(geoxgb.metrics_tracker, 'all_metrics') and geoxgb.metrics_tracker.all_metrics:
-                        print(f"Number of metric records: {len(geoxgb.metrics_tracker.all_metrics)}")
-                        
-                        # Show some sample metrics
-                        for i, record in enumerate(geoxgb.metrics_tracker.all_metrics[:3]):
-                            print(f"  Record {i}: Round {record.get('partition_round', 'N/A')}, "
-                                  f"Branch {record.get('branch_id', 'N/A')}, "
-                                  f"F1 improvement: {record.get('f1_improvement', 'N/A'):.4f}")
-                    else:
-                        print("No metrics records found in tracker")
-                    
-                    # Try to get summary
-                    try:
-                        summary = geoxgb.metrics_tracker.get_improvement_summary()
-                        if summary:
-                            print(f"\nPartition Metrics Summary for Q{quarter} 2024:")
-                            print(f"  Total partitions tracked: {summary['total_partitions']}")
-                            print(f"  Average F1 improvement: {summary['avg_f1_improvement']:.4f}")
-                            print(f"  Average accuracy improvement: {summary['avg_accuracy_improvement']:.4f}")
-                            print(f"  Positive F1 improvements: {summary['positive_f1_improvements']}")
-                            print(f"  Positive accuracy improvements: {summary['positive_accuracy_improvements']}")
-                        else:
-                            print("Warning: No partition metrics summary available")
-                    except Exception as e:
-                        print(f"Error getting metrics summary: {e}")
-                        
-                    # Check if visualization files were created
-                    if hasattr(geoxgb, 'model_dir'):
-                        vis_dir = os.path.join(geoxgb.model_dir, 'vis')
-                        metrics_dir = os.path.join(geoxgb.model_dir, 'partition_metrics')
-                        
-                        if os.path.exists(vis_dir):
-                            vis_files = [f for f in os.listdir(vis_dir) if f.endswith('.png')]
-                            print(f"Visualization files created: {len(vis_files)}")
-                            if vis_files:
-                                print(f"  Sample files: {vis_files[:3]}")
-                        else:
-                            print("No visualization directory found")
-                            
-                        if os.path.exists(metrics_dir):
-                            csv_files = [f for f in os.listdir(metrics_dir) if f.endswith('.csv')]
-                            print(f"Metrics CSV files created: {len(csv_files)}")
-                            if csv_files:
-                                print(f"  Sample files: {csv_files[:3]}")
-                        else:
-                            print("No metrics directory found")
-                else:
-                    print("Warning: Metrics tracker is None")
-            else:
+                # Train 2-layer model with optional metrics tracking
                 if track_partition_metrics:
-                    print("Warning: Metrics tracker not found on geoxgb object")
+                    # Note: 2-layer fit doesn't support partition metrics yet, 
+                    # but we can extend it later if needed
+                    print("Note: Partition metrics tracking not yet supported for 2-layer models")
+                    
+                geoxgb_2layer.fit_2layer(
+                    Xtrain_L1, Xtrain_L2, ytrain, Xtrain_group,
+                    val_ratio=VAL_RATIO,
+                    contiguity_type=contiguity_type,
+                    polygon_contiguity_info=polygon_contiguity_info
+                )
+                
+                # Get predictions
+                ypred = geoxgb_2layer.predict_2layer(Xtest_L1, Xtest_L2, Xtest_group, correction_strategy='flip')
+                
+                # Evaluate
+                (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb_2layer.evaluate_2layer(
+                    X_L1_test=Xtest_L1,
+                    X_L2_test=Xtest_L2,
+                    y_test=ytest,
+                    X_group_test=Xtest_group,
+                    X_L1_train=Xtrain_L1,
+                    X_L2_train=Xtrain_L2,
+                    y_train=ytrain,
+                    X_group_train=Xtrain_group,
+                    correction_strategy='flip',
+                    print_to_file=True,
+                    contiguity_type=contiguity_type,
+                    polygon_contiguity_info=polygon_contiguity_info
+                )
+                
+                print(f"Q{quarter} {test_year} Test - 2-Layer GeoXGB F1: {f1}, 2-Layer Base XGB F1: {f1_base}")
+                
+                # Extract and save correspondence table for 2-layer model
+                try:
+                    X_branch_id_path = os.path.join(geoxgb_2layer.dir_space, 'X_branch_id.npy')
+                    if os.path.exists(X_branch_id_path):
+                        X_branch_id = np.load(X_branch_id_path)
+                        create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, geoxgb_2layer.model_dir)
+                except Exception as e:
+                    print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
             
-            # Get predictions
-            ypred = geoxgb.predict(Xtest, Xtest_group)
-            
-            # Evaluate
-            (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
-                Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True
-            )
-            
-            print(f"Q{quarter} 2024 Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")
-            
-            # Extract and save correspondence table for single-layer model
-            try:
-                X_branch_id_path = os.path.join(geoxgb.dir_space, 'X_branch_id.npy')
-                if os.path.exists(X_branch_id_path):
-                    X_branch_id = np.load(X_branch_id_path)
-                    create_correspondence_table(df, years, dates, 2024, quarter, X_branch_id, geoxgb.model_dir)
-            except Exception as e:
-                print(f"Warning: Could not create correspondence table for Q{quarter} 2024: {e}")
+            else:
+                # Single-layer model with XGBoost
+                geoxgb = GeoRF_XGB(
+                    min_model_depth=MIN_DEPTH,
+                    max_model_depth=MAX_DEPTH,
+                    n_jobs=N_JOBS,
+                    max_depth=max_depth,
+                    learning_rate=learning_rate,
+                    reg_alpha=reg_alpha,
+                    reg_lambda=reg_lambda,
+                    subsample=subsample,
+                    colsample_bytree=colsample_bytree
+                )
+                
+                # Train model with optional partition metrics tracking
+                if track_partition_metrics:
+                    print(f"Training GeoXGB with partition metrics tracking enabled")
+                    print(f"Correspondence table path: {correspondence_table_path}")
+                    print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
+                    print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
+                    
+                    # Verify correspondence table exists and is readable
+                    if correspondence_table_path and os.path.exists(correspondence_table_path):
+                        test_df = pd.read_csv(correspondence_table_path)
+                        print(f"Correspondence table loaded successfully with {len(test_df)} entries")
+                        print(f"Columns: {test_df.columns.tolist()}")
+                        print(f"Sample entries:\n{test_df.head()}")
+                    else:
+                        print(f"Warning: Correspondence table not found at {correspondence_table_path}")
+                    
+                geoxgb.fit(
+                    Xtrain, ytrain, Xtrain_group,
+                    val_ratio=VAL_RATIO,
+                    contiguity_type=contiguity_type,
+                    polygon_contiguity_info=polygon_contiguity_info,
+                    track_partition_metrics=track_partition_metrics,
+                    correspondence_table_path=correspondence_table_path
+                )
+                
+                # Check if metrics were tracked
+                if track_partition_metrics and hasattr(geoxgb, 'metrics_tracker'):
+                    if geoxgb.metrics_tracker is not None:
+                        print(f"\nPartition metrics tracker found for Q{quarter} {test_year}")
+                        
+                        # Check if any metrics were actually recorded
+                        if hasattr(geoxgb.metrics_tracker, 'all_metrics') and geoxgb.metrics_tracker.all_metrics:
+                            print(f"Number of metric records: {len(geoxgb.metrics_tracker.all_metrics)}")
+                            
+                            # Show some sample metrics
+                            for i, record in enumerate(geoxgb.metrics_tracker.all_metrics[:3]):
+                                print(f"  Record {i}: Round {record.get('partition_round', 'N/A')}, "
+                                      f"Branch {record.get('branch_id', 'N/A')}, "
+                                      f"F1 improvement: {record.get('f1_improvement', 'N/A'):.4f}")
+                        else:
+                            print("No metrics records found in tracker")
+                        
+                        # Try to get summary
+                        try:
+                            summary = geoxgb.metrics_tracker.get_improvement_summary()
+                            if summary:
+                                print(f"\nPartition Metrics Summary for Q{quarter} {test_year}:")
+                                print(f"  Total partitions tracked: {summary['total_partitions']}")
+                                print(f"  Average F1 improvement: {summary['avg_f1_improvement']:.4f}")
+                                print(f"  Average accuracy improvement: {summary['avg_accuracy_improvement']:.4f}")
+                                print(f"  Positive F1 improvements: {summary['positive_f1_improvements']}")
+                                print(f"  Positive accuracy improvements: {summary['positive_accuracy_improvements']}")
+                            else:
+                                print("Warning: No partition metrics summary available")
+                        except Exception as e:
+                            print(f"Error getting metrics summary: {e}")
+                            
+                        # Check if visualization files were created
+                        if hasattr(geoxgb, 'model_dir'):
+                            vis_dir = os.path.join(geoxgb.model_dir, 'vis')
+                            metrics_dir = os.path.join(geoxgb.model_dir, 'partition_metrics')
+                            
+                            if os.path.exists(vis_dir):
+                                vis_files = [f for f in os.listdir(vis_dir) if f.endswith('.png')]
+                                print(f"Visualization files created: {len(vis_files)}")
+                                if vis_files:
+                                    print(f"  Sample files: {vis_files[:3]}")
+                            else:
+                                print("No visualization directory found")
+                                
+                            if os.path.exists(metrics_dir):
+                                csv_files = [f for f in os.listdir(metrics_dir) if f.endswith('.csv')]
+                                print(f"Metrics CSV files created: {len(csv_files)}")
+                                if csv_files:
+                                    print(f"  Sample files: {csv_files[:3]}")
+                            else:
+                                print("No metrics directory found")
+                    else:
+                        print("Warning: Metrics tracker is None")
+                else:
+                    if track_partition_metrics:
+                        print("Warning: Metrics tracker not found on geoxgb object")
+                
+                # Get predictions
+                ypred = geoxgb.predict(Xtest, Xtest_group)
+                
+                # Evaluate
+                (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
+                    Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True
+                )
+                
+                print(f"Q{quarter} {test_year} Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")
+                
+                # Extract and save correspondence table for single-layer model
+                try:
+                    X_branch_id_path = os.path.join(geoxgb.dir_space, 'X_branch_id.npy')
+                    if os.path.exists(X_branch_id_path):
+                        X_branch_id = np.load(X_branch_id_path)
+                        create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, geoxgb.model_dir)
+                except Exception as e:
+                    print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
         
         # Store results
         nsample_class = np.bincount(ytest)
         
         results_df = pd.concat([results_df, pd.DataFrame({
-            'year': [2024],
+            'year': [test_year],
             'quarter': [quarter],
             'precision(0)': [pre[0]],
             'precision(1)': [pre[1]],
@@ -1101,7 +1115,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # Try to get month and admin code from test data
             # This assumes these are in the original columns
             y_pred_test = pd.concat([y_pred_test, pd.DataFrame({
-                'year': [2024] * len(ytest),
+                'year': [test_year] * len(ytest),
                 'quarter': [quarter] * len(ytest),
                 'month': [quarter * 3] * len(ytest),  # Use quarter end month (3, 6, 9, 12)
                 'adm_code': [0] * len(ytest),  # Placeholder - would need actual admin codes
@@ -1111,13 +1125,19 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         except:
             # Fallback with placeholders
             y_pred_test = pd.concat([y_pred_test, pd.DataFrame({
-                'year': [2024] * len(ytest),
+                'year': [test_year] * len(ytest),
                 'quarter': [quarter] * len(ytest),
                 'month': [quarter * 3] * len(ytest),  # Use quarter end month (3, 6, 9, 12)
                 'adm_code': [0] * len(ytest),
                 'fews_ipc_crisis_pred': ypred,
                 'fews_ipc_crisis_true': ytest
             })], ignore_index=True)
+            
+            # Update progress bar
+            progress_bar.update(1)
+    
+    # Close progress bar
+    progress_bar.close()
     
     return results_df, y_pred_test
 

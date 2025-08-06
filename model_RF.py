@@ -124,6 +124,9 @@ class RFmodel():
     return accuracy_score(y_true, y_pred)
 
   def get_new_forest(self, X, y, sample_weights_by_class):
+    import gc
+    import psutil
+    
     #recover all classes
     X_pseudo, y_pseudo = self.get_pseudo_full_class_data(X.shape[1])
     X = np.vstack([X, X_pseudo])
@@ -134,9 +137,44 @@ class RFmodel():
     # class_weight = self.get_class_weights_by_input_weights(sample_weights_by_class)
     class_weight = None
 
+    # Force garbage collection before creating RF to free memory
+    gc.collect()
+    
+    # ADAPTIVE MEMORY PRESSURE DETECTION
+    # Check available memory and adjust n_jobs dynamically to prevent bitmap allocation failures
+    try:
+        memory = psutil.virtual_memory()
+        available_gb = memory.available / (1024**3)
+        used_percent = memory.percent
+        
+        # Calculate estimated memory needs for RF training
+        data_size_gb = (X.shape[0] * X.shape[1] * 8) / (1024**3)  # Rough estimate
+        estimated_rf_memory = data_size_gb * self.n_jobs * 2  # Rough estimate of RF memory with parallelism
+        
+        # Adaptive n_jobs based on memory pressure
+        if available_gb < estimated_rf_memory or used_percent > 85:
+            # High memory pressure - use minimal parallelism
+            adaptive_n_jobs = 1
+            print(f"HIGH memory pressure detected (Available: {available_gb:.1f}GB, Used: {used_percent:.1f}%)")
+            print(f"Using n_jobs=1 to prevent bitmap allocation failure")
+        elif available_gb < estimated_rf_memory * 1.5 or used_percent > 75:
+            # Medium memory pressure - use reduced parallelism
+            adaptive_n_jobs = min(4, self.n_jobs)
+            print(f"MEDIUM memory pressure detected (Available: {available_gb:.1f}GB, Used: {used_percent:.1f}%)")
+            print(f"Using n_jobs={adaptive_n_jobs} to reduce memory pressure")
+        else:
+            # Low memory pressure - use full parallelism
+            adaptive_n_jobs = self.n_jobs
+            print(f"Low memory pressure (Available: {available_gb:.1f}GB, Used: {used_percent:.1f}%)")
+            print(f"Using full n_jobs={adaptive_n_jobs}")
+    except:
+        # Fallback to original n_jobs if psutil fails
+        adaptive_n_jobs = self.n_jobs
+        print("Memory pressure detection failed, using original n_jobs")
+
     new_forest = RandomForestClassifier(n_estimators = self.n_trees_unit, max_depth=self.max_depth,
                                         random_state=self.random_state,
-                                        n_jobs = self.n_jobs,
+                                        n_jobs = adaptive_n_jobs,  # Use adaptive parallelism
                                         class_weight = class_weight)
 
     # new_forest.classes_ = np.array(range(0,NUM_CLASS))
@@ -149,7 +187,28 @@ class RFmodel():
       sample_weights = None#default by sklearn
     # sample_weights = None
 
-    new_forest.fit(X,y, sample_weights)
+    try:
+        new_forest.fit(X,y, sample_weights)
+        print(f"Random Forest training successful with n_jobs={adaptive_n_jobs}")
+    except Exception as e:
+        if "bitmap" in str(e).lower() or "allocate" in str(e).lower() or "memory" in str(e).lower():
+            print(f"MEMORY ERROR with n_jobs={adaptive_n_jobs}: {e}")
+            print("Falling back to single-threaded execution...")
+            
+            # Delete failed model and cleanup
+            del new_forest
+            gc.collect()
+            
+            # Retry with single-threaded execution as last resort
+            new_forest = RandomForestClassifier(n_estimators = self.n_trees_unit, max_depth=self.max_depth,
+                                                random_state=self.random_state,
+                                                n_jobs = 1,
+                                                class_weight = class_weight)
+            new_forest.fit(X,y, sample_weights)
+            print("SUCCESS: Single-threaded Random Forest training completed")
+        else:
+            raise e
+    
     return new_forest
 
   def get_class_weights(self, y):
