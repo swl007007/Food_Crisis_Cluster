@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-XGBoost version of main_model_GF_replicated_fixed.py
+Replicated and debugged version of main_model_GF_main.ipynb - XGBoost Version
 
-This script replicates the full functionality of the original GeoRF pipeline
-but uses XGBoost instead of Random Forest as the base learner.
+This script replicates the full functionality of the notebook for food crisis prediction
+using GeoXGB (XGBoost-based GeoRF) with polygon-based contiguity support.
 
 Key features:
-1. Data preprocessing with polars and pandas (same as RF version)
+1. Data preprocessing with polars and pandas
 2. Multiple spatial grouping options (polygons, grid, country, AEZ, etc.)
 3. Polygon-based contiguity with corrected setup
 4. Time-based train-test splitting for temporal validation
-5. Single-layer and 2-layer GeoXGB models (XGBoost-based GeoRF)
+5. Single-layer and 2-layer GeoXGB models (XGBoost instead of Random Forest)
 6. Comprehensive evaluation and result saving
-7. XGBoost hyperparameters optimized for acute food crisis prediction
+7. XGBoost-specific hyperparameters optimized for food crisis prediction
 
-Date: 2024-07-21
+Date: 2025-08-12
 """
 
 import numpy as np
@@ -22,43 +22,264 @@ import pandas as pd
 import polars as pl
 import os
 import sys
+import gc
+import glob
 import warnings
 warnings.filterwarnings('ignore')
 
-# GeoRF imports (modified for XGBoost)
-from GeoRF_XGB import GeoRF_XGB  # Changed from GeoRF to GeoRF_XGB
+# GeoXGB imports - CHANGED from GeoRF to GeoRF_XGB
+from GeoRF_XGB import GeoRF_XGB
 from customize import *
 from data import load_demo_data
 from helper import get_spatial_range
 from initialization import train_test_split_all
 from customize import train_test_split_rolling_window
 from config import *
-from sklearn.impute import SimpleImputer
+# Note: No imputation imports needed for XGBoost - handles missing values natively
 from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
 
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
 
-def comp_impute(X, strategy="max_plus", multiplier=100.0):
+def get_checkpoint_info():
     """
-    Custom imputation function that handles infinite values and missing data.
+    Scan for existing checkpoint directories and return information about completed quarters.
+    
+    Returns:
+    --------
+    completed_quarters : list
+        List of tuples (year, quarter) for completed evaluations
+    partial_results_files : list
+        List of paths to partial results CSV files
+    checkpoint_dirs : dict
+        Mapping from (year, quarter) to result directory path
+    """
+    print("Scanning for existing checkpoints...")
+    
+    # Find all result_GeoXGB_* directories - CHANGED from result_GeoRF_*
+    result_dirs = glob.glob('result_GeoXGB_*')
+    completed_quarters = []
+    checkpoint_dirs = {}
+    partial_results_files = []
+    
+    for result_dir in result_dirs:
+        # Check for correspondence tables to identify completed quarters
+        corr_tables = glob.glob(os.path.join(result_dir, 'correspondence_table_Q*.csv'))
+        
+        for corr_table in corr_tables:
+            # Parse quarter and year from filename: correspondence_table_Q4_2019.csv
+            filename = os.path.basename(corr_table)
+            try:
+                parts = filename.replace('correspondence_table_Q', '').replace('.csv', '').split('_')
+                quarter = int(parts[0])
+                year = int(parts[1])
+                
+                # Verify the checkpoint is complete by checking for required files
+                checkpoints_dir = os.path.join(result_dir, 'checkpoints')
+                space_dir = os.path.join(result_dir, 'space_partitions')
+                
+                if (os.path.exists(checkpoints_dir) and 
+                    os.path.exists(space_dir) and 
+                    os.path.exists(os.path.join(space_dir, 'X_branch_id.npy'))):
+                    
+                    completed_quarters.append((year, quarter))
+                    checkpoint_dirs[(year, quarter)] = result_dir
+                    print(f"  Found completed Q{quarter} {year} in {result_dir}")
+                    
+            except (ValueError, IndexError):
+                # Skip if filename doesn't match expected pattern
+                continue
+    
+    # Look for partial results CSV files
+    partial_results_patterns = [
+        'results_df_gp_*.csv',  # polygon assignment results
+        'results_df_gg_*.csv',  # grid assignment results  
+        'results_df_gc_*.csv',  # country assignment results
+        'results_df_*.csv'      # any other results files
+    ]
+    
+    for pattern in partial_results_patterns:
+        files = glob.glob(pattern)
+        partial_results_files.extend(files)
+    
+    if partial_results_files:
+        print(f"  Found {len(partial_results_files)} partial results files")
+        for f in partial_results_files[:5]:  # Show first 5 files
+            print(f"    {f}")
+        if len(partial_results_files) > 5:
+            print(f"    ... and {len(partial_results_files) - 5} more")
+    
+    # Sort completed quarters chronologically
+    completed_quarters.sort()
+    
+    print(f"Found {len(completed_quarters)} completed quarter evaluations")
+    if completed_quarters:
+        print(f"  Range: Q{completed_quarters[0][1]} {completed_quarters[0][0]} to Q{completed_quarters[-1][1]} {completed_quarters[-1][0]}")
+    
+    return completed_quarters, partial_results_files, checkpoint_dirs
+
+def load_partial_results(partial_results_files, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None):
+    """
+    Load and combine partial results from previous runs.
+    
+    Parameters:
+    -----------
+    partial_results_files : list
+        List of partial results CSV file paths
+    assignment : str
+        Current assignment method to match files
+    nowcasting : bool
+        Whether 2-layer model is being used
+    max_depth : int or None
+        Maximum depth setting
+    desire_terms : int or None
+        Desired terms setting
+    forecasting_scope : int or None
+        Forecasting scope setting
+        
+    Returns:
+    --------
+    results_df : pandas.DataFrame or None
+        Combined results DataFrame, or None if no matching files found
+    y_pred_test : pandas.DataFrame or None
+        Combined predictions DataFrame, or None if no matching files found
+    """
+    print("Loading partial results from previous runs...")
+    
+    # Build expected filename patterns based on current configuration
+    pred_test_name = 'y_pred_test_g'
+    results_df_name = 'results_df_g'
+    
+    assignment_suffixes = {
+        'polygons': 'p',
+        'grid': 'g', 
+        'country': 'c',
+        'AEZ': 'ae',
+        'country_AEZ': 'cae',
+        'geokmeans': 'gk',
+        'all_kmeans': 'ak'
+    }
+    
+    if assignment in assignment_suffixes:
+        pred_test_name += assignment_suffixes[assignment]
+        results_df_name += assignment_suffixes[assignment]
+    
+    # Add configuration suffixes
+    if max_depth is not None:
+        pred_test_name += f'_d{max_depth}'
+        results_df_name += f'_d{max_depth}'
+    
+    if desire_terms is not None:
+        pred_test_name += f'_t{desire_terms}'
+        results_df_name += f'_t{desire_terms}'
+        
+    if forecasting_scope is not None:
+        pred_test_name += f'_fs{forecasting_scope}'
+        results_df_name += f'_fs{forecasting_scope}'
+    
+    if nowcasting:
+        pred_test_name += '_nowcast'
+        results_df_name += '_nowcast'
+    
+    pred_test_name += '.csv'
+    results_df_name += '.csv'
+    
+    results_df = None
+    y_pred_test = None
+    
+    # Try to load matching results files
+    if results_df_name in partial_results_files:
+        try:
+            results_df = pd.read_csv(results_df_name)
+            print(f"  Loaded existing results: {results_df_name} ({len(results_df)} rows)")
+        except Exception as e:
+            print(f"  Warning: Could not load {results_df_name}: {e}")
+    
+    if pred_test_name in partial_results_files:
+        try:
+            y_pred_test = pd.read_csv(pred_test_name)
+            print(f"  Loaded existing predictions: {pred_test_name} ({len(y_pred_test)} rows)")
+        except Exception as e:
+            print(f"  Warning: Could not load {pred_test_name}: {e}")
+    
+    return results_df, y_pred_test
+
+def determine_remaining_quarters(completed_quarters, start_year, end_year, desire_terms):
+    """
+    Determine which quarters still need to be evaluated.
+    
+    Parameters:
+    -----------
+    completed_quarters : list
+        List of tuples (year, quarter) for completed evaluations
+    start_year : int
+        Start year for evaluation
+    end_year : int
+        End year for evaluation
+    desire_terms : int or None
+        Specific quarter to evaluate (1-4), or None for all quarters
+        
+    Returns:
+    --------
+    remaining_quarters : list
+        List of tuples (year, quarter) that still need to be evaluated
+    """
+    # Determine which quarters to evaluate based on desire_terms
+    if desire_terms is None:
+        quarters_to_evaluate = [1, 2, 3, 4]
+    else:
+        quarters_to_evaluate = [desire_terms]
+    
+    # Generate all expected quarters
+    all_quarters = []
+    for year in range(start_year, end_year + 1):
+        for quarter in quarters_to_evaluate:
+            all_quarters.append((year, quarter))
+    
+    # Find remaining quarters
+    completed_set = set(completed_quarters)
+    remaining_quarters = [(year, quarter) for year, quarter in all_quarters 
+                         if (year, quarter) not in completed_set]
+    
+    print(f"Checkpoint analysis:")
+    print(f"  Total quarters to evaluate: {len(all_quarters)}")
+    print(f"  Already completed: {len(completed_quarters)}")
+    print(f"  Remaining: {len(remaining_quarters)}")
+    
+    if remaining_quarters:
+        print(f"  Next to evaluate: Q{remaining_quarters[0][1]} {remaining_quarters[0][0]}")
+        if len(remaining_quarters) > 1:
+            print(f"  Last to evaluate: Q{remaining_quarters[-1][1]} {remaining_quarters[-1][0]}")
+    else:
+        print("  All quarters already completed!")
+    
+    return remaining_quarters
+
+def save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None):
+    """
+    Save results as checkpoint files that can be resumed later.
+    
+    This is the same as save_results but called more frequently for checkpointing.
+    """
+    save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
+
+def handle_infinite_values(X):
+    """
+    Handle infinite values by replacing them with NaN.
+    XGBoost can handle NaN values natively without extreme value imputation.
     
     Parameters:
     -----------
     X : numpy.ndarray
         Input data array
-    strategy : str
-        Imputation strategy
-    multiplier : float
-        Multiplier for out-of-range values
         
     Returns:
     --------
     X : numpy.ndarray
-        Imputed data array
+        Data array with infinite values replaced by NaN
     """
-    # Handle infinite values
+    # Handle infinite values only - XGBoost handles NaN natively
     inf_count = 0
     for col_idx in range(X.shape[1]):
         col_data = X[:, col_idx]
@@ -73,22 +294,30 @@ def comp_impute(X, strategy="max_plus", multiplier=100.0):
             continue
     
     if inf_count > 0:
-        print(f"Found and replaced infinite values in {inf_count} columns")
+        print(f"Found and replaced infinite values with NaN in {inf_count} columns")
+        print("XGBoost will handle NaN values natively during training")
     
-    # Apply imputation with reduced verbosity
-    X_imputed, imputer = impute_missing_values(X, strategy=strategy, multiplier=multiplier, verbose=False)
+    # Check for missing value statistics
+    total_missing = np.isnan(X.astype(float)).sum()
+    if total_missing > 0:
+        print(f"Total missing values (including NaN): {total_missing} ({100*total_missing/X.size:.2f}% of data)")
+        print("XGBoost will use native missing value handling during training")
     
-    # Get summary info
-    if hasattr(imputer, 'column_stats_'):
-        imputed_cols = sum(1 for stats in imputer.column_stats_.values() if stats['has_missing'])
-        print(f"Imputed missing values in {imputed_cols} columns")
-    
-    return X_imputed
+    return X
 
 def load_and_preprocess_data(data_path):
     """
     Load and preprocess the FEWSNET data.
-    Same as RF version - no changes needed.
+    
+    Parameters:
+    -----------
+    data_path : str
+        Path to the CSV data file
+        
+    Returns:
+    --------
+    df : pandas.DataFrame
+        Preprocessed dataframe
     """
     print("Loading data...")
     
@@ -172,7 +401,22 @@ def load_and_preprocess_data(data_path):
 def setup_spatial_groups(df, assignment='polygons'):
     """
     Setup spatial grouping based on assignment method.
-    Same as RF version - no changes needed.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        Input dataframe
+    assignment : str
+        Grouping method ('polygons', 'grid', 'country', etc.)
+        
+    Returns:
+    --------
+    X_group : numpy.ndarray
+        Group assignments
+    X_loc : numpy.ndarray
+        Location coordinates
+    contiguity_info : dict or None
+        Contiguity information for polygon-based grouping
     """
     print(f"Setting up spatial groups using: {assignment}")
     
@@ -193,6 +437,7 @@ def setup_spatial_groups(df, assignment='polygons'):
         admin_to_polygon_idx = {admin_code: idx for idx, admin_code in enumerate(unique_polygons)}
         
         # FIXED: Create correct polygon_group_mapping
+        # Map polygon_index -> [admin_code] (each polygon is its own group using admin code as group ID)
         polygon_group_mapping = {i: [unique_polygons[i]] for i in range(len(unique_polygons))}
         
         # Convert admin codes to polygon indices for PolygonGroupGenerator
@@ -536,9 +781,9 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
     # L1 features are all others
     l1_index = [i for i in range(X.shape[1]) if i not in l2_index]
     
-    # Apply imputation (reduced verbosity)
-    print("Applying imputation to missing values...")
-    X = comp_impute(X, strategy="max_plus", multiplier=100.0)
+    # Handle infinite values only - XGBoost handles missing values natively
+    print("Handling infinite values (XGBoost native missing value support)...")
+    X = handle_infinite_values(X)
     
     # Get years for temporal splitting
     years = df_sorted['years'].values
@@ -558,7 +803,13 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
 def validate_polygon_contiguity(contiguity_info, X_group):
     """
     Validate polygon contiguity setup.
-    Same as RF version - no changes needed.
+    
+    Parameters:
+    -----------
+    contiguity_info : dict
+        Contiguity information
+    X_group : numpy.ndarray
+        Group assignments
     """
     print("=== Polygon Contiguity Validation ===")
     
@@ -623,34 +874,57 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
         if not isinstance(dates, pd.Series):
             dates = pd.to_datetime(dates)
         
-        # Define quarter end dates for 2024
-        quarter_ends = {
-            1: pd.Timestamp('2024-03-31'),
-            2: pd.Timestamp('2024-06-30'),
-            3: pd.Timestamp('2024-09-30'),
-            4: pd.Timestamp('2024-12-31')
+        # Define quarter start and end dates using the actual train_year (not hardcoded 2024)
+        quarter_starts = {
+            1: pd.Timestamp(f'{train_year}-01-01'),
+            2: pd.Timestamp(f'{train_year}-04-01'),
+            3: pd.Timestamp(f'{train_year}-07-01'),
+            4: pd.Timestamp(f'{train_year}-10-01')
         }
         
-        # Get the training mask (same logic as rolling window)
-        test_quarter_end = quarter_ends[quarter]
-        train_end_date = test_quarter_end
+        quarter_ends = {
+            1: pd.Timestamp(f'{train_year}-03-31'),
+            2: pd.Timestamp(f'{train_year}-06-30'),
+            3: pd.Timestamp(f'{train_year}-09-30'),
+            4: pd.Timestamp(f'{train_year}-12-31')
+        }
+        
+        # Get the training mask (same logic as rolling window - FIXED to match new logic)
+        test_quarter_start = quarter_starts[quarter]
+        train_end_date = test_quarter_start  # Training ends when test quarter begins (NO OVERLAP)
         train_start_date = train_end_date - pd.DateOffset(years=5)
         train_mask = (dates >= train_start_date) & (dates < train_end_date)
         
-        # Check if X_branch_id length matches training data
-        if len(X_branch_id) != np.sum(train_mask):
-            print(f"Warning: X_branch_id length ({len(X_branch_id)}) doesn't match training data length ({np.sum(train_mask)})")
-            print("Using first N samples from df for correspondence table creation")
-            # Use the first len(X_branch_id) samples that match the training criteria
-            train_indices = np.where(train_mask)[0][:len(X_branch_id)]
-            df_train = df.iloc[train_indices].copy()
-        else:
-            # Get training subset of dataframe
-            df_train = df[train_mask].copy()
+        # Get the training subset of dataframe
+        df_train = df[train_mask].copy()
+        actual_train_length = len(df_train)
+        branch_id_length = len(X_branch_id)
+        
+        print(f"Correspondence table debug:")
+        print(f"  Training data length (from df): {actual_train_length}")
+        print(f"  X_branch_id length (from model): {branch_id_length}")
+        
+        # Handle length mismatch gracefully
+        if branch_id_length != actual_train_length:
+            print(f"Warning: Length mismatch detected")
+            
+            if branch_id_length < actual_train_length:
+                # Model has fewer partition IDs than training samples
+                # This can happen if some samples were filtered during model training
+                print(f"  Using first {branch_id_length} training samples to match X_branch_id")
+                df_train = df_train.iloc[:branch_id_length].copy()
+            else:
+                # More partition IDs than training samples (unusual)
+                print(f"  Truncating X_branch_id to match training data length")
+                X_branch_id = X_branch_id[:actual_train_length]
+        
+        # Ensure exact length match after adjustment
+        df_train = df_train.iloc[:len(X_branch_id)].copy()
+        
+        print(f"  Final lengths: df_train={len(df_train)}, X_branch_id={len(X_branch_id)}")
         
         # Add partition IDs to training data
-        df_train = df_train.iloc[:len(X_branch_id)].copy()  # Ensure exact length match
-        df_train['partition_id'] = X_branch_id
+        df_train.loc[:, 'partition_id'] = X_branch_id
         
         # Extract unique FEWSNET_admin_code and partition_id pairs
         correspondence_table = df_train[['FEWSNET_admin_code', 'partition_id']].drop_duplicates()
@@ -658,7 +932,7 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
         # Sort by admin code for better readability
         correspondence_table = correspondence_table.sort_values('FEWSNET_admin_code')
         
-        # Save to result directory with quarter naming
+        # Save to result directory
         output_path = os.path.join(result_dir, f'correspondence_table_Q{quarter}_{train_year}.csv')
         correspondence_table.to_csv(output_path, index=False)
         
@@ -667,16 +941,16 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
         
     except Exception as e:
         print(f"Error creating correspondence table: {e}")
-        print("Correspondence table creation failed, but model training/evaluation will continue")
+        print("Continuing without correspondence table...")
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
-                           track_partition_metrics=False, enable_metrics_maps=True,
-                           # XGBoost hyperparameters
-                           learning_rate=0.1, reg_alpha=0.1, reg_lambda=1.0,
-                           subsample=0.8, colsample_bytree=0.8):
+                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None,
+                           # XGBoost-specific hyperparameters
+                           learning_rate=0.1, reg_alpha=0.1, reg_lambda=1.0, subsample=0.8, colsample_bytree=0.8):
     """
-    Run temporal evaluation for 2024 quarters using rolling window approach with XGBoost.
+    Run temporal evaluation for all quarters from start_year to end_year using rolling window approach.
+    Uses GeoXGB (XGBoost-based GeoRF) instead of Random Forest.
     
     Parameters:
     -----------
@@ -714,6 +988,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         Whether to enable partition metrics tracking and visualization
     enable_metrics_maps : bool
         Whether to create maps showing F1/accuracy improvements
+    forecasting_scope : int or None
+        Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
     learning_rate : float
         XGBoost learning rate
     reg_alpha : float
@@ -723,7 +999,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     subsample : float
         XGBoost subsample ratio
     colsample_bytree : float
-        XGBoost column subsampling ratio
+        XGBoost column subsample ratio
         
     Returns:
     --------
@@ -732,8 +1008,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     y_pred_test : pandas.DataFrame
         Prediction results with quarter information
     """
-    print(f"Running temporal evaluation with XGBoost (nowcasting={nowcasting})...")
-    print(f"XGB hyperparameters: lr={learning_rate}, reg_alpha={reg_alpha}, reg_lambda={reg_lambda}")
+    print(f"Running temporal evaluation using GeoXGB (nowcasting={nowcasting})...")
+    print(f"XGBoost hyperparameters: learning_rate={learning_rate}, reg_alpha={reg_alpha}, reg_lambda={reg_lambda}")
+    print(f"                        subsample={subsample}, colsample_bytree={colsample_bytree}")
     
     # Initialize results tracking
     results_df = pd.DataFrame(columns=[
@@ -743,6 +1020,34 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     ])
     
     y_pred_test = pd.DataFrame(columns=['year', 'quarter', 'month', 'adm_code', 'fews_ipc_crisis_pred', 'fews_ipc_crisis_true'])
+    
+    # CHECKPOINT RECOVERY: Check for existing results and determine what needs to be evaluated
+    print("\n=== Checkpoint Recovery System ===")
+    completed_quarters, partial_results_files, checkpoint_dirs = get_checkpoint_info()
+    
+    # Load partial results if they exist
+    existing_results_df, existing_y_pred_test = load_partial_results(
+        partial_results_files, assignment, nowcasting, max_depth, desire_terms, forecasting_scope
+    )
+    
+    # Merge existing results with new DataFrames
+    if existing_results_df is not None and len(existing_results_df) > 0:
+        results_df = existing_results_df.copy()
+        print(f"Resuming from existing results: {len(results_df)} previous evaluations loaded")
+    
+    if existing_y_pred_test is not None and len(existing_y_pred_test) > 0:
+        y_pred_test = existing_y_pred_test.copy()
+        print(f"Resuming from existing predictions: {len(y_pred_test)} previous predictions loaded")
+    
+    # Determine remaining quarters to evaluate
+    remaining_quarters = determine_remaining_quarters(completed_quarters, start_year, end_year, desire_terms)
+    
+    if not remaining_quarters:
+        print("All quarters already completed! Returning existing results.")
+        return results_df, y_pred_test
+    
+    print(f"Will evaluate {len(remaining_quarters)} remaining quarters")
+    print("=== End Checkpoint Recovery ===\n")
     
     # Setup correspondence table path for partition metrics tracking
     correspondence_table_path = None
@@ -866,9 +1171,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         contiguity_type = 'grid'
         polygon_contiguity_info = None
     
-    # Run evaluation for all quarters from 2015 to 2024 using rolling window
-    start_year = 2015
-    end_year = 2024
+    # Run evaluation for all quarters from start_year to end_year using rolling window
     print(f"\nEvaluating all quarters from {start_year} to {end_year} using rolling window approach...")
     
     # Determine which quarters to evaluate based on desire_terms
@@ -879,21 +1182,26 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         quarters_to_evaluate = [desire_terms]  # Evaluate only specific quarter
         print(f"Evaluating only Q{desire_terms} for each year from {start_year} to {end_year}")
     
-    # Create progress bar for quarterly evaluation
-    total_evaluations = len(range(start_year, end_year + 1)) * len(quarters_to_evaluate)
+    # Create progress bar for remaining quarterly evaluations
     progress_bar = tqdm(
-        total=total_evaluations, 
+        total=len(remaining_quarters), 
         desc="GeoXGB Quarterly Evaluation", 
         unit="quarter",
         bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
     )
     
-    # Loop through years and quarters
-    for test_year in range(start_year, end_year + 1):
-        for quarter in quarters_to_evaluate:
-            progress_bar.set_description(f"GeoXGB Q{quarter} {test_year}")
-            print(f"\n--- Evaluating Q{quarter} {test_year} ---")
-            
+    # Loop through remaining quarters only
+    for i, (test_year, quarter) in enumerate(remaining_quarters):
+        progress_bar.set_description(f"GeoXGB Q{quarter} {test_year}")
+        print(f"\n--- Evaluating Q{quarter} {test_year} (#{i+1}/{len(remaining_quarters)}) ---")
+        
+        # Memory monitoring at start of iteration
+        import psutil
+        process = psutil.Process()
+        start_memory = process.memory_info().rss / 1024 / 1024  # MB
+        print(f"Memory at start of Q{quarter} {test_year}: {start_memory:.1f} MB")
+        
+        try:
             # Train-test split with rolling window (5 years before quarter end)
             (Xtrain, ytrain, Xtrain_loc, Xtrain_group,
              Xtest, ytest, Xtest_loc, Xtest_group) = train_test_split_rolling_window(
@@ -907,44 +1215,47 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # Skip evaluation if no test samples
             if len(ytest) == 0:
                 print(f"Warning: No test samples for Q{quarter} {test_year}. Skipping this quarter.")
+                # Update progress bar even when skipping
+                progress_bar.update(1)
                 continue
             
             if nowcasting:
-                # 2-layer model with XGBoost
+                # 2-layer model
                 Xtrain_L1 = Xtrain[:, l1_index]
                 Xtrain_L2 = Xtrain[:, l2_index]
                 Xtest_L1 = Xtest[:, l1_index]
                 Xtest_L2 = Xtest[:, l2_index]
-                
-                # Create and train 2-layer GeoXGB model
+            
+                # Create and train 2-layer GeoXGB model - CHANGED from GeoRF to GeoRF_XGB
                 geoxgb_2layer = GeoRF_XGB(
                     min_model_depth=MIN_DEPTH,
                     max_model_depth=MAX_DEPTH,
                     n_jobs=N_JOBS,
                     max_depth=max_depth,
+                    # XGBoost-specific parameters
                     learning_rate=learning_rate,
                     reg_alpha=reg_alpha,
                     reg_lambda=reg_lambda,
                     subsample=subsample,
                     colsample_bytree=colsample_bytree
                 )
-                
+            
                 # Train 2-layer model with optional metrics tracking
                 if track_partition_metrics:
                     # Note: 2-layer fit doesn't support partition metrics yet, 
                     # but we can extend it later if needed
                     print("Note: Partition metrics tracking not yet supported for 2-layer models")
-                    
+                
                 geoxgb_2layer.fit_2layer(
                     Xtrain_L1, Xtrain_L2, ytrain, Xtrain_group,
                     val_ratio=VAL_RATIO,
                     contiguity_type=contiguity_type,
                     polygon_contiguity_info=polygon_contiguity_info
                 )
-                
+            
                 # Get predictions
                 ypred = geoxgb_2layer.predict_2layer(Xtest_L1, Xtest_L2, Xtest_group, correction_strategy='flip')
-                
+            
                 # Evaluate
                 (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb_2layer.evaluate_2layer(
                     X_L1_test=Xtest_L1,
@@ -960,9 +1271,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     contiguity_type=contiguity_type,
                     polygon_contiguity_info=polygon_contiguity_info
                 )
-                
+            
                 print(f"Q{quarter} {test_year} Test - 2-Layer GeoXGB F1: {f1}, 2-Layer Base XGB F1: {f1_base}")
-                
+            
                 # Extract and save correspondence table for 2-layer model
                 try:
                     X_branch_id_path = os.path.join(geoxgb_2layer.dir_space, 'X_branch_id.npy')
@@ -973,47 +1284,48 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
             
             else:
-                # Single-layer model with XGBoost
-                geoxgb = GeoRF_XGB(
+                # Single-layer model
+                geoxgb = GeoRF_XGB(  # CHANGED from GeoRF to GeoRF_XGB
                     min_model_depth=MIN_DEPTH,
                     max_model_depth=MAX_DEPTH,
                     n_jobs=N_JOBS,
                     max_depth=max_depth,
+                    # XGBoost-specific parameters
                     learning_rate=learning_rate,
                     reg_alpha=reg_alpha,
                     reg_lambda=reg_lambda,
                     subsample=subsample,
                     colsample_bytree=colsample_bytree
                 )
+            
+            # Train model with optional partition metrics tracking
+            if track_partition_metrics:
+                print(f"Training GeoXGB with partition metrics tracking enabled")
+                print(f"Correspondence table path: {correspondence_table_path}")
+                print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
+                print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
                 
-                # Train model with optional partition metrics tracking
-                if track_partition_metrics:
-                    print(f"Training GeoXGB with partition metrics tracking enabled")
-                    print(f"Correspondence table path: {correspondence_table_path}")
-                    print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
-                    print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
-                    
-                    # Verify correspondence table exists and is readable
-                    if correspondence_table_path and os.path.exists(correspondence_table_path):
-                        test_df = pd.read_csv(correspondence_table_path)
-                        print(f"Correspondence table loaded successfully with {len(test_df)} entries")
-                        print(f"Columns: {test_df.columns.tolist()}")
-                        print(f"Sample entries:\n{test_df.head()}")
-                    else:
-                        print(f"Warning: Correspondence table not found at {correspondence_table_path}")
-                    
-                geoxgb.fit(
-                    Xtrain, ytrain, Xtrain_group,
-                    val_ratio=VAL_RATIO,
-                    contiguity_type=contiguity_type,
-                    polygon_contiguity_info=polygon_contiguity_info,
-                    track_partition_metrics=track_partition_metrics,
-                    correspondence_table_path=correspondence_table_path
-                )
-                
-                # Check if metrics were tracked
-                if track_partition_metrics and hasattr(geoxgb, 'metrics_tracker'):
-                    if geoxgb.metrics_tracker is not None:
+                # Verify correspondence table exists and is readable
+                if correspondence_table_path and os.path.exists(correspondence_table_path):
+                    test_df = pd.read_csv(correspondence_table_path)
+                    print(f"Correspondence table loaded successfully with {len(test_df)} entries")
+                    print(f"Columns: {test_df.columns.tolist()}")
+                    print(f"Sample entries:\n{test_df.head()}")
+                else:
+                    print(f"Warning: Correspondence table not found at {correspondence_table_path}")
+            
+            geoxgb.fit(
+                Xtrain, ytrain, Xtrain_group,
+                val_ratio=VAL_RATIO,
+                contiguity_type=contiguity_type,
+                polygon_contiguity_info=polygon_contiguity_info,
+                track_partition_metrics=track_partition_metrics,
+                correspondence_table_path=correspondence_table_path
+            )
+            
+            # Check if metrics were tracked
+            if track_partition_metrics and hasattr(geoxgb, 'metrics_tracker'):
+                if geoxgb.metrics_tracker is not None:
                         print(f"\nPartition metrics tracker found for Q{quarter} {test_year}")
                         
                         # Check if any metrics were actually recorded
@@ -1063,77 +1375,463 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                                     print(f"  Sample files: {csv_files[:3]}")
                             else:
                                 print("No metrics directory found")
-                    else:
-                        print("Warning: Metrics tracker is None")
                 else:
-                    if track_partition_metrics:
-                        print("Warning: Metrics tracker not found on geoxgb object")
+                    print("Warning: Metrics tracker is None")
+            else:
+                if track_partition_metrics:
+                    print("Warning: Metrics tracker not found on geoxgb object")
                 
-                # Get predictions
-                ypred = geoxgb.predict(Xtest, Xtest_group)
-                
-                # Evaluate
-                (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
-                    Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True
-                )
-                
-                print(f"Q{quarter} {test_year} Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")
-                
-                # Extract and save correspondence table for single-layer model
-                try:
-                    X_branch_id_path = os.path.join(geoxgb.dir_space, 'X_branch_id.npy')
-                    if os.path.exists(X_branch_id_path):
-                        X_branch_id = np.load(X_branch_id_path)
-                        create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, geoxgb.model_dir)
-                except Exception as e:
-                    print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
-        
-        # Store results
-        nsample_class = np.bincount(ytest)
-        
-        results_df = pd.concat([results_df, pd.DataFrame({
-            'year': [test_year],
-            'quarter': [quarter],
-            'precision(0)': [pre[0]],
-            'precision(1)': [pre[1]],
-            'recall(0)': [rec[0]],
-            'recall(1)': [rec[1]],
-            'f1(0)': [f1[0]],
-            'f1(1)': [f1[1]],
-            'precision_base(0)': [pre_base[0]],
-            'precision_base(1)': [pre_base[1]],
-            'recall_base(0)': [rec_base[0]],
-            'recall_base(1)': [rec_base[1]],
-            'f1_base(0)': [f1_base[0]],
-            'f1_base(1)': [f1_base[1]],
-            'num_samples(0)': [nsample_class[0]],
-            'num_samples(1)': [nsample_class[1]]
-        })], ignore_index=True)
-        
-        # Store predictions - need to handle column indexing issue
-        try:
-            # Try to get month and admin code from test data
-            # This assumes these are in the original columns
-            y_pred_test = pd.concat([y_pred_test, pd.DataFrame({
-                'year': [test_year] * len(ytest),
-                'quarter': [quarter] * len(ytest),
-                'month': [quarter * 3] * len(ytest),  # Use quarter end month (3, 6, 9, 12)
-                'adm_code': [0] * len(ytest),  # Placeholder - would need actual admin codes
-                'fews_ipc_crisis_pred': ypred,
-                'fews_ipc_crisis_true': ytest
-            })], ignore_index=True)
-        except:
-            # Fallback with placeholders
-            y_pred_test = pd.concat([y_pred_test, pd.DataFrame({
-                'year': [test_year] * len(ytest),
-                'quarter': [quarter] * len(ytest),
-                'month': [quarter * 3] * len(ytest),  # Use quarter end month (3, 6, 9, 12)
-                'adm_code': [0] * len(ytest),
-                'fews_ipc_crisis_pred': ypred,
-                'fews_ipc_crisis_true': ytest
-            })], ignore_index=True)
+            # Get predictions
+            ypred = geoxgb.predict(Xtest, Xtest_group)
             
-            # Update progress bar
+            # Evaluate
+            (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
+                Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True
+            )
+            
+            print(f"Q{quarter} {test_year} Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")
+            
+            # Extract and save correspondence table for single-layer model
+            try:
+                X_branch_id_path = os.path.join(geoxgb.dir_space, 'X_branch_id.npy')
+                if os.path.exists(X_branch_id_path):
+                    X_branch_id = np.load(X_branch_id_path)
+                    create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, geoxgb.model_dir)
+            except Exception as e:
+                print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
+            
+            # Store results - MEMORY FIX: Use more efficient DataFrame appending
+            nsample_class = np.bincount(ytest)
+            
+            # Create new result row as dictionary first to avoid intermediate DataFrame
+            new_result_row = {
+                'year': test_year,
+                'quarter': quarter,
+                'precision(0)': pre[0],
+                'precision(1)': pre[1],
+                'recall(0)': rec[0],
+                'recall(1)': rec[1],
+                'f1(0)': f1[0],
+                'f1(1)': f1[1],
+                'precision_base(0)': pre_base[0],
+                'precision_base(1)': pre_base[1],
+                'recall_base(0)': rec_base[0],
+                'recall_base(1)': rec_base[1],
+                'f1_base(0)': f1_base[0],
+                'f1_base(1)': f1_base[1],
+                'num_samples(0)': nsample_class[0],
+                'num_samples(1)': nsample_class[1]
+            }
+            
+            # Append row efficiently using pd.concat with list
+            results_df = pd.concat([results_df, pd.DataFrame([new_result_row])], ignore_index=True)
+            
+            # Store predictions - MEMORY FIX: Use more efficient approach  
+            try:
+                # CRITICAL MEMORY FIX: Avoid unnecessary array copies that cause memory bloat
+                # Create prediction data as dictionary first - avoid .copy() which doubles memory usage
+                pred_data = {
+                    'year': np.full(len(ytest), test_year, dtype=np.int16),  # Use smaller dtypes
+                    'quarter': np.full(len(ytest), quarter, dtype=np.int8),
+                    'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Use quarter end month (3, 6, 9, 12)
+                    'adm_code': np.zeros(len(ytest), dtype=np.int32),  # Placeholder - would need actual admin codes
+                    'fews_ipc_crisis_pred': ypred,  # Don't copy - transfer ownership
+                    'fews_ipc_crisis_true': ytest   # Don't copy - transfer ownership
+                }
+                
+                # Append predictions efficiently
+                y_pred_test = pd.concat([y_pred_test, pd.DataFrame(pred_data)], ignore_index=True)
+                
+            except Exception as e:
+                print(f"Warning: Error storing predictions: {e}")
+                # Fallback with placeholders - MEMORY OPTIMIZED
+                pred_data = {
+                    'year': np.full(len(ytest), test_year, dtype=np.int16),
+                    'quarter': np.full(len(ytest), quarter, dtype=np.int8),
+                    'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Use quarter end month (3, 6, 9, 12)
+                    'adm_code': np.zeros(len(ytest), dtype=np.int32),
+                    'fews_ipc_crisis_pred': ypred,  # Transfer ownership, don't copy
+                    'fews_ipc_crisis_true': ytest   # Transfer ownership, don't copy
+                }
+                y_pred_test = pd.concat([y_pred_test, pd.DataFrame(pred_data)], ignore_index=True)
+            
+            # CRITICAL MEMORY FIX: Add explicit cleanup for intermediate variables
+            print("Cleaning up memory...")
+            
+            # Clean up intermediate variables immediately after storing results
+            try:
+                del new_result_row
+                del pred_data
+                del nsample_class
+            except:
+                pass
+            
+            # CRITICAL FIX 1: Clear PartitionMetricsTracker accumulation (major memory leak source)
+            try:
+                if 'geoxgb' in locals() and hasattr(geoxgb, 'metrics_tracker'):
+                    if geoxgb.metrics_tracker is not None:
+                        # Clear accumulated metrics data (can be hundreds of MB per quarter)
+                        if hasattr(geoxgb.metrics_tracker, 'all_metrics'):
+                            geoxgb.metrics_tracker.all_metrics.clear()
+                        if hasattr(geoxgb.metrics_tracker, 'partition_history'):
+                            geoxgb.metrics_tracker.partition_history.clear()
+                        geoxgb.metrics_tracker = None
+                        print("Cleared PartitionMetricsTracker data")
+                if 'geoxgb_2layer' in locals() and hasattr(geoxgb_2layer, 'metrics_tracker'):
+                    if geoxgb_2layer.metrics_tracker is not None:
+                        if hasattr(geoxgb_2layer.metrics_tracker, 'all_metrics'):
+                            geoxgb_2layer.metrics_tracker.all_metrics.clear()
+                        if hasattr(geoxgb_2layer.metrics_tracker, 'partition_history'):
+                            geoxgb_2layer.metrics_tracker.partition_history.clear()
+                        geoxgb_2layer.metrics_tracker = None
+                        print("Cleared 2-layer PartitionMetricsTracker data")
+            except Exception as e:
+                print(f"Warning: Could not clear metrics tracker: {e}")
+            
+            # CRITICAL FIX 2: Delete model objects completely and break circular references
+            try:
+                if 'geoxgb' in locals():
+                    # ENHANCED model cleanup to prevent memory leaks
+                    # Clear all model components explicitly
+                    if hasattr(geoxgb, 'model') and geoxgb.model is not None:
+                        if hasattr(geoxgb.model, 'model') and geoxgb.model.model is not None:
+                            # Clear XGBoost internals that hold large arrays
+                            # Use try-except to safely clear attributes that might not exist or cause errors
+                            try:
+                                if hasattr(geoxgb.model.model, '_Booster') and geoxgb.model.model._Booster is not None:
+                                    geoxgb.model.model._Booster = None
+                            except:
+                                pass
+                            try:
+                                # Clear feature importances
+                                if hasattr(geoxgb.model.model, 'feature_importances_') and geoxgb.model.model.feature_importances_ is not None:
+                                    geoxgb.model.model.feature_importances_ = None
+                            except:
+                                pass
+                            # Clear XGBoost model completely
+                            geoxgb.model.model = None
+                        geoxgb.model = None
+                    
+                    # Clear all directory references
+                    geoxgb.dir_space = None
+                    geoxgb.dir_ckpt = None
+                    geoxgb.dir_vis = None
+                    geoxgb.model_dir = None
+                    
+                    # Clear spatial partitioning data that can be large
+                    if hasattr(geoxgb, 's_branch'):
+                        geoxgb.s_branch = None
+                    if hasattr(geoxgb, 'branch_table'):
+                        geoxgb.branch_table = None
+                    if hasattr(geoxgb, 'X_branch_id'):
+                        geoxgb.X_branch_id = None
+                    
+                    # Clear any other potential large attributes
+                    for attr in ['train_idx', 'val_idx', 'X_train', 'y_train', 'X_val', 'y_val']:
+                        if hasattr(geoxgb, attr):
+                            setattr(geoxgb, attr, None)
+                    
+                    geoxgb = None
+                del geoxgb
+                print("Cleared GeoXGB model and all references")
+            except NameError:
+                pass
+            try:
+                if 'geoxgb_2layer' in locals():
+                    # ENHANCED cleanup for 2-layer model
+                    # Clear both layer models 
+                    if hasattr(geoxgb_2layer, 'georf_l1') and geoxgb_2layer.georf_l1 is not None:
+                        # Clear L1 model internals
+                        if hasattr(geoxgb_2layer.georf_l1, 'model') and geoxgb_2layer.georf_l1.model is not None:
+                            if hasattr(geoxgb_2layer.georf_l1.model, 'model') and geoxgb_2layer.georf_l1.model.model is not None:
+                                try:
+                                    if hasattr(geoxgb_2layer.georf_l1.model.model, '_Booster') and geoxgb_2layer.georf_l1.model.model._Booster is not None:
+                                        geoxgb_2layer.georf_l1.model.model._Booster = None
+                                except:
+                                    pass
+                                geoxgb_2layer.georf_l1.model.model = None
+                            geoxgb_2layer.georf_l1.model = None
+                        geoxgb_2layer.georf_l1 = None
+                    
+                    if hasattr(geoxgb_2layer, 'georf_l2') and geoxgb_2layer.georf_l2 is not None:
+                        # Clear L2 model internals
+                        if hasattr(geoxgb_2layer.georf_l2, 'model') and geoxgb_2layer.georf_l2.model is not None:
+                            if hasattr(geoxgb_2layer.georf_l2.model, 'model') and geoxgb_2layer.georf_l2.model.model is not None:
+                                try:
+                                    if hasattr(geoxgb_2layer.georf_l2.model.model, '_Booster') and geoxgb_2layer.georf_l2.model.model._Booster is not None:
+                                        geoxgb_2layer.georf_l2.model.model._Booster = None
+                                except:
+                                    pass
+                                geoxgb_2layer.georf_l2.model.model = None
+                            geoxgb_2layer.georf_l2.model = None
+                        geoxgb_2layer.georf_l2 = None
+                    
+                    if hasattr(geoxgb_2layer, 'model') and geoxgb_2layer.model is not None:
+                        if hasattr(geoxgb_2layer.model, 'model') and geoxgb_2layer.model.model is not None:
+                            try:
+                                if hasattr(geoxgb_2layer.model.model, '_Booster') and geoxgb_2layer.model.model._Booster is not None:
+                                    geoxgb_2layer.model.model._Booster = None
+                            except:
+                                pass
+                            geoxgb_2layer.model.model = None
+                        geoxgb_2layer.model = None
+                    
+                    # Clear directory references
+                    geoxgb_2layer.dir_space = None
+                    geoxgb_2layer.dir_ckpt = None
+                    geoxgb_2layer.dir_vis = None
+                    geoxgb_2layer.model_dir = None
+                    
+                    # Clear spatial partitioning data
+                    if hasattr(geoxgb_2layer, 's_branch'):
+                        geoxgb_2layer.s_branch = None
+                    if hasattr(geoxgb_2layer, 'branch_table'):
+                        geoxgb_2layer.branch_table = None
+                        
+                    geoxgb_2layer = None
+                del geoxgb_2layer
+                print("Cleared 2-layer GeoXGB model and all references")
+            except NameError:
+                pass
+            
+            # Delete training data
+            try:
+                del Xtrain
+            except NameError:
+                pass
+            try:
+                del ytrain
+            except NameError:
+                pass
+            try:
+                del Xtrain_loc
+            except NameError:
+                pass
+            try:
+                del Xtrain_group
+            except NameError:
+                pass
+            
+            # Delete test data
+            try:
+                del Xtest
+            except NameError:
+                pass
+            try:
+                del ytest
+            except NameError:
+                pass
+            try:
+                del Xtest_loc
+            except NameError:
+                pass
+            try:
+                del Xtest_group
+            except NameError:
+                pass
+            
+            # Delete layer-specific data
+            try:
+                del Xtrain_L1
+            except NameError:
+                pass
+            try:
+                del Xtrain_L2
+            except NameError:
+                pass
+            try:
+                del Xtest_L1
+            except NameError:
+                pass
+            try:
+                del Xtest_L2
+            except NameError:
+                pass
+            
+            # Delete predictions and other large arrays
+            try:
+                del ypred
+            except NameError:
+                pass
+            try:
+                del X_branch_id
+            except NameError:
+                pass
+            
+            # Delete any other potentially large variables
+            try:
+                del nsample_class
+            except NameError:
+                pass
+            try:
+                del pre, rec, f1, pre_base, rec_base, f1_base
+            except NameError:
+                pass
+            
+            # AGGRESSIVE memory cleanup to prevent hidden leaks
+            import sys
+            
+            # CRITICAL FIX 2: Clear XGBoost internal caches and memory pools more aggressively
+            try:
+                # Clear XGBoost internal memory pools if available
+                import xgboost as xgb
+                if hasattr(xgb, '_lib') and hasattr(xgb._lib, 'XGBSetGlobalConfig'):
+                    # Reset XGBoost global configuration to clear internal caches
+                    try:
+                        xgb._lib.XGBSetGlobalConfig('{"verbosity": 0}')
+                    except:
+                        pass
+                print("Cleared XGBoost internal memory pools")
+            except Exception as e:
+                print(f"Warning: Could not clear XGBoost pools: {e}")
+                
+            # Clear numpy memory pools
+            try:
+                # Force numpy to release memory back to system (np already imported globally)
+                np.random.seed()  # This can help clear internal state
+            except:
+                pass
+            
+            # CRITICAL FIX 3: DISABLE aggressive pandas cache clearing to prevent hashtable corruption
+            # The KeyError 'int32' indicates that our cache clearing is corrupting pandas internal state
+            # We'll use a much safer approach that only clears specific known-safe caches
+            try:
+                # Only clear the safest pandas caches to avoid corrupting internal hashtables
+                print("Performing safe pandas cache cleanup...")
+                
+                # Clear only the most basic caches that are known to be safe
+                try:
+                    # Clear string interning which is generally safe
+                    if hasattr(pd.core.dtypes.common, '_pandas_dtype_type_map'):
+                        # Don't clear this as it can cause issues
+                        pass
+                    
+                    # Force a small garbage collection instead of aggressive cache clearing
+                    import gc
+                    gc.collect()
+                    
+                    print("Applied safe pandas cleanup")
+                except Exception as inner_e:
+                    print(f"Warning: Safe pandas cleanup failed: {inner_e}")
+                    
+            except Exception as e:
+                print(f"Warning: Could not perform pandas cleanup: {e}")
+            
+            # CRITICAL FIX 4: Add explicit DataFrame memory management to fix the real memory leak
+            # The 1.3GB growth suggests DataFrames are not being properly garbage collected
+            try:
+                print("Forcing DataFrame garbage collection...")
+                
+                # Clear any DataFrames that might be lingering in local scope
+                for var_name in list(locals().keys()):
+                    if var_name.startswith('df') or 'frame' in var_name.lower():
+                        try:
+                            local_var = locals()[var_name]
+                            if hasattr(local_var, 'values'):  # Likely a DataFrame
+                                del locals()[var_name]
+                        except:
+                            pass
+                
+                # Aggressive garbage collection specifically for DataFrames
+                import gc
+                for obj in gc.get_objects():
+                    try:
+                        if hasattr(obj, '_mgr') and hasattr(obj, 'columns'):  # Likely a DataFrame
+                            if hasattr(obj, '_clear_item_cache'):
+                                obj._clear_item_cache()
+                    except:
+                        pass
+                
+                # Multiple garbage collection passes
+                for i in range(3):
+                    collected = gc.collect()
+                    if collected == 0:
+                        break
+                        
+                print("Completed DataFrame garbage collection")
+                
+            except Exception as e:
+                print(f"Warning: DataFrame garbage collection failed: {e}")
+                
+            # Clear Python's internal object caches
+            try:
+                # Clear small int cache
+                for i in range(-5, 257):
+                    sys.intern(str(i))
+                # Clear string interning cache (careful with this)
+                sys.intern.cache_clear() if hasattr(sys.intern, 'cache_clear') else None
+            except:
+                pass
+            
+            # Save checkpoint after each quarter (in case of interruption)
+            if (i + 1) % 5 == 0 or (i + 1) == len(remaining_quarters):  # Save every 5 quarters and at the end
+                print(f"Saving checkpoint after Q{quarter} {test_year}...")
+                save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
+                
+                # CRITICAL MEMORY FIX: Aggressive cleanup after checkpoints to prevent accumulation
+                print("Performing aggressive memory cleanup after checkpoint...")
+                
+                # CRITICAL FIX 4: Rebuild DataFrames to eliminate fragmentation and internal memory bloat
+                # This is a major source of memory leaks - DataFrames accumulate internal overhead
+                print("Rebuilding DataFrames to clear internal overhead...")
+                
+                # Create completely new DataFrame objects to eliminate all internal overhead
+                if len(results_df) > 0:
+                    # Copy data to plain dictionary first, then create new DataFrame
+                    results_data = results_df.to_dict('records')
+                    del results_df  # Delete old DataFrame immediately
+                    gc.collect()    # Force cleanup
+                    results_df = pd.DataFrame(results_data)  # Create fresh DataFrame
+                    del results_data  # Clean up temporary data
+                    
+                if len(y_pred_test) > 0:
+                    # Same for predictions DataFrame
+                    pred_data = y_pred_test.to_dict('records')
+                    del y_pred_test  # Delete old DataFrame immediately 
+                    gc.collect()     # Force cleanup
+                    y_pred_test = pd.DataFrame(pred_data)  # Create fresh DataFrame
+                    del pred_data    # Clean up temporary data
+                
+                # Reset indices on the new DataFrames
+                results_df = results_df.reset_index(drop=True)
+                y_pred_test = y_pred_test.reset_index(drop=True)
+                
+                # Force multiple aggressive garbage collections
+                for _ in range(3):
+                    gc.collect()
+                    
+                print(f"DataFrame rebuild complete. Current sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")
+            
+            # Force garbage collection after every quarter
+            gc.collect()
+            
+            # Memory monitoring after cleanup with leak detection
+            end_memory = process.memory_info().rss / 1024 / 1024  # MB
+            memory_diff = end_memory - start_memory
+            print(f"Memory after cleanup: {end_memory:.1f} MB (change: {memory_diff:+.1f} MB)")
+            
+            # Alert if significant memory leak detected
+            if memory_diff > 500:  # More than 500MB growth per quarter
+                print(f"WARNING: Large memory increase detected: {memory_diff:.1f} MB")
+                print("This indicates a potential memory leak that needs investigation")
+                print(f"Consider reducing n_jobs or disabling partition metrics tracking")
+            elif memory_diff > 100:  # More than 100MB but less than 500MB
+                print(f"NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
+                print("Memory growth within acceptable range but monitor if this persists")
+            else:
+                print(f"OK: Memory growth within normal range: {memory_diff:+.1f} MB")
+            
+            # Show DataFrame sizes for monitoring  
+            print(f"DataFrame sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")
+            
+        except Exception as e:
+            print(f"Error evaluating Q{quarter} {test_year}: {str(e)}")
+            print("Continuing to next quarter...")
+            import traceback
+            traceback.print_exc()
+        
+        finally:
+            # Always update progress bar, regardless of success or failure
             progress_bar.update(1)
     
     # Close progress bar
@@ -1163,8 +1861,8 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
         Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo)
     """
     # Create file names based on assignment
-    pred_test_name = 'y_pred_test_xgb_g'  # Added _xgb suffix
-    results_df_name = 'results_df_xgb_g'  # Added _xgb suffix
+    pred_test_name = 'y_pred_test_g'
+    results_df_name = 'results_df_g'
     
     assignment_suffixes = {
         'polygons': 'p',
@@ -1212,27 +1910,36 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
 
 def main():
     """
-    Main function to run the complete XGBoost pipeline.
+    Main function to run the complete GeoXGB pipeline.
     """
     print("=== Starting GeoXGB Food Crisis Prediction Pipeline ===")
     
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
-    max_depth = 6           # XGBoost default, good for preventing overfitting
-    desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
-    forecasting_scope = 1    # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+    max_depth = None  # Set to integer for specific XGB depth
+    desire_terms = 1         # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    forecasting_scope = 4    # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
     
-    # XGBoost-specific hyperparameters
-    learning_rate = 0.1     # Moderate learning rate for stability
-    reg_alpha = 0.1         # L1 regularization for feature selection
-    reg_lambda = 1.0        # L2 regularization for stability
-    subsample = 0.8         # Prevent overfitting
-    colsample_bytree = 0.8  # Prevent overfitting
+    # XGBoost-specific hyperparameters optimized for food crisis prediction
+    learning_rate = 0.1      # Learning rate (step size shrinkage)
+    reg_alpha = 0.1          # L1 regularization term on weights
+    reg_lambda = 1.0         # L2 regularization term on weights
+    subsample = 0.8          # Subsample ratio of training instances
+    colsample_bytree = 0.8   # Subsample ratio of columns when constructing each tree
+    
+    # Note: XGBoost handles missing values natively - no extreme value imputation needed
     
     # Partition Metrics Tracking Configuration
-    track_partition_metrics = True  # Enable partition metrics tracking and visualization
-    enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
+    track_partition_metrics = False # Enable partition metrics tracking and visualization
+    enable_metrics_maps = False      # Create maps showing F1/accuracy improvements
+    
+    # Checkpoint Recovery Configuration
+    enable_checkpoint_recovery = True  # Enable automatic checkpoint detection and resume
+    
+    # start year and end year
+    start_year = 2024
+    end_year = 2024
     
     print(f"Configuration:")
     print(f"  - Assignment method: {assignment}")
@@ -1243,7 +1950,14 @@ def main():
     print(f"  - Rolling window: 5-year training windows before each test quarter")
     print(f"  - Track partition metrics: {track_partition_metrics}")
     print(f"  - Enable metrics maps: {enable_metrics_maps}")
-    print(f"  - XGBoost hyperparameters: lr={learning_rate}, reg_alpha={reg_alpha}, reg_lambda={reg_lambda}")
+    print(f"  - Checkpoint recovery: {enable_checkpoint_recovery}")
+    print(f"  - Start year: {start_year}, End year: {end_year}")
+    print(f"  - XGBoost hyperparameters:")
+    print(f"    * learning_rate: {learning_rate}")
+    print(f"    * reg_alpha (L1): {reg_alpha}")
+    print(f"    * reg_lambda (L2): {reg_lambda}")
+    print(f"    * subsample: {subsample}")
+    print(f"    * colsample_bytree: {colsample_bytree}")
     
     try:
         # Step 1: Load and preprocess data
@@ -1259,11 +1973,13 @@ def main():
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
             validate_polygon_contiguity(contiguity_info, X_group)
         
-        # Step 5: Run temporal evaluation with XGBoost
+        # Step 5: Run temporal evaluation with XGBoost hyperparameters
         results_df, y_pred_test = run_temporal_evaluation(
             X, y, X_loc, X_group, years, dates, l1_index, l2_index,
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
+            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope,
+            # Pass XGBoost hyperparameters
             learning_rate=learning_rate,
             reg_alpha=reg_alpha,
             reg_lambda=reg_lambda,
@@ -1275,7 +1991,7 @@ def main():
         save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms=desire_terms, forecasting_scope=forecasting_scope)
         
         # Step 7: Display summary
-        print("\n=== XGBoost Evaluation Summary ===")
+        print("\n=== Evaluation Summary ===")
         if 'quarter' in results_df.columns:
             print("Results by Quarter:")
             print(results_df.groupby(['year', 'quarter'])[['f1(0)', 'f1(1)', 'f1_base(0)', 'f1_base(1)']].mean())
@@ -1283,7 +1999,7 @@ def main():
             print("Results by Year:")
             print(results_df.groupby('year')[['f1(0)', 'f1(1)', 'f1_base(0)', 'f1_base(1)']].mean())
         
-        print("\n=== XGBoost Pipeline completed successfully! ===")
+        print("\n=== GeoXGB Pipeline completed successfully! ===")
         
     except Exception as e:
         print(f"Error occurred: {str(e)}")

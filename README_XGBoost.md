@@ -7,7 +7,7 @@ This directory contains an XGBoost-based implementation of the GeoRF (Geo-aware 
 ### Core XGBoost Implementation
 - **`model_XGB.py`** - XGBoost model wrapper that mirrors the `RFmodel` interface
 - **`GeoRF_XGB.py`** - Main GeoRF class using XGBoost instead of Random Forest
-- **`main_model_XGB_replicated_fixed.py`** - Complete pipeline script for XGBoost version
+- **`main_model_XGB.py`** - Complete pipeline script for XGBoost version (replicated from Random Forest)
 - **`GeoRF_XGB_demo.py`** - Demo script showing XGBoost usage and comparisons
 
 ## Key Differences from Random Forest Version
@@ -94,7 +94,7 @@ y_pred = geoxgb.predict(X_test, X_group_test)
 
 ```python
 # Run the complete XGBoost pipeline
-python main_model_XGB_replicated_fixed.py
+python main_model_XGB.py
 ```
 
 ### Demo and Comparison
@@ -187,30 +187,102 @@ result_GeoXGB_*/
 │   ├── X_branch_id.npy
 │   ├── s_branch.pkl
 │   └── branch_table.npy
+├── partition_metrics/  # NEW: Partition performance tracking
+│   ├── partition_metrics_round0_*.csv
+│   └── improvement_maps_*.png
 ├── vis/                # Visualization outputs
-├── correspondence_table_xgb_2021.csv  # Correspondence tables
-├── correspondence_table_xgb_2022.csv
-├── correspondence_table_xgb_2023.csv
-├── correspondence_table_xgb_2024.csv
+├── correspondence_table_Q*.csv  # Quarterly correspondence tables
 └── log_print.txt
 ```
 
 ### Result Files
-- `results_df_xgb_g*.csv` - Performance metrics by year
-- `y_pred_test_xgb_g*.csv` - Predictions for each test year
-- `correspondence_table_xgb_*.csv` - Admin code to partition ID mapping
+- `results_df_g*.csv` - Performance metrics by quarter/year (assignment method suffixes: gp=polygons, gg=grid, gc=country)
+- `y_pred_test_g*.csv` - Predictions for each test quarter/year
+- `correspondence_table_Q*_*.csv` - Quarterly admin code to partition ID mapping (e.g., Q4_2024.csv)
+
+## New Features in Updated XGBoost Implementation
+
+### Complete Pipeline Replication
+The new `main_model_XGB.py` is a complete replication of the Random Forest version with these key features:
+
+#### **Checkpoint Recovery**
+```python
+# Automatic detection and resume from previous runs
+enable_checkpoint_recovery = True  # in main()
+
+# Scans for result_GeoXGB_* directories
+# Automatically resumes from last completed quarter
+# Supports partial result loading and continuation
+```
+
+#### **Rolling Window Temporal Evaluation**
+```python
+# 5-year training windows before each test quarter
+# Quarterly evaluation (Q1, Q2, Q3, Q4) for specified years
+start_year = 2024
+end_year = 2024
+desire_terms = None  # All quarters, or specific quarter (1-4)
+```
+
+#### **Partition Metrics Tracking**
+```python
+# Enable detailed tracking of partition performance improvements
+track_partition_metrics = True
+enable_metrics_maps = True
+
+# Automatically creates:
+# - CSV files with F1/accuracy before/after each partition
+# - Geographic maps showing performance improvements
+```
+
+#### **Forecasting Scope Options**
+```python
+forecasting_scope = 1  # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+```
+
+#### **Memory Management**
+```python
+# Comprehensive memory cleanup for XGBoost models
+# Handles large-scale evaluation across multiple quarters
+# Progress tracking and memory usage monitoring
+```
 
 ## Advanced Features
 
 ### 2-Layer Model Support
-The XGBoost version also supports 2-layer models for nowcasting:
+The XGBoost version supports 2-layer models for nowcasting:
 
 ```python
+# Enable 2-layer model in main configuration
+nowcasting = True  # Set to True for 2-layer model
+
 # Train 2-layer model
 geoxgb.fit_2layer(X_L1, X_L2, y, X_group)
 
 # Make 2-layer predictions
 y_pred = geoxgb.predict_2layer(X_L1_test, X_L2_test, X_group_test)
+```
+
+### Complete Configuration Control
+```python
+# All configuration in main() function
+assignment = 'polygons'         # Spatial grouping method
+nowcasting = False              # 2-layer model toggle
+max_depth = None                # XGBoost tree depth
+desire_terms = None             # Quarterly filter
+forecasting_scope = 1           # Lag configuration
+
+# XGBoost hyperparameters
+learning_rate = 0.1
+reg_alpha = 0.1
+reg_lambda = 1.0
+subsample = 0.8
+colsample_bytree = 0.8
+
+# Feature toggles
+track_partition_metrics = True
+enable_metrics_maps = True
+enable_checkpoint_recovery = True
 ```
 
 ### Early Stopping

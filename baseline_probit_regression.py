@@ -3,16 +3,21 @@
 Baseline Probit Regression for Food Crisis Prediction
 
 This script implements a simple probit regression baseline that mirrors the 
-workflow in main_model_GF.py but uses only lagged crisis variables as features.
+workflow in main_model_XGB.py but uses only lagged crisis variables as features.
 
 Key features:
-1. Uses fews_ipc_crisis_lag_1, lag_2, and lag_3 as predictors
-2. Uses 5-year rolling training window (same as main_model_GF)
-3. Loops through 2015Q1 to 2024Q4 for temporal validation
-4. Calculates precision, recall, and F1 score
-5. Saves results in same format for comparison
+1. Uses lagged crisis variables as predictors with configurable forecasting scope
+2. Forecasting scope options:
+   - scope=1: lag 1,2,3 terms (3-month forecasting)
+   - scope=2: lag 2,3,4 terms (6-month forecasting)  
+   - scope=3: lag 3,4,5 terms (9-month forecasting)
+   - scope=4: lag 4,5,6 terms (12-month forecasting)
+3. Uses 5-year rolling training window (same as main_model_XGB)
+4. Loops through configurable year range for temporal validation
+5. Calculates precision, recall, and F1 score
+6. Saves results with forecasting scope suffix for comparison
 
-Date: 2025-08-06
+Date: 2025-08-13
 """
 
 import numpy as np
@@ -33,9 +38,14 @@ import gc
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
 
-def load_and_prepare_data():
+def load_and_prepare_data(forecasting_scope=4):
     """
     Load data and prepare features for probit regression baseline.
+    
+    Parameters:
+    -----------
+    forecasting_scope : int, default=4
+        Forecasting scope: 1=1,2,3 term lags, 2=2,3,4 term lags, 3=3,4,5 term lags, 4=4,5,6 term lags
     """
     print("Loading data...")
     
@@ -61,14 +71,33 @@ def load_and_prepare_data():
     # Sort by admin code and date for proper lag calculation
     df = df.sort_values(['FEWSNET_admin_code', 'year', 'quarter'])
     
-    # Create lag features for crisis variable (same as main_model_GF)
-    print("Creating lag features...")
-    df['fews_ipc_crisis_lag_1'] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(1)
-    df['fews_ipc_crisis_lag_2'] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(2) 
-    df['fews_ipc_crisis_lag_3'] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(3)
+    # Create lag features based on forecasting scope
+    print(f"Creating lag features for forecasting_scope={forecasting_scope}...")
     
-    # Define feature columns for baseline model
-    feature_cols = ['fews_ipc_crisis_lag_1', 'fews_ipc_crisis_lag_2', 'fews_ipc_crisis_lag_3']
+    # Define lag terms based on forecasting scope
+    # scope=1: use lag 1,2,3 terms (3-month forecasting)
+    # scope=2: use lag 2,3,4 terms (6-month forecasting)  
+    # scope=3: use lag 3,4,5 terms (9-month forecasting)
+    # scope=4: use lag 4,5,6 terms (12-month forecasting)
+    lag_mapping = {
+        1: [1, 2, 3],  # 3-month lag
+        2: [2, 3, 4],  # 6-month lag
+        3: [3, 4, 5],  # 9-month lag
+        4: [4, 5, 6]   # 12-month lag
+    }
+    
+    if forecasting_scope not in lag_mapping:
+        raise ValueError(f"Invalid forecasting_scope: {forecasting_scope}. Must be 1, 2, 3, or 4.")
+    
+    lag_terms = lag_mapping[forecasting_scope]
+    print(f"Using lag terms: {lag_terms} for {[3,6,9,12][forecasting_scope-1]}-month forecasting")
+    
+    # Create lag features
+    feature_cols = []
+    for lag in lag_terms:
+        col_name = f'fews_ipc_crisis_lag_{lag}'
+        df[col_name] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
+        feature_cols.append(col_name)
     
     print("Missing values in lag features:")
     for col in feature_cols:
@@ -182,12 +211,21 @@ def main():
     """
     print("=== Baseline Probit Regression for Food Crisis Prediction ===")
     
-    # Load and prepare data
-    X, y, X_loc, X_group, years, dates, terms, feature_names = load_and_prepare_data()
+    # Configuration
+    forecasting_scope = 4  # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+    start_year = 2015
+    end_year = 2024
     
-    # Generate quarters to evaluate (2015Q1 to 2024Q4)
-    eval_quarters = generate_quarters(2015, 2024)
-    print(f"Will evaluate {len(eval_quarters)} quarters from 2015Q1 to 2024Q4")
+    print(f"Configuration:")
+    print(f"  - Forecasting scope: {forecasting_scope} ({[3,6,9,12][forecasting_scope-1]}-month lag)")
+    print(f"  - Evaluation period: {start_year} to {end_year}")
+    
+    # Load and prepare data
+    X, y, X_loc, X_group, years, dates, terms, feature_names = load_and_prepare_data(forecasting_scope=forecasting_scope)
+    
+    # Generate quarters to evaluate
+    eval_quarters = generate_quarters(start_year, end_year)
+    print(f"Will evaluate {len(eval_quarters)} quarters from {start_year}Q1 to {end_year}Q4")
     
     # Initialize results storage
     results_list = []
@@ -276,11 +314,11 @@ def main():
         # Sort by year and quarter
         results_df = results_df.sort_values(['year', 'quarter'])
         
-        # Save results
+        # Save results with forecasting scope in filename
         output_dir = "baseline_probit_results"
         os.makedirs(output_dir, exist_ok=True)
         
-        output_file = os.path.join(output_dir, "baseline_probit_results.csv")
+        output_file = os.path.join(output_dir, f"baseline_probit_results_fs{forecasting_scope}.csv")
         results_df.to_csv(output_file, index=False)
         print(f"\nResults saved to: {output_file}")
         

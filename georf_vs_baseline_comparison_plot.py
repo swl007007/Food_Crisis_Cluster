@@ -3,222 +3,224 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-def load_and_process_data(base_dir, baseline_results_path):
-    """Load GeoRF results and baseline probit results for comparison"""
+def load_and_process_data(base_dir):
+    """Load probit, RF, and XGBoost results for comparison"""
     
-    # File mapping for GeoRF results with lag information
-    georf_files = {
-        3: 'results_df_gp_fs1_l3.csv',
-        6: 'results_df_gp_fs2_l6.csv', 
-        9: 'results_df_gp_fs3_l9.csv',
-        12: 'results_df_gp_fs4_l12.csv'
+    # Define lag periods in months
+    lag_periods = [3, 6, 9, 12]
+    
+    # Initialize data storage
+    probit_data = {}
+    rf_data = {}
+    xgboost_data = {}
+    
+    # Load data for each lag period
+    for lag in lag_periods:
+        # Load probit baseline results
+        probit_file = os.path.join(base_dir, f'probit_l{lag}.csv')
+        probit_df = pd.read_csv(probit_file)
+        
+        # Create year-quarter identifier and sort
+        probit_df['year_quarter'] = probit_df['year'].astype(str) + '-Q' + probit_df['quarter'].astype(str)
+        probit_df = probit_df.sort_values(['year', 'quarter']).reset_index(drop=True)
+        
+        # Calculate total samples for weighting
+        probit_df['total_samples'] = probit_df['num_samples(0)'] + probit_df['num_samples(1)']
+        
+        probit_data[lag] = probit_df
+        
+        # Load RF (GeoRF) results
+        rf_file = os.path.join(base_dir, f'RF_l{lag}.csv')
+        rf_df = pd.read_csv(rf_file)
+        
+        # Create year-quarter identifier and sort
+        rf_df['year_quarter'] = rf_df['year'].astype(str) + '-Q' + rf_df['quarter'].astype(str)
+        rf_df = rf_df.sort_values(['year', 'quarter']).reset_index(drop=True)
+        
+        # Calculate total samples for weighting
+        rf_df['total_samples'] = rf_df['num_samples(0)'] + rf_df['num_samples(1)']
+        
+        rf_data[lag] = rf_df
+        
+        # Load XGBoost results
+        xgboost_file = os.path.join(base_dir, f'XGboost_l{lag}.csv')
+        xgboost_df = pd.read_csv(xgboost_file)
+        
+        # Create year-quarter identifier and sort
+        xgboost_df['year_quarter'] = xgboost_df['year'].astype(str) + '-Q' + xgboost_df['quarter'].astype(str)
+        xgboost_df = xgboost_df.sort_values(['year', 'quarter']).reset_index(drop=True)
+        
+        # Calculate total samples for weighting
+        xgboost_df['total_samples'] = xgboost_df['num_samples(0)'] + xgboost_df['num_samples(1)']
+        
+        xgboost_data[lag] = xgboost_df
+    
+    return probit_data, rf_data, xgboost_data
+
+def calculate_weighted_metrics(df, metric_col):
+    """Calculate sample-weighted metric averages"""
+    weights = df['total_samples'] / df['total_samples'].sum()
+    return (df[metric_col] * weights).sum()
+
+def create_comparison_plot(probit_data, rf_data, xgboost_data):
+    """Create 4x3 subplot grid comparing probit, RF, and GeoRF across forecasting scopes and metrics"""
+    
+    # Setup the 4x3 subplot grid
+    fig, axes = plt.subplots(4, 3, figsize=(18, 16))
+    
+    # Define lag periods and their labels
+    lag_periods = [3, 6, 9, 12]
+    lag_labels = ['l3 (3-month)', 'l6 (6-month)', 'l9 (9-month)', 'l12 (12-month)']
+    
+    # Define metrics and their labels
+    metrics = ['precision(1)', 'recall(1)', 'f1(1)']
+    metric_labels = ['Precision', 'Recall', 'F1 Score']
+    
+    # Define colors for each model
+    colors = {
+        'probit': 'red',
+        'rf': 'blue', 
+        'xgboost': 'green'
     }
     
-    # Load GeoRF data
-    georf_data = {}
-    
-    for lag, filename in georf_files.items():
-        filepath = os.path.join(base_dir, filename)
-        df = pd.read_csv(filepath)
-        
-        # Create year-quarter identifier for time series
-        df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
-        
-        # Calculate total samples per row for weighting within each time period
-        df['total_samples'] = df['num_samples(0)'] + df['num_samples(1)']
-        
-        # Store the dataframe with lag info
-        georf_data[lag] = df
-    
-    # Load baseline probit results
-    baseline_df = pd.read_csv(baseline_results_path)
-    
-    # Create year-quarter identifier for baseline
-    baseline_df['year_quarter'] = baseline_df['year'].astype(str) + '-Q' + baseline_df['quarter'].astype(str)
-    
-    # Calculate total samples for baseline
-    baseline_df['total_samples'] = baseline_df['num_samples(0)'] + baseline_df['num_samples(1)']
-    
-    # Rename baseline columns to match GeoRF format
-    baseline_df = baseline_df.rename(columns={
-        'precision(0)': 'precision_base(0)',
-        'recall(0)': 'recall_base(0)', 
-        'f1(0)': 'f1_base(0)',
-        'precision(1)': 'precision_base(1)',
-        'recall(1)': 'recall_base(1)',
-        'f1(1)': 'f1_base(1)'
-    })
-    
-    return georf_data, baseline_df
-
-def create_comparison_plot(georf_data, baseline_df):
-    """Create time series subplot visualization comparing GeoRF with baseline probit"""
-    
-    lags = sorted(georf_data.keys())
-    colors = ['blue', 'red', 'green', 'orange']
-    
-    # Sort baseline data by year and quarter
-    baseline_sorted = baseline_df.sort_values(['year', 'quarter']).reset_index(drop=True)
-    
-    # Create subplots
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 6))
-    
-    # Plot precision over time
-    for i, lag in enumerate(lags):
-        df = georf_data[lag]
-        df_sorted = df.sort_values(['year', 'quarter']).reset_index(drop=True)
-        
-        # GeoRF performance (solid lines)
-        ax1.plot(range(len(df_sorted)), df_sorted['precision(1)'], 
-                'o-', color=colors[i], label=f'GeoRF {lag}m lag', markersize=4, linewidth=2)
-        
-        # Set x-axis labels only for the first series to avoid overlap
-        if i == 0:
-            ax1.set_xticks(range(len(df_sorted)))
-            ax1.set_xticklabels(df_sorted['year_quarter'], rotation=45)
-    
-    # Add baseline probit results as time series (dashed line)
-    ax1.plot(range(len(baseline_sorted)), baseline_sorted['precision_base(1)'], 
-            's--', color='black', label='Baseline Probit', markersize=3, linewidth=2, alpha=0.8)
-    
-    ax1.set_title('Precision Over Time')
-    ax1.set_xlabel('Year-Quarter')
-    ax1.set_ylabel('Precision')
-    ax1.legend()
-    ax1.grid(True, alpha=0.3)
-    
-    # Plot recall over time
-    for i, lag in enumerate(lags):
-        df = georf_data[lag]
-        df_sorted = df.sort_values(['year', 'quarter']).reset_index(drop=True)
-        
-        # GeoRF performance (solid lines)
-        ax2.plot(range(len(df_sorted)), df_sorted['recall(1)'], 
-                'o-', color=colors[i], label=f'GeoRF {lag}m lag', markersize=4, linewidth=2)
-        
-        # Set x-axis labels only for the first series to avoid overlap
-        if i == 0:
-            ax2.set_xticks(range(len(df_sorted)))
-            ax2.set_xticklabels(df_sorted['year_quarter'], rotation=45)
-    
-    # Add baseline probit recall time series
-    ax2.plot(range(len(baseline_sorted)), baseline_sorted['recall_base(1)'], 
-            's--', color='black', label='Baseline Probit', markersize=3, linewidth=2, alpha=0.8)
-    
-    ax2.set_title('Recall Over Time')
-    ax2.set_xlabel('Year-Quarter')
-    ax2.set_ylabel('Recall')
-    ax2.legend()
-    ax2.grid(True, alpha=0.3)
-    
-    # Plot F1 over time
-    for i, lag in enumerate(lags):
-        df = georf_data[lag]
-        df_sorted = df.sort_values(['year', 'quarter']).reset_index(drop=True)
-        
-        # GeoRF performance (solid lines)
-        ax3.plot(range(len(df_sorted)), df_sorted['f1(1)'], 
-                'o-', color=colors[i], label=f'GeoRF {lag}m lag', markersize=4, linewidth=2)
-        
-        # Set x-axis labels only for the first series to avoid overlap
-        if i == 0:
-            ax3.set_xticks(range(len(df_sorted)))
-            ax3.set_xticklabels(df_sorted['year_quarter'], rotation=45)
-    
-    # Add baseline probit F1 time series
-    ax3.plot(range(len(baseline_sorted)), baseline_sorted['f1_base(1)'], 
-            's--', color='black', label='Baseline Probit', markersize=3, linewidth=2, alpha=0.8)
-    
-    ax3.set_title('F1 Score Over Time')
-    ax3.set_xlabel('Year-Quarter')
-    ax3.set_ylabel('F1 Score')
-    ax3.legend()
-    ax3.grid(True, alpha=0.3)
+    # Plot for each lag period (row) and metric (column)
+    for row, (lag, lag_label) in enumerate(zip(lag_periods, lag_labels)):
+        for col, (metric, metric_label) in enumerate(zip(metrics, metric_labels)):
+            ax = axes[row, col]
+            
+            # Get data for this lag period
+            probit_df = probit_data[lag]
+            rf_df = rf_data[lag]
+            xgboost_df = xgboost_data[lag]
+            
+            # Find common time periods across all datasets
+            common_periods = set(probit_df['year_quarter']).intersection(
+                set(rf_df['year_quarter']), set(xgboost_df['year_quarter'])
+            )
+            common_periods = sorted(list(common_periods))
+            
+            # Filter datasets to common periods
+            probit_common = probit_df[probit_df['year_quarter'].isin(common_periods)].sort_values(['year', 'quarter']).reset_index(drop=True)
+            rf_common = rf_df[rf_df['year_quarter'].isin(common_periods)].sort_values(['year', 'quarter']).reset_index(drop=True)
+            xgboost_common = xgboost_df[xgboost_df['year_quarter'].isin(common_periods)].sort_values(['year', 'quarter']).reset_index(drop=True)
+            
+            
+            # Ensure all data arrays have the same length before plotting
+            min_length = min(len(probit_common), len(rf_common), len(xgboost_common))
+            
+            # Truncate all arrays to the minimum length
+            probit_values = probit_common[metric].iloc[:min_length]
+            rf_values = rf_common[metric].iloc[:min_length]  
+            xgboost_values = xgboost_common[metric].iloc[:min_length]
+            x_positions = range(min_length)
+            
+            # Plot each model
+            ax.plot(x_positions, probit_values, 'o-', 
+                   color=colors['probit'], label='Probit (Baseline)', 
+                   linewidth=2, markersize=4, alpha=0.8)
+            
+            ax.plot(x_positions, rf_values, 's-', 
+                   color=colors['rf'], label='RF (GeoRF)', 
+                   linewidth=2, markersize=4, alpha=0.8)
+            
+            ax.plot(x_positions, xgboost_values, '^-', 
+                   color=colors['xgboost'], label='XGBoost', 
+                   linewidth=2, markersize=4, alpha=0.8)
+            
+            # Set subplot title and labels
+            if row == 0:
+                ax.set_title(f'{metric_label}', fontsize=14, fontweight='bold')
+            
+            if col == 0:
+                ax.set_ylabel(f'{lag_label}\\n{metric_label}', fontsize=12, fontweight='bold')
+            else:
+                ax.set_ylabel(f'{metric_label}', fontsize=11)
+            
+            # Set x-axis labels (only for bottom row)
+            if row == 3:
+                ax.set_xlabel('Time Period (Year-Quarter)', fontsize=11)
+                # Set x-tick labels with rotation, showing every few quarters to avoid crowding
+                step = max(1, min_length // 10)  # Show ~10 labels max
+                ax.set_xticks(x_positions[::step])
+                ax.set_xticklabels(probit_common['year_quarter'].iloc[:min_length:step], rotation=45, ha='right')
+            else:
+                ax.set_xticks([])
+            
+            # Add grid and legend (only for top-right subplot)
+            ax.grid(True, alpha=0.3)
+            if row == 0 and col == 2:
+                ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            
+            # Set y-axis limits for better comparison
+            ax.set_ylim(0, 1)
+            
+            # Add row label on the left
+            if col == 0:
+                ax.text(-0.15, 0.5, lag_label, rotation=90, va='center', ha='center',
+                       transform=ax.transAxes, fontsize=12, fontweight='bold')
     
     # Add main title
-    fig.suptitle('GeoRF vs Baseline Probit Regression Performance Over Time', fontsize=14, y=1.02)
+    fig.suptitle('Model Performance Comparison Across Forecasting Scopes', 
+                 fontsize=16, fontweight='bold', y=0.98)
     
+    # Adjust layout to prevent overlap
     plt.tight_layout()
+    plt.subplots_adjust(top=0.94, right=0.88, hspace=0.3, wspace=0.3)
     
-    # Calculate sample-weighted averages for return
-    weights = baseline_sorted['total_samples'] / baseline_sorted['total_samples'].sum()
-    weighted_baseline_precision = (baseline_sorted['precision_base(1)'] * weights).sum()
-    weighted_baseline_recall = (baseline_sorted['recall_base(1)'] * weights).sum()
-    weighted_baseline_f1 = (baseline_sorted['f1_base(1)'] * weights).sum()
+    return fig
+
+def print_summary_statistics(probit_data, rf_data, xgboost_data):
+    """Print weighted average performance statistics for each model and lag"""
     
-    return fig, weighted_baseline_precision, weighted_baseline_recall, weighted_baseline_f1
+    lag_periods = [3, 6, 9, 12]
+    metrics = ['precision(1)', 'recall(1)', 'f1(1)']
+    metric_names = ['Precision', 'Recall', 'F1 Score']
+    
+    print("\\n" + "="*80)
+    print("SAMPLE-WEIGHTED PERFORMANCE SUMMARY")
+    print("="*80)
+    
+    for lag in lag_periods:
+        print(f"\\n{lag}-month lag forecasting:")
+        print("-" * 40)
+        
+        # Calculate weighted averages for each metric
+        for metric, metric_name in zip(metrics, metric_names):
+            probit_avg = calculate_weighted_metrics(probit_data[lag], metric)
+            rf_avg = calculate_weighted_metrics(rf_data[lag], metric)
+            xgboost_avg = calculate_weighted_metrics(xgboost_data[lag], metric)
+            
+            print(f"{metric_name:>10}: Probit={probit_avg:.4f}, RF={rf_avg:.4f}, XGBoost={xgboost_avg:.4f}")
 
 def main():
-    # Set directories
-    base_dir = "trial_06_10years_metric_compare"
-    baseline_results_path = "baseline_probit_results/baseline_probit_results.csv"
+    # Set directory containing the data files
+    base_dir = "20250808attachments/trial_07_XGboost_and_baseline"
     
     # Load and process data
-    print("Loading GeoRF and baseline probit data...")
-    georf_data, baseline_df = load_and_process_data(base_dir, baseline_results_path)
+    print("Loading probit, RF, and XGBoost data...")
+    probit_data, rf_data, xgboost_data = load_and_process_data(base_dir)
     
     # Print data summary
-    print("\nGeoRF Data Summary:")
+    print("\\nData Summary:")
     print("=" * 50)
-    for lag in sorted(georf_data.keys()):
-        df = georf_data[lag]
-        print(f"GeoRF {lag}m lag: {len(df)} time periods")
-        print(f"  Time range: {df['year_quarter'].min()} to {df['year_quarter'].max()}")
-        print(f"  Avg Precision: {df['precision(1)'].mean():.4f}")
-        print(f"  Avg Recall:    {df['recall(1)'].mean():.4f}")
-        print(f"  Avg F1 Score:  {df['f1(1)'].mean():.4f}")
-        print()
+    for lag in [3, 6, 9, 12]:
+        probit_df = probit_data[lag]
+        rf_df = rf_data[lag]
+        xgboost_df = xgboost_data[lag]
+        print(f"{lag}-month lag: {len(probit_df)} time periods")
+        print(f"  Time range: {probit_df['year_quarter'].min()} to {probit_df['year_quarter'].max()}")
     
-    print("Baseline Probit Data Summary:")
-    print("=" * 50)
-    print(f"Baseline: {len(baseline_df)} time periods")
-    print(f"Time range: {baseline_df['year_quarter'].min()} to {baseline_df['year_quarter'].max()}")
-    
-    # Calculate sample-weighted averages for baseline
-    weights = baseline_df['total_samples'] / baseline_df['total_samples'].sum()
-    weighted_precision = (baseline_df['precision_base(1)'] * weights).sum()
-    weighted_recall = (baseline_df['recall_base(1)'] * weights).sum()
-    weighted_f1 = (baseline_df['f1_base(1)'] * weights).sum()
-    
-    print(f"Weighted Avg Precision: {weighted_precision:.4f}")
-    print(f"Weighted Avg Recall:    {weighted_recall:.4f}")
-    print(f"Weighted Avg F1 Score:  {weighted_f1:.4f}")
-    print()
-    
-    # Create and save plot
-    print("Creating comparison visualization...")
-    fig, baseline_precision, baseline_recall, baseline_f1 = create_comparison_plot(georf_data, baseline_df)
+    # Create comparison plot
+    print("\\nCreating 4x3 comparison visualization...")
+    fig = create_comparison_plot(probit_data, rf_data, xgboost_data)
     
     # Save plot
-    output_path = os.path.join(base_dir, 'georf_vs_baseline_probit_comparison.png')
+    output_path = os.path.join(base_dir, 'model_comparison_4x3_grid.png')
     fig.savefig(output_path, dpi=300, bbox_inches='tight')
     print(f"Plot saved to: {output_path}")
     
-    # Performance comparison summary
-    print("\n" + "="*80)
-    print("PERFORMANCE COMPARISON SUMMARY")
-    print("="*80)
-    print(f"Baseline Probit Regression (Sample-Weighted):")
-    print(f"  Precision: {baseline_precision:.4f}")
-    print(f"  Recall:    {baseline_recall:.4f}")
-    print(f"  F1 Score:  {baseline_f1:.4f}")
-    print()
-    
-    # Compare with each GeoRF lag
-    for lag in sorted(georf_data.keys()):
-        df = georf_data[lag]
-        georf_precision = df['precision(1)'].mean()
-        georf_recall = df['recall(1)'].mean()
-        georf_f1 = df['f1(1)'].mean()
-        
-        print(f"GeoRF {lag}m lag vs Baseline:")
-        print(f"  Precision: {georf_precision:.4f} vs {baseline_precision:.4f} "
-              f"({'+' if georf_precision > baseline_precision else ''}{georf_precision - baseline_precision:.4f})")
-        print(f"  Recall:    {georf_recall:.4f} vs {baseline_recall:.4f} "
-              f"({'+' if georf_recall > baseline_recall else ''}{georf_recall - baseline_recall:.4f})")
-        print(f"  F1 Score:  {georf_f1:.4f} vs {baseline_f1:.4f} "
-              f"({'+' if georf_f1 > baseline_f1 else ''}{georf_f1 - baseline_f1:.4f})")
-        print()
+    # Print summary statistics
+    print_summary_statistics(probit_data, rf_data, xgboost_data)
     
     # Show plot
     plt.show()

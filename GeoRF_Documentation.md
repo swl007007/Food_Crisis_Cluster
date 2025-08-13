@@ -21,12 +21,14 @@
 
 ### Key Features
 - **Spatial Partitioning**: Hierarchical binary partitioning based on spatial/geographic groups
+- **Dual Implementations**: Both Random Forest (GeoRF) and XGBoost (GeoRF_XGB) variants
 - **Geo-aware Predictions**: Location-informed model selection for test points
 - **Scalable Architecture**: Parallel processing support for large datasets
-- **Flexible Grouping**: Customizable spatial grouping strategies (grid-based, administrative boundaries, etc.)
+- **Flexible Grouping**: Grid-based, polygon-based, and K-means clustering spatial strategies
+- **Spatial Contiguity**: Both grid-based and polygon-based contiguity refinement
 - **Statistical Validation**: Significance testing for optimal partition depth
-- **2-Layer Architecture**: Main prediction + error correction layers
-- **Visualization Tools**: Spatial visualization of partitions and performance
+- **2-Layer Architecture**: Main prediction + error correction layers for nowcasting/forecasting
+- **Comprehensive Visualization**: Spatial maps, performance grids, and partition metrics tracking
 
 ### Application Domain
 Originally developed for food crisis prediction using satellite and ground-based data, but adaptable to any spatially-varying classification or regression task.
@@ -39,28 +41,44 @@ Originally developed for food crisis prediction using satellite and ground-based
 ```bash
 # Core Dependencies
 numpy
-scipy
+scipy  
 pandas
-scikit-learn
+polars                    # High-performance data processing
+scikit-learn             # Random Forest models
+xgboost                  # XGBoost models
+matplotlib               # Basic plotting
+seaborn                  # Statistical visualization
+geopandas                # Geospatial data handling
+contextily               # Web map tiles for visualization
 ```
 
 ### File Structure
 ```
 Food_Crisis_Cluster/
-├── GeoRF.py              # Main GeoRF class
-├── GeoRF_main.py         # Demo usage script
-├── config.py             # Global configuration parameters
-├── data.py               # Data loading utilities
-├── customize.py          # Group generation classes
-├── model_RF.py           # Random Forest model implementation
-├── transformation.py     # Spatial partitioning algorithms
-├── partition_opt.py      # Partition optimization
-├── initialization.py     # Data initialization utilities
-├── helper.py             # Utility functions
-├── metrics.py            # Evaluation metrics
-├── visualization.py      # Visualization functions
-├── sig_test.py           # Statistical significance testing
-└── result_GeoRF*/        # Output directories
+├── GeoRF.py                      # Main GeoRF Random Forest class
+├── GeoRF_XGB.py                  # GeoRF XGBoost implementation
+├── GeoRF_main.py                 # Basic Random Forest demo
+├── GeoRF_demo.py                 # Demonstration script
+├── main_model_GF.py              # Food crisis pipeline (Random Forest)
+├── main_model_XGB.py             # Food crisis pipeline (XGBoost)
+├── config.py                     # Global configuration parameters
+├── data.py                       # Data loading utilities
+├── customize.py                  # Group generation classes
+├── model_RF.py                   # Random Forest model wrapper
+├── model_XGB.py                  # XGBoost model wrapper
+├── transformation.py             # Spatial partitioning algorithms
+├── partition_opt.py              # Partition optimization and contiguity
+├── train_branch.py               # Branch-specific training logic
+├── initialization.py             # Data initialization utilities
+├── helper.py                     # Utility functions
+├── metrics.py                    # Evaluation metrics
+├── visualization.py              # Visualization and mapping functions
+├── sig_test.py                   # Statistical significance testing
+├── baseline_probit_regression.py # Probit baseline comparison
+├── metric_comparison_plot.py     # Performance comparison plots
+├── static_table.py               # Result table generation
+└── result_GeoRF*/                # Random Forest output directories
+└── result_GeoXGB*/               # XGBoost output directories
 ```
 
 ---
@@ -74,13 +92,23 @@ Data Input → Group Generation → Spatial Partitioning → Local RF Training �
 
 ### Module Responsibilities
 
-#### **GeoRF.py** - Main Framework
+#### **GeoRF.py** - Random Forest Framework
 - **Primary Class**: `GeoRF`
-- **Purpose**: Main interface providing standard ML methods (`fit()`, `predict()`, `evaluate()`)
+- **Purpose**: Main Random Forest interface providing standard ML methods (`fit()`, `predict()`, `evaluate()`)
 - **Key Features**: 
   - Standard and 2-layer GeoRF variants
-  - Spatial contiguity refinement
+  - Spatial contiguity refinement (grid and polygon)
   - Model persistence and loading
+  - Partition metrics tracking
+
+#### **GeoRF_XGB.py** - XGBoost Framework  
+- **Primary Class**: `GeoRF_XGB`
+- **Purpose**: XGBoost implementation with same interface as GeoRF
+- **Key Features**:
+  - XGBoost-based local models
+  - Same spatial partitioning as Random Forest variant
+  - Hyperparameter optimization support
+  - GPU acceleration capability
 
 #### **customize.py** - Spatial Grouping
 - **Primary Class**: `GroupGenerator`
@@ -116,7 +144,7 @@ class GeoRF():
 
 #### Primary Methods
 
-##### **fit(X, y, X_group, X_set=None, val_ratio=0.2, print_to_file=True, contiguity_type='grid', polygon_contiguity_info=None)**
+##### **fit(X, y, X_group, X_set=None, val_ratio=0.2, print_to_file=True, contiguity_type='grid', polygon_contiguity_info=None, track_partition_metrics=False, correspondence_table_path=None)**
 Train the GeoRF model with spatial partitioning.
 
 **Parameters:**
@@ -128,6 +156,8 @@ Train the GeoRF model with spatial partitioning.
 - `print_to_file` (bool): Save training logs to file (default: True)
 - `contiguity_type` (str): Type of contiguity refinement: 'grid' or 'polygon' (default: uses CONTIGUITY_TYPE from config)
 - `polygon_contiguity_info` (dict, optional): Dictionary containing polygon contiguity information (required when contiguity_type='polygon')
+- `track_partition_metrics` (bool): Enable partition performance tracking (default: False)
+- `correspondence_table_path` (str, optional): Path to correspondence table for partition visualization
 
 **Returns:**
 - `self`: Trained GeoRF instance
@@ -371,14 +401,33 @@ Rolling window temporal splitting for quarterly evaluation with 5-year training 
 
 ## 6. Configuration Guide
 
-### 6.1 Core Configuration Parameters (config.py)
+### 6.1 Running the Models
+
+#### **Basic Random Forest GeoRF**
+```bash
+python GeoRF_main.py
+```
+
+#### **Food Crisis Pipeline (Random Forest)**
+```bash
+python main_model_GF.py
+```
+
+#### **Food Crisis Pipeline (XGBoost)**
+```bash
+python main_model_XGB.py
+```
+
+*Note: The XGBoost version (`main_model_XGB.py`) is now a complete replication of the Random Forest pipeline with identical functionality, checkpoint recovery, rolling window evaluation, and partition metrics tracking.*
+
+### 6.2 Core Configuration Parameters (config.py)
 
 #### **Model Structure Parameters**
 ```python
 MIN_DEPTH = 1                    # Minimum partitioning depth
 MAX_DEPTH = 4                    # Maximum partitioning depth  
 N_JOBS = 32                      # Parallel processing cores
-MODEL_CHOICE = 'RF'              # Model type ('RF' for Random Forest)
+MODEL_CHOICE = 'RF'              # Model type ('RF' for Random Forest, 'XGB' for XGBoost)
 MODE = 'classification'          # Task type ('classification' or 'regression')
 NUM_CLASS = 2                    # Number of classes (binary classification)
 ```
@@ -539,7 +588,33 @@ pre, rec, f1, pre_base, rec_base, f1_base = georf.evaluate_2layer(
     X_L1_train, X_L2_train, y_train, X_group_train)
 ```
 
-### 7.5 Missing Value Handling
+### 7.7 XGBoost Implementation
+
+```python
+from GeoRF_XGB import GeoRF_XGB
+
+# XGBoost variant with same interface as GeoRF
+georf_xgb = GeoRF_XGB(max_model_depth=3, n_jobs=16)
+georf_xgb.fit(X_train, y_train, X_group_train)
+y_pred = georf_xgb.predict(X_test, X_group_test)
+
+# XGBoost with comprehensive hyperparameter control
+georf_xgb = GeoRF_XGB(
+    max_model_depth=3,
+    learning_rate=0.1,      # Step size shrinkage
+    reg_alpha=0.1,          # L1 regularization
+    reg_lambda=1.0,         # L2 regularization
+    subsample=0.8,          # Training instance sampling
+    colsample_bytree=0.8,   # Feature sampling per tree
+    n_estimators=100
+)
+
+# Complete XGBoost pipeline (equivalent to main_model_GF.py)
+# python main_model_XGB.py
+# Features: checkpoint recovery, rolling window evaluation, partition metrics
+```
+
+### 7.8 Missing Value Handling
 
 ```python
 from customize import impute_missing_values
@@ -552,7 +627,7 @@ X_imputed, imputer = impute_missing_values(
 georf.fit(X_imputed_train, y_train, X_group_train)
 ```
 
-### 7.6 Time-Based Splitting
+### 7.9 Time-Based Splitting
 
 ```python
 from customize import train_test_split_rolling_window
@@ -645,7 +720,52 @@ georf.model.load('')  # Load root branch
 # s_branch loaded from: result_GeoRF_*/space_partitions/s_branch.pkl
 ```
 
-### 8.4 Statistical Significance Testing
+### 8.4 Partition Metrics Tracking
+
+GeoRF can track partition performance improvements during training:
+
+```python
+# Enable partition metrics tracking during training
+georf = GeoRF(min_model_depth=1, max_model_depth=3)
+georf.fit(X, y, X_group, 
+          track_partition_metrics=True,
+          correspondence_table_path='correspondence_table.csv')
+
+# Metrics automatically saved to result_GeoRF_*/partition_metrics/
+# - CSV files with group-wise F1/accuracy before/after each partition
+# - Visualization maps showing performance improvements geographically
+```
+
+**Visualizing Partition Improvements:**
+```python
+from visualization import plot_metrics_improvement_map
+
+# Plot F1 improvement map from saved metrics
+plot_metrics_improvement_map(
+    'result_GeoRF_27/partition_metrics/partition_metrics_round0_branchroot.csv',
+    metric_type='f1_improvement',
+    correspondence_table_path='correspondence_table.csv'
+)
+```
+
+### 8.5 Partition Visualization and Debugging
+
+```python
+from visualization import plot_partition_map, plot_partition_map_from_result_dir
+
+# Plot from correspondence table
+plot_partition_map('result_GeoRF_27/correspondence_table_2021.csv')
+
+# Plot from result directory (convenience function)
+plot_partition_map_from_result_dir('result_GeoRF_27/', year='2021')
+```
+
+**Requirements for partition mapping:**
+- Correspondence table with 'FEWSNET_admin_code' and 'partition_id' columns
+- FEWS NET admin boundaries shapefile
+- geopandas and contextily packages
+
+### 8.6 Statistical Significance Testing
 
 Partition creation uses statistical tests to determine optimal depth:
 
@@ -660,7 +780,7 @@ Partition creation uses statistical tests to determine optimal depth:
 ### 9.1 Directory Structure
 
 ```
-result_GeoRF_*/
+result_GeoRF_*/                  # Random Forest results
 ├── checkpoints/               # Trained RF models
 │   ├── rf_                   # Root model (all data)
 │   ├── rf_0                  # Left branch after 1st split
@@ -671,13 +791,34 @@ result_GeoRF_*/
 │   ├── s_branch.pkl          # Group-to-branch mapping
 │   ├── X_branch_id.npy       # Branch assignments
 │   └── branch_table.npy      # Partition tree structure
+├── partition_metrics/        # Partition performance tracking
+│   ├── partition_metrics_round0_*.csv  # Performance before/after splits
+│   └── improvement_maps_*.png # Geographic improvement visualization
 ├── vis/                      # Visualizations
 │   ├── partition_*.png       # Partition maps
 │   ├── performance_*.png     # Performance grids
 │   └── diff_*.png           # Difference maps
+├── correspondence_table_*.csv # Admin unit mappings
 ├── log_print.txt            # Training logs
 ├── log_print_eval.txt       # Evaluation logs
 └── model.log               # Detailed model logs
+
+result_GeoXGB_*/               # XGBoost results (identical structure to GeoRF)
+├── checkpoints/               # Trained XGBoost models
+│   ├── xgb_                  # Root model (instead of rf_)
+│   ├── xgb_0, xgb_1         # Branch models
+│   └── xgb_000, xgb_001, ... # Deeper partitions
+├── space_partitions/         # Same partition structure
+│   ├── s_branch.pkl          # Group-to-branch mapping
+│   ├── X_branch_id.npy       # Branch assignments
+│   └── branch_table.npy      # Partition tree structure
+├── partition_metrics/        # NEW: Partition performance tracking
+│   ├── partition_metrics_round0_*.csv
+│   └── improvement_maps_*.png
+├── vis/                      # Visualizations
+├── correspondence_table_Q*.csv # Quarterly mappings (Q1_2024.csv, Q2_2024.csv, etc.)
+├── log_print.txt            # Training logs
+└── log_print_eval.txt       # Evaluation logs
 ```
 
 ### 9.2 Key Output Files
@@ -716,15 +857,97 @@ Results compared between:
 
 ---
 
-## 10. Troubleshooting
+## 10. Updated XGBoost Pipeline Features
 
-### 10.1 Common Issues
+### 10.1 Complete Feature Parity
+
+The updated `main_model_XGB.py` now provides complete feature parity with the Random Forest version:
+
+#### **Checkpoint Recovery System**
+```python
+# Automatic detection of previous runs
+completed_quarters, partial_results_files, checkpoint_dirs = get_checkpoint_info()
+remaining_quarters = determine_remaining_quarters(completed_quarters, start_year, end_year, desire_terms)
+
+# Automatic resume from last completed quarter
+results_df, y_pred_test = load_partial_results(partial_results_files, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
+```
+
+#### **Rolling Window Temporal Evaluation**
+```python
+# 5-year training windows before each test quarter
+(X_train, y_train, X_train_loc, X_train_group,
+ X_test, y_test, X_test_loc, X_test_group) = train_test_split_rolling_window(
+    X, y, X_loc, X_group, years, dates, test_year=test_year, 
+    input_terms=input_terms, need_terms=quarter)
+```
+
+#### **Partition Metrics Tracking**
+```python
+# Enable in main() configuration
+track_partition_metrics = True
+enable_metrics_maps = True
+
+# Creates detailed CSV files and geographic improvement maps
+# Tracks F1/accuracy improvements before/after each partition round
+```
+
+#### **Memory Management for Large-Scale Evaluation**
+```python
+# Comprehensive cleanup for XGBoost models
+# Handles quarterly evaluation across multiple years
+# Progress tracking with memory usage monitoring
+```
+
+### 10.2 XGBoost-Specific Configuration
+
+```python
+# Complete hyperparameter control in main()
+learning_rate = 0.1          # Step size shrinkage
+reg_alpha = 0.1              # L1 regularization
+reg_lambda = 1.0             # L2 regularization  
+subsample = 0.8              # Training instance sampling
+colsample_bytree = 0.8       # Feature sampling per tree
+
+# Forecasting scope options
+forecasting_scope = 1        # 1=3mo, 2=6mo, 3=9mo, 4=12mo lag
+
+# Temporal evaluation range
+start_year = 2024
+end_year = 2024
+desire_terms = None          # All quarters or specific (1-4)
+```
+
+### 10.3 Results and Output Files
+
+```python
+# Results follow same naming pattern as RF version
+# Assignment method suffixes:
+# - gp: polygons
+# - gg: grid  
+# - gc: country
+# - gae: AEZ
+# - gcae: country_AEZ
+# - ggk: geokmeans
+# - gak: all_kmeans
+
+# Example files:
+# results_df_gp_d3_t1_fs1.csv      # Polygons, depth=3, Q1 only, 3mo lag
+# y_pred_test_gp_d3_t1_fs1.csv     # Corresponding predictions
+# correspondence_table_Q1_2024.csv  # Quarterly admin code mapping
+```
+
+## 11. Troubleshooting
+
+### 11.1 Common Issues
 
 #### **Memory Issues**
 - Reduce `N_JOBS` parameter
 - Decrease `MAX_DEPTH` to limit partitions
 - Increase `STEP_SIZE` to reduce number of groups
 - Use smaller datasets for testing
+- For XGBoost: disable GPU acceleration if memory-limited
+- Consider using polars instead of pandas for large datasets
 
 #### **Slow Performance**
 - Increase `N_JOBS` for more parallel processing
@@ -750,7 +973,7 @@ Results compared between:
 - **Memory issues**: Reduce number of polygons or use larger distance threshold
 - **Inconsistent results**: Ensure polygon_group_mapping is consistent across train/test
 
-### 10.2 Debugging Tips
+### 11.2 Debugging Tips
 
 #### **Check Data Integrity**
 ```python
@@ -805,18 +1028,47 @@ print(f"Centroid range: lat {polygon_centroids[:, 0].min():.2f}-{polygon_centroi
       f"lon {polygon_centroids[:, 1].min():.2f}-{polygon_centroids[:, 1].max():.2f}")
 ```
 
-### 10.3 Performance Optimization
+### 11.3 XGBoost-Specific Issues
+
+#### **XGBoost Memory Issues**
+- XGBoost models can use more memory than Random Forest
+- Reduce `n_trees_unit` or use `subsample` and `colsample_bytree` < 0.8
+- Monitor memory during large-scale quarterly evaluation
+- Use checkpoint recovery to avoid recomputing completed quarters
+
+#### **XGBoost Performance Issues**
+- Slow training: Increase `learning_rate` but add more regularization
+- Overfitting: Increase `reg_alpha` and `reg_lambda`, reduce `learning_rate`
+- Underfitting: Decrease regularization, increase `n_trees_unit`
+- GPU issues: Set `n_jobs=1` and verify CUDA installation
+
+#### **Checkpoint Recovery Issues**
+- Incomplete checkpoints: Check for existence of both `checkpoints/` and `space_partitions/` directories
+- Partial results not loading: Verify filename patterns match current configuration
+- Memory errors during resume: Clear old result directories or increase system memory
+
+### 11.4 Performance Optimization
 
 #### **For Large Datasets**
 1. **Preprocessing**: Use feature selection to reduce dimensionality
 2. **Sampling**: Train on subset, evaluate on full dataset
 3. **Incremental**: Process data in chunks if memory-limited
 4. **Distributed**: Use multiple machines with distributed frameworks
+5. **XGBoost-specific**: Use `subsample` and `colsample_bytree` for memory efficiency
+6. **Checkpoint recovery**: Leverage automatic resume functionality for long-running evaluations
 
 #### **For Real-time Applications**
 1. **Model Compression**: Save only necessary partition information
 2. **Fast Grouping**: Pre-compute group assignments for common locations
 3. **Simplified Models**: Reduce `n_trees_unit` for faster predictions
+4. **XGBoost optimization**: Use higher `learning_rate` with fewer trees for speed
+5. **Memory management**: Use checkpoint system to avoid retraining completed partitions
+
+#### **For Temporal Evaluation**
+1. **Rolling windows**: Use 5-year training windows for temporal consistency
+2. **Quarterly processing**: Process quarters independently with checkpoint recovery
+3. **Memory cleanup**: Automatic model cleanup between quarters
+4. **Progress tracking**: Monitor evaluation progress across multiple years
 
 ---
 
@@ -826,10 +1078,13 @@ GeoRF provides a powerful framework for spatial machine learning that goes beyon
 
 Key strengths:
 - **Spatial Awareness**: Explicitly handles spatial non-stationarity
+- **Dual Implementations**: Both Random Forest and XGBoost variants with identical interfaces
 - **Automatic Partitioning**: Data-driven determination of optimal spatial regions
-- **Flexible Grouping**: Supports various spatial aggregation strategies (grid-based, polygon-based, K-means clustering)
+- **Flexible Grouping**: Grid-based, polygon-based, and K-means clustering strategies
 - **Dual Contiguity Systems**: Both grid-based and polygon-based contiguity refinement
+- **Performance Tracking**: Detailed partition metrics and improvement visualization
 - **Statistical Rigor**: Significance testing for partition validation
-- **Scalable Design**: Parallel processing for large datasets
+- **Scalable Design**: Parallel processing and GPU acceleration support
+- **Comprehensive Evaluation**: Built-in comparison with baseline models
 
 For further questions or advanced customizations, refer to the source code documentation and example notebooks provided with the framework.
