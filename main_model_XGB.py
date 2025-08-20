@@ -25,6 +25,7 @@ import sys
 import gc
 import glob
 import warnings
+import argparse
 warnings.filterwarnings('ignore')
 
 # GeoXGB imports - CHANGED from GeoRF to GeoRF_XGB
@@ -256,13 +257,13 @@ def determine_remaining_quarters(completed_quarters, start_year, end_year, desir
     
     return remaining_quarters
 
-def save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None):
+def save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None, start_year=None, end_year=None):
     """
     Save results as checkpoint files that can be resumed later.
     
     This is the same as save_results but called more frequently for checkpointing.
     """
-    save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
+    save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope, start_year, end_year)
 
 def handle_infinite_values(X):
     """
@@ -1012,11 +1013,11 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     print(f"XGBoost hyperparameters: learning_rate={learning_rate}, reg_alpha={reg_alpha}, reg_lambda={reg_lambda}")
     print(f"                        subsample={subsample}, colsample_bytree={colsample_bytree}")
     
-    # Initialize results tracking
+    # Initialize results tracking (class 1 only)
     results_df = pd.DataFrame(columns=[
-        'year', 'quarter', 'precision(0)', 'recall(0)', 'f1(0)', 'precision(1)', 'recall(1)', 'f1(1)',
-        'precision_base(0)', 'recall_base(0)', 'f1_base(0)', 'precision_base(1)', 'recall_base(1)', 'f1_base(1)',
-        'num_samples(0)', 'num_samples(1)'
+        'year', 'quarter', 'precision(1)', 'recall(1)', 'f1(1)',
+        'precision_base(1)', 'recall_base(1)', 'f1_base(1)',
+        'num_samples(1)'
     ])
     
     y_pred_test = pd.DataFrame(columns=['year', 'quarter', 'month', 'adm_code', 'fews_ipc_crisis_pred', 'fews_ipc_crisis_true'])
@@ -1839,7 +1840,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     
     return results_df, y_pred_test
 
-def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None):
+def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None, start_year=None, end_year=None):
     """
     Save evaluation results to CSV files.
     
@@ -1859,6 +1860,10 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
         Desired terms setting
     forecasting_scope : int or None
         Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo)
+    start_year : int or None
+        Start year of evaluation period
+    end_year : int or None
+        End year of evaluation period
     """
     # Create file names based on assignment
     pred_test_name = 'y_pred_test_g'
@@ -1892,6 +1897,11 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
         pred_test_name += f'_fs{forecasting_scope}'
         results_df_name += f'_fs{forecasting_scope}'
     
+    # Add year range suffix
+    if start_year is not None and end_year is not None:
+        pred_test_name += f'_{start_year}_{end_year}'
+        results_df_name += f'_{start_year}_{end_year}'
+    
     # Add nowcasting suffix
     if nowcasting:
         pred_test_name += '_nowcast'
@@ -1914,12 +1924,20 @@ def main():
     """
     print("=== Starting GeoXGB Food Crisis Prediction Pipeline ===")
     
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='GeoXGB Food Crisis Prediction Pipeline')
+    parser.add_argument('--start_year', type=int, default=2024, help='Start year for evaluation (default: 2024)')
+    parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
+    parser.add_argument('--forecasting_scope', type=int, default=4, choices=[1,2,3,4], 
+                        help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 4)')
+    args = parser.parse_args()
+    
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific XGB depth
     desire_terms = 1         # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
-    forecasting_scope = 4    # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+    forecasting_scope = args.forecasting_scope    # From command line argument
     
     # XGBoost-specific hyperparameters optimized for food crisis prediction
     learning_rate = 0.1      # Learning rate (step size shrinkage)
@@ -1937,9 +1955,9 @@ def main():
     # Checkpoint Recovery Configuration
     enable_checkpoint_recovery = True  # Enable automatic checkpoint detection and resume
     
-    # start year and end year
-    start_year = 2024
-    end_year = 2024
+    # start year and end year from command line arguments
+    start_year = args.start_year
+    end_year = args.end_year
     
     print(f"Configuration:")
     print(f"  - Assignment method: {assignment}")
@@ -1987,17 +2005,23 @@ def main():
             colsample_bytree=colsample_bytree
         )
         
-        # Step 6: Save results
-        save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms=desire_terms, forecasting_scope=forecasting_scope)
+        # Step 6: Filter results to class 1 only (if needed)
+        class_1_columns = [col for col in results_df.columns if '(1)' in col or col in ['year', 'quarter']]
+        if len(class_1_columns) < len(results_df.columns):
+            print("Filtering results to class 1 metrics only...")
+            results_df = results_df[class_1_columns].copy()
         
-        # Step 7: Display summary
-        print("\n=== Evaluation Summary ===")
+        # Step 7: Save results
+        save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms=desire_terms, forecasting_scope=forecasting_scope, start_year=start_year, end_year=end_year)
+        
+        # Step 8: Display summary (class 1 only)
+        print("\n=== Evaluation Summary (Class 1 Only) ===")
         if 'quarter' in results_df.columns:
             print("Results by Quarter:")
-            print(results_df.groupby(['year', 'quarter'])[['f1(0)', 'f1(1)', 'f1_base(0)', 'f1_base(1)']].mean())
+            print(results_df.groupby(['year', 'quarter'])[['f1(1)', 'f1_base(1)']].mean())
         else:
             print("Results by Year:")
-            print(results_df.groupby('year')[['f1(0)', 'f1(1)', 'f1_base(0)', 'f1_base(1)']].mean())
+            print(results_df.groupby('year')[['f1(1)', 'f1_base(1)']].mean())
         
         print("\n=== GeoXGB Pipeline completed successfully! ===")
         

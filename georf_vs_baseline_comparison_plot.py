@@ -2,165 +2,359 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import glob
 
-def load_and_process_data(base_dir):
-    """Load probit, RF, and XGBoost results for comparison"""
+def load_and_process_data(base_dir='.'):
+    """
+    Load probit, RF, and XGBoost results for comparison using auto-detection.
     
-    # Define lag periods in months
-    lag_periods = [3, 6, 9, 12]
+    Expected file patterns:
+    - Probit: baseline_probit_results/baseline_probit_results_fs{scope}.csv
+    - GeoRF: results_df_gp_fs{scope}_{start_year}_{end_year}.csv  
+    - XGBoost: results_df_xgb_gp_fs{scope}_{start_year}_{end_year}.csv
+    
+    Parameters:
+    -----------
+    base_dir : str, default='.'
+        Base directory to search for files
+    
+    Returns:
+    --------
+    probit_data, rf_data, xgboost_data : dict
+        Dictionaries with forecasting scope as key and DataFrames as values
+    """
+    print("Auto-detecting result files...")
+    
+    # Map forecasting scope to lag months
+    scope_to_lag = {1: 3, 2: 6, 3: 9, 4: 12}
     
     # Initialize data storage
     probit_data = {}
+    fewsnet_data = {}
     rf_data = {}
     xgboost_data = {}
     
-    # Load data for each lag period
-    for lag in lag_periods:
-        # Load probit baseline results
-        probit_file = os.path.join(base_dir, f'probit_l{lag}.csv')
-        probit_df = pd.read_csv(probit_file)
-        
-        # Create year-quarter identifier and sort
-        probit_df['year_quarter'] = probit_df['year'].astype(str) + '-Q' + probit_df['quarter'].astype(str)
-        probit_df = probit_df.sort_values(['year', 'quarter']).reset_index(drop=True)
-        
-        # Calculate total samples for weighting
-        probit_df['total_samples'] = probit_df['num_samples(0)'] + probit_df['num_samples(1)']
-        
-        probit_data[lag] = probit_df
-        
-        # Load RF (GeoRF) results
-        rf_file = os.path.join(base_dir, f'RF_l{lag}.csv')
-        rf_df = pd.read_csv(rf_file)
-        
-        # Create year-quarter identifier and sort
-        rf_df['year_quarter'] = rf_df['year'].astype(str) + '-Q' + rf_df['quarter'].astype(str)
-        rf_df = rf_df.sort_values(['year', 'quarter']).reset_index(drop=True)
-        
-        # Calculate total samples for weighting
-        rf_df['total_samples'] = rf_df['num_samples(0)'] + rf_df['num_samples(1)']
-        
-        rf_data[lag] = rf_df
-        
-        # Load XGBoost results
-        xgboost_file = os.path.join(base_dir, f'XGboost_l{lag}.csv')
-        xgboost_df = pd.read_csv(xgboost_file)
-        
-        # Create year-quarter identifier and sort
-        xgboost_df['year_quarter'] = xgboost_df['year'].astype(str) + '-Q' + xgboost_df['quarter'].astype(str)
-        xgboost_df = xgboost_df.sort_values(['year', 'quarter']).reset_index(drop=True)
-        
-        # Calculate total samples for weighting
-        xgboost_df['total_samples'] = xgboost_df['num_samples(0)'] + xgboost_df['num_samples(1)']
-        
-        xgboost_data[lag] = xgboost_df
+    # 1. Load probit baseline results
+    print("\nSearching for probit baseline results...")
+    probit_pattern = os.path.join(base_dir, 'baseline_probit_results', 'baseline_probit_results_fs*.csv')
+    probit_files = glob.glob(probit_pattern)
     
-    return probit_data, rf_data, xgboost_data
+    # 1.5. Load FEWSNET baseline results
+    print("\nSearching for FEWSNET baseline results...")
+    fewsnet_pattern = os.path.join(base_dir, 'fewsnet_baseline_results', 'fewsnet_baseline_results_fs*.csv')
+    fewsnet_files = glob.glob(fewsnet_pattern)
+    
+    for file_path in probit_files:
+        filename = os.path.basename(file_path)
+        # Extract forecasting scope from filename: baseline_probit_results_fs4.csv -> scope=4
+        try:
+            scope = int(filename.split('_fs')[1].split('.')[0])
+            lag_months = scope_to_lag[scope]
+            
+            df = pd.read_csv(file_path)
+            print(f"  Found probit results for forecasting scope {scope} ({lag_months}-month): {filename}")
+            
+            # Create year-quarter identifier if quarter column exists
+            if 'quarter' in df.columns:
+                df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
+            else:
+                df['year_quarter'] = df['year'].astype(str)
+            
+            df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
+            probit_data[lag_months] = df
+            
+        except (ValueError, IndexError, KeyError) as e:
+            print(f"  Warning: Could not parse forecasting scope from {filename}: {e}")
+    
+    # 1.5. Process FEWSNET baseline results
+    for file_path in fewsnet_files:
+        filename = os.path.basename(file_path)
+        # Extract forecasting scope from filename: fewsnet_baseline_results_fs1.csv -> scope=1
+        try:
+            scope = int(filename.split('_fs')[1].split('.')[0])
+            lag_months = scope_to_lag[scope]
+            
+            df = pd.read_csv(file_path)
+            print(f"  Found FEWSNET results for forecasting scope {scope} ({lag_months}-month): {filename}")
+            
+            # Create year-quarter identifier if quarter column exists
+            if 'quarter' in df.columns:
+                df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
+            else:
+                df['year_quarter'] = df['year'].astype(str)
+            
+            df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
+            fewsnet_data[lag_months] = df
+            
+        except (ValueError, IndexError, KeyError) as e:
+            print(f"  Warning: Could not parse forecasting scope from {filename}: {e}")
+    
+    # 2. Load GeoRF results
+    print("\nSearching for GeoRF results...")
+    rf_pattern = os.path.join(base_dir, 'results_df_gp_fs*_*_*.csv')
+    rf_files = glob.glob(rf_pattern)
+    
+    # Group RF files by forecasting scope and combine across year ranges
+    rf_by_scope = {}
+    for file_path in rf_files:
+        filename = os.path.basename(file_path)
+        try:
+            # Extract scope from: results_df_gp_fs1_2015_2016.csv -> scope=1
+            parts = filename.split('_fs')[1].split('_')
+            scope = int(parts[0])
+            start_year = int(parts[1])
+            end_year = int(parts[2].split('.')[0])
+            lag_months = scope_to_lag[scope]
+            
+            df = pd.read_csv(file_path)
+            print(f"  Found GeoRF results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
+            
+            if lag_months not in rf_by_scope:
+                rf_by_scope[lag_months] = []
+            rf_by_scope[lag_months].append(df)
+            
+        except (ValueError, IndexError, KeyError) as e:
+            print(f"  Warning: Could not parse filename {filename}: {e}")
+    
+    # Combine RF data across year ranges for each scope
+    for lag_months, dfs in rf_by_scope.items():
+        combined_df = pd.concat(dfs, ignore_index=True)
+        
+        # Create year-quarter identifier
+        if 'quarter' in combined_df.columns:
+            combined_df['year_quarter'] = combined_df['year'].astype(str) + '-Q' + combined_df['quarter'].astype(str)
+        else:
+            combined_df['year_quarter'] = combined_df['year'].astype(str)
+        
+        combined_df = combined_df.sort_values(['year'] + (['quarter'] if 'quarter' in combined_df.columns else [])).reset_index(drop=True)
+        rf_data[lag_months] = combined_df
+        print(f"  Combined {len(dfs)} files for {lag_months}-month lag: {len(combined_df)} total records")
+    
+    # 3. Load XGBoost results  
+    print("\nSearching for XGBoost results...")
+    xgb_pattern = os.path.join(base_dir, 'results_df_xgb_gp_fs*_*_*.csv')
+    xgb_files = glob.glob(xgb_pattern)
+    
+    # Group XGB files by forecasting scope and combine across year ranges
+    xgb_by_scope = {}
+    for file_path in xgb_files:
+        filename = os.path.basename(file_path)
+        try:
+            # Extract scope from: results_df_xgb_gp_fs1_2015_2016.csv -> scope=1
+            parts = filename.split('_fs')[1].split('_')
+            scope = int(parts[0])
+            start_year = int(parts[1])
+            end_year = int(parts[2].split('.')[0])
+            lag_months = scope_to_lag[scope]
+            
+            df = pd.read_csv(file_path)
+            print(f"  Found XGBoost results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
+            
+            if lag_months not in xgb_by_scope:
+                xgb_by_scope[lag_months] = []
+            xgb_by_scope[lag_months].append(df)
+            
+        except (ValueError, IndexError, KeyError) as e:
+            print(f"  Warning: Could not parse filename {filename}: {e}")
+    
+    # Combine XGBoost data across year ranges for each scope
+    for lag_months, dfs in xgb_by_scope.items():
+        combined_df = pd.concat(dfs, ignore_index=True)
+        
+        # Create year-quarter identifier
+        if 'quarter' in combined_df.columns:
+            combined_df['year_quarter'] = combined_df['year'].astype(str) + '-Q' + combined_df['quarter'].astype(str)
+        else:
+            combined_df['year_quarter'] = combined_df['year'].astype(str)
+            
+        combined_df = combined_df.sort_values(['year'] + (['quarter'] if 'quarter' in combined_df.columns else [])).reset_index(drop=True)
+        xgboost_data[lag_months] = combined_df
+        print(f"  Combined {len(dfs)} files for {lag_months}-month lag: {len(combined_df)} total records")
+    
+    # Summary
+    print(f"\nData loading summary:")
+    print(f"  Probit baseline: {list(probit_data.keys())} month lags")
+    print(f"  FEWSNET baseline: {list(fewsnet_data.keys())} month lags")
+    print(f"  GeoRF: {list(rf_data.keys())} month lags")
+    print(f"  XGBoost: {list(xgboost_data.keys())} month lags")
+    
+    return probit_data, fewsnet_data, rf_data, xgboost_data
 
-def calculate_weighted_metrics(df, metric_col):
-    """Calculate sample-weighted metric averages"""
-    weights = df['total_samples'] / df['total_samples'].sum()
-    return (df[metric_col] * weights).sum()
 
-def create_comparison_plot(probit_data, rf_data, xgboost_data):
-    """Create 4x3 subplot grid comparing probit, RF, and GeoRF across forecasting scopes and metrics"""
+def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
+    """Create dynamic subplot grid comparing probit, FEWSNET, GeoRF, and XGBoost across available forecasting scopes and class 1 metrics"""
     
-    # Setup the 4x3 subplot grid
-    fig, axes = plt.subplots(4, 3, figsize=(18, 16))
+    # Get available lag periods from all datasets
+    available_lags = sorted(set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys()))
     
-    # Define lag periods and their labels
-    lag_periods = [3, 6, 9, 12]
-    lag_labels = ['l3 (3-month)', 'l6 (6-month)', 'l9 (9-month)', 'l12 (12-month)']
+    if not available_lags:
+        print("No data available for plotting!")
+        return None
+    
+    # Setup dynamic subplot grid
+    n_rows = len(available_lags)
+    n_cols = 3  # precision, recall, f1
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(18, 4 * n_rows))
+    
+    # Handle single row case
+    if n_rows == 1:
+        axes = axes.reshape(1, -1)
+    
+    # Create lag labels
+    lag_labels = [f'l{lag} ({lag}-month)' for lag in available_lags]
     
     # Define metrics and their labels
     metrics = ['precision(1)', 'recall(1)', 'f1(1)']
-    metric_labels = ['Precision', 'Recall', 'F1 Score']
+    metric_labels = ['Precision (Class 1)', 'Recall (Class 1)', 'F1 Score (Class 1)']
     
     # Define colors for each model
     colors = {
         'probit': 'red',
+        'fewsnet': 'orange',
         'rf': 'blue', 
         'xgboost': 'green'
     }
     
     # Plot for each lag period (row) and metric (column)
-    for row, (lag, lag_label) in enumerate(zip(lag_periods, lag_labels)):
+    for row, (lag, lag_label) in enumerate(zip(available_lags, lag_labels)):
         for col, (metric, metric_label) in enumerate(zip(metrics, metric_labels)):
             ax = axes[row, col]
             
-            # Get data for this lag period
-            probit_df = probit_data[lag]
-            rf_df = rf_data[lag]
-            xgboost_df = xgboost_data[lag]
+            # Check which datasets have this lag period
+            has_probit = lag in probit_data
+            has_fewsnet = lag in fewsnet_data
+            has_rf = lag in rf_data
+            has_xgb = lag in xgboost_data
             
-            # Find common time periods across all datasets
-            common_periods = set(probit_df['year_quarter']).intersection(
-                set(rf_df['year_quarter']), set(xgboost_df['year_quarter'])
-            )
+            if not (has_probit or has_fewsnet or has_rf or has_xgb):
+                # No data for this lag period
+                ax.text(0.5, 0.5, f'No data available\nfor {lag}-month lag', 
+                       ha='center', va='center', transform=ax.transAxes)
+                ax.set_title(f'{metric_label} - {lag_label}')
+                continue
+            
+            # Get available datasets for this lag period
+            datasets = {}
+            if has_probit:
+                datasets['probit'] = probit_data[lag]
+            if has_fewsnet:
+                datasets['fewsnet'] = fewsnet_data[lag]
+            if has_rf:
+                datasets['rf'] = rf_data[lag]
+            if has_xgb:
+                datasets['xgboost'] = xgboost_data[lag]
+            
+            # Find common time periods across available datasets
+            all_periods = []
+            for name, df in datasets.items():
+                all_periods.extend(df['year_quarter'].tolist())
+            
+            # Get intersection of all available datasets
+            if len(datasets) > 1:
+                period_sets = [set(df['year_quarter']) for df in datasets.values()]
+                common_periods = set.intersection(*period_sets)
+            else:
+                # Only one dataset available
+                common_periods = set(list(datasets.values())[0]['year_quarter'])
+            
             common_periods = sorted(list(common_periods))
             
-            # Filter datasets to common periods
-            probit_common = probit_df[probit_df['year_quarter'].isin(common_periods)].sort_values(['year', 'quarter']).reset_index(drop=True)
-            rf_common = rf_df[rf_df['year_quarter'].isin(common_periods)].sort_values(['year', 'quarter']).reset_index(drop=True)
-            xgboost_common = xgboost_df[xgboost_df['year_quarter'].isin(common_periods)].sort_values(['year', 'quarter']).reset_index(drop=True)
+            if not common_periods:
+                # No common periods found
+                ax.text(0.5, 0.5, f'No common time periods\nfor {lag}-month lag', 
+                       ha='center', va='center', transform=ax.transAxes)
+                ax.set_title(f'{metric_label} - {lag_label}')
+                continue
             
+            # Filter available datasets to common periods and check for metric availability
+            filtered_datasets = {}
+            for name, df in datasets.items():
+                if metric in df.columns:
+                    filtered_df = df[df['year_quarter'].isin(common_periods)]
+                    # Sort by year and quarter if quarter exists, otherwise just year
+                    sort_cols = ['year'] + (['quarter'] if 'quarter' in filtered_df.columns else [])
+                    filtered_df = filtered_df.sort_values(sort_cols).reset_index(drop=True)
+                    filtered_datasets[name] = filtered_df
             
-            # Ensure all data arrays have the same length before plotting
-            min_length = min(len(probit_common), len(rf_common), len(xgboost_common))
+            if not filtered_datasets:
+                # No datasets have this metric
+                ax.text(0.5, 0.5, f'Metric {metric} not available\nfor {lag}-month lag', 
+                       ha='center', va='center', transform=ax.transAxes)
+                ax.set_title(f'{metric_label} - {lag_label}')
+                continue
             
-            # Truncate all arrays to the minimum length
-            probit_values = probit_common[metric].iloc[:min_length]
-            rf_values = rf_common[metric].iloc[:min_length]  
-            xgboost_values = xgboost_common[metric].iloc[:min_length]
+            # Get minimum length across all available datasets
+            min_length = min(len(df) for df in filtered_datasets.values())
             x_positions = range(min_length)
             
-            # Plot each model
-            ax.plot(x_positions, probit_values, 'o-', 
-                   color=colors['probit'], label='Probit (Baseline)', 
-                   linewidth=2, markersize=4, alpha=0.8)
+            # Plot each available model
+            plotted_models = []
             
-            ax.plot(x_positions, rf_values, 's-', 
-                   color=colors['rf'], label='RF (GeoRF)', 
-                   linewidth=2, markersize=4, alpha=0.8)
+            if 'probit' in filtered_datasets:
+                probit_values = filtered_datasets['probit'][metric].iloc[:min_length]
+                ax.plot(x_positions, probit_values, 'o-', 
+                       color=colors['probit'], label='Probit (Baseline)', 
+                       linewidth=2, markersize=4, alpha=0.8)
+                plotted_models.append('Probit')
             
-            ax.plot(x_positions, xgboost_values, '^-', 
-                   color=colors['xgboost'], label='XGBoost', 
-                   linewidth=2, markersize=4, alpha=0.8)
+            if 'fewsnet' in filtered_datasets:
+                fewsnet_values = filtered_datasets['fewsnet'][metric].iloc[:min_length]
+                ax.plot(x_positions, fewsnet_values, 'D-', 
+                       color=colors['fewsnet'], label='FEWSNET (Official)', 
+                       linewidth=2, markersize=4, alpha=0.8)
+                plotted_models.append('FEWSNET')
+            
+            if 'rf' in filtered_datasets:
+                rf_values = filtered_datasets['rf'][metric].iloc[:min_length]
+                ax.plot(x_positions, rf_values, 's-', 
+                       color=colors['rf'], label='GeoRF', 
+                       linewidth=2, markersize=4, alpha=0.8)
+                plotted_models.append('GeoRF')
+            
+            if 'xgboost' in filtered_datasets:
+                xgboost_values = filtered_datasets['xgboost'][metric].iloc[:min_length]
+                ax.plot(x_positions, xgboost_values, '^-', 
+                       color=colors['xgboost'], label='XGBoost', 
+                       linewidth=2, markersize=4, alpha=0.8)
+                plotted_models.append('XGBoost')
             
             # Set subplot title and labels
             if row == 0:
                 ax.set_title(f'{metric_label}', fontsize=14, fontweight='bold')
             
             if col == 0:
-                ax.set_ylabel(f'{lag_label}\\n{metric_label}', fontsize=12, fontweight='bold')
-            else:
-                ax.set_ylabel(f'{metric_label}', fontsize=11)
+                ax.set_ylabel(f'{lag_label}', fontsize=12, fontweight='bold')
             
             # Set x-axis labels (only for bottom row)
-            if row == 3:
-                ax.set_xlabel('Time Period (Year-Quarter)', fontsize=11)
-                # Set x-tick labels with rotation, showing every few quarters to avoid crowding
-                step = max(1, min_length // 10)  # Show ~10 labels max
-                ax.set_xticks(x_positions[::step])
-                ax.set_xticklabels(probit_common['year_quarter'].iloc[:min_length:step], rotation=45, ha='right')
+            if row == n_rows - 1:  # Use dynamic bottom row
+                ax.set_xlabel('Time Period', fontsize=11)
+                # Set x-tick labels with rotation, showing every few periods to avoid crowding
+                if min_length > 0:
+                    step = max(1, min_length // 8)  # Show ~8 labels max
+                    ax.set_xticks(x_positions[::step])
+                    # Use any available dataset for x-labels (they should have common periods)
+                    sample_df = list(filtered_datasets.values())[0]
+                    ax.set_xticklabels(sample_df['year_quarter'].iloc[:min_length:step], rotation=45, ha='right')
             else:
                 ax.set_xticks([])
             
-            # Add grid and legend (only for top-right subplot)
+            # Add grid and legend (only for top-right subplot if we have plots)
             ax.grid(True, alpha=0.3)
-            if row == 0 and col == 2:
+            if row == 0 and col == 2 and plotted_models:
                 ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
             
             # Set y-axis limits for better comparison
             ax.set_ylim(0, 1)
             
-            # Add row label on the left
-            if col == 0:
-                ax.text(-0.15, 0.5, lag_label, rotation=90, va='center', ha='center',
-                       transform=ax.transAxes, fontsize=12, fontweight='bold')
+            # Add models plotted info as subtitle
+            if plotted_models:
+                models_str = ', '.join(plotted_models)
+                ax.text(0.5, 0.95, f'Models: {models_str}', 
+                       ha='center', va='top', transform=ax.transAxes, 
+                       fontsize=9, style='italic')
     
     # Add main title
-    fig.suptitle('Model Performance Comparison Across Forecasting Scopes', 
+    fig.suptitle('Class 1 Performance Comparison Across Forecasting Scopes', 
                  fontsize=16, fontweight='bold', y=0.98)
     
     # Adjust layout to prevent overlap
@@ -169,61 +363,110 @@ def create_comparison_plot(probit_data, rf_data, xgboost_data):
     
     return fig
 
-def print_summary_statistics(probit_data, rf_data, xgboost_data):
-    """Print weighted average performance statistics for each model and lag"""
+def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
+    """Print class 1 performance statistics for each model and lag (unweighted averages)"""
     
-    lag_periods = [3, 6, 9, 12]
+    # Use available lag periods from the data
+    available_lags = sorted(set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys()))
     metrics = ['precision(1)', 'recall(1)', 'f1(1)']
-    metric_names = ['Precision', 'Recall', 'F1 Score']
+    metric_names = ['Precision (Class 1)', 'Recall (Class 1)', 'F1 Score (Class 1)']
     
     print("\\n" + "="*80)
-    print("SAMPLE-WEIGHTED PERFORMANCE SUMMARY")
+    print("CLASS 1 PERFORMANCE SUMMARY (Unweighted Averages)")
     print("="*80)
     
-    for lag in lag_periods:
+    for lag in available_lags:
         print(f"\\n{lag}-month lag forecasting:")
-        print("-" * 40)
+        print("-" * 50)
         
-        # Calculate weighted averages for each metric
+        # Calculate simple means for each metric
         for metric, metric_name in zip(metrics, metric_names):
-            probit_avg = calculate_weighted_metrics(probit_data[lag], metric)
-            rf_avg = calculate_weighted_metrics(rf_data[lag], metric)
-            xgboost_avg = calculate_weighted_metrics(xgboost_data[lag], metric)
+            probit_avg = probit_data[lag][metric].mean() if lag in probit_data and metric in probit_data[lag].columns else np.nan
+            fewsnet_avg = fewsnet_data[lag][metric].mean() if lag in fewsnet_data and metric in fewsnet_data[lag].columns else np.nan
+            rf_avg = rf_data[lag][metric].mean() if lag in rf_data and metric in rf_data[lag].columns else np.nan
+            xgboost_avg = xgboost_data[lag][metric].mean() if lag in xgboost_data and metric in xgboost_data[lag].columns else np.nan
             
-            print(f"{metric_name:>10}: Probit={probit_avg:.4f}, RF={rf_avg:.4f}, XGBoost={xgboost_avg:.4f}")
+            print(f"{metric_name:>18}: Probit={probit_avg:.4f}, FEWSNET={fewsnet_avg:.4f}, GeoRF={rf_avg:.4f}, XGBoost={xgboost_avg:.4f}")
+        
+        # Print data counts
+        probit_count = len(probit_data[lag]) if lag in probit_data else 0
+        fewsnet_count = len(fewsnet_data[lag]) if lag in fewsnet_data else 0
+        rf_count = len(rf_data[lag]) if lag in rf_data else 0
+        xgb_count = len(xgboost_data[lag]) if lag in xgboost_data else 0
+        print(f"{'Sample counts':>18}: Probit={probit_count}, FEWSNET={fewsnet_count}, GeoRF={rf_count}, XGBoost={xgb_count}")
 
 def main():
-    # Set directory containing the data files
-    base_dir = "20250808attachments/trial_07_XGboost_and_baseline"
+    # Use current directory for auto-detection
+    base_dir = "."
     
-    # Load and process data
-    print("Loading probit, RF, and XGBoost data...")
-    probit_data, rf_data, xgboost_data = load_and_process_data(base_dir)
+    # Load and process data using auto-detection
+    print("Auto-detecting and loading comparison data...")
+    probit_data, fewsnet_data, rf_data, xgboost_data = load_and_process_data(base_dir)
+    
+    # Check if any data was found
+    if not probit_data and not fewsnet_data and not rf_data and not xgboost_data:
+        print("\\nError: No result files found!")
+        print("Expected files:")
+        print("  - Probit: baseline_probit_results/baseline_probit_results_fs*.csv")
+        print("  - FEWSNET: fewsnet_baseline_results/fewsnet_baseline_results_fs*.csv")
+        print("  - GeoRF: results_df_gp_fs*_*_*.csv")
+        print("  - XGBoost: results_df_xgb_gp_fs*_*_*.csv")
+        return
+    
+    # Get available lag periods from all datasets
+    available_lags = sorted(set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys()))
     
     # Print data summary
     print("\\nData Summary:")
     print("=" * 50)
-    for lag in [3, 6, 9, 12]:
-        probit_df = probit_data[lag]
-        rf_df = rf_data[lag]
-        xgboost_df = xgboost_data[lag]
-        print(f"{lag}-month lag: {len(probit_df)} time periods")
-        print(f"  Time range: {probit_df['year_quarter'].min()} to {probit_df['year_quarter'].max()}")
+    for lag in available_lags:
+        has_probit = lag in probit_data
+        has_fewsnet = lag in fewsnet_data
+        has_rf = lag in rf_data
+        has_xgb = lag in xgboost_data
+        
+        print(f"{lag}-month lag:")
+        if has_probit:
+            probit_df = probit_data[lag]
+            print(f"  Probit: {len(probit_df)} time periods ({probit_df['year_quarter'].min()} to {probit_df['year_quarter'].max()})")
+        else:
+            print(f"  Probit: No data found")
+            
+        if has_fewsnet:
+            fewsnet_df = fewsnet_data[lag]
+            print(f"  FEWSNET: {len(fewsnet_df)} time periods ({fewsnet_df['year_quarter'].min()} to {fewsnet_df['year_quarter'].max()})")
+        else:
+            print(f"  FEWSNET: No data found")
+            
+        if has_rf:
+            rf_df = rf_data[lag]
+            print(f"  GeoRF: {len(rf_df)} time periods ({rf_df['year_quarter'].min()} to {rf_df['year_quarter'].max()})")
+        else:
+            print(f"  GeoRF: No data found")
+            
+        if has_xgb:
+            xgb_df = xgboost_data[lag]
+            print(f"  XGBoost: {len(xgb_df)} time periods ({xgb_df['year_quarter'].min()} to {xgb_df['year_quarter'].max()})")
+        else:
+            print(f"  XGBoost: No data found")
     
-    # Create comparison plot
-    print("\\nCreating 4x3 comparison visualization...")
-    fig = create_comparison_plot(probit_data, rf_data, xgboost_data)
-    
-    # Save plot
-    output_path = os.path.join(base_dir, 'model_comparison_4x3_grid.png')
-    fig.savefig(output_path, dpi=300, bbox_inches='tight')
-    print(f"Plot saved to: {output_path}")
-    
-    # Print summary statistics
-    print_summary_statistics(probit_data, rf_data, xgboost_data)
-    
-    # Show plot
-    plt.show()
+    # Create comparison plot only if we have data
+    if available_lags:
+        print("\\nCreating class 1 performance comparison visualization...")
+        fig = create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data)
+        
+        # Save plot in current directory
+        output_path = 'model_comparison_class1_focus.png'
+        fig.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"Plot saved to: {output_path}")
+        
+        # Print summary statistics
+        print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data)
+        
+        # Show plot
+        plt.show()
+    else:
+        print("\\nNo data available for plotting.")
 
 if __name__ == "__main__":
     main()

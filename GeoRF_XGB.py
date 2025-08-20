@@ -487,8 +487,8 @@ class GeoRF_XGB():
         # ... (similar implementation as single layer)
         
         # For now, return placeholder base results
-        pre_base = pre * 0.9  # Placeholder
-        rec_base = rec * 0.9  # Placeholder  
-        f1_base = f1 * 0.9   # Placeholder
+        pre_base = 0  # Placeholder
+        rec_base = 0  # Placeholder  
+        f1_base = 0   # Placeholder
         
         return pre, rec, f1, pre_base, rec_base, f1_base

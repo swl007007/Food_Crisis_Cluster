@@ -135,7 +135,7 @@ if multi:
   #used locations marked by "#select_class"
 else:
   #binary: one crop
-  SELECT_CLASS = None
+  SELECT_CLASS = [1]
   NUM_CLASS = 2
 
 #For improved spatial contiguity of partitions

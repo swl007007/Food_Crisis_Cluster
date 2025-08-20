@@ -161,39 +161,24 @@ def predict_probit_baseline(model, X_test):
     
     return y_pred, y_pred_proba
 
-def evaluate_predictions(y_true, y_pred, y_pred_proba=None):
+def evaluate_predictions_class1_only(y_true, y_pred, y_pred_proba=None):
     """
-    Calculate evaluation metrics.
+    Calculate evaluation metrics for class 1 only.
     """
-    # Calculate metrics for both classes
-    precision = precision_score(y_true, y_pred, average=None, zero_division=0)
-    recall = recall_score(y_true, y_pred, average=None, zero_division=0)
-    f1 = f1_score(y_true, y_pred, average=None, zero_division=0)
+    # Calculate class 1 metrics only
+    precision_1 = precision_score(y_true, y_pred, pos_label=1, zero_division=0)
+    recall_1 = recall_score(y_true, y_pred, pos_label=1, zero_division=0)
+    f1_1 = f1_score(y_true, y_pred, pos_label=1, zero_division=0)
     
-    # Get class counts
-    unique_true, counts_true = np.unique(y_true, return_counts=True)
-    unique_pred, counts_pred = np.unique(y_pred, return_counts=True)
+    # Count class 1 samples
+    num_samples_1 = sum(y_true == 1)
     
-    # Ensure we have metrics for both classes (0 and 1)
-    metrics = {}
-    for cls in [0, 1]:
-        if cls < len(precision):
-            metrics[f'precision({cls})'] = precision[cls]
-            metrics[f'recall({cls})'] = recall[cls]
-            metrics[f'f1({cls})'] = f1[cls]
-        else:
-            metrics[f'precision({cls})'] = 0.0
-            metrics[f'recall({cls})'] = 0.0
-            metrics[f'f1({cls})'] = 0.0
-            
-        # Count samples
-        if cls in unique_true:
-            idx = np.where(unique_true == cls)[0][0]
-            metrics[f'num_samples({cls})'] = counts_true[idx]
-        else:
-            metrics[f'num_samples({cls})'] = 0
-    
-    return metrics
+    return {
+        'precision(1)': precision_1,
+        'recall(1)': recall_1,
+        'f1(1)': f1_1,
+        'num_samples(1)': num_samples_1
+    }
 
 def generate_quarters(start_year, end_year):
     """
@@ -276,7 +261,7 @@ def main():
             y_pred, y_pred_proba = predict_probit_baseline(model, Xtest)
             
             # Evaluate predictions
-            metrics = evaluate_predictions(ytest, y_pred, y_pred_proba)
+            metrics = evaluate_predictions_class1_only(ytest, y_pred, y_pred_proba)
             
             # Add metadata
             metrics['year'] = test_year
@@ -284,12 +269,10 @@ def main():
             
             # Print results
             print(f"Results for Q{quarter} {test_year}:")
-            print(f"  Precision (class 0): {metrics['precision(0)']:.4f}")
             print(f"  Precision (class 1): {metrics['precision(1)']:.4f}")
-            print(f"  Recall (class 0): {metrics['recall(0)']:.4f}")
             print(f"  Recall (class 1): {metrics['recall(1)']:.4f}")
-            print(f"  F1 (class 0): {metrics['f1(0)']:.4f}")
             print(f"  F1 (class 1): {metrics['f1(1)']:.4f}")
+            print(f"  Samples (class 1): {metrics['num_samples(1)']}")
             
             # Store results
             results_list.append(metrics)
@@ -323,11 +306,12 @@ def main():
         print(f"\nResults saved to: {output_file}")
         
         # Print summary statistics
-        print("\n=== Summary Statistics ===")
+        print("\n=== Summary Statistics (Class 1 Only) ===")
         print(f"Total quarters evaluated: {len(results_df)}")
         print(f"Average precision (class 1): {results_df['precision(1)'].mean():.4f}")
         print(f"Average recall (class 1): {results_df['recall(1)'].mean():.4f}")
         print(f"Average F1 (class 1): {results_df['f1(1)'].mean():.4f}")
+        print(f"Total class 1 samples: {results_df['num_samples(1)'].sum()}")
         
         return results_df
     else:
