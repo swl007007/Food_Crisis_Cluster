@@ -408,17 +408,67 @@ Rolling window temporal splitting for quarterly evaluation with 5-year training 
 python GeoRF_main.py
 ```
 
-#### **Food Crisis Pipeline (Random Forest)**
+#### **Food Crisis Pipeline - Single Execution**
+
+**Random Forest (GeoRF):**
 ```bash
-python main_model_GF.py
+python main_model_GF.py --start_year 2023 --end_year 2024 --forecasting_scope 1
 ```
 
-#### **Food Crisis Pipeline (XGBoost)**
+**XGBoost (GeoXGB):**
 ```bash
-python main_model_XGB.py
+python main_model_XGB.py --start_year 2023 --end_year 2024 --forecasting_scope 1
 ```
 
-*Note: The XGBoost version (`main_model_XGB.py`) is now a complete replication of the Random Forest pipeline with identical functionality, checkpoint recovery, rolling window evaluation, and partition metrics tracking.*
+**Command Line Arguments:**
+- `--start_year`: Start year for evaluation (default: 2024)
+- `--end_year`: End year for evaluation (default: 2024) 
+- `--forecasting_scope`: Forecasting scope 1-4 (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
+
+#### **RECOMMENDED: Batch Processing for Memory Management**
+
+**GeoRF Batch Processing:**
+```bash
+# Full production run (5 time periods × 4 forecasting scopes = 20 batches)
+run_georf_batches.bat
+
+# Light testing (2 time periods × 2 forecasting scopes = 4 batches)
+test_georf_batches.bat
+```
+
+**XGBoost Batch Processing:**
+```bash
+# Full production run (5 time periods × 4 forecasting scopes = 20 batches)
+run_xgboost_batches.bat
+
+# Light testing (2 time periods × 2 forecasting scopes = 4 batches)
+test_xgboost_batches.bat
+```
+
+**Batch Processing Benefits:**
+- **Memory Cleanup**: Prevents memory leakage during long temporal evaluations
+- **Error Handling**: Continues processing if individual batches fail
+- **Unique Naming**: Generates files with `_{start_year}_{end_year}` suffixes to prevent overwrites
+- **Progress Tracking**: Shows batch completion status and memory cleanup
+
+#### **Baseline Comparisons and Model Evaluation**
+
+**Probit Regression Baseline:**
+```bash
+python baseline_probit_regression.py
+```
+
+**FEWSNET Official Predictions Baseline:**
+```bash
+python fewsnet_baseline_evaluation.py
+```
+
+**4-Model Performance Comparison:**
+```bash
+python georf_vs_baseline_comparison_plot.py
+```
+
+*Note: All models now focus exclusively on class 1 (crisis prediction) metrics: precision, recall, and F1 score. The XGBoost version (`main_model_XGB.py`) provides complete feature parity with the Random Forest pipeline including checkpoint recovery, rolling window evaluation, and partition metrics tracking.*
 
 ### 6.2 Core Configuration Parameters (config.py)
 

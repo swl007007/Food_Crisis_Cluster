@@ -90,11 +90,47 @@ geoxgb.fit(X, y, X_group)
 y_pred = geoxgb.predict(X_test, X_group_test)
 ```
 
-### Complete Pipeline
+### Complete Pipeline - Single Execution
 
-```python
-# Run the complete XGBoost pipeline
-python main_model_XGB.py
+**Single Run:**
+```bash
+python main_model_XGB.py --start_year 2023 --end_year 2024 --forecasting_scope 1
+```
+
+**Command Line Arguments:**
+- `--start_year`: Start year for evaluation (default: 2024)
+- `--end_year`: End year for evaluation (default: 2024) 
+- `--forecasting_scope`: Forecasting scope 1-4 (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
+
+### **RECOMMENDED: Batch Processing for Memory Management**
+
+**XGBoost Batch Processing:**
+```bash
+# Full production run (5 time periods × 4 forecasting scopes = 20 batches)
+run_xgboost_batches.bat
+
+# Light testing (2 time periods × 2 forecasting scopes = 4 batches)
+test_xgboost_batches.bat
+```
+
+**Batch Processing Benefits:**
+- **Memory Cleanup**: Prevents memory leakage during long temporal evaluations
+- **Error Handling**: Continues processing if individual batches fail  
+- **Unique Naming**: Generates files with `_{start_year}_{end_year}` suffixes to prevent overwrites
+- **Progress Tracking**: Shows batch completion status and memory cleanup
+
+### **4-Model Comparison Framework**
+
+**Baseline Evaluations:**
+```bash
+# Probit regression baseline
+python baseline_probit_regression.py
+
+# FEWSNET official predictions baseline  
+python fewsnet_baseline_evaluation.py
+
+# 4-model performance comparison (Probit, FEWSNET, GeoRF, XGBoost)
+python georf_vs_baseline_comparison_plot.py
 ```
 
 ### Demo and Comparison
@@ -196,55 +232,98 @@ result_GeoXGB_*/
 ```
 
 ### Result Files
-- `results_df_g*.csv` - Performance metrics by quarter/year (assignment method suffixes: gp=polygons, gg=grid, gc=country)
-- `y_pred_test_g*.csv` - Predictions for each test quarter/year
+
+**Standard Output Files:**
+- `results_df_xgb_gp_fs{scope}_{start_year}_{end_year}.csv` - Performance metrics with temporal range
+- `y_pred_test_xgb_gp_fs{scope}_{start_year}_{end_year}.csv` - Predictions with temporal range
 - `correspondence_table_Q*_*.csv` - Quarterly admin code to partition ID mapping (e.g., Q4_2024.csv)
+
+**Assignment Method Suffixes:**
+- `gp` = polygons
+- `gg` = grid  
+- `gc` = country
+- `gae` = AEZ
+- `gcae` = country_AEZ
+
+**Batch Processing Output:**
+With batch processing, files include temporal ranges to prevent overwrites:
+```
+results_df_xgb_gp_fs1_2015_2016.csv
+results_df_xgb_gp_fs2_2015_2016.csv
+results_df_xgb_gp_fs1_2017_2018.csv
+results_df_xgb_gp_fs2_2017_2018.csv
+...
+```
+
+**Baseline Comparison Files:**
+- `baseline_probit_results/baseline_probit_results_fs{scope}.csv`
+- `fewsnet_baseline_results/fewsnet_baseline_results_fs{scope}.csv`
+- `model_comparison_class1_focus.png` - 4-model comparison visualization
 
 ## New Features in Updated XGBoost Implementation
 
-### Complete Pipeline Replication
+### Complete Pipeline Replication and Memory Management
 The new `main_model_XGB.py` is a complete replication of the Random Forest version with these key features:
 
-#### **Checkpoint Recovery**
+#### **Command Line Interface**
 ```python
-# Automatic detection and resume from previous runs
-enable_checkpoint_recovery = True  # in main()
+# External iteration with command line arguments
+python main_model_XGB.py --start_year 2023 --end_year 2024 --forecasting_scope 1
 
-# Scans for result_GeoXGB_* directories
-# Automatically resumes from last completed quarter
-# Supports partial result loading and continuation
+# Enables memory management through batch processing
+# Prevents memory leakage during long temporal evaluations
 ```
 
-#### **Rolling Window Temporal Evaluation**
+#### **Batch Processing Integration**
 ```python
-# 5-year training windows before each test quarter
-# Quarterly evaluation (Q1, Q2, Q3, Q4) for specified years
-start_year = 2024
-end_year = 2024
-desire_terms = None  # All quarters, or specific quarter (1-4)
+# Memory management through external iteration
+run_xgboost_batches.bat      # Full production (20 batches)
+test_xgboost_batches.bat     # Light testing (4 batches)
+
+# Each batch:
+# 1. Runs XGBoost for specific time period and forecasting scope
+# 2. Cleans up result_GeoXGB_* directories between batches
+# 3. Removes temporary files and forces memory cleanup
+# 4. Generates unique file names to prevent overwrites
 ```
 
-#### **Partition Metrics Tracking**
+#### **Class 1 (Crisis) Focus**
 ```python
-# Enable detailed tracking of partition performance improvements
-track_partition_metrics = True
-enable_metrics_maps = True
-
-# Automatically creates:
-# - CSV files with F1/accuracy before/after each partition
-# - Geographic maps showing performance improvements
+# All models now focus exclusively on crisis prediction metrics
+# Class 1 metrics only: precision(1), recall(1), f1(1)
+# Removes class 0 (non-crisis) evaluation to focus on crisis detection
 ```
 
-#### **Forecasting Scope Options**
+#### **4-Model Comparison Framework**
 ```python
-forecasting_scope = 1  # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+# Integrated baseline comparison system:
+# 1. Probit Baseline - Simple regression with lagged crisis variables
+# 2. FEWSNET Baseline - Official predictions from FEWS NET system
+# 3. GeoRF - Geo-aware Random Forest with spatial partitioning
+# 4. XGBoost - XGBoost with same spatial partitioning framework
+
+# Automatic detection and comparison via georf_vs_baseline_comparison_plot.py
 ```
 
-#### **Memory Management**
+#### **Forecasting Scope Configuration**
 ```python
-# Comprehensive memory cleanup for XGBoost models
-# Handles large-scale evaluation across multiple quarters
-# Progress tracking and memory usage monitoring
+# Command line configurable forecasting scopes:
+forecasting_scope = 1  # 3-month lag (lag terms 1,2,3)
+forecasting_scope = 2  # 6-month lag (lag terms 2,3,4)  
+forecasting_scope = 3  # 9-month lag (lag terms 3,4,5)
+forecasting_scope = 4  # 12-month lag (lag terms 4,5,6)
+
+# Supports external iteration across all scopes
+```
+
+#### **Enhanced Memory Management**
+```python
+# XGBoost-specific memory cleanup:
+# - Clears XGBoost internal caches and memory pools
+# - Releases _Booster objects and model internals
+# - Comprehensive cleanup for 2-layer models
+# - Progress tracking with memory usage monitoring
+# - Automatic garbage collection between quarters
 ```
 
 ## Advanced Features
