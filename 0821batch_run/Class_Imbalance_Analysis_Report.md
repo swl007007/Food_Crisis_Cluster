@@ -229,10 +229,167 @@ def should_accept_partition(class_0_improvement, class_1_improvement):
 - Support both crisis-focused and balanced optimization
 - Preserve existing API for non-crisis applications
 
+## Critical Discovery: Triple Misalignment in Pipeline
+
+**Even with `SELECT_CLASS = np.array([1])`, BOTH partition optimization AND significance testing use overall accuracy instead of class 1 metrics!**
+
+### Complete Pipeline Analysis
+
+#### 1. Partition Optimization Problem
+
+**In `get_class_wise_stat()` (partition_opt.py:69):**
+```python
+# Line 104: Calculate OVERALL accuracy
+stat = (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
+
+# Line 112-113: Filter to class 1 samples only  
+if SELECT_CLASS is not None:
+    y_true = y_true[:, SELECT_CLASS]
+
+# Line 117: Multiply class 1 labels by OVERALL accuracy
+true_pred_w_class = y_true * np.expand_dims(stat, 1)
+```
+
+**In `get_score()` (partition_opt.py:718):**
+```python
+# Line 741: Calculate OVERALL accuracy
+score = (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
+
+# Lines 748-755: Filter to class 1 SAMPLES, but score is still overall accuracy
+if SELECT_CLASS is not None:
+    score_select = np.zeros(score.shape)
+    for i in range(SELECT_CLASS.shape[0]):
+        class_id = int(SELECT_CLASS[i])
+        score_select[y_true[:,class_id]==1] = 1
+    score = score[score_select.astype(bool)]
+```
+
+#### 2. Significance Testing Problem
+
+**In `transformation.py:562-563, 606`:**
+```python
+# Score calculation uses OVERALL accuracy
+base_score_before = get_score(y_val, y_pred_before)      # OVERALL accuracy
+split_score0, split_score1 = get_split_score(...)        # OVERALL accuracy per partition
+
+# Significance test uses OVERALL accuracy scores
+sig = sig_test(base_score, split_score0, split_score1, base_score_before)
+```
+
+**In `sig_test.py:23-24, 36-37`:**
+```python
+# Uses OVERALL accuracy scores for significance testing
+split_score = np.hstack([split_score0, split_score1])
+diff = split_score - base_score  # Improvement in OVERALL accuracy
+
+# Rejects partitions that don't improve OVERALL accuracy
+if mean_diff <= 0:  # No improvement in OVERALL accuracy
+    return 0  # REJECT PARTITION
+```
+
+### What SELECT_CLASS Actually Does vs What It Should Do
+
+**Current Behavior:**
+- ✅ **Filters samples**: Only includes samples that belong to class 1
+- ❌ **Score calculation**: Still uses overall accuracy for those samples
+- ❌ **Optimization target**: Improves overall accuracy on class 1 samples
+- ❌ **Significance testing**: Rejects partitions that don't improve overall accuracy
+
+**What It Should Do for Crisis Prediction:**
+- ✅ **Filter samples**: Only include samples that belong to class 1  
+- ✅ **Score calculation**: Use class 1 specific accuracy (precision/recall/F1)
+- ✅ **Optimization target**: Improve class 1 prediction performance
+- ✅ **Significance testing**: Accept partitions that improve class 1 F1
+
+### The Complete Pipeline Trace
+
+1. **Partition optimization** (transformation.py:562-563):
+   ```python
+   base_score_before = get_score(y_val, y_pred_before)      # OVERALL accuracy
+   split_score0, split_score1 = get_split_score(...)        # OVERALL accuracy per partition
+   ```
+
+2. **Significance testing** (transformation.py:606, sig_test.py:23-24):
+   ```python
+   sig = sig_test(base_score, split_score0, split_score1)   # Uses OVERALL accuracy
+   diff = split_score - base_score  # Improvement in OVERALL accuracy
+   if mean_diff <= 0: return 0     # Reject if no OVERALL improvement
+   ```
+
+3. **Final evaluation** (main_model_*.py):
+   ```python
+   f1_class1 = f1_score(y_true, y_pred, pos_label=1)       # CLASS 1 F1 only
+   ```
+
+**Result:** **Triple misalignment** where no stage optimizes for actual crisis prediction performance!
+
+### Why This Causes Your Observed Behavior
+
+**Partition Metrics (~0.9):**
+- Optimizing for overall accuracy on class 1 samples
+- Overall accuracy includes correct "non-crisis" predictions within class 1 timeframes  
+- High performance due to easier overall classification task
+
+**Final Evaluation (~0.5-0.6):**
+- Measuring class 1 F1 (precision/recall for crisis detection)
+- Much harder task requiring accurate crisis identification
+- **Misaligned optimization target** leads to suboptimal performance
+
+**Significance Testing Impact:**
+- **Automatically rejects** partitions that improve crisis prediction but hurt overall accuracy
+- **Only 165 out of 10497 partitions** show positive overall improvement
+- **Most beneficial crisis prediction partitions** are eliminated by significance testing
+
+## Comprehensive Solution Architecture
+
+### Updated Class-Specific Score Calculation:
+```python
+def get_class_1_f1_score(y_true, y_pred):
+    """Calculate class 1 specific F1 score instead of overall accuracy."""
+    from sklearn.metrics import f1_score
+    y_true_labels = np.argmax(y_true, axis=1) 
+    y_pred_labels = np.argmax(y_pred, axis=1)
+    return f1_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0)
+
+def get_class_wise_stat_crisis_focused(y_true, y_pred, y_group):
+    """Modified version that uses class 1 F1 instead of overall accuracy."""
+    # Convert to one-hot if needed
+    if len(y_true.shape)==1:
+        y_true = np.eye(NUM_CLASS)[y_true.astype(int)].astype(int)
+        y_pred = np.eye(NUM_CLASS)[y_pred.astype(int)].astype(int)
+    
+    # Calculate CLASS 1 SPECIFIC F1 score per sample
+    stat = calculate_per_sample_class_1_contribution(y_true, y_pred)  # New function needed
+    
+    # Filter to class 1 samples
+    if SELECT_CLASS is not None:
+        y_true = y_true[:, SELECT_CLASS]
+    
+    true_pred_w_class = y_true * np.expand_dims(stat, 1)
+    # ... rest of grouping logic
+
+def sig_test_crisis_focused(base_score, split_score0, split_score1, base_score_before=None):
+    """Modified significance test that uses class 1 F1 improvement."""
+    # Use class 1 F1 scores instead of overall accuracy
+    split_score = np.hstack([split_score0, split_score1])
+    diff = split_score - base_score  # Improvement in CLASS 1 F1
+    
+    mean_diff = np.mean(diff)
+    if mean_diff <= 0:  # No improvement in CLASS 1 F1
+        return 0
+    # ... rest of significance testing logic
+```
+
+### Configuration Addition:
+```python
+# In config.py
+CRISIS_FOCUSED_OPTIMIZATION = True  # Use class 1 F1 instead of overall accuracy  
+PARTITION_OPTIMIZATION_METRIC = 'class_1_f1'  # 'overall_accuracy' or 'class_1_f1'
+CLASS_1_SIGNIFICANCE_TESTING = True  # Use class 1 F1 for significance testing
+```
+
 ## Conclusion
 
-The observed discrepancy is **not a bug** but a **fundamental misalignment** between optimization target (macro F1) and evaluation target (class 1 F1). The high overall metrics reflect excellent majority class performance, while the low class 1 metrics reveal the true crisis prediction challenge. 
+You've identified the **fundamental architectural flaw**: 
 
-**Key Insight:** Your current spatial partitioning is optimizing for overall accuracy rather than crisis detection capability. Aligning the optimization target with crisis prediction goals should significantly improve class 1 F1 performance while maintaining reasonable overall model performance.
-
-**Recommendation:** Implement Solution 1 (Class 1 Focused Optimization) with Solution 3 (Configuration-Based) for immediate impact, followed by enhanced monitoring capabilities from Solution 2.
+**The entire spatial partitioning framework optimizes for overall accuracy while your application requires crisis prediction optimization.** This explains exactly why your high partition metrics (~0.9 overall accuracy) don't translate to good class 1 performance (~0.54 crisis F1) - the optimization target is fundamentally wrong for crisis prediction at **both the partition creation AND significance testing levels**!
