@@ -323,7 +323,7 @@ if mean_diff <= 0:  # No improvement in OVERALL accuracy
 
 **Result:** **Triple misalignment** where no stage optimizes for actual crisis prediction performance!
 
-### Why This Causes Your Observed Behavior
+### Why This Causes Observed Behavior
 
 **Partition Metrics (~0.9):**
 - Optimizing for overall accuracy on class 1 samples
@@ -387,9 +387,3 @@ CRISIS_FOCUSED_OPTIMIZATION = True  # Use class 1 F1 instead of overall accuracy
 PARTITION_OPTIMIZATION_METRIC = 'class_1_f1'  # 'overall_accuracy' or 'class_1_f1'
 CLASS_1_SIGNIFICANCE_TESTING = True  # Use class 1 F1 for significance testing
 ```
-
-## Conclusion
-
-You've identified the **fundamental architectural flaw**: 
-
-**The entire spatial partitioning framework optimizes for overall accuracy while your application requires crisis prediction optimization.** This explains exactly why your high partition metrics (~0.9 overall accuracy) don't translate to good class 1 performance (~0.54 crisis F1) - the optimization target is fundamentally wrong for crisis prediction at **both the partition creation AND significance testing levels**!
