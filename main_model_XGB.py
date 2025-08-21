@@ -40,12 +40,92 @@ from config import *
 from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
 
+# Import adjacency matrix utilities
+if USE_ADJACENCY_MATRIX:
+    from adjacency_utils import load_or_create_adjacency_matrix
+
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
 
-def get_checkpoint_info():
+def force_cleanup_xgboost_directories():
+    """
+    Perform robust cleanup of all result_GeoXGB* directories.
+    Uses Python for better error handling and cross-platform compatibility.
+    """
+    import shutil
+    import time
+    
+    print("Performing force cleanup of XGBoost result directories...")
+    
+    # Find all result_GeoXGB* directories
+    result_dirs = glob.glob('result_GeoXGB*')
+    
+    if not result_dirs:
+        print("No result_GeoXGB* directories found to clean up.")
+        return
+    
+    cleaned_count = 0
+    failed_count = 0
+    
+    for result_dir in result_dirs:
+        try:
+            print(f"Attempting to delete: {result_dir}")
+            
+            # Force remove read-only flags and delete
+            if os.path.exists(result_dir):
+                # First try to make everything writable
+                for root, dirs, files in os.walk(result_dir):
+                    for d in dirs:
+                        os.chmod(os.path.join(root, d), 0o777)
+                    for f in files:
+                        file_path = os.path.join(root, f)
+                        os.chmod(file_path, 0o777)
+                
+                # Force remove the directory
+                shutil.rmtree(result_dir, ignore_errors=True)
+                
+                # Verify deletion
+                if not os.path.exists(result_dir):
+                    print(f"✓ Successfully deleted: {result_dir}")
+                    cleaned_count += 1
+                else:
+                    print(f"✗ Failed to delete: {result_dir} (still exists)")
+                    failed_count += 1
+                    
+        except Exception as e:
+            print(f"✗ Error deleting {result_dir}: {e}")
+            failed_count += 1
+            
+        # Small delay to release file handles
+        time.sleep(0.1)
+    
+    # Force garbage collection
+    gc.collect()
+    
+    print(f"XGBoost cleanup completed: {cleaned_count} deleted, {failed_count} failed")
+    
+    # Additional cleanup of temporary files
+    temp_patterns = ['temp_*', '*.pkl', '__pycache__']
+    for pattern in temp_patterns:
+        temp_files = glob.glob(pattern)
+        for temp_file in temp_files:
+            try:
+                if os.path.isfile(temp_file):
+                    os.remove(temp_file)
+                elif os.path.isdir(temp_file):
+                    shutil.rmtree(temp_file, ignore_errors=True)
+                print(f"Cleaned up: {temp_file}")
+            except:
+                pass
+
+def get_checkpoint_info(force_cleanup=False):
     """
     Scan for existing checkpoint directories and return information about completed quarters.
+    
+    Parameters:
+    -----------
+    force_cleanup : bool
+        If True, perform cleanup and return empty lists (bypass checkpoint detection)
     
     Returns:
     --------
@@ -56,6 +136,12 @@ def get_checkpoint_info():
     checkpoint_dirs : dict
         Mapping from (year, quarter) to result directory path
     """
+    if force_cleanup:
+        print("Force cleanup mode enabled - performing XGBoost directory cleanup...")
+        force_cleanup_xgboost_directories()
+        print("Returning empty checkpoint info to force fresh execution.")
+        return [], [], {}
+    
     print("Scanning for existing checkpoints...")
     
     # Find all result_GeoXGB_* directories - CHANGED from result_GeoRF_*
@@ -444,11 +530,60 @@ def setup_spatial_groups(df, assignment='polygons'):
         # Convert admin codes to polygon indices for PolygonGroupGenerator
         polygon_indices = np.array([admin_to_polygon_idx[admin_code] for admin_code in X_polygon_ids])
         
-        # Create polygon generator with correct mapping
+        # Load adjacency matrix if enabled
+        adjacency_dict = None
+        if USE_ADJACENCY_MATRIX:
+            try:
+                print("Loading adjacency matrix for polygon-based contiguity...")
+                adj_dict_raw, polygon_id_mapping, adj_centroids = load_or_create_adjacency_matrix(
+                    shapefile_path=ADJACENCY_SHAPEFILE_PATH,
+                    polygon_id_column=ADJACENCY_POLYGON_ID_COLUMN,
+                    cache_dir=ADJACENCY_CACHE_DIR,
+                    force_regenerate=ADJACENCY_FORCE_REGENERATE
+                )
+                
+                # Create mapping from admin_code to adjacency matrix index
+                # The adjacency matrix keys are indices 0,1,2... corresponding to shapefile admin_codes
+                admin_code_to_adj_idx = {}
+                adj_idx_to_admin_code = {}
+                
+                for adj_idx, admin_code in polygon_id_mapping.items():
+                    admin_code_to_adj_idx[admin_code] = adj_idx
+                    adj_idx_to_admin_code[adj_idx] = admin_code
+                
+                # Map adjacency dictionary to use polygon indices (matching our polygon_indices array)
+                adjacency_dict = {}
+                for polygon_idx in range(len(unique_polygons)):
+                    admin_code = unique_polygons[polygon_idx]
+                    if admin_code in admin_code_to_adj_idx:
+                        adj_idx = admin_code_to_adj_idx[admin_code]
+                        if adj_idx in adj_dict_raw:
+                            # Map neighbor adjacency indices back to polygon indices
+                            neighbor_admin_codes = [adj_idx_to_admin_code.get(neighbor_adj_idx) for neighbor_adj_idx in adj_dict_raw[adj_idx]]
+                            neighbor_polygon_indices = []
+                            for neighbor_admin_code in neighbor_admin_codes:
+                                if neighbor_admin_code in admin_to_polygon_idx:
+                                    neighbor_polygon_indices.append(admin_to_polygon_idx[neighbor_admin_code])
+                            adjacency_dict[polygon_idx] = np.array(neighbor_polygon_indices)
+                        else:
+                            adjacency_dict[polygon_idx] = np.array([])
+                    else:
+                        adjacency_dict[polygon_idx] = np.array([])
+                
+                print(f"Adjacency matrix loaded: {len(adj_dict_raw)} polygons in shapefile, {len(adjacency_dict)} mapped to current data")
+                print(f"Sample adjacency connections: polygon 0 has {len(adjacency_dict.get(0, []))} neighbors")
+                
+            except Exception as e:
+                print(f"Warning: Failed to load adjacency matrix: {e}")
+                print("Falling back to distance-based neighbor calculation")
+                adjacency_dict = None
+        
+        # Create polygon generator with correct mapping and adjacency info
         polygon_gen = PolygonGroupGenerator(
             polygon_centroids=polygon_centroids,
             polygon_group_mapping=polygon_group_mapping,
-            neighbor_distance_threshold=0.8
+            neighbor_distance_threshold=0.8,
+            adjacency_dict=adjacency_dict
         )
         
         # Generate groups (these will be admin codes, not indices!)
@@ -946,7 +1081,7 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
-                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None,
+                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False,
                            # XGBoost-specific hyperparameters
                            learning_rate=0.1, reg_alpha=0.1, reg_lambda=1.0, subsample=0.8, colsample_bytree=0.8):
     """
@@ -1024,7 +1159,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     
     # CHECKPOINT RECOVERY: Check for existing results and determine what needs to be evaluated
     print("\n=== Checkpoint Recovery System ===")
-    completed_quarters, partial_results_files, checkpoint_dirs = get_checkpoint_info()
+    completed_quarters, partial_results_files, checkpoint_dirs = get_checkpoint_info(force_cleanup)
     
     # Load partial results if they exist
     existing_results_df, existing_y_pred_test = load_partial_results(
@@ -1866,8 +2001,8 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
         End year of evaluation period
     """
     # Create file names based on assignment
-    pred_test_name = 'y_pred_test_g'
-    results_df_name = 'results_df_g'
+    pred_test_name = 'y_pred_test_xgb_g'
+    results_df_name = 'results_df_xgb_g'
     
     assignment_suffixes = {
         'polygons': 'p',
@@ -1930,13 +2065,15 @@ def main():
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
     parser.add_argument('--forecasting_scope', type=int, default=4, choices=[1,2,3,4], 
                         help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 4)')
+    parser.add_argument('--force_cleanup', action='store_true', 
+                        help='Force cleanup of existing result directories and bypass checkpoint detection')
     args = parser.parse_args()
     
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific XGB depth
-    desire_terms = 1         # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    desire_terms = None         # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = args.forecasting_scope    # From command line argument
     
     # XGBoost-specific hyperparameters optimized for food crisis prediction
@@ -1953,7 +2090,7 @@ def main():
     enable_metrics_maps = False      # Create maps showing F1/accuracy improvements
     
     # Checkpoint Recovery Configuration
-    enable_checkpoint_recovery = True  # Enable automatic checkpoint detection and resume
+    enable_checkpoint_recovery = False  # Enable automatic checkpoint detection and resume
     
     # start year and end year from command line arguments
     start_year = args.start_year
@@ -1996,7 +2133,7 @@ def main():
             X, y, X_loc, X_group, years, dates, l1_index, l2_index,
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
-            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope,
+            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup,
             # Pass XGBoost hyperparameters
             learning_rate=learning_rate,
             reg_alpha=reg_alpha,

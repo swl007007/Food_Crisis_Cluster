@@ -789,7 +789,7 @@ class PolygonGroupGenerator():
   This generator creates groups from polygon assignments and stores centroid information
   for spatial contiguity refinement.
   '''
-  def __init__(self, polygon_centroids, polygon_group_mapping=None, neighbor_distance_threshold=None):
+  def __init__(self, polygon_centroids, polygon_group_mapping=None, neighbor_distance_threshold=None, adjacency_dict=None):
     '''
     Initialize PolygonGroupGenerator.
     
@@ -801,9 +801,13 @@ class PolygonGroupGenerator():
         Mapping from polygon indices to group IDs. If None, each polygon becomes one group.
     neighbor_distance_threshold : float, optional
         Distance threshold for determining polygon neighbors in contiguity refinement
+    adjacency_dict : dict, optional
+        Pre-computed adjacency dictionary from true polygon boundaries.
+        If provided, takes precedence over distance-based neighbor calculation.
     '''
     self.polygon_centroids = np.array(polygon_centroids)
     self.neighbor_distance_threshold = neighbor_distance_threshold
+    self.adjacency_dict = adjacency_dict
     
     # Create polygon to group mapping if not provided
     if polygon_group_mapping is None:
@@ -863,17 +867,23 @@ class PolygonGroupGenerator():
     Returns:
     --------
     contiguity_info : dict
-        Dictionary containing centroids, group mapping, and neighbor threshold
+        Dictionary containing centroids, group mapping, neighbor threshold, and adjacency dict
     '''
-    return {
+    contiguity_info = {
       'polygon_centroids': self.polygon_centroids,
       'polygon_group_mapping': self.polygon_group_mapping,
       'neighbor_distance_threshold': self.neighbor_distance_threshold
     }
+    
+    # Add adjacency dictionary if available
+    if self.adjacency_dict is not None:
+      contiguity_info['adjacency_dict'] = self.adjacency_dict
+    
+    return contiguity_info
 
 
 def generate_polygon_groups_from_centroids(X_polygon_ids, polygon_centroids, 
-                                          polygon_group_mapping=None, neighbor_distance_threshold=None):
+                                          polygon_group_mapping=None, neighbor_distance_threshold=None, adjacency_dict=None):
   '''
   Convenience function to generate polygon-based groups.
   
@@ -887,6 +897,9 @@ def generate_polygon_groups_from_centroids(X_polygon_ids, polygon_centroids,
       Mapping from polygon indices to group IDs
   neighbor_distance_threshold : float, optional
       Distance threshold for determining polygon neighbors
+  adjacency_dict : dict, optional
+      Pre-computed adjacency dictionary from true polygon boundaries.
+      If provided, takes precedence over distance-based neighbor calculation.
       
   Returns:
   --------
@@ -895,7 +908,7 @@ def generate_polygon_groups_from_centroids(X_polygon_ids, polygon_centroids,
   polygon_generator : PolygonGroupGenerator
       Generator instance for further use
   '''
-  polygon_generator = PolygonGroupGenerator(polygon_centroids, polygon_group_mapping, neighbor_distance_threshold)
+  polygon_generator = PolygonGroupGenerator(polygon_centroids, polygon_group_mapping, neighbor_distance_threshold, adjacency_dict)
   X_group = polygon_generator.get_groups(X_polygon_ids)
   
   return X_group, polygon_generator

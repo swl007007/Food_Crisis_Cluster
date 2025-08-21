@@ -69,10 +69,15 @@ set forecasting_scope=%3
 
 echo.
 echo ------ Batch !batch_count!: Years %start_year%-%end_year%, Forecasting Scope %forecasting_scope% ------
-echo Running: python main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
 
-REM Run the Python script with current parameters
-python main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
+REM Pre-execution cleanup to ensure clean state
+echo Performing pre-execution cleanup...
+call :cleanup_directories
+
+echo Running: python main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+
+REM Run the Python script with current parameters and force cleanup
+python main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
 
 REM Check if the Python script succeeded
 if !errorlevel! neq 0 (
@@ -86,10 +91,9 @@ echo Batch !batch_count! completed successfully
 
 REM Clean up results folders and force garbage collection
 echo Cleaning up results folders...
-if exist "results_GeoRF*" (
-    rmdir /s /q results_GeoRF* 2>nul
-    echo Deleted results_GeoRF* folders
-)
+
+REM Use robust cleanup with explicit enumeration and retry logic
+call :cleanup_directories
 
 REM Clean up any temporary files
 if exist "temp_*" (
@@ -111,10 +115,56 @@ if exist "__pycache__" (
 
 REM Force Windows to release memory and wait
 echo Forcing memory cleanup...
-timeout /t 3 /nobreak >nul
+timeout /t 5 /nobreak >nul
 
 echo Memory cleanup completed for batch !batch_count!
 echo.
+goto :eof
+
+:cleanup_directories
+echo Performing robust directory cleanup...
+
+REM Try to enumerate and delete each result_GeoRF directory explicitly
+for /d %%D in (result_GeoRF*) do (
+    echo Attempting to delete directory: %%D
+    
+    REM First attempt - immediate deletion
+    rmdir /s /q "%%D" 2>nul
+    
+    REM Verify deletion
+    if exist "%%D" (
+        echo Directory %%D still exists, trying alternative cleanup...
+        
+        REM Force close any open handles and retry
+        timeout /t 2 /nobreak >nul
+        
+        REM Second attempt with explicit file deletion first
+        del /s /f /q "%%D\*" 2>nul
+        rmdir /s /q "%%D" 2>nul
+        
+        REM Final verification
+        if exist "%%D" (
+            echo WARNING: Failed to delete directory %%D - may be locked by another process
+        ) else (
+            echo Successfully deleted directory: %%D
+        )
+    ) else (
+        echo Successfully deleted directory: %%D
+    )
+)
+
+REM Additional cleanup for numbered directories that might not match the pattern
+for /L %%i in (0,1,50) do (
+    if exist "result_GeoRF_%%i" (
+        echo Found numbered directory result_GeoRF_%%i, attempting deletion...
+        rmdir /s /q "result_GeoRF_%%i" 2>nul
+        if not exist "result_GeoRF_%%i" (
+            echo Successfully deleted: result_GeoRF_%%i
+        )
+    )
+)
+
+echo Directory cleanup attempt completed
 goto :eof
 
 :end

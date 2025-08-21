@@ -140,7 +140,7 @@ def load_and_process_data(base_dir='.'):
     for file_path in xgb_files:
         filename = os.path.basename(file_path)
         try:
-            # Extract scope from: results_df_xgb_gp_fs1_2015_2016.csv -> scope=1
+            # Extract scope from: results_df_xgb_gp_fs1_2015_2015.csv or results_df_xgb_gp_fs1_2015_2016.csv -> scope=1
             parts = filename.split('_fs')[1].split('_')
             scope = int(parts[0])
             start_year = int(parts[1])

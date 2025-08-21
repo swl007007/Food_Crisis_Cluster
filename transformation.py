@@ -22,6 +22,58 @@ from visualization import *
 
 # import models
 
+def generate_branch_visualization_correspondence(X, X_group, X_branch_id, branch_id, 
+                                               s0_group_refined, s1_group_refined, 
+                                               visualization_scope='branch_only'):
+  """
+  Generate correspondence table for branch visualization.
+  
+  Args:
+    X: Feature matrix
+    X_group: Group IDs for each data point  
+    X_branch_id: Branch IDs for each data point
+    branch_id: Current branch being split (e.g., '0', '01', etc.)
+    s0_group_refined: Groups assigned to partition 0 after refinement
+    s1_group_refined: Groups assigned to partition 1 after refinement
+    visualization_scope: 'branch_only' shows only current branch being split,
+                        'full' shows all data points with updated assignments
+  
+  Returns:
+    List of dictionaries with FEWSNET_admin_code and partition_id for visualization
+  """
+  partition_data = []
+  
+  for idx in range(len(X)):
+    current_branch = X_branch_id[idx]
+    admin_code = X_group[idx]
+    
+    # For visualization_scope='branch_only', only include data points from the current branch
+    if visualization_scope == 'branch_only' and current_branch != branch_id:
+      continue
+    
+    # Determine partition assignment
+    if current_branch == branch_id:
+      # This data point is in the branch being split
+      if admin_code in s0_group_refined:
+        refined_partition = branch_id + '0'
+      elif admin_code in s1_group_refined:
+        refined_partition = branch_id + '1' 
+      else:
+        refined_partition = current_branch  # Keep original if not in either partition
+    else:
+      # Data point is not in the branch being split
+      if visualization_scope == 'full':
+        refined_partition = current_branch if current_branch != '' else 'root'
+      else:
+        continue  # Skip for branch_only scope
+    
+    partition_data.append({
+      'FEWSNET_admin_code': admin_code,
+      'partition_id': refined_partition
+    })
+  
+  return partition_data
+
 def partition(model, X, y,
                      X_group , X_set, X_id, X_branch_id,
                      #group_loc = None,
@@ -221,7 +273,7 @@ def partition(model, X, y,
           
           for i_refine in range(refine_times):
             print(f"Contiguity refinement epoch {i_refine + 1}/{refine_times} for branch {branch_id}")
-            s0, s1 = get_refined_partitions(s0, s1, y_val_gid, None, 
+            s0, s1 = get_refined_partitions_dispatcher(s0, s1, y_val_gid, None, 
                                           dir = model.path, branch_id = branch_id,
                                           contiguity_type = 'polygon',
                                           polygon_centroids = polygon_contiguity_info['polygon_centroids'],
@@ -244,31 +296,12 @@ def partition(model, X, y,
               # Create temporary correspondence table for current refinement state
               current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine + 1}.csv')
               
-              # Create a temporary X_branch_id state for this refinement epoch
+              # Generate correspondence table for branch visualization (only show the branch being split)
               import pandas as pd
-              partition_data = []
-              
-              # Map current s0 and s1 groups to partition assignments
-              for idx in range(len(X)):
-                current_branch = X_branch_id[idx]
-                admin_code = X_group[idx]
-                
-                # If this data point is in the current branch being refined
-                if current_branch == branch_id:
-                  # Check if this admin_code (X_group) is in s0 or s1 after refinement
-                  if admin_code in s0_group_refined:
-                    refined_partition = branch_id + '0'
-                  elif admin_code in s1_group_refined:
-                    refined_partition = branch_id + '1'
-                  else:
-                    refined_partition = current_branch  # Keep original if not in either partition
-                else:
-                  refined_partition = current_branch if current_branch != '' else 'root'
-                
-                partition_data.append({
-                  'FEWSNET_admin_code': admin_code,
-                  'partition_id': refined_partition
-                })
+              partition_data = generate_branch_visualization_correspondence(
+                X, X_group, X_branch_id, branch_id, s0_group_refined, s1_group_refined, 
+                visualization_scope='branch_only'  # Only show the current branch being split
+              )
               
               # Create DataFrame and save
               partition_df = pd.DataFrame(partition_data)
@@ -295,25 +328,11 @@ def partition(model, X, y,
                 
                 prev_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine}.csv')
                 
-                prev_partition_data = []
-                for idx in range(len(X)):
-                  current_branch = X_branch_id[idx]
-                  admin_code = X_group[idx]
-                  
-                  if current_branch == branch_id:
-                    if admin_code in s0_group_prev:
-                      prev_partition = branch_id + '0'
-                    elif admin_code in s1_group_prev:
-                      prev_partition = branch_id + '1'
-                    else:
-                      prev_partition = current_branch
-                  else:
-                    prev_partition = current_branch if current_branch != '' else 'root'
-                  
-                  prev_partition_data.append({
-                    'FEWSNET_admin_code': admin_code,
-                    'partition_id': prev_partition
-                  })
+                # Generate correspondence table for previous state (only show the branch being split)
+                prev_partition_data = generate_branch_visualization_correspondence(
+                  X, X_group, X_branch_id, branch_id, s0_group_prev, s1_group_prev, 
+                  visualization_scope='branch_only'  # Only show the current branch being split
+                )
                 
                 prev_partition_df = pd.DataFrame(prev_partition_data)
                 prev_partition_df = prev_partition_df.drop_duplicates()
@@ -368,7 +387,7 @@ def partition(model, X, y,
           for i_refine in range(refine_times):
             print(f"Contiguity refinement epoch {i_refine + 1}/{refine_times} for branch {branch_id}")
             #!!!s0 and s1 do not contain gid; instead, they contain indices from y_val_true (for gid need to use y_val_gid)
-            s0, s1 = get_refined_partitions(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id)
+            s0, s1 = get_refined_partitions_dispatcher(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id, contiguity_type = 'grid')
             
             # Generate partition map visualization for each refinement epoch (grid-based)
             try:
@@ -386,31 +405,12 @@ def partition(model, X, y,
               # Create temporary correspondence table for current refinement state
               current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine + 1}.csv')
               
-              # Create a temporary X_branch_id state for this refinement epoch
+              # Generate correspondence table for branch visualization (only show the branch being split)
               import pandas as pd
-              partition_data = []
-              
-              # Map current s0 and s1 groups to partition assignments
-              for idx in range(len(X)):
-                current_branch = X_branch_id[idx]
-                admin_code = X_group[idx]
-                
-                # If this data point is in the current branch being refined
-                if current_branch == branch_id:
-                  # Check if this admin_code (X_group) is in s0 or s1 after refinement
-                  if admin_code in s0_group_refined:
-                    refined_partition = branch_id + '0'
-                  elif admin_code in s1_group_refined:
-                    refined_partition = branch_id + '1'
-                  else:
-                    refined_partition = current_branch  # Keep original if not in either partition
-                else:
-                  refined_partition = current_branch if current_branch != '' else 'root'
-                
-                partition_data.append({
-                  'FEWSNET_admin_code': admin_code,
-                  'partition_id': refined_partition
-                })
+              partition_data = generate_branch_visualization_correspondence(
+                X, X_group, X_branch_id, branch_id, s0_group_refined, s1_group_refined, 
+                visualization_scope='branch_only'  # Only show the current branch being split
+              )
               
               # Create DataFrame and save
               partition_df = pd.DataFrame(partition_data)
@@ -437,25 +437,11 @@ def partition(model, X, y,
                 
                 prev_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine}.csv')
                 
-                prev_partition_data = []
-                for idx in range(len(X)):
-                  current_branch = X_branch_id[idx]
-                  admin_code = X_group[idx]
-                  
-                  if current_branch == branch_id:
-                    if admin_code in s0_group_prev:
-                      prev_partition = branch_id + '0'
-                    elif admin_code in s1_group_prev:
-                      prev_partition = branch_id + '1'
-                    else:
-                      prev_partition = current_branch
-                  else:
-                    prev_partition = current_branch if current_branch != '' else 'root'
-                  
-                  prev_partition_data.append({
-                    'FEWSNET_admin_code': admin_code,
-                    'partition_id': prev_partition
-                  })
+                # Generate correspondence table for previous state (only show the branch being split)
+                prev_partition_data = generate_branch_visualization_correspondence(
+                  X, X_group, X_branch_id, branch_id, s0_group_prev, s1_group_prev, 
+                  visualization_scope='branch_only'  # Only show the current branch being split
+                )
                 
                 prev_partition_df = pd.DataFrame(prev_partition_data)
                 prev_partition_df = prev_partition_df.drop_duplicates()
@@ -503,7 +489,7 @@ def partition(model, X, y,
       # #group_loc = generate_groups_loc(X_loc, STEP_SIZE)
       # #s0_group = get_s_list_group_ids(s0, y_val_gid)
       # #s1_group = get_s_list_group_ids(s1, y_val_gid)
-      # s0_debug, s1_debug = get_refined_partitions(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id)
+      # s0_debug, s1_debug = get_refined_partitions_dispatcher(s0, s1, y_val_gid, group_loc, dir = model.path, branch_id = branch_id, contiguity_type = 'grid')
       # print('#Debug: s0, s1; s0_refine, s1_refine: ', s0.shape, s1.shape, s0_debug.shape, s1_debug.shape)
 
       s0_group = get_s_list_group_ids(s0, y_val_gid)

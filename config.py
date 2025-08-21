@@ -135,7 +135,7 @@ if multi:
   #used locations marked by "#select_class"
 else:
   #binary: one crop
-  SELECT_CLASS = [1]
+  SELECT_CLASS = np.array([1])
   NUM_CLASS = 2
 
 #For improved spatial contiguity of partitions
@@ -153,6 +153,13 @@ CONTIGUITY_TYPE = 'polygon'  # Default to polygon-based contiguity
 #Polygon contiguity parameters (used when CONTIGUITY_TYPE = 'polygon')
 POLYGON_NEIGHBOR_DISTANCE_THRESHOLD = 0.8  # Auto-calculate if None
 POLYGON_CONTIGUITY_INFO = None  # Set this to polygon contiguity info dict when using polygon contiguity
+
+# Adjacency matrix parameters for polygon-based contiguity
+USE_ADJACENCY_MATRIX = True  # If True, use true polygon adjacency instead of distance-based neighbors
+ADJACENCY_SHAPEFILE_PATH = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
+ADJACENCY_POLYGON_ID_COLUMN = 'admin_code'  # Column name for polygon identifiers in shapefile
+ADJACENCY_CACHE_DIR = None  # Directory for caching adjacency matrix (None = current directory)
+ADJACENCY_FORCE_REGENERATE = False  # If True, regenerate adjacency matrix even if cache exists
 
 #Visualization debug control
 VIS_DEBUG_MODE = False  # Set to False to disable all debug visualizations and metric tables to speed up execution

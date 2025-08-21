@@ -354,7 +354,7 @@ def grid_to_partitions(loc_grid, null_value = -1):
 
 
 #customized spatial contiguity check, optional
-def get_refined_partitions(s0, s1, y_val_gid, g_loc, dir = None, branch_id = None, 
+def get_refined_partitions_dispatcher(s0, s1, y_val_gid, g_loc, dir = None, branch_id = None, 
                           contiguity_type='grid', polygon_centroids=None, 
                           polygon_group_mapping=None, neighbor_distance_threshold=None):
   '''This will refine partitions based on specific user needs, i.e., this function is problem-specific.
@@ -378,13 +378,37 @@ def get_refined_partitions(s0, s1, y_val_gid, g_loc, dir = None, branch_id = Non
   if contiguity_type == 'polygon':
     if polygon_centroids is None or polygon_group_mapping is None:
       print("Warning: polygon_centroids and polygon_group_mapping required for polygon contiguity. Falling back to grid contiguity.")
+      return get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir, branch_id)
     else:
       return get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids, 
                                           polygon_group_mapping, neighbor_distance_threshold, 
                                           dir, branch_id)
   
-  # Original grid-based contiguity implementation
+  # Use grid-based contiguity (default)
+  return get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir, branch_id)
 
+
+def get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir=None, branch_id=None):
+  '''Grid version of get_refined_partitions using grid-based spatial contiguity.
+  
+  Parameters:
+  -----------
+  s0, s1 : array-like
+      Partition assignments (indices in y_val_gid)
+  y_val_gid : array-like
+      Group IDs for validation data
+  g_loc : array-like, shape (n_groups, 2)
+      Grid locations for each group (row, col coordinates)
+  dir : str, optional
+      Directory for saving visualizations
+  branch_id : str, optional
+      Branch identifier for visualization files
+      
+  Returns:
+  --------
+  s0_refined, s1_refined : array-like
+      Refined partition assignments
+  '''
   #s0, s1 do not contain gid directly
   s0_group = get_s_list_group_ids(s0.astype(int), y_val_gid).astype(int)
   s1_group = get_s_list_group_ids(s1.astype(int), y_val_gid).astype(int)
@@ -421,8 +445,8 @@ def get_refined_partitions(s0, s1, y_val_gid, g_loc, dir = None, branch_id = Non
   return s0.astype(int), s1.astype(int)
 
 
-def get_polygon_neighbors(centroids, neighbor_distance_threshold=None):
-  '''Find neighboring polygons based on centroid distances.
+def get_polygon_neighbors(centroids, neighbor_distance_threshold=None, adjacency_dict=None):
+  '''Find neighboring polygons based on either true adjacency matrix or centroid distances.
   
   Parameters:
   -----------
@@ -431,14 +455,27 @@ def get_polygon_neighbors(centroids, neighbor_distance_threshold=None):
   neighbor_distance_threshold : float, optional
       Maximum distance to consider polygons as neighbors.
       If None, uses adaptive threshold based on median distance.
+      Only used when adjacency_dict is None.
+  adjacency_dict : dict, optional
+      Pre-computed adjacency dictionary from true polygon boundaries.
+      If provided, this takes precedence over distance-based calculation.
       
   Returns:
   --------
   neighbor_dict : dict
       Dictionary where keys are polygon indices and values are lists of neighbor indices
   '''
-  from scipy.spatial.distance import cdist
   import numpy as np
+  
+  # If adjacency dictionary is provided, use it directly
+  if adjacency_dict is not None:
+    from adjacency_utils import adjacency_dict_to_neighbors_dict
+    print("Using true polygon adjacency matrix for neighbor determination")
+    return adjacency_dict_to_neighbors_dict(adjacency_dict)
+  
+  # Fall back to distance-based neighbor calculation
+  print("Using centroid distance-based neighbor determination")
+  from scipy.spatial.distance import cdist
   
   # Calculate pairwise distances between centroids
   distances = cdist(centroids, centroids, metric='euclidean')
@@ -625,8 +662,11 @@ def get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids,
       for poly_idx in group_to_polygon_map[group_id]:
         polygon_partitions[poly_idx] = 1
   
-  # Find polygon neighbors
-  polygon_neighbors = get_polygon_neighbors(polygon_centroids, neighbor_distance_threshold)
+  # Find polygon neighbors (use adjacency matrix if available in polygon_group_mapping dict)
+  adjacency_dict = None
+  if isinstance(polygon_group_mapping, dict) and 'adjacency_dict' in polygon_group_mapping:
+    adjacency_dict = polygon_group_mapping['adjacency_dict']
+  polygon_neighbors = get_polygon_neighbors(polygon_centroids, neighbor_distance_threshold, adjacency_dict)
   
   # Apply majority voting refinement
   polygon_partitions_refined = swap_partition_polygon(polygon_partitions, polygon_neighbors, polygon_centroids)
