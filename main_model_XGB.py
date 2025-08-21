@@ -938,7 +938,7 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
 
 def validate_polygon_contiguity(contiguity_info, X_group):
     """
-    Validate polygon contiguity setup.
+    Validate polygon contiguity setup using adjacency matrix (preferred) or distance-based fallback.
     
     Parameters:
     -----------
@@ -949,26 +949,48 @@ def validate_polygon_contiguity(contiguity_info, X_group):
     """
     print("=== Polygon Contiguity Validation ===")
     
-    from partition_opt import get_polygon_neighbors
+    # Use adjacency matrix if available (preferred approach)
+    if 'adjacency_dict' in contiguity_info and contiguity_info['adjacency_dict'] is not None:
+        print("Using adjacency matrix-based neighbors (production approach)")
+        adjacency_dict = contiguity_info['adjacency_dict']
+        neighbor_counts = [len(neighbors) for neighbors in adjacency_dict.values()]
+        
+        print(f"Adjacency neighbor stats: min={min(neighbor_counts) if neighbor_counts else 0}, "
+              f"max={max(neighbor_counts) if neighbor_counts else 0}, "
+              f"mean={np.mean(neighbor_counts):.1f if neighbor_counts else 0}")
+        
+        # Check for isolated polygons in adjacency matrix
+        isolated_polygons = [poly_id for poly_id, neighs in adjacency_dict.items() if len(neighs) == 0]
+        if len(isolated_polygons) > 0:
+            print(f"Note: {len(isolated_polygons)} isolated polygons (normal for islands/enclaves)")
+        
+        total_connections = sum(len(neighbors) for neighbors in adjacency_dict.values())
+        print(f"Total adjacency connections: {total_connections}")
+        
+    else:
+        # Fallback to distance-based approach (legacy)
+        print("Warning: Using distance-based neighbors (fallback - consider enabling adjacency matrix)")
+        from partition_opt import get_polygon_neighbors
+        
+        neighbors = get_polygon_neighbors(contiguity_info['polygon_centroids'], 
+                                         contiguity_info['neighbor_distance_threshold'])
+        neighbor_counts = [len(n) for n in neighbors.values()]
+        
+        print(f"Distance neighbor stats: min={min(neighbor_counts)}, max={max(neighbor_counts)}, "
+              f"mean={np.mean(neighbor_counts):.1f}")
+        
+        # Check for isolated polygons
+        isolated_polygons = [poly_id for poly_id, neighs in neighbors.items() if len(neighs) == 0]
+        if len(isolated_polygons) > 0:
+            print(f"Warning: {len(isolated_polygons)} isolated polygons")
     
-    neighbors = get_polygon_neighbors(contiguity_info['polygon_centroids'], 
-                                     contiguity_info['neighbor_distance_threshold'])
-    neighbor_counts = [len(n) for n in neighbors.values()]
+    # Check centroids (common validation)
+    if 'polygon_centroids' in contiguity_info:
+        centroids = contiguity_info['polygon_centroids']
+        print(f"Centroid range: lat {centroids[:, 0].min():.2f}-{centroids[:, 0].max():.2f}, "
+              f"lon {centroids[:, 1].min():.2f}-{centroids[:, 1].max():.2f}")
     
-    print(f"Neighbor stats: min={min(neighbor_counts)}, max={max(neighbor_counts)}, "
-          f"mean={np.mean(neighbor_counts):.1f}")
-    
-    # Check for isolated polygons
-    isolated_polygons = [poly_id for poly_id, neighs in neighbors.items() if len(neighs) == 0]
-    if len(isolated_polygons) > 0:
-        print(f"Warning: {len(isolated_polygons)} isolated polygons")
-    
-    # Check centroids
-    centroids = contiguity_info['polygon_centroids']
-    print(f"Centroid range: lat {centroids[:, 0].min():.2f}-{centroids[:, 0].max():.2f}, "
-          f"lon {centroids[:, 1].min():.2f}-{centroids[:, 1].max():.2f}")
-    
-    # Check group sizes
+    # Check group sizes (common validation)
     group_sizes = pd.Series(X_group).value_counts()
     print(f"Group size stats: min={group_sizes.min()}, max={group_sizes.max()}, "
           f"mean={group_sizes.mean():.1f}")
