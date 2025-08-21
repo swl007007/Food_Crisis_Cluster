@@ -2102,19 +2102,19 @@ def main():
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific RF depth
-    desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
-    forecasting_scope = args.forecasting_scope    # From command line argument
+    desire_terms = 2      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    forecasting_scope = 1    # From command line argument
     
     # Partition Metrics Tracking Configuration
-    track_partition_metrics = False  # Enable partition metrics tracking and visualization
-    enable_metrics_maps = False      # Create maps showing F1/accuracy improvements
+    track_partition_metrics = True  # Enable partition metrics tracking and visualization
+    enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
     
     # Checkpoint Recovery Configuration
     enable_checkpoint_recovery = False  # Enable automatic checkpoint detection and resume
     
     # start year and end year from command line arguments
-    start_year = args.start_year
-    end_year = args.end_year
+    start_year = 2015
+    end_year = 2015
     
     print(f"Configuration:")
     print(f"  - Assignment method: {assignment}")

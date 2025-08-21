@@ -462,6 +462,7 @@ Using adjacency matrix-based neighbors (production approach)
 Adjacency neighbor stats: min=0, max=16, mean=4.1
 Note: 655 isolated polygons (normal for islands/enclaves)
 Total adjacency connections: 23224
+Centroid range: lat -34.90-37.55, lon -18.00-51.26
 Group size stats: min=1, max=2847, mean=156.2
 === End Polygon Validation ===
 ```

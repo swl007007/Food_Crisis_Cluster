@@ -955,9 +955,10 @@ def validate_polygon_contiguity(contiguity_info, X_group):
         adjacency_dict = contiguity_info['adjacency_dict']
         neighbor_counts = [len(neighbors) for neighbors in adjacency_dict.values()]
         
-        print(f"Adjacency neighbor stats: min={min(neighbor_counts) if neighbor_counts else 0}, "
-              f"max={max(neighbor_counts) if neighbor_counts else 0}, "
-              f"mean={np.mean(neighbor_counts):.1f if neighbor_counts else 0}")
+        min_neighbors = min(neighbor_counts) if neighbor_counts else 0
+        max_neighbors = max(neighbor_counts) if neighbor_counts else 0
+        mean_neighbors = np.mean(neighbor_counts) if neighbor_counts else 0
+        print(f"Adjacency neighbor stats: min={min_neighbors}, max={max_neighbors}, mean={mean_neighbors:.1f}")
         
         # Check for isolated polygons in adjacency matrix
         isolated_polygons = [poly_id for poly_id, neighs in adjacency_dict.items() if len(neighs) == 0]

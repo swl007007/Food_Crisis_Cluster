@@ -162,7 +162,7 @@ ADJACENCY_CACHE_DIR = None  # Directory for caching adjacency matrix (None = cur
 ADJACENCY_FORCE_REGENERATE = False  # If True, regenerate adjacency matrix even if cache exists
 
 #Visualization debug control
-VIS_DEBUG_MODE = False  # Set to False to disable all debug visualizations and metric tables to speed up execution
+VIS_DEBUG_MODE = True  # Set to False to disable all debug visualizations and metric tables to speed up execution
 
 #predefined groups such as US counties
 #unused here
