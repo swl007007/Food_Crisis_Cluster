@@ -67,6 +67,8 @@ def load_and_process_data(base_dir='.'):
             print(f"  Warning: Could not parse forecasting scope from {filename}: {e}")
     
     # 1.5. Process FEWSNET baseline results
+    fewsnet_longest_lag_data = None  # Store the longest lag FEWSNET data for extension
+    
     for file_path in fewsnet_files:
         filename = os.path.basename(file_path)
         # Extract forecasting scope from filename: fewsnet_baseline_results_fs1.csv -> scope=1
@@ -86,8 +88,23 @@ def load_and_process_data(base_dir='.'):
             df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
             fewsnet_data[lag_months] = df
             
+            # Keep track of longest lag data (scope 2 = 6 months is the longest FEWSNET provides)
+            if scope == 2:  # 6-month lag is the longest official FEWSNET prediction
+                fewsnet_longest_lag_data = df.copy()
+            
         except (ValueError, IndexError, KeyError) as e:
             print(f"  Warning: Could not parse forecasting scope from {filename}: {e}")
+    
+    # Extend FEWSNET baseline to longer lag periods using the longest available prediction (scope 2)
+    if fewsnet_longest_lag_data is not None:
+        print("  Extending FEWSNET baseline to longer forecasting scopes using 6-month lag data...")
+        
+        # Extend to 9-month and 12-month lags using the same 6-month predictions
+        for extended_lag in [9, 12]:  # scope 3 and 4
+            if extended_lag not in fewsnet_data:  # Only extend if not already present
+                extended_df = fewsnet_longest_lag_data.copy()
+                fewsnet_data[extended_lag] = extended_df
+                print(f"  Extended FEWSNET results to {extended_lag}-month lag using 6-month predictions")
     
     # 2. Load GeoRF results
     print("\nSearching for GeoRF results...")
@@ -299,10 +316,24 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
             
             if 'fewsnet' in filtered_datasets:
                 fewsnet_values = filtered_datasets['fewsnet'][metric].iloc[:min_length]
-                ax.plot(x_positions, fewsnet_values, 'D-', 
-                       color=colors['fewsnet'], label='FEWSNET (Official)', 
-                       linewidth=2, markersize=4, alpha=0.8)
-                plotted_models.append('FEWSNET')
+                # Indicate if this is extended FEWSNET data beyond native capabilities
+                if lag in [9, 12]:  # Extended lags
+                    label = 'FEWSNET (6mo-ext)'  # Show that it's using 6-month extended
+                    linestyle = '--'  # Use dashed line to indicate extended data
+                    alpha = 0.6  # Slightly more transparent
+                else:
+                    label = 'FEWSNET (Official)'  # Native FEWSNET predictions
+                    linestyle = '-'
+                    alpha = 0.8
+                
+                ax.plot(x_positions, fewsnet_values, 'D' + linestyle, 
+                       color=colors['fewsnet'], label=label, 
+                       linewidth=2, markersize=4, alpha=alpha)
+                
+                if lag in [9, 12]:
+                    plotted_models.append('FEWSNET (6mo-ext)')
+                else:
+                    plotted_models.append('FEWSNET')
             
             if 'rf' in filtered_datasets:
                 rf_values = filtered_datasets['rf'][metric].iloc[:min_length]
@@ -386,14 +417,28 @@ def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
             rf_avg = rf_data[lag][metric].mean() if lag in rf_data and metric in rf_data[lag].columns else np.nan
             xgboost_avg = xgboost_data[lag][metric].mean() if lag in xgboost_data and metric in xgboost_data[lag].columns else np.nan
             
-            print(f"{metric_name:>18}: Probit={probit_avg:.4f}, FEWSNET={fewsnet_avg:.4f}, GeoRF={rf_avg:.4f}, XGBoost={xgboost_avg:.4f}")
+            # Add indicator for extended FEWSNET data
+            fewsnet_label = "FEWSNET"
+            if lag in [9, 12] and not pd.isna(fewsnet_avg):
+                fewsnet_label = "FEWSNET*"  # Asterisk indicates extended data
+            
+            print(f"{metric_name:>18}: Probit={probit_avg:.4f}, {fewsnet_label}={fewsnet_avg:.4f}, GeoRF={rf_avg:.4f}, XGBoost={xgboost_avg:.4f}")
         
         # Print data counts
         probit_count = len(probit_data[lag]) if lag in probit_data else 0
         fewsnet_count = len(fewsnet_data[lag]) if lag in fewsnet_data else 0
         rf_count = len(rf_data[lag]) if lag in rf_data else 0
         xgb_count = len(xgboost_data[lag]) if lag in xgboost_data else 0
-        print(f"{'Sample counts':>18}: Probit={probit_count}, FEWSNET={fewsnet_count}, GeoRF={rf_count}, XGBoost={xgb_count}")
+        
+        fewsnet_count_label = "FEWSNET"
+        if lag in [9, 12] and fewsnet_count > 0:
+            fewsnet_count_label = "FEWSNET*"
+            
+        print(f"{'Sample counts':>18}: Probit={probit_count}, {fewsnet_count_label}={fewsnet_count}, GeoRF={rf_count}, XGBoost={xgb_count}")
+        
+        # Add note about extended FEWSNET data for longer lags
+        if lag in [9, 12]:
+            print(f"{'':>18}  * FEWSNET data extended using 6-month predictions")
 
 def main():
     # Use current directory for auto-detection
