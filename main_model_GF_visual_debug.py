@@ -34,9 +34,9 @@ from data import load_demo_data
 from helper import get_spatial_range
 from initialization import train_test_split_all
 from customize import train_test_split_rolling_window
-from config import *
+from config_visual import *
 from sklearn.impute import SimpleImputer
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score, balanced_accuracy_score
 from tqdm import tqdm
 
 # Import adjacency matrix utilities
@@ -45,6 +45,58 @@ if USE_ADJACENCY_MATRIX:
 
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
+
+def calculate_class_1_metrics(y_true, y_pred):
+    """Calculate class 1 specific metrics for crisis prediction."""
+    if len(y_true.shape) > 1:
+        y_true_labels = np.argmax(y_true, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+    else:
+        y_true_labels, y_pred_labels = y_true, y_pred
+    
+    metrics = {
+        'class_1_f1': f1_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0),
+        'class_1_precision': precision_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0),
+        'class_1_recall': recall_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0),
+        'class_1_support': np.sum(y_true_labels == 1),
+        'class_0_f1': f1_score(y_true_labels, y_pred_labels, pos_label=0, zero_division=0),
+        'class_0_support': np.sum(y_true_labels == 0),
+        'overall_accuracy': np.mean(y_true_labels == y_pred_labels),
+        'balanced_accuracy': balanced_accuracy_score(y_true_labels, y_pred_labels)
+    }
+    return metrics
+
+def evaluate_crisis_prediction(georf, X_test, y_test, X_group_test, test_period="Test"):
+    """Evaluate model with focus on crisis prediction metrics."""
+    y_pred_test = georf.predict(X_test, X_group_test)
+    
+    # Calculate class-specific metrics
+    class_1_metrics = calculate_class_1_metrics(y_test, y_pred_test)
+    
+    print("=" * 60)
+    print(f"CRISIS PREDICTION EVALUATION - {test_period} (Class 1 Focus)")
+    print("=" * 60)
+    print(f"Class 1 F1 Score:      {class_1_metrics['class_1_f1']:.4f} ⭐ PRIMARY METRIC")
+    print(f"Class 1 Precision:     {class_1_metrics['class_1_precision']:.4f}")
+    print(f"Class 1 Recall:        {class_1_metrics['class_1_recall']:.4f}")
+    print(f"Class 1 Support:       {class_1_metrics['class_1_support']}")
+    print("-" * 40)
+    print(f"Class 0 F1 Score:      {class_1_metrics['class_0_f1']:.4f}")
+    print(f"Class 0 Support:       {class_1_metrics['class_0_support']}")
+    print("-" * 40)
+    print(f"Overall Accuracy:      {class_1_metrics['overall_accuracy']:.4f}")
+    print(f"Balanced Accuracy:     {class_1_metrics['balanced_accuracy']:.4f}")
+    print("=" * 60)
+    
+    # Highlight the key insight
+    if VIS_DEBUG_CRISIS_FOCUS:
+        print("\n🎯 CRISIS PREDICTION FOCUS:")
+        print(f"   • Optimizing for CLASS 1 F1: {class_1_metrics['class_1_f1']:.4f}")
+        print(f"   • Crisis prediction accuracy: {class_1_metrics['class_1_precision']:.1%}")
+        print(f"   • Crisis detection rate: {class_1_metrics['class_1_recall']:.1%}")
+        print(f"   • Total crisis events: {class_1_metrics['class_1_support']}")
+    
+    return class_1_metrics, y_pred_test
 
 def force_cleanup_directories():
     """
@@ -1535,6 +1587,11 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             print(f"Q{quarter} {test_year} Test - GeoRF F1: {f1}, Base RF F1: {f1_base}")
             
+            # Crisis-focused evaluation
+            class_1_metrics, _ = evaluate_crisis_prediction(
+                georf, Xtest, ytest, Xtest_group, f"Q{quarter} {test_year}"
+            )
+            
             # Extract and save correspondence table for single-layer model
             try:
                 X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
@@ -2138,9 +2195,40 @@ def main():
         # Step 3: Prepare features with forecasting scope
         X, y, l1_index, l2_index, years, terms, dates = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
         
-        # Step 4: Validate polygon contiguity (if applicable)
+        # Step 4: Validate polygon contiguity (if applicable) and track polygon counts
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
             validate_polygon_contiguity(contiguity_info, X_group)
+            
+            # Track polygon counts for disappearance diagnosis (VISUAL DEBUG MODE)
+            if VIS_DEBUG_CRISIS_FOCUS:
+                initial_polygon_count = len(np.unique(X_group))
+                print(f"=== VISUAL DEBUG POLYGON TRACKING ===")
+                print(f"Initial polygon count after spatial setup: {initial_polygon_count}")
+                print(f"X_group unique values: {len(np.unique(X_group))}")
+                print(f"Data points: {len(X_group)}")
+                print(f"Sample X_group values: {sorted(np.unique(X_group))[:20]}")
+                
+                # Check for missing polygon IDs in sequence
+                unique_groups = sorted(np.unique(X_group))
+                if len(unique_groups) > 1:
+                    gaps = []
+                    for i in range(1, len(unique_groups)):
+                        if unique_groups[i] - unique_groups[i-1] > 1:
+                            gaps.append((unique_groups[i-1], unique_groups[i]))
+                    if gaps:
+                        print(f"❌ Warning: Gaps found in X_group sequence: {gaps[:5]}")
+                        print("   This indicates polygon disappearance during spatial setup!")
+                    else:
+                        print("✅ No gaps found in X_group sequence")
+                        
+                    # Enhanced visual debug tracking
+                    print(f"X_group range: {unique_groups[0]} to {unique_groups[-1]}")
+                    print(f"Expected consecutive count: {unique_groups[-1] - unique_groups[0] + 1}")
+                    print(f"Actual unique count: {len(unique_groups)}")
+                    if len(unique_groups) != (unique_groups[-1] - unique_groups[0] + 1):
+                        missing_count = (unique_groups[-1] - unique_groups[0] + 1) - len(unique_groups)
+                        print(f"🚨 POLYGON LOSS DETECTED: {missing_count} polygons missing from sequence!")
+                print("=" * 38)
         
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(

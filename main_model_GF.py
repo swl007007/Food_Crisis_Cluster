@@ -2138,9 +2138,31 @@ def main():
         # Step 3: Prepare features with forecasting scope
         X, y, l1_index, l2_index, years, terms, dates = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
         
-        # Step 4: Validate polygon contiguity (if applicable)
+        # Step 4: Validate polygon contiguity (if applicable) and track polygon counts
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
             validate_polygon_contiguity(contiguity_info, X_group)
+            
+            # Track polygon counts for disappearance diagnosis
+            if DIAGNOSTIC_POLYGON_TRACKING:
+                initial_polygon_count = len(np.unique(X_group))
+                print(f"=== POLYGON TRACKING ===")
+                print(f"Initial polygon count after spatial setup: {initial_polygon_count}")
+                print(f"X_group unique values: {len(np.unique(X_group))}")
+                print(f"Data points: {len(X_group)}")
+                print(f"Sample X_group values: {sorted(np.unique(X_group))[:20]}")
+                
+                # Check for missing polygon IDs in sequence
+                unique_groups = sorted(np.unique(X_group))
+                if len(unique_groups) > 1:
+                    gaps = []
+                    for i in range(1, len(unique_groups)):
+                        if unique_groups[i] - unique_groups[i-1] > 1:
+                            gaps.append((unique_groups[i-1], unique_groups[i]))
+                    if gaps:
+                        print(f"Warning: Gaps found in X_group sequence: {gaps[:5]}")
+                    else:
+                        print("No gaps found in X_group sequence")
+                print("=" * 25)
         
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(

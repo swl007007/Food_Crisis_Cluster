@@ -162,14 +162,19 @@ ADJACENCY_CACHE_DIR = None  # Directory for caching adjacency matrix (None = cur
 ADJACENCY_FORCE_REGENERATE = False  # If True, regenerate adjacency matrix even if cache exists
 
 #Visualization debug control
-VIS_DEBUG_MODE = False  # Set to False to disable all debug visualizations and metric tables to speed up execution
+VIS_DEBUG_MODE = True  # Set to False to disable all debug visualizations and metric tables to speed up execution
 
-# Crisis-focused optimization parameters
+# Crisis-focused optimization parameters for visual debug
 GOVERNING_METRIC = 'class_1_f1'  # Primary optimization target for crisis prediction
 CRISIS_FOCUSED_OPTIMIZATION = True  # Enable class 1 prioritization throughout pipeline
 PARTITION_OPTIMIZATION_METRIC = 'class_1_f1'  # Metric for partition selection
 CLASS_1_SIGNIFICANCE_TESTING = True  # Use class 1 metrics in significance testing
 MIN_CLASS_1_IMPROVEMENT_THRESHOLD = 0.01  # Minimum class 1 F1 improvement to accept partition
+
+# Visual debug specific settings
+VIS_DEBUG_CRISIS_FOCUS = True  # Enable crisis-focused visualizations
+TRACK_CLASS_SPECIFIC_METRICS = True  # Track both class 0 and class 1 separately
+PARTITION_METRICS_DETAILED = True  # Save detailed per-partition class metrics
 
 # Metric calculation modes
 METRIC_CALCULATION_MODES = {

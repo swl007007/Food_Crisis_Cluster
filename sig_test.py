@@ -14,10 +14,52 @@ from static_table import cvtable
 
 #significance testing functions
 
+def sig_test_class_1_focused(base_score, split_score0, split_score1, base_score_before=None):
+  '''Crisis-focused significance test optimized for class 1 F1 performance.'''
+  
+  split_score = np.hstack([split_score0, split_score1])
+  diff = split_score - base_score
+  mean_diff = np.mean(diff)
+  
+  print("CRISIS-FOCUSED SIGNIFICANCE TESTING")
+  print("mean split score: %f" % (np.mean(split_score)))
+  print("mean base score: %f" % (np.mean(base_score)))
+  print("mean class 1 improvement: %f" % mean_diff)
+  
+  # Accept if class 1 improvement exceeds minimum threshold
+  if mean_diff > MIN_CLASS_1_IMPROVEMENT_THRESHOLD:
+      print("Partition accepted: Class 1 improvement above threshold (%.4f)" % MIN_CLASS_1_IMPROVEMENT_THRESHOLD)
+      return 1
+  elif mean_diff <= 0:
+      print("Partition rejected: No class 1 improvement")
+      return 0
+  
+  # For borderline cases, use standard significance testing
+  degree_freedom = diff.shape[0] - 1
+  std_diff = np.std(diff)
+  std_err_mean = std_diff/np.sqrt(degree_freedom+1)
+  
+  if std_err_mean == 0:
+      return 1 if mean_diff > 0 else 0
+  
+  test_stat = mean_diff/std_err_mean
+  
+  # Use more lenient threshold for crisis prediction
+  if test_stat > 1.0:  # Lower threshold than traditional significance testing
+      print("Partition accepted: Modest class 1 improvement with adequate confidence")
+      return 1
+  else:
+      print("Partition rejected: Insufficient class 1 improvement")
+      return 0
+
 def sig_test(base_score, split_score0, split_score1, base_score_before = None):#diff
   '''Significance testing: pure numerical-based test (spatial test is V2 for arbitrary subset of grid cells).
   This function needs cv_table to be loaded first (available in main.py).
   '''
+
+  # Crisis-focused significance testing
+  if 'CLASS_1_SIGNIFICANCE_TESTING' in globals() and CLASS_1_SIGNIFICANCE_TESTING:
+      return sig_test_class_1_focused(base_score, split_score0, split_score1, base_score_before)
 
   #prepare diff
   split_score = np.hstack([split_score0, split_score1])

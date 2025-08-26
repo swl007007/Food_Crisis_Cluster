@@ -146,7 +146,37 @@ def get_s_list_group_ids(s_list, group_ids):
   s_list is s0 or s1 which contains the indices of values;
   group_ids contains the corresponding group id of each index
   '''
-  s_group = group_ids[s_list.astype(int)]
+  import numpy as np
+  
+  # Add bounds checking to prevent indexing errors
+  s_list_int = s_list.astype(int)
+  max_valid_idx = len(group_ids) - 1
+  
+  if np.any(s_list_int > max_valid_idx) or np.any(s_list_int < 0):
+    invalid_indices = s_list_int[(s_list_int > max_valid_idx) | (s_list_int < 0)]
+    print(f"Warning: Invalid indices found in get_s_list_group_ids: {len(invalid_indices)} invalid out of {len(s_list_int)} total")
+    print(f"  Invalid indices: {invalid_indices[:10]}{'...' if len(invalid_indices) > 10 else ''}")
+    print(f"  Valid range: 0 to {max_valid_idx}")
+    
+    try:
+      from config import DIAGNOSTIC_POLYGON_TRACKING
+      if DIAGNOSTIC_POLYGON_TRACKING:
+        print(f"  Original s_list size: {len(s_list_int)}")
+    except:
+      pass
+    
+    # Filter out invalid indices
+    valid_mask = (s_list_int >= 0) & (s_list_int <= max_valid_idx)
+    s_list_int = s_list_int[valid_mask]
+    
+    try:
+      from config import DIAGNOSTIC_POLYGON_TRACKING
+      if DIAGNOSTIC_POLYGON_TRACKING:
+        print(f"  Filtered s_list size: {len(s_list_int)} (lost {np.sum(~valid_mask)} indices)")
+    except:
+      pass
+  
+  s_group = group_ids[s_list_int]
   return s_group
 
 def get_gid_to_s_map(y_val_gid, s0, s1):

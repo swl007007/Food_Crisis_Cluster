@@ -11,6 +11,7 @@ import numpy as np
 # import tensorflow as tf
 import pandas as pd
 from scipy import stats
+from sklearn.metrics import f1_score, precision_score, recall_score, balanced_accuracy_score
 
 from scipy import ndimage
 # from skimage import measure
@@ -22,6 +23,66 @@ from visualization import *
 from helper import *
 
 from config import *
+
+# Crisis-focused scoring functions
+def get_class_1_f1_score(y_true, y_pred):
+    """Calculate class 1 F1 score for crisis prediction optimization."""
+    if len(y_true.shape) > 1:
+        y_true_labels = np.argmax(y_true, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+    else:
+        y_true_labels, y_pred_labels = y_true, y_pred
+    return f1_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0)
+
+def get_class_1_precision_score(y_true, y_pred):
+    """Calculate class 1 precision score for crisis prediction optimization."""
+    if len(y_true.shape) > 1:
+        y_true_labels = np.argmax(y_true, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+    else:
+        y_true_labels, y_pred_labels = y_true, y_pred
+    return precision_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0)
+
+def get_class_1_recall_score(y_true, y_pred):
+    """Calculate class 1 recall score for crisis prediction optimization."""
+    if len(y_true.shape) > 1:
+        y_true_labels = np.argmax(y_true, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+    else:
+        y_true_labels, y_pred_labels = y_true, y_pred
+    return recall_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0)
+
+def get_metric_score_array(y_true, y_pred, metric_name=None):
+    """Calculate per-sample scores based on governing metric."""
+    if metric_name is None:
+        metric_name = GOVERNING_METRIC if 'GOVERNING_METRIC' in globals() else 'overall_accuracy'
+    
+    if metric_name == 'class_1_f1':
+        # For F1, we need to calculate per-sample contributions
+        # This is an approximation - return 1.0 for correct class 1 predictions, 0.0 otherwise
+        if len(y_true.shape) > 1:
+            y_true_labels = np.argmax(y_true, axis=1)
+            y_pred_labels = np.argmax(y_pred, axis=1)
+        else:
+            y_true_labels, y_pred_labels = y_true, y_pred
+        
+        # Return 1.0 for correct class 1 predictions, 0.0 for all others
+        correct_class_1 = (y_true_labels == 1) & (y_pred_labels == 1)
+        return correct_class_1.astype(float)
+    
+    elif metric_name == 'overall_accuracy':
+        # Original behavior
+        if len(y_true.shape) > 1:
+            return (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
+        else:
+            return (y_true == y_pred).astype(int)
+    
+    else:
+        # Fallback to overall accuracy
+        if len(y_true.shape) > 1:
+            return (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
+        else:
+            return (y_true == y_pred).astype(int)
 
 def groupby_sum(y, y_group, onehot = ONEHOT):
   try:
@@ -101,7 +162,11 @@ def get_class_wise_stat(y_true, y_pred, y_group, mode = MODE, onehot = ONEHOT):
       y_group = y_group.astype(int)
       y_group = np.repeat(y_group, data_point_size)
 
-    stat = (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
+    # Crisis-focused optimization: use governing metric instead of overall accuracy
+    if 'CRISIS_FOCUSED_OPTIMIZATION' in globals() and CRISIS_FOCUSED_OPTIMIZATION:
+        stat = get_metric_score_array(y_true, y_pred, GOVERNING_METRIC)
+    else:
+        stat = (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
     # stat = tf.keras.metrics.categorical_accuracy(y_true, y_pred)
     # stat = stat.numpy()
     # y_true = np.array(y_true)
@@ -520,9 +585,20 @@ def swap_partition_polygon(partition_assignments, polygon_neighbors, centroids=N
   for poly_idx in range(len(partition_assignments)):
     current_partition = partition_assignments[poly_idx]
     
-    # Skip if polygon has no neighbors
+    # Handle isolated polygons (polygons with no neighbors)
     if poly_idx not in polygon_neighbors or len(polygon_neighbors[poly_idx]) == 0:
-      continue
+      try:
+        from config import PRESERVE_ISOLATED_POLYGONS, DIAGNOSTIC_POLYGON_TRACKING
+        if PRESERVE_ISOLATED_POLYGONS:
+          # Keep isolated polygon with its original assignment
+          partition_assignments_new[poly_idx] = current_partition
+          if DIAGNOSTIC_POLYGON_TRACKING:
+            print(f"Preserving isolated polygon {poly_idx} with partition {current_partition}")
+          continue
+        else:
+          continue  # Original behavior: skip isolated polygons
+      except:
+        continue  # Fallback to original behavior
     
     # Get neighbor partition assignments
     neighbor_indices = polygon_neighbors[poly_idx]
@@ -630,9 +706,25 @@ def get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids,
   import numpy as np
   from helper import get_gid_to_s_map
   
+  # Track polygon counts for validation
+  try:
+    from config import DIAGNOSTIC_POLYGON_TRACKING
+    if DIAGNOSTIC_POLYGON_TRACKING:
+      print(f"get_refined_partitions_polygon - Input: s0={len(s0)}, s1={len(s1)}, y_val_gid={len(y_val_gid)}")
+  except:
+    pass
+  
   # Get group IDs for each partition
   s0_group = get_s_list_group_ids(s0.astype(int), y_val_gid).astype(int)
   s1_group = get_s_list_group_ids(s1.astype(int), y_val_gid).astype(int)
+  
+  # Track group counts
+  try:
+    from config import DIAGNOSTIC_POLYGON_TRACKING
+    if DIAGNOSTIC_POLYGON_TRACKING:
+      print(f"  After get_s_list_group_ids: s0_group={len(s0_group)}, s1_group={len(s1_group)}")
+  except:
+    pass
   
   # Create reverse mapping from group IDs to polygon indices
   group_to_polygon_map = {}
@@ -677,6 +769,22 @@ def get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids,
   # Convert back to original indices
   gid_to_s_map = get_gid_to_s_map(y_val_gid, s0, s1)
   s0_refined, s1_refined = s_group_to_s(s0_group_refined, s1_group_refined, gid_to_s_map)
+  
+  # Validate output polygon counts
+  try:
+    from config import DIAGNOSTIC_POLYGON_TRACKING, VALIDATE_POLYGON_COUNTS
+    if DIAGNOSTIC_POLYGON_TRACKING:
+      print(f"  Output: s0_refined={len(s0_refined)}, s1_refined={len(s1_refined)}")
+      print(f"  Total refined: {len(s0_refined) + len(s1_refined)}, Original total: {len(s0) + len(s1)}")
+    
+    if VALIDATE_POLYGON_COUNTS:
+      original_total = len(s0) + len(s1)
+      refined_total = len(s0_refined) + len(s1_refined)
+      if original_total != refined_total:
+        print(f"WARNING: Polygon count mismatch in get_refined_partitions_polygon!")
+        print(f"  Original: {original_total}, Refined: {refined_total}, Difference: {original_total - refined_total}")
+  except:
+    pass
   
   return s0_refined.astype(int), s1_refined.astype(int)
 
@@ -738,7 +846,11 @@ def get_score(y_true, y_pred, mode = MODE):
       # y_true = tf.reshape(y_true, [-1,NUM_CLASS])#tf.reshape takes numpy arrays
       # y_pred = tf.reshape(y_pred, [-1,NUM_CLASS])
 
-    score = (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
+    # Crisis-focused optimization: use governing metric instead of overall accuracy
+    if 'CRISIS_FOCUSED_OPTIMIZATION' in globals() and CRISIS_FOCUSED_OPTIMIZATION:
+        score = get_metric_score_array(y_true, y_pred, GOVERNING_METRIC)
+    else:
+        score = (np.argmax(y_true, axis=1) == np.argmax(y_pred, axis=1)).astype(int)
     # score = tf.keras.metrics.categorical_accuracy(y_true, y_pred)
     # score = score.numpy()
 

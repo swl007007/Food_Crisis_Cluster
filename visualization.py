@@ -647,16 +647,53 @@ def plot_partition_map(correspondence_table_path,
     df_clean['admin_code'] = df_clean['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
     gdf['admin_code'] = gdf['admin_code'].astype(str)
     
-    merged_gdf = df_clean.merge(gdf, on='admin_code', how='left')
+    # Use outer join to preserve all polygons when configured
+    try:
+        from config import USE_OUTER_JOINS, DIAGNOSTIC_POLYGON_TRACKING
+        join_type = 'outer' if USE_OUTER_JOINS else 'left'
+    except:
+        join_type = 'left'  # Fallback to original behavior
     
-    # Check for missing geometries
-    missing_geom = merged_gdf['geometry'].isna().sum()
-    if missing_geom > 0:
-        print(f"Warning: {missing_geom} administrative units have no matching geometry")
+    merged_gdf = df_clean.merge(gdf, on='admin_code', how=join_type)
+    
+    # Track unmatched polygons
+    unmatched_admin = merged_gdf[merged_gdf['partition_id'].isna()]['admin_code'].tolist()
+    unmatched_geom = merged_gdf[merged_gdf['geometry'].isna()]['admin_code'].tolist() 
+    
+    if unmatched_admin:
+        print(f"Warning: {len(unmatched_admin)} admin codes have no partition assignment")
+        try:
+            if DIAGNOSTIC_POLYGON_TRACKING:
+                print(f"  Sample unmatched admin codes: {unmatched_admin[:10]}")
+        except:
+            pass
+            
+    if unmatched_geom:
+        print(f"Warning: {len(unmatched_geom)} admin codes have no geometry")
+        try:
+            if DIAGNOSTIC_POLYGON_TRACKING:
+                print(f"  Sample missing geometries: {unmatched_geom[:10]}")
+        except:
+            pass
+    
+    # Assign default partition to unmatched admin codes to preserve them in visualization
+    merged_gdf.loc[merged_gdf['partition_id'].isna(), 'partition_id'] = -1  # Unassigned partition
     
     # Convert to GeoDataFrame
     merged_gdf = gpd.GeoDataFrame(merged_gdf, geometry='geometry')
+    
+    # Only drop geometries that are truly invalid, but track the loss
+    initial_count = len(merged_gdf)
     merged_gdf = merged_gdf.dropna(subset=['geometry'])
+    final_count = len(merged_gdf)
+    
+    if initial_count != final_count:
+        print(f"Polygon loss in visualization: {initial_count} -> {final_count} ({initial_count-final_count} lost)")
+        try:
+            if DIAGNOSTIC_POLYGON_TRACKING:
+                print("  These polygons were lost due to missing geometry data")
+        except:
+            pass
     
     if len(merged_gdf) == 0:
         raise ValueError("No valid geometries found after merging")
@@ -902,15 +939,44 @@ def plot_metrics_improvement_map(metrics_csv_path,
     if 'FEWSNET_admin_code' in merged_metrics.columns:
         # Convert FEWSNET_admin_code to int first, then to string to remove decimal points
         merged_metrics['admin_code'] = merged_metrics['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
-        final_gdf = merged_metrics.merge(gdf, on='admin_code', how='left')
+        
+        # Use outer join when configured to preserve polygons
+        try:
+            from config import USE_OUTER_JOINS
+            join_type = 'outer' if USE_OUTER_JOINS else 'left'
+        except:
+            join_type = 'left'
+            
+        final_gdf = merged_metrics.merge(gdf, on='admin_code', how=join_type)
     else:
         # Fallback: try using X_group as admin_code  
         merged_metrics['admin_code'] = merged_metrics['X_group'].astype(float).astype(int).astype(str)
-        final_gdf = merged_metrics.merge(gdf, on='admin_code', how='left')
+        
+        # Use outer join when configured to preserve polygons
+        try:
+            from config import USE_OUTER_JOINS
+            join_type = 'outer' if USE_OUTER_JOINS else 'left'
+        except:
+            join_type = 'left'
+            
+        final_gdf = merged_metrics.merge(gdf, on='admin_code', how=join_type)
     
     # Convert to GeoDataFrame
     final_gdf = gpd.GeoDataFrame(final_gdf, geometry='geometry')
+    
+    # Track polygon losses before dropna
+    initial_count = len(final_gdf)
     final_gdf = final_gdf.dropna(subset=['geometry', metric_type])
+    final_count = len(final_gdf)
+    
+    if initial_count != final_count:
+        print(f"Polygon loss in metrics visualization: {initial_count} -> {final_count} ({initial_count-final_count} lost)")
+        try:
+            from config import DIAGNOSTIC_POLYGON_TRACKING
+            if DIAGNOSTIC_POLYGON_TRACKING:
+                print("  Lost polygons due to missing geometry or metric data")
+        except:
+            pass
     
     if len(final_gdf) == 0:
         raise ValueError("No valid geometries found after merging. Check correspondence table and admin codes.")
