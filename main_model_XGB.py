@@ -511,14 +511,25 @@ def setup_spatial_groups(df, assignment='polygons'):
     X_loc = df[['lat', 'lon']].values
     
     if assignment == 'polygons':
-        X_polygon_ids = df['FEWSNET_admin_code'].values
+        # CRITICAL FIX: Use unique admin units, not all temporal records
+        # The bug was that X_polygon_ids contained all 70,228 temporal records
+        # when it should only contain unique admin units for spatial grouping
         
-        # Get unique polygons and their centroids
+        # Get unique polygons and their centroids (deduplicated)
         polygon_data = df[['FEWSNET_admin_code', 'lat', 'lon']].drop_duplicates()
         polygon_centroids = polygon_data[['lat', 'lon']].values
         
         # Get unique admin codes
         unique_polygons = polygon_data['FEWSNET_admin_code'].unique()
+        
+        print(f"SPATIAL GROUPING FIX:")
+        print(f"  - Total records in df: {len(df):,}")
+        print(f"  - Unique admin units: {len(unique_polygons):,}")
+        print(f"  - Records per admin unit: {len(df)/len(unique_polygons):.1f}")
+        
+        # Create X_polygon_ids array that maps each temporal record to its admin unit ID
+        # This ensures partitioning works on temporal records but groups by admin units
+        X_polygon_ids = df['FEWSNET_admin_code'].values
         
         # Create mapping from FEWSNET_admin_code to polygon index
         admin_to_polygon_idx = {admin_code: idx for idx, admin_code in enumerate(unique_polygons)}
@@ -1104,7 +1115,7 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
-                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False,
+                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False, force_final_accuracy=False,
                            # XGBoost-specific hyperparameters
                            learning_rate=0.1, reg_alpha=0.1, reg_lambda=1.0, subsample=0.8, colsample_bytree=0.8):
     """
@@ -1545,7 +1556,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             # Evaluate
             (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
-                Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True
+                Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True,
+                force_accuracy=force_final_accuracy
             )
             
             print(f"Q{quarter} {test_year} Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")
@@ -2090,6 +2102,8 @@ def main():
                         help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 4)')
     parser.add_argument('--force_cleanup', action='store_true', 
                         help='Force cleanup of existing result directories and bypass checkpoint detection')
+    parser.add_argument('--force-final-accuracy', action='store_true',
+                        help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
     
     # Configuration
@@ -2179,6 +2193,7 @@ def main():
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
             start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup,
+            force_final_accuracy=args.force_final_accuracy,
             # Pass XGBoost hyperparameters
             learning_rate=learning_rate,
             reg_alpha=reg_alpha,

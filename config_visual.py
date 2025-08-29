@@ -164,6 +164,25 @@ ADJACENCY_FORCE_REGENERATE = False  # If True, regenerate adjacency matrix even 
 #Visualization debug control
 VIS_DEBUG_MODE = True  # Set to False to disable all debug visualizations and metric tables to speed up execution
 
+# FRAGMENTATION BUG FIX APPLIED (2025-08-28)
+# This config file is compatible with the fragmentation bug fix
+# The fix ensures visualization shows correct admin unit counts instead of temporal record counts
+
+# Enhanced visualization configuration for visual debug branch
+VISUALIZE_ALWAYS = True  # Always generate basic maps (accuracy, partition) regardless of partition count
+VISUALIZE_FORCE = False  # CLI override to force visualization even in degenerate cases (set via --force-visualize)
+VISUALIZE_BACKEND = 'matplotlib'  # Visualization backend ('matplotlib' or 'folium')  
+VISUALIZE_DPI = 200  # Output resolution for saved maps
+VISUALIZE_MISSING_COLOR = 'lightgray'  # Color for polygons with missing data
+VISUALIZE_DEGENERATE_CASES = True  # Generate maps even when partitioning fails or selects root model
+
+# Partition visualization filtering configuration
+HIDE_UNASSIGNED_PARTITIONS = True  # Hide unassigned/out-of-AOI partitions in visualizations
+UNASSIGNED_LABELS = [-1]  # List of partition labels to treat as unassigned
+VALID_PARTITION_LABELS = [0, 1]  # Expected valid partition labels
+UNASSIGNED_FILL_COLOR = '#dddddd'  # Color for unassigned areas (when shown)
+UNASSIGNED_ALPHA = 0.0  # Transparency for unassigned areas (0.0 = fully transparent)
+
 # Crisis-focused optimization parameters for visual debug
 GOVERNING_METRIC = 'class_1_f1'  # Primary optimization target for crisis prediction
 CRISIS_FOCUSED_OPTIMIZATION = True  # Enable class 1 prioritization throughout pipeline
@@ -194,6 +213,11 @@ DIAGNOSTIC_POLYGON_TRACKING = True  # Log polygon counts at each stage
 # Contiguity refinement safeguards  
 MIN_ADJACENCY_THRESHOLD = 0.0      # Don't filter polygons by neighbor count
 PRESERVE_ORIGINAL_ON_MAPPING_FAIL = True  # Fallback for mapping failures
+
+# Final accuracy rendering configuration (requires VIS_DEBUG_MODE=True)
+FINAL_ACCURACY_BACKEND = 'matplotlib'  # Visualization backend for accuracy maps
+FINAL_ACCURACY_DPI = 200               # Output resolution for accuracy maps
+FINAL_ACCURACY_MISSING_COLOR = '#dddddd'  # Color for polygons with missing accuracy data
 
 #predefined groups such as US counties
 #unused here

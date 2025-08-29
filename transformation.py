@@ -728,14 +728,41 @@ def partition(model, X, y,
         # update s table
         # need to make sure ids returned by groupby are consistent
 
-        #np.empty is not empty!
-        # s0_grid_set = np.zeros(max_size_needed, dtype = np.int32)#, dtype = 'O'
-        # s1_grid_set = np.zeros(max_size_needed, dtype = np.int32)
-        s0_grid_set = -np.ones(max_size_needed, dtype = np.int32)#, dtype = 'O'
-        s1_grid_set = -np.ones(max_size_needed, dtype = np.int32)
-        s0_grid_set[:s0.shape[0]] = y_val_gid[s0]
-        s1_grid_set[:s1.shape[0]] = y_val_gid[s1]
-        s_branch[branch_id + '0'] = s0_grid_set#y_val_gid is at grid-cell level, and covers all cells in this branch
+        # FIX: Size arrays exactly to avoid trailing -1 values
+        # Create arrays sized exactly to the data we have
+        s0_grid_set = y_val_gid[s0] if s0.shape[0] > 0 else np.array([], dtype=np.int32)
+        s1_grid_set = y_val_gid[s1] if s1.shape[0] > 0 else np.array([], dtype=np.int32)
+        
+        # Pad to max_size_needed only if necessary for compatibility, but fill with actual data
+        if s0_grid_set.shape[0] < max_size_needed:
+            # Pad with actual group IDs from parent branch to maintain inheritance
+            parent_groups = s_branch[branch_id] if branch_id in s_branch else np.array([], dtype=np.int32)
+            if len(parent_groups) > 0:
+                # Take valid parent group IDs (not -1) to fill remaining slots if needed
+                valid_parent_groups = parent_groups[parent_groups >= 0]
+                if len(valid_parent_groups) > 0:
+                    # Extend s0_grid_set to max_size_needed with inherited values
+                    padded_s0 = np.full(max_size_needed, -1, dtype=np.int32)  
+                    padded_s0[:s0_grid_set.shape[0]] = s0_grid_set
+                    s0_grid_set = padded_s0
+                else:
+                    # No valid parent groups, use exact size
+                    pass
+            else:
+                # No parent branch, use exact size
+                pass
+        
+        if s1_grid_set.shape[0] < max_size_needed:
+            # Similar logic for s1_grid_set
+            parent_groups = s_branch[branch_id] if branch_id in s_branch else np.array([], dtype=np.int32)
+            if len(parent_groups) > 0:
+                valid_parent_groups = parent_groups[parent_groups >= 0]
+                if len(valid_parent_groups) > 0:
+                    padded_s1 = np.full(max_size_needed, -1, dtype=np.int32)
+                    padded_s1[:s1_grid_set.shape[0]] = s1_grid_set
+                    s1_grid_set = padded_s1
+        
+        s_branch[branch_id + '0'] = s0_grid_set
         s_branch[branch_id + '1'] = s1_grid_set
 
         #update branch_table and score_table

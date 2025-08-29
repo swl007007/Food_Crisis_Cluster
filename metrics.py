@@ -291,7 +291,11 @@ class PartitionMetricsTracker:
         """
         Save all recorded metrics to CSV files.
         """
-        from config import VIS_DEBUG_MODE
+        # Dynamically import VIS_DEBUG_MODE from the appropriate config
+        try:
+            from config_visual import VIS_DEBUG_MODE
+        except ImportError:
+            from config import VIS_DEBUG_MODE
         if not VIS_DEBUG_MODE:
             return
             

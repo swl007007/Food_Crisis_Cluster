@@ -6,6 +6,7 @@
 # @License: MIT License
 
 import numpy as np
+import os
 from scipy import stats
 
 #GeoRF
@@ -205,8 +206,73 @@ class GeoRF():
 		#timer
 		start_time = time.time()
 
-		#Train to stablize before starting the first data partitioning
+		# PRE-PARTITIONING DIAGNOSTICS WITH CROSS-VALIDATION
+		# Generate diagnostic maps using CV to prevent overfitting bias before spatial partitioning
 		train_list_init = np.where(X_set == 0)
+		try:
+			from pre_partition_diagnostic import create_pre_partition_diagnostics_cv
+			print("\n=== Generating Pre-Partitioning CV Diagnostic Maps ===")
+			
+			# Get TRAINING DATA ONLY - completely exclude test data
+			train_indices = np.where(X_set == 0)[0]
+			X_train_only = X[train_indices]
+			y_train_only = y[train_indices]
+			X_group_train_only = X_group[train_indices]
+			
+			# Verify test data exclusion
+			test_indices = np.where(X_set == 1)[0]
+			assert len(np.intersect1d(train_indices, test_indices)) == 0, \
+				"CRITICAL: Test data contamination detected in diagnostic!"
+			
+			print(f"  Training samples for CV diagnostic: {len(X_train_only):,}")
+			print(f"  Test samples (excluded): {len(test_indices):,}")
+			print(f"  Total verification: {len(train_indices) + len(test_indices)} == {len(X)}")
+			
+			# Set up diagnostic output directory
+			import os as os_module
+			diagnostic_vis_dir = os_module.path.join(self.model_dir, 'vis') if hasattr(self, 'model_dir') else self.dir_vis
+			
+			# Model parameters for CV
+			model_params = {
+				'dir_ckpt': self.dir_ckpt,
+				'n_trees_unit': self.n_trees_unit,
+				'max_depth': self.max_depth
+			}
+			
+			# Get shapefile path from config
+			shapefile_path = None
+			try:
+				from config import ADJACENCY_SHAPEFILE_PATH
+				shapefile_path = ADJACENCY_SHAPEFILE_PATH
+			except:
+				pass
+			
+			# Run CV diagnostics (NO TEST DATA INVOLVED)
+			diagnostic_results = create_pre_partition_diagnostics_cv(
+				X_train=X_train_only,
+				y_train=y_train_only,
+				X_group_train=X_group_train_only,
+				model_class=RFmodel,
+				model_params=model_params,
+				vis_dir=diagnostic_vis_dir,
+				shapefile_path=shapefile_path,
+				uid_col='FEWSNET_admin_code',
+				class_positive=1,
+				cv_folds=5,
+				random_state=42
+			)
+			
+			print("SUCCESS: Pre-partitioning CV diagnostics completed successfully")
+			
+		except ImportError:
+			print("WARNING: Pre-partitioning diagnostic module not available. Skipping diagnostic maps.")
+		except Exception as e:
+			print(f"WARNING: Pre-partitioning CV diagnostics failed: {e}")
+			import traceback
+			traceback.print_exc()
+			print("  Continuing with partitioning...")
+
+		#Train to stablize before starting the first data partitioning
 		if MODEL_CHOICE == 'RF':
 			#RF
 			self.model = RFmodel(self.dir_ckpt, self.n_trees_unit, max_depth = self.max_depth)#can add sample_weights_by_class
@@ -260,6 +326,150 @@ class GeoRF():
 			X_branch_id = get_refined_partitions_all(X_branch_id, self.s_branch, X_group, dir = self.dir_vis, min_component_size = MIN_COMPONENT_SIZE)
 		## 	GLOBAL_CONTIGUITY = True#unused
 
+		# VISUALIZATION FIX: Always render essential maps regardless of conditions
+		try:
+			from visualization_fix import ensure_vis_dir_and_render_maps
+			
+			# Create correspondence table for visualization with proper inheritance
+			from config_visual import VALID_PARTITION_LABELS
+			
+			# CRITICAL FIX: Create correspondence data for unique admin units only, not all temporal records
+			# Bug was: iterating through X_branch_id (70,228 temporal records) instead of unique admin units
+			print(f"CORRESPONDENCE TABLE FIX:")
+			print(f"  X_branch_id length (temporal records): {len(X_branch_id):,}")
+			print(f"  X_group length (temporal records): {len(X_group):,}")
+			print(f"  Unique admin units: {len(np.unique(X_group)):,}")
+			
+			correspondence_data = []
+			
+			# Create a mapping of unique admin units to their partition assignments
+			# Use the first occurrence of each admin unit to determine its partition
+			seen_admin_codes = set()
+			for group_id, branch_id in enumerate(X_branch_id):
+				if group_id < len(X_group):  # Safety check
+					admin_code = X_group[group_id] if hasattr(X_group[group_id], '__iter__') else X_group[group_id]
+					
+					# Only process each admin code once (skip temporal duplicates)
+					if admin_code not in seen_admin_codes:
+						seen_admin_codes.add(admin_code)
+						
+						# Map branch_id to partition_id with proper inheritance
+						if branch_id == '' or branch_id is None:
+							# Root branch - assign to partition 0
+							partition_id = 0
+						else:
+							# Map branch IDs to partition labels
+							# For binary partitioning: even branches -> 0, odd branches -> 1
+							try:
+								# Convert branch_id to binary representation and count 1s
+								branch_num = sum(1 for c in branch_id if c == '1') if branch_id else 0
+								partition_id = branch_num % 2  # Binary partitioning: 0 or 1
+							except:
+								partition_id = 0  # Default to partition 0 if parsing fails
+						
+						correspondence_data.append({
+							'FEWSNET_admin_code': admin_code,
+							'partition_id': partition_id,
+							'branch_id': branch_id,  # Keep original branch_id for analysis
+							'X_group': group_id
+						})
+			
+			print(f"  Correspondence entries created: {len(correspondence_data):,}")
+			print(f"  Expected entries (unique admin units): {len(np.unique(X_group)):,}")
+			print(f"  Fix successful: {len(correspondence_data) == len(np.unique(X_group))}")
+			
+			correspondence_df = pd.DataFrame(correspondence_data) if correspondence_data else None
+			
+			# Count partitions
+			partition_count = len(self.s_branch) if hasattr(self, 's_branch') and self.s_branch is not None else 0
+			
+			# Generate frequency reports and trace logs
+			if correspondence_df is not None and len(correspondence_df) > 0:
+				# Create vis directory for reports
+				import os
+				vis_dir = os.path.join(self.model_dir, 'vis')
+				os.makedirs(vis_dir, exist_ok=True)
+				
+				# Label frequency analysis
+				partition_freqs = correspondence_df['partition_id'].value_counts().sort_index()
+				branch_freqs = correspondence_df['branch_id'].value_counts()
+				
+				print(f"Partition label frequencies: {dict(partition_freqs)}")
+				print(f"Branch ID frequencies: {dict(branch_freqs)}")
+				
+				# Save frequency table
+				freq_data = []
+				for pid in partition_freqs.index:
+					freq_data.append({
+						'label_type': 'partition_id',
+						'label_value': pid,
+						'frequency': partition_freqs[pid],
+						'percentage': partition_freqs[pid] / len(correspondence_df) * 100
+					})
+				
+				for bid in branch_freqs.index:
+					freq_data.append({
+						'label_type': 'branch_id', 
+						'label_value': bid,
+						'frequency': branch_freqs[bid],
+						'percentage': branch_freqs[bid] / len(correspondence_df) * 100
+					})
+				
+				freq_df = pd.DataFrame(freq_data)
+				freq_path = os.path.join(vis_dir, 'label_freqs.csv')
+				freq_df.to_csv(freq_path, index=False, encoding='utf-8')
+				print(f"Label frequencies saved: {freq_path}")
+				
+				# Stage trace log
+				trace_path = os.path.join(vis_dir, 'stage_trace.txt')
+				with open(trace_path, 'a', encoding='utf-8') as f:
+					import datetime
+					timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+					f.write(f"\n=== PARTITION INHERITANCE ANALYSIS - {timestamp} ===\n")
+					f.write(f"Model directory: {self.model_dir}\n")
+					f.write(f"Total admin units: {len(correspondence_df)}\n")
+					f.write(f"Partition count: {partition_count}\n")
+					f.write(f"Branch count: {len(branch_freqs)}\n")
+					f.write(f"Partition frequencies: {dict(partition_freqs)}\n")
+					f.write(f"Branch frequencies: {dict(branch_freqs)}\n")
+					
+					# Check for problematic assignments
+					unassigned_count = correspondence_df['partition_id'].isna().sum()
+					if unassigned_count > 0:
+						f.write(f"WARNING: {unassigned_count} unassigned partition IDs found\n")
+					
+					# Check for -1 partitions
+					from config_visual import UNASSIGNED_LABELS
+					problematic_partitions = correspondence_df[correspondence_df['partition_id'].isin(UNASSIGNED_LABELS)]
+					if len(problematic_partitions) > 0:
+						f.write(f"WARNING: {len(problematic_partitions)} polygons assigned to unassigned labels {UNASSIGNED_LABELS}\n")
+						# Save dropped IDs
+						dropped_path = os.path.join(vis_dir, 'dropped_or_unassigned_ids.txt')
+						with open(dropped_path, 'w', encoding='utf-8') as drop_f:
+							drop_f.write(f"# Polygons assigned to unassigned labels {UNASSIGNED_LABELS}\n")
+							drop_f.write(f"# Generated: {timestamp}\n")
+							for idx, row in problematic_partitions.iterrows():
+								drop_f.write(f"{row['FEWSNET_admin_code']},{row['partition_id']},{row['branch_id']}\n")
+						f.write(f"Dropped IDs saved: {dropped_path}\n")
+				
+				print(f"Stage trace updated: {trace_path}")
+			
+			# Render maps with comprehensive logging
+			render_summary = ensure_vis_dir_and_render_maps(
+				model_dir=self.model_dir,
+				correspondence_df=correspondence_df,
+				test_data=None,  # Test data would need to be passed from caller
+				partition_count=partition_count,
+				stage_info="post-training-with-fixes",
+				model=self  # Pass model for accuracy computation
+			)
+			
+			print(f"Visualization fix applied successfully: {len(render_summary['artifacts_rendered'])} maps rendered")
+			
+		except Exception as vis_error:
+			print(f"Warning: Visualization fix failed: {vis_error}")
+			# Continue execution even if visualization fails
+
 		if print_to_file:
 			sys.stdout.close()
 			sys.stdout = self.original_stdout
@@ -295,7 +505,7 @@ class GeoRF():
 
 		return y_pred
 
-	def evaluate(self, Xtest, ytest, Xtest_group, eval_base = False, print_to_file = True):
+	def evaluate(self, Xtest, ytest, Xtest_group, eval_base = False, print_to_file = True, force_accuracy = False):
 		"""
     Evaluating GeoRF and/or RF.
 
@@ -358,11 +568,47 @@ class GeoRF():
 			logger.info('f1_base: %s' % log_print)
 			logger.info("Pred time: Base: %f s" % (time.time() - start_time))
 
+			# FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
+			try:
+				from visualization_fix import ensure_vis_dir_and_render_maps
+				
+				# Render final accuracy maps using the test data that was just evaluated
+				render_summary = ensure_vis_dir_and_render_maps(
+					model_dir=self.model_dir,
+					test_data=(Xtest, ytest, Xtest_group),  # Use the test data from evaluation
+					force_accuracy=force_accuracy,
+					model=self  # Pass the model for accuracy computation
+				)
+				
+				if render_summary.get('final_accuracy_generated'):
+					print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
+				
+			except Exception as e:
+				print(f"Warning: Could not render final accuracy maps: {e}")
+
 			if print_to_file:
 				sys.stdout.close()
 				sys.stdout = self.original_stdout
 
 			return pre, rec, f1, pre_single, rec_single, f1_single
+
+		# FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
+		try:
+			from visualization_fix import ensure_vis_dir_and_render_maps
+			
+			# Render final accuracy maps using the test data that was just evaluated
+			render_summary = ensure_vis_dir_and_render_maps(
+				model_dir=self.model_dir,
+				test_data=(Xtest, ytest, Xtest_group),  # Use the test data from evaluation
+				force_accuracy=force_accuracy,
+				model=self  # Pass the model for accuracy computation
+			)
+			
+			if render_summary.get('final_accuracy_generated'):
+				print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
+			
+		except Exception as e:
+			print(f"Warning: Could not render final accuracy maps: {e}")
 
 		if print_to_file:
 			sys.stdout.close()

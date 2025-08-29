@@ -76,7 +76,7 @@ def evaluate_crisis_prediction(georf, X_test, y_test, X_group_test, test_period=
     print("=" * 60)
     print(f"CRISIS PREDICTION EVALUATION - {test_period} (Class 1 Focus)")
     print("=" * 60)
-    print(f"Class 1 F1 Score:      {class_1_metrics['class_1_f1']:.4f} ⭐ PRIMARY METRIC")
+    print(f"Class 1 F1 Score:      {class_1_metrics['class_1_f1']:.4f} [PRIMARY METRIC]")
     print(f"Class 1 Precision:     {class_1_metrics['class_1_precision']:.4f}")
     print(f"Class 1 Recall:        {class_1_metrics['class_1_recall']:.4f}")
     print(f"Class 1 Support:       {class_1_metrics['class_1_support']}")
@@ -90,11 +90,11 @@ def evaluate_crisis_prediction(georf, X_test, y_test, X_group_test, test_period=
     
     # Highlight the key insight
     if VIS_DEBUG_CRISIS_FOCUS:
-        print("\n🎯 CRISIS PREDICTION FOCUS:")
-        print(f"   • Optimizing for CLASS 1 F1: {class_1_metrics['class_1_f1']:.4f}")
-        print(f"   • Crisis prediction accuracy: {class_1_metrics['class_1_precision']:.1%}")
-        print(f"   • Crisis detection rate: {class_1_metrics['class_1_recall']:.1%}")
-        print(f"   • Total crisis events: {class_1_metrics['class_1_support']}")
+        print("\nCRISIS PREDICTION FOCUS:")
+        print(f"   - Optimizing for CLASS 1 F1: {class_1_metrics['class_1_f1']:.4f}")
+        print(f"   - Crisis prediction accuracy: {class_1_metrics['class_1_precision']:.1%}")
+        print(f"   - Crisis detection rate: {class_1_metrics['class_1_recall']:.1%}")
+        print(f"   - Total crisis events: {class_1_metrics['class_1_support']}")
     
     return class_1_metrics, y_pred_test
 
@@ -575,14 +575,25 @@ def setup_spatial_groups(df, assignment='polygons'):
     X_loc = df[['lat', 'lon']].values
     
     if assignment == 'polygons':
-        X_polygon_ids = df['FEWSNET_admin_code'].values
+        # CRITICAL FIX: Use unique admin units, not all temporal records
+        # The bug was that X_polygon_ids contained all 70,228 temporal records
+        # when it should only contain unique admin units for spatial grouping
         
-        # Get unique polygons and their centroids
+        # Get unique polygons and their centroids (deduplicated)
         polygon_data = df[['FEWSNET_admin_code', 'lat', 'lon']].drop_duplicates()
         polygon_centroids = polygon_data[['lat', 'lon']].values
         
         # Get unique admin codes
         unique_polygons = polygon_data['FEWSNET_admin_code'].unique()
+        
+        print(f"SPATIAL GROUPING FIX:")
+        print(f"  - Total records in df: {len(df):,}")
+        print(f"  - Unique admin units: {len(unique_polygons):,}")
+        print(f"  - Records per admin unit: {len(df)/len(unique_polygons):.1f}")
+        
+        # Create X_polygon_ids array that maps each temporal record to its admin unit ID
+        # This ensures partitioning works on temporal records but groups by admin units
+        X_polygon_ids = df['FEWSNET_admin_code'].values
         
         # Create mapping from FEWSNET_admin_code to polygon index
         admin_to_polygon_idx = {admin_code: idx for idx, admin_code in enumerate(unique_polygons)}
@@ -1168,7 +1179,7 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
-                           track_partition_metrics=False, enable_metrics_maps=True, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False):
+                           track_partition_metrics=False, enable_metrics_maps=True, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False, force_final_accuracy=False):
     """
     Run temporal evaluation for all quarters from start_year to end_year using rolling window approach.
     
@@ -1582,7 +1593,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             # Evaluate
             (pre, rec, f1, pre_base, rec_base, f1_base) = georf.evaluate(
-                Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True
+                Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True,
+                force_accuracy=force_final_accuracy
             )
             
             print(f"Q{quarter} {test_year} Test - GeoRF F1: {f1}, Base RF F1: {f1_base}")
@@ -2034,14 +2046,14 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             # Alert if significant memory leak detected
             if memory_diff > 500:  # More than 500MB growth per quarter
-                print(f"🚨 WARNING: Large memory increase detected: {memory_diff:.1f} MB")
+                print(f"WARNING: Large memory increase detected: {memory_diff:.1f} MB")
                 print("This indicates a potential memory leak that needs investigation")
                 print(f"Consider reducing n_jobs or disabling partition metrics tracking")
             elif memory_diff > 100:  # More than 100MB but less than 500MB
-                print(f"⚠️  NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
+                print(f"NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
                 print("Memory growth within acceptable range but monitor if this persists")
             else:
-                print(f"✅ Memory growth within normal range: {memory_diff:+.1f} MB")
+                print(f"OK: Memory growth within normal range: {memory_diff:+.1f} MB")
             
             # Show DataFrame sizes for monitoring  
             print(f"DataFrame sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")
@@ -2153,13 +2165,23 @@ def main():
                         help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 1)')
     parser.add_argument('--force_cleanup', action='store_true', 
                         help='Force cleanup of existing result directories and bypass checkpoint detection')
+    parser.add_argument('--force-visualize', action='store_true',
+                        help='Force visualization generation even in degenerate cases (single partition, etc.)')
+    parser.add_argument('--force-final-accuracy', action='store_true',
+                        help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
+    
+    # Set global visualization force flag from CLI argument
+    if args.force_visualize:
+        import config_visual
+        config_visual.VISUALIZE_FORCE = True
+        print("Force visualization enabled via --force-visualize flag")
     
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific RF depth
-    desire_terms = 2      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    desire_terms = 1     # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = 1    # From command line argument
     
     # Partition Metrics Tracking Configuration
@@ -2216,10 +2238,10 @@ def main():
                         if unique_groups[i] - unique_groups[i-1] > 1:
                             gaps.append((unique_groups[i-1], unique_groups[i]))
                     if gaps:
-                        print(f"❌ Warning: Gaps found in X_group sequence: {gaps[:5]}")
+                        print(f"WARNING: Gaps found in X_group sequence: {gaps[:5]}")
                         print("   This indicates polygon disappearance during spatial setup!")
                     else:
-                        print("✅ No gaps found in X_group sequence")
+                        print("OK: No gaps found in X_group sequence")
                         
                     # Enhanced visual debug tracking
                     print(f"X_group range: {unique_groups[0]} to {unique_groups[-1]}")
@@ -2227,7 +2249,7 @@ def main():
                     print(f"Actual unique count: {len(unique_groups)}")
                     if len(unique_groups) != (unique_groups[-1] - unique_groups[0] + 1):
                         missing_count = (unique_groups[-1] - unique_groups[0] + 1) - len(unique_groups)
-                        print(f"🚨 POLYGON LOSS DETECTED: {missing_count} polygons missing from sequence!")
+                        print(f"ALERT: POLYGON LOSS DETECTED: {missing_count} polygons missing from sequence!")
                 print("=" * 38)
         
         # Step 5: Run temporal evaluation
@@ -2235,7 +2257,8 @@ def main():
             X, y, X_loc, X_group, years, dates, l1_index, l2_index,
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
-            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup
+            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup,
+            force_final_accuracy=args.force_final_accuracy
         )
         
         # Step 6: Filter results to class 1 only (if needed)

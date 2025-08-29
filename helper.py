@@ -283,7 +283,8 @@ def get_group_branch_dict(s_branch):
 
 def get_X_branch_id_by_group(X_group, s_branch, max_depth = MAX_DEPTH):
   group_branch = get_group_branch_dict(s_branch)#key:group_id, vaule:branch_id
-  X_branch_id = np.empty(X_group.shape[0], dtype = np.dtype(('U', max_depth+1)))#add 1 just in case
+  # FIX: Initialize with root branch instead of empty to ensure all polygons have assignments
+  X_branch_id = np.full(X_group.shape[0], '', dtype = np.dtype(('U', max_depth+1)))  # Initialize with root branch
   for group_id, branch_id in group_branch.items():
     X_branch_id[X_group == group_id] = branch_id
   return X_branch_id

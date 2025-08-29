@@ -676,8 +676,15 @@ def plot_partition_map(correspondence_table_path,
         except:
             pass
     
-    # Assign default partition to unmatched admin codes to preserve them in visualization
-    merged_gdf.loc[merged_gdf['partition_id'].isna(), 'partition_id'] = -1  # Unassigned partition
+    # Handle unassigned partitions based on configuration
+    from config_visual import HIDE_UNASSIGNED_PARTITIONS, UNASSIGNED_LABELS
+    
+    if HIDE_UNASSIGNED_PARTITIONS:
+        # Keep NA values as NA for unmatched admin codes - they'll be filtered out later
+        pass  # Don't assign -1 to preserve original data semantics
+    else:
+        # Assign default partition to unmatched admin codes to preserve them in visualization
+        merged_gdf.loc[merged_gdf['partition_id'].isna(), 'partition_id'] = -1  # Unassigned partition
     
     # Convert to GeoDataFrame
     merged_gdf = gpd.GeoDataFrame(merged_gdf, geometry='geometry')
@@ -701,9 +708,38 @@ def plot_partition_map(correspondence_table_path,
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
     
-    # Get unique partition IDs and create color map
-    unique_partitions = merged_gdf['partition_id'].unique()
+    # Filter partitions based on configuration
+    original_count = len(merged_gdf)
+    
+    if HIDE_UNASSIGNED_PARTITIONS:
+        # Filter out unassigned labels from visualization
+        unassigned_set = set(UNASSIGNED_LABELS)
+        
+        # Also filter out NA values
+        merged_gdf_filtered = merged_gdf[
+            (~merged_gdf['partition_id'].isin(unassigned_set)) & 
+            (~merged_gdf['partition_id'].isna())
+        ].copy()
+        
+        dropped_count = original_count - len(merged_gdf_filtered)
+        if dropped_count > 0:
+            print(f"Hiding {dropped_count} unassigned polygons from visualization")
+        
+        merged_gdf = merged_gdf_filtered
+    
+    # Get unique partition IDs and create color map  
+    unique_partitions = merged_gdf['partition_id'].dropna().unique()
     n_partitions = len(unique_partitions)
+    
+    if n_partitions == 0:
+        print("Warning: No valid partitions to visualize after filtering")
+        # Create empty plot with message
+        ax.text(0.5, 0.5, 'No valid partitions to display\n(All areas unassigned/filtered)', 
+               ha='center', va='center', transform=ax.transAxes, fontsize=14)
+        ax.set_title(title if title else 'Partition Map - No Data', fontsize=16, pad=20)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        return fig
     
     # Use optimized color palette for better distinction
     colors = get_colors(n_partitions)
@@ -756,10 +792,16 @@ def plot_partition_map(correspondence_table_path,
              fontsize=10,
              title="Partitions")
     
-    # Set labels and title
+    # Set labels and title  
     ax.set_xlabel('Longitude', fontsize=12)
     ax.set_ylabel('Latitude', fontsize=12)
-    ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+    
+    # Modify title to indicate if unassigned areas are hidden
+    final_title = title
+    if HIDE_UNASSIGNED_PARTITIONS and dropped_count > 0:
+        final_title += f" (Unassigned areas hidden: {dropped_count})"
+    
+    ax.set_title(final_title, fontsize=16, fontweight='bold', pad=20)
     
     # Add summary statistics as text
     stats_text = f"Total partitions: {n_partitions}\nAdmin units: {len(merged_gdf)}"
@@ -1134,3 +1176,140 @@ def plot_partition_metrics_dashboard(metrics_tracker, output_dir,
                 print(f"Warning: Could not create maps for {csv_file}: {e}")
     
     return outputs_created
+
+
+def plot_error_rate_choropleth(error_df, metric_col, shapefile_path=None, 
+                              uid_col='FEWSNET_admin_code', title=None,
+                              save_path=None, figsize=(12, 10), dpi=200,
+                              missing_color='lightgray', crs_target='EPSG:4326'):
+    """
+    Create choropleth map showing error rates by polygon.
+    
+    This function integrates with the existing visualization infrastructure to create
+    consistent choropleth maps for pre-partitioning diagnostics.
+    
+    Parameters
+    ----------
+    error_df : pandas.DataFrame
+        DataFrame with polygon error statistics
+    metric_col : str
+        Column name containing error rates to visualize
+    shapefile_path : str, optional
+        Path to polygon shapefile. Uses default FEWSNET path if None
+    uid_col : str, default='FEWSNET_admin_code'
+        Column containing polygon unique identifiers
+    title : str, optional
+        Map title. Auto-generated if None
+    save_path : str, optional
+        Path to save the map. If None, displays only
+    figsize : tuple, default=(12, 10)
+        Figure size in inches
+    dpi : int, default=200
+        Output resolution for saved maps
+    missing_color : str, default='lightgray'
+        Color for polygons with missing data
+    crs_target : str, default='EPSG:4326'
+        Target coordinate reference system
+        
+    Returns
+    -------
+    matplotlib.figure.Figure
+        The created figure object
+    """
+    try:
+        import geopandas as gpd
+        import contextily as ctx
+        import matplotlib.colors as mcolors
+        from matplotlib.patches import Patch
+    except ImportError as e:
+        raise ImportError(f"Required packages missing: {e}. Install with: pip install geopandas contextily")
+    
+    # Default shapefile path
+    if shapefile_path is None:
+        shapefile_path = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
+    
+    # Auto-generate title if not provided
+    if title is None:
+        metric_name = metric_col.replace('pct_err_', '').replace('_', ' ').title()
+        title = f"{metric_name} Error Rate by Polygon"
+    
+    # Load and prepare shapefile
+    gdf = gpd.read_file(shapefile_path)
+    
+    # Standardize column names
+    if 'admin_code' in gdf.columns:
+        gdf = gdf.rename(columns={'admin_code': uid_col})
+    
+    gdf = gdf[[uid_col, 'geometry']].copy()
+    gdf = gdf.to_crs(crs_target)
+    
+    # Merge with error data
+    merged_gdf = gdf.merge(error_df, on=uid_col, how='left')
+    merged_gdf = gpd.GeoDataFrame(merged_gdf, geometry='geometry')
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Plot polygons with valid data
+    data_mask = merged_gdf[metric_col].notna()
+    
+    if data_mask.sum() > 0:
+        merged_gdf[data_mask].plot(
+            column=metric_col,
+            ax=ax,
+            cmap='Reds',
+            vmin=0.0,
+            vmax=1.0,
+            legend=True,
+            legend_kwds={
+                'shrink': 0.8,
+                'label': 'Error Rate',
+                'format': '%.0%'
+            }
+        )
+    
+    # Plot polygons without data
+    no_data_mask = ~data_mask
+    if no_data_mask.sum() > 0:
+        merged_gdf[no_data_mask].plot(
+            ax=ax,
+            color=missing_color,
+            alpha=0.7,
+            hatch='///',
+            edgecolor='white',
+            linewidth=0.1
+        )
+    
+    # Styling
+    ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Longitude', fontsize=12)
+    ax.set_ylabel('Latitude', fontsize=12)
+    ax.grid(True, alpha=0.3)
+    
+    # Add summary statistics
+    valid_values = merged_gdf[metric_col].dropna()
+    if len(valid_values) > 0:
+        stats_text = (f"Valid: {len(valid_values):,}\n"
+                     f"Mean: {valid_values.mean():.1%}\n"
+                     f"Std: {valid_values.std():.1%}\n"
+                     f"Range: [{valid_values.min():.1%}, {valid_values.max():.1%}]")
+        ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, fontsize=10,
+               verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+    
+    # Add legend for missing data if needed
+    if no_data_mask.sum() > 0:
+        legend_elements = []
+        if ax.get_legend():
+            legend_elements = ax.get_legend().get_patches()
+        legend_elements.append(Patch(facecolor=missing_color, hatch='///', 
+                                   label=f'No Data ({no_data_mask.sum():,})'))
+        ax.legend(handles=legend_elements, loc='lower right')
+    
+    plt.tight_layout()
+    
+    # Save if path provided
+    if save_path:
+        plt.savefig(save_path, dpi=dpi, bbox_inches='tight', facecolor='white')
+        print(f"Choropleth map saved: {save_path}")
+    
+    return fig

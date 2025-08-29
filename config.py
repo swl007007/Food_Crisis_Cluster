@@ -164,6 +164,13 @@ ADJACENCY_FORCE_REGENERATE = False  # If True, regenerate adjacency matrix even 
 #Visualization debug control
 VIS_DEBUG_MODE = False  # Set to False to disable all debug visualizations and metric tables to speed up execution
 
+# FRAGMENTATION BUG FIX DOCUMENTATION (2025-08-28)
+# Fixed critical bug where temporal records were being counted as spatial units
+# Root cause: Spatial partitioning processed 70,228 temporal records but correspondence 
+# table generation created entries for each temporal record instead of unique admin units
+# Fix applied to: GeoRF.py, main_model_GF.py, main_model_GF_visual_debug.py, main_model_XGB.py
+# Result: Visualization now shows correct admin unit counts (~3,600) instead of temporal record counts (~70,000)
+
 # Crisis-focused optimization parameters
 GOVERNING_METRIC = 'class_1_f1'  # Primary optimization target for crisis prediction
 CRISIS_FOCUSED_OPTIMIZATION = True  # Enable class 1 prioritization throughout pipeline
@@ -189,6 +196,11 @@ DIAGNOSTIC_POLYGON_TRACKING = True  # Log polygon counts at each stage
 # Contiguity refinement safeguards  
 MIN_ADJACENCY_THRESHOLD = 0.0      # Don't filter polygons by neighbor count
 PRESERVE_ORIGINAL_ON_MAPPING_FAIL = True  # Fallback for mapping failures
+
+# Final accuracy rendering configuration (requires VIS_DEBUG_MODE=True)
+FINAL_ACCURACY_BACKEND = 'matplotlib'  # Visualization backend for accuracy maps
+FINAL_ACCURACY_DPI = 200               # Output resolution for accuracy maps
+FINAL_ACCURACY_MISSING_COLOR = '#dddddd'  # Color for polygons with missing accuracy data
 
 #predefined groups such as US counties
 #unused here

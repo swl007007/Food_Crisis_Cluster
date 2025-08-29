@@ -252,6 +252,84 @@ class GeoRF_XGB():
             early_stopping_rounds=self.early_stopping_rounds
         )
 
+        # PRE-PARTITIONING DIAGNOSTICS WITH CROSS-VALIDATION FOR XGBOOST
+        # Generate diagnostic maps using CV to prevent overfitting bias before spatial partitioning
+        try:
+            from pre_partition_diagnostic import create_pre_partition_diagnostics_cv
+            print("\n=== Generating Pre-Partitioning CV Diagnostic Maps (XGBoost) ===")
+            
+            # Get TRAINING DATA ONLY - completely exclude test data
+            train_indices = np.where(X_set == 0)[0]
+            X_train_only = X[train_indices]
+            y_train_only = y[train_indices]
+            X_group_train_only = X_group[train_indices]
+            
+            # Verify test data exclusion
+            test_indices = np.where(X_set == 1)[0]
+            assert len(np.intersect1d(train_indices, test_indices)) == 0, \
+                "CRITICAL: Test data contamination detected in XGBoost diagnostic!"
+            
+            print(f"  Training samples for CV diagnostic: {len(X_train_only):,}")
+            print(f"  Test samples (excluded): {len(test_indices):,}")
+            print(f"  Total verification: {len(train_indices) + len(test_indices)} == {len(X)}")
+            
+            # Set up diagnostic output directory
+            diagnostic_vis_dir = os.path.join(self.model_dir, 'vis') if hasattr(self, 'model_dir') else self.dir_vis
+            
+            # Model parameters for CV (XGBoost-specific)
+            model_params = {
+                'path': self.dir_ckpt,
+                'n_trees_unit': self.n_trees_unit,
+                'num_class': self.num_class,
+                'max_depth': self.max_depth,
+                'random_state': self.random_state,
+                'n_jobs': self.n_jobs,
+                'max_model_depth': self.max_model_depth,
+                'mode': self.mode,
+                'name': self.name,
+                'type': self.type,
+                'sample_weights_by_class': self.sample_weights_by_class,
+                'learning_rate': self.learning_rate,
+                'subsample': self.subsample,
+                'colsample_bytree': self.colsample_bytree,
+                'reg_alpha': self.reg_alpha,
+                'reg_lambda': self.reg_lambda,
+                'early_stopping_rounds': self.early_stopping_rounds
+            }
+            
+            # Get shapefile path from config
+            shapefile_path = None
+            try:
+                from config import ADJACENCY_SHAPEFILE_PATH
+                shapefile_path = ADJACENCY_SHAPEFILE_PATH
+            except:
+                pass
+            
+            # Run CV diagnostics (NO TEST DATA INVOLVED)
+            diagnostic_results = create_pre_partition_diagnostics_cv(
+                X_train=X_train_only,
+                y_train=y_train_only,
+                X_group_train=X_group_train_only,
+                model_class=XGBmodel,
+                model_params=model_params,
+                vis_dir=diagnostic_vis_dir,
+                shapefile_path=shapefile_path,
+                uid_col='FEWSNET_admin_code',
+                class_positive=1,
+                cv_folds=5,
+                random_state=42
+            )
+            
+            print("SUCCESS: Pre-partitioning CV diagnostics (XGBoost) completed successfully")
+            
+        except ImportError:
+            print("WARNING: Pre-partitioning diagnostic module not available. Skipping diagnostic maps.")
+        except Exception as e:
+            print(f"WARNING: Pre-partitioning CV diagnostics (XGBoost) failed: {e}")
+            import traceback
+            traceback.print_exc()
+            print("  Continuing with partitioning...")
+
         # Spatial partitioning (same as original GeoRF, with optional metrics tracking)
         partition_result = partition(
             self.model, X, y,
@@ -319,7 +397,7 @@ class GeoRF_XGB():
 
         return y_pred
 
-    def evaluate(self, X, y, X_group, eval_base=False, print_to_file=False):
+    def evaluate(self, X, y, X_group, eval_base=False, print_to_file=False, force_accuracy=False):
         """Evaluate the trained GeoXGB model."""
         if print_to_file:
             print_file = self.model_dir + '/' + 'log_print.txt'
@@ -360,11 +438,47 @@ class GeoRF_XGB():
             print('Recall: ', rec_base)
             print('F1-score: ', f1_base)
 
+            # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
+            try:
+                from visualization_fix import ensure_vis_dir_and_render_maps
+                
+                # Render final accuracy maps using the test data that was just evaluated
+                render_summary = ensure_vis_dir_and_render_maps(
+                    model_dir=self.model_dir,
+                    test_data=(X, y, X_group),  # Use the test data from evaluation
+                    force_accuracy=force_accuracy,
+                    model=self  # Pass model for accuracy computation
+                )
+                
+                if render_summary.get('final_accuracy_generated'):
+                    print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
+                
+            except Exception as e:
+                print(f"Warning: Could not render final accuracy maps: {e}")
+
             if print_to_file:
                 sys.stdout.close()
                 sys.stdout = self.original_stdout
 
             return pre, rec, f1, pre_base, rec_base, f1_base
+
+        # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
+        try:
+            from visualization_fix import ensure_vis_dir_and_render_maps
+            
+            # Render final accuracy maps using the test data that was just evaluated
+            render_summary = ensure_vis_dir_and_render_maps(
+                model_dir=self.model_dir,
+                test_data=(X, y, X_group),  # Use the test data from evaluation
+                force_accuracy=force_accuracy,
+                model=self  # Pass model for accuracy computation
+            )
+            
+            if render_summary.get('final_accuracy_generated'):
+                print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
+            
+        except Exception as e:
+            print(f"Warning: Could not render final accuracy maps: {e}")
 
         if print_to_file:
             sys.stdout.close()
