@@ -17,20 +17,20 @@ from scipy import stats
 
 # GeoRF with XGBoost
 # Model import changed from RF to XGB
-from model_XGB import XGBmodel, save_single, predict_test_group_wise
+from src.model.model_XGB import XGBmodel, save_single, predict_test_group_wise
 try:
     import xgboost as xgb
 except ImportError:
     raise ImportError("XGBoost is required. Install with: pip install xgboost")
 
-from customize import *
-from data import *
-from initialization import init_X_info, init_X_info_raw_loc, init_X_branch_id, train_val_split
-from helper import create_dir, open_dir, get_X_branch_id_by_group, get_filter_thrd
-from transformation import partition
-from visualization import *
-from metrics import get_class_wise_accuracy, get_prf
-from partition_opt import get_refined_partitions_all
+from src.customize.customize import *
+from demo.data import *
+from src.initialization.initialization import init_X_info, init_X_info_raw_loc, init_X_branch_id, train_val_split
+from src.helper.helper import create_dir, open_dir, get_X_branch_id_by_group, get_filter_thrd
+from src.partition.transformation import partition
+from src.vis.visualization import *
+from src.metrics.metrics import get_class_wise_accuracy, get_prf
+from src.partition.partition_opt import get_refined_partitions_all
 # All global parameters
 from config import *
 
@@ -255,7 +255,7 @@ class GeoRF_XGB():
         # PRE-PARTITIONING DIAGNOSTICS WITH CROSS-VALIDATION FOR XGBOOST
         # Generate diagnostic maps using CV to prevent overfitting bias before spatial partitioning
         try:
-            from pre_partition_diagnostic import create_pre_partition_diagnostics_cv
+            from src.diagnostics.pre_partition_diagnostic import create_pre_partition_diagnostics_cv
             print("\n=== Generating Pre-Partitioning CV Diagnostic Maps (XGBoost) ===")
             
             # Get TRAINING DATA ONLY - completely exclude test data
@@ -440,7 +440,7 @@ class GeoRF_XGB():
 
             # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
             try:
-                from visualization_fix import ensure_vis_dir_and_render_maps
+                from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
                 
                 # Render final accuracy maps using the test data that was just evaluated
                 render_summary = ensure_vis_dir_and_render_maps(
@@ -464,7 +464,7 @@ class GeoRF_XGB():
 
         # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
         try:
-            from visualization_fix import ensure_vis_dir_and_render_maps
+            from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
             
             # Render final accuracy maps using the test data that was just evaluated
             render_summary = ensure_vis_dir_and_render_maps(

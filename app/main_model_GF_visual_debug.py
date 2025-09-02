@@ -25,26 +25,82 @@ import gc
 import glob
 import warnings
 import argparse
+
+# Add parent directory to path to find src module
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 warnings.filterwarnings('ignore')
 
 # GeoRF imports
-from GeoRF import GeoRF
-from customize import *
-from data import load_demo_data
-from helper import get_spatial_range
-from initialization import train_test_split_all
-from customize import train_test_split_rolling_window
-from config import *
+from src.model.GeoRF import GeoRF
+from src.customize.customize import *
+from demo.data import load_demo_data
+from src.helper.helper import get_spatial_range
+from src.initialization.initialization import train_test_split_all
+from src.customize.customize import train_test_split_rolling_window
+from config_visual import *
 from sklearn.impute import SimpleImputer
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score, balanced_accuracy_score
 from tqdm import tqdm
 
 # Import adjacency matrix utilities
 if USE_ADJACENCY_MATRIX:
-    from adjacency_utils import load_or_create_adjacency_matrix
+    from src.adjacency.adjacency_utils import load_or_create_adjacency_matrix
 
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
+
+def calculate_class_1_metrics(y_true, y_pred):
+    """Calculate class 1 specific metrics for crisis prediction."""
+    if len(y_true.shape) > 1:
+        y_true_labels = np.argmax(y_true, axis=1)
+        y_pred_labels = np.argmax(y_pred, axis=1)
+    else:
+        y_true_labels, y_pred_labels = y_true, y_pred
+    
+    metrics = {
+        'class_1_f1': f1_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0),
+        'class_1_precision': precision_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0),
+        'class_1_recall': recall_score(y_true_labels, y_pred_labels, pos_label=1, zero_division=0),
+        'class_1_support': np.sum(y_true_labels == 1),
+        'class_0_f1': f1_score(y_true_labels, y_pred_labels, pos_label=0, zero_division=0),
+        'class_0_support': np.sum(y_true_labels == 0),
+        'overall_accuracy': np.mean(y_true_labels == y_pred_labels),
+        'balanced_accuracy': balanced_accuracy_score(y_true_labels, y_pred_labels)
+    }
+    return metrics
+
+def evaluate_crisis_prediction(georf, X_test, y_test, X_group_test, test_period="Test"):
+    """Evaluate model with focus on crisis prediction metrics."""
+    y_pred_test = georf.predict(X_test, X_group_test)
+    
+    # Calculate class-specific metrics
+    class_1_metrics = calculate_class_1_metrics(y_test, y_pred_test)
+    
+    print("=" * 60)
+    print(f"CRISIS PREDICTION EVALUATION - {test_period} (Class 1 Focus)")
+    print("=" * 60)
+    print(f"Class 1 F1 Score:      {class_1_metrics['class_1_f1']:.4f} [PRIMARY METRIC]")
+    print(f"Class 1 Precision:     {class_1_metrics['class_1_precision']:.4f}")
+    print(f"Class 1 Recall:        {class_1_metrics['class_1_recall']:.4f}")
+    print(f"Class 1 Support:       {class_1_metrics['class_1_support']}")
+    print("-" * 40)
+    print(f"Class 0 F1 Score:      {class_1_metrics['class_0_f1']:.4f}")
+    print(f"Class 0 Support:       {class_1_metrics['class_0_support']}")
+    print("-" * 40)
+    print(f"Overall Accuracy:      {class_1_metrics['overall_accuracy']:.4f}")
+    print(f"Balanced Accuracy:     {class_1_metrics['balanced_accuracy']:.4f}")
+    print("=" * 60)
+    
+    # Highlight the key insight
+    if VIS_DEBUG_CRISIS_FOCUS:
+        print("\nCRISIS PREDICTION FOCUS:")
+        print(f"   - Optimizing for CLASS 1 F1: {class_1_metrics['class_1_f1']:.4f}")
+        print(f"   - Crisis prediction accuracy: {class_1_metrics['class_1_precision']:.1%}")
+        print(f"   - Crisis detection rate: {class_1_metrics['class_1_recall']:.1%}")
+        print(f"   - Total crisis events: {class_1_metrics['class_1_support']}")
+    
+    return class_1_metrics, y_pred_test
 
 def force_cleanup_directories():
     """
@@ -1547,6 +1603,11 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             print(f"Q{quarter} {test_year} Test - GeoRF F1: {f1}, Base RF F1: {f1_base}")
             
+            # Crisis-focused evaluation
+            class_1_metrics, _ = evaluate_crisis_prediction(
+                georf, Xtest, ytest, Xtest_group, f"Q{quarter} {test_year}"
+            )
+            
             # Extract and save correspondence table for single-layer model
             try:
                 X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
@@ -1989,14 +2050,14 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             # Alert if significant memory leak detected
             if memory_diff > 500:  # More than 500MB growth per quarter
-                print(f"🚨 WARNING: Large memory increase detected: {memory_diff:.1f} MB")
+                print(f"WARNING: Large memory increase detected: {memory_diff:.1f} MB")
                 print("This indicates a potential memory leak that needs investigation")
                 print(f"Consider reducing n_jobs or disabling partition metrics tracking")
             elif memory_diff > 100:  # More than 100MB but less than 500MB
-                print(f"⚠️  NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
+                print(f"NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
                 print("Memory growth within acceptable range but monitor if this persists")
             else:
-                print(f"✅ Memory growth within normal range: {memory_diff:+.1f} MB")
+                print(f"OK: Memory growth within normal range: {memory_diff:+.1f} MB")
             
             # Show DataFrame sizes for monitoring  
             print(f"DataFrame sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")
@@ -2108,27 +2169,35 @@ def main():
                         help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 1)')
     parser.add_argument('--force_cleanup', action='store_true', 
                         help='Force cleanup of existing result directories and bypass checkpoint detection')
+    parser.add_argument('--force-visualize', action='store_true',
+                        help='Force visualization generation even in degenerate cases (single partition, etc.)')
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
+    
+    # Set global visualization force flag from CLI argument
+    if args.force_visualize:
+        import config_visual
+        config_visual.VISUALIZE_FORCE = True
+        print("Force visualization enabled via --force-visualize flag")
     
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific RF depth
-    desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
-    forecasting_scope = args.forecasting_scope    # From command line argument
+    desire_terms = 1     # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    forecasting_scope = 1    # From command line argument
     
     # Partition Metrics Tracking Configuration
-    track_partition_metrics = False  # Enable partition metrics tracking and visualization
-    enable_metrics_maps = False      # Create maps showing F1/accuracy improvements
+    track_partition_metrics = True  # Enable partition metrics tracking and visualization
+    enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
     
     # Checkpoint Recovery Configuration
     enable_checkpoint_recovery = False  # Enable automatic checkpoint detection and resume
     
     # start year and end year from command line arguments
-    start_year = args.start_year
-    end_year = args.end_year
+    start_year = 2015
+    end_year = 2015
     
     print(f"Configuration:")
     print(f"  - Assignment method: {assignment}")
@@ -2156,10 +2225,10 @@ def main():
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
             validate_polygon_contiguity(contiguity_info, X_group)
             
-            # Track polygon counts for disappearance diagnosis
-            if DIAGNOSTIC_POLYGON_TRACKING:
+            # Track polygon counts for disappearance diagnosis (VISUAL DEBUG MODE)
+            if VIS_DEBUG_CRISIS_FOCUS:
                 initial_polygon_count = len(np.unique(X_group))
-                print(f"=== POLYGON TRACKING ===")
+                print(f"=== VISUAL DEBUG POLYGON TRACKING ===")
                 print(f"Initial polygon count after spatial setup: {initial_polygon_count}")
                 print(f"X_group unique values: {len(np.unique(X_group))}")
                 print(f"Data points: {len(X_group)}")
@@ -2173,10 +2242,19 @@ def main():
                         if unique_groups[i] - unique_groups[i-1] > 1:
                             gaps.append((unique_groups[i-1], unique_groups[i]))
                     if gaps:
-                        print(f"Warning: Gaps found in X_group sequence: {gaps[:5]}")
+                        print(f"WARNING: Gaps found in X_group sequence: {gaps[:5]}")
+                        print("   This indicates polygon disappearance during spatial setup!")
                     else:
-                        print("No gaps found in X_group sequence")
-                print("=" * 25)
+                        print("OK: No gaps found in X_group sequence")
+                        
+                    # Enhanced visual debug tracking
+                    print(f"X_group range: {unique_groups[0]} to {unique_groups[-1]}")
+                    print(f"Expected consecutive count: {unique_groups[-1] - unique_groups[0] + 1}")
+                    print(f"Actual unique count: {len(unique_groups)}")
+                    if len(unique_groups) != (unique_groups[-1] - unique_groups[0] + 1):
+                        missing_count = (unique_groups[-1] - unique_groups[0] + 1) - len(unique_groups)
+                        print(f"ALERT: POLYGON LOSS DETECTED: {missing_count} polygons missing from sequence!")
+                print("=" * 38)
         
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(

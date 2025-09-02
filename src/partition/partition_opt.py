@@ -17,10 +17,10 @@ from scipy import ndimage
 # from skimage import measure
 
 # from partition_opt import swap_partition_general
-from customize import generate_groups_loc
+from src.customize.customize import generate_groups_loc
 # from visualization import vis_partition_group, generate_vis_image_from_grid
-from visualization import *
-from helper import *
+from src.vis.visualization import *
+from src.helper.helper import *
 
 from config import *
 
@@ -534,7 +534,7 @@ def get_polygon_neighbors(centroids, neighbor_distance_threshold=None, adjacency
   
   # If adjacency dictionary is provided, use it directly
   if adjacency_dict is not None:
-    from adjacency_utils import adjacency_dict_to_neighbors_dict
+    from src.adjacency.adjacency_utils import adjacency_dict_to_neighbors_dict
     print("Using true polygon adjacency matrix for neighbor determination")
     return adjacency_dict_to_neighbors_dict(adjacency_dict)
   
@@ -704,7 +704,7 @@ def get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids,
       Refined partition assignments
   '''
   import numpy as np
-  from helper import get_gid_to_s_map
+  from src.helper.helper import get_gid_to_s_map
   
   # Track polygon counts for validation
   try:

@@ -292,7 +292,7 @@ def validate_adjacency_matrix(adjacency_dict, polygon_centroids=None, distance_t
     
     # Compare with distance-based neighbors if centroids provided
     if polygon_centroids is not None and distance_threshold is not None:
-        from partition_opt import get_polygon_neighbors
+        from src.partition.partition_opt import get_polygon_neighbors
         distance_neighbors = get_polygon_neighbors(polygon_centroids, distance_threshold)
         
         # Compare neighbor counts

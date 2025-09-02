@@ -13,7 +13,7 @@ Key Features:
 - Integrates seamlessly with GeoRF and XGBoost pipelines
 
 Usage:
-    from pre_partition_diagnostic import create_pre_partition_diagnostics
+    from src.diagnostics.pre_partition_diagnostic import create_pre_partition_diagnostics
     
     create_pre_partition_diagnostics(
         df_train=training_dataframe,

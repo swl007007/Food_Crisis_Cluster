@@ -19,8 +19,8 @@ from sklearn.metrics import accuracy_score
 import pickle
 
 from config import *
-from helper import get_X_branch_id_by_group
-from metrics import *
+from src.helper.helper import get_X_branch_id_by_group
+from src.metrics.metrics import *
 
 # NUM_LAYERS = 8 #num_layers is the number of non-input layers
 

@@ -10,9 +10,9 @@ import numpy as np
 import pandas as pd
 
 from config import *
-from customize import generate_groups, generate_groups_from_raw_loc#can customize group definition
-from customize import generate_groups_nonimg_input
-from customize import *#generate_groups
+from src.customize.customize import generate_groups, generate_groups_from_raw_loc#can customize group definition
+from src.customize.customize import generate_groups_nonimg_input
+from src.customize.customize import *#generate_groups
 
 
 def init_X_info(X, y, X_loc = None, train_ratio = TRAIN_RATIO, step_size = STEP_SIZE):

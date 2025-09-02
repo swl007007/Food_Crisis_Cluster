@@ -6,7 +6,7 @@ This module diagnoses whether terminal partition fragmentation is caused by
 lineage/merge bugs vs genuine topology. It ensures that when branches {00,01,10,11} 
 adopt their parents {0,1}, the final map becomes exactly the parent's continuous map.
 
-Author: Claude AI Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 

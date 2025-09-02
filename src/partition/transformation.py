@@ -11,14 +11,14 @@ import pandas as pd
 from scipy import stats
 
 from config import *
-from helper import *
-from train_branch import *
-from partition_opt import *
-from sig_test import *
+from src.helper.helper import *
+from src.model.train_branch import *
+from src.partition.partition_opt import *
+from src.tests.sig_test import *
 
-from customize import *
+from src.customize.customize import *
 
-from visualization import *
+from src.vis.visualization import *
 
 # import models
 
@@ -95,7 +95,7 @@ def partition(model, X, y,
   # Initialize metrics tracker if requested
   metrics_tracker = None
   if track_partition_metrics:
-    from metrics import PartitionMetricsTracker
+    from src.metrics.metrics import PartitionMetricsTracker
     metrics_tracker = PartitionMetricsTracker(correspondence_table_path)
     print("Partition metrics tracking enabled")
   
@@ -142,7 +142,7 @@ def partition(model, X, y,
       
       # Generate baseline visualization
       import os
-      from visualization import plot_metrics_improvement_map
+      from src.vis.visualization import plot_metrics_improvement_map
       
       vis_dir = os.path.join(model.model_dir, 'vis')
       os.makedirs(vis_dir, exist_ok=True)
@@ -283,7 +283,7 @@ def partition(model, X, y,
             # Generate partition map visualization for each refinement epoch
             try:
               import os
-              from visualization import plot_partition_map, plot_partition_swaps
+              from src.vis.visualization import plot_partition_map, plot_partition_swaps
               
               # Create vis directory if it doesn't exist
               vis_dir = os.path.join(model_dir, 'vis')
@@ -392,7 +392,7 @@ def partition(model, X, y,
             # Generate partition map visualization for each refinement epoch (grid-based)
             try:
               import os
-              from visualization import plot_partition_map, plot_partition_swaps
+              from src.vis.visualization import plot_partition_map, plot_partition_swaps
               
               # Create vis directory if it doesn't exist
               vis_dir = os.path.join(model_dir, 'vis')
@@ -648,7 +648,7 @@ def partition(model, X, y,
         if correspondence_table_path:
           try:
             import os
-            from visualization import plot_metrics_improvement_map
+            from src.vis.visualization import plot_metrics_improvement_map
             
             # Use vis directory instead of partition_metrics for easier access
             vis_dir = os.path.join(model_dir, 'vis')
@@ -773,7 +773,7 @@ def partition(model, X, y,
         # Generate partition map visualization after each partition round
         try:
           import os
-          from visualization import plot_partition_map
+          from src.vis.visualization import plot_partition_map
           
           # Create vis directory if it doesn't exist
           vis_dir = os.path.join(model_dir, 'vis')
@@ -861,7 +861,7 @@ def partition(model, X, y,
       
       # Create visualization dashboard if correspondence table is available
       if correspondence_table_path and VIS_DEBUG_MODE:
-        from visualization import plot_partition_metrics_dashboard
+        from src.vis.visualization import plot_partition_metrics_dashboard
         dashboard_outputs = plot_partition_metrics_dashboard(
           metrics_tracker, 
           metrics_dir,
@@ -886,7 +886,7 @@ def partition(model, X, y,
             
             # Generate comprehensive improvement maps
             if len(all_metrics_df) > 0:
-              from visualization import plot_metrics_improvement_map
+              from src.vis.visualization import plot_metrics_improvement_map
               
               # Overall F1 improvement map across all rounds
               overall_f1_path = os.path.join(vis_dir, "overall_f1_improvement_map.png")

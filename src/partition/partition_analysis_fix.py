@@ -9,7 +9,7 @@ This module addresses:
 4. Fragmentation and enclave quantification  
 5. Comprehensive reporting and documentation
 
-Author: Claude AI Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 

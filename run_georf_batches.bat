@@ -1,5 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
+set PYTHONPATH=%~dp0
 
 REM GeoRF Memory Management Batch Script
 REM This script iterates through time periods and forecasting scopes to avoid memory leakage
@@ -74,10 +75,10 @@ REM Pre-execution cleanup to ensure clean state
 echo Performing pre-execution cleanup...
 call :cleanup_directories
 
-echo Running: python main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+echo Running: python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
 
 REM Run the Python script with current parameters and force cleanup
-python main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
 
 REM Check if the Python script succeeded
 if !errorlevel! neq 0 (

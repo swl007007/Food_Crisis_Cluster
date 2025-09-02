@@ -8,7 +8,7 @@ This module creates distinct visualizations for:
 3. Content-hash validation and deduplication
 4. Fragmentation metrics and validation guards
 
-Author: Claude AI Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 

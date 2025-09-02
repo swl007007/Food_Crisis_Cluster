@@ -57,8 +57,8 @@ def compute_final_accuracy_per_polygon(model, test_data, uid_col='FEWSNET_admin_
         Xtest, ytest, Xtest_group = test_data
         
         # Import required functions
-        from model_RF import predict_test_group_wise as predict_rf
-        from model_XGB import predict_test_group_wise as predict_xgb
+        from src.model.model_RF import predict_test_group_wise as predict_rf
+        from src.model.model_XGB import predict_test_group_wise as predict_xgb
         
         # Determine which predict function to use based on model type
         if hasattr(model, 'model') and hasattr(model.model, 'predict'):
@@ -247,7 +247,7 @@ def render_accuracy_choropleth(df, metric_col, save_path, title, uid_col, dpi, m
     """
     try:
         # Use existing plot_error_rate_choropleth function
-        from visualization import plot_error_rate_choropleth
+        from src.vis.visualization import plot_error_rate_choropleth
         
         fig = plot_error_rate_choropleth(
             df, metric_col,
@@ -307,7 +307,7 @@ def render_accuracy_map(df, save_path=None, title=None, degenerate_note=None):
         # Use existing choropleth function if data is valid
         if len(df) > 0 and 'accuracy' in df.columns:
             try:
-                from visualization import plot_error_rate_choropleth
+                from src.vis.visualization import plot_error_rate_choropleth
                 fig = plot_error_rate_choropleth(
                     df, 'accuracy', 
                     title=title,
@@ -376,7 +376,7 @@ def render_partition_map(correspondence_df, save_path=None, title=None, degenera
                         correspondence_df.to_csv(temp_csv.name, index=False, encoding='utf-8')
                         temp_csv_path = temp_csv.name
                     
-                    from visualization import plot_partition_map
+                    from src.vis.visualization import plot_partition_map
                     fig = plot_partition_map(temp_csv_path, save_path=save_path, title=title)
                     os.unlink(temp_csv_path)  # Clean up temp file
                     return save_path

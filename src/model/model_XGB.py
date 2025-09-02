@@ -27,8 +27,8 @@ except ImportError:
 
 from sklearn.metrics import accuracy_score
 from config import *
-from helper import get_X_branch_id_by_group
-from metrics import *
+from src.helper.helper import get_X_branch_id_by_group
+from src.metrics.metrics import *
 
 
 class XGBmodel():

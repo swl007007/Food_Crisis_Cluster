@@ -13,17 +13,17 @@ from scipy import stats
 #Can be customized with the template
 
 # from models import DNNmodel, LSTMmodel, UNetmodel#model is easily customizable
-from model_RF import RFmodel, save_single, predict_test_group_wise#model is easily customizable
+from src.model.model_RF import RFmodel, save_single, predict_test_group_wise#model is easily customizable
 from sklearn.ensemble import RandomForestClassifier
 # from customize import generate_groups_nonimg_input#can customize group definition
-from customize import *
-from data import *
-from initialization import init_X_info, init_X_info_raw_loc, init_X_branch_id, train_val_split
-from helper import create_dir, open_dir, get_X_branch_id_by_group, get_filter_thrd
-from transformation import partition
-from visualization import *
-from metrics import get_class_wise_accuracy, get_prf
-from partition_opt import get_refined_partitions_all
+from src.customize.customize import *
+from demo.data import *
+from src.initialization.initialization import init_X_info, init_X_info_raw_loc, init_X_branch_id, train_val_split
+from src.helper.helper import create_dir, open_dir, get_X_branch_id_by_group, get_filter_thrd
+from src.partition.transformation import partition
+from src.vis.visualization import *
+from src.metrics.metrics import get_class_wise_accuracy, get_prf
+from src.partition.partition_opt import get_refined_partitions_all
 #All global parameters
 from config import *
 
@@ -210,7 +210,7 @@ class GeoRF():
 		# Generate diagnostic maps using CV to prevent overfitting bias before spatial partitioning
 		train_list_init = np.where(X_set == 0)
 		try:
-			from pre_partition_diagnostic import create_pre_partition_diagnostics_cv
+			from src.diagnostics.pre_partition_diagnostic import create_pre_partition_diagnostics_cv
 			print("\n=== Generating Pre-Partitioning CV Diagnostic Maps ===")
 			
 			# Get TRAINING DATA ONLY - completely exclude test data
@@ -328,7 +328,7 @@ class GeoRF():
 
 		# VISUALIZATION FIX: Always render essential maps regardless of conditions
 		try:
-			from visualization_fix import ensure_vis_dir_and_render_maps
+			from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
 			
 			# Create correspondence table for visualization with proper inheritance
 			from config_visual import VALID_PARTITION_LABELS
@@ -570,7 +570,7 @@ class GeoRF():
 
 			# FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
 			try:
-				from visualization_fix import ensure_vis_dir_and_render_maps
+				from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
 				
 				# Render final accuracy maps using the test data that was just evaluated
 				render_summary = ensure_vis_dir_and_render_maps(
@@ -594,7 +594,7 @@ class GeoRF():
 
 		# FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
 		try:
-			from visualization_fix import ensure_vis_dir_and_render_maps
+			from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
 			
 			# Render final accuracy maps using the test data that was just evaluated
 			render_summary = ensure_vis_dir_and_render_maps(
