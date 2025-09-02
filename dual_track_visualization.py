@@ -8,7 +8,7 @@ This module provides separate visualization tracks for:
 This addresses the user confusion about fragmented final maps by clearly
 separating algorithmic intent and providing both perspectives.
 
-Author: Claude Code Assistant  
+Author: Weilunm Shi  
 Date: 2025-08-29
 """
 

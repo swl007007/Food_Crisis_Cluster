@@ -13,7 +13,7 @@ This addresses the user's confusion about:
 - Why final maps show fragmentation that doesn't match hierarchical partitions
 - What the algorithm is actually doing vs what they expect to see
 
-Author: Claude Code Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 

@@ -9,7 +9,7 @@ The key fix addresses the issue where:
 - partition_map.png shows terminal assignments after significance testing
 - These should be consistent when representing the same algorithm stage
 
-Author: Claude Code Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 

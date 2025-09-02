@@ -9,7 +9,7 @@ allowing users to choose between:
 
 This addresses the user confusion by providing clear control over algorithmic stages.
 
-Author: Claude Code Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 

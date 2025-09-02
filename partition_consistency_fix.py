@@ -11,7 +11,7 @@ Key Issues Fixed:
 - Fragmented final maps that don't match hierarchical partitions
 - Lack of clear documentation about algorithmic stages
 
-Author: Claude Code Assistant
+Author: Weilunm Shi
 Date: 2025-08-29
 """
 
