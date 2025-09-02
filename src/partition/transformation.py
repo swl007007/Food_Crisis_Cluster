@@ -308,17 +308,18 @@ def partition(model, X, y,
               partition_df = partition_df.drop_duplicates()
               partition_df.to_csv(current_correspondence_path, index=False)
               
+              if VIS_DEBUG_MODE:
               # Generate partition map
-              partition_map_path = os.path.join(vis_dir, f'contiguity_refinement_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine + 1}.png')
-              
-              plot_partition_map(
-                correspondence_table_path=current_correspondence_path,
-                save_path=partition_map_path,
-                title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
-                figsize=(14, 12)
-              )
-              
-              print(f"Generated contiguity refinement map: {partition_map_path}")
+                partition_map_path = os.path.join(vis_dir, f'contiguity_refinement_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine + 1}.png')
+                
+                plot_partition_map(
+                  correspondence_table_path=current_correspondence_path,
+                  save_path=partition_map_path,
+                  title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
+                  figsize=(14, 12)
+                )
+                
+                print(f"Generated contiguity refinement map: {partition_map_path}")
               
               # Generate swap visualization (compare with previous epoch)
               if i_refine > 0 or True:  # Always generate, even for first epoch (compare with initial scan)
@@ -342,18 +343,19 @@ def partition(model, X, y,
                 swap_map_path = os.path.join(vis_dir, f'contiguity_swaps_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine}_to_{i_refine + 1}.png')
                 
                 try:
-                  swap_fig = plot_partition_swaps(
-                    correspondence_before_path=prev_correspondence_path,
-                    correspondence_after_path=current_correspondence_path,
-                    save_path=swap_map_path,
-                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
-                    figsize=(14, 12)
-                  )
-                  
-                  if swap_fig is not None:
-                    print(f"Generated contiguity swap map: {swap_map_path}")
-                  else:
-                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
+                  if VIS_DEBUG_MODE:
+                    swap_fig = plot_partition_swaps(
+                      correspondence_before_path=prev_correspondence_path,
+                      correspondence_after_path=current_correspondence_path,
+                      save_path=swap_map_path,
+                      title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
+                      figsize=(14, 12)
+                    )
+                    
+                    if swap_fig is not None:
+                      print(f"Generated contiguity swap map: {swap_map_path}")
+                    else:
+                      print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
                     
                 except Exception as swap_error:
                   print(f"ERROR: Failed to create swap visualization: {swap_error}")

@@ -110,7 +110,7 @@ class GeoRF():
 	#Train GeoRF
 	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True, 
 	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
-	        track_partition_metrics = False, correspondence_table_path = None):#X_loc is unused
+	        track_partition_metrics = False, correspondence_table_path = None, VIS_DEBUG_MODE=True):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -259,7 +259,8 @@ class GeoRF():
 				uid_col='FEWSNET_admin_code',
 				class_positive=1,
 				cv_folds=5,
-				random_state=42
+				random_state=42,
+				VIS_DEBUG_MODE=VIS_DEBUG_MODE
 			)
 			
 			print("SUCCESS: Pre-partitioning CV diagnostics completed successfully")
@@ -323,7 +324,9 @@ class GeoRF():
 		#fragmented partitions (e.g., one grid cell with a different partition ID from most of its neighbors).'''
 		## GLOBAL_CONTIGUITY = False#unused (mentioned in visualization part later)
 		if CONTIGUITY:
-			X_branch_id = get_refined_partitions_all(X_branch_id, self.s_branch, X_group, dir = self.dir_vis, min_component_size = MIN_COMPONENT_SIZE)
+			# Pass vis_dir only if VIS_DEBUG_MODE is enabled for contiguity refinement visualization
+			vis_dir_param = self.dir_vis if VIS_DEBUG_MODE else None
+			X_branch_id = get_refined_partitions_all(X_branch_id, self.s_branch, X_group, dir = vis_dir_param, min_component_size = MIN_COMPONENT_SIZE)
 		## 	GLOBAL_CONTIGUITY = True#unused
 
 		# VISUALIZATION FIX: Always render essential maps regardless of conditions
@@ -454,17 +457,20 @@ class GeoRF():
 				
 				print(f"Stage trace updated: {trace_path}")
 			
-			# Render maps with comprehensive logging
-			render_summary = ensure_vis_dir_and_render_maps(
-				model_dir=self.model_dir,
-				correspondence_df=correspondence_df,
-				test_data=None,  # Test data would need to be passed from caller
-				partition_count=partition_count,
-				stage_info="post-training-with-fixes",
-				model=self  # Pass model for accuracy computation
-			)
-			
-			print(f"Visualization fix applied successfully: {len(render_summary['artifacts_rendered'])} maps rendered")
+			# Render maps with comprehensive logging (only if VIS_DEBUG_MODE enabled)
+			if VIS_DEBUG_MODE:
+				render_summary = ensure_vis_dir_and_render_maps(
+					model_dir=self.model_dir,
+					correspondence_df=correspondence_df,
+					test_data=None,  # Test data would need to be passed from caller
+					partition_count=partition_count,
+					stage_info="post-training-with-fixes",
+					model=self  # Pass model for accuracy computation
+				)
+				
+				print(f"Visualization fix applied successfully: {len(render_summary['artifacts_rendered'])} maps rendered")
+			else:
+				print("Visualization disabled (VIS_DEBUG_MODE=False)")
 			
 		except Exception as vis_error:
 			print(f"Warning: Visualization fix failed: {vis_error}")

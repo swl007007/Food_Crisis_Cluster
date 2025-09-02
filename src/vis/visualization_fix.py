@@ -446,6 +446,17 @@ def ensure_vis_dir_and_render_maps(model_dir, correspondence_df=None, test_data=
     -------
     dict : Summary of rendered artifacts
     """
+    # Early return if visualization disabled (unless force_accuracy is True)
+    if not VIS_DEBUG_MODE and not force_accuracy:
+        return {
+            'stage': stage_info,
+            'vis_dir_created': False,
+            'vis_dir_path': None,
+            'artifacts_rendered': [],
+            'partition_count': partition_count,
+            'visualization_disabled': True
+        }
+    
     # ALWAYS create vis directory
     vis_dir = os.path.join(model_dir, 'vis')
     os.makedirs(vis_dir, exist_ok=True)

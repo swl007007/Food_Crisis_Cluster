@@ -168,7 +168,7 @@ class GeoRF_XGB():
 
     def fit(self, X, y, X_group, X_set=None, val_ratio=VAL_RATIO, print_to_file=True,
             contiguity_type=CONTIGUITY_TYPE, polygon_contiguity_info=POLYGON_CONTIGUITY_INFO,
-            track_partition_metrics=False, correspondence_table_path=None):
+            track_partition_metrics=False, correspondence_table_path=None, VIS_DEBUG_MODE=True):
         """
         Train the geo-aware XGBoost (Geo-XGB).
 
@@ -317,7 +317,8 @@ class GeoRF_XGB():
                 uid_col='FEWSNET_admin_code',
                 class_positive=1,
                 cv_folds=5,
-                random_state=42
+                random_state=42,
+                VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
             
             print("SUCCESS: Pre-partitioning CV diagnostics (XGBoost) completed successfully")
@@ -372,9 +373,11 @@ class GeoRF_XGB():
                 # TODO: Implement polygon-specific contiguity refinement
             else:
                 # Grid-based contiguity refinement
+                # Pass vis_dir only if VIS_DEBUG_MODE is enabled for contiguity refinement visualization
+                vis_dir_param = self.dir_vis if VIS_DEBUG_MODE else None
                 X_branch_id = get_refined_partitions_all(
                     X_branch_id, self.s_branch, X_group,
-                    dir=self.dir_vis,
+                    dir=vis_dir_param,
                     min_component_size=MIN_COMPONENT_SIZE
                 )
                 
@@ -439,6 +442,34 @@ class GeoRF_XGB():
             print('F1-score: ', f1_base)
 
             # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
+            if VIS_DEBUG_MODE:
+                try:
+                    from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
+                    
+                    # Render final accuracy maps using the test data that was just evaluated
+                    render_summary = ensure_vis_dir_and_render_maps(
+                        model_dir=self.model_dir,
+                        test_data=(X, y, X_group),  # Use the test data from evaluation
+                        force_accuracy=force_accuracy,
+                        model=self  # Pass model for accuracy computation
+                    )
+                    
+                    if render_summary.get('final_accuracy_generated'):
+                        print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
+                    
+                except Exception as e:
+                    print(f"Warning: Could not render final accuracy maps: {e}")
+            else:
+                print("Visualization disabled (VIS_DEBUG_MODE=False)")
+
+            if print_to_file:
+                sys.stdout.close()
+                sys.stdout = self.original_stdout
+
+            return pre, rec, f1, pre_base, rec_base, f1_base
+
+        # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
+        if VIS_DEBUG_MODE:
             try:
                 from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
                 
@@ -455,30 +486,8 @@ class GeoRF_XGB():
                 
             except Exception as e:
                 print(f"Warning: Could not render final accuracy maps: {e}")
-
-            if print_to_file:
-                sys.stdout.close()
-                sys.stdout = self.original_stdout
-
-            return pre, rec, f1, pre_base, rec_base, f1_base
-
-        # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
-        try:
-            from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
-            
-            # Render final accuracy maps using the test data that was just evaluated
-            render_summary = ensure_vis_dir_and_render_maps(
-                model_dir=self.model_dir,
-                test_data=(X, y, X_group),  # Use the test data from evaluation
-                force_accuracy=force_accuracy,
-                model=self  # Pass model for accuracy computation
-            )
-            
-            if render_summary.get('final_accuracy_generated'):
-                print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
-            
-        except Exception as e:
-            print(f"Warning: Could not render final accuracy maps: {e}")
+        else:
+            print("Visualization disabled (VIS_DEBUG_MODE=False)")
 
         if print_to_file:
             sys.stdout.close()

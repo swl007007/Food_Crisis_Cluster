@@ -27,7 +27,6 @@ Usage:
         seed=42
     )
 """
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -35,6 +34,8 @@ import seaborn as sns
 from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
+
+
 
 try:
     import geopandas as gpd
@@ -192,7 +193,7 @@ def save_diagnostic_csv(error_df, vis_dir, uid_col='FEWSNET_admin_code', min_n_t
 
 def create_error_choropleth_maps(error_df, vis_dir, shapefile_path=None, 
                                 uid_col='FEWSNET_admin_code', crs_target='EPSG:4326',
-                                missing_color='lightgray', dpi=200, seed=42):
+                                missing_color='lightgray', dpi=200, seed=42, VIS_DEBUG_MODE=True):
     """
     Generate choropleth maps showing error rates by polygon.
     
@@ -389,6 +390,11 @@ def create_error_choropleth_maps(error_df, vis_dir, shapefile_path=None,
         print(f"\n=== CREATING DIAGNOSTIC MAPS ===")
         map_paths = []
         
+        # Only generate maps if VIS_DEBUG_MODE is enabled
+        if not VIS_DEBUG_MODE:
+            print("Diagnostic map generation disabled (VIS_DEBUG_MODE=False)")
+            return None, None
+        
         for metric, title, filename in [
             ('pct_err_all', 'Overall Misclassification Rate by Polygon (Training Data)', 'map_pct_err_all.png'),
             ('pct_err_cls1', 'Class 1 Misclassification Rate by Polygon (Training Data)', 'map_pct_err_class1.png')
@@ -517,7 +523,7 @@ def create_error_choropleth_maps(error_df, vis_dir, shapefile_path=None,
 def create_pre_partition_diagnostics(df_train, y_true, y_pred, vis_dir, 
                                    shapefile_path=None, uid_col='FEWSNET_admin_code',
                                    class_positive=1, fold_split_col=None, 
-                                   min_n_threshold=10, seed=42):
+                                   min_n_threshold=10, seed=42, VIS_DEBUG_MODE=True):
     """
     Main function to create comprehensive pre-partitioning diagnostics.
     
@@ -566,6 +572,7 @@ def create_pre_partition_diagnostics(df_train, y_true, y_pred, vis_dir,
     vis_path = Path(vis_dir)
     vis_path.mkdir(parents=True, exist_ok=True)
     
+    
     # Step 1: Compute error rates
     error_df = compute_training_error_rates(
         df_train, y_true, y_pred, uid_col=uid_col, 
@@ -578,7 +585,7 @@ def create_pre_partition_diagnostics(df_train, y_true, y_pred, vis_dir,
     
     # Step 3: Generate maps
     map_overall, map_class1 = create_error_choropleth_maps(
-        error_df, vis_dir, shapefile_path=shapefile_path, uid_col=uid_col, seed=seed
+        error_df, vis_dir, shapefile_path=shapefile_path, uid_col=uid_col, seed=seed, VIS_DEBUG_MODE=VIS_DEBUG_MODE
     )
     
     # Step 4: Generate summary
@@ -845,7 +852,7 @@ def create_pre_partition_diagnostics_cv(X_train, y_train, X_group_train,
                                        min_n_threshold=10,
                                        cv_folds=5,
                                        random_state=42,
-                                       seed=None):
+                                       seed=None, VIS_DEBUG_MODE=True):
     """
     Generate pre-partitioning diagnostics using cross-validation to prevent overfitting bias.
     
@@ -927,7 +934,7 @@ def create_pre_partition_diagnostics_cv(X_train, y_train, X_group_train,
     if shapefile_path and GEOSPATIAL_AVAILABLE:
         try:
             map_overall, map_class1 = create_error_choropleth_maps(
-                error_df, vis_dir, shapefile_path, uid_col=uid_col, seed=final_seed
+                error_df, vis_dir, shapefile_path, uid_col=uid_col, seed=final_seed, VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
         except Exception as e:
             print(f"Error generating maps: {e}")
