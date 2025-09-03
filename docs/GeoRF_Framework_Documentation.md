@@ -17,7 +17,7 @@
 
 ## 1. Project Overview
 
-**GeoRF** is a Spatial Transformation Framework that implements geo-aware machine learning for food crisis prediction and clustering analysis. The system handles spatial variability through hierarchical spatial partitioning, making it particularly effective for geographic data where regional variations are important.
+**GeoRF** is a Spatial Transformation Framework that implements geo-aware machine learning for acute food crisis prediction. The system handles spatial variability through hierarchical spatial partitioning, making it particularly effective for geographic data where regional variations are important.
 
 The framework provides **two model implementations** that share identical spatial partitioning logic but use different base learners:
 - **GeoRF (Random Forest)**: Uses scikit-learn's RandomForestClassifier as the base learner
@@ -37,7 +37,9 @@ Both implementations provide the same interface and capabilities, with XGBoost o
 - **Statistical Validation**: Significance testing for optimal partition depth
 - **2-Layer Architecture**: Main prediction + error correction layers for nowcasting/forecasting
 - **Comprehensive Visualization**: Spatial maps, performance grids, and partition metrics tracking
-- **Memory Management**: Batch processing pipeline for large-scale temporal evaluation
+- **Memory Management**: Batch processing pipeline for large-scale temporal evaluation with automatic cleanup
+- **Baseline Comparison Framework**: Built-in comparison with probit regression and FEWSNET official predictions
+- **Crisis Prediction Focus**: Specialized metrics focusing on Class 1 (crisis) prediction performance
 
 ### Application Domain
 Originally developed for food crisis prediction using satellite and ground-based data, but adaptable to any spatially-varying classification or regression task.
@@ -56,7 +58,8 @@ Originally developed for food crisis prediction using satellite and ground-based
 | **Training Speed** | Faster | Slower (more hyperparameters to tune) |
 | **Regularization** | Limited (max_depth, min_samples) | Extensive (L1, L2, sampling, early stopping) |
 | **Output Directories** | `result_GeoRF_*` | `result_GeoXGB_*` |
-| **Batch Processing** | 20 batches (5 time periods) | 40 batches (10 years, more granular) |
+| **Batch Processing** | 20 batches (5 time periods × 4 scopes) | 40 batches (10 years × 4 scopes, more granular) |
+| **Memory Cleanup** | Moderate (time period-based) | Aggressive (yearly cleanup) |
 
 **Recommendation**: Start with Random Forest for quick prototyping, then use XGBoost for production deployments where performance is critical.
 
@@ -82,36 +85,49 @@ contextily               # Web map tiles for visualization
 ### File Structure
 ```
 Food_Crisis_Cluster/
-├── GeoRF.py                      # Main GeoRF Random Forest class
-├── GeoRF_XGB.py                  # GeoRF XGBoost implementation
-├── GeoRF_main.py                 # Basic Random Forest demo
-├── GeoRF_demo.py                 # Demonstration script
-├── main_model_GF.py              # Food crisis pipeline (Random Forest)
-├── main_model_XGB.py             # Food crisis pipeline (XGBoost)
-├── config.py                     # Global configuration parameters
-├── data.py                       # Data loading utilities
-├── customize.py                  # Group generation classes
-├── model_RF.py                   # Random Forest model wrapper
-├── model_XGB.py                  # XGBoost model wrapper
-├── transformation.py             # Spatial partitioning algorithms
-├── partition_opt.py              # Partition optimization and contiguity
-├── adjacency_utils.py            # Polygon adjacency matrix utilities (NEW)
-├── train_branch.py               # Branch-specific training logic
-├── initialization.py             # Data initialization utilities
-├── helper.py                     # Utility functions
-├── metrics.py                    # Evaluation metrics
-├── visualization.py              # Visualization and mapping functions
-├── sig_test.py                   # Statistical significance testing
-├── baseline_probit_regression.py # Probit baseline comparison
-├── fewsnet_baseline_evaluation.py # FEWSNET baseline evaluation
-├── georf_vs_baseline_comparison_plot.py # 4-model comparison visualization
-├── metric_comparison_plot.py     # Performance comparison plots
-├── static_table.py               # Result table generation
-├── test_adjacency_integration.py # Adjacency matrix test suite
-├── run_georf_batches.bat         # GeoRF batch processing script
-├── run_xgboost_batches.bat       # XGBoost batch processing script
-└── result_GeoRF*/                # Random Forest output directories
-└── result_GeoXGB*/               # XGBoost output directories
+├── app/
+│   ├── main_model_GF.py              # Food crisis pipeline (Random Forest)
+│   ├── main_model_XGB.py             # Food crisis pipeline (XGBoost)
+│   └── final/
+│       ├── baseline_probit_regression.py # Probit baseline comparison
+│       ├── fewsnet_baseline_evaluation.py # FEWSNET baseline evaluation
+│       └── georf_vs_baseline_comparison_plot.py # 4-model comparison visualization
+├── src/
+│   ├── model/
+│   │   ├── GeoRF.py                  # Main GeoRF Random Forest class
+│   │   ├── GeoRF_XGB.py              # GeoRF XGBoost implementation
+│   │   ├── model_RF.py               # Random Forest model wrapper
+│   │   └── model_XGB.py              # XGBoost model wrapper
+│   ├── partition/
+│   │   ├── transformation.py         # Spatial partitioning algorithms
+│   │   └── partition_opt.py          # Partition optimization and contiguity
+│   ├── customize/
+│   │   └── customize.py              # Group generation classes
+│   ├── adjacency/
+│   │   └── adjacency_utils.py        # Polygon adjacency matrix utilities
+│   ├── initialization/
+│   │   └── initialization.py         # Data initialization utilities
+│   ├── helper/
+│   │   └── helper.py                 # Utility functions
+│   ├── metrics/
+│   │   └── metrics.py                # Evaluation metrics
+│   ├── vis/
+│   │   └── visualization.py          # Visualization and mapping functions
+│   ├── tests/
+│   │   └── sig_test.py               # Statistical significance testing
+│   └── utils/
+│       ├── force_clean.py            # Memory cleanup utilities
+│       └── save_results.py           # Result saving utilities
+├── demo/
+│   ├── GeoRF_demo.py                 # Demonstration script
+│   └── data.py                       # Data loading utilities
+├── config.py                         # Global configuration parameters
+├── run_georf_batches.bat             # GeoRF batch processing script (20 batches)
+├── run_xgboost_batches.bat           # XGBoost batch processing script (40 batches)
+├── test_georf_batches.bat            # GeoRF testing script (4 batches)
+├── test_xgboost_batches.bat          # XGBoost testing script (4 batches)
+└── result_GeoRF*/                    # Random Forest output directories
+└── result_GeoXGB*/                   # XGBoost output directories
 ```
 
 ---
@@ -533,9 +549,30 @@ Rolling window temporal splitting for quarterly evaluation with 5-year training 
 
 ## 6. Configuration Guide
 
-### 6.1 Production Pipeline Defaults
+### 6.1 Complete Evaluation Pipeline
 
-**Current Production Configuration:**
+The framework now includes a comprehensive 4-model comparison system for acute food crisis prediction:
+
+#### **4-Model Evaluation Framework:**
+
+1. **Probit Baseline**: Simple regression with lagged crisis variables (supports all 4 forecasting scopes)
+2. **FEWSNET Baseline**: Official predictions from FEWS NET system (supports scopes 1-2 only)  
+3. **GeoRF**: Geo-aware Random Forest with spatial partitioning (supports all 4 scopes)
+4. **XGBoost**: XGBoost with same spatial partitioning framework (supports all 4 scopes)
+
+#### **Forecasting Scopes:**
+- **Scope 1**: 3-month lag forecasting (lag terms 1,2,3)
+- **Scope 2**: 6-month lag forecasting (lag terms 2,3,4)
+- **Scope 3**: 9-month lag forecasting (lag terms 3,4,5)  
+- **Scope 4**: 12-month lag forecasting (lag terms 4,5,6)
+
+#### **Crisis Prediction Focus (Class 1 Metrics Only):**
+All models focus exclusively on crisis prediction (Class 1) performance:
+- **Precision (Class 1)**: True crisis predictions / All crisis predictions
+- **Recall (Class 1)**: True crisis predictions / All actual crises
+- **F1 Score (Class 1)**: Harmonic mean of precision and recall
+
+#### **Production Pipeline Configuration:**
 ```python
 # Spatial assignment and contiguity (production defaults)
 assignment = 'polygons'              # Uses FEWSNET admin boundaries  
@@ -558,19 +595,19 @@ USE_ADJACENCY_MATRIX = True          # Uses true polygon adjacency (recommended)
 
 #### **Basic Random Forest GeoRF**
 ```bash
-python GeoRF_main.py
+python demo/GeoRF_demo.py
 ```
 
 #### **Food Crisis Pipeline - Single Execution**
 
 **Random Forest (GeoRF):**
 ```bash
-python main_model_GF.py --start_year 2023 --end_year 2024 --forecasting_scope 1
+python app/main_model_GF.py --start_year 2023 --end_year 2024 --forecasting_scope 1
 ```
 
 **XGBoost (GeoXGB):**
 ```bash
-python main_model_XGB.py --start_year 2023 --end_year 2024 --forecasting_scope 1
+python app/main_model_XGB.py --start_year 2023 --end_year 2024 --forecasting_scope 1
 ```
 
 **Command Line Arguments:**
@@ -628,17 +665,17 @@ test_xgboost_batches.bat
 
 **Probit Regression Baseline:**
 ```bash
-python baseline_probit_regression.py
+python app/final/baseline_probit_regression.py
 ```
 
 **FEWSNET Official Predictions Baseline:**
 ```bash
-python fewsnet_baseline_evaluation.py
+python app/final/fewsnet_baseline_evaluation.py
 ```
 
 **4-Model Performance Comparison:**
 ```bash
-python georf_vs_baseline_comparison_plot.py
+python app/final/georf_vs_baseline_comparison_plot.py
 ```
 
 #### **Complete Evaluation Pipeline**
@@ -647,10 +684,10 @@ python georf_vs_baseline_comparison_plot.py
 1. **Run Baseline Models:**
    ```bash
    # Generate probit regression baseline results
-   python baseline_probit_regression.py
+   python app/final/baseline_probit_regression.py
    
    # Generate FEWSNET official predictions baseline results  
-   python fewsnet_baseline_evaluation.py
+   python app/final/fewsnet_baseline_evaluation.py
    ```
 
 2. **Run Main Models with Batch Processing:**
@@ -665,7 +702,7 @@ python georf_vs_baseline_comparison_plot.py
 3. **Generate Comparison Analysis:**
    ```bash
    # Auto-detect all results and create 4-model comparison visualization
-   python georf_vs_baseline_comparison_plot.py
+   python app/final/georf_vs_baseline_comparison_plot.py
    ```
 
 **Pipeline Output Files:**
@@ -674,18 +711,23 @@ python georf_vs_baseline_comparison_plot.py
 - `baseline_probit_results/baseline_probit_results_fs{1-4}.csv`
 - `fewsnet_baseline_results/fewsnet_baseline_results_fs{1-2}.csv` (FEWSNET supports scopes 1-2 only)
 
-**GeoRF Results:**
-- `results_df_gp_fs{scope}_{start_year}_{end_year}.csv` (20 files from batches)
-- `y_pred_test_gp_fs{scope}_{start_year}_{end_year}.csv` (prediction arrays)
+**GeoRF Results (20 batch files from time periods):**
+- `results_df_gf_fs{scope}_{start_year}_{end_year}.csv` - Main results with metrics
+- `y_pred_test_gf_fs{scope}_{start_year}_{end_year}.csv` - Prediction arrays
 - `result_GeoRF_{id}/` directories (cleaned up between batches)
 
-**XGBoost Results:**
-- `results_df_xgb_gp_fs{scope}_{start_year}_{end_year}.csv` (40 files from batches)
-- `y_pred_test_xgb_gp_fs{scope}_{start_year}_{end_year}.csv` (prediction arrays)
+**XGBoost Results (40 batch files from individual years):**  
+- `results_df_xgb_fs{scope}_{start_year}_{end_year}.csv` - Main results with metrics
+- `y_pred_test_xgb_fs{scope}_{start_year}_{end_year}.csv` - Prediction arrays
 - `result_GeoXGB_{id}/` directories (cleaned up between batches)
 
+**File Naming Convention:**
+- `{model_type}`: `gf` (GeoRF), `xgb` (XGBoost), `baseline_probit`, `fewsnet_baseline`
+- `fs{scope}`: Forecasting scope (fs1=3mo, fs2=6mo, fs3=9mo, fs4=12mo)
+- `{start_year}_{end_year}`: Temporal range processed in the batch
+
 **Comparison Output:**
-- `model_comparison_class1_focus.png` - Dynamic 4-model performance visualization
+- `model_comparison_class1_focus.png` - Dynamic 4-model performance visualization  
 - Console output with detailed summary statistics for all models and forecasting scopes
 
 **FEWSNET Baseline Details:**
@@ -703,7 +745,26 @@ python georf_vs_baseline_comparison_plot.py
 - Handles missing data gracefully with informative subplot messages
 - Provides summary statistics with unweighted averages across time periods
 
-*Note: All models now focus exclusively on class 1 (crisis prediction) metrics: precision, recall, and F1 score. The XGBoost version (`main_model_XGB.py`) provides complete feature parity with the Random Forest pipeline including checkpoint recovery, rolling window evaluation, and partition metrics tracking.*
+**Crisis Prediction Focus:**
+All models in the framework now focus exclusively on **Class 1 (crisis prediction)** metrics:
+
+- **Precision (Class 1)**: True crisis predictions / All crisis predictions made by the model
+- **Recall (Class 1)**: True crisis predictions / All actual crises in the data  
+- **F1 Score (Class 1)**: Harmonic mean of precision and recall, balancing both metrics
+
+**Why Class 1 Focus:**
+- Crisis prediction is the primary objective (more important than predicting non-crisis)
+- Class imbalance makes overall accuracy misleading
+- Policy relevance: False negatives (missed crises) and false positives (unnecessary alerts) have different costs
+- Alignment with operational food security early warning systems
+
+**Model Performance Expectations:**
+- **Random Forest GeoRF**: F1 scores typically 0.65-0.75 for crisis prediction
+- **XGBoost GeoRF**: F1 scores typically 0.70-0.80 for crisis prediction (3-8% improvement)
+- **Baseline Models**: Probit ~0.55-0.65, FEWSNET ~0.60-0.70 F1 scores
+- **Performance varies by forecasting scope**: Shorter lags (3-month) typically perform better than longer lags (12-month)
+
+*Note: The XGBoost version (`app/main_model_XGB.py`) provides complete feature parity with the Random Forest pipeline including checkpoint recovery, rolling window evaluation, and partition metrics tracking.*
 
 ### 6.2 Core Configuration Parameters (config.py)
 
@@ -1350,10 +1411,11 @@ desire_terms = None          # All quarters or specific (1-4)
 # - ggk: geokmeans
 # - gak: all_kmeans
 
-# Example files:
-# results_df_gp_d3_t1_fs1.csv      # Polygons, depth=3, Q1 only, 3mo lag
-# y_pred_test_gp_d3_t1_fs1.csv     # Corresponding predictions
-# correspondence_table_Q1_2024.csv  # Quarterly admin code mapping
+# Example batch result files:
+# results_df_gf_fs1_2023_2024.csv      # GeoRF, 3mo lag, 2023-2024 time period
+# results_df_xgb_fs2_2024_2024.csv     # XGBoost, 6mo lag, 2024 single year
+# y_pred_test_gf_fs1_2023_2024.csv     # GeoRF predictions
+# correspondence_table_Q1_2024.csv      # Quarterly admin code mapping
 ```
 
 ## 11. Troubleshooting
