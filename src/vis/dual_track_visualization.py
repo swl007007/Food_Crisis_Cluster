@@ -21,6 +21,19 @@ from typing import Dict, List, Tuple, Optional, Any, Union
 import json
 from datetime import datetime
 
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+    try:
+        if VIS_DEBUG_MODE is None:
+            try:
+                from config_visual import VIS_DEBUG_MODE as Vv
+            except ImportError:
+                from config import VIS_DEBUG_MODE as Vv
+            return bool(Vv)
+        return bool(VIS_DEBUG_MODE)
+    except Exception:
+        return False
+
+
 def create_dual_track_visualization(
     result_dir: str,
     hierarchical_correspondence: str,
@@ -28,7 +41,8 @@ def create_dual_track_visualization(
     shapefile_path: Optional[str] = None,
     output_prefix: str = "dual_track",
     figsize: Tuple[int, int] = (20, 10),
-    dpi: int = 300
+    dpi: int = 300,
+    VIS_DEBUG_MODE: Optional[bool] = None
 ) -> Dict[str, str]:
     """
     Create side-by-side comparison of hierarchical vs spatially optimized partitions.
@@ -580,3 +594,6 @@ if __name__ == "__main__":
     else:
         print("Usage: python dual_track_visualization.py <result_directory>")
         print("Example: python dual_track_visualization.py result_GeoRF_27")
+    # Strict gate
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return {'status': 'disabled'}

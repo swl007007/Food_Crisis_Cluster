@@ -20,7 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tempfile
 
-def compute_final_accuracy_per_polygon(model, test_data, uid_col='FEWSNET_admin_code'):
+def compute_final_accuracy_per_polygon(model, test_data, uid_col='FEWSNET_admin_code', VIS_DEBUG_MODE=None):
     """
     Compute per-polygon accuracy metrics on the terminal model state.
     
@@ -39,19 +39,21 @@ def compute_final_accuracy_per_polygon(model, test_data, uid_col='FEWSNET_admin_
         DataFrame with columns: [uid_col, pct_err_all, pct_err_pos, eval_count]
         or None if VIS_DEBUG_MODE=False
     """
-    # Early return if visualization is disabled
-    # Check both config_visual (priority) and config for VIS_DEBUG_MODE
+    # Early return if visualization is disabled (strict gate)
     try:
-        try:
-            from config_visual import VIS_DEBUG_MODE
-        except ImportError:
-            from config import VIS_DEBUG_MODE
-        
-        if not VIS_DEBUG_MODE:
-            return None
-    except ImportError:
-        # Fallback: assume debug mode if config not available
-        pass
+        if VIS_DEBUG_MODE is None:
+            try:
+                from config_visual import VIS_DEBUG_MODE as Vv
+            except ImportError:
+                from config import VIS_DEBUG_MODE as Vv
+            enabled = bool(Vv)
+        else:
+            enabled = bool(VIS_DEBUG_MODE)
+    except Exception:
+        enabled = False
+
+    if not enabled:
+        return None
     
     try:
         Xtest, ytest, Xtest_group = test_data
@@ -128,7 +130,7 @@ def compute_final_accuracy_per_polygon(model, test_data, uid_col='FEWSNET_admin_
 
 def render_final_accuracy_maps(accuracy_df, vis_dir, uid_col='FEWSNET_admin_code', 
                               dpi=None, missing_color=None, backend=None,
-                              degenerate_note=None, force_render=False):
+                              degenerate_note=None, force_render=False, VIS_DEBUG_MODE=None):
     """
     Render final accuracy choropleth maps for overall and class 1 error rates.
     
@@ -156,19 +158,20 @@ def render_final_accuracy_maps(accuracy_df, vis_dir, uid_col='FEWSNET_admin_code
     dict
         Summary of rendered artifacts
     """
-    # Check VIS_DEBUG_MODE unless force_render is True
-    if not force_render:
-        try:
-            # Check both config_visual (priority) and config for VIS_DEBUG_MODE
+    # Strict gate: skip rendering when VIS_DEBUG_MODE is False
+    try:
+        if VIS_DEBUG_MODE is None:
             try:
-                from config_visual import VIS_DEBUG_MODE
+                from config_visual import VIS_DEBUG_MODE as Vv
             except ImportError:
-                from config import VIS_DEBUG_MODE
-                
-            if not VIS_DEBUG_MODE:
-                return {'artifacts_rendered': [], 'skipped_reason': 'VIS_DEBUG_MODE=False'}
-        except ImportError:
-            pass  # Continue if config not available
+                from config import VIS_DEBUG_MODE as Vv
+            enabled = bool(Vv)
+        else:
+            enabled = bool(VIS_DEBUG_MODE)
+    except Exception:
+        enabled = False
+    if not enabled:
+        return {'artifacts_rendered': [], 'skipped_reason': 'VIS_DEBUG_MODE=False'}
     
     # Load configuration defaults
     try:
@@ -239,7 +242,7 @@ def render_final_accuracy_maps(accuracy_df, vis_dir, uid_col='FEWSNET_admin_code
     return {'artifacts_rendered': rendered_artifacts}
 
 
-def render_accuracy_choropleth(df, metric_col, save_path, title, uid_col, dpi, missing_color):
+def render_accuracy_choropleth(df, metric_col, save_path, title, uid_col, dpi, missing_color, VIS_DEBUG_MODE=None):
     """
     Render a single accuracy choropleth map using existing infrastructure.
     
@@ -255,7 +258,8 @@ def render_accuracy_choropleth(df, metric_col, save_path, title, uid_col, dpi, m
             title=title,
             save_path=save_path,
             dpi=dpi,
-            missing_color=missing_color
+            missing_color=missing_color,
+            VIS_DEBUG_MODE=True
         )
         return save_path
         
@@ -275,7 +279,7 @@ def render_accuracy_choropleth(df, metric_col, save_path, title, uid_col, dpi, m
         return save_path
 
 
-def render_accuracy_map(df, save_path=None, title=None, degenerate_note=None):
+def render_accuracy_map(df, save_path=None, title=None, degenerate_note=None, VIS_DEBUG_MODE=None):
     """
     Render accuracy map that always works, even for degenerate/single-partition cases.
     
@@ -304,6 +308,21 @@ def render_accuracy_map(df, save_path=None, title=None, degenerate_note=None):
         if degenerate_note:
             title += f" ({degenerate_note})"
             
+        # Strict gate
+        try:
+            if VIS_DEBUG_MODE is None:
+                try:
+                    from config_visual import VIS_DEBUG_MODE as Vv
+                except ImportError:
+                    from config import VIS_DEBUG_MODE as Vv
+                if not Vv:
+                    return None
+            else:
+                if not VIS_DEBUG_MODE:
+                    return None
+        except Exception:
+            return None
+
         # Use existing choropleth function if data is valid
         if len(df) > 0 and 'accuracy' in df.columns:
             try:
@@ -311,7 +330,8 @@ def render_accuracy_map(df, save_path=None, title=None, degenerate_note=None):
                 fig = plot_error_rate_choropleth(
                     df, 'accuracy', 
                     title=title,
-                    save_path=save_path
+                    save_path=save_path,
+                    VIS_DEBUG_MODE=True
                 )
                 return save_path
             except Exception as e:
@@ -334,7 +354,7 @@ def render_accuracy_map(df, save_path=None, title=None, degenerate_note=None):
         return None
 
 
-def render_partition_map(correspondence_df, save_path=None, title=None, degenerate_note=None):
+def render_partition_map(correspondence_df, save_path=None, title=None, degenerate_note=None, VIS_DEBUG_MODE=None):
     """
     Render partition map that always works, even for degenerate/single-partition cases.
     
@@ -354,6 +374,21 @@ def render_partition_map(correspondence_df, save_path=None, title=None, degenera
     str : path to saved map or None if failed
     """
     try:
+        # Strict gate
+        try:
+            if VIS_DEBUG_MODE is None:
+                try:
+                    from config_visual import VIS_DEBUG_MODE as Vv
+                except ImportError:
+                    from config import VIS_DEBUG_MODE as Vv
+                if not Vv:
+                    return None
+            else:
+                if not VIS_DEBUG_MODE:
+                    return None
+        except Exception:
+            return None
+
         if save_path is None:
             save_path = "partition_map.png"
             
@@ -377,7 +412,7 @@ def render_partition_map(correspondence_df, save_path=None, title=None, degenera
                         temp_csv_path = temp_csv.name
                     
                     from src.vis.visualization import plot_partition_map
-                    fig = plot_partition_map(temp_csv_path, save_path=save_path, title=title)
+                    fig = plot_partition_map(temp_csv_path, save_path=save_path, title=title, VIS_DEBUG_MODE=True)
                     os.unlink(temp_csv_path)  # Clean up temp file
                     return save_path
                 except Exception as e:
@@ -415,7 +450,7 @@ Polygons: {n_polygons}
 
 
 def ensure_vis_dir_and_render_maps(model_dir, correspondence_df=None, test_data=None, 
-                                  partition_count=None, stage_info="", force_accuracy=False, model=None):
+                                  partition_count=None, stage_info="", force_accuracy=False, model=None, VIS_DEBUG_MODE=None):
     """
     Ensure visualization directory exists and render essential maps.
     
@@ -446,8 +481,21 @@ def ensure_vis_dir_and_render_maps(model_dir, correspondence_df=None, test_data=
     -------
     dict : Summary of rendered artifacts
     """
-    # Early return if visualization disabled (unless force_accuracy is True)
-    if not VIS_DEBUG_MODE and not force_accuracy:
+    # Strict gate: skip all rendering and directory creation when disabled
+    enabled = False
+    try:
+        if VIS_DEBUG_MODE is None:
+            try:
+                from config_visual import VIS_DEBUG_MODE as Vv
+            except ImportError:
+                from config import VIS_DEBUG_MODE as Vv
+            enabled = bool(Vv)
+        else:
+            enabled = bool(VIS_DEBUG_MODE)
+    except Exception:
+        enabled = False
+
+    if not enabled:
         return {
             'stage': stage_info,
             'vis_dir_created': False,
@@ -486,13 +534,14 @@ def ensure_vis_dir_and_render_maps(model_dir, correspondence_df=None, test_data=
     # Compute and render final accuracy maps
     if test_data is not None and model is not None:
         print("Computing final accuracy per polygon...")
-        accuracy_df = compute_final_accuracy_per_polygon(model, test_data)
+        accuracy_df = compute_final_accuracy_per_polygon(model, test_data, VIS_DEBUG_MODE=True)
         
         # Render final accuracy maps
         accuracy_summary = render_final_accuracy_maps(
             accuracy_df, vis_dir, 
             degenerate_note=degenerate_note,
-            force_render=force_accuracy
+            force_render=False,
+            VIS_DEBUG_MODE=True
         )
         
         if accuracy_summary['artifacts_rendered']:
@@ -507,7 +556,7 @@ def ensure_vis_dir_and_render_maps(model_dir, correspondence_df=None, test_data=
     # Render partition map
     if correspondence_df is not None and len(correspondence_df) > 0:
         partition_path = os.path.join(vis_dir, 'partition_map.png') 
-        partition_result = render_partition_map(correspondence_df, partition_path, degenerate_note=degenerate_note)
+        partition_result = render_partition_map(correspondence_df, partition_path, degenerate_note=degenerate_note, VIS_DEBUG_MODE=True)
         if partition_result:
             stage_summary['artifacts_rendered'].append('partition_map.png')
             print(f"Rendered partition map: {partition_path}")
@@ -520,7 +569,7 @@ def ensure_vis_dir_and_render_maps(model_dir, correspondence_df=None, test_data=
     if correspondence_df is not None and len(correspondence_df) > 0:
         final_partition_path = os.path.join(vis_dir, 'final_partition_map.png')
         final_result = render_partition_map(correspondence_df, final_partition_path, 
-                                          title="Final Partition Map", degenerate_note=degenerate_note)
+                                          title="Final Partition Map", degenerate_note=degenerate_note, VIS_DEBUG_MODE=True)
         if final_result:
             stage_summary['artifacts_rendered'].append('final_partition_map.png')
             print(f"Rendered final partition map: {final_partition_path}")

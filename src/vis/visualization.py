@@ -23,6 +23,19 @@ from PIL import Image
 Functions in visualization normally need to be customized depending on how the groups are generated, and the data type.
 '''
 
+# Strict visualization gate resolver
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+  try:
+    if VIS_DEBUG_MODE is None:
+      try:
+        from config_visual import VIS_DEBUG_MODE as V
+      except ImportError:
+        from config import VIS_DEBUG_MODE as V
+      return bool(V)
+    return bool(VIS_DEBUG_MODE)
+  except Exception:
+    return False
+
 #in training visualization
 def vis_partition_training(grid, branch_id):
   '''Visualize space-partitionings.'''
@@ -165,8 +178,8 @@ def vis_partition_group(s_branch, unique_branch, step_size, max_depth = MAX_DEPT
   else:
     return grid
 
-def generate_vis_image(s_branch, X_branch_id, max_depth, dir, step_size = STEP_SIZE, file_name='all'):
-  if not VIS_DEBUG_MODE:
+def generate_vis_image(s_branch, X_branch_id, max_depth, dir, step_size = STEP_SIZE, file_name='all', VIS_DEBUG_MODE=None):
+  if not _resolve_vis_flag(VIS_DEBUG_MODE):
     return
     
   print(list(s_branch.keys()))
@@ -195,8 +208,8 @@ def generate_vis_image(s_branch, X_branch_id, max_depth, dir, step_size = STEP_S
   np.save(dir + '/' + 'grid' + file_name + '.npy', grid)
 
 
-def generate_vis_image_from_grid(grid, dir, file_name='all'):
-  if not VIS_DEBUG_MODE:
+def generate_vis_image_from_grid(grid, dir, file_name='all', VIS_DEBUG_MODE=None):
+  if not _resolve_vis_flag(VIS_DEBUG_MODE):
     return
     
   from PIL import ImageOps
@@ -335,7 +348,8 @@ def plot_partition_swaps(correspondence_before_path, correspondence_after_path,
                         figsize=(12, 10), 
                         dpi=300,
                         add_basemap=True,
-                        basemap_source=None):
+                        basemap_source=None,
+                        VIS_DEBUG_MODE=None):
     """
     Plot only the areas that changed partition assignments between two states.
     
@@ -524,7 +538,7 @@ def plot_partition_swaps(correspondence_before_path, correspondence_after_path,
     
     return fig
 
-def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = None):
+def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = None, VIS_DEBUG_MODE=None):
   '''This generates visualization images for all groups.
   Args:
     grid: from generate_grid_vis()
@@ -532,7 +546,7 @@ def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = N
     vmin: min value for clim in matplotlib
     vmax: max value for clim in matplotlib
   '''
-  if not VIS_DEBUG_MODE:
+  if not _resolve_vis_flag(VIS_DEBUG_MODE):
     return
 
   # if vmin is None:
@@ -571,7 +585,8 @@ def plot_partition_map(correspondence_table_path,
                       figsize=(12, 10), 
                       dpi=300,
                       add_basemap=True,
-                      basemap_source=None):
+                      basemap_source=None,
+                      VIS_DEBUG_MODE=None):
     """
     Plot GeoRF partitions on a map using correspondence table and shapefiles.
     
@@ -822,7 +837,7 @@ def plot_partition_map(correspondence_table_path,
     return fig
 
 
-def plot_partition_map_from_result_dir(result_dir, year=None, model_type='GeoRF', **kwargs):
+def plot_partition_map_from_result_dir(result_dir, year=None, model_type='GeoRF', VIS_DEBUG_MODE=None, **kwargs):
     """
     Convenience function to plot partition map from a result directory.
     
@@ -863,7 +878,7 @@ def plot_partition_map_from_result_dir(result_dir, year=None, model_type='GeoRF'
         file_name = os.path.basename(correspondence_path)
         kwargs['title'] = f"{dir_name} - {file_name}"
     
-    return plot_partition_map(correspondence_path, **kwargs)
+    return plot_partition_map(correspondence_path, VIS_DEBUG_MODE=VIS_DEBUG_MODE, **kwargs)
 
 
 def plot_metrics_improvement_map(metrics_csv_path, 
@@ -876,7 +891,8 @@ def plot_metrics_improvement_map(metrics_csv_path,
                                 dpi=300,
                                 add_basemap=True,
                                 colormap='RdBu',
-                                center_colormap=True):
+                                center_colormap=True,
+                                VIS_DEBUG_MODE=None):
     """
     Plot F1/accuracy improvement on a map using partition metrics and correspondence table.
     
@@ -1181,7 +1197,7 @@ def plot_partition_metrics_dashboard(metrics_tracker, output_dir,
 def plot_error_rate_choropleth(error_df, metric_col, shapefile_path=None, 
                               uid_col='FEWSNET_admin_code', title=None,
                               save_path=None, figsize=(12, 10), dpi=200,
-                              missing_color='lightgray', crs_target='EPSG:4326'):
+                              missing_color='lightgray', crs_target='EPSG:4326', VIS_DEBUG_MODE=None):
     """
     Create choropleth map showing error rates by polygon.
     
@@ -1313,3 +1329,15 @@ def plot_error_rate_choropleth(error_df, metric_col, shapefile_path=None,
         print(f"Choropleth map saved: {save_path}")
     
     return fig
+    # Strict gate: no image creation when disabled
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return None
+    # Strict gate
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return None
+    # Strict gate
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return None
+    # Strict gate
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return None

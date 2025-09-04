@@ -442,7 +442,10 @@ class GeoRF_XGB():
             print('F1-score: ', f1_base)
 
             # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
-            if VIS_DEBUG_MODE:
+            # Strict gate: use VIS_DEBUG_MODE from config only (production control)
+            from config import VIS_DEBUG_MODE as _VIS_FLAG
+
+            if _VIS_FLAG:
                 try:
                     from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
                     
@@ -451,7 +454,8 @@ class GeoRF_XGB():
                         model_dir=self.model_dir,
                         test_data=(X, y, X_group),  # Use the test data from evaluation
                         force_accuracy=force_accuracy,
-                        model=self  # Pass model for accuracy computation
+                        model=self,  # Pass model for accuracy computation
+                        VIS_DEBUG_MODE=_VIS_FLAG
                     )
                     
                     if render_summary.get('final_accuracy_generated'):
@@ -469,7 +473,10 @@ class GeoRF_XGB():
             return pre, rec, f1, pre_base, rec_base, f1_base
 
         # FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
-        if VIS_DEBUG_MODE:
+        # Strict gate: use VIS_DEBUG_MODE from config only (production control)
+        from config import VIS_DEBUG_MODE as _VIS_FLAG
+
+        if _VIS_FLAG:
             try:
                 from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
                 
@@ -478,7 +485,8 @@ class GeoRF_XGB():
                     model_dir=self.model_dir,
                     test_data=(X, y, X_group),  # Use the test data from evaluation
                     force_accuracy=force_accuracy,
-                    model=self  # Pass model for accuracy computation
+                    model=self,  # Pass model for accuracy computation
+                    VIS_DEBUG_MODE=_VIS_FLAG
                 )
                 
                 if render_summary.get('final_accuracy_generated'):

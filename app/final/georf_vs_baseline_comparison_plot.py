@@ -495,8 +495,21 @@ def main():
         else:
             print(f"  XGBoost: No data found")
     
-    # Create comparison plot only if we have data
-    if available_lags:
+    # Strict gate for visualization
+    def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+        try:
+            if VIS_DEBUG_MODE is None:
+                try:
+                    from config_visual import VIS_DEBUG_MODE as Vv
+                except ImportError:
+                    from config import VIS_DEBUG_MODE as Vv
+                return bool(Vv)
+            return bool(VIS_DEBUG_MODE)
+        except Exception:
+            return False
+
+    # Create comparison plot only if we have data and visuals enabled
+    if available_lags and _resolve_vis_flag():
         print("\\nCreating class 1 performance comparison visualization...")
         fig = create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data)
         

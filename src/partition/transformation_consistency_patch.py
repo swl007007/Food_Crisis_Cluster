@@ -98,12 +98,18 @@ def generate_consistent_round_correspondence(
     print(f"Generated consistent round correspondence: {filename}")
     return correspondence_path
 
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+    # Strict gate: only honor the passed flag; default False
+    return bool(VIS_DEBUG_MODE)
+
+
 def create_dual_stage_round_visualizations(
     partition_data: Dict[str, List],
     branch_info: Dict[str, Any],
     round_id: int,
     branch_id: str,
-    vis_dir: str
+    vis_dir: str,
+    VIS_DEBUG_MODE: Optional[bool] = None
 ) -> Dict[str, str]:
     """
     Create both immediate and terminal assignment visualizations for a round.
@@ -149,6 +155,8 @@ def create_dual_stage_round_visualizations(
     
     # Generate partition maps for both
     try:
+        if not _resolve_vis_flag(VIS_DEBUG_MODE):
+            return visualization_files
         from visualization import plot_partition_map
         
         # Immediate split partition map
@@ -161,7 +169,8 @@ def create_dual_stage_round_visualizations(
             correspondence_table_path=immediate_correspondence,
             save_path=immediate_map_path,
             title=f'Round {round_id}, Branch {branch_id} - Immediate Splits',
-            figsize=(14, 12)
+            figsize=(14, 12),
+            VIS_DEBUG_MODE=True
         )
         visualization_files['immediate_map'] = immediate_map_path
         
@@ -175,7 +184,8 @@ def create_dual_stage_round_visualizations(
             correspondence_table_path=terminal_correspondence,
             save_path=terminal_map_path,
             title=f'Round {round_id}, Branch {branch_id} - Terminal Assignments',
-            figsize=(14, 12)
+            figsize=(14, 12),
+            VIS_DEBUG_MODE=True
         )
         visualization_files['terminal_map'] = terminal_map_path
         

@@ -364,7 +364,7 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
     
     if need_terms is None:
         # Training set: all years before test_year (fallback when need_terms is None)
-        train_mask = years < test_year
+        train_mask = (years < test_year) & (years >= (test_year - 5))  # Limit to last 5 years for training
         # Test set: only test_year
         test_mask = years == test_year
 
@@ -377,6 +377,19 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         ytest = y[test_mask]
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
+        
+        #Xtest_group unique values
+        X_test_unique = np.unique(Xtest_group)
+        
+        # generate mask for Xtrain_group to only include groups present in Xtest_group
+        train_group_mask = np.isin(Xtrain_group, X_test_unique)
+        
+        # apply mask to Xtrain, ytrain, Xtrain_loc, Xtrain_group
+        Xtrain = Xtrain[train_group_mask]
+        ytrain = ytrain[train_group_mask]
+        Xtrain_loc = Xtrain_loc[train_group_mask]
+        Xtrain_group = Xtrain_group[train_group_mask]
+        
     else:
         # Rolling window approach: 5 years before test term → test on specific 2024 term
         import pandas as pd
@@ -426,6 +439,14 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         ytest = y[test_mask]
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
+        
+        # Ensure training groups overlap with test groups
+        X_test_unique = np.unique(Xtest_group)
+        train_group_mask = np.isin(Xtrain_group, X_test_unique)
+        Xtrain = Xtrain[train_group_mask]
+        ytrain = ytrain[train_group_mask]
+        Xtrain_loc = Xtrain_loc[train_group_mask]
+        Xtrain_group = Xtrain_group[train_group_mask]
         
         print(f"Rolling Window Split for Q{need_terms} {test_year}:")
         print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()} (5 years BEFORE test quarter)")
@@ -565,13 +586,6 @@ def generate_groups_loc(X_DIM, step_size):#X_DIM, X_loc,  = STEP_SIZE
   group_loc[:, 1] = np.arange(n_cols * n_rows) % n_cols
 
   return group_loc.astype(int)
-
-def generate_group_id_for_test(X_test):
-  '''Use if data points' group ids in test are not included in generate_groups() function.
-    For example, test's group ids can be inferred by maximizing similarity to groups from training data.
-  '''
-
-  return X_group
 
 
 ''' customized groups assignment using county assignment

@@ -55,8 +55,21 @@ def compute_file_content_hash(file_path):
         return None
 
 
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+    try:
+        if VIS_DEBUG_MODE is None:
+            try:
+                from config_visual import VIS_DEBUG_MODE as Vv
+            except ImportError:
+                from config import VIS_DEBUG_MODE as Vv
+            return bool(Vv)
+        return bool(VIS_DEBUG_MODE)
+    except Exception:
+        return False
+
+
 def render_partition_map_with_metadata(correspondence_df, save_path, title="Partition Map", 
-                                     metadata=None, hide_unassigned=True):
+                                     metadata=None, hide_unassigned=True, VIS_DEBUG_MODE=None):
     """
     Render partition map with enhanced metadata and proper handling.
     
@@ -78,6 +91,8 @@ def render_partition_map_with_metadata(correspondence_df, save_path, title="Part
     bool : Success status
     """
     try:
+        if not _resolve_vis_flag(VIS_DEBUG_MODE):
+            return False
         # Prepare data
         df_clean = correspondence_df.copy()
         
@@ -103,7 +118,7 @@ def render_partition_map_with_metadata(correspondence_df, save_path, title="Part
                     temp_csv_path = temp_csv.name
                 
                 from visualization import plot_partition_map
-                fig = plot_partition_map(temp_csv_path, save_path=save_path, title=title)
+                fig = plot_partition_map(temp_csv_path, save_path=save_path, title=title, VIS_DEBUG_MODE=True)
                 os.unlink(temp_csv_path)  # Clean up temp file
                 
                 # Add metadata annotation if provided
@@ -172,7 +187,7 @@ def render_partition_map_with_metadata(correspondence_df, save_path, title="Part
         return False
 
 
-def create_enhanced_partition_visualizations(result_dir):
+def create_enhanced_partition_visualizations(result_dir, VIS_DEBUG_MODE=None):
     """
     Create enhanced partition visualizations with proper round vs final semantics.
     
@@ -185,6 +200,8 @@ def create_enhanced_partition_visualizations(result_dir):
     -------
     dict : Visualization summary
     """
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return {'result_dir': result_dir, 'status': 'disabled', 'maps_created': []}
     print("=== ENHANCED PARTITION VISUALIZATION ===")
     
     vis_dir = os.path.join(result_dir, 'vis')

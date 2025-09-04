@@ -24,6 +24,18 @@ from src.helper.helper import *
 
 from config import *
 
+# Strict visualization gate resolver (prefer config_visual)
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+  try:
+    if VIS_DEBUG_MODE is None:
+      try:
+        from config_visual import VIS_DEBUG_MODE as V
+      except ImportError:
+        from config import VIS_DEBUG_MODE as V
+      return bool(V)
+    return bool(VIS_DEBUG_MODE)
+  except Exception:
+    return False
 # Crisis-focused scoring functions
 def get_class_1_f1_score(y_true, y_pred):
     """Calculate class 1 F1 score for crisis prediction optimization."""
@@ -453,7 +465,7 @@ def get_refined_partitions_dispatcher(s0, s1, y_val_gid, g_loc, dir = None, bran
   return get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir, branch_id)
 
 
-def get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir=None, branch_id=None):
+def get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir=None, branch_id=None, VIS_DEBUG_MODE=False):
   '''Grid version of get_refined_partitions using grid-based spatial contiguity.
   
   Parameters:
@@ -490,16 +502,16 @@ def get_refined_partitions_grid(s0, s1, y_val_gid, g_loc, dir=None, branch_id=No
   # print(loc_grid)
 
   #the generate_vis_image_for_all_groups() in the following 2 if conditions can be added back to compare results
-  if dir is not None and branch_id is not None:
-    generate_vis_image_for_all_groups(loc_grid, dir = dir, ext = '_debug1_' + branch_id, vmin = -1, vmax = 1)
+  if dir is not None and branch_id is not None and VIS_DEBUG_MODE:
+    generate_vis_image_for_all_groups(loc_grid, dir = dir, ext = '_debug1_' + branch_id, vmin = -1, vmax = 1, VIS_DEBUG_MODE=VIS_DEBUG_MODE)
 
   #only perform once after each partitioning, should not affect efficiency
   # loc_grid = swap_partition(loc_grid, loc_s0, 0)
   # loc_grid = swap_partition(loc_grid, loc_s1, 1)
   loc_grid = swap_partition_general(loc_grid, np.vstack([loc_s0, loc_s1]))
 
-  if dir is not None:
-    generate_vis_image_for_all_groups(loc_grid, dir = dir, ext = '_debug2_' + branch_id, vmin = -1, vmax = 1)
+  if dir is not None and VIS_DEBUG_MODE:
+    generate_vis_image_for_all_groups(loc_grid, dir = dir, ext = '_debug2_' + branch_id, vmin = -1, vmax = 1, VIS_DEBUG_MODE=VIS_DEBUG_MODE)
   # print(loc_grid)
 
   #grid to s0, s1
@@ -678,7 +690,7 @@ def polygon_partitions_to_groups(partition_assignments, polygon_to_group_map):
 
 def get_refined_partitions_polygon(s0, s1, y_val_gid, polygon_centroids, 
                                   polygon_group_mapping, neighbor_distance_threshold=None,
-                                  dir=None, branch_id=None):
+                                  dir=None, branch_id=None, VIS_DEBUG_MODE=False):
   '''Polygon version of get_refined_partitions using centroid-based neighbors.
   
   Parameters:
@@ -954,7 +966,7 @@ def scan(y_true_value, true_pred_value, min_sample,
     return s0, s1
 
 
-def get_refined_partitions_all(X_branch_id, s_branch, X_group, dir = None, min_component_size = 10, max_depth = MAX_DEPTH):
+def get_refined_partitions_all(X_branch_id, s_branch, X_group, dir = None, min_component_size = 10, max_depth = MAX_DEPTH, VIS_DEBUG_MODE=False):
   '''This is used to refine partitions with all partition ids (not for smoothing binary partitions during the training process).'''
 
   unique_branch = np.unique(X_branch_id[X_branch_id != ''])
@@ -968,7 +980,7 @@ def get_refined_partitions_all(X_branch_id, s_branch, X_group, dir = None, min_c
   # print('grid.shape', grid.shape)
 
   if VIS_DEBUG_MODE:
-    generate_vis_image_from_grid(grid, dir, file_name = 'all_refined_before')
+    generate_vis_image_from_grid(grid, dir, file_name = 'all_refined_before', VIS_DEBUG_MODE=VIS_DEBUG_MODE)
 
   if dir is not None and VIS_DEBUG_MODE:
     np.save(dir + '/' + 'grid' + '_before' + '.npy', grid)#ext
@@ -979,7 +991,7 @@ def get_refined_partitions_all(X_branch_id, s_branch, X_group, dir = None, min_c
   grid = swap_small_components(grid, min_component_size)
 
   if dir is not None and VIS_DEBUG_MODE:
-    generate_vis_image_from_grid(grid, dir, file_name = 'all_refined')
+    generate_vis_image_from_grid(grid, dir, file_name = 'all_refined', VIS_DEBUG_MODE=VIS_DEBUG_MODE)
     np.save(dir + '/' + 'grid' + '_after' + '.npy', grid)
 
   list_branch_id_int = grid.reshape(-1).astype(int)

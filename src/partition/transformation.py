@@ -20,6 +20,19 @@ from src.customize.customize import *
 
 from src.vis.visualization import *
 
+# Strict visualization gate resolver (prefer config_visual)
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+  try:
+    if VIS_DEBUG_MODE is None:
+      try:
+        from config_visual import VIS_DEBUG_MODE as V
+      except ImportError:
+        from config import VIS_DEBUG_MODE as V
+      return bool(V)
+    return bool(VIS_DEBUG_MODE)
+  except Exception:
+    return False
+
 # import models
 
 def generate_branch_visualization_correspondence(X, X_group, X_branch_id, branch_id, 
@@ -92,6 +105,9 @@ def partition(model, X, y,
   **paras is for model-specific parameters (could be different for deep learning and traditional ML)
   maybe create two different versions?
   '''
+  # Strict gate: take visualization flag only from arguments, never from config
+  VIS_DEBUG_MODE = paras.get('VIS_DEBUG_MODE', False)
+
   # Initialize metrics tracker if requested
   metrics_tracker = None
   if track_partition_metrics:
@@ -285,7 +301,9 @@ def partition(model, X, y,
               import os
               from src.vis.visualization import plot_partition_map, plot_partition_swaps
               
-              # Create vis directory if it doesn't exist
+              # Create vis directory if it doesn't exist (strict gate from caller)
+              if not VIS_DEBUG_MODE:
+                raise RuntimeError('VIS_DEBUG_MODE=False; skipping contiguity visualization')
               vis_dir = os.path.join(model_dir, 'vis')
               os.makedirs(vis_dir, exist_ok=True)
               
@@ -308,18 +326,16 @@ def partition(model, X, y,
               partition_df = partition_df.drop_duplicates()
               partition_df.to_csv(current_correspondence_path, index=False)
               
-              if VIS_DEBUG_MODE:
-              # Generate partition map
-                partition_map_path = os.path.join(vis_dir, f'contiguity_refinement_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine + 1}.png')
-                
-                plot_partition_map(
-                  correspondence_table_path=current_correspondence_path,
-                  save_path=partition_map_path,
-                  title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
-                  figsize=(14, 12)
-                )
-                
-                print(f"Generated contiguity refinement map: {partition_map_path}")
+              # Generate partition map (strict gate)
+              partition_map_path = os.path.join(vis_dir, f'contiguity_refinement_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine + 1}.png')
+              plot_partition_map(
+                correspondence_table_path=current_correspondence_path,
+                save_path=partition_map_path,
+                title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
+                figsize=(14, 12),
+                VIS_DEBUG_MODE=VIS_DEBUG_MODE
+              )
+              print(f"Generated contiguity refinement map: {partition_map_path}")
               
               # Generate swap visualization (compare with previous epoch)
               if i_refine > 0 or True:  # Always generate, even for first epoch (compare with initial scan)
@@ -343,20 +359,18 @@ def partition(model, X, y,
                 swap_map_path = os.path.join(vis_dir, f'contiguity_swaps_round_{i}_branch_{branch_id or "root"}_epoch_{i_refine}_to_{i_refine + 1}.png')
                 
                 try:
-                  if VIS_DEBUG_MODE:
-                    swap_fig = plot_partition_swaps(
-                      correspondence_before_path=prev_correspondence_path,
-                      correspondence_after_path=current_correspondence_path,
-                      save_path=swap_map_path,
-                      title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
-                      figsize=(14, 12)
-                    )
-                    
-                    if swap_fig is not None:
-                      print(f"Generated contiguity swap map: {swap_map_path}")
-                    else:
-                      print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
-                    
+                  swap_fig = plot_partition_swaps(
+                    correspondence_before_path=prev_correspondence_path,
+                    correspondence_after_path=current_correspondence_path,
+                    save_path=swap_map_path,
+                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
+                    figsize=(14, 12),
+                    VIS_DEBUG_MODE=VIS_DEBUG_MODE
+                  )
+                  if swap_fig is not None:
+                    print(f"Generated contiguity swap map: {swap_map_path}")
+                  else:
+                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
                 except Exception as swap_error:
                   print(f"ERROR: Failed to create swap visualization: {swap_error}")
                   import traceback
@@ -396,7 +410,9 @@ def partition(model, X, y,
               import os
               from src.vis.visualization import plot_partition_map, plot_partition_swaps
               
-              # Create vis directory if it doesn't exist
+              # Create vis directory if it doesn't exist (strict gate from caller)
+              if not VIS_DEBUG_MODE:
+                raise RuntimeError('VIS_DEBUG_MODE=False; skipping contiguity visualization')
               vis_dir = os.path.join(model_dir, 'vis')
               os.makedirs(vis_dir, exist_ok=True)
               
@@ -426,7 +442,8 @@ def partition(model, X, y,
                 correspondence_table_path=current_correspondence_path,
                 save_path=partition_map_path,
                 title=f'Contiguity Refinement - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine + 1}/{refine_times}',
-                figsize=(14, 12)
+                figsize=(14, 12),
+                VIS_DEBUG_MODE=VIS_DEBUG_MODE
               )
               
               print(f"Generated contiguity refinement map: {partition_map_path}")
@@ -458,7 +475,8 @@ def partition(model, X, y,
                     correspondence_after_path=current_correspondence_path,
                     save_path=swap_map_path,
                     title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
-                    figsize=(14, 12)
+                    figsize=(14, 12),
+                    VIS_DEBUG_MODE=VIS_DEBUG_MODE
                   )
                   
                   if swap_fig is not None:
@@ -772,54 +790,52 @@ def partition(model, X, y,
           next_level_row_ids_for_new_branches = [branch_id_to_loop_id(branch_id+'0'), branch_id_to_loop_id(branch_id+'1')]
           branch_table[next_level_row_ids_for_new_branches, i+1] = 1
 
-        # Generate partition map visualization after each partition round
-        try:
-          import os
-          from src.vis.visualization import plot_partition_map
-          
-          # Create vis directory if it doesn't exist
-          vis_dir = os.path.join(model_dir, 'vis')
-          os.makedirs(vis_dir, exist_ok=True)
-          
-          # Create temporary correspondence table for current partition state
-          current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}.csv')
-          
-          # Create correspondence table from current X_branch_id state
-          import pandas as pd
-          partition_data = []
-          
-          for idx in range(len(X)):
-            # Map data point to its X_group (admin code) and current partition (branch_id)
-            current_branch = X_branch_id[idx]
-            admin_code = X_group[idx]
-            
-            partition_data.append({
-              'FEWSNET_admin_code': admin_code,
-              'partition_id': current_branch if current_branch != '' else 'root'
-            })
-          
-          # Create DataFrame and save
-          partition_df = pd.DataFrame(partition_data)
-          partition_df = partition_df.drop_duplicates()
-          partition_df.to_csv(current_correspondence_path, index=False)
-          
-          # Generate partition map
-          partition_map_path = os.path.join(vis_dir, f'partition_map_round_{i}_branch_{branch_id or "root"}.png')
-          
-          plot_partition_map(
-            correspondence_table_path=current_correspondence_path,
-            save_path=partition_map_path,
-            title=f'GeoRF Partitions - Round {i}, Branch {branch_id if branch_id else "root"} (After Split)',
-            figsize=(14, 12)
-          )
-          
-          print(f"Generated partition map: {partition_map_path}")
-          
-          # Clean up temporary correspondence table
-          os.remove(current_correspondence_path)
-          
-        except Exception as e:
-          print(f"Warning: Could not generate partition map for Round {i}, Branch {branch_id}: {e}")
+        # Generate partition map visualization after each partition round (strict gate)
+        if VIS_DEBUG_MODE:
+          try:
+            import os
+            from src.vis.visualization import plot_partition_map
+
+            # Create vis directory if it doesn't exist
+            vis_dir = os.path.join(model_dir, 'vis')
+            os.makedirs(vis_dir, exist_ok=True)
+
+            # Create temporary correspondence table for current partition state
+            current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}.csv')
+
+            # Create correspondence table from current X_branch_id state
+            import pandas as pd
+            partition_data = []
+
+            for idx in range(len(X)):
+              current_branch = X_branch_id[idx]
+              admin_code = X_group[idx]
+              partition_data.append({
+                'FEWSNET_admin_code': admin_code,
+                'partition_id': current_branch if current_branch != '' else 'root'
+              })
+
+            partition_df = pd.DataFrame(partition_data)
+            partition_df = partition_df.drop_duplicates()
+            partition_df.to_csv(current_correspondence_path, index=False)
+
+            # Generate partition map
+            partition_map_path = os.path.join(vis_dir, f'partition_map_round_{i}_branch_{branch_id or "root"}.png')
+            plot_partition_map(
+              correspondence_table_path=current_correspondence_path,
+              save_path=partition_map_path,
+              title=f'GeoRF Partitions - Round {i}, Branch {branch_id if branch_id else "root"} (After Split)',
+              figsize=(14, 12),
+              VIS_DEBUG_MODE=VIS_DEBUG_MODE
+            )
+
+            print(f"Generated partition map: {partition_map_path}")
+
+            # Clean up temporary correspondence table
+            os.remove(current_correspondence_path)
+
+          except Exception as e:
+            print(f"Warning: Could not generate partition map for Round {i}, Branch {branch_id}: {e}")
 
         # vis_partition_training(grid, branch_id)
         # !!!the generate_vis_image() and generate_vis_image_for_all_groups() in the following can be added back to motinor partitioning in the training process
@@ -940,6 +956,10 @@ def partition(model, X, y,
       import traceback
       traceback.print_exc()
     
-    return X_branch_id, branch_table, s_branch, metrics_tracker
-  else:
-    return X_branch_id, branch_table, s_branch
+    if track_partition_metrics:
+      return X_branch_id, branch_table, s_branch, metrics_tracker
+    else:
+      return X_branch_id, branch_table, s_branch
+
+  # No metrics tracker: return core outputs
+  return X_branch_id, branch_table, s_branch

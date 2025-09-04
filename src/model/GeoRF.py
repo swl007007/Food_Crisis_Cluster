@@ -298,7 +298,8 @@ class GeoRF():
 		                   contiguity_type = contiguity_type, polygon_contiguity_info = polygon_contiguity_info,
 		                   track_partition_metrics = track_partition_metrics and VIS_DEBUG_MODE, 
 		                   correspondence_table_path = correspondence_table_path,
-		                   model_dir = self.model_dir)#X_loc = X_loc is unused
+		                   model_dir = self.model_dir,
+		                   VIS_DEBUG_MODE = VIS_DEBUG_MODE)#X_loc = X_loc is unused
 		
 		# Handle different return formats (with/without metrics tracker)
 		if track_partition_metrics and VIS_DEBUG_MODE:
@@ -326,7 +327,7 @@ class GeoRF():
 		if CONTIGUITY:
 			# Pass vis_dir only if VIS_DEBUG_MODE is enabled for contiguity refinement visualization
 			vis_dir_param = self.dir_vis if VIS_DEBUG_MODE else None
-			X_branch_id = get_refined_partitions_all(X_branch_id, self.s_branch, X_group, dir = vis_dir_param, min_component_size = MIN_COMPONENT_SIZE)
+			X_branch_id = get_refined_partitions_all(X_branch_id, self.s_branch, X_group, dir = vis_dir_param, min_component_size = MIN_COMPONENT_SIZE, VIS_DEBUG_MODE=VIS_DEBUG_MODE)
 		## 	GLOBAL_CONTIGUITY = True#unused
 
 		# VISUALIZATION FIX: Always render essential maps regardless of conditions
@@ -459,13 +460,15 @@ class GeoRF():
 			
 			# Render maps with comprehensive logging (only if VIS_DEBUG_MODE enabled)
 			if VIS_DEBUG_MODE:
+			# render_summary = ensure_vis_dir_and_render_maps(
 				render_summary = ensure_vis_dir_and_render_maps(
 					model_dir=self.model_dir,
 					correspondence_df=correspondence_df,
 					test_data=None,  # Test data would need to be passed from caller
 					partition_count=partition_count,
 					stage_info="post-training-with-fixes",
-					model=self  # Pass model for accuracy computation
+					model=self,  # Pass model for accuracy computation
+					VIS_DEBUG_MODE=VIS_DEBUG_MODE
 				)
 				
 				print(f"Visualization fix applied successfully: {len(render_summary['artifacts_rendered'])} maps rendered")
@@ -511,48 +514,48 @@ class GeoRF():
 
 		return y_pred
 
-	def evaluate(self, Xtest, ytest, Xtest_group, eval_base = False, print_to_file = True, force_accuracy = False):
+	def evaluate(self, Xtest, ytest, Xtest_group, eval_base = False, print_to_file = True, force_accuracy = False, VIS_DEBUG_MODE=None):
 		"""
-    Evaluating GeoRF and/or RF.
+		Evaluating GeoRF and/or RF.
 
-    Parameters
-    ----------
-    Xtest: array-like
-        Input features.
-    ytest: array-like
-        Output targets.
+		Parameters
+		----------
+		Xtest: array-like
+			Input features.
+		ytest: array-like
+			Output targets.
 		Xtest_group: array-like
-				Same way of assignment as training. See detailed explanations in training.
+			Same way of assignment as training. See detailed explanations in training.
 		eval_base: boolean
-				Optional. If True, base RF will be evaluated for comparison.
+			Optional. If True, base RF will be evaluated for comparison.
 		print_to_file: boolean
-				Optional. If True, prints will go to file.
-    Returns
-    -------
+			Optional. If True, prints will go to file.
+		Returns
+		-------
 		pre, rec, f1: array-like
-				Precision, recall and F1 scores. Separate for different classes in arrays.
+			Precision, recall and F1 scores. Separate for different classes in arrays.
 		pre_single, rec_single, f1_single: array-like
-				If eval_base is True, additionally returns results for the base RF model.
-    """
+			If eval_base is True, additionally returns results for the base RF model.
+		"""
 
-		#Logging: testing purpose only.
+		# Logging
 		logging.basicConfig(filename=self.model_dir + '/' + "model_eval.log",
 						format='%(asctime)s %(message)s',
 						filemode='w')
 		logger=logging.getLogger()
 		logger.setLevel(logging.INFO)
 
-		#print to file
+		# Print to file
 		if print_to_file:
 			print('model_dir:', self.model_dir)
 			print('Printing to file.')
 			print_file = self.model_dir + '/' + 'log_print_eval.txt'
 			sys.stdout = open(print_file, "w")
 
-		#Geo-RF
+		# Geo-RF
 		start_time = time.time()
 
-		#Model assignment
+		# Model assignment
 		Xtest_branch_id = get_X_branch_id_by_group(Xtest_group, self.s_branch)
 
 		pre, rec, f1, total_class = self.model.predict_test(Xtest, ytest, Xtest_group, self.s_branch, X_branch_id = Xtest_branch_id)
@@ -561,7 +564,7 @@ class GeoRF():
 		logger.info('f1: %s' % log_print)
 		logger.info("Pred time: GeoRF: %f s" % (time.time() - start_time))
 
-		#Base RF
+		# Base RF
 		if eval_base:
 			start_time = time.time()
 			self.model.load('')
@@ -574,21 +577,23 @@ class GeoRF():
 			logger.info('f1_base: %s' % log_print)
 			logger.info("Pred time: Base: %f s" % (time.time() - start_time))
 
-			# FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=True case)
+			# Final accuracy visualization (eval_base=True)
 			try:
 				from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
-				
-				# Render final accuracy maps using the test data that was just evaluated
+				# Use caller flag if provided; otherwise config (prod)
+				if VIS_DEBUG_MODE is None:
+					from config import VIS_DEBUG_MODE as _VIS_FLAG
+				else:
+					_VIS_FLAG = bool(VIS_DEBUG_MODE)
 				render_summary = ensure_vis_dir_and_render_maps(
 					model_dir=self.model_dir,
-					test_data=(Xtest, ytest, Xtest_group),  # Use the test data from evaluation
+					test_data=(Xtest, ytest, Xtest_group),
 					force_accuracy=force_accuracy,
-					model=self  # Pass the model for accuracy computation
+					model=self,
+					VIS_DEBUG_MODE=_VIS_FLAG
 				)
-				
 				if render_summary.get('final_accuracy_generated'):
 					print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
-				
 			except Exception as e:
 				print(f"Warning: Could not render final accuracy maps: {e}")
 
@@ -598,21 +603,22 @@ class GeoRF():
 
 			return pre, rec, f1, pre_single, rec_single, f1_single
 
-		# FINAL ACCURACY VISUALIZATION: Render final accuracy maps after evaluation (eval_base=False case)
+		# Final accuracy visualization (eval_base=False)
 		try:
 			from src.vis.visualization_fix import ensure_vis_dir_and_render_maps
-			
-			# Render final accuracy maps using the test data that was just evaluated
+			if VIS_DEBUG_MODE is None:
+				from config import VIS_DEBUG_MODE as _VIS_FLAG
+			else:
+				_VIS_FLAG = bool(VIS_DEBUG_MODE)
 			render_summary = ensure_vis_dir_and_render_maps(
 				model_dir=self.model_dir,
-				test_data=(Xtest, ytest, Xtest_group),  # Use the test data from evaluation
+				test_data=(Xtest, ytest, Xtest_group),
 				force_accuracy=force_accuracy,
-				model=self  # Pass the model for accuracy computation
+				model=self,
+				VIS_DEBUG_MODE=_VIS_FLAG
 			)
-			
 			if render_summary.get('final_accuracy_generated'):
 				print(f"Final accuracy maps rendered: {render_summary.get('final_accuracy_artifacts', [])}")
-			
 		except Exception as e:
 			print(f"Warning: Could not render final accuracy maps: {e}")
 

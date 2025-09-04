@@ -504,7 +504,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # Evaluate
             (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
                 Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True,
-                force_accuracy=force_final_accuracy and VIS_DEBUG_MODE
+                force_accuracy=force_final_accuracy and VIS_DEBUG_MODE,
+                VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
             
             print(f"Q{quarter} {test_year} Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")

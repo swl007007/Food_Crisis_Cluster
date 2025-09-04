@@ -4,6 +4,7 @@
 *.csv
 *.png
 CLAUDE.md
+AGENTS.md
 
 # ignore everything under result_*
 result_*

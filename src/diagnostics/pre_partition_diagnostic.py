@@ -221,6 +221,13 @@ def create_error_choropleth_maps(error_df, vis_dir, shapefile_path=None,
     tuple
         Paths to (overall_error_map, class1_error_map)
     """
+    # Strict gate: do nothing when disabled
+    try:
+        if not bool(VIS_DEBUG_MODE):
+            return None, None
+    except Exception:
+        return None, None
+
     if not GEOSPATIAL_AVAILABLE:
         print("Geospatial packages not available. Skipping map generation.")
         return None, None

@@ -3,6 +3,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+def _resolve_vis_flag(VIS_DEBUG_MODE=None):
+    try:
+        if VIS_DEBUG_MODE is None:
+            try:
+                from config_visual import VIS_DEBUG_MODE as Vv
+            except ImportError:
+                from config import VIS_DEBUG_MODE as Vv
+            return bool(Vv)
+        return bool(VIS_DEBUG_MODE)
+    except Exception:
+        return False
+
 def load_and_process_data(base_dir):
     """Load all CSV files and keep time series data"""
     
@@ -31,7 +43,9 @@ def load_and_process_data(base_dir):
     
     return all_data
 
-def create_comparison_plot(data):
+def create_comparison_plot(data, VIS_DEBUG_MODE=None):
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        return None
     """Create time series subplot visualization with metrics and comparison lines"""
     
     lags = sorted(data.keys())
@@ -116,7 +130,10 @@ def create_comparison_plot(data):
     plt.tight_layout()
     return fig
 
-def main():
+def main(VIS_DEBUG_MODE=None):
+    if not _resolve_vis_flag(VIS_DEBUG_MODE):
+        print("Visualization disabled (VIS_DEBUG_MODE=False); skipping metric comparison plot.")
+        return
     # Set base directory  
     base_dir = "trial_06_10years_metric_compare"
     
@@ -138,15 +155,15 @@ def main():
     
     # Create and save plot
     print("Creating time series visualization...")
-    fig = create_comparison_plot(all_data)
+    fig = create_comparison_plot(all_data, VIS_DEBUG_MODE=True)
     
     # Save plot
     output_path = os.path.join(base_dir, 'metric_comparison_timeseries.png')
-    fig.savefig(output_path, dpi=300, bbox_inches='tight')
-    print(f"Plot saved to: {output_path}")
-    
-    # Show plot
-    plt.show()
+    if fig is not None:
+        fig.savefig(output_path, dpi=300, bbox_inches='tight')
+        print(f"Plot saved to: {output_path}")
+        # Show plot
+        plt.show()
 
 if __name__ == "__main__":
     main()

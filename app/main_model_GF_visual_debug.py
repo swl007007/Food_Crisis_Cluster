@@ -37,6 +37,7 @@ from config_visual import *
 from src.utils.force_clean import *
 from src.preprocess.preprocess import *
 from src.feature.feature import *
+from src.utils.save_results import *
 
 
 from tqdm import tqdm
@@ -47,6 +48,8 @@ if USE_ADJACENCY_MATRIX:
 
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
+
+VIS_DEBUG_MODE = True
 
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
@@ -399,7 +402,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 contiguity_type=contiguity_type,
                 polygon_contiguity_info=polygon_contiguity_info,
                 track_partition_metrics=track_partition_metrics,
-                correspondence_table_path=correspondence_table_path
+                correspondence_table_path=correspondence_table_path,
+                VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
             
             # Check if metrics were tracked
@@ -466,7 +470,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # Evaluate
             (pre, rec, f1, pre_base, rec_base, f1_base) = georf.evaluate(
                 Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True,
-                force_accuracy=force_final_accuracy
+                force_accuracy=force_final_accuracy,
+                VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
             
             print(f"Q{quarter} {test_year} Test - GeoRF F1: {f1}, Base RF F1: {f1_base}")
@@ -977,7 +982,7 @@ def main():
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific RF depth
-    desire_terms = 1     # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    desire_terms = 4     # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = 1    # From command line argument
     
     # Partition Metrics Tracking Configuration
