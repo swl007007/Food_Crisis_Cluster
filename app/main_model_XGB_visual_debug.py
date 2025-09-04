@@ -1,25 +1,29 @@
 #!/usr/bin/env python3
 """
-Replicated and debugged version of main_model_GF_main.ipynb
+Replicated and debugged version of main_model_GF_main.ipynb - XGBoost Version
 
 This script replicates the full functionality of the notebook for food crisis prediction
-using GeoRF with polygon-based contiguity support.
+using GeoXGB (XGBoost-based GeoRF) with polygon-based contiguity support.
 
 Key features:
 1. Data preprocessing with polars and pandas
 2. Multiple spatial grouping options (polygons, grid, country, AEZ, etc.)
 3. Polygon-based contiguity with corrected setup
 4. Time-based train-test splitting for temporal validation
-5. Single-layer and 2-layer GeoRF models
+5. Single-layer and 2-layer GeoXGB models (XGBoost instead of Random Forest)
 6. Comprehensive evaluation and result saving
+7. XGBoost-specific hyperparameters optimized for food crisis prediction
 
-Date: 2025-07-23
+Date: 2025-08-12
 """
 
 import numpy as np
 import pandas as pd
+import polars as pl
 import os
 import sys
+import gc
+import glob
 import warnings
 import argparse
 
@@ -28,26 +32,34 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 warnings.filterwarnings('ignore')
 
-# GeoRF imports
-from src.model.GeoRF import GeoRF
+# GeoXGB imports - CHANGED from GeoRF to GeoRF_XGB
+from src.model.GeoRF_XGB import GeoRF_XGB
 from src.customize.customize import *
+from demo.data import load_demo_data
+from src.helper.helper import get_spatial_range
+from src.initialization.initialization import train_test_split_all
 from src.customize.customize import train_test_split_rolling_window
-from src.tests.class_wise_metrics import *
 from config_visual import *
-from src.utils.force_clean import *
-from src.preprocess.preprocess import *
-from src.feature.feature import *
-from src.utils.save_results import *
-
-
+# Note: No imputation imports needed for XGBoost - handles missing values natively
+from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
 
 # Import adjacency matrix utilities
 if USE_ADJACENCY_MATRIX:
     from src.adjacency.adjacency_utils import load_or_create_adjacency_matrix
 
+# Import redirected functions from src modules
+from src.preprocess.preprocess import load_and_preprocess_data, setup_spatial_groups, handle_infinite_values
+from src.feature.feature import prepare_features, validate_polygon_contiguity, create_correspondence_table
+from src.utils.force_clean import force_cleanup_directories, get_checkpoint_info, load_partial_results, determine_remaining_quarters, save_checkpoint_results
+from src.utils.save_results import save_results
+
+VIS_DEBUG_MODE = True
+
 # Configuration
-DATA_MODE = 'full'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro'
+
+
+DATA_MODE = 'nomacro'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro'
 
 
 if DATA_MODE == 'full':
@@ -61,14 +73,16 @@ elif DATA_MODE == 'nomacro':
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 
-VIS_DEBUG_MODE = True
 
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
-                           track_partition_metrics=False, enable_metrics_maps=True, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False, force_final_accuracy=False):
+                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False, force_final_accuracy=False,
+                           # XGBoost-specific hyperparameters
+                           learning_rate=0.1, reg_alpha=0.1, reg_lambda=1.0, subsample=0.8, colsample_bytree=0.8):
     """
     Run temporal evaluation for all quarters from start_year to end_year using rolling window approach.
+    Uses GeoXGB (XGBoost-based GeoRF) instead of Random Forest.
     
     Parameters:
     -----------
@@ -97,7 +111,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     nowcasting : bool
         Whether to use 2-layer model
     max_depth : int or None
-        Maximum depth for RF models
+        Maximum depth for XGB models
     input_terms : numpy.ndarray
         Terms within each year (1-4 corresponding to quarters)
     desire_terms : int or None
@@ -108,6 +122,16 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         Whether to create maps showing F1/accuracy improvements
     forecasting_scope : int or None
         Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
+    learning_rate : float
+        XGBoost learning rate
+    reg_alpha : float
+        XGBoost L1 regularization
+    reg_lambda : float
+        XGBoost L2 regularization
+    subsample : float
+        XGBoost subsample ratio
+    colsample_bytree : float
+        XGBoost column subsample ratio
         
     Returns:
     --------
@@ -116,7 +140,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     y_pred_test : pandas.DataFrame
         Prediction results with quarter information
     """
-    print(f"Running temporal evaluation (nowcasting={nowcasting})...")
+    print(f"Running temporal evaluation using GeoXGB (nowcasting={nowcasting})...")
+    print(f"XGBoost hyperparameters: learning_rate={learning_rate}, reg_alpha={reg_alpha}, reg_lambda={reg_lambda}")
+    print(f"                        subsample={subsample}, colsample_bytree={colsample_bytree}")
     
     # Initialize results tracking (class 1 only)
     results_df = pd.DataFrame(columns=[
@@ -133,7 +159,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     
     # Load partial results if they exist
     existing_results_df, existing_y_pred_test = load_partial_results(
-        partial_results_files, assignment, nowcasting, max_depth, desire_terms, forecasting_scope, start_year, end_year
+        partial_results_files, assignment, nowcasting, max_depth, desire_terms, forecasting_scope
     )
     
     # Merge existing results with new DataFrames
@@ -291,14 +317,14 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     # Create progress bar for remaining quarterly evaluations
     progress_bar = tqdm(
         total=len(remaining_quarters), 
-        desc="GeoRF Quarterly Evaluation", 
+        desc="GeoXGB Quarterly Evaluation", 
         unit="quarter",
         bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
     )
     
     # Loop through remaining quarters only
     for i, (test_year, quarter) in enumerate(remaining_quarters):
-        progress_bar.set_description(f"GeoRF Q{quarter} {test_year}")
+        progress_bar.set_description(f"GeoXGB Q{quarter} {test_year}")
         print(f"\n--- Evaluating Q{quarter} {test_year} (#{i+1}/{len(remaining_quarters)}) ---")
         
         # Memory monitoring at start of iteration
@@ -332,12 +358,18 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 Xtest_L1 = Xtest[:, l1_index]
                 Xtest_L2 = Xtest[:, l2_index]
             
-                # Create and train 2-layer GeoRF model
-                georf_2layer = GeoRF(
+                # Create and train 2-layer GeoXGB model - CHANGED from GeoRF to GeoRF_XGB
+                geoxgb_2layer = GeoRF_XGB(
                     min_model_depth=MIN_DEPTH,
                     max_model_depth=MAX_DEPTH,
                     n_jobs=N_JOBS,
-                    max_depth=max_depth
+                    max_depth=max_depth,
+                    # XGBoost-specific parameters
+                    learning_rate=learning_rate,
+                    reg_alpha=reg_alpha,
+                    reg_lambda=reg_lambda,
+                    subsample=subsample,
+                    colsample_bytree=colsample_bytree
                 )
             
                 # Train 2-layer model with optional metrics tracking
@@ -346,7 +378,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     # but we can extend it later if needed
                     print("Note: Partition metrics tracking not yet supported for 2-layer models")
                 
-                georf_2layer.fit_2layer(
+                geoxgb_2layer.fit_2layer(
                     Xtrain_L1, Xtrain_L2, ytrain, Xtrain_group,
                     val_ratio=VAL_RATIO,
                     contiguity_type=contiguity_type,
@@ -354,10 +386,10 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 )
             
                 # Get predictions
-                ypred = georf_2layer.predict_2layer(Xtest_L1, Xtest_L2, Xtest_group, correction_strategy='flip')
+                ypred = geoxgb_2layer.predict_2layer(Xtest_L1, Xtest_L2, Xtest_group, correction_strategy='flip')
             
                 # Evaluate
-                (pre, rec, f1, pre_base, rec_base, f1_base) = georf_2layer.evaluate_2layer(
+                (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb_2layer.evaluate_2layer(
                     X_L1_test=Xtest_L1,
                     X_L2_test=Xtest_L2,
                     y_test=ytest,
@@ -372,29 +404,35 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     polygon_contiguity_info=polygon_contiguity_info
                 )
             
-                print(f"Q{quarter} {test_year} Test - 2-Layer GeoRF F1: {f1}, 2-Layer Base RF F1: {f1_base}")
+                print(f"Q{quarter} {test_year} Test - 2-Layer GeoXGB F1: {f1}, 2-Layer Base XGB F1: {f1_base}")
             
                 # Extract and save correspondence table for 2-layer model
                 try:
-                    X_branch_id_path = os.path.join(georf_2layer.dir_space, 'X_branch_id.npy')
+                    X_branch_id_path = os.path.join(geoxgb_2layer.dir_space, 'X_branch_id.npy')
                     if os.path.exists(X_branch_id_path):
                         X_branch_id = np.load(X_branch_id_path)
-                        create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, georf_2layer.model_dir)
+                        create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, geoxgb_2layer.model_dir)
                 except Exception as e:
                     print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
             
             else:
                 # Single-layer model
-                georf = GeoRF(
+                geoxgb = GeoRF_XGB(  # CHANGED from GeoRF to GeoRF_XGB
                     min_model_depth=MIN_DEPTH,
                     max_model_depth=MAX_DEPTH,
                     n_jobs=N_JOBS,
-                    max_depth=max_depth
+                    max_depth=max_depth,
+                    # XGBoost-specific parameters
+                    learning_rate=learning_rate,
+                    reg_alpha=reg_alpha,
+                    reg_lambda=reg_lambda,
+                    subsample=subsample,
+                    colsample_bytree=colsample_bytree
                 )
             
             # Train model with optional partition metrics tracking
             if track_partition_metrics:
-                print(f"Training GeoRF with partition metrics tracking enabled")
+                print(f"Training GeoXGB with partition metrics tracking enabled")
                 print(f"Correspondence table path: {correspondence_table_path}")
                 print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
                 print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
@@ -408,7 +446,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 else:
                     print(f"Warning: Correspondence table not found at {correspondence_table_path}")
             
-            georf.fit(
+            geoxgb.fit(
                 Xtrain, ytrain, Xtrain_group,
                 val_ratio=VAL_RATIO,
                 contiguity_type=contiguity_type,
@@ -419,16 +457,16 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             )
             
             # Check if metrics were tracked
-            if track_partition_metrics and hasattr(georf, 'metrics_tracker'):
-                if georf.metrics_tracker is not None:
+            if track_partition_metrics and hasattr(geoxgb, 'metrics_tracker'):
+                if geoxgb.metrics_tracker is not None:
                         print(f"\nPartition metrics tracker found for Q{quarter} {test_year}")
                         
                         # Check if any metrics were actually recorded
-                        if hasattr(georf.metrics_tracker, 'all_metrics') and georf.metrics_tracker.all_metrics:
-                            print(f"Number of metric records: {len(georf.metrics_tracker.all_metrics)}")
+                        if hasattr(geoxgb.metrics_tracker, 'all_metrics') and geoxgb.metrics_tracker.all_metrics:
+                            print(f"Number of metric records: {len(geoxgb.metrics_tracker.all_metrics)}")
                             
                             # Show some sample metrics
-                            for i, record in enumerate(georf.metrics_tracker.all_metrics[:3]):
+                            for i, record in enumerate(geoxgb.metrics_tracker.all_metrics[:3]):
                                 print(f"  Record {i}: Round {record.get('partition_round', 'N/A')}, "
                                       f"Branch {record.get('branch_id', 'N/A')}, "
                                       f"F1 improvement: {record.get('f1_improvement', 'N/A'):.4f}")
@@ -437,7 +475,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         
                         # Try to get summary
                         try:
-                            summary = georf.metrics_tracker.get_improvement_summary()
+                            summary = geoxgb.metrics_tracker.get_improvement_summary()
                             if summary:
                                 print(f"\nPartition Metrics Summary for Q{quarter} {test_year}:")
                                 print(f"  Total partitions tracked: {summary['total_partitions']}")
@@ -451,9 +489,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                             print(f"Error getting metrics summary: {e}")
                             
                         # Check if visualization files were created
-                        if hasattr(georf, 'model_dir'):
-                            vis_dir = os.path.join(georf.model_dir, 'vis')
-                            metrics_dir = os.path.join(georf.model_dir, 'partition_metrics')
+                        if hasattr(geoxgb, 'model_dir'):
+                            vis_dir = os.path.join(geoxgb.model_dir, 'vis')
+                            metrics_dir = os.path.join(geoxgb.model_dir, 'partition_metrics')
                             
                             if os.path.exists(vis_dir):
                                 vis_files = [f for f in os.listdir(vis_dir) if f.endswith('.png')]
@@ -474,31 +512,26 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     print("Warning: Metrics tracker is None")
             else:
                 if track_partition_metrics:
-                    print("Warning: Metrics tracker not found on georf object")
+                    print("Warning: Metrics tracker not found on geoxgb object")
                 
             # Get predictions
-            ypred = georf.predict(Xtest, Xtest_group)
+            ypred = geoxgb.predict(Xtest, Xtest_group)
             
             # Evaluate
-            (pre, rec, f1, pre_base, rec_base, f1_base) = georf.evaluate(
+            (pre, rec, f1, pre_base, rec_base, f1_base) = geoxgb.evaluate(
                 Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True,
-                force_accuracy=force_final_accuracy,
+                force_accuracy=force_final_accuracy and VIS_DEBUG_MODE,
                 VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
             
-            print(f"Q{quarter} {test_year} Test - GeoRF F1: {f1}, Base RF F1: {f1_base}")
-            
-            # Crisis-focused evaluation
-            class_1_metrics, _ = evaluate_crisis_prediction(
-                georf, Xtest, ytest, Xtest_group, f"Q{quarter} {test_year}"
-            )
+            print(f"Q{quarter} {test_year} Test - GeoXGB F1: {f1}, Base XGB F1: {f1_base}")
             
             # Extract and save correspondence table for single-layer model
             try:
-                X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
+                X_branch_id_path = os.path.join(geoxgb.dir_space, 'X_branch_id.npy')
                 if os.path.exists(X_branch_id_path):
                     X_branch_id = np.load(X_branch_id_path)
-                    create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, georf.model_dir)
+                    create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, geoxgb.model_dir)
             except Exception as e:
                 print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
             
@@ -570,130 +603,129 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             
             # CRITICAL FIX 1: Clear PartitionMetricsTracker accumulation (major memory leak source)
             try:
-                if 'georf' in locals() and hasattr(georf, 'metrics_tracker'):
-                    if georf.metrics_tracker is not None:
+                if 'geoxgb' in locals() and hasattr(geoxgb, 'metrics_tracker'):
+                    if geoxgb.metrics_tracker is not None:
                         # Clear accumulated metrics data (can be hundreds of MB per quarter)
-                        if hasattr(georf.metrics_tracker, 'all_metrics'):
-                            georf.metrics_tracker.all_metrics.clear()
-                        if hasattr(georf.metrics_tracker, 'partition_history'):
-                            georf.metrics_tracker.partition_history.clear()
-                        georf.metrics_tracker = None
+                        if hasattr(geoxgb.metrics_tracker, 'all_metrics'):
+                            geoxgb.metrics_tracker.all_metrics.clear()
+                        if hasattr(geoxgb.metrics_tracker, 'partition_history'):
+                            geoxgb.metrics_tracker.partition_history.clear()
+                        geoxgb.metrics_tracker = None
                         print("Cleared PartitionMetricsTracker data")
-                if 'georf_2layer' in locals() and hasattr(georf_2layer, 'metrics_tracker'):
-                    if georf_2layer.metrics_tracker is not None:
-                        if hasattr(georf_2layer.metrics_tracker, 'all_metrics'):
-                            georf_2layer.metrics_tracker.all_metrics.clear()
-                        if hasattr(georf_2layer.metrics_tracker, 'partition_history'):
-                            georf_2layer.metrics_tracker.partition_history.clear()
-                        georf_2layer.metrics_tracker = None
+                if 'geoxgb_2layer' in locals() and hasattr(geoxgb_2layer, 'metrics_tracker'):
+                    if geoxgb_2layer.metrics_tracker is not None:
+                        if hasattr(geoxgb_2layer.metrics_tracker, 'all_metrics'):
+                            geoxgb_2layer.metrics_tracker.all_metrics.clear()
+                        if hasattr(geoxgb_2layer.metrics_tracker, 'partition_history'):
+                            geoxgb_2layer.metrics_tracker.partition_history.clear()
+                        geoxgb_2layer.metrics_tracker = None
                         print("Cleared 2-layer PartitionMetricsTracker data")
             except Exception as e:
                 print(f"Warning: Could not clear metrics tracker: {e}")
             
             # CRITICAL FIX 2: Delete model objects completely and break circular references
             try:
-                if 'georf' in locals():
+                if 'geoxgb' in locals():
                     # ENHANCED model cleanup to prevent memory leaks
                     # Clear all model components explicitly
-                    if hasattr(georf, 'model') and georf.model is not None:
-                        if hasattr(georf.model, 'model') and georf.model.model is not None:
-                            # Clear sklearn RandomForest internals that hold large arrays
+                    if hasattr(geoxgb, 'model') and geoxgb.model is not None:
+                        if hasattr(geoxgb.model, 'model') and geoxgb.model.model is not None:
+                            # Clear XGBoost internals that hold large arrays
                             # Use try-except to safely clear attributes that might not exist or cause errors
                             try:
-                                if hasattr(georf.model.model, 'estimators_') and georf.model.model.estimators_ is not None:
-                                    georf.model.model.estimators_ = None
+                                if hasattr(geoxgb.model.model, '_Booster') and geoxgb.model.model._Booster is not None:
+                                    geoxgb.model.model._Booster = None
                             except:
                                 pass
                             try:
-                                # Don't access feature_importances_ property as it can fail if estimators_ is None
-                                # Clear the private attribute instead if it exists
-                                if hasattr(georf.model.model, '_feature_importances'):
-                                    georf.model.model._feature_importances = None
+                                # Clear feature importances
+                                if hasattr(geoxgb.model.model, 'feature_importances_') and geoxgb.model.model.feature_importances_ is not None:
+                                    geoxgb.model.model.feature_importances_ = None
                             except:
                                 pass
-                            # Clear sklearn model completely
-                            georf.model.model = None
-                        georf.model = None
+                            # Clear XGBoost model completely
+                            geoxgb.model.model = None
+                        geoxgb.model = None
                     
                     # Clear all directory references
-                    georf.dir_space = None
-                    georf.dir_ckpt = None
-                    georf.dir_vis = None
-                    georf.model_dir = None
+                    geoxgb.dir_space = None
+                    geoxgb.dir_ckpt = None
+                    geoxgb.dir_vis = None
+                    geoxgb.model_dir = None
                     
                     # Clear spatial partitioning data that can be large
-                    if hasattr(georf, 's_branch'):
-                        georf.s_branch = None
-                    if hasattr(georf, 'branch_table'):
-                        georf.branch_table = None
-                    if hasattr(georf, 'X_branch_id'):
-                        georf.X_branch_id = None
+                    if hasattr(geoxgb, 's_branch'):
+                        geoxgb.s_branch = None
+                    if hasattr(geoxgb, 'branch_table'):
+                        geoxgb.branch_table = None
+                    if hasattr(geoxgb, 'X_branch_id'):
+                        geoxgb.X_branch_id = None
                     
                     # Clear any other potential large attributes
                     for attr in ['train_idx', 'val_idx', 'X_train', 'y_train', 'X_val', 'y_val']:
-                        if hasattr(georf, attr):
-                            setattr(georf, attr, None)
+                        if hasattr(geoxgb, attr):
+                            setattr(geoxgb, attr, None)
                     
-                    georf = None
-                del georf
-                print("Cleared GeoRF model and all references")
+                    geoxgb = None
+                del geoxgb
+                print("Cleared GeoXGB model and all references")
             except NameError:
                 pass
             try:
-                if 'georf_2layer' in locals():
+                if 'geoxgb_2layer' in locals():
                     # ENHANCED cleanup for 2-layer model
                     # Clear both layer models 
-                    if hasattr(georf_2layer, 'georf_l1') and georf_2layer.georf_l1 is not None:
+                    if hasattr(geoxgb_2layer, 'georf_l1') and geoxgb_2layer.georf_l1 is not None:
                         # Clear L1 model internals
-                        if hasattr(georf_2layer.georf_l1, 'model') and georf_2layer.georf_l1.model is not None:
-                            if hasattr(georf_2layer.georf_l1.model, 'model') and georf_2layer.georf_l1.model.model is not None:
+                        if hasattr(geoxgb_2layer.georf_l1, 'model') and geoxgb_2layer.georf_l1.model is not None:
+                            if hasattr(geoxgb_2layer.georf_l1.model, 'model') and geoxgb_2layer.georf_l1.model.model is not None:
                                 try:
-                                    if hasattr(georf_2layer.georf_l1.model.model, 'estimators_') and georf_2layer.georf_l1.model.model.estimators_ is not None:
-                                        georf_2layer.georf_l1.model.model.estimators_ = None
+                                    if hasattr(geoxgb_2layer.georf_l1.model.model, '_Booster') and geoxgb_2layer.georf_l1.model.model._Booster is not None:
+                                        geoxgb_2layer.georf_l1.model.model._Booster = None
                                 except:
                                     pass
-                                georf_2layer.georf_l1.model.model = None
-                            georf_2layer.georf_l1.model = None
-                        georf_2layer.georf_l1 = None
+                                geoxgb_2layer.georf_l1.model.model = None
+                            geoxgb_2layer.georf_l1.model = None
+                        geoxgb_2layer.georf_l1 = None
                     
-                    if hasattr(georf_2layer, 'georf_l2') and georf_2layer.georf_l2 is not None:
+                    if hasattr(geoxgb_2layer, 'georf_l2') and geoxgb_2layer.georf_l2 is not None:
                         # Clear L2 model internals
-                        if hasattr(georf_2layer.georf_l2, 'model') and georf_2layer.georf_l2.model is not None:
-                            if hasattr(georf_2layer.georf_l2.model, 'model') and georf_2layer.georf_l2.model.model is not None:
+                        if hasattr(geoxgb_2layer.georf_l2, 'model') and geoxgb_2layer.georf_l2.model is not None:
+                            if hasattr(geoxgb_2layer.georf_l2.model, 'model') and geoxgb_2layer.georf_l2.model.model is not None:
                                 try:
-                                    if hasattr(georf_2layer.georf_l2.model.model, 'estimators_') and georf_2layer.georf_l2.model.model.estimators_ is not None:
-                                        georf_2layer.georf_l2.model.model.estimators_ = None
+                                    if hasattr(geoxgb_2layer.georf_l2.model.model, '_Booster') and geoxgb_2layer.georf_l2.model.model._Booster is not None:
+                                        geoxgb_2layer.georf_l2.model.model._Booster = None
                                 except:
                                     pass
-                                georf_2layer.georf_l2.model.model = None
-                            georf_2layer.georf_l2.model = None
-                        georf_2layer.georf_l2 = None
+                                geoxgb_2layer.georf_l2.model.model = None
+                            geoxgb_2layer.georf_l2.model = None
+                        geoxgb_2layer.georf_l2 = None
                     
-                    if hasattr(georf_2layer, 'model') and georf_2layer.model is not None:
-                        if hasattr(georf_2layer.model, 'model') and georf_2layer.model.model is not None:
+                    if hasattr(geoxgb_2layer, 'model') and geoxgb_2layer.model is not None:
+                        if hasattr(geoxgb_2layer.model, 'model') and geoxgb_2layer.model.model is not None:
                             try:
-                                if hasattr(georf_2layer.model.model, 'estimators_') and georf_2layer.model.model.estimators_ is not None:
-                                    georf_2layer.model.model.estimators_ = None
+                                if hasattr(geoxgb_2layer.model.model, '_Booster') and geoxgb_2layer.model.model._Booster is not None:
+                                    geoxgb_2layer.model.model._Booster = None
                             except:
                                 pass
-                            georf_2layer.model.model = None
-                        georf_2layer.model = None
+                            geoxgb_2layer.model.model = None
+                        geoxgb_2layer.model = None
                     
                     # Clear directory references
-                    georf_2layer.dir_space = None
-                    georf_2layer.dir_ckpt = None
-                    georf_2layer.dir_vis = None
-                    georf_2layer.model_dir = None
+                    geoxgb_2layer.dir_space = None
+                    geoxgb_2layer.dir_ckpt = None
+                    geoxgb_2layer.dir_vis = None
+                    geoxgb_2layer.model_dir = None
                     
                     # Clear spatial partitioning data
-                    if hasattr(georf_2layer, 's_branch'):
-                        georf_2layer.s_branch = None
-                    if hasattr(georf_2layer, 'branch_table'):
-                        georf_2layer.branch_table = None
+                    if hasattr(geoxgb_2layer, 's_branch'):
+                        geoxgb_2layer.s_branch = None
+                    if hasattr(geoxgb_2layer, 'branch_table'):
+                        geoxgb_2layer.branch_table = None
                         
-                    georf_2layer = None
-                del georf_2layer
-                print("Cleared 2-layer GeoRF model and all references")
+                    geoxgb_2layer = None
+                del geoxgb_2layer
+                print("Cleared 2-layer GeoXGB model and all references")
             except NameError:
                 pass
             
@@ -774,39 +806,19 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # AGGRESSIVE memory cleanup to prevent hidden leaks
             import sys
             
-            # CRITICAL FIX 2: Clear sklearn internal caches and memory pools more aggressively
+            # CRITICAL FIX 2: Clear XGBoost internal caches and memory pools more aggressively
             try:
-                # Clear sklearn joblib memory pools
-                from sklearn.externals import joblib
-                joblib.Memory.clear_cache_older_than = 0
-            except:
-                pass
-            
-            try:
-                # Force sklearn to release memory pools more aggressively
-                from sklearn.utils import _joblib
-                if hasattr(_joblib, 'Parallel'):
-                    # Clear joblib parallel backend state
-                    _joblib.Parallel._pool = None
-                
-                # Clear sklearn RandomForest internal memory pools
-                import sklearn.ensemble._forest
-                if hasattr(sklearn.ensemble._forest, '_generate_sample_indices'):
-                    # Clear any cached sample indices that can accumulate
+                # Clear XGBoost internal memory pools if available
+                import xgboost as xgb
+                if hasattr(xgb, '_lib') and hasattr(xgb._lib, 'XGBSetGlobalConfig'):
+                    # Reset XGBoost global configuration to clear internal caches
                     try:
-                        del sklearn.ensemble._forest._generate_sample_indices.__defaults__
+                        xgb._lib.XGBSetGlobalConfig('{"verbosity": 0}')
                     except:
                         pass
-                
-                # Force clearing of sklearn tree building memory
-                import sklearn.tree._tree
-                if hasattr(sklearn.tree._tree, 'Tree'):
-                    # This helps clear tree building buffers
-                    pass
-                    
-                print("Cleared sklearn internal memory pools")
+                print("Cleared XGBoost internal memory pools")
             except Exception as e:
-                print(f"Warning: Could not clear sklearn pools: {e}")
+                print(f"Warning: Could not clear XGBoost pools: {e}")
                 
             # Clear numpy memory pools
             try:
@@ -889,7 +901,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # Save checkpoint after each quarter (in case of interruption)
             if (i + 1) % 5 == 0 or (i + 1) == len(remaining_quarters):  # Save every 5 quarters and at the end
                 print(f"Saving checkpoint after Q{quarter} {test_year}...")
-                save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope, start_year, end_year)
+                save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
                 
                 # CRITICAL MEMORY FIX: Aggressive cleanup after checkpoints to prevent accumulation
                 print("Performing aggressive memory cleanup after checkpoint...")
@@ -962,43 +974,43 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     
     return results_df, y_pred_test
 
-
-
 def main():
     """
-    Main function to run the complete pipeline.
+    Main function to run the complete GeoXGB pipeline.
     """
-    print("=== Starting GeoRF Food Crisis Prediction Pipeline ===")
+    print("=== Starting GeoXGB Food Crisis Prediction Pipeline ===")
+    print(f"[PROD MODE: visuals {'ENABLED' if VIS_DEBUG_MODE else 'DISABLED'}]")
     
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='GeoRF Food Crisis Prediction Pipeline')
+    parser = argparse.ArgumentParser(description='GeoXGB Food Crisis Prediction Pipeline')
     parser.add_argument('--start_year', type=int, default=2024, help='Start year for evaluation (default: 2024)')
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
-    parser.add_argument('--forecasting_scope', type=int, default=1, choices=[1,2,3,4], 
-                        help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 1)')
+    parser.add_argument('--forecasting_scope', type=int, default=4, choices=[1,2,3,4], 
+                        help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 4)')
     parser.add_argument('--force_cleanup', action='store_true', 
                         help='Force cleanup of existing result directories and bypass checkpoint detection')
-    parser.add_argument('--force-visualize', action='store_true',
-                        help='Force visualization generation even in degenerate cases (single partition, etc.)')
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
     
-    # Set global visualization force flag from CLI argument
-    if args.force_visualize:
-        import config_visual
-        config_visual.VISUALIZE_FORCE = True
-        print("Force visualization enabled via --force-visualize flag")
-    
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
-    max_depth = None  # Set to integer for specific RF depth
-    desire_terms = 4     # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    max_depth = None  # Set to integer for specific XGB depth
+    desire_terms = 1         # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = 1    # From command line argument
     
+    # XGBoost-specific hyperparameters optimized for food crisis prediction
+    learning_rate = 0.1      # Learning rate (step size shrinkage)
+    reg_alpha = 0.1          # L1 regularization term on weights
+    reg_lambda = 1.0         # L2 regularization term on weights
+    subsample = 0.8          # Subsample ratio of training instances
+    colsample_bytree = 0.8   # Subsample ratio of columns when constructing each tree
+    
+    # Note: XGBoost handles missing values natively - no extreme value imputation needed
+    
     # Partition Metrics Tracking Configuration
-    track_partition_metrics = True  # Enable partition metrics tracking and visualization
+    track_partition_metrics = True # Enable partition metrics tracking and visualization
     enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
     
     # Checkpoint Recovery Configuration
@@ -1019,6 +1031,12 @@ def main():
     print(f"  - Enable metrics maps: {enable_metrics_maps}")
     print(f"  - Checkpoint recovery: {enable_checkpoint_recovery}")
     print(f"  - Start year: {start_year}, End year: {end_year}")
+    print(f"  - XGBoost hyperparameters:")
+    print(f"    * learning_rate: {learning_rate}")
+    print(f"    * reg_alpha (L1): {reg_alpha}")
+    print(f"    * reg_lambda (L2): {reg_lambda}")
+    print(f"    * subsample: {subsample}")
+    print(f"    * colsample_bytree: {colsample_bytree}")
     
     try:
         # Step 1: Load and preprocess data
@@ -1034,10 +1052,10 @@ def main():
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
             validate_polygon_contiguity(contiguity_info, X_group)
             
-            # Track polygon counts for disappearance diagnosis (VISUAL DEBUG MODE)
-            if VIS_DEBUG_CRISIS_FOCUS:
+            # Track polygon counts for disappearance diagnosis
+            if DIAGNOSTIC_POLYGON_TRACKING:
                 initial_polygon_count = len(np.unique(X_group))
-                print(f"=== VISUAL DEBUG POLYGON TRACKING ===")
+                print(f"=== XGB POLYGON TRACKING ===")
                 print(f"Initial polygon count after spatial setup: {initial_polygon_count}")
                 print(f"X_group unique values: {len(np.unique(X_group))}")
                 print(f"Data points: {len(X_group)}")
@@ -1051,27 +1069,24 @@ def main():
                         if unique_groups[i] - unique_groups[i-1] > 1:
                             gaps.append((unique_groups[i-1], unique_groups[i]))
                     if gaps:
-                        print(f"WARNING: Gaps found in X_group sequence: {gaps[:5]}")
-                        print("   This indicates polygon disappearance during spatial setup!")
+                        print(f"Warning: Gaps found in X_group sequence: {gaps[:5]}")
                     else:
-                        print("OK: No gaps found in X_group sequence")
-                        
-                    # Enhanced visual debug tracking
-                    print(f"X_group range: {unique_groups[0]} to {unique_groups[-1]}")
-                    print(f"Expected consecutive count: {unique_groups[-1] - unique_groups[0] + 1}")
-                    print(f"Actual unique count: {len(unique_groups)}")
-                    if len(unique_groups) != (unique_groups[-1] - unique_groups[0] + 1):
-                        missing_count = (unique_groups[-1] - unique_groups[0] + 1) - len(unique_groups)
-                        print(f"ALERT: POLYGON LOSS DETECTED: {missing_count} polygons missing from sequence!")
-                print("=" * 38)
+                        print("No gaps found in X_group sequence")
+                print("=" * 29)
         
-        # Step 5: Run temporal evaluation
+        # Step 5: Run temporal evaluation with XGBoost hyperparameters
         results_df, y_pred_test = run_temporal_evaluation(
             X, y, X_loc, X_group, years, dates, l1_index, l2_index,
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
             start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup,
-            force_final_accuracy=args.force_final_accuracy
+            force_final_accuracy=args.force_final_accuracy,
+            # Pass XGBoost hyperparameters
+            learning_rate=learning_rate,
+            reg_alpha=reg_alpha,
+            reg_lambda=reg_lambda,
+            subsample=subsample,
+            colsample_bytree=colsample_bytree
         )
         
         # Step 6: Filter results to class 1 only (if needed)
@@ -1092,7 +1107,7 @@ def main():
             print("Results by Year:")
             print(results_df.groupby('year')[['f1(1)', 'f1_base(1)']].mean())
         
-        print("\n=== Pipeline completed successfully! ===")
+        print("\n=== GeoXGB Pipeline completed successfully! ===")
         
     except Exception as e:
         print(f"Error occurred: {str(e)}")

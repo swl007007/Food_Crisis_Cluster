@@ -1,9 +1,9 @@
-1.why there are three partitions in round0?
-2. why  in the round 1, branch 0 and branch 1 are not inherited from root branch? they should only show their parent partition, not the all polygons.
-3. why final_partition_map are different and mosaiced? What is this thing after all? 
-4. there is still no performance map.
-5. the partition_map & final partition_map are redundant, identical.
-6. the partition_map looks incorrect, as there are only 2 partitions where each of the branch in the root branch is further splited, so there should be 4 partitions in total.But it could be the case where the afterwards different partition adopts the root model/parent model, please clarify to me.
-------------------
+1. test and train data misalignment, alot of missing area
+2.majority voting system
+3. accuracy in train and test seems different
 
 
+
+
+2.checkpoint system is useless
+3. GeoXGB test pipeline is not producing all the required figures

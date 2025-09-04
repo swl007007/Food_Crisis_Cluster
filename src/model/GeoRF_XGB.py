@@ -400,7 +400,7 @@ class GeoRF_XGB():
 
         return y_pred
 
-    def evaluate(self, X, y, X_group, eval_base=False, print_to_file=False, force_accuracy=False):
+    def evaluate(self, X, y, X_group, eval_base=False, print_to_file=False, force_accuracy=False, VIS_DEBUG_MODE=None):
         """Evaluate the trained GeoXGB model."""
         if print_to_file:
             print_file = self.model_dir + '/' + 'log_print.txt'
