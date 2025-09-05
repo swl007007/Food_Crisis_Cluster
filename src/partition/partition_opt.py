@@ -956,9 +956,10 @@ def scan(y_true_value, true_pred_value, min_sample,
     # if (i == max_iteration - 1) and (connected == True):
       # s0, s1 = get_connected_top_cells(g, g_grid, X_dim, step_size, flex = flex)
 
-    # print('s0', s0)
-    # print('s1', s1)
-
+    print('s0', s0)
+    print('s1', s1)
+    
+  print(q)
   if return_score:
     return s0, s1, g
     # return s0, s1, g[s0], g[s1]

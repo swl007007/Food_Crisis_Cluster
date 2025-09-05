@@ -58,6 +58,8 @@ elif DATA_MODE == 'nofoodprice':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nofoodprice.csv"
 elif DATA_MODE == 'nomacro':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
+elif DATA_MODE == 'nogis':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 

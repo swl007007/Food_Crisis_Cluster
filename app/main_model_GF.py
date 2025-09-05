@@ -53,9 +53,22 @@ from src.feature.feature import prepare_features, validate_polygon_contiguity, c
 from src.utils.force_clean import force_cleanup_directories, get_checkpoint_info, load_partial_results, determine_remaining_quarters, save_checkpoint_results
 from src.utils.save_results import save_results
 VIS_DEBUG_MODE =  False
-
 # Configuration
-DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
+DATA_MODE = 'nogis'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis'
+
+
+if DATA_MODE == 'full':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
+elif DATA_MODE == 'noconflict':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\noconf.csv"
+elif DATA_MODE == 'nofoodprice':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nofoodprice.csv"
+elif DATA_MODE == 'nomacro':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
+elif DATA_MODE == 'nogis':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
+else:
+    raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,

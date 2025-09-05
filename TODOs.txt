@@ -1,9 +1,16 @@
+known situation:
 1. test and train data misalignment, alot of missing area
 2.majority voting system
 3. accuracy in train and test seems different
 
 
+Action Points:
+known issues:
+1.checkpoint system is useless
+2. GeoXGB test pipeline is not producing all the required figures
 
 
-2.checkpoint system is useless
-3. GeoXGB test pipeline is not producing all the required figures
+
+TODOs:
+1.write out features that need unit tests, complete unit tests and complete feature tests/integration reports
+2.Write architecture and technical design documents
