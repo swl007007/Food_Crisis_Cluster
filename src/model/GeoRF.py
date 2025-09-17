@@ -33,6 +33,9 @@ import argparse
 import sys
 import time
 import logging
+# import shap value toolkit
+import shap
+
 
 #search for "!!!" for places to potentially update
 class GeoRF():
@@ -292,6 +295,9 @@ class GeoRF():
 		#s_branch: another key output, that stores the group ids for all branches.
 		#X_branch_id: contains the branch_id for each data point.
 		#branch_table: shows which branches are further split and which are not.
+		print("="*50)
+		print(f"GEORF.PY DEBUG: GeoRF.fit() calling partition() with VIS_DEBUG_MODE={VIS_DEBUG_MODE}")
+		print("="*50)
 		partition_result = partition(self.model, X, y,
 		                   X_group , X_set, X_id, X_branch_id,
 		                   min_depth = self.min_model_depth, max_depth = self.max_model_depth,
@@ -566,11 +572,46 @@ class GeoRF():
 
 		# Base RF
 		if eval_base:
+
 			start_time = time.time()
 			self.model.load('')
 			y_pred_single = self.model.predict(Xtest)
 			true_single, total_single, pred_total_single = get_class_wise_accuracy(ytest, y_pred_single, prf = True)
 			pre_single, rec_single, f1_single, total_class = get_prf(true_single, total_single, pred_total_single)
+   
+
+			# Compute SHAP values for base RF
+			explainer = shap.TreeExplainer(self.model.model)
+			shap_values = explainer.shap_values(Xtest)
+			# shap returns [n_samples, n_features] for binary or list[dense] per class.
+			if isinstance(shap_values, list):
+				# For multi-class RF, shap returns one matrix per class; save separate files.
+				for class_idx, shap_matrix in enumerate(shap_values):
+					shap_matrix = np.asarray(shap_matrix)
+					if shap_matrix.ndim != 2:
+						# Flatten unexpected shapes to avoid crashes while preserving data.
+						shap_matrix = shap_matrix.reshape(shap_matrix.shape[0], -1)
+					shap_df_base = pd.DataFrame(
+						shap_matrix,
+						columns=[f"Feature_{i}" for i in range(shap_matrix.shape[1])]
+					)
+					shap_path_base = os.path.join(
+						self.model_dir,
+						f'shap_values_base_rf_class{class_idx}.csv'
+					)
+					shap_df_base.to_csv(shap_path_base, index=False)
+					print(f"SHAP values for base RF (class {class_idx}) saved: {shap_path_base}")
+			else:
+				shap_matrix = np.asarray(shap_values)
+				if shap_matrix.ndim != 2:
+					shap_matrix = shap_matrix.reshape(shap_matrix.shape[0], -1)
+				shap_df_base = pd.DataFrame(
+					shap_matrix,
+					columns=[f"Feature_{i}" for i in range(shap_matrix.shape[1])]
+				)
+				shap_path_base = os.path.join(self.model_dir, 'shap_values_base_rf.csv')
+				shap_df_base.to_csv(shap_path_base, index=False)
+				print(f"SHAP values for base RF saved: {shap_path_base}")
 
 			print('f1_base:', f1_single)
 			log_print = ', '.join('%f' % value for value in f1_single)

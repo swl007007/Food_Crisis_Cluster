@@ -410,6 +410,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 else:
                     print(f"Warning: Correspondence table not found at {correspondence_table_path}")
             
+            print("="*60)
+            print(f"MAIN SCRIPT DEBUG: About to call georf.fit() with VIS_DEBUG_MODE={VIS_DEBUG_MODE}")
+            print("="*60)
             georf.fit(
                 Xtrain, ytrain, Xtrain_group,
                 val_ratio=VAL_RATIO,
@@ -419,6 +422,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 correspondence_table_path=correspondence_table_path,
                 VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
+            print("="*60)
+            print("MAIN SCRIPT DEBUG: georf.fit() completed")
+            print("="*60)
             
             # Check if metrics were tracked
             if track_partition_metrics and hasattr(georf, 'metrics_tracker'):

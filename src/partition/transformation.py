@@ -18,6 +18,11 @@ from src.tests.sig_test import *
 
 from src.customize.customize import *
 
+# MODULE LEVEL DEBUG: This should print when transformation.py is imported
+import sys
+sys.stderr.write("*** TRANSFORMATION.PY MODULE LOADED - DEBUG LOGGING ACTIVE ***\n")
+sys.stderr.flush()
+
 from src.vis.visualization import *
 
 # Strict visualization gate resolver (prefer config_visual)
@@ -107,6 +112,16 @@ def partition(model, X, y,
   '''
   # Strict gate: take visualization flag only from arguments, never from config
   VIS_DEBUG_MODE = paras.get('VIS_DEBUG_MODE', False)
+  print("="*50)
+  print(f"TRANSFORMATION.PY DEBUG: partition() received VIS_DEBUG_MODE={VIS_DEBUG_MODE}")
+  print(f"TRANSFORMATION.PY DEBUG: paras keys = {list(paras.keys())}")
+  print("="*50)
+
+  # Resolve model_dir for visualization artifacts and metrics export
+  resolved_model_dir = model_dir or getattr(model, 'model_dir', None) or getattr(model, 'path', None)
+  if resolved_model_dir is None:
+    print("Warning: partition() could not resolve model_dir; visualization exports will be skipped")
+  model_dir = resolved_model_dir
 
   # Initialize metrics tracker if requested
   metrics_tracker = None
@@ -157,51 +172,55 @@ def partition(model, X, y,
       )
       
       # Generate baseline visualization
-      import os
-      from src.vis.visualization import plot_metrics_improvement_map
-      
-      vis_dir = os.path.join(model.model_dir, 'vis')
-      os.makedirs(vis_dir, exist_ok=True)
-      metrics_dir = os.path.join(model_dir, 'partition_metrics')
-      os.makedirs(metrics_dir, exist_ok=True)
-      
-      # Save baseline metrics to CSV
-      baseline_csv = os.path.join(metrics_dir, "partition_metrics_baseline.csv")
-      baseline_metrics = []
-      if hasattr(metrics_tracker, 'all_metrics') and metrics_tracker.all_metrics:
-        for record in metrics_tracker.all_metrics:
-          if record['partition_round'] == -1 and record['branch_id'] == 'baseline':
-            baseline_metrics.append(record)
-      
-      if baseline_metrics:
-        import pandas as pd
-        baseline_df = pd.DataFrame(baseline_metrics)
-        baseline_df.to_csv(baseline_csv, index=False)
-        
-        # Create baseline performance maps (will show current performance levels)
-        baseline_f1_path = os.path.join(vis_dir, "baseline_f1_performance_map.png")
-        plot_metrics_improvement_map(
-            baseline_csv,
-            metric_type='f1_before',  # Show current F1 performance
-            correspondence_table_path=correspondence_table_path,
-            save_path=baseline_f1_path,
-            title="Baseline F1 Performance (Before Partitioning)"
-        )
-        
-        baseline_acc_path = os.path.join(vis_dir, "baseline_accuracy_performance_map.png")
-        plot_metrics_improvement_map(
-            baseline_csv,
-            metric_type='accuracy_before',  # Show current accuracy performance
-            correspondence_table_path=correspondence_table_path,
-            save_path=baseline_acc_path,
-            title="Baseline Accuracy Performance (Before Partitioning)"
-        )
-        
-        print("Generated baseline performance maps in /vis/ directory")
+      if model_dir:
+        import os
+        from src.vis.visualization import plot_metrics_improvement_map
+
+        vis_dir = os.path.join(model_dir, 'vis')
+        os.makedirs(vis_dir, exist_ok=True)
+        metrics_dir = os.path.join(model_dir, 'partition_metrics')
+        os.makedirs(metrics_dir, exist_ok=True)
+
+        # Save baseline metrics to CSV
+        baseline_csv = os.path.join(metrics_dir, "partition_metrics_baseline.csv")
+        baseline_metrics = []
+        if hasattr(metrics_tracker, 'all_metrics') and metrics_tracker.all_metrics:
+          for record in metrics_tracker.all_metrics:
+            if record['partition_round'] == -1 and record['branch_id'] == 'baseline':
+              baseline_metrics.append(record)
+
+        if baseline_metrics:
+          import pandas as pd
+          baseline_df = pd.DataFrame(baseline_metrics)
+          baseline_df.to_csv(baseline_csv, index=False)
+
+          # Create baseline performance maps (will show current performance levels)
+          baseline_f1_path = os.path.join(vis_dir, "baseline_f1_performance_map.png")
+          plot_metrics_improvement_map(
+              baseline_csv,
+              metric_type='f1_before',  # Show current F1 performance
+              correspondence_table_path=correspondence_table_path,
+              save_path=baseline_f1_path,
+              title="Baseline F1 Performance (Before Partitioning)"
+          )
+
+          baseline_acc_path = os.path.join(vis_dir, "baseline_accuracy_performance_map.png")
+          plot_metrics_improvement_map(
+              baseline_csv,
+              metric_type='accuracy_before',  # Show current accuracy performance
+              correspondence_table_path=correspondence_table_path,
+              save_path=baseline_acc_path,
+              title="Baseline Accuracy Performance (Before Partitioning)"
+          )
+
+          print("Generated baseline performance maps in /vis/ directory")
+      else:
+        print("Warning: Skipping baseline metric exports because model_dir is undefined")
         
     except Exception as e:
       print(f"Warning: Could not generate baseline visualization: {e}")
   
+  print(f"TRANSFORMATION.PY DEBUG: Starting partition loop with max_depth={max_depth}, range={max_depth-1}")
   for i in range(max_depth-1):
 
     num_branches = 2**i
@@ -254,6 +273,9 @@ def partition(model, X, y,
                                                              X_group[val_list])
                                                             #  X_loc[np.ix_(val_list[0], GRID_COLS)])#X_val_grid
 
+      y_val_gid = np.asarray(y_val_gid)
+      unique_gid_values, unique_gid_indices = np.unique(y_val_gid, return_index=True)
+
       # TODO: Verify if there are still data of interest left for selected class.
       #y_val_value should have shape (num_groups, n_class)
       # if np.sum(y_val_value) <= MIN_BRANCH_SAMPLE_SIZE:
@@ -271,7 +293,7 @@ def partition(model, X, y,
       RETURN_SCAN_SCORE = True
       if RETURN_SCAN_SCORE:
         # the error is calculated in get_c_b, no need to convert true to error here
-        s0, s1, gscore = scan(y_val_value, true_pred_value, MIN_SCAN_CLASS_SAMPLE, return_score = RETURN_SCAN_SCORE)
+        s0, s1, gscore, qscore = scan(y_val_value, true_pred_value, MIN_SCAN_CLASS_SAMPLE, return_score = RETURN_SCAN_SCORE)
         # s0, s1, gscore = scan(y_val_value, y_val_value * (1-true_pred_value), MIN_SCAN_CLASS_SAMPLE, return_score = RETURN_SCAN_SCORE)
       else:
         s0, s1 = scan(y_val_value, true_pred_value, MIN_SCAN_CLASS_SAMPLE)
@@ -279,7 +301,62 @@ def partition(model, X, y,
 
       # s0_prev = s0
       # s1_prev = s1
+      s0_before_contiguity = s0.copy()
+      s1_before_contiguity = s1.copy()
+      s0_group_before_contiguity = get_s_list_group_ids(s0_before_contiguity, y_val_gid)
+      s1_group_before_contiguity = get_s_list_group_ids(s1_before_contiguity, y_val_gid)
+      
+      # create a dataframe for current s0 group, s1 group and their corresponding gscore/qscore, turned on if VIS_DEBUG_MODE
+      if VIS_DEBUG_MODE:
+        print(f"INFO: VIS_DEBUG_MODE=True, attempting to write score_details CSV for round {i} branch {branch_id}")
+        try:
+          import os
+          if not model_dir:
+            raise ValueError("model_dir is undefined; cannot write score_details CSV")
+          vis_dir = os.path.join(model_dir, 'vis')
+          os.makedirs(vis_dir, exist_ok=True)
+          score_df_path = os.path.join(vis_dir, f'score_details_round_{i}_branch_{branch_id or "root"}.csv')
+          gscore_arr = np.asarray(gscore, dtype=float)
 
+          y_val_gid_unique = y_val_gid[unique_gid_indices]
+          gscore_unique = gscore_arr[unique_gid_indices]
+
+          s0_flags = np.isin(y_val_gid_unique, s0_group_before_contiguity).astype(int)
+          s1_flags = np.isin(y_val_gid_unique, s1_group_before_contiguity).astype(int)
+
+          print(f"Debug: writing score details for round {i}, branch '{branch_id}' with {len(y_val_gid_unique)} groups")
+
+          score_df_dict = {
+            'FEWSNET_admin_code': y_val_gid_unique,
+            's0_partition': s0_flags,
+            's1_partition': s1_flags,
+            'gscore': gscore_unique
+          }
+
+          # Expand q-score information safely for CSV export. qscore is one value
+          # per class; duplicate it across rows so the DataFrame shape matches.
+          if qscore is not None:
+            qscore_arr = np.asarray(qscore)
+
+            if qscore_arr.ndim == 0:
+              # Scalar risk multiplier – broadcast to all groups.
+              score_df_dict['qscore'] = np.full(gscore_unique.shape, float(qscore_arr), dtype=float)
+            elif qscore_arr.ndim == 1:
+              for cls_idx, cls_q in enumerate(qscore_arr):
+                score_df_dict[f'qscore_class_{cls_idx}'] = np.full(gscore_unique.shape, float(cls_q), dtype=float)
+            else:
+              # Unexpected shape – fall back to per-row max to avoid crashes and log it.
+              flattened = float(np.max(qscore_arr))
+              score_df_dict['qscore'] = np.full(gscore_unique.shape, flattened, dtype=float)
+
+          score_df = pd.DataFrame(score_df_dict)
+          score_df.to_csv(score_df_path, index=False)
+          print(f"INFO: WRITE score_details_round_{i}_branch_{branch_id or 'root'}.csv -> {score_df_path} ({len(score_df)} rows)")
+        except Exception as e:
+          print(f"Warning: Could not save partition score details: {e}")
+      else:
+        print(f"INFO: VIS_DEBUG_MODE=False, skipping score_details CSV write for round {i} branch {branch_id}")
+      
       if CONTIGUITY:
         if contiguity_type == 'polygon' and polygon_contiguity_info is not None:
           # Use polygon-based contiguity refinement
@@ -304,12 +381,15 @@ def partition(model, X, y,
               # Create vis directory if it doesn't exist (strict gate from caller)
               if not VIS_DEBUG_MODE:
                 raise RuntimeError('VIS_DEBUG_MODE=False; skipping contiguity visualization')
+              if not model_dir:
+                raise ValueError('model_dir is undefined; cannot render contiguity refinement maps')
               vis_dir = os.path.join(model_dir, 'vis')
               os.makedirs(vis_dir, exist_ok=True)
               
               # Create temporary partition mapping for current refinement state
               s0_group_refined = get_s_list_group_ids(s0, y_val_gid)
               s1_group_refined = get_s_list_group_ids(s1, y_val_gid)
+                
               
               # Create temporary correspondence table for current refinement state
               current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}_refine_{i_refine + 1}.csv')
@@ -413,6 +493,8 @@ def partition(model, X, y,
               # Create vis directory if it doesn't exist (strict gate from caller)
               if not VIS_DEBUG_MODE:
                 raise RuntimeError('VIS_DEBUG_MODE=False; skipping contiguity visualization')
+              if not model_dir:
+                raise ValueError('model_dir is undefined; cannot render contiguity refinement maps')
               vis_dir = os.path.join(model_dir, 'vis')
               os.makedirs(vis_dir, exist_ok=True)
               
@@ -514,6 +596,32 @@ def partition(model, X, y,
 
       s0_group = get_s_list_group_ids(s0, y_val_gid)
       s1_group = get_s_list_group_ids(s1, y_val_gid)
+      # if VIS_DEBUG_MODE, save the final s0_group and s1_group after contiguity refinement
+      if VIS_DEBUG_MODE:
+        print(f"INFO: VIS_DEBUG_MODE=True, attempting to write final_partitions CSV for round {i} branch {branch_id}")
+        try:
+          import os
+          if not model_dir:
+            raise ValueError("model_dir is undefined; cannot write final_partitions CSV")
+          vis_dir = os.path.join(model_dir, 'vis')
+          os.makedirs(vis_dir, exist_ok=True)
+          final_partition_df_path = os.path.join(vis_dir, f'final_partitions_round_{i}_branch_{branch_id or "root"}.csv')
+          final_gid_unique = y_val_gid[unique_gid_indices]
+          final_s0_flags = np.isin(final_gid_unique, s0_group).astype(int)
+          final_s1_flags = np.isin(final_gid_unique, s1_group).astype(int)
+          print(f"Debug: writing final partitions for round {i}, branch '{branch_id}' with {len(final_gid_unique)} groups")
+          final_partition_df = pd.DataFrame({
+            'FEWSNET_admin_code': final_gid_unique,
+            's0_partition': final_s0_flags,
+            's1_partition': final_s1_flags
+          })
+          final_partition_df.to_csv(final_partition_df_path, index=False)
+          print(f"INFO: WRITE final_partitions_round_{i}_branch_{branch_id or 'root'}.csv -> {final_partition_df_path} ({len(final_partition_df)} rows)")
+        except Exception as e:
+          print(f"Warning: Could not save final partition assignments: {e}")
+      else:
+        print(f"INFO: VIS_DEBUG_MODE=False, skipping final_partitions CSV write for round {i} branch {branch_id}")
+          
       (X0_train, y0_train, X0_val, y0_val,
        X1_train, y1_train, X1_val, y1_val,
        s0_train, s1_train, s0_val, s1_val) = get_branch_data_by_group(X, y, X_group,
@@ -669,11 +777,13 @@ def partition(model, X, y,
           try:
             import os
             from src.vis.visualization import plot_metrics_improvement_map
-            
+
             # Use vis directory instead of partition_metrics for easier access
+            if not model_dir:
+              raise ValueError('model_dir is undefined; cannot render metrics improvement maps')
             vis_dir = os.path.join(model_dir, 'vis')
             os.makedirs(vis_dir, exist_ok=True)
-            
+
             # Also create partition_metrics directory for CSV files
             metrics_dir = os.path.join(model_dir, 'partition_metrics')
             os.makedirs(metrics_dir, exist_ok=True)
@@ -797,6 +907,8 @@ def partition(model, X, y,
             from src.vis.visualization import plot_partition_map
 
             # Create vis directory if it doesn't exist
+            if not model_dir:
+              raise ValueError('model_dir is undefined; cannot render partition maps')
             vis_dir = os.path.join(model_dir, 'vis')
             os.makedirs(vis_dir, exist_ok=True)
 
@@ -873,6 +985,8 @@ def partition(model, X, y,
     # Save metrics to the model directory
     try:
       import os
+      if not model_dir:
+        raise ValueError('model_dir is undefined; cannot persist partition metrics')
       metrics_dir = os.path.join(model_dir, 'partition_metrics')
       os.makedirs(metrics_dir, exist_ok=True)
       metrics_tracker.save_metrics_to_csv(metrics_dir)
@@ -890,6 +1004,8 @@ def partition(model, X, y,
         
         # Generate comprehensive summary maps in /vis/ directory for debugging
         try:
+          if not model_dir:
+            raise ValueError('model_dir is undefined; cannot persist visualization metrics')
           vis_dir = os.path.join(model_dir, 'vis')
           os.makedirs(vis_dir, exist_ok=True)
           

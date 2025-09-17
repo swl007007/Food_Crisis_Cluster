@@ -332,6 +332,7 @@ class GeoRF_XGB():
             print("  Continuing with partitioning...")
 
         # Spatial partitioning (same as original GeoRF, with optional metrics tracking)
+        print(f"DEBUG: GeoRF_XGB.fit() calling partition() with VIS_DEBUG_MODE={VIS_DEBUG_MODE}")
         partition_result = partition(
             self.model, X, y,
             X_group, X_set, X_id, X_branch_id,
@@ -341,7 +342,8 @@ class GeoRF_XGB():
             polygon_contiguity_info=polygon_contiguity_info,
             track_partition_metrics=track_partition_metrics and VIS_DEBUG_MODE,
             correspondence_table_path=correspondence_table_path,
-            model_dir=self.model_dir
+            model_dir=self.model_dir,
+            VIS_DEBUG_MODE=VIS_DEBUG_MODE
         )
         
         # Handle different return formats (with/without metrics tracker)

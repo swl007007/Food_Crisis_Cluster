@@ -62,8 +62,8 @@ print(f"Final N_JOBS configuration: {N_JOBS}")
 #*********************************************************************************
 
 #Detailed ***Optional*** specifications
-MIN_BRANCH_SAMPLE_SIZE = 3  # Reduced to allow more partitioning
-MIN_SCAN_CLASS_SAMPLE = 5   # Reduced to allow more partitioning opportunities
+MIN_BRANCH_SAMPLE_SIZE = 0 # Reduced to allow more partitioning
+MIN_SCAN_CLASS_SAMPLE = 0   # Reduced to allow more partitioning opportunities
 FLEX_RATIO = 0.025#affects max size difference between two partitions in each split
 FLEX_OPTION = True
 #FLEX_TYPE = 'n_sample'

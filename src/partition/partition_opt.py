@@ -959,9 +959,8 @@ def scan(y_true_value, true_pred_value, min_sample,
     print('s0', s0)
     print('s1', s1)
     
-  print(q)
   if return_score:
-    return s0, s1, g
+    return s0, s1, g, q
     # return s0, s1, g[s0], g[s1]
   else:
     return s0, s1
