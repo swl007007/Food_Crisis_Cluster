@@ -85,6 +85,14 @@ MD_THRD = 0.0005  # Reduced mean difference threshold
 TRAIN_RATIO = 0.6
 VAL_RATIO = 0.20#subset from training, e.g., 0.2 means 20% of training data will be set as validation ## validation set
 TEST_RATIO = 1 - TRAIN_RATIO
+
+# Group-aware validation split configuration
+GROUP_SPLIT = {
+    'enable': True,
+    'min_val_per_group': 1,
+    'skip_singleton_groups': True,
+    'random_state': 42,
+}
 #*********************************************************************************
 
 

@@ -8,6 +8,7 @@
 import numpy as np
 import os
 from scipy import stats
+from sklearn.model_selection import StratifiedKFold, KFold
 
 #GeoRF
 #Can be customized with the template
@@ -20,6 +21,7 @@ from src.customize.customize import *
 from demo.data import *
 from src.initialization.initialization import init_X_info, init_X_info_raw_loc, init_X_branch_id, train_val_split
 from src.helper.helper import create_dir, open_dir, get_X_branch_id_by_group, get_filter_thrd
+from src.utils.split import group_aware_train_val_split
 from src.partition.transformation import partition
 from src.vis.visualization import *
 from src.metrics.metrics import get_class_wise_accuracy, get_prf
@@ -112,6 +114,7 @@ class GeoRF():
 
 	#Train GeoRF
 	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True, 
+	        split = None,
 	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
 	        track_partition_metrics = False, correspondence_table_path = None, VIS_DEBUG_MODE=True):#X_loc is unused
 		"""
@@ -196,8 +199,72 @@ class GeoRF():
     #X_set stores train-val-test assignments: train=0, val=1, test=2
     #X_branch_id stores branch_ids (or, partion ids) of each data points. All init to route branch ''. Dynamically updated during training.
     #X_group stores group assignment: customizable. In this example, groups are defined by grid cells in space.
-		if X_set is None:
-			X_set = train_val_split(X, val_ratio=val_ratio)
+		val_groups = None
+		coverage_df = None
+		if split is not None:
+			if 'X_set' in split:
+				X_set = np.asarray(split['X_set'], dtype=int)
+				if X_set.shape[0] != X.shape[0]:
+					raise ValueError('Provided split["X_set"] must match number of samples in X.')
+			else:
+				X_set = np.zeros(X.shape[0], dtype=int)
+				val_key = 'val_indices' if 'val_indices' in split else 'val'
+				if val_key not in split:
+					raise ValueError('split must include "X_set" or one of "val_indices"/"val" entries.')
+				val_indices = np.asarray(split[val_key], dtype=int)
+				if np.any(val_indices < 0) or np.any(val_indices >= X.shape[0]):
+					raise ValueError(f'split["{val_key}"] contains invalid indices.')
+				X_set[val_indices] = 1
+				if 'train_indices' in split or 'train' in split:
+					train_key = 'train_indices' if 'train_indices' in split else 'train'
+					train_indices = np.asarray(split[train_key], dtype=int)
+					if np.any(train_indices < 0) or np.any(train_indices >= X.shape[0]):
+						raise ValueError(f'split["{train_key}"] contains invalid indices.')
+					if np.intersect1d(train_indices, val_indices).size > 0:
+						raise ValueError('Provided train and val indices overlap.')
+			val_groups = np.asarray(split.get('groups_val')) if 'groups_val' in split else np.unique(np.asarray(X_group)[X_set == 1])
+		elif X_set is None:
+			group_split_cfg = globals().get('GROUP_SPLIT', {})
+			group_split_enabled = bool(group_split_cfg.get('enable', False))
+			if group_split_enabled:
+				split_result = group_aware_train_val_split(
+					groups=np.asarray(X_group),
+					val_ratio=val_ratio,
+					min_val_per_group=int(group_split_cfg.get('min_val_per_group', 1)),
+					random_state=group_split_cfg.get('random_state', self.random_state),
+					skip_singleton_groups=bool(group_split_cfg.get('skip_singleton_groups', True)),
+				)
+				X_set = split_result['X_set']
+				coverage_df = split_result['coverage']
+				val_groups = split_result['val_groups']
+			else:
+				X_set = train_val_split(X, val_ratio=val_ratio)
+				val_groups = np.unique(np.asarray(X_group)[X_set == 1])
+		else:
+			val_groups = np.unique(np.asarray(X_group)[X_set == 1])
+
+		if coverage_df is None:
+			temp_df = pd.DataFrame({
+				'FEWSNET_admin_code': np.asarray(X_group),
+				'is_val': X_set == 1})
+			coverage_df = temp_df.groupby('FEWSNET_admin_code', dropna=False).agg(
+				total_count=('is_val', 'size'),
+				val_count=('is_val', 'sum'))
+			coverage_df['train_count'] = coverage_df['total_count'] - coverage_df['val_count']
+			coverage_df = coverage_df.reset_index()[['FEWSNET_admin_code', 'total_count', 'train_count', 'val_count']]
+
+		import os as os_module
+		coverage_path = os_module.path.join(self.model_dir, 'val_coverage_by_group.csv')
+		coverage_df.to_csv(coverage_path, index=False)
+		logger.info(f'Validation coverage report written to {coverage_path}')
+
+		uncovered = coverage_df[(coverage_df['val_count'] == 0) & (coverage_df['total_count'] > 1)]
+		if not uncovered.empty:
+			warning_groups = ', '.join(map(str, uncovered['FEWSNET_admin_code'].tolist()))
+			print(f'WARNING: Groups without validation samples despite having multiple records: {warning_groups}')
+			logger.warning(f'Groups without validation samples despite having multiple records: {warning_groups}')
+
+		self.val_groups_ = val_groups
 		X_id = np.arange(X.shape[0])#the id is used to later refer back to the original X, and the related information
 		X_branch_id = init_X_branch_id(X, max_depth = self.max_model_depth)
 		# X_group, X_set, X_id, X_branch_id = init_X_info_raw_loc(X, y, X_loc, train_ratio = TRAIN_RATIO, val_ratio = VAL_RATIO, step_size = STEP_SIZE, predefined = PREDEFINED_GROUPS)
@@ -212,6 +279,22 @@ class GeoRF():
 		# PRE-PARTITIONING DIAGNOSTICS WITH CROSS-VALIDATION
 		# Generate diagnostic maps using CV to prevent overfitting bias before spatial partitioning
 		train_list_init = np.where(X_set == 0)
+		try:
+			import config as cfg_module
+		except ImportError:
+			cfg_module = None
+		if cfg_module is None or not getattr(cfg_module, 'DISABLE_BASELINE_CV_MAP', False):
+			try:
+				self._generate_baseline_cv_error_map(
+					X[train_list_init],
+					y[train_list_init],
+					np.asarray(X_group)[train_list_init],
+					logger
+				)
+			except Exception as baseline_cv_err:
+				print(f"Warning: Baseline CV misclassification map failed: {baseline_cv_err}")
+				if logger:
+					logger.warning(f"Baseline CV misclassification map failed: {baseline_cv_err}")
 		try:
 			from src.diagnostics.pre_partition_diagnostic import create_pre_partition_diagnostics_cv
 			print("\n=== Generating Pre-Partitioning CV Diagnostic Maps ===")
@@ -490,6 +573,179 @@ class GeoRF():
 			sys.stdout = self.original_stdout
 
 		return self
+
+	def _generate_baseline_cv_error_map(self, X_train, y_train, uid_train, logger=None):
+		import config as cfg
+
+		vis_dir = getattr(self, 'dir_vis', self.model_dir)
+		os.makedirs(vis_dir, exist_ok=True)
+		log_path = os.path.join(vis_dir, 'baseline_cv_map_log.txt')
+		csv_path = os.path.join(vis_dir, 'baseline_cv_error_by_polygon.csv')
+		png_path = os.path.join(vis_dir, 'baseline_cv_error_map.png')
+
+		log_lines = ['baseline_cv_map_start']
+
+		try:
+			import geopandas as gpd
+		except ImportError as exc:
+			log_lines.append(f'geopandas_missing={exc}')
+			with open(log_path, 'w') as log_file:
+				log_file.write('\n'.join(log_lines))
+			if logger:
+				logger.warning(f'Baseline CV map skipped: geopandas missing ({exc})')
+			return
+
+		try:
+			from matplotlib import pyplot as plt
+			from matplotlib.ticker import PercentFormatter
+			import matplotlib as mpl
+		except ImportError as exc:
+			log_lines.append(f'matplotlib_missing={exc}')
+			with open(log_path, 'w') as log_file:
+				log_file.write('\n'.join(log_lines))
+			if logger:
+				logger.warning(f'Baseline CV map skipped: matplotlib missing ({exc})')
+			return
+		seed = getattr(cfg, 'BASELINE_CV_SEED', 42)
+		n_splits = getattr(cfg, 'BASELINE_CV_N_SPLITS', 5)
+
+		X_train = np.asarray(X_train)
+		y_train = np.asarray(y_train)
+		uid_train = np.asarray(uid_train)
+		if X_train.shape[0] == 0:
+			log_lines.append('no_training_samples')
+			with open(log_path, 'w') as log_file:
+				log_file.write('\n'.join(log_lines))
+			return
+		if X_train.shape[0] < 2:
+			log_lines.append('insufficient_samples_for_cv')
+			with open(log_path, 'w') as log_file:
+				log_file.write('\n'.join(log_lines))
+			return
+
+		effective_splits = min(n_splits, X_train.shape[0])
+		if effective_splits < n_splits:
+			log_lines.append(f'effective_splits={effective_splits}')
+		unique_classes, class_counts = np.unique(y_train, return_counts=True)
+		min_count = class_counts.min() if class_counts.size else 0
+		if min_count < effective_splits:
+			log_lines.append(f'fallback_kfold_due_to_min_count={min_count}')
+			splitter = KFold(n_splits=effective_splits, shuffle=True, random_state=seed)
+		else:
+			splitter = StratifiedKFold(n_splits=effective_splits, shuffle=True, random_state=seed)
+
+		oof_pred = np.full(y_train.shape[0], np.nan)
+		for fold_idx, (train_idx, val_idx) in enumerate(splitter.split(X_train, y_train), start=1):
+			model_cv = RFmodel(
+				self.dir_ckpt,
+				self.n_trees_unit,
+				max_depth=self.max_depth,
+				num_class=self.num_class,
+				random_state=seed,
+				n_jobs=self.n_jobs,
+				sample_weights_by_class=self.sample_weights_by_class
+			)
+			model_cv.train(X_train[train_idx], y_train[train_idx], branch_id=f'cv{fold_idx}')
+			y_pred_fold = model_cv.predict(X_train[val_idx])
+			oof_pred[val_idx] = y_pred_fold
+			fold_err = float(np.mean(y_pred_fold != y_train[val_idx])) if val_idx.size else float('nan')
+			fold_msg = f'fold_{fold_idx}_done n_train={train_idx.size} n_val={val_idx.size} fold_err={fold_err:.6f}'
+			log_lines.append(fold_msg)
+			if logger:
+				logger.info(fold_msg)
+
+		valid_mask = ~np.isnan(oof_pred)
+		total_expected = int(valid_mask.sum())
+		missing = int((~valid_mask).sum())
+		if missing > 0:
+			log_lines.append(f'missing_oof_predictions={missing}')
+			of = oof_pred[valid_mask]
+			y_valid = y_train[valid_mask]
+			uid_valid = uid_train[valid_mask]
+		else:
+			of = oof_pred
+			y_valid = y_train
+			uid_valid = uid_train
+
+		metrics_df = pd.DataFrame({
+			'uid': uid_valid.astype(str),
+			'y_true': y_valid,
+			'y_pred': of
+		})
+		metrics_df['is_error'] = (metrics_df['y_true'] != metrics_df['y_pred']).astype(int)
+		agg_df = metrics_df.groupby('uid', dropna=False).agg(
+			n_oof=('is_error', 'size'),
+			errors=('is_error', 'sum')
+		).reset_index()
+		agg_df['pct_err_all'] = agg_df['errors'] / agg_df['n_oof']
+		agg_df = agg_df[['uid', 'n_oof', 'pct_err_all']]
+
+		sum_n_oof = int(agg_df['n_oof'].sum()) if not agg_df.empty else 0
+		log_lines.append(f'sum_n_oof={sum_n_oof}/{total_expected}')
+		if logger:
+			logger.info(f'sum_n_oof={sum_n_oof}/{total_expected}')
+
+		uid_column = getattr(cfg, 'ADJACENCY_POLYGON_ID_COLUMN', 'FEWSNET_admin_code')
+		polygon_path = getattr(cfg, 'BASELINE_POLYGON_PATH', None) or getattr(cfg, 'ADJACENCY_SHAPEFILE_PATH', None)
+		if polygon_path is None or not os.path.exists(polygon_path):
+			log_lines.append('polygon_path_missing')
+			with open(log_path, 'w') as log_file:
+				log_file.write('\n'.join(log_lines))
+			return
+
+		polys = gpd.read_file(polygon_path)
+		if hasattr(polys.geometry, 'make_valid'):
+			polys.geometry = polys.geometry.make_valid()
+		polys['_uid_merge'] = polys[uid_column].astype(str)
+
+		merged = polys.merge(agg_df, how='left', left_on='_uid_merge', right_on='uid')
+		share_nan = float(merged['pct_err_all'].isna().mean())
+		log_lines.append(f'share_nan_polygons={share_nan:.6f}')
+		if logger:
+			logger.info(f'share_nan_polygons={share_nan:.6f}')
+
+		agg_df.to_csv(csv_path, index=False)
+		csv_msg = f'csv_written_path={csv_path}'
+		log_lines.append(csv_msg)
+		if logger:
+			logger.info(csv_msg)
+
+		fig, ax = plt.subplots(1, 1, figsize=(10, 8), dpi=getattr(cfg, 'FINAL_ACCURACY_DPI', 200))
+		vmin, vmax = 0.0, 1.0
+		cmap = mpl.cm.get_cmap('Reds')
+		missing_color = getattr(cfg, 'FINAL_ACCURACY_MISSING_COLOR', '#dddddd')
+
+		merged.plot(
+			column='pct_err_all',
+			cmap=cmap,
+			vmin=vmin,
+			vmax=vmax,
+			ax=ax,
+			missing_kwds={'color': missing_color, 'edgecolor': 'none', 'label': 'No Data'}
+		)
+		ax.set_title('Baseline 5-Fold OOF Misclassification Rate by Polygon', fontsize=12)
+		ax.axis('off')
+
+		sm = mpl.cm.ScalarMappable(norm=mpl.colors.Normalize(vmin=vmin, vmax=vmax), cmap=cmap)
+		cbar_ax = fig.add_axes([0.92, 0.25, 0.02, 0.5])
+		cb = plt.colorbar(sm, cax=cbar_ax)
+		cb.ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=0))
+		cb.set_ticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+		cb.set_label('Misclassification Rate')
+
+		plt.savefig(png_path, bbox_inches='tight')
+		plt.close(fig)
+		png_msg = f'png_written_path={png_path}'
+		log_lines.append(png_msg)
+		if logger:
+			logger.info(png_msg)
+
+		with open(log_path, 'w') as log_file:
+			log_file.write('\n'.join(log_lines))
+		if logger:
+			logger.info(f'baseline_cv_map_log_path={log_path}')
+
+		print(f'Baseline CV misclassification artifacts: {csv_path}, {png_path}')
 
 	def predict(self, X, X_group, save_full_predictions = False):
 		"""

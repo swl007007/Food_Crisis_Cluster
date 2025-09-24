@@ -64,7 +64,7 @@ print(f"Final N_JOBS configuration: {N_JOBS}")
 #Detailed ***Optional*** specifications
 MIN_BRANCH_SAMPLE_SIZE = 0  # Reduced to allow more partitioning
 MIN_SCAN_CLASS_SAMPLE = 0   # Reduced to allow more partitioning opportunities
-FLEX_RATIO = 0.025#affects max size difference between two partitions in each split
+FLEX_RATIO = 0.5#affects max size difference between two partitions in each split
 FLEX_OPTION = True
 #FLEX_TYPE = 'n_sample'
 #FLEX_TYPE = 'n_group_w_sample'#careful with threshold
@@ -85,6 +85,21 @@ MD_THRD = 0.0005  # Reduced mean difference threshold
 TRAIN_RATIO = 0.6
 VAL_RATIO = 0.20#subset from training, e.g., 0.2 means 20% of training data will be set as validation ## validation set
 TEST_RATIO = 1 - TRAIN_RATIO
+
+# Group-aware validation split configuration (mirrors training config)
+GROUP_SPLIT = {
+    'enable': True,
+    'min_val_per_group': 1,
+    'skip_singleton_groups': True,
+    'random_state': 42,
+}
+
+# Baseline CV visualization controls
+BASELINE_CV_SEED = 42
+BASELINE_CV_N_SPLITS = 5
+DISABLE_BASELINE_CV_MAP = False
+# Optional shapefile override; defaults to ADJACENCY_SHAPEFILE_PATH when None
+BASELINE_POLYGON_PATH = None
 #*********************************************************************************
 
 

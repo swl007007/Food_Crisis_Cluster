@@ -2,39 +2,37 @@ known situation:
 1. test and train data misalignment, alot of missing area
 2. majority voting system still implement 4/9 threshold
 3. accuracy in train and test seems different due to unkown issue
-4.WARNING(During group level validation before scanning): Right now nothing in the code enforces “at least one validation sample per group.” When you call GeoRF.fit without supplying X_set, it falls back to train_val_split, which just tags individual rows as train (0) or val (1) by drawing from a uniform random distribution (src/model/GeoRF.py:196, src/initialization/initialization.py:162). Because our admins have many quarterly records, most groups end up with some validation rows, but there’s no hard guarantee—partition(...) even prints a warning if a branch’s validation slice comes back empty (src/partition/transformation.py:230).                                                                                                                                                                                                                       
-The aggregation step only compacts whatever validation rows exist: get_class_wise_stat groups the current branch’s validation records by X_group to produce one row per admin unit before the scan (src/partition/transformation.py:252, src/partition/partition_opt.py:142). If a group had no validation records in the first place, it simply doesn’t appear in that summary; the partition    
-optimizer then has no evidence for that admin and defaults it into the “keep with parent” side when the split is applied (src/helper/helper.py:205–src/helper/helper.py:210).                                                                                                                                                                                                                      
-If you need every group to carry validation coverage, pass an explicit mask through the optional X_set parameter when calling fit. For example, you can build X_set so each admin’s most recent quarter is marked 1 (validation) and earlier quarters 0 (training); GeoRF.fit will use your mask verbatim and skip the random assignment. Otherwise, the only safeguards are global—              
-MIN_BRANCH_SAMPLE_SIZE checks and the early-out for empty validation slices—so the default workflow relies on the dataset’s density rather than an explicit per-group rule. 
+
+INVESTIGATION:
+WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with only 4% positive and 18.52% negative)
 
 
 Action Points:
 TODO(CRITICAL):
-1.remove lat and lon
-2. remove year variable and quarter variable(gradually remove)
-3. smaller feature set of ~20 variables
-
 
 
 
 TODO(on hold):
+1.remove lat and lon 1min
+2. remove year variable and quarter variable(gradually remove) 1min
+3. smaller feature set of ~20 variables 1min
+4.further processing on shap values 10min
 
-1.after split, output train set X_group_id, test set X_group_id (for submodel comparison?)
-2. for baseline output test set, train set of X_group_id(to do what?)
 
 
 
 
 
 TODO(FUTURE):
-1.write out features that need unit tests, complete unit tests and complete feature tests/integration reports
-2. checkpoint system is deprecated, need to re-design
-3. GeoXGB test pipeline is not producing all the required figures
-
+1. checkpoint system is deprecated, need to re-design
+2. GeoXGB test pipeline is not producing all the required figures
+3. Rewrite Agent documentations  according to standard, private domain engineering wiki.
+4.write out features that need unit tests, complete unit tests and complete feature tests/integration reports
 
 
 IMPORTANT NOTE
 for one round:
-parent RF -> using the parent RF validation/train to calculate groupwise metrics -> partition (LTSS/q) -> partition contiguity refinement -> child model using child model specific validation/train -> child model performance metrics -> partition significance test -> in RF, can also copy parent RF weights to one of the child RF
+parent RF -> using the parent RF validation/train to calculate groupwise metrics -> partition (LTSS/q) -> 
+partition contiguity refinement -> child model using child model specific validation/train -> child model performance metrics -> partition significance test ->
+ in RF, can also copy parent RF weights to one of the child RF
 
