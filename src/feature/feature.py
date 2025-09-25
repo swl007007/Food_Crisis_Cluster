@@ -4,6 +4,7 @@ import pandas as pd
 import polars as pl
 import os
 import sys
+from pathlib import Path
 import warnings
 # Add parent directory to path to find src module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -153,7 +154,17 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
     # Drop unnecessary columns
     df_features = df_sorted.drop(columns=['date', 'fews_ipc_crisis', 'AEZ_group', 'ISO_encoded', 'AEZ_country_group'])
     
-    # Get feature matrix
+    # Get feature matrix and preserve column names for downstream interpretable outputs
+    feature_columns = [str(col) for col in df_features.columns]
+    try:
+        debug_path = Path('feature_columns_debug.csv')
+        debug_df = pd.DataFrame({
+            'feature_index': np.arange(len(feature_columns), dtype=int),
+            'feature_name': feature_columns
+        })
+        debug_df.to_csv(debug_path, index=False)
+    except Exception as debug_err:
+        print(f'Warning: could not write feature_columns_debug.csv: {debug_err}')
     X = df_features.values
     
     # Identify L2 feature indices
@@ -182,7 +193,7 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
     
     print(f"Feature preparation complete: {X.shape[1]} features, {len(l1_index)} L1 features, {len(l2_index)} L2 features")
     
-    return X, y, l1_index, l2_index, years, terms, df_sorted['date']
+    return X, y, l1_index, l2_index, years, terms, df_sorted['date'], feature_columns
 
 def validate_polygon_contiguity(contiguity_info, X_group):
     """

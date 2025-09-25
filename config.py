@@ -93,6 +93,16 @@ GROUP_SPLIT = {
     'skip_singleton_groups': True,
     'random_state': 42,
 }
+
+# Feature drop configuration (post temporal split, pre-training)
+FEATURE_DROP = {
+    'enable': False,
+    'cols': ['lat', 'lon', 'year', 'month'],
+    'patterns': ['year_*', 'month_*'],
+}
+
+# Backward compatible alias for lowercase access
+feature_drop = FEATURE_DROP
 #*********************************************************************************
 
 

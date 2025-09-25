@@ -94,6 +94,14 @@ GROUP_SPLIT = {
     'random_state': 42,
 }
 
+# Feature drop configuration (post temporal split, pre-training)
+FEATURE_DROP = {
+    'enable': True,
+    'cols': ['lat', 'lon', 'year', 'month','FEWSNET_admin_code'],
+    'patterns': ['year_*', 'month_*'],
+}
+feature_drop = FEATURE_DROP
+
 # Baseline CV visualization controls
 BASELINE_CV_SEED = 42
 BASELINE_CV_N_SPLITS = 5

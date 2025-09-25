@@ -35,6 +35,7 @@ import argparse
 import sys
 import time
 import logging
+from pathlib import Path
 # import shap value toolkit
 import shap
 
@@ -107,6 +108,12 @@ class GeoRF():
 		self.dir_space = dir_space
 		self.dir_ckpt = dir_ckpt
 		self.dir_vis = dir_vis
+		self._cached_feature_names = None
+		self.drop_list_ = []
+		self._drop_indices = tuple()
+		self._base_training_X = None
+		self._base_training_y = None
+		self._base_training_groups = None
 
 		#toggle between prints
 		self.original_stdout = sys.stdout
@@ -116,7 +123,7 @@ class GeoRF():
 	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True, 
 	        split = None,
 	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
-	        track_partition_metrics = False, correspondence_table_path = None, VIS_DEBUG_MODE=True):#X_loc is unused
+	        track_partition_metrics = False, correspondence_table_path = None, feature_names=None, VIS_DEBUG_MODE=True):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -188,6 +195,14 @@ class GeoRF():
 
 		print('X.shape: ', X.shape)
 		print('y.shape: ', y.shape)
+
+		if feature_names is not None:
+			if len(feature_names) != X.shape[1]:
+				print(f'Warning: feature_names length ({len(feature_names)}) != X width ({X.shape[1]})')
+			self._cached_feature_names = [str(raw_name) for raw_name in feature_names]
+			self._write_feature_reference(self._cached_feature_names, logger=logger)
+		else:
+			self._cached_feature_names = None
 
 
 		# #for debugging#X_loc removed here
@@ -269,6 +284,11 @@ class GeoRF():
 		X_branch_id = init_X_branch_id(X, max_depth = self.max_model_depth)
 		# X_group, X_set, X_id, X_branch_id = init_X_info_raw_loc(X, y, X_loc, train_ratio = TRAIN_RATIO, val_ratio = VAL_RATIO, step_size = STEP_SIZE, predefined = PREDEFINED_GROUPS)
 
+		X, updated_feature_names = self._prepare_feature_drop_after_split(X, self._cached_feature_names, logger=logger)
+		if updated_feature_names is not None:
+			self._cached_feature_names = [str(name) for name in updated_feature_names]
+			self._write_feature_reference(self._cached_feature_names, logger=logger)
+
 		# '''RF paras''' --> unused
 		# max_new_forests = [1,1,1,1,1,1]
 		# sample_weights_by_class = None#np.array([0.05, 0.95])#None#np.array([0.05, 0.95])#None
@@ -279,6 +299,22 @@ class GeoRF():
 		# PRE-PARTITIONING DIAGNOSTICS WITH CROSS-VALIDATION
 		# Generate diagnostic maps using CV to prevent overfitting bias before spatial partitioning
 		train_list_init = np.where(X_set == 0)
+		train_indices_flat = train_list_init[0] if isinstance(train_list_init, tuple) else np.asarray(train_list_init)
+		train_indices_flat = np.asarray(train_indices_flat, dtype=int)
+		reference_names_for_cache = list(self._cached_feature_names) if getattr(self, '_cached_feature_names', None) else None
+		base_train_source = X[train_indices_flat]
+		if reference_names_for_cache:
+			base_train_aligned, _ = self._restrict_to_feature_reference(
+				base_train_source,
+				reference_names_for_cache,
+				logger=None,
+				context_label='fit.base_training'
+			)
+		else:
+			base_train_aligned = np.asarray(base_train_source)
+		self._base_training_X = np.array(base_train_aligned, copy=True)
+		self._base_training_y = np.array(y[train_indices_flat], copy=True)
+		self._base_training_groups = np.array(np.asarray(X_group)[train_indices_flat], copy=True)
 		try:
 			import config as cfg_module
 		except ImportError:
@@ -747,6 +783,211 @@ class GeoRF():
 
 		print(f'Baseline CV misclassification artifacts: {csv_path}, {png_path}')
 
+	def _load_feature_name_reference(self, logger=None):
+		"""Load persisted feature reference list if available."""
+		reference_names = None
+		ref_path = Path(self.model_dir) / 'feature_name_reference.csv'
+		if ref_path.exists():
+			try:
+				df_ref = pd.read_csv(ref_path)
+				if 'feature_name' in df_ref.columns:
+					reference_names = df_ref['feature_name'].astype(str).tolist()
+					if logger:
+						logger.info(f'feature_reference_loaded count={len(reference_names)} path={ref_path}')
+				else:
+					if logger:
+						logger.warning(f'feature_reference_missing_feature_name_column path={ref_path}')
+			except Exception as ref_err:
+				if logger:
+					logger.warning(f'feature_reference_load_failed path={ref_path} error={ref_err}')
+		if not reference_names and getattr(self, '_cached_feature_names', None):
+			reference_names = [str(name) for name in self._cached_feature_names]
+		if reference_names:
+			self._cached_feature_names = [str(name) for name in reference_names]
+		return reference_names
+
+	def _restrict_to_feature_reference(self, X_input, reference_names, logger=None, context_label='eval'):
+		"""Restrict features of X_input to match the persisted reference."""
+		if not reference_names:
+			return X_input, None
+		reference_names = [str(name) for name in reference_names]
+		reference_set = set(reference_names)
+		self._cached_feature_names = [str(name) for name in reference_names]
+		if hasattr(X_input, 'loc') and getattr(X_input, 'columns', None) is not None:
+			columns = [str(col) for col in X_input.columns]
+			extra = [col for col in columns if col not in reference_set]
+			missing = [name for name in reference_names if name not in columns]
+			if missing:
+				raise ValueError(f'X input for {context_label} missing expected features: {missing}')
+			if extra and logger:
+				logger.warning(f'x_input_extra_features_dropped context={context_label} count={len(extra)} sample={extra[:5]}')
+			aligned_df = X_input.loc[:, reference_names]
+			return aligned_df.to_numpy(), aligned_df
+		X_array = np.asarray(X_input)
+		if X_array.ndim != 2:
+			raise ValueError(f'X input for {context_label} must be 2-dimensional; got shape {X_array.shape}')
+		if X_array.shape[1] != len(reference_names):
+			raise ValueError(
+				f'X input for {context_label} width mismatch: expected {len(reference_names)} features, got {X_array.shape[1]}'
+			)
+		return X_array, None
+
+	def _write_feature_reference(self, names, logger=None):
+		if not names:
+			return
+		try:
+			ref_path = Path(self.model_dir) / 'feature_name_reference.csv'
+			reference_df = pd.DataFrame({
+				'feature_index': np.arange(len(names), dtype=int),
+				'feature_name': [str(name) for name in names]
+			})
+			reference_df.to_csv(ref_path, index=False)
+		except Exception as ref_err:
+			if logger:
+				logger.warning(f'feature_reference_write_failed path={ref_path} error={ref_err}')
+
+	def _get_feature_drop_config(self):
+		cfg = globals().get('FEATURE_DROP')
+		if isinstance(cfg, dict):
+			return cfg
+		cfg_lower = globals().get('feature_drop')
+		if isinstance(cfg_lower, dict):
+			return cfg_lower
+		return {}
+
+	def _prepare_feature_drop_after_split(self, X, feature_names, logger=None):
+		drop_cfg = self._get_feature_drop_config()
+		enabled = bool(drop_cfg.get('enable', False))
+		drop_candidates_raw = drop_cfg.get('cols', [])
+		drop_candidates = [str(col) for col in drop_candidates_raw if col is not None]
+		pattern_candidates_raw = drop_cfg.get('patterns', [])
+		pattern_candidates = [str(pat) for pat in pattern_candidates_raw if pat]
+		if not enabled or (not drop_candidates and not pattern_candidates):
+			self.drop_list_ = []
+			self._drop_indices = tuple()
+			return X, feature_names
+		available_names = None
+		if feature_names:
+			available_names = [str(name) for name in feature_names]
+		elif hasattr(X, 'columns') and getattr(X, 'columns', None) is not None:
+			available_names = [str(col) for col in X.columns]
+		if not available_names:
+			if logger:
+				logger.warning('feature_drop_enabled_but_feature_names_missing; skipping drop')
+			self.drop_list_ = []
+			self._drop_indices = tuple()
+			return X, feature_names
+		protected = set()
+		for key in ('TARGET_COLUMN', 'TARGET_COL', 'TARGET', 'TARGET_NAME', 'UID_COLUMN', 'UID_COL', 'UNIQUE_ID_COLUMN'):
+			value = globals().get(key)
+			if value:
+				protected.add(str(value))
+		pattern_matches = set()
+		try:
+			import fnmatch
+		except ImportError:
+			fnmatch = None
+		if pattern_candidates and fnmatch is not None:
+			for pat in pattern_candidates:
+				matched = [name for name in available_names if fnmatch.fnmatch(name, pat)]
+				pattern_matches.update(matched)
+		drop_ordered = []
+		skipped_protected = []
+		for name in drop_candidates:
+			if name in protected:
+				skipped_protected.append(name)
+				continue
+			drop_ordered.append(name)
+		if skipped_protected and logger:
+			logger.info(f'DROP_COLUMNS skipped_protected={skipped_protected}')
+		present = [name for name in drop_ordered if name in available_names]
+		present += [name for name in sorted(pattern_matches) if name not in present]
+		missing = [name for name in drop_ordered if name not in available_names]
+		if missing and logger:
+			logger.info(f'DROP_COLUMNS missing post-temporal-split count={len(missing)} names={missing}')
+		if not present:
+			self.drop_list_ = []
+			self._drop_indices = tuple()
+			return X, feature_names
+		index_map = {name: idx for idx, name in enumerate(available_names)}
+		drop_indices = sorted(index_map[name] for name in present)
+		if hasattr(X, 'drop') and getattr(X, 'columns', None) is not None:
+			X = X.drop(columns=[name for name in present if name in X.columns])
+			X_out = X.to_numpy()
+		else:
+			X_array = np.asarray(X)
+			if X_array.ndim != 2:
+				raise ValueError(f'Feature matrix must be 2-dimensional after drop; got shape {X_array.shape}')
+			X_out = np.delete(X_array, drop_indices, axis=1) if drop_indices else X_array
+		remaining_names = [name for name in available_names if name not in present]
+		self.drop_list_ = present
+		self._drop_indices = tuple(drop_indices)
+		if logger:
+			logger.info(f'DROP_COLUMNS post-temporal-split pre-train count={len(present)} names={present}')
+		return X_out, remaining_names
+
+	def _apply_feature_drop_inference(self, X):
+		drop_names = list(getattr(self, 'drop_list_', []) or [])
+		drop_indices = list(getattr(self, '_drop_indices', tuple()) or [])
+		if not drop_names:
+			return X
+		if hasattr(X, 'drop') and getattr(X, 'columns', None) is not None:
+			present = [name for name in drop_names if name in X.columns]
+			if present:
+				return X.drop(columns=present)
+			return X
+		if drop_indices:
+			X_array = np.asarray(X)
+			if X_array.ndim != 2:
+				raise ValueError(f'Feature matrix must be 2-dimensional at inference; got shape {X_array.shape}')
+			return np.delete(X_array, drop_indices, axis=1)
+		return X
+
+	def _resolve_feature_names(self, X_source, model, n_features, pipeline=None, logger=None):
+		"""Resolve feature names with fallbacks and duplicate handling."""
+		names = None
+		source = None
+		if hasattr(X_source, 'columns') and getattr(X_source, 'columns', None) is not None:
+			names = [str(col) for col in X_source.columns]
+			source = 'X.columns'
+		elif hasattr(model, 'feature_names_in_') and getattr(model, 'feature_names_in_', None) is not None:
+			names = [str(col) for col in model.feature_names_in_]
+			source = 'model.feature_names_in_'
+		elif pipeline is not None and hasattr(pipeline, 'get_feature_names_out'):
+			try:
+				names = [str(col) for col in pipeline.get_feature_names_out()]
+				source = 'pipeline.get_feature_names_out()'
+			except Exception as err:
+				if logger:
+					logger.warning(f'feature_name_resolution_pipeline_failed={err}')
+		elif getattr(self, '_cached_feature_names', None):
+			names = [str(col) for col in self._cached_feature_names]
+			source = 'cached_feature_names'
+		if not names:
+			names = [f'feature_{idx}' for idx in range(n_features)]
+			source = 'fallback_generated'
+			if logger:
+				logger.warning('feature_name_resolution_fallback_used')
+		if len(names) != n_features:
+			if len(names) > n_features:
+				names = names[:n_features]
+			else:
+				names = names + [f'feature_{idx}' for idx in range(len(names), n_features)]
+		deduped = []
+		seen = {}
+		for idx, name in enumerate(names):
+			base = str(name)
+			if base in seen:
+				seen[base] += 1
+				new_name = f'{base}__{seen[base]}'
+				if logger and seen[base] == 2:
+					logger.warning('feature_name_resolution_deduplicated')
+				deduped.append(new_name)
+			else:
+				seen[base] = 1
+				deduped.append(base)
+		return deduped, source
+
 	def predict(self, X, X_group, save_full_predictions = False):
 		"""
     Evaluating GeoRF and/or RF.
@@ -768,8 +1009,14 @@ class GeoRF():
     """
 
 		#Model assignment
+		X_processed = self._apply_feature_drop_inference(X)
+		if hasattr(X_processed, 'to_numpy'):
+			X_matrix = X_processed.to_numpy()
+		else:
+			X_matrix = np.asarray(X_processed)
+
 		X_branch_id = get_X_branch_id_by_group(X_group, self.s_branch)
-		y_pred = self.model.predict_georf(X, X_group, self.s_branch, X_branch_id = X_branch_id)
+		y_pred = self.model.predict_georf(X_matrix, X_group, self.s_branch, X_branch_id = X_branch_id)
 
 		if save_full_predictions:
 			np.save(self.dir_space + '/' + 'y_pred_georf.npy', y_pred)
@@ -814,6 +1061,21 @@ class GeoRF():
 			print_file = self.model_dir + '/' + 'log_print_eval.txt'
 			sys.stdout = open(print_file, "w")
 
+		Xtest = self._apply_feature_drop_inference(Xtest)
+
+		reference_names = self._load_feature_name_reference(logger=logger)
+		if not reference_names:
+			raise ValueError('feature_name_reference.csv unavailable; cannot enforce strict feature alignment')
+		Xtest_for_shap = None
+		Xtest_aligned, Xtest_df = self._restrict_to_feature_reference(
+			Xtest,
+			reference_names,
+			logger=logger,
+			context_label='evaluate.Xtest'
+		)
+		Xtest = Xtest_aligned
+		Xtest_for_shap = Xtest_df if Xtest_df is not None else Xtest_aligned
+
 		# Geo-RF
 		start_time = time.time()
 
@@ -830,44 +1092,202 @@ class GeoRF():
 		if eval_base:
 
 			start_time = time.time()
-			self.model.load('')
-			y_pred_single = self.model.predict(Xtest)
+			baseline_wrapper = None
+			if self._base_training_X is not None and self._base_training_y is not None:
+				baseline_train_matrix, _ = self._restrict_to_feature_reference(
+					self._base_training_X,
+					reference_names,
+					logger=logger,
+					context_label='evaluate.base_training'
+				)
+				baseline_wrapper = RFmodel(
+					self.dir_ckpt,
+					self.n_trees_unit,
+					max_depth=self.max_depth,
+					num_class=self.num_class,
+					random_state=self.random_state,
+					n_jobs=self.n_jobs,
+					sample_weights_by_class=self.sample_weights_by_class
+				)
+				baseline_wrapper.train(
+					np.array(baseline_train_matrix, copy=True),
+					np.array(self._base_training_y, copy=True),
+					branch_id='eval',
+					sample_weights_by_class=self.sample_weights_by_class
+				)
+				logger.info('baseline_rf_retrained_from_cached_training_data=1')
+			else:
+				logger.warning('baseline_training_cache_missing; falling back to saved baseline model')
+				self.model.load('')
+				baseline_wrapper = self.model
+			base_estimator = getattr(baseline_wrapper, 'model', None)
+			feature_count_expected = len(reference_names)
+			if base_estimator is not None and hasattr(base_estimator, 'n_features_in_'):
+				n_features_in = getattr(base_estimator, 'n_features_in_', None)
+				print(f'Baseline RF debug: n_features_in_={n_features_in}, Xtest width={feature_count_expected}')
+				logger.info(f'baseline_rf_feature_check n_features_in={n_features_in} Xtest_width={feature_count_expected}')
+				if n_features_in is not None and int(n_features_in) != int(feature_count_expected):
+					raise ValueError(f'Baseline RF feature mismatch: model expects {n_features_in} features but Xtest has {feature_count_expected}')
+			if base_estimator is not None and hasattr(base_estimator, 'feature_names_in_'):
+				estimator_feature_names = [str(name) for name in getattr(base_estimator, 'feature_names_in_', [])]
+				if estimator_feature_names and estimator_feature_names != reference_names:
+					raise ValueError('Baseline RF feature names mismatch with feature_name_reference')
+			y_pred_single = baseline_wrapper.predict(Xtest)
 			true_single, total_single, pred_total_single = get_class_wise_accuracy(ytest, y_pred_single, prf = True)
 			pre_single, rec_single, f1_single, total_class = get_prf(true_single, total_single, pred_total_single)
    
 
-			# Compute SHAP values for base RF
-			explainer = shap.TreeExplainer(self.model.model)
-			shap_values = explainer.shap_values(Xtest)
-			# shap returns [n_samples, n_features] for binary or list[dense] per class.
-			if isinstance(shap_values, list):
-				# For multi-class RF, shap returns one matrix per class; save separate files.
-				for class_idx, shap_matrix in enumerate(shap_values):
-					shap_matrix = np.asarray(shap_matrix)
-					if shap_matrix.ndim != 2:
-						# Flatten unexpected shapes to avoid crashes while preserving data.
-						shap_matrix = shap_matrix.reshape(shap_matrix.shape[0], -1)
-					shap_df_base = pd.DataFrame(
-						shap_matrix,
-						columns=[f"Feature_{i}" for i in range(shap_matrix.shape[1])]
-					)
-					shap_path_base = os.path.join(
-						self.model_dir,
-						f'shap_values_base_rf_class{class_idx}.csv'
-					)
-					shap_df_base.to_csv(shap_path_base, index=False)
-					print(f"SHAP values for base RF (class {class_idx}) saved: {shap_path_base}")
+			# Compute SHAP values for base RF with feature-aware outputs
+			explainer = shap.TreeExplainer(baseline_wrapper.model)
+			X_baseline = Xtest_for_shap
+			shape_info = getattr(X_baseline, 'shape', None)
+			print(f'SHAP debug: X_baseline shape={shape_info}')
+			logger.info(f'shap_debug_X_baseline_shape={shape_info}')
+			shap_values_raw = explainer.shap_values(X_baseline)
+			if isinstance(shap_values_raw, list):
+				print(f'SHAP debug: got list of length {len(shap_values_raw)}')
+				for idx_tmp, shap_matrix in enumerate(shap_values_raw[:2]):
+					try:
+						print(f'SHAP debug: shap_matrix[{idx_tmp}] shape={np.asarray(shap_matrix).shape}')
+					except Exception:
+						pass
+				stacked = []
+				for class_idx, shap_matrix in enumerate(shap_values_raw):
+					matrix = np.asarray(shap_matrix)
+					if matrix.ndim != 2:
+						matrix = matrix.reshape(matrix.shape[0], -1)
+					stacked.append(matrix)
+				if not stacked:
+					raise ValueError('No SHAP values produced for baseline model')
+				S = np.mean(np.stack(stacked, axis=0), axis=0)
 			else:
-				shap_matrix = np.asarray(shap_values)
-				if shap_matrix.ndim != 2:
-					shap_matrix = shap_matrix.reshape(shap_matrix.shape[0], -1)
-				shap_df_base = pd.DataFrame(
-					shap_matrix,
-					columns=[f"Feature_{i}" for i in range(shap_matrix.shape[1])]
-				)
-				shap_path_base = os.path.join(self.model_dir, 'shap_values_base_rf.csv')
-				shap_df_base.to_csv(shap_path_base, index=False)
-				print(f"SHAP values for base RF saved: {shap_path_base}")
+				S = np.asarray(shap_values_raw)
+				feature_count = X_baseline.shape[1]
+				print(f'SHAP debug: raw array shape={S.shape}, ndim={S.ndim}, feature_count={feature_count}')
+				if S.ndim == 3:
+					if S.shape[0] == X_baseline.shape[0] and S.shape[2] == self.num_class:
+						S = S.mean(axis=2)
+						print(f'SHAP debug: collapsed layout (samples, features, classes) -> {S.shape}')
+					elif S.shape[0] == self.num_class and S.shape[1] == X_baseline.shape[0]:
+						S = S.mean(axis=0)
+						print(f'SHAP debug: collapsed layout (classes, samples, features) -> {S.shape}')
+					else:
+						S = S.reshape(S.shape[0], -1)
+						print(f'SHAP debug: reshaped unexpected 3D layout -> {S.shape}')
+				elif S.ndim == 2 and self.num_class > 1 and S.shape[1] == feature_count * self.num_class:
+					S = S.reshape(S.shape[0], self.num_class, feature_count).mean(axis=1)
+					print(f'SHAP debug: collapsed flattened class axis -> {S.shape}')
+				elif S.ndim != 2:
+					S = S.reshape(S.shape[0], -1)
+					print(f'SHAP debug: reshaped fallback -> {S.shape}')
+			n_samples, n_features = S.shape
+			print(f'SHAP debug: n_samples={n_samples}, n_features={n_features}')
+			feature_names, feature_source = self._resolve_feature_names(
+				X_baseline,
+				getattr(baseline_wrapper, 'model', baseline_wrapper),
+				n_features,
+				pipeline=getattr(baseline_wrapper, 'pipeline', None),
+				logger=logger
+			)
+			if reference_names:
+				if len(reference_names) != S.shape[1]:
+					raise ValueError('SHAP feature dimension mismatch with feature_name_reference')
+				feature_names = list(reference_names)
+				feature_source = 'feature_name_reference'
+			logger.info(f'shap_feature_dimensions n_features={n_features} resolved={len(feature_names)} source={feature_source}')
+			if S.shape[1] != len(feature_names):
+				raise ValueError('SHAP feature dimension mismatch')
+			shap_df = pd.DataFrame(S, columns=feature_names)
+			feature_index_map = {name: idx for idx, name in enumerate(feature_names)}
+			mean_abs = shap_df.abs().mean(axis=0)
+			df_rank = mean_abs.sort_values(ascending=False, kind='mergesort').reset_index()
+			df_rank.columns = ['feature', 'mean_abs_shap']
+			df_rank['rank'] = np.arange(1, len(df_rank) + 1)
+			vis_dir = getattr(self, 'dir_vis', None) or getattr(self, 'model_dir', None) or '.'
+			vis_path = Path(vis_dir)
+			vis_path.mkdir(parents=True, exist_ok=True)
+			csv_path = vis_path / 'baseline_shap_mean_abs_by_feature.csv'
+			df_rank[['feature', 'mean_abs_shap', 'rank']].to_csv(csv_path, index=False)
+			logger.info(f'feature_name_source={feature_source}')
+			csv_path_str = str(csv_path)
+			logger.info(f'csv_written_path={csv_path_str}')
+			print(f'Baseline SHAP mean |SHAP| CSV saved: {csv_path_str}')
+			top_n = min(10, len(df_rank))
+			bottom_n = min(10, len(df_rank))
+			top_df = df_rank.head(top_n)
+			bottom_df = df_rank.tail(bottom_n)
+			selected_df = pd.concat([top_df, bottom_df], axis=0).drop_duplicates('feature', keep='first')
+			selected_df = selected_df.sort_values('rank', kind='mergesort')
+			sel_features = selected_df['feature'].tolist()
+			logger.info(f'beeswarm_feature_count={len(sel_features)} top_n={top_n} bottom_n={bottom_n}')
+			if sel_features:
+				selected_names = list(sel_features)
+				S_sel = None
+				X_sel = None
+				plot_features = None
+				if hasattr(X_baseline, 'loc'):
+					existing = [name for name in selected_names if name in X_baseline.columns]
+					missing_count = len(selected_names) - len(existing)
+					if missing_count:
+						logger.warning(f'beeswarm_dataframe_missing_features={missing_count}')
+					if existing:
+						S_sel = shap_df[existing].values
+						X_sel = X_baseline.loc[:, existing]
+						plot_features = existing
+				else:
+					X_array = np.asarray(X_baseline)
+					if X_array.ndim == 1:
+						X_array = X_array.reshape(-1, 1)
+					valid_pairs = []
+					for name in selected_names:
+						idx = feature_index_map.get(name)
+						if idx is None:
+							continue
+						if idx >= X_array.shape[1]:
+							logger.warning('beeswarm_array_index_out_of_bounds name=%s idx=%d limit=%d', name, idx, X_array.shape[1])
+							continue
+						valid_pairs.append((name, idx))
+					if valid_pairs:
+						valid_names, valid_indices = zip(*valid_pairs)
+						valid_names = list(valid_names)
+						valid_indices = list(valid_indices)
+						S_sel = shap_df[valid_names].values
+						X_sel = X_array[:, valid_indices]
+						plot_features = valid_names
+				if S_sel is None or X_sel is None or plot_features is None:
+					logger.warning('beeswarm_skipped_no_valid_features_after_alignment')
+				else:
+					import matplotlib.pyplot as plt
+					plt.figure(figsize=(10, 6), dpi=200)
+					try:
+						shap.summary_plot(S_sel, features=X_sel, feature_names=plot_features, show=False, plot_type='dot')
+					except Exception:
+						for pos, feat in enumerate(plot_features):
+							values = S_sel[:, pos]
+							y = np.full(values.shape[0], pos)
+							plt.scatter(values, y, s=4, alpha=0.5, color='#1f77b4')
+						plt.yticks(range(len(plot_features)), plot_features)
+						plt.xlabel('SHAP value')
+					plt.title('Baseline SHAP Beeswarm (Top/Bottom-10 by mean |SHAP|)')
+					plt.tight_layout()
+					png_path = vis_path / 'baseline_shap_beeswarm_top10_bottom10.png'
+					plt.savefig(png_path)
+					plt.close()
+					png_path_str = str(png_path)
+					logger.info(f'beeswarm_written_path={png_path_str}')
+					print(f'Baseline SHAP beeswarm saved: {png_path_str}')
+					log_path = vis_path / 'baseline_shap_log.txt'
+					log_path_str = str(log_path)
+					log_lines = [
+						f'feature_name_source={feature_source}',
+						f'csv_written_path={csv_path_str}',
+						f'beeswarm_written_path={png_path_str}'
+					]
+					with open(log_path, 'w') as log_file:
+						log_file.write('\n'.join(log_lines) + '\n')
+					logger.info(f'shap_log_written_path={log_path_str}')
+			else:
+				logger.warning('beeswarm_skipped_no_features')
 
 			print('f1_base:', f1_single)
 			log_print = ', '.join('%f' % value for value in f1_single)

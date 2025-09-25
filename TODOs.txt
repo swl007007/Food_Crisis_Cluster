@@ -13,10 +13,7 @@ TODO(CRITICAL):
 
 
 TODO(on hold):
-1.remove lat and lon 1min
-2. remove year variable and quarter variable(gradually remove) 1min
 3. smaller feature set of ~20 variables 1min
-4.further processing on shap values 10min
 
 
 

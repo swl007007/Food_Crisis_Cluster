@@ -70,7 +70,7 @@ elif DATA_MODE == 'nogis':
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 
-def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, 
+def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
                            track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False, force_final_accuracy=False):
     """
@@ -421,6 +421,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 polygon_contiguity_info=polygon_contiguity_info,
                 track_partition_metrics=track_partition_metrics,
                 correspondence_table_path=correspondence_table_path,
+                feature_names=feature_columns,
                 VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
             
@@ -1021,7 +1022,7 @@ def main():
         X_group, X_loc, contiguity_info = setup_spatial_groups(df, assignment)
         
         # Step 3: Prepare features with forecasting scope
-        X, y, l1_index, l2_index, years, terms, dates = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
+        X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
         
         # Step 4: Validate polygon contiguity (if applicable) and track polygon counts
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
@@ -1051,7 +1052,7 @@ def main():
         
         # Step 5: Run temporal evaluation
         results_df, y_pred_test = run_temporal_evaluation(
-            X, y, X_loc, X_group, years, dates, l1_index, l2_index,
+            X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
             start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup,
