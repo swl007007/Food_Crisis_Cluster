@@ -53,7 +53,7 @@ if USE_ADJACENCY_MATRIX:
     from src.adjacency.adjacency_utils import load_or_create_adjacency_matrix
 
 # Configuration
-DATA_MODE = 'full'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro'
+DATA_MODE = 'min'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min'
 
 
 if DATA_MODE == 'full':
@@ -66,6 +66,8 @@ elif DATA_MODE == 'nomacro':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
 elif DATA_MODE == 'nogis':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
+elif DATA_MODE == 'min':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 

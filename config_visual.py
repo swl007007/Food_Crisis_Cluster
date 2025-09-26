@@ -95,10 +95,16 @@ GROUP_SPLIT = {
 }
 
 # Feature drop configuration (post temporal split, pre-training)
+#FEATURE_DROP = {
+#    'enable': True,
+#    'cols': ['lat', 'lon', 'years', 'month','FEWSNET_admin_code','IPC_admin_code],
+#    'patterns': ['year_*', 'month_*'],
+#}
+
 FEATURE_DROP = {
     'enable': True,
-    'cols': ['lat', 'lon', 'year', 'month','FEWSNET_admin_code'],
-    'patterns': ['year_*', 'month_*'],
+    'cols': ['lat', 'lon', 'years', 'month','FEWSNET_admin_code','IPC_admin_code','pop'],
+    'patterns': ['year_*', 'month_*','AEZ_*','GDP_*','gini_*','CPI_*'],
 }
 feature_drop = FEATURE_DROP
 

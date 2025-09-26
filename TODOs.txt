@@ -12,19 +12,14 @@ TODO(CRITICAL):
 
 
 
-TODO(on hold):
-3. smaller feature set of ~20 variables 1min
-
-
-
-
 
 
 TODO(FUTURE):
 1. checkpoint system is deprecated, need to re-design
-2. GeoXGB test pipeline is not producing all the required figures
-3. Rewrite Agent documentations  according to standard, private domain engineering wiki.
-4.write out features that need unit tests, complete unit tests and complete feature tests/integration reports
+2. two-layer system is deprecated, need to re-design or remove completely.
+3. GeoXGB test pipeline is not producing all the required figures
+4. Rewrite Agent documentations  according to standard, private domain engineering wiki.
+5. Restructure documents.
 
 
 IMPORTANT NOTE
