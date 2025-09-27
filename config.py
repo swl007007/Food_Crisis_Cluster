@@ -17,6 +17,11 @@ MODEL_CHOICE = 'RF'
 #Task (only classification version for RF has been tested)
 MODE = 'classification'#'regression'
 
+# Visualization guardrails (synced with config_visual)
+VISUALIZE_ENFORCE_PARENT_SCOPE = True
+VISUALIZE_HIDE_UNASSIGNED = True
+PARTITIONING_VALIDATE_TERMINAL_LABELS = True
+
 #------------------GeoRF parameters------------------
 
 #**************************ATTENTION NEEDED [1, total 3]**************************

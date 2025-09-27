@@ -462,52 +462,16 @@ class GeoRF():
 			# Create correspondence table for visualization with proper inheritance
 			from config_visual import VALID_PARTITION_LABELS
 			
-			# CRITICAL FIX: Create correspondence data for unique admin units only, not all temporal records
-			# Bug was: iterating through X_branch_id (70,228 temporal records) instead of unique admin units
-			print(f"CORRESPONDENCE TABLE FIX:")
+			from src.merge.terminal import build_terminal
+			print("CORRESPONDENCE TABLE BUILD:")
 			print(f"  X_branch_id length (temporal records): {len(X_branch_id):,}")
 			print(f"  X_group length (temporal records): {len(X_group):,}")
 			print(f"  Unique admin units: {len(np.unique(X_group)):,}")
-			
-			correspondence_data = []
-			
-			# Create a mapping of unique admin units to their partition assignments
-			# Use the first occurrence of each admin unit to determine its partition
-			seen_admin_codes = set()
-			for group_id, branch_id in enumerate(X_branch_id):
-				if group_id < len(X_group):  # Safety check
-					admin_code = X_group[group_id] if hasattr(X_group[group_id], '__iter__') else X_group[group_id]
-					
-					# Only process each admin code once (skip temporal duplicates)
-					if admin_code not in seen_admin_codes:
-						seen_admin_codes.add(admin_code)
-						
-						# Map branch_id to partition_id with proper inheritance
-						if branch_id == '' or branch_id is None:
-							# Root branch - assign to partition 0
-							partition_id = 0
-						else:
-							# Map branch IDs to partition labels
-							# For binary partitioning: even branches -> 0, odd branches -> 1
-							try:
-								# Convert branch_id to binary representation and count 1s
-								branch_num = sum(1 for c in branch_id if c == '1') if branch_id else 0
-								partition_id = branch_num % 2  # Binary partitioning: 0 or 1
-							except:
-								partition_id = 0  # Default to partition 0 if parsing fails
-						
-						correspondence_data.append({
-							'FEWSNET_admin_code': admin_code,
-							'partition_id': partition_id,
-							'branch_id': branch_id,  # Keep original branch_id for analysis
-							'X_group': group_id
-						})
-			
-			print(f"  Correspondence entries created: {len(correspondence_data):,}")
-			print(f"  Expected entries (unique admin units): {len(np.unique(X_group)):,}")
-			print(f"  Fix successful: {len(correspondence_data) == len(np.unique(X_group))}")
-			
-			correspondence_df = pd.DataFrame(correspondence_data) if correspondence_data else None
+			correspondence_df, terminal_meta = build_terminal(X_group, X_branch_id)
+			print(f"  Correspondence entries created: {len(correspondence_df):,}")
+			print(f"  Collisions detected: {terminal_meta.get('n_collisions', 0)}")
+			if terminal_meta.get('collisions'):
+				print(f"  Collision sample: {terminal_meta['collisions']}")
 			
 			# Count partitions
 			partition_count = len(self.s_branch) if hasattr(self, 's_branch') and self.s_branch is not None else 0

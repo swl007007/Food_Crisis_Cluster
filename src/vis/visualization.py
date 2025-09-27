@@ -578,265 +578,272 @@ def generate_vis_image_for_all_groups(grid, dir, ext = '', vmin = None, vmax = N
   fig.savefig(dir + '/' + 'result_group' + ext + '.png')
 
 
-def plot_partition_map(correspondence_table_path, 
-                      shapefile_path=None, 
-                      save_path=None, 
-                      title="GeoRF Partition Map", 
-                      figsize=(12, 10), 
+def plot_partition_map(correspondence_table_path,
+                      shapefile_path=None,
+                      save_path=None,
+                      title="GeoRF Partition Map",
+                      figsize=(12, 10),
                       dpi=300,
                       add_basemap=True,
                       basemap_source=None,
                       VIS_DEBUG_MODE=None):
-    """
-    Plot GeoRF partitions on a map using correspondence table and shapefiles.
-    
-    This function visualizes spatial partitions created by GeoRF by mapping partition IDs
-    back to administrative boundaries using the correspondence table that links 
-    X_group/partition_id to FEWSNET_admin_code.
-    
-    Args:
-        correspondence_table_path (str): Path to CSV file containing partition assignments.
-                                       Expected columns: 'FEWSNET_admin_code', 'partition_id'
-        shapefile_path (str, optional): Path to shapefile with admin boundaries.
-                                      If None, uses default FEWS NET boundaries
-        save_path (str, optional): Output path for saved map. If None, uses default naming
-        title (str): Title for the map
-        figsize (tuple): Figure size as (width, height)
-        dpi (int): Resolution for saved figure
-        add_basemap (bool): Whether to add contextily basemap
-        basemap_source: Contextily basemap source (e.g., ctx.providers.CartoDB.Positron)
-        
-    Returns:
-        matplotlib.figure.Figure: The created figure object
-        
-    Raises:
-        FileNotFoundError: If correspondence table or shapefile cannot be found
-        ValueError: If required columns are missing from correspondence table
-    """
+    """Render partition choropleths with strict legend/data parity and audits."""
+
     try:
         import geopandas as gpd
         import contextily as ctx
-        import matplotlib.colors as mcolors
+        from matplotlib.colors import ListedColormap, to_hex
         from matplotlib.patches import Patch
-    except ImportError as e:
+    except ImportError as e:  # pragma: no cover
         raise ImportError(f"Required packages missing: {e}. Install with: pip install geopandas contextily")
-    
-    # Default paths
+
+    np.random.seed(42)
+
+    from pathlib import Path
+
+    try:
+        from config_visual import HIDE_UNASSIGNED_PARTITIONS, UNASSIGNED_LABELS
+    except ImportError:
+        try:
+            from config import HIDE_UNASSIGNED_PARTITIONS, UNASSIGNED_LABELS  # type: ignore
+        except ImportError:
+            HIDE_UNASSIGNED_PARTITIONS = True
+            UNASSIGNED_LABELS = [-1]
+
+    _ = HIDE_UNASSIGNED_PARTITIONS  # Preserve flag for compatibility even if unused
+
     if shapefile_path is None:
         shapefile_path = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
-    
+
     if save_path is None:
         save_path = correspondence_table_path.replace('.csv', '_partition_map.png')
-    
-    # Load and validate correspondence table
+
+    output_dir = Path(save_path).resolve().parent
+    output_dir.mkdir(parents=True, exist_ok=True)
+
     try:
-        df = pd.read_csv(correspondence_table_path)
+        assignments_df = pd.read_csv(correspondence_table_path)
     except FileNotFoundError:
         raise FileNotFoundError(f"Correspondence table not found: {correspondence_table_path}")
-    
-    # Validate required columns
-    required_cols = ['FEWSNET_admin_code', 'partition_id']
-    missing_cols = [col for col in required_cols if col not in df.columns]
+
+    required_cols = {'FEWSNET_admin_code', 'partition_id'}
+    missing_cols = required_cols - set(assignments_df.columns)
     if missing_cols:
-        raise ValueError(f"Missing required columns in correspondence table: {missing_cols}")
-    
-    # Clean data: remove rows with empty partition_id
-    df_clean = df.dropna(subset=['partition_id'])
-    df_clean = df_clean[df_clean['partition_id'] != '']
-    
-    if len(df_clean) == 0:
-        print("Warning: No valid partition assignments found in correspondence table")
-        return None
-    
-    # Load shapefile
+        raise ValueError(f"Missing required columns in correspondence table: {sorted(missing_cols)}")
+
+    assignments_df['admin_code'] = assignments_df['FEWSNET_admin_code'].astype('string').str.strip()
+
+    nodata_tokens = {"", "nan", "NaN", "None", "<NA>", "-1"}
+    nodata_tokens.update({str(v).strip() for v in UNASSIGNED_LABELS})
+
+    partitions_str = assignments_df['partition_id'].astype('string').str.strip()
+    nodata_mask = partitions_str.isna() | partitions_str.isin(nodata_tokens)
+    partitions_clean = partitions_str.mask(nodata_mask)
+
+    assignments_df['partition_id'] = pd.Categorical(
+        partitions_clean,
+        categories=sorted(partitions_clean.dropna().unique()),
+        ordered=False
+    )
+
+    assignments_df = assignments_df[assignments_df['admin_code'].notna()].copy()
+    assignments_df = assignments_df.drop_duplicates(subset=['admin_code'], keep='last')
+
+    label_freqs_in_data = (
+        assignments_df.assign(partition_id=assignments_df['partition_id'].astype('string'))
+        .groupby('partition_id', dropna=False)
+        .size()
+        .reset_index(name='count')
+    )
+    label_freqs_in_data['is_nodata'] = label_freqs_in_data['partition_id'].isna() | label_freqs_in_data['partition_id'].isin(nodata_tokens)
+    label_freqs_in_data.to_csv(output_dir / 'label_freqs_in_data.csv', index=False)
+
+    categories_in_data = [
+        cat for cat in sorted(partitions_clean.dropna().unique())
+        if cat not in nodata_tokens
+    ]
+
+    if not categories_in_data:
+        raise ValueError("No valid partition labels available after NoData filtering")
+
+    assignments_scope = assignments_df[assignments_df['partition_id'].notna()].copy()
+    assignments_scope['partition_id'] = assignments_scope['partition_id'].astype('string')
+
+    total_assignments = len(assignments_scope)
+
     try:
-        gdf = gpd.read_file(shapefile_path)
-    except Exception as e:
-        raise FileNotFoundError(f"Cannot load shapefile: {shapefile_path}. Error: {e}")
-    
-    # Keep only necessary columns and merge
-    gdf = gdf[['admin_code', 'geometry']].copy()
-    
-    # Merge correspondence table with geometries
-    # Convert FEWSNET_admin_code to int first, then to string to remove decimal points
-    df_clean['admin_code'] = df_clean['FEWSNET_admin_code'].astype(float).astype(int).astype(str)
-    gdf['admin_code'] = gdf['admin_code'].astype(str)
-    
-    # Use outer join to preserve all polygons when configured
+        polygons_gdf = gpd.read_file(shapefile_path)[['admin_code', 'geometry']].copy()
+    except Exception as exc:
+        raise FileNotFoundError(f"Cannot load shapefile: {shapefile_path}. Error: {exc}")
+
+    polygons_gdf['admin_code'] = polygons_gdf['admin_code'].astype('string').str.strip()
+    polygons_gdf = polygons_gdf.dropna(subset=['geometry'])
+
+    assignments_presence = assignments_scope[['admin_code', 'partition_id']].copy()
+    assignments_presence['partition_id'] = assignments_presence['partition_id'].astype('string')
+    assignments_presence['in_assignments'] = True
+
+    polygons_presence = polygons_gdf[['admin_code']].copy()
+    polygons_presence['in_polygons'] = True
+
+    join_audit = assignments_presence.merge(polygons_presence, on='admin_code', how='outer')
+    join_audit['in_assignments'] = join_audit['in_assignments'].fillna(False)
+    join_audit['in_polygons'] = join_audit['in_polygons'].fillna(False)
+    join_audit['joined'] = join_audit['in_assignments'] & join_audit['in_polygons']
+    join_audit['partition_id'] = join_audit['partition_id'].astype('string')
+    join_audit.to_csv(output_dir / 'join_audit.csv', index=False)
+
     try:
-        from config import USE_OUTER_JOINS, DIAGNOSTIC_POLYGON_TRACKING
-        join_type = 'outer' if USE_OUTER_JOINS else 'left'
-    except:
-        join_type = 'left'  # Fallback to original behavior
-    
-    merged_gdf = df_clean.merge(gdf, on='admin_code', how=join_type)
-    
-    # Track unmatched polygons
-    unmatched_admin = merged_gdf[merged_gdf['partition_id'].isna()]['admin_code'].tolist()
-    unmatched_geom = merged_gdf[merged_gdf['geometry'].isna()]['admin_code'].tolist() 
-    
-    if unmatched_admin:
-        print(f"Warning: {len(unmatched_admin)} admin codes have no partition assignment")
-        try:
-            if DIAGNOSTIC_POLYGON_TRACKING:
-                print(f"  Sample unmatched admin codes: {unmatched_admin[:10]}")
-        except:
-            pass
-            
-    if unmatched_geom:
-        print(f"Warning: {len(unmatched_geom)} admin codes have no geometry")
-        try:
-            if DIAGNOSTIC_POLYGON_TRACKING:
-                print(f"  Sample missing geometries: {unmatched_geom[:10]}")
-        except:
-            pass
-    
-    # Handle unassigned partitions based on configuration
-    from config_visual import HIDE_UNASSIGNED_PARTITIONS, UNASSIGNED_LABELS
-    
-    if HIDE_UNASSIGNED_PARTITIONS:
-        # Keep NA values as NA for unmatched admin codes - they'll be filtered out later
-        pass  # Don't assign -1 to preserve original data semantics
-    else:
-        # Assign default partition to unmatched admin codes to preserve them in visualization
-        merged_gdf.loc[merged_gdf['partition_id'].isna(), 'partition_id'] = -1  # Unassigned partition
-    
-    # Convert to GeoDataFrame
-    merged_gdf = gpd.GeoDataFrame(merged_gdf, geometry='geometry')
-    
-    # Only drop geometries that are truly invalid, but track the loss
-    initial_count = len(merged_gdf)
-    merged_gdf = merged_gdf.dropna(subset=['geometry'])
-    final_count = len(merged_gdf)
-    
-    if initial_count != final_count:
-        print(f"Polygon loss in visualization: {initial_count} -> {final_count} ({initial_count-final_count} lost)")
-        try:
-            if DIAGNOSTIC_POLYGON_TRACKING:
-                print("  These polygons were lost due to missing geometry data")
-        except:
-            pass
-    
-    if len(merged_gdf) == 0:
-        raise ValueError("No valid geometries found after merging")
-    
-    # Create figure
+        merged = polygons_gdf.merge(
+            assignments_scope[['admin_code', 'partition_id']],
+            on='admin_code',
+            how='inner',
+            validate='1:1'
+        )
+    except Exception as exc:
+        raise ValueError(f"Failed to merge polygons with assignments: {exc}")
+
+    if merged.empty:
+        raise ValueError("Inner join yielded no records; verify UID alignment")
+
+    merged['partition_id'] = merged['partition_id'].astype('string').str.strip()
+    merged = merged[merged['partition_id'].isin(categories_in_data)]
+
+    if merged.empty:
+        raise ValueError("All joined partitions filtered out after normalization")
+
+    drawn_categories = [
+        cat for cat in categories_in_data
+        if (merged['partition_id'] == cat).any()
+    ]
+
+    if not drawn_categories:
+        raise ValueError("No partition categories remain for rendering")
+
+    merged['partition_id'] = pd.Categorical(merged['partition_id'], categories=drawn_categories, ordered=False)
+
+    gdf_plot = gpd.GeoDataFrame(merged, geometry='geometry', crs=polygons_gdf.crs)
+
+    label_freqs_drawn = (
+        gdf_plot['partition_id']
+        .astype('string')
+        .value_counts(dropna=False)
+        .rename_axis('partition_id')
+        .reindex(drawn_categories, fill_value=0)
+        .reset_index(name='count')
+    )
+    label_freqs_drawn.to_csv(output_dir / 'label_freqs_drawn.csv', index=False)
+
+    diff_table = (
+        label_freqs_in_data.set_index('partition_id')
+        .join(label_freqs_drawn.set_index('partition_id'), how='outer', lsuffix='_data', rsuffix='_drawn')
+        .fillna(0)
+    )
+    diff_table['count_data'] = diff_table['count_data'].astype(int)
+    diff_table['count_drawn'] = diff_table['count_drawn'].astype(int)
+    diff_table['delta'] = diff_table['count_drawn'] - diff_table['count_data']
+
+    n_labels_in_data = len(categories_in_data)
+    n_labels_drawn = len(drawn_categories)
+    n_missing_labels = len(set(categories_in_data) - set(drawn_categories))
+    join_loss_count = max(total_assignments - len(gdf_plot), 0)
+
+    diff_report_path = output_dir / 'labels_diff_report.txt'
+    with diff_report_path.open('w', encoding='utf-8') as diff_handle:
+        diff_handle.write(
+            f"n_labels_in_data={n_labels_in_data}\n"
+            f"n_labels_drawn={n_labels_drawn}\n"
+            f"n_missing_labels={n_missing_labels}\n"
+            f"join_loss_count={join_loss_count}\n"
+        )
+        diff_handle.write("\nlabel deltas (partition_id, count_data, count_drawn, delta):\n")
+        diff_handle.write(diff_table.reset_index().to_string(index=False))
+        diff_handle.write("\n")
+
+    palette = get_colors(len(drawn_categories))
+    palette = [to_hex(c) for c in palette]
+    cmap = ListedColormap(palette)
+
     fig, ax = plt.subplots(figsize=figsize)
-    
-    # Filter partitions based on configuration
-    original_count = len(merged_gdf)
-    
-    if HIDE_UNASSIGNED_PARTITIONS:
-        # Filter out unassigned labels from visualization
-        unassigned_set = set(UNASSIGNED_LABELS)
-        
-        # Also filter out NA values
-        merged_gdf_filtered = merged_gdf[
-            (~merged_gdf['partition_id'].isin(unassigned_set)) & 
-            (~merged_gdf['partition_id'].isna())
-        ].copy()
-        
-        dropped_count = original_count - len(merged_gdf_filtered)
-        if dropped_count > 0:
-            print(f"Hiding {dropped_count} unassigned polygons from visualization")
-        
-        merged_gdf = merged_gdf_filtered
-    
-    # Get unique partition IDs and create color map  
-    unique_partitions = merged_gdf['partition_id'].dropna().unique()
-    n_partitions = len(unique_partitions)
-    
-    if n_partitions == 0:
-        print("Warning: No valid partitions to visualize after filtering")
-        # Create empty plot with message
-        ax.text(0.5, 0.5, 'No valid partitions to display\n(All areas unassigned/filtered)', 
-               ha='center', va='center', transform=ax.transAxes, fontsize=14)
-        ax.set_title(title if title else 'Partition Map - No Data', fontsize=16, pad=20)
-        ax.set_xticks([])
-        ax.set_yticks([])
-        return fig
-    
-    # Use optimized color palette for better distinction
-    colors = get_colors(n_partitions)
-    
-    # Create a custom colormap from the selected colors
-    from matplotlib.colors import ListedColormap
-    cmap = ListedColormap(colors)
-    
-    # Plot partitions
-    merged_gdf.plot(
+
+    gdf_plot.plot(
         ax=ax,
         column='partition_id',
         cmap=cmap,
         legend=False,
-        alpha=0.8,
+        alpha=1.0,
         edgecolor='black',
         linewidth=0.2
     )
-    
-    # Add basemap if requested
+
     if add_basemap:
         try:
             if basemap_source is None:
                 basemap_source = ctx.providers.CartoDB.Positron
-            
+
             ctx.add_basemap(
                 ax,
-                crs=merged_gdf.crs.to_string(),
+                crs=gdf_plot.crs.to_string(),
                 source=basemap_source,
                 zoom='auto',
-                alpha=0.7
+                alpha=0.6
             )
-        except Exception as e:
-            print(f"Could not add basemap: {e}")
-    
-    # Create custom legend
-    legend_elements = []
-    # Use the same colors from get_colors function for legend consistency
-    legend_colors = colors  # colors is already defined from get_colors(n_partitions)
-    
-    for i, partition_id in enumerate(sorted(unique_partitions)):
-        count = len(merged_gdf[merged_gdf['partition_id'] == partition_id])
-        label = f"Partition {partition_id} ({count} units)"
-        legend_elements.append(Patch(facecolor=legend_colors[i], label=label))
-    
-    # Add legend
-    ax.legend(handles=legend_elements, 
-             loc='center left', 
-             bbox_to_anchor=(1, 0.5), 
-             fontsize=10,
-             title="Partitions")
-    
-    # Set labels and title  
+        except Exception as exc:
+            print(f"Could not add basemap: {exc}")
+
+    legend_entries = []
+    for color, cat in zip(palette, drawn_categories):
+        count = int((gdf_plot['partition_id'] == cat).sum())
+        legend_entries.append(Patch(facecolor=color, edgecolor='black', label=f"{cat} (n={count})"))
+
+    legend_categories = [entry.get_label().split(' (n=')[0] for entry in legend_entries]
+    if set(legend_categories) != set(drawn_categories):
+        raise ValueError("Legend/data categories mismatch after construction")
+
+    ax.legend(
+        handles=legend_entries,
+        loc='center left',
+        bbox_to_anchor=(1, 0.5),
+        fontsize=10,
+        title="Partitions"
+    )
+
     ax.set_xlabel('Longitude', fontsize=12)
     ax.set_ylabel('Latitude', fontsize=12)
-    
-    # Modify title to indicate if unassigned areas are hidden
-    final_title = title
-    if HIDE_UNASSIGNED_PARTITIONS and dropped_count > 0:
-        final_title += f" (Unassigned areas hidden: {dropped_count})"
-    
-    ax.set_title(final_title, fontsize=16, fontweight='bold', pad=20)
-    
-    # Add summary statistics as text
-    stats_text = f"Total partitions: {n_partitions}\nAdmin units: {len(merged_gdf)}"
-    ax.text(0.02, 0.98, stats_text, transform=ax.transAxes, 
-           verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
-    
-    # Adjust layout and save
+
+    scoped_title = f"{title} • units={len(gdf_plot)} • categories={len(drawn_categories)}"
+    ax.set_title(scoped_title, fontsize=16, fontweight='bold', pad=20)
+
+    stats_text = (
+        f"labels(data)={n_labels_in_data}\n"
+        f"labels(drawn)={n_labels_drawn}\n"
+        f"join_loss={join_loss_count}"
+    )
+    ax.text(
+        0.02,
+        0.98,
+        stats_text,
+        transform=ax.transAxes,
+        verticalalignment='top',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8)
+    )
+
     plt.tight_layout()
-    plt.subplots_adjust(right=0.85)
-    
+    plt.subplots_adjust(right=0.82)
+
     try:
-        plt.savefig(save_path, dpi=dpi, bbox_inches='tight',
-                   facecolor='white', edgecolor='none')
+        plt.savefig(
+            save_path,
+            dpi=dpi,
+            bbox_inches='tight',
+            facecolor='white',
+            edgecolor='none'
+        )
         print(f"Partition map saved to: {save_path}")
-    except Exception as e:
-        print(f"Could not save figure: {e}")
-    
+    except Exception as exc:
+        print(f"Could not save figure: {exc}")
+
     return fig
-
-
 def plot_partition_map_from_result_dir(result_dir, year=None, model_type='GeoRF', VIS_DEBUG_MODE=None, **kwargs):
     """
     Convenience function to plot partition map from a result directory.

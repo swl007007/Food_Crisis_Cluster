@@ -40,56 +40,73 @@ def _resolve_vis_flag(VIS_DEBUG_MODE=None):
 
 # import models
 
-def generate_branch_visualization_correspondence(X, X_group, X_branch_id, branch_id, 
-                                               s0_group_refined, s1_group_refined, 
+def generate_branch_visualization_correspondence(X, X_group, X_branch_id, branch_id,
+                                               s0_group_refined, s1_group_refined,
                                                visualization_scope='branch_only'):
-  """
-  Generate correspondence table for branch visualization.
-  
-  Args:
-    X: Feature matrix
-    X_group: Group IDs for each data point  
-    X_branch_id: Branch IDs for each data point
-    branch_id: Current branch being split (e.g., '0', '01', etc.)
-    s0_group_refined: Groups assigned to partition 0 after refinement
-    s1_group_refined: Groups assigned to partition 1 after refinement
-    visualization_scope: 'branch_only' shows only current branch being split,
-                        'full' shows all data points with updated assignments
-  
-  Returns:
-    List of dictionaries with FEWSNET_admin_code and partition_id for visualization
-  """
+  """Generate correspondence rows for partition visualization."""
+
   partition_data = []
-  
+
+  # Normalise branch identifiers for lookup and child labels
+  focus_branch = branch_id or ''
+  child_zero = f"{focus_branch}0"
+  child_one = f"{focus_branch}1"
+
+  def _extract_valid_groups(groups):
+    if groups is None:
+      return []
+
+    flat_groups = np.asarray(groups).ravel()
+    valid = []
+    for value in flat_groups:
+      try:
+        gid = int(value)
+      except (TypeError, ValueError):
+        continue
+      if gid >= 0:
+        valid.append(gid)
+    return valid
+
+  # Prepare group assignments derived from the refinement step
+  s0_groups = _extract_valid_groups(s0_group_refined)
+  s1_groups = _extract_valid_groups(s1_group_refined)
+
+  if visualization_scope == 'branch_only':
+    if not s0_groups and not s1_groups:
+      return partition_data
+
+    for gid in s0_groups:
+      partition_data.append({
+        'FEWSNET_admin_code': gid,
+        'partition_id': child_zero
+      })
+
+    for gid in s1_groups:
+      partition_data.append({
+        'FEWSNET_admin_code': gid,
+        'partition_id': child_one
+      })
+
+    return partition_data
+
+  # Fallback to full-scope correspondence: include all records, but respect new assignments
+  reassignment_lookup = {gid: child_zero for gid in s0_groups}
+  reassignment_lookup.update({gid: child_one for gid in s1_groups})
+
   for idx in range(len(X)):
-    current_branch = X_branch_id[idx]
     admin_code = X_group[idx]
-    
-    # For visualization_scope='branch_only', only include data points from the current branch
-    if visualization_scope == 'branch_only' and current_branch != branch_id:
-      continue
-    
-    # Determine partition assignment
-    if current_branch == branch_id:
-      # This data point is in the branch being split
-      if admin_code in s0_group_refined:
-        refined_partition = branch_id + '0'
-      elif admin_code in s1_group_refined:
-        refined_partition = branch_id + '1' 
-      else:
-        refined_partition = current_branch  # Keep original if not in either partition
+    current_branch = X_branch_id[idx]
+
+    if admin_code in reassignment_lookup:
+      refined_partition = reassignment_lookup[admin_code]
     else:
-      # Data point is not in the branch being split
-      if visualization_scope == 'full':
-        refined_partition = current_branch if current_branch != '' else 'root'
-      else:
-        continue  # Skip for branch_only scope
-    
+      refined_partition = current_branch if current_branch != '' else 'root'
+
     partition_data.append({
       'FEWSNET_admin_code': admin_code,
       'partition_id': refined_partition
     })
-  
+
   return partition_data
 
 def partition(model, X, y,
@@ -366,12 +383,16 @@ def partition(model, X, y,
           
           for i_refine in range(refine_times):
             print(f"Contiguity refinement epoch {i_refine + 1}/{refine_times} for branch {branch_id}")
-            s0, s1 = get_refined_partitions_dispatcher(s0, s1, y_val_gid, None, 
-                                          dir = model.path, branch_id = branch_id,
-                                          contiguity_type = 'polygon',
-                                          polygon_centroids = polygon_contiguity_info['polygon_centroids'],
-                                          polygon_group_mapping = polygon_contiguity_info['polygon_group_mapping'],
-                                          neighbor_distance_threshold = polygon_contiguity_info['neighbor_distance_threshold'])
+            s0, s1 = get_refined_partitions_dispatcher(
+              s0, s1, y_val_gid, None,
+              dir=model.path,
+              branch_id=branch_id,
+              contiguity_type='polygon',
+              polygon_centroids=polygon_contiguity_info['polygon_centroids'],
+              polygon_group_mapping=polygon_contiguity_info['polygon_group_mapping'],
+              neighbor_distance_threshold=polygon_contiguity_info.get('neighbor_distance_threshold'),
+              adjacency_dict=polygon_contiguity_info.get('adjacency_dict')
+            )
             
             # Generate partition map visualization for each refinement epoch
             try:
@@ -904,50 +925,47 @@ def partition(model, X, y,
         if VIS_DEBUG_MODE:
           try:
             import os
-            from src.vis.visualization import plot_partition_map
+            import pandas as pd
+            from src.vis.partition_map import render_round_map
 
-            # Create vis directory if it doesn't exist
             if not model_dir:
               raise ValueError('model_dir is undefined; cannot render partition maps')
             vis_dir = os.path.join(model_dir, 'vis')
             os.makedirs(vis_dir, exist_ok=True)
 
-            # Create temporary correspondence table for current partition state
-            current_correspondence_path = os.path.join(vis_dir, f'temp_correspondence_round_{i}_branch_{branch_id or "root"}.csv')
+            partition_data = generate_branch_visualization_correspondence(
+              X, X_group, X_branch_id,
+              branch_id,
+              s0_group, s1_group,
+              visualization_scope='branch_only'
+            )
 
-            # Create correspondence table from current X_branch_id state
-            import pandas as pd
-            partition_data = []
-
-            for idx in range(len(X)):
-              current_branch = X_branch_id[idx]
-              admin_code = X_group[idx]
-              partition_data.append({
-                'FEWSNET_admin_code': admin_code,
-                'partition_id': current_branch if current_branch != '' else 'root'
-              })
+            if not partition_data:
+              raise ValueError('Scoped branch correspondence is empty; cannot render map')
 
             partition_df = pd.DataFrame(partition_data)
-            partition_df = partition_df.drop_duplicates()
-            partition_df.to_csv(current_correspondence_path, index=False)
+            parent_scope = set()
+            parent_scope.update([gid for gid in s0_group])
+            parent_scope.update([gid for gid in s1_group])
 
-            # Generate partition map
-            partition_map_path = os.path.join(vis_dir, f'partition_map_round_{i}_branch_{branch_id or "root"}.png')
-            plot_partition_map(
-              correspondence_table_path=current_correspondence_path,
+            partition_map_path = os.path.join(
+              vis_dir,
+              f'partition_map_round_{i}_branch_{branch_id or "root"}_scoped.png'
+            )
+
+            render_round_map(
+              partition_df,
+              parent_scope_uids=parent_scope,
+              parent_label=branch_id or 'root',
+              round_id=i,
               save_path=partition_map_path,
-              title=f'GeoRF Partitions - Round {i}, Branch {branch_id if branch_id else "root"} (After Split)',
-              figsize=(14, 12),
               VIS_DEBUG_MODE=VIS_DEBUG_MODE
             )
 
-            print(f"Generated partition map: {partition_map_path}")
-
-            # Clean up temporary correspondence table
-            os.remove(current_correspondence_path)
+            print(f"Generated scoped partition map: {partition_map_path}")
 
           except Exception as e:
-            print(f"Warning: Could not generate partition map for Round {i}, Branch {branch_id}: {e}")
+            print(f"Warning: Could not generate scoped partition map for Round {i}, Branch {branch_id}: {e}")
 
         # vis_partition_training(grid, branch_id)
         # !!!the generate_vis_image() and generate_vis_image_for_all_groups() in the following can be added back to motinor partitioning in the training process

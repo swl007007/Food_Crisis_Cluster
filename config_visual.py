@@ -17,6 +17,11 @@ MODEL_CHOICE = 'RF'
 #Task (only classification version for RF has been tested)
 MODE = 'classification'#'regression'
 
+# Visualization guardrails (applied in scoped round maps and terminal merge)
+VISUALIZE_ENFORCE_PARENT_SCOPE = True
+VISUALIZE_HIDE_UNASSIGNED = True
+PARTITIONING_VALIDATE_TERMINAL_LABELS = True
+
 #------------------GeoRF parameters------------------
 
 #**************************ATTENTION NEEDED [1, total 3]**************************
@@ -64,7 +69,7 @@ print(f"Final N_JOBS configuration: {N_JOBS}")
 #Detailed ***Optional*** specifications
 MIN_BRANCH_SAMPLE_SIZE = 0  # Reduced to allow more partitioning
 MIN_SCAN_CLASS_SAMPLE = 0   # Reduced to allow more partitioning opportunities
-FLEX_RATIO = 0.5#affects max size difference between two partitions in each split
+FLEX_RATIO = 0.1#affects max size difference between two partitions in each split
 FLEX_OPTION = True
 #FLEX_TYPE = 'n_sample'
 #FLEX_TYPE = 'n_group_w_sample'#careful with threshold
@@ -104,7 +109,7 @@ GROUP_SPLIT = {
 FEATURE_DROP = {
     'enable': True,
     'cols': ['lat', 'lon', 'years', 'month','FEWSNET_admin_code','IPC_admin_code','pop'],
-    'patterns': ['year_*', 'month_*','AEZ_*','GDP_*','gini_*','CPI_*'],
+    'patterns': ['year_*', 'month_*','AEZ_*','GDP_*','gini_*','CPI_*','fews_ipc_crisis_*'],
 }
 feature_drop = FEATURE_DROP
 
