@@ -3,6 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import glob
+import sys
+from pathlib import Path
+
+# Ensure project root is on sys.path so config modules resolve when run from app/final
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 def load_and_process_data(base_dir='.'):
     """
@@ -442,7 +449,7 @@ def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
 
 def main():
     # Use current directory for auto-detection
-    base_dir = "."
+    base_dir = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\batch_run1007"
     
     # Load and process data using auto-detection
     print("Auto-detecting and loading comparison data...")

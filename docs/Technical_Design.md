@@ -1,3 +1,14 @@
+---
+**📋 MIGRATION NOTICE**
+
+This document has been migrated to the new structured documentation system:
+- **Current Usage**: See `CLAUDE.md` in root directory for user guide
+- **Technical Design**: See `.ai/spatial-partitioning-optimization/design/architecture.md` for detailed design
+- **Development Standards**: See `.ai/docs/` for foundation documents
+
+For migration details, see `_migration_index.csv` and `_link_graph.md` in this directory.
+---
+
   Partition Algorithm Details
   ================================
   

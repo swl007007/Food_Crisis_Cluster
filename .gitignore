@@ -10,6 +10,7 @@ AGENTS.md
 result_*
 trial_*
 .claude/settings.local.json
+.ai
 PARTITION_METRICS_INTEGRATION.md
 
 *.ipynb

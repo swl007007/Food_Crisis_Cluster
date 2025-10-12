@@ -1,4 +1,16 @@
 # GeoRF: Spatial Transformation Framework with Dual Model Support
+
+---
+**📋 MIGRATION NOTICE**
+
+This comprehensive documentation has been reorganized for better usability:
+- **For Users**: See `CLAUDE.md` in root directory for running instructions
+- **For Developers**: See `.ai/` directory for structured development documentation
+- **For AI Assistants**: See `.ai/ai-context-structure.md` for complete structure guide
+
+For migration details, see `_migration_index.csv` and `_link_graph.md` in this directory.
+---
+
 ## Comprehensive Documentation
 
 ### Table of Contents
@@ -657,7 +669,7 @@ test_xgboost_batches.bat
 - **Unique Naming**: Generates files with `_{start_year}_{end_year}` suffixes to prevent overwrites
 - **Progress Tracking**: Shows batch completion status and memory cleanup
 - **Robust Directory Cleanup**: Multiple attempts with retry logic for locked directories
-- **Force Cleanup Flag**: Passes `--force_cleanup` to Python scripts for additional memory management
+- **Cleanup Utilities**: Run `python -c "from src.utils.force_clean import force_cleanup_directories; force_cleanup_directories()"` manually when you need to purge old outputs
 - **Temporary File Removal**: Cleans up temp files, pickle files, and __pycache__ directories
 - **Windows Memory Release**: Forces OS-level memory cleanup with timeout between batches
 
@@ -1343,15 +1355,10 @@ Results compared between:
 
 The updated `main_model_XGB.py` now provides complete feature parity with the Random Forest version:
 
-#### **Checkpoint Recovery System**
-```python
-# Automatic detection of previous runs
-completed_quarters, partial_results_files, checkpoint_dirs = get_checkpoint_info()
-remaining_quarters = determine_remaining_quarters(completed_quarters, start_year, end_year, desire_terms)
-
-# Automatic resume from last completed quarter
-results_df, y_pred_test = load_partial_results(partial_results_files, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
-```
+#### **Checkpoint Recovery System (Removed)**
+The legacy checkpoint-resume workflow has been retired. Both GeoRF and GeoXGB now
+evaluate the requested quarters from scratch on each run, which keeps the code
+paths aligned and avoids mismatches with older partial results.
 
 #### **Rolling Window Temporal Evaluation**
 ```python

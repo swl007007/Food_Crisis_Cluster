@@ -17,6 +17,24 @@ set batch_count=0
 REM Individual year processing for memory management
 REM Each batch processes 1 year with 1 forecasting scope to minimize memory usage
 
+REM Year 2013 - All forecasting scopes
+echo ==========================================
+echo Processing year: 2013
+echo ==========================================
+call :run_batch 2013 2013 1
+call :run_batch 2013 2013 2
+call :run_batch 2013 2013 3
+call :run_batch 2013 2013 4
+
+REM Year 2014 - All forecasting scopes
+echo ==========================================
+echo Processing year: 2014
+echo ==========================================
+call :run_batch 2014 2014 1
+call :run_batch 2014 2014 2
+call :run_batch 2014 2014 3
+call :run_batch 2014 2014 4
+
 REM Year 2015 - All forecasting scopes
 echo ==========================================
 echo Processing year: 2015
@@ -110,9 +128,9 @@ call :run_batch 2024 2024 4
 echo.
 echo ===== All XGBoost batches completed successfully! =====
 echo Total batches processed: !batch_count!
-echo Years processed: 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+echo Years processed: 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
 echo Forecasting scopes: 1, 2, 3, 4 (for each year)
-echo Memory-optimized: 1 year + 1 scope per batch (40 total batches)
+echo Memory-optimized: 1 year + 1 scope per batch (48 total batches)
 goto :end
 
 REM Function to run a single batch
@@ -129,10 +147,10 @@ REM Pre-execution cleanup to ensure clean state
 echo Performing pre-execution cleanup...
 call :cleanup_xgboost_directories
 
-echo Running: python app/main_model_XGB.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+echo Running: python app/main_model_XGB.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
 
-REM Run the Python script with current parameters and force cleanup
-python app/main_model_XGB.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+REM Run the Python script with current parameters
+python app/main_model_XGB.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
 
 REM Check if the Python script succeeded
 if !errorlevel! neq 0 (

@@ -5,7 +5,19 @@
 # @Last modified time: 2025-04-21
 # @License: MIT License
 
-import numpy as np
+import sys
+
+try:
+    import numpy as np
+except ModuleNotFoundError:
+    if '--dry-run' in sys.argv:
+        class _NumpyStub:
+            def array(self, value):  # type: ignore[override]
+                return value
+
+        np = _NumpyStub()  # type: ignore
+    else:
+        raise
 
 #Note: Some of the parameters are for the deep learning version (commented).
 #They are for now kept as part of the config file in case some conditions
@@ -69,7 +81,7 @@ print(f"Final N_JOBS configuration: {N_JOBS}")
 #Detailed ***Optional*** specifications
 MIN_BRANCH_SAMPLE_SIZE = 0 # Reduced to allow more partitioning
 MIN_SCAN_CLASS_SAMPLE = 0   # Reduced to allow more partitioning opportunities
-FLEX_RATIO = 0.025#affects max size difference between two partitions in each split
+FLEX_RATIO = 0.1#affects max size difference between two partitions in each split
 FLEX_OPTION = True
 #FLEX_TYPE = 'n_sample'
 #FLEX_TYPE = 'n_group_w_sample'#careful with threshold

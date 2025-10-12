@@ -51,7 +51,6 @@ if USE_ADJACENCY_MATRIX:
 # Import redirected functions from src modules
 from src.preprocess.preprocess import load_and_preprocess_data, setup_spatial_groups, handle_infinite_values
 from src.feature.feature import prepare_features, validate_polygon_contiguity, create_correspondence_table
-from src.utils.force_clean import force_cleanup_directories, get_checkpoint_info, load_partial_results, determine_remaining_quarters, save_checkpoint_results
 from src.utils.save_results import save_results
 
 VIS_DEBUG_MODE = True
@@ -79,7 +78,7 @@ else:
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
-                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_cleanup=False, force_final_accuracy=False,
+                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_final_accuracy=False,
                            # XGBoost-specific hyperparameters
                            learning_rate=0.1, reg_alpha=0.1, reg_lambda=1.0, subsample=0.8, colsample_bytree=0.8):
     """
@@ -154,34 +153,6 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     ])
     
     y_pred_test = pd.DataFrame(columns=['year', 'quarter', 'month', 'adm_code', 'fews_ipc_crisis_pred', 'fews_ipc_crisis_true'])
-    
-    # CHECKPOINT RECOVERY: Check for existing results and determine what needs to be evaluated
-    print("\n=== Checkpoint Recovery System ===")
-    completed_quarters, partial_results_files, checkpoint_dirs = get_checkpoint_info(force_cleanup)
-    
-    # Load partial results if they exist
-    existing_results_df, existing_y_pred_test = load_partial_results(
-        partial_results_files, assignment, nowcasting, max_depth, desire_terms, forecasting_scope
-    )
-    
-    # Merge existing results with new DataFrames
-    if existing_results_df is not None and len(existing_results_df) > 0:
-        results_df = existing_results_df.copy()
-        print(f"Resuming from existing results: {len(results_df)} previous evaluations loaded")
-    
-    if existing_y_pred_test is not None and len(existing_y_pred_test) > 0:
-        y_pred_test = existing_y_pred_test.copy()
-        print(f"Resuming from existing predictions: {len(y_pred_test)} previous predictions loaded")
-    
-    # Determine remaining quarters to evaluate
-    remaining_quarters = determine_remaining_quarters(completed_quarters, start_year, end_year, desire_terms)
-    
-    if not remaining_quarters:
-        print("All quarters already completed! Returning existing results.")
-        return results_df, y_pred_test
-    
-    print(f"Will evaluate {len(remaining_quarters)} remaining quarters")
-    print("=== End Checkpoint Recovery ===\n")
     
     # Setup correspondence table path for partition metrics tracking
     correspondence_table_path = None
@@ -307,7 +278,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     
     # Run evaluation for all quarters from start_year to end_year using rolling window
     print(f"\nEvaluating all quarters from {start_year} to {end_year} using rolling window approach...")
-    
+
     # Determine which quarters to evaluate based on desire_terms
     if desire_terms is None:
         quarters_to_evaluate = [1, 2, 3, 4]  # Evaluate all quarters
@@ -315,16 +286,28 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     else:
         quarters_to_evaluate = [desire_terms]  # Evaluate only specific quarter
         print(f"Evaluating only Q{desire_terms} for each year from {start_year} to {end_year}")
-    
-    # Create progress bar for remaining quarterly evaluations
+
+    print("Checkpoint recovery disabled: evaluating requested quarters from scratch.")
+
+    remaining_quarters = [
+        (year, quarter)
+        for year in range(start_year, end_year + 1)
+        for quarter in quarters_to_evaluate
+    ]
+
+    if not remaining_quarters:
+        print("No quarters to evaluate with the provided configuration.")
+        return results_df, y_pred_test
+
+    # Create progress bar for requested quarterly evaluations
     progress_bar = tqdm(
-        total=len(remaining_quarters), 
-        desc="GeoXGB Quarterly Evaluation", 
+        total=len(remaining_quarters),
+        desc="GeoXGB Quarterly Evaluation",
         unit="quarter",
         bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
     )
-    
-    # Loop through remaining quarters only
+
+    # Loop through each quarter that needs to be evaluated
     for i, (test_year, quarter) in enumerate(remaining_quarters):
         progress_bar.set_description(f"GeoXGB Q{quarter} {test_year}")
         print(f"\n--- Evaluating Q{quarter} {test_year} (#{i+1}/{len(remaining_quarters)}) ---")
@@ -903,45 +886,6 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             except:
                 pass
             
-            # Save checkpoint after each quarter (in case of interruption)
-            if (i + 1) % 5 == 0 or (i + 1) == len(remaining_quarters):  # Save every 5 quarters and at the end
-                print(f"Saving checkpoint after Q{quarter} {test_year}...")
-                save_checkpoint_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms, forecasting_scope)
-                
-                # CRITICAL MEMORY FIX: Aggressive cleanup after checkpoints to prevent accumulation
-                print("Performing aggressive memory cleanup after checkpoint...")
-                
-                # CRITICAL FIX 4: Rebuild DataFrames to eliminate fragmentation and internal memory bloat
-                # This is a major source of memory leaks - DataFrames accumulate internal overhead
-                print("Rebuilding DataFrames to clear internal overhead...")
-                
-                # Create completely new DataFrame objects to eliminate all internal overhead
-                if len(results_df) > 0:
-                    # Copy data to plain dictionary first, then create new DataFrame
-                    results_data = results_df.to_dict('records')
-                    del results_df  # Delete old DataFrame immediately
-                    gc.collect()    # Force cleanup
-                    results_df = pd.DataFrame(results_data)  # Create fresh DataFrame
-                    del results_data  # Clean up temporary data
-                    
-                if len(y_pred_test) > 0:
-                    # Same for predictions DataFrame
-                    pred_data = y_pred_test.to_dict('records')
-                    del y_pred_test  # Delete old DataFrame immediately 
-                    gc.collect()     # Force cleanup
-                    y_pred_test = pd.DataFrame(pred_data)  # Create fresh DataFrame
-                    del pred_data    # Clean up temporary data
-                
-                # Reset indices on the new DataFrames
-                results_df = results_df.reset_index(drop=True)
-                y_pred_test = y_pred_test.reset_index(drop=True)
-                
-                # Force multiple aggressive garbage collections
-                for _ in range(3):
-                    gc.collect()
-                    
-                print(f"DataFrame rebuild complete. Current sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")
-            
             # Force garbage collection after every quarter
             gc.collect()
             
@@ -992,8 +936,6 @@ def main():
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
     parser.add_argument('--forecasting_scope', type=int, default=4, choices=[1,2,3,4], 
                         help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 4)')
-    parser.add_argument('--force_cleanup', action='store_true', 
-                        help='Force cleanup of existing result directories and bypass checkpoint detection')
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
@@ -1019,8 +961,6 @@ def main():
     enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
     
     # Checkpoint Recovery Configuration
-    enable_checkpoint_recovery = False  # Enable automatic checkpoint detection and resume
-    
     # start year and end year from command line arguments
     start_year = 2015
     end_year = 2015
@@ -1034,7 +974,6 @@ def main():
     print(f"  - Rolling window: 5-year training windows before each test quarter")
     print(f"  - Track partition metrics: {track_partition_metrics}")
     print(f"  - Enable metrics maps: {enable_metrics_maps}")
-    print(f"  - Checkpoint recovery: {enable_checkpoint_recovery}")
     print(f"  - Start year: {start_year}, End year: {end_year}")
     print(f"  - XGBoost hyperparameters:")
     print(f"    * learning_rate: {learning_rate}")
@@ -1084,7 +1023,7 @@ def main():
             X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
             assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
             track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
-            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope, force_cleanup=args.force_cleanup,
+            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope,
             force_final_accuracy=args.force_final_accuracy,
             # Pass XGBoost hyperparameters
             learning_rate=learning_rate,

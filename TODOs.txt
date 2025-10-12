@@ -9,16 +9,14 @@ WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with onl
 
 Action Points:
 TODO(CRITICAL):
-
+2. for georf and geoxgboost, in the main pipeline skip all baseline cross validation etc.
+3. for geoxgboost, clarify the output name
 
 
 
 
 TODO(FUTURE):
-1. checkpoint system is deprecated, need to re-design
-2. Rewrite Agent documentations  according to standard, private domain engineering wiki.
-3. Restructure documents.
-4. GeoXGB test pipeline is not producing all the required figures
+1. Rewrite Agent documentations  according to standard, private domain engineering wiki.
 
 IMPORTANT NOTE
 for one round:

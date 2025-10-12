@@ -710,6 +710,118 @@ class GeoRF_XGB():
 
         print(f'Baseline CV misclassification artifacts: {csv_path}, {png_path}')
 
+    def _get_feature_drop_config(self):
+        """Return feature drop configuration from module globals if present."""
+        cfg = globals().get('FEATURE_DROP')
+        if isinstance(cfg, dict):
+            return cfg
+        cfg_lower = globals().get('feature_drop')
+        if isinstance(cfg_lower, dict):
+            return cfg_lower
+        return {}
+
+    def _prepare_feature_drop_after_split(self, X, feature_names, logger=None):
+        """Apply configured feature drop post temporal split and cache indices."""
+        drop_cfg = self._get_feature_drop_config()
+        enabled = bool(drop_cfg.get('enable', False))
+        drop_candidates_raw = drop_cfg.get('cols', [])
+        drop_candidates = [str(col) for col in drop_candidates_raw if col is not None]
+        pattern_candidates_raw = drop_cfg.get('patterns', [])
+        pattern_candidates = [str(pat) for pat in pattern_candidates_raw if pat]
+        if not enabled or (not drop_candidates and not pattern_candidates):
+            self.drop_list_ = []
+            self._drop_indices = tuple()
+            return X, feature_names
+
+        available_names = None
+        if feature_names:
+            available_names = [str(name) for name in feature_names]
+        elif hasattr(X, 'columns') and getattr(X, 'columns', None) is not None:
+            available_names = [str(col) for col in X.columns]
+
+        if not available_names:
+            if logger:
+                logger.warning('feature_drop_enabled_but_feature_names_missing; skipping drop')
+            self.drop_list_ = []
+            self._drop_indices = tuple()
+            return X, feature_names
+
+        protected = set()
+        for key in (
+            'TARGET_COLUMN', 'TARGET_COL', 'TARGET', 'TARGET_NAME',
+            'UID_COLUMN', 'UID_COL', 'UNIQUE_ID_COLUMN'
+        ):
+            value = globals().get(key)
+            if value:
+                protected.add(str(value))
+
+        pattern_matches = set()
+        try:
+            import fnmatch
+        except ImportError:
+            fnmatch = None
+        if pattern_candidates and fnmatch is not None:
+            for pat in pattern_candidates:
+                matched = [name for name in available_names if fnmatch.fnmatch(name, pat)]
+                pattern_matches.update(matched)
+
+        drop_ordered = []
+        skipped_protected = []
+        for name in drop_candidates:
+            if name in protected:
+                skipped_protected.append(name)
+                continue
+            drop_ordered.append(name)
+        if skipped_protected and logger:
+            logger.info(f'DROP_COLUMNS skipped_protected={skipped_protected}')
+
+        present = [name for name in drop_ordered if name in available_names]
+        present += [name for name in sorted(pattern_matches) if name not in present]
+        missing = [name for name in drop_ordered if name not in available_names]
+        if missing and logger:
+            logger.info(f'DROP_COLUMNS missing post-temporal-split count={len(missing)} names={missing}')
+
+        if not present:
+            self.drop_list_ = []
+            self._drop_indices = tuple()
+            return X, feature_names
+
+        index_map = {name: idx for idx, name in enumerate(available_names)}
+        drop_indices = sorted(index_map[name] for name in present)
+
+        if hasattr(X, 'drop') and getattr(X, 'columns', None) is not None:
+            X_out = X.drop(columns=[name for name in present if name in X.columns])
+        else:
+            X_array = np.asarray(X)
+            if X_array.ndim != 2:
+                raise ValueError(f'Feature matrix must be 2-dimensional after drop; got shape {X_array.shape}')
+            X_out = np.delete(X_array, drop_indices, axis=1) if drop_indices else X_array
+
+        remaining_names = [name for name in available_names if name not in present]
+        self.drop_list_ = present
+        self._drop_indices = tuple(drop_indices)
+        if logger:
+            logger.info(f'DROP_COLUMNS post-temporal-split pre-train count={len(present)} names={present}')
+        return X_out, remaining_names
+
+    def _apply_feature_drop_inference(self, X):
+        """Drop configured features at inference using cached indices."""
+        drop_names = list(getattr(self, 'drop_list_', []) or [])
+        drop_indices = list(getattr(self, '_drop_indices', tuple()) or [])
+        if not drop_names:
+            return X
+        if hasattr(X, 'drop') and getattr(X, 'columns', None) is not None:
+            present = [name for name in drop_names if name in X.columns]
+            if present:
+                return X.drop(columns=present)
+            return X
+        if drop_indices:
+            X_array = np.asarray(X)
+            if X_array.ndim != 2:
+                raise ValueError(f'Feature matrix must be 2-dimensional at inference; got shape {X_array.shape}')
+            return np.delete(X_array, drop_indices, axis=1)
+        return X
+
     def _load_feature_name_reference(self, logger=None):
         """Load persisted feature reference list if available."""
         reference_names = None

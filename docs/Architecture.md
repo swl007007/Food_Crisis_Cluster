@@ -1,5 +1,16 @@
 # GeoRF Architecture (Standard Markdown)
 
+---
+**📋 MIGRATION NOTICE**
+
+This document has been migrated to the new structured documentation system:
+- **Current Usage**: See `CLAUDE.md` in root directory for user guide
+- **Technical Design**: See `.ai/spatial-partitioning-optimization/design/architecture.md` for detailed architecture
+- **Development Standards**: See `.ai/docs/` for foundation documents
+
+For migration details, see `_migration_index.csv` and `_link_graph.md` in this directory.
+---
+
 ## 1) Overview
 
 This document summarizes the end-to-end data pipeline, model training flow, partitioning algorithm, validation-coverage caveats, and inference routing for **GeoRF** with minimal edits to the original wording. File paths and key line references are retained for traceability.

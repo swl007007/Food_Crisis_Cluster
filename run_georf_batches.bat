@@ -14,7 +14,15 @@ echo.
 REM Counter for batch tracking
 set batch_count=0
 
-REM Time period 1: 2015-2016
+REM Time period 1: 2013-2014
+echo ==========================================
+echo Processing time period: 2013-2014
+echo ==========================================
+for /L %%f in (1,1,4) do (
+    call :run_batch 2013 2014 %%f
+)
+
+REM Time period 2: 2015-2016
 echo ==========================================
 echo Processing time period: 2015-2016
 echo ==========================================
@@ -22,7 +30,7 @@ for /L %%f in (1,1,4) do (
     call :run_batch 2015 2016 %%f
 )
 
-REM Time period 2: 2017-2018
+REM Time period 3: 2017-2018
 echo ==========================================
 echo Processing time period: 2017-2018
 echo ==========================================
@@ -30,7 +38,7 @@ for /L %%f in (1,1,4) do (
     call :run_batch 2017 2018 %%f
 )
 
-REM Time period 3: 2019-2020
+REM Time period 4: 2019-2020
 echo ==========================================
 echo Processing time period: 2019-2020
 echo ==========================================
@@ -38,7 +46,7 @@ for /L %%f in (1,1,4) do (
     call :run_batch 2019 2020 %%f
 )
 
-REM Time period 4: 2021-2022
+REM Time period 5: 2021-2022
 echo ==========================================
 echo Processing time period: 2021-2022
 echo ==========================================
@@ -46,7 +54,7 @@ for /L %%f in (1,1,4) do (
     call :run_batch 2021 2022 %%f
 )
 
-REM Time period 5: 2023-2024
+REM Time period 6: 2023-2024
 echo ==========================================
 echo Processing time period: 2023-2024
 echo ==========================================
@@ -57,7 +65,7 @@ for /L %%f in (1,1,4) do (
 echo.
 echo ===== All batches completed successfully! =====
 echo Total batches processed: !batch_count!
-echo Time periods: 2015-2016, 2017-2018, 2019-2020, 2021-2022, 2023-2024
+echo Time periods: 2013-2014, 2015-2016, 2017-2018, 2019-2020, 2021-2022, 2023-2024
 echo Forecasting scopes: 1, 2, 3, 4 (for each time period)
 goto :end
 
@@ -75,10 +83,10 @@ REM Pre-execution cleanup to ensure clean state
 echo Performing pre-execution cleanup...
 call :cleanup_directories
 
-echo Running: python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+echo Running: python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
 
-REM Run the Python script with current parameters and force cleanup
-python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope% --force_cleanup
+REM Run the Python script with current parameters
+python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
 
 REM Check if the Python script succeeded
 if !errorlevel! neq 0 (

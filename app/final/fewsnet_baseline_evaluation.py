@@ -76,8 +76,8 @@ def load_and_prepare_fewsnet_data():
     
     # Filter to years >= 2015 to match other models
     print(f"Original data: {len(df)} rows")
-    df = df[df['year'] >= 2015]
-    print(f"After filtering >= 2015: {len(df)} rows")
+    df = df[df['year'] >= 2013]
+    print(f"After filtering >= 2013: {len(df)} rows")
     
     # Remove rows with missing target or predictions
     original_len = len(df)
@@ -262,7 +262,7 @@ def main():
     
     # Parse command line arguments for consistency
     parser = argparse.ArgumentParser(description='FEWSNET Baseline Evaluation')
-    parser.add_argument('--start_year', type=int, default=2015, help='Start year for evaluation (default: 2015)')
+    parser.add_argument('--start_year', type=int, default=2013, help='Start year for evaluation (default: 2015)')
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
     parser.add_argument('--forecasting_scope', type=int, choices=[1,2], 
                         help='Forecasting scope: 1=3mo lag, 2=6mo lag (default: run both)')
