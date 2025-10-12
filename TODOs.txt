@@ -16,11 +16,9 @@ TODO(CRITICAL):
 
 TODO(FUTURE):
 1. checkpoint system is deprecated, need to re-design
-2. two-layer system is deprecated, need to re-design or remove completely.
-3. GeoXGB test pipeline is not producing all the required figures
-4. Rewrite Agent documentations  according to standard, private domain engineering wiki.
-5. Restructure documents.
-
+2. Rewrite Agent documentations  according to standard, private domain engineering wiki.
+3. Restructure documents.
+4. GeoXGB test pipeline is not producing all the required figures
 
 IMPORTANT NOTE
 for one round:
