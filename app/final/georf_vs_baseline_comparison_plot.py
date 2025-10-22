@@ -7,11 +7,9 @@ import sys
 from pathlib import Path
 
 # Ensure project root is on sys.path so config modules resolve when run from app/final
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+PROJECT_ROOT = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\results"
 
-def load_and_process_data(base_dir='.'):
+def load_and_process_data(base_dir=PROJECT_ROOT):
     """
     Load probit, RF, and XGBoost results for comparison using auto-detection.
     
@@ -201,6 +199,7 @@ def load_and_process_data(base_dir='.'):
     print(f"  FEWSNET baseline: {list(fewsnet_data.keys())} month lags")
     print(f"  GeoRF: {list(rf_data.keys())} month lags")
     print(f"  XGBoost: {list(xgboost_data.keys())} month lags")
+
     
     return probit_data, fewsnet_data, rf_data, xgboost_data
 
@@ -449,7 +448,7 @@ def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
 
 def main():
     # Use current directory for auto-detection
-    base_dir = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\batch_run1007"
+    base_dir = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\results"
     
     # Load and process data using auto-detection
     print("Auto-detecting and loading comparison data...")
@@ -501,22 +500,8 @@ def main():
             print(f"  XGBoost: {len(xgb_df)} time periods ({xgb_df['year_quarter'].min()} to {xgb_df['year_quarter'].max()})")
         else:
             print(f"  XGBoost: No data found")
-    
-    # Strict gate for visualization
-    def _resolve_vis_flag(VIS_DEBUG_MODE=None):
-        try:
-            if VIS_DEBUG_MODE is None:
-                try:
-                    from config_visual import VIS_DEBUG_MODE as Vv
-                except ImportError:
-                    from config import VIS_DEBUG_MODE as Vv
-                return bool(Vv)
-            return bool(VIS_DEBUG_MODE)
-        except Exception:
-            return False
-
     # Create comparison plot only if we have data and visuals enabled
-    if available_lags and _resolve_vis_flag():
+    if available_lags:
         print("\\nCreating class 1 performance comparison visualization...")
         fig = create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data)
         
