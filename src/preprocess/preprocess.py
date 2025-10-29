@@ -27,6 +27,9 @@ from src.helper.helper import get_spatial_range
 from src.tests.class_wise_metrics import *
 from config_visual import *
 from src.utils.force_clean import *
+from src.utils.lag_schedules import resolve_lag_schedule
+
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config_visual.LAGS_MONTHS")
 
 
 # Import adjacency matrix utilities
@@ -141,7 +144,7 @@ def load_and_preprocess_data(data_path):
     
     # Drop unnecessary columns
     cols_to_drop = [
-        "ISO3", "fews_ipc_adjusted", "fews_proj_med_adjusted", "fews_ipc",
+        "ISO3", "fews_ipc_adjusted", "fews_proj_med_adjusted",
         "fews_proj_near", "fews_proj_near_ha", "fews_proj_med",
         "fews_proj_med_ha", "ADMIN0", "ADMIN1", "ADMIN2", "ADMIN3"
     ]
@@ -194,10 +197,18 @@ def load_and_preprocess_data(data_path):
     df['date'] = pd.to_datetime(df['date'])
     df['years'] = df['date'].dt.year
     
-    # Create lag features
-    df['fews_ipc_crisis_lag_1'] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(1)
-    df['fews_ipc_crisis_lag_2'] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(2)
-    df['fews_ipc_crisis_lag_3'] = df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(3)
+    # Create lag features matching active schedule
+    for lag in ACTIVE_LAGS:
+        df[f'fews_ipc_crisis_lag_{lag}'] = (
+            df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
+        )
+    for lag in ACTIVE_LAGS:
+        df[f'fews_ipc_lag_{lag}'] = (
+            df.groupby('FEWSNET_admin_code')['fews_ipc'].shift(lag)
+        )
+    
+    # drop fews_ipc
+    df = df.drop(columns=['fews_ipc'])
     
     # Create year and month dummies
     for year in df['years'].unique():

@@ -17,10 +17,13 @@ from src.tests.class_wise_metrics import *
 from config_visual import *
 from src.utils.force_clean import *
 from src.preprocess.preprocess import *
+from src.utils.lag_schedules import forecasting_scope_to_lag, resolve_lag_schedule
+
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config_visual.LAGS_MONTHS")
 
 
 
-def prepare_features(df, X_group, X_loc, forecasting_scope=4):
+def prepare_features(df, X_group, X_loc, forecasting_scope=len(ACTIVE_LAGS)):
     """
     Prepare feature matrices and identify L1/L2 feature indices with forecasting scope logic.
     
@@ -32,8 +35,8 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
         Group assignments
     X_loc : numpy.ndarray
         Location coordinates
-    forecasting_scope : int, default=4
-        Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+    forecasting_scope : int, default=len(ACTIVE_LAGS)
+        Forecasting scope (1-based index into active lag schedule)
         
     Returns:
     --------
@@ -76,14 +79,11 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
         'gpp_sd', 'gpp_mean', 'CPI', 'GDP', 'CC', 'gini', 'WFP_Price', 'WFP_Price_std'
     ]
     
-    # Determine lag months based on forecasting scope  
-    # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
-    lag_months_map = {1: 3, 2: 6, 3: 9, 4: 12}
-    lag_months = lag_months_map.get(forecasting_scope, 12)
+    lag_months = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
     print(f"Using {lag_months}-month lag for forecasting scope {forecasting_scope}")
     
     # Create appropriate time variant list based on forecasting scope
-    if forecasting_scope == 4:
+    if lag_months == 12:
         # For 12-month lag, use existing m12 variables if available
         time_variants_m12 = [variant + '_m12' for variant in time_variants]
         time_variants_list = time_variants + time_variants_m12
@@ -105,8 +105,8 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
     
     # Create lag features based on forecasting scope
     print(f"Creating lag features for forecasting scope {forecasting_scope} ({lag_months} months)...")
-    
-    if forecasting_scope != 4:
+
+    if lag_months != 12:
         # For scopes 1, 2, 3, create lagged features for time-variant variables
         existing_cols_before = set(df_sorted.columns)
         
@@ -148,8 +148,10 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=4):
             print(f"Removed {len(cols_to_remove)} duplicate columns")
     
     # Create additional lag features for crisis variable
-    for lag in range(1, 4):
-        df_sorted[f'fews_ipc_crisis_lag_{lag}'] = df_sorted.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
+    for lag in ACTIVE_LAGS:
+        df_sorted[f'fews_ipc_crisis_lag_{lag}'] = (
+            df_sorted.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
+        )
     
     # Drop unnecessary columns
     df_features = df_sorted.drop(columns=['date', 'fews_ipc_crisis', 'AEZ_group', 'ISO_encoded', 'AEZ_country_group'])

@@ -6,6 +6,7 @@
 # @License: MIT License
 
 import sys
+from typing import Sequence
 
 try:
     import numpy as np
@@ -33,6 +34,30 @@ MODE = 'classification'#'regression'
 VISUALIZE_ENFORCE_PARENT_SCOPE = True
 VISUALIZE_HIDE_UNASSIGNED = True
 PARTITIONING_VALIDATE_TERMINAL_LABELS = True
+
+# Lag schedule (GeoRF + baseline alignment)
+LEGACY_LAG_VALUES = {3, 6, 9}
+DEFAULT_LAGS_MONTHS: Sequence[int] = (4, 8, 12)
+LAGS_MONTHS = list(DEFAULT_LAGS_MONTHS)
+
+
+def _validate_lag_schedule(lags: Sequence[int]) -> list[int]:
+    resolved = list(lags)
+    if list(dict.fromkeys(resolved)) != resolved:
+        raise ValueError(f"Duplicated lag entries detected: {resolved}")
+    if any(lag in LEGACY_LAG_VALUES for lag in resolved):
+        raise ValueError(
+            f"Legacy lag months detected ({LEGACY_LAG_VALUES}); GeoRF now requires {list(DEFAULT_LAGS_MONTHS)}."
+        )
+    if list(resolved) != list(DEFAULT_LAGS_MONTHS):
+        raise ValueError(
+            f"Lag schedule {resolved} unsupported; configure to {list(DEFAULT_LAGS_MONTHS)} to match FEWSNET baseline."
+        )
+    return resolved
+
+
+LAGS_MONTHS = _validate_lag_schedule(LAGS_MONTHS)
+
 
 #------------------GeoRF parameters------------------
 

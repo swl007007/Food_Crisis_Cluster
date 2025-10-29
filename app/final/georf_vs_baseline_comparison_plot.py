@@ -6,8 +6,17 @@ import glob
 import sys
 from pathlib import Path
 
-# Ensure project root is on sys.path so config modules resolve when run from app/final
-PROJECT_ROOT = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\results"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from config import LAGS_MONTHS
+from src.utils.lag_schedules import resolve_lag_schedule
+
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config.LAGS_MONTHS")
+PROJECT_ROOT = str(REPO_ROOT / 'results')
+VIS_OUTPUT_DIR = REPO_ROOT / 'result_GeoRF' / 'vis'
+FEWSNET_EXTENSION_SOURCE: dict[int, int] = {}
 
 def load_and_process_data(base_dir=PROJECT_ROOT):
     """
@@ -29,9 +38,12 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         Dictionaries with forecasting scope as key and DataFrames as values
     """
     print("Auto-detecting result files...")
-    
-    # Map forecasting scope to lag months
-    scope_to_lag = {1: 3, 2: 6, 3: 9, 4: 12}
+
+    global FEWSNET_EXTENSION_SOURCE
+    FEWSNET_EXTENSION_SOURCE.clear()
+
+    # Map forecasting scope indices to canonical lag months
+    scope_to_lag = {idx + 1: lag for idx, lag in enumerate(ACTIVE_LAGS)}
     
     # Initialize data storage
     probit_data = {}
@@ -54,62 +66,73 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         # Extract forecasting scope from filename: baseline_probit_results_fs4.csv -> scope=4
         try:
             scope = int(filename.split('_fs')[1].split('.')[0])
-            lag_months = scope_to_lag[scope]
-            
-            df = pd.read_csv(file_path)
-            print(f"  Found probit results for forecasting scope {scope} ({lag_months}-month): {filename}")
-            
-            # Create year-quarter identifier if quarter column exists
-            if 'quarter' in df.columns:
-                df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
-            else:
-                df['year_quarter'] = df['year'].astype(str)
-            
-            df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
-            probit_data[lag_months] = df
-            
-        except (ValueError, IndexError, KeyError) as e:
+        except (ValueError, IndexError) as e:
             print(f"  Warning: Could not parse forecasting scope from {filename}: {e}")
+            continue
+
+        if scope not in scope_to_lag:
+            raise ValueError(
+                f"Unsupported forecasting scope fs{scope} detected in {filename}; expected indices {list(scope_to_lag)} for lags {ACTIVE_LAGS}."
+            )
+
+        lag_months = scope_to_lag[scope]
+
+        df = pd.read_csv(file_path)
+        print(f"  Found probit results for forecasting scope {scope} ({lag_months}-month): {filename}")
+
+        # Create year-quarter identifier if quarter column exists
+        if 'quarter' in df.columns:
+            df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
+        else:
+            df['year_quarter'] = df['year'].astype(str)
+
+        df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
+        probit_data[lag_months] = df
     
     # 1.5. Process FEWSNET baseline results
-    fewsnet_longest_lag_data = None  # Store the longest lag FEWSNET data for extension
     
     for file_path in fewsnet_files:
         filename = os.path.basename(file_path)
         # Extract forecasting scope from filename: fewsnet_baseline_results_fs1.csv -> scope=1
         try:
             scope = int(filename.split('_fs')[1].split('.')[0])
-            lag_months = scope_to_lag[scope]
-            
-            df = pd.read_csv(file_path)
-            print(f"  Found FEWSNET results for forecasting scope {scope} ({lag_months}-month): {filename}")
-            
-            # Create year-quarter identifier if quarter column exists
-            if 'quarter' in df.columns:
-                df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
-            else:
-                df['year_quarter'] = df['year'].astype(str)
-            
-            df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
-            fewsnet_data[lag_months] = df
-            
-            # Keep track of longest lag data (scope 2 = 6 months is the longest FEWSNET provides)
-            if scope == 2:  # 6-month lag is the longest official FEWSNET prediction
-                fewsnet_longest_lag_data = df.copy()
-            
-        except (ValueError, IndexError, KeyError) as e:
+        except (ValueError, IndexError) as e:
             print(f"  Warning: Could not parse forecasting scope from {filename}: {e}")
+            continue
+
+        if scope not in scope_to_lag:
+            raise ValueError(
+                f"Unsupported FEWSNET forecasting scope fs{scope} detected in {filename}; expected indices {list(scope_to_lag)} for lags {ACTIVE_LAGS}."
+            )
+
+        lag_months = scope_to_lag[scope]
+
+        df = pd.read_csv(file_path)
+        print(f"  Found FEWSNET results for forecasting scope {scope} ({lag_months}-month): {filename}")
+
+        # Create year-quarter identifier if quarter column exists
+        if 'quarter' in df.columns:
+            df['year_quarter'] = df['year'].astype(str) + '-Q' + df['quarter'].astype(str)
+        else:
+            df['year_quarter'] = df['year'].astype(str)
+
+        df = df.sort_values(['year'] + (['quarter'] if 'quarter' in df.columns else [])).reset_index(drop=True)
+        fewsnet_data[lag_months] = df
+
     
-    # Extend FEWSNET baseline to longer lag periods using the longest available prediction (scope 2)
-    if fewsnet_longest_lag_data is not None:
-        print("  Extending FEWSNET baseline to longer forecasting scopes using 6-month lag data...")
-        
-        # Extend to 9-month and 12-month lags using the same 6-month predictions
-        for extended_lag in [9, 12]:  # scope 3 and 4
-            if extended_lag not in fewsnet_data:  # Only extend if not already present
-                extended_df = fewsnet_longest_lag_data.copy()
-                fewsnet_data[extended_lag] = extended_df
-                print(f"  Extended FEWSNET results to {extended_lag}-month lag using 6-month predictions")
+    # Extend FEWSNET baseline to longer lag periods using the longest available prediction if needed
+    if fewsnet_data:
+        existing_lags = sorted(fewsnet_data.keys())
+        longest_available = max(existing_lags)
+        missing_lags = [lag for lag in ACTIVE_LAGS if lag not in fewsnet_data]
+
+        for extended_lag in missing_lags:
+            if extended_lag > longest_available:
+                FEWSNET_EXTENSION_SOURCE[extended_lag] = longest_available
+                fewsnet_data[extended_lag] = fewsnet_data[longest_available].copy()
+                print(
+                    f"  Extended FEWSNET results to {extended_lag}-month lag using {longest_available}-month predictions"
+                )
     
     # 2. Load GeoRF results
     print("\nSearching for GeoRF results...")
@@ -121,22 +144,27 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
     for file_path in rf_files:
         filename = os.path.basename(file_path)
         try:
-            # Extract scope from: results_df_gp_fs1_2015_2016.csv -> scope=1
             parts = filename.split('_fs')[1].split('_')
             scope = int(parts[0])
             start_year = int(parts[1])
             end_year = int(parts[2].split('.')[0])
-            lag_months = scope_to_lag[scope]
-            
-            df = pd.read_csv(file_path)
-            print(f"  Found GeoRF results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
-            
-            if lag_months not in rf_by_scope:
-                rf_by_scope[lag_months] = []
-            rf_by_scope[lag_months].append(df)
-            
-        except (ValueError, IndexError, KeyError) as e:
+        except (ValueError, IndexError) as e:
             print(f"  Warning: Could not parse filename {filename}: {e}")
+            continue
+
+        if scope not in scope_to_lag:
+            raise ValueError(
+                f"Unsupported GeoRF forecasting scope fs{scope} detected in {filename}; expected indices {list(scope_to_lag)} for lags {ACTIVE_LAGS}."
+            )
+
+        lag_months = scope_to_lag[scope]
+
+        df = pd.read_csv(file_path)
+        print(f"  Found GeoRF results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
+
+        if lag_months not in rf_by_scope:
+            rf_by_scope[lag_months] = []
+        rf_by_scope[lag_months].append(df)
     
     # Combine RF data across year ranges for each scope
     for lag_months, dfs in rf_by_scope.items():
@@ -162,22 +190,27 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
     for file_path in xgb_files:
         filename = os.path.basename(file_path)
         try:
-            # Extract scope from: results_df_xgb_gp_fs1_2015_2015.csv or results_df_xgb_gp_fs1_2015_2016.csv -> scope=1
             parts = filename.split('_fs')[1].split('_')
             scope = int(parts[0])
             start_year = int(parts[1])
             end_year = int(parts[2].split('.')[0])
-            lag_months = scope_to_lag[scope]
-            
-            df = pd.read_csv(file_path)
-            print(f"  Found XGBoost results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
-            
-            if lag_months not in xgb_by_scope:
-                xgb_by_scope[lag_months] = []
-            xgb_by_scope[lag_months].append(df)
-            
-        except (ValueError, IndexError, KeyError) as e:
+        except (ValueError, IndexError) as e:
             print(f"  Warning: Could not parse filename {filename}: {e}")
+            continue
+
+        if scope not in scope_to_lag:
+            raise ValueError(
+                f"Unsupported XGBoost forecasting scope fs{scope} detected in {filename}; expected indices {list(scope_to_lag)} for lags {ACTIVE_LAGS}."
+            )
+
+        lag_months = scope_to_lag[scope]
+
+        df = pd.read_csv(file_path)
+        print(f"  Found XGBoost results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
+
+        if lag_months not in xgb_by_scope:
+            xgb_by_scope[lag_months] = []
+        xgb_by_scope[lag_months].append(df)
     
     # Combine XGBoost data across year ranges for each scope
     for lag_months, dfs in xgb_by_scope.items():
@@ -193,8 +226,15 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         xgboost_data[lag_months] = combined_df
         print(f"  Combined {len(dfs)} files for {lag_months}-month lag: {len(combined_df)} total records")
     
+    # Guard against unsupported lag outputs
+    collected_lags = set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys())
+    unexpected_lags = sorted(collected_lags - set(ACTIVE_LAGS))
+    if unexpected_lags:
+        raise ValueError(f"Detected unsupported lag months {unexpected_lags}; expected {ACTIVE_LAGS}.")
+
     # Summary
     print(f"\nData loading summary:")
+    print(f"  Active lag schedule: {ACTIVE_LAGS}")
     print(f"  Probit baseline: {list(probit_data.keys())} month lags")
     print(f"  FEWSNET baseline: {list(fewsnet_data.keys())} month lags")
     print(f"  GeoRF: {list(rf_data.keys())} month lags")
@@ -206,15 +246,23 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
 
 def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
     """Create dynamic subplot grid comparing probit, FEWSNET, GeoRF, and XGBoost across available forecasting scopes and class 1 metrics"""
-    
-    # Get available lag periods from all datasets
-    available_lags = sorted(set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys()))
-    
-    if not available_lags:
+    global FEWSNET_EXTENSION_SOURCE
+
+    # Use canonical lag ordering for plotting
+    available_lags = list(ACTIVE_LAGS)
+
+    # Verify at least one dataset provides data
+    has_any_data = any(
+        lag in dataset
+        for lag in available_lags
+        for dataset in (probit_data, fewsnet_data, rf_data, xgboost_data)
+    )
+
+    if not has_any_data:
         print("No data available for plotting!")
         return None
-    
-    # Setup dynamic subplot grid
+
+    # Setup subplot grid (one row per lag, three metrics per row)
     n_rows = len(available_lags)
     n_cols = 3  # precision, recall, f1
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(18, 4 * n_rows))
@@ -224,7 +272,7 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
         axes = axes.reshape(1, -1)
     
     # Create lag labels
-    lag_labels = [f'l{lag} ({lag}-month)' for lag in available_lags]
+    lag_labels = [f'Lag {lag} months' for lag in available_lags]
     
     # Define metrics and their labels
     metrics = ['precision(1)', 'recall(1)', 'f1(1)']
@@ -322,24 +370,21 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
             
             if 'fewsnet' in filtered_datasets:
                 fewsnet_values = filtered_datasets['fewsnet'][metric].iloc[:min_length]
-                # Indicate if this is extended FEWSNET data beyond native capabilities
-                if lag in [9, 12]:  # Extended lags
-                    label = 'FEWSNET (6mo-ext)'  # Show that it's using 6-month extended
-                    linestyle = '--'  # Use dashed line to indicate extended data
-                    alpha = 0.6  # Slightly more transparent
+                extended_from = FEWSNET_EXTENSION_SOURCE.get(lag)
+                if extended_from is not None:
+                    label = f'FEWSNET ({extended_from}mo-ext)'
+                    linestyle = '--'
+                    alpha = 0.6
+                    plotted_models.append(f'FEWSNET ({extended_from}mo-ext)')
                 else:
-                    label = 'FEWSNET (Official)'  # Native FEWSNET predictions
+                    label = 'FEWSNET (Official)'
                     linestyle = '-'
                     alpha = 0.8
-                
-                ax.plot(x_positions, fewsnet_values, 'D' + linestyle, 
-                       color=colors['fewsnet'], label=label, 
-                       linewidth=2, markersize=4, alpha=alpha)
-                
-                if lag in [9, 12]:
-                    plotted_models.append('FEWSNET (6mo-ext)')
-                else:
                     plotted_models.append('FEWSNET')
+
+                ax.plot(x_positions, fewsnet_values, 'D' + linestyle,
+                       color=colors['fewsnet'], label=label,
+                       linewidth=2, markersize=4, alpha=alpha)
             
             if 'rf' in filtered_datasets:
                 rf_values = filtered_datasets['rf'][metric].iloc[:min_length]
@@ -403,8 +448,8 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
 def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
     """Print class 1 performance statistics for each model and lag (unweighted averages)"""
     
-    # Use available lag periods from the data
-    available_lags = sorted(set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys()))
+    # Use canonical lag periods
+    available_lags = list(ACTIVE_LAGS)
     metrics = ['precision(1)', 'recall(1)', 'f1(1)']
     metric_names = ['Precision (Class 1)', 'Recall (Class 1)', 'F1 Score (Class 1)']
     
@@ -424,9 +469,8 @@ def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
             xgboost_avg = xgboost_data[lag][metric].mean() if lag in xgboost_data and metric in xgboost_data[lag].columns else np.nan
             
             # Add indicator for extended FEWSNET data
-            fewsnet_label = "FEWSNET"
-            if lag in [9, 12] and not pd.isna(fewsnet_avg):
-                fewsnet_label = "FEWSNET*"  # Asterisk indicates extended data
+            extended_from = FEWSNET_EXTENSION_SOURCE.get(lag)
+            fewsnet_label = "FEWSNET" if extended_from is None else f"FEWSNET ({extended_from}mo-ext)"
             
             print(f"{metric_name:>18}: Probit={probit_avg:.4f}, {fewsnet_label}={fewsnet_avg:.4f}, GeoRF={rf_avg:.4f}, XGBoost={xgboost_avg:.4f}")
         
@@ -436,19 +480,17 @@ def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
         rf_count = len(rf_data[lag]) if lag in rf_data else 0
         xgb_count = len(xgboost_data[lag]) if lag in xgboost_data else 0
         
-        fewsnet_count_label = "FEWSNET"
-        if lag in [9, 12] and fewsnet_count > 0:
-            fewsnet_count_label = "FEWSNET*"
+        extended_from = FEWSNET_EXTENSION_SOURCE.get(lag)
+        fewsnet_count_label = "FEWSNET" if extended_from is None else f"FEWSNET ({extended_from}mo-ext)"
             
         print(f"{'Sample counts':>18}: Probit={probit_count}, {fewsnet_count_label}={fewsnet_count}, GeoRF={rf_count}, XGBoost={xgb_count}")
         
         # Add note about extended FEWSNET data for longer lags
-        if lag in [9, 12]:
-            print(f"{'':>18}  * FEWSNET data extended using 6-month predictions")
+        if extended_from is not None:
+            print(f"{'':>18}  * FEWSNET data extended using {extended_from}-month predictions")
 
 def main():
-    # Use current directory for auto-detection
-    base_dir = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\results"
+    base_dir = PROJECT_ROOT
     
     # Load and process data using auto-detection
     print("Auto-detecting and loading comparison data...")
@@ -464,8 +506,7 @@ def main():
         print("  - XGBoost: results_df_xgb_gp_fs*_*_*.csv")
         return
     
-    # Get available lag periods from all datasets
-    available_lags = sorted(set(probit_data.keys()) | set(fewsnet_data.keys()) | set(rf_data.keys()) | set(xgboost_data.keys()))
+    available_lags = list(ACTIVE_LAGS)
     
     # Print data summary
     print("\\nData Summary:")
@@ -504,17 +545,17 @@ def main():
     if available_lags:
         print("\\nCreating class 1 performance comparison visualization...")
         fig = create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data)
-        
-        # Save plot in current directory
-        output_path = 'model_comparison_class1_focus.png'
-        fig.savefig(output_path, dpi=300, bbox_inches='tight')
-        print(f"Plot saved to: {output_path}")
-        
-        # Print summary statistics
-        print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data)
-        
-        # Show plot
-        plt.show()
+
+        if fig is not None:
+            VIS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+            output_path = VIS_OUTPUT_DIR / f"georf_vs_baseline_lag_{'_'.join(str(lag) for lag in ACTIVE_LAGS)}.png"
+            fig.savefig(output_path, dpi=300, bbox_inches='tight')
+            print(f"Plot saved to: {output_path}")
+
+            print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data)
+            plt.show()
+        else:
+            print("No figure generated; skipping visualization export.")
     else:
         print("\\nNo data available for plotting.")
 

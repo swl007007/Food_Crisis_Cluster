@@ -7,6 +7,8 @@
 
 import numpy as np
 
+from config import LAGS_MONTHS  # Reuse canonical lag schedule
+
 #Note: Some of the parameters are for the deep learning version (commented).
 #They are for now kept as part of the config file in case some conditions
 #were used in some function definitions in the code repo.

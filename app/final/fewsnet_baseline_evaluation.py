@@ -71,8 +71,8 @@ def load_and_prepare_fewsnet_data():
     # Apply lags by admin_code
     print("Applying temporal lags...")
     df = df.sort_values(['FEWSNET_admin_code', 'year', 'month'])
-    df['pred_near_lag1'] = df.groupby('FEWSNET_admin_code')['pred_near'].shift(1)
-    df['pred_med_lag2'] = df.groupby('FEWSNET_admin_code')['pred_med'].shift(2)
+    df['pred_near_lag1'] = df.groupby('FEWSNET_admin_code')['pred_near'].shift(4)
+    df['pred_med_lag2'] = df.groupby('FEWSNET_admin_code')['pred_med'].shift(8)
     
     # Filter to years >= 2015 to match other models
     print(f"Original data: {len(df)} rows")

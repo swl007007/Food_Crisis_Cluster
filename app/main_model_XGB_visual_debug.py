@@ -40,6 +40,12 @@ from src.helper.helper import get_spatial_range
 from src.initialization.initialization import train_test_split_all
 from src.customize.customize import train_test_split_rolling_window
 from config_visual import *
+from config import DEFAULT_LAGS_MONTHS
+from src.utils.lag_schedules import (
+    forecasting_scope_to_lag,
+    log_lag_schedule,
+    resolve_lag_schedule,
+)
 # Note: No imputation imports needed for XGBoost - handles missing values natively
 from sklearn.metrics import precision_score, recall_score, f1_score
 from tqdm import tqdm
@@ -54,11 +60,18 @@ from src.feature.feature import prepare_features, validate_polygon_contiguity, c
 from src.utils.save_results import save_results
 
 VIS_DEBUG_MODE = True
+ARTIFACTS_ROOT = os.path.join('result_GeoRF')
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config_visual.LAGS_MONTHS")
+EXPECTED_LAG_SCHEDULE = list(DEFAULT_LAGS_MONTHS)
+if ACTIVE_LAGS != EXPECTED_LAG_SCHEDULE:
+    raise ValueError(
+        f"GeoXGB visual debug requires FEWSNET-aligned lags {EXPECTED_LAG_SCHEDULE}; found {ACTIVE_LAGS}."
+    )
 
 # Configuration
 
 
-DATA_MODE = 'nomacro'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro'
+DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
@@ -71,9 +84,12 @@ elif DATA_MODE == 'nomacro':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
 elif DATA_MODE == 'nogis':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
+elif DATA_MODE == 'min':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
+elif DATA_MODE == 'unadjusted':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_unadjusted_bm.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
-
 
 
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
@@ -122,7 +138,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     enable_metrics_maps : bool
         Whether to create maps showing F1/accuracy improvements
     forecasting_scope : int or None
-        Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
+        Forecasting scope (1-based index into active lag schedule)
     learning_rate : float
         XGBoost learning rate
     reg_alpha : float
@@ -556,7 +572,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 pred_data = {
                     'year': np.full(len(ytest), test_year, dtype=np.int16),  # Use smaller dtypes
                     'quarter': np.full(len(ytest), quarter, dtype=np.int8),
-                    'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Use quarter end month (3, 6, 9, 12)
+                    'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Quarter end month (Mar, Jun, Sep, Dec)
                     'adm_code': np.zeros(len(ytest), dtype=np.int32),  # Placeholder - would need actual admin codes
                     'fews_ipc_crisis_pred': ypred,  # Don't copy - transfer ownership
                     'fews_ipc_crisis_true': ytest   # Don't copy - transfer ownership
@@ -571,7 +587,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 pred_data = {
                     'year': np.full(len(ytest), test_year, dtype=np.int16),
                     'quarter': np.full(len(ytest), quarter, dtype=np.int8),
-                    'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Use quarter end month (3, 6, 9, 12)
+                    'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Quarter end month (Mar, Jun, Sep, Dec)
                     'adm_code': np.zeros(len(ytest), dtype=np.int32),
                     'fews_ipc_crisis_pred': ypred,  # Transfer ownership, don't copy
                     'fews_ipc_crisis_true': ytest   # Transfer ownership, don't copy
@@ -934,8 +950,10 @@ def main():
     parser = argparse.ArgumentParser(description='GeoXGB Food Crisis Prediction Pipeline')
     parser.add_argument('--start_year', type=int, default=2024, help='Start year for evaluation (default: 2024)')
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
-    parser.add_argument('--forecasting_scope', type=int, default=4, choices=[1,2,3,4], 
-                        help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 4)')
+    scope_choices = list(range(1, len(ACTIVE_LAGS) + 1))
+    scope_help = f"Forecasting scope (1-based index) for lag schedule {ACTIVE_LAGS} (default: {len(ACTIVE_LAGS)})"
+    parser.add_argument('--forecasting_scope', type=int, default=len(ACTIVE_LAGS), choices=scope_choices,
+                        help=scope_help)
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
@@ -945,7 +963,9 @@ def main():
     nowcasting = False       # Set to True for 2-layer model
     max_depth = None  # Set to integer for specific XGB depth
     desire_terms = 1         # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
-    forecasting_scope = 1    # From command line argument
+    forecasting_scope = args.forecasting_scope
+    active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
+    log_path = log_lag_schedule(ACTIVE_LAGS, ARTIFACTS_ROOT)
     
     # XGBoost-specific hyperparameters optimized for food crisis prediction
     learning_rate = 0.1      # Learning rate (step size shrinkage)
@@ -970,7 +990,8 @@ def main():
     print(f"  - Nowcasting (2-layer): {nowcasting}")
     print(f"  - Max depth: {max_depth}")
     print(f"  - Desired terms: {desire_terms} ({'All quarters (Q1-Q4)' if desire_terms is None else f'Q{desire_terms} only'})")
-    print(f"  - Forecasting scope: {forecasting_scope} ({[3,6,9,12][forecasting_scope-1]}-month lag)")
+    print(f"  - Forecasting scope: {forecasting_scope} ({active_lag}-month lag)")
+    print(f"  - Active lag schedule: {ACTIVE_LAGS} (logged to {log_path})")
     print(f"  - Rolling window: 5-year training windows before each test quarter")
     print(f"  - Track partition metrics: {track_partition_metrics}")
     print(f"  - Enable metrics maps: {enable_metrics_maps}")

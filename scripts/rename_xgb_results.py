@@ -5,7 +5,7 @@ import sys
 
 # Windows-style directory containing the XGB result CSVs.
 WINDOWS_TARGET_DIR = PureWindowsPath(
-    r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\xgb"
+    r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster"
 )
 
 # Filename prefix to inject into matching CSVs.

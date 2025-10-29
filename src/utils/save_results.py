@@ -21,7 +21,7 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
     desire_terms : int or None
         Desired terms setting
     forecasting_scope : int or None
-        Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo)
+        Forecasting scope (1-based index into canonical lag schedule)
     start_year : int or None
         Start year of evaluation period
     end_year : int or None

@@ -43,7 +43,13 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 warnings.filterwarnings('ignore')
 
 from config import *
+from src.utils.lag_schedules import (
+    forecasting_scope_to_lag,
+    log_lag_schedule,
+    resolve_lag_schedule,
+)
 
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config.LAGS_MONTHS")
 IS_DRY_RUN = '--dry-run' in _ARGS
 
 if not IS_DRY_RUN:
@@ -77,11 +83,13 @@ else:
     MODEL_ADAPTER = DryRunAdapter()
 VIS_DEBUG_MODE =  False
 # Configuration
-DATA_MODE = 'nogis'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis'
 ARTIFACTS_ROOT = os.path.join('result_GeoRF')
 PARITY_LOG_PATH = os.path.join(ARTIFACTS_ROOT, 'logs', 'parity_check.log')
 CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
 GLOBAL_RANDOM_SEED = 42
+
+
+DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
@@ -94,6 +102,10 @@ elif DATA_MODE == 'nomacro':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
 elif DATA_MODE == 'nogis':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
+elif DATA_MODE == 'min':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
+elif DATA_MODE == 'unadjusted':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_unadjusted_bm.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 
@@ -159,7 +171,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     enable_metrics_maps : bool
         Whether to create maps showing F1/accuracy improvements
     forecasting_scope : int or None
-        Forecasting scope (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
+        Forecasting scope (1-based index into active lag schedule)
         
     Returns:
     --------
@@ -989,8 +1001,12 @@ def main():
     parser = argparse.ArgumentParser(description=f'{adapter.display_name} Food Crisis Prediction Pipeline')
     parser.add_argument('--start_year', type=int, default=2024, help='Start year for evaluation (default: 2024)')
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
-    parser.add_argument('--forecasting_scope', type=int, default=1, choices=[1,2,3,4], 
-                        help='Forecasting scope: 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag (default: 1)')
+    scope_choices = list(range(1, len(ACTIVE_LAGS) + 1))
+    scope_help = \
+        "Forecasting scope (1-based index) for lag schedule " \
+        f"{ACTIVE_LAGS} (default: 1)"
+    parser.add_argument('--forecasting_scope', type=int, default=1, choices=scope_choices,
+                        help=scope_help)
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     parser.add_argument('--dry-run', action='store_true',
@@ -1010,6 +1026,7 @@ def main():
     max_depth = None  # Set to integer for specific RF depth
     desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = args.forecasting_scope    # From command line argument
+    active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
     
     # Partition Metrics Tracking Configuration
     track_partition_metrics = False  # Enable partition metrics tracking and visualization
@@ -1019,12 +1036,14 @@ def main():
     start_year = args.start_year
     end_year = args.end_year
     
+    log_path = log_lag_schedule(ACTIVE_LAGS, ARTIFACTS_ROOT)
     print(f"Configuration:")
     print(f"  - Assignment method: {assignment}")
     print(f"  - Nowcasting (2-layer): {nowcasting}")
     print(f"  - Max depth: {max_depth}")
     print(f"  - Desired terms: {desire_terms} ({'All quarters (Q1-Q4)' if desire_terms is None else f'Q{desire_terms} only'})")
-    print(f"  - Forecasting scope: {forecasting_scope} ({[3,6,9,12][forecasting_scope-1]}-month lag)")
+    print(f"  - Forecasting scope: {forecasting_scope} ({active_lag}-month lag)")
+    print(f"  - Active lag schedule: {ACTIVE_LAGS} (logged to {log_path})")
     print(f"  - Rolling window: 5-year training windows before each test quarter")
     print(f"  - Track partition metrics: {track_partition_metrics}")
     print(f"  - Enable metrics maps: {enable_metrics_maps}")

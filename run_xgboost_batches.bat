@@ -8,6 +8,7 @@ REM Each batch cleans up results before proceeding to the next run
 
 echo ===== Starting XGBoost Batch Processing =====
 echo This script will run XGBoost for multiple time periods and forecasting scopes
+echo Active lag schedule: 4, 8, 12 months
 echo Each batch will clean up memory to prevent leakage issues
 echo.
 
@@ -24,7 +25,6 @@ echo ==========================================
 call :run_batch 2013 2013 1
 call :run_batch 2013 2013 2
 call :run_batch 2013 2013 3
-call :run_batch 2013 2013 4
 
 REM Year 2014 - All forecasting scopes
 echo ==========================================
@@ -33,7 +33,6 @@ echo ==========================================
 call :run_batch 2014 2014 1
 call :run_batch 2014 2014 2
 call :run_batch 2014 2014 3
-call :run_batch 2014 2014 4
 
 REM Year 2015 - All forecasting scopes
 echo ==========================================
@@ -42,7 +41,6 @@ echo ==========================================
 call :run_batch 2015 2015 1
 call :run_batch 2015 2015 2
 call :run_batch 2015 2015 3
-call :run_batch 2015 2015 4
 
 REM Year 2016 - All forecasting scopes
 echo ==========================================
@@ -51,7 +49,6 @@ echo ==========================================
 call :run_batch 2016 2016 1
 call :run_batch 2016 2016 2
 call :run_batch 2016 2016 3
-call :run_batch 2016 2016 4
 
 REM Year 2017 - All forecasting scopes
 echo ==========================================
@@ -60,7 +57,6 @@ echo ==========================================
 call :run_batch 2017 2017 1
 call :run_batch 2017 2017 2
 call :run_batch 2017 2017 3
-call :run_batch 2017 2017 4
 
 REM Year 2018 - All forecasting scopes
 echo ==========================================
@@ -69,7 +65,6 @@ echo ==========================================
 call :run_batch 2018 2018 1
 call :run_batch 2018 2018 2
 call :run_batch 2018 2018 3
-call :run_batch 2018 2018 4
 
 REM Year 2019 - All forecasting scopes
 echo ==========================================
@@ -78,7 +73,6 @@ echo ==========================================
 call :run_batch 2019 2019 1
 call :run_batch 2019 2019 2
 call :run_batch 2019 2019 3
-call :run_batch 2019 2019 4
 
 REM Year 2020 - All forecasting scopes
 echo ==========================================
@@ -87,7 +81,6 @@ echo ==========================================
 call :run_batch 2020 2020 1
 call :run_batch 2020 2020 2
 call :run_batch 2020 2020 3
-call :run_batch 2020 2020 4
 
 REM Year 2021 - All forecasting scopes
 echo ==========================================
@@ -96,7 +89,6 @@ echo ==========================================
 call :run_batch 2021 2021 1
 call :run_batch 2021 2021 2
 call :run_batch 2021 2021 3
-call :run_batch 2021 2021 4
 
 REM Year 2022 - All forecasting scopes
 echo ==========================================
@@ -105,7 +97,6 @@ echo ==========================================
 call :run_batch 2022 2022 1
 call :run_batch 2022 2022 2
 call :run_batch 2022 2022 3
-call :run_batch 2022 2022 4
 
 REM Year 2023 - All forecasting scopes
 echo ==========================================
@@ -114,7 +105,6 @@ echo ==========================================
 call :run_batch 2023 2023 1
 call :run_batch 2023 2023 2
 call :run_batch 2023 2023 3
-call :run_batch 2023 2023 4
 
 REM Year 2024 - All forecasting scopes
 echo ==========================================
@@ -123,14 +113,13 @@ echo ==========================================
 call :run_batch 2024 2024 1
 call :run_batch 2024 2024 2
 call :run_batch 2024 2024 3
-call :run_batch 2024 2024 4
 
 echo.
 echo ===== All XGBoost batches completed successfully! =====
 echo Total batches processed: !batch_count!
 echo Years processed: 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
-echo Forecasting scopes: 1, 2, 3, 4 (for each year)
-echo Memory-optimized: 1 year + 1 scope per batch (48 total batches)
+echo Forecasting scopes: 1, 2, 3 (for each year)
+echo Memory-optimized: 1 year + 1 scope per batch (36 total batches)
 goto :end
 
 REM Function to run a single batch

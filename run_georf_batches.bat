@@ -8,6 +8,7 @@ REM Each batch cleans up results before proceeding to the next run
 
 echo ===== Starting GeoRF Batch Processing =====
 echo This script will run GeoRF for multiple time periods and forecasting scopes
+echo Active lag schedule: 4, 8, 12 months
 echo Each batch will clean up memory to prevent leakage issues
 echo.
 
@@ -18,7 +19,7 @@ REM Time period 1: 2013-2014
 echo ==========================================
 echo Processing time period: 2013-2014
 echo ==========================================
-for /L %%f in (1,1,4) do (
+for /L %%f in (1,1,3) do (
     call :run_batch 2013 2014 %%f
 )
 
@@ -26,7 +27,7 @@ REM Time period 2: 2015-2016
 echo ==========================================
 echo Processing time period: 2015-2016
 echo ==========================================
-for /L %%f in (1,1,4) do (
+for /L %%f in (1,1,3) do (
     call :run_batch 2015 2016 %%f
 )
 
@@ -34,7 +35,7 @@ REM Time period 3: 2017-2018
 echo ==========================================
 echo Processing time period: 2017-2018
 echo ==========================================
-for /L %%f in (1,1,4) do (
+for /L %%f in (1,1,3) do (
     call :run_batch 2017 2018 %%f
 )
 
@@ -42,7 +43,7 @@ REM Time period 4: 2019-2020
 echo ==========================================
 echo Processing time period: 2019-2020
 echo ==========================================
-for /L %%f in (1,1,4) do (
+for /L %%f in (1,1,3) do (
     call :run_batch 2019 2020 %%f
 )
 
@@ -50,7 +51,7 @@ REM Time period 5: 2021-2022
 echo ==========================================
 echo Processing time period: 2021-2022
 echo ==========================================
-for /L %%f in (1,1,4) do (
+for /L %%f in (1,1,3) do (
     call :run_batch 2021 2022 %%f
 )
 
@@ -58,7 +59,7 @@ REM Time period 6: 2023-2024
 echo ==========================================
 echo Processing time period: 2023-2024
 echo ==========================================
-for /L %%f in (1,1,4) do (
+for /L %%f in (1,1,3) do (
     call :run_batch 2023 2024 %%f
 )
 
@@ -66,7 +67,7 @@ echo.
 echo ===== All batches completed successfully! =====
 echo Total batches processed: !batch_count!
 echo Time periods: 2013-2014, 2015-2016, 2017-2018, 2019-2020, 2021-2022, 2023-2024
-echo Forecasting scopes: 1, 2, 3, 4 (for each time period)
+echo Forecasting scopes: 1, 2, 3 (for each time period)
 goto :end
 
 REM Function to run a single batch

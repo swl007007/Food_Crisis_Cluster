@@ -7,11 +7,10 @@ workflow in main_model_XGB.py but uses only lagged crisis variables as features.
 
 Key features:
 1. Uses lagged crisis variables as predictors with configurable forecasting scope
-2. Forecasting scope options:
-   - scope=1: lag 1,2,3 terms (3-month forecasting)
-   - scope=2: lag 2,3,4 terms (6-month forecasting)  
-   - scope=3: lag 3,4,5 terms (9-month forecasting)
-   - scope=4: lag 4,5,6 terms (12-month forecasting)
+2. Forecasting scope options (aligned with canonical lag schedule [4, 8, 12] months):
+   - scope=1: uses lag 1,2,3 terms (4-month forecasting)
+   - scope=2: uses lag 5,6,7 terms (8-month forecasting)
+   - scope=3: uses lag 9,10,11 terms (12-month forecasting)
 3. Uses 5-year rolling training window (same as main_model_XGB)
 4. Loops through configurable year range for temporal validation
 5. Calculates precision, recall, and F1 score
@@ -26,6 +25,7 @@ import polars as pl
 import os
 import sys
 import warnings
+from pathlib import Path
 warnings.filterwarnings('ignore')
 
 from sklearn.linear_model import LogisticRegression  # Use logistic for probit-like behavior
@@ -35,17 +35,26 @@ from customize import train_test_split_rolling_window
 from tqdm import tqdm
 import gc
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from config import LAGS_MONTHS
+from src.utils.lag_schedules import forecasting_scope_to_lag, resolve_lag_schedule
+
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config.LAGS_MONTHS")
+
 # Configuration
 DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
 
-def load_and_prepare_data(forecasting_scope=4):
+def load_and_prepare_data(forecasting_scope=len(ACTIVE_LAGS)):
     """
     Load data and prepare features for probit regression baseline.
     
     Parameters:
     -----------
-    forecasting_scope : int, default=4
-        Forecasting scope: 1=1,2,3 term lags, 2=2,3,4 term lags, 3=3,4,5 term lags, 4=4,5,6 term lags
+    forecasting_scope : int, default=len(ACTIVE_LAGS)
+        Forecasting scope (1-based index into active lag schedule)
     """
     print("Loading data...")
     
@@ -74,23 +83,14 @@ def load_and_prepare_data(forecasting_scope=4):
     # Create lag features based on forecasting scope
     print(f"Creating lag features for forecasting_scope={forecasting_scope}...")
     
-    # Define lag terms based on forecasting scope
-    # scope=1: use lag 1,2,3 terms (3-month forecasting)
-    # scope=2: use lag 2,3,4 terms (6-month forecasting)  
-    # scope=3: use lag 3,4,5 terms (9-month forecasting)
-    # scope=4: use lag 4,5,6 terms (12-month forecasting)
-    lag_mapping = {
-        1: [1, 2, 3],  # 3-month lag
-        2: [2, 3, 4],  # 6-month lag
-        3: [3, 4, 5],  # 9-month lag
-        4: [4, 5, 6]   # 12-month lag
-    }
-    
-    if forecasting_scope not in lag_mapping:
-        raise ValueError(f"Invalid forecasting_scope: {forecasting_scope}. Must be 1, 2, 3, or 4.")
-    
-    lag_terms = lag_mapping[forecasting_scope]
-    print(f"Using lag terms: {lag_terms} for {[3,6,9,12][forecasting_scope-1]}-month forecasting")
+    active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
+    lag_terms = [active_lag - 3, active_lag - 2, active_lag - 1]
+    if min(lag_terms) < 1:
+        raise ValueError(
+            f"Lag calculation produced non-positive terms {lag_terms} for forecasting_scope={forecasting_scope}."
+        )
+
+    print(f"Using lag terms: {lag_terms} for {active_lag}-month forecasting")
     
     # Create lag features
     feature_cols = []
@@ -197,12 +197,14 @@ def main():
     print("=== Baseline Probit Regression for Food Crisis Prediction ===")
     
     # Configuration
-    forecasting_scope = 4  # 1=3mo lag, 2=6mo lag, 3=9mo lag, 4=12mo lag
+    forecasting_scope = len(ACTIVE_LAGS)  # Default to longest horizon (12-month)
     start_year = 2015
     end_year = 2024
     
+    active_lag_main = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
+
     print(f"Configuration:")
-    print(f"  - Forecasting scope: {forecasting_scope} ({[3,6,9,12][forecasting_scope-1]}-month lag)")
+    print(f"  - Forecasting scope: {forecasting_scope} ({active_lag_main}-month lag)")
     print(f"  - Evaluation period: {start_year} to {end_year}")
     
     # Load and prepare data
