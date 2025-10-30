@@ -9,17 +9,23 @@ WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with onl
 
 Action Points:
 TODO(CRITICAL):
-2.use 4-8-12 months lag instead of 3-6-8-12 months lag throughout the pipeline
-
-4.solve accuracy map axis name issue
-
-concurrent:
-7.think about the architecture of two layer model
+1.solve accuracy map axis name issue
+2.edit slides
 
 
-
-TODO(FUTURE):
+Concurrent
+1.think about the architecture of two layer model
 2.use ChatGPT to parse pre-2017 locations to country ISO and admin1 codes
+
+
+
+
+
+
+KNOWN ISSUES:
+1. xgboost name issue(the output name is not correct)
+2. xgboost should not impute data
+
 
 
 IMPORTANT NOTE

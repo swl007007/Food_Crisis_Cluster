@@ -54,42 +54,20 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=len(ACTIVE_LAGS)):
     print(f"Preparing features with forecasting_scope={forecasting_scope}...")
     
     # Define time-variant features for L2
-    time_variants = [
-        'event_count_battles', 'event_count_explosions', 'event_count_violence',
-        'sum_fatalities_battles', 'sum_fatalities_explosions', 'sum_fatalities_violence',
-        'event_count_battles_w5', 'event_count_explosions_w5', 'event_count_violence_w5',
-        'sum_fatalities_battles_w5', 'sum_fatalities_explosions_w5', 'sum_fatalities_violence_w5',
-        'event_count_battles_w10', 'event_count_explosions_w10', 'event_count_violence_w10',
-        'sum_fatalities_battles_w10', 'sum_fatalities_explosions_w10', 'sum_fatalities_violence_w10',
-        'nightlight', 'nightlight_sd', 'EVI', 'EVI_stdDev', 'FAO_price',
-        'Evap_tavg_mean', 'Evap_tavg_stdDev', 'LWdown_f_tavg_mean', 'LWdown_f_tavg_stdDev',
-        'Lwnet_tavg_mean', 'Lwnet_tavg_stdDev', 'Psurf_f_tavg_mean', 'Psurf_f_tavg_stdDev',
-        'Qair_f_tavg_mean', 'Qair_f_tavg_stdDev', 'Qg_tavg_mean', 'Qg_tavg_stdDev',
-        'Qh_tavg_mean', 'Qh_tavg_stdDev', 'Qle_tavg_mean', 'Qle_tavg_stdDev',
-        'Qs_tavg_mean', 'Qs_tavg_stdDev', 'Qsb_tavg_mean', 'Qsb_tavg_stdDev',
-        'RadT_tavg_mean', 'RadT_tavg_stdDev', 'Rainf_f_tavg_mean', 'Rainf_f_tavg_stdDev',
-        'SnowCover_inst_mean', 'SnowCover_inst_stdDev', 'SnowDepth_inst_mean', 'SnowDepth_inst_stdDev',
-        'Snowf_tavg_mean', 'Snowf_tavg_stdDev', 'SoilMoi00_10cm_tavg_mean', 'SoilMoi00_10cm_tavg_stdDev',
-        'SoilMoi10_40cm_tavg_mean', 'SoilMoi10_40cm_tavg_stdDev', 'SoilMoi100_200cm_tavg_mean', 'SoilMoi100_200cm_tavg_stdDev',
-        'SoilMoi40_100cm_tavg_mean', 'SoilMoi40_100cm_tavg_stdDev', 'SoilTemp00_10cm_tavg_mean', 'SoilTemp00_10cm_tavg_stdDev',
-        'SoilTemp10_40cm_tavg_mean', 'SoilTemp10_40cm_tavg_stdDev', 'SoilTemp100_200cm_tavg_mean', 'SoilTemp100_200cm_tavg_stdDev',
-        'SoilTemp40_100cm_tavg_mean', 'SoilTemp40_100cm_tavg_stdDev', 'SWdown_f_tavg_mean', 'SWdown_f_tavg_stdDev',
-        'SWE_inst_mean', 'SWE_inst_stdDev', 'Swnet_tavg_mean', 'Swnet_tavg_stdDev',
-        'Tair_f_tavg_mean', 'Tair_f_tavg_stdDev', 'Wind_f_tavg_mean', 'Wind_f_tavg_stdDev',
-        'gpp_sd', 'gpp_mean', 'CPI', 'GDP', 'CC', 'gini', 'WFP_Price', 'WFP_Price_std'
-    ]
+    # df group by FEWSNET_admin_code, see which features are time-variant(has different value for one FEWSNET_admin_code within one year)
+    features = df.columns.tolist()
+    time_variants = []
+    for feature in features:
+        if feature not in ['FEWSNET_admin_code', 'date', 'fews_ipc_crisis', 'AEZ_group', 'ISO_encoded', 'AEZ_country_group']:
+            if df.groupby(['FEWSNET_admin_code', df['date'].dt.year])[feature].nunique().max() > 2:
+                time_variants.append(feature)
     
     lag_months = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
     print(f"Using {lag_months}-month lag for forecasting scope {forecasting_scope}")
     
     # Create appropriate time variant list based on forecasting scope
-    if lag_months == 12:
-        # For 12-month lag, use existing m12 variables if available
-        time_variants_m12 = [variant + '_m12' for variant in time_variants]
-        time_variants_list = time_variants + time_variants_m12
-    else:
-        # For other forecasting scopes, we'll create lagged features dynamically
-        time_variants_list = time_variants.copy()
+    # For other forecasting scopes, we'll create lagged features dynamically
+    time_variants_list = time_variants.copy()
     
     # Get target variable
     y = df['fews_ipc_crisis'].values
@@ -106,52 +84,13 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=len(ACTIVE_LAGS)):
     # Create lag features based on forecasting scope
     print(f"Creating lag features for forecasting scope {forecasting_scope} ({lag_months} months)...")
 
-    if lag_months != 12:
-        # For scopes 1, 2, 3, create lagged features for time-variant variables
-        existing_cols_before = set(df_sorted.columns)
-        
-        for variant in time_variants:
-            if variant in df_sorted.columns:
-                lagged_col_name = f'{variant}_lag{lag_months}m'
-                df_sorted[lagged_col_name] = df_sorted.groupby('FEWSNET_admin_code')[variant].shift(lag_months)
-                time_variants_list.append(lagged_col_name)
-        
-        # Check for duplicates and remove if they already exist in the dataset
-        print("Checking for duplicate lagged features...")
-        cols_to_remove = []
-        for variant in time_variants:
-            lagged_col_name = f'{variant}_lag{lag_months}m'
-            # Check if similar columns already exist with various naming patterns
-            potential_existing = [
-                f'{variant}_m{lag_months}',        # e.g., variant_m3, variant_m6
-                f'{variant}_lag_{lag_months}',     # e.g., variant_lag_3, variant_lag_6  
-                f'{variant}_{lag_months}m',        # e.g., variant_3m, variant_6m
-                f'{variant}_l{lag_months}',        # e.g., variant_l3, variant_l6, variant_l9
-                f'{variant}_L{lag_months}',        # e.g., variant_L3, variant_L6 (uppercase)
-                f'{variant}.l{lag_months}',        # e.g., variant.l3, variant.l6 (with dot)
-                f'{variant}.L{lag_months}'         # e.g., variant.L3, variant.L6 (with dot, uppercase)
-            ]
-            
-            for existing_name in potential_existing:
-                if existing_name in df_sorted.columns and lagged_col_name in df_sorted.columns:
-                    print(f"Found duplicate: {lagged_col_name} vs {existing_name}, keeping {existing_name}")
-                    cols_to_remove.append(lagged_col_name)
-                    if lagged_col_name in time_variants_list:
-                        time_variants_list.remove(lagged_col_name)
-                    if existing_name not in time_variants_list:
-                        time_variants_list.append(existing_name)
-                    break
-        
-        # Remove duplicate columns
-        if cols_to_remove:
-            df_sorted = df_sorted.drop(columns=[col for col in cols_to_remove if col in df_sorted.columns])
-            print(f"Removed {len(cols_to_remove)} duplicate columns")
     
-    # Create additional lag features for crisis variable
-    for lag in ACTIVE_LAGS:
-        df_sorted[f'fews_ipc_crisis_lag_{lag}'] = (
-            df_sorted.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
-        )
+    for variant in time_variants:
+        if variant in df_sorted.columns:
+            lagged_col_name = f'{variant}_lag{lag_months}m'
+            df_sorted[lagged_col_name] = df_sorted.groupby('FEWSNET_admin_code')[variant].shift(lag_months)
+            time_variants_list.append(lagged_col_name)
+    
     
     # Drop unnecessary columns
     df_features = df_sorted.drop(columns=['date', 'fews_ipc_crisis', 'AEZ_group', 'ISO_encoded', 'AEZ_country_group'])

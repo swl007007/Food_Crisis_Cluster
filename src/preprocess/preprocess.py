@@ -150,22 +150,6 @@ def load_and_preprocess_data(data_path):
     ]
     data = data.drop(cols_to_drop)
     
-    # Optionally reduce variables
-    less_var = True
-    if less_var:
-        var_extra = [
-            'Evap_tavg_mean', 'Qsb_tavg_mean', 'RadT_tavg_mean', 
-            'SnowCover_inst_mean', 'SnowDepth_inst_mean', 'Snowf_tavg_mean',
-            'SoilMoi00_10cm_tavg_mean', 'SoilMoi10_40cm_tavg_mean', 
-            'SoilMoi100_200cm_tavg_mean', 'SoilMoi40_100cm_tavg_mean',
-            'LWdown_f_tavg_mean', 'SoilTemp00_10cm_tavg_mean', 
-            'SoilTemp10_40cm_tavg_mean', 'SoilTemp100_200cm_tavg_mean',
-            'SoilTemp40_100cm_tavg_mean', 'SWdown_f_tavg_mean', 
-            'SWE_inst_mean', 'Swnet_tavg_mean', 'Wind_f_tavg_mean',
-            'Lwnet_tavg_mean', 'Psurf_f_tavg_mean', 'Qair_f_tavg_mean',
-            'Qg_tavg_mean', 'Qh_tavg_mean', 'Qle_tavg_mean', 'Qs_tavg_mean'
-        ]
-        data = data.drop([col for col in data.columns if col.startswith(tuple(var_extra))])
     
     # Filter for non-null crisis data
     data = data.filter(pl.col("fews_ipc_crisis").is_not_null())
@@ -216,12 +200,21 @@ def load_and_preprocess_data(data_path):
     for month in df['date'].dt.month.unique():
         df[f'month_{month}'] = (df['date'].dt.month == month).astype(int)
     
+    # Feature Engineering:Method 1
+    feature_1_list = ['WFP_Price','WFP_Price_std','FAO_price','event_count_battles','event_count_explosions','event_count_violence','sum_fatalities_battles','sum_fatalities_explosions','sum_fatalities_violence','event_count_battles_w5','event_count_explosions_w5','event_count_violence_w5',
+    'sum_fatalities_battles_w5','sum_fatalities_explosions_w5','sum_fatalities_violence_w5','event_count_battles_w10','event_count_explosions_w10','event_count_violence_w10','sum_fatalities_battles_w10','sum_fatalities_explosions_w10','sum_fatalities_violence_w10']
+    feature_2_list = ['nightlight','nightlight_sd']
+    feature_3_list = ['EVI','Rainf_f_tavg_mean','Tair_f_tavg_mean','gpp_mean']
+    df = feature_engineering_1(df,feature_1_list)
+    df = feature_engineering_2(df,feature_2_list)
+    df = feature_engineering_3(df,feature_3_list)
     # Create AEZ groups
     aez_columns = [col for col in df.columns if col.startswith('AEZ_')]
     df['AEZ_group'] = df.groupby(aez_columns).ngroup()
     df['AEZ_country_group'] = df.groupby(['AEZ_group', 'ISO_encoded']).ngroup()
-    
+
     print(f"Data loaded: {df.shape[0]} rows, {df.shape[1]} columns")
+
     return df
 
 def setup_spatial_groups(df, assignment='polygons'):
@@ -520,3 +513,66 @@ def setup_spatial_groups(df, assignment='polygons'):
         raise ValueError(f"Unknown assignment method: {assignment}")
     
     return X_group, X_loc, contiguity_info
+
+def feature_engineering_1(df,feature_list):
+    """
+    Placeholder for Feature Engineering Method 1.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        Input dataframe
+    feature_list : list
+        List of features to engineer
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+        Dataframe with new features added
+    """
+ #group by FEWSNET_admin_code and calculate rolling mean
+    for feature in feature_list:
+        df[feature + '_m4'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=4).sum()
+        df[feature + '_m12'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=12).sum()
+    return df
+
+def feature_engineering_2(df,feature_list):
+    """
+    Placeholder for Feature Engineering Method 2.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        Input dataframe
+    feature_list : list
+        List of features to engineer
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+        Dataframe with new features added
+    """
+    for feature in feature_list:
+        df[feature +'_m12'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=12).sum()
+    return df
+
+def feature_engineering_3(df,feature_list):
+    """
+    Placeholder for Feature Engineering Method 3.
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        Input dataframe
+    feature_list : list
+        List of features to engineer
+
+    Returns:
+    --------
+    df : pandas.DataFrame
+        Dataframe with new features added
+    """
+    for feature in feature_list:
+        for lag in range(1, 13):
+            df[feature + f'_l{lag}'] = df.groupby('FEWSNET_admin_code')[feature].shift(lag)    
+    return df

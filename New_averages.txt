@@ -1,0 +1,20 @@
+\n================================================================================
+CLASS 1 PERFORMANCE SUMMARY (Unweighted Averages)
+================================================================================
+\n4-month lag forecasting:
+--------------------------------------------------
+Precision (Class 1): Probit=nan, FEWSNET=0.6931, GeoRF=0.8000, XGBoost=0.7509
+  Recall (Class 1): Probit=nan, FEWSNET=0.6785, GeoRF=0.4185, XGBoost=0.5057
+F1 Score (Class 1): Probit=nan, FEWSNET=0.6655, GeoRF=0.5085, XGBoost=0.5762
+     Sample counts: Probit=0, FEWSNET=39, GeoRF=39, XGBoost=39
+\n8-month lag forecasting:
+--------------------------------------------------
+Precision (Class 1): Probit=nan, FEWSNET=0.6267, GeoRF=0.7976, XGBoost=0.7542
+  Recall (Class 1): Probit=nan, FEWSNET=0.5912, GeoRF=0.4131, XGBoost=0.5038
+F1 Score (Class 1): Probit=nan, FEWSNET=0.5903, GeoRF=0.5059, XGBoost=0.5781
+     Sample counts: Probit=0, FEWSNET=39, GeoRF=39, XGBoost=39
+\n12-month lag forecasting:
+--------------------------------------------------
+Precision (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.6267, GeoRF=0.7938, XGBoost=0.7635
+  Recall (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.5912, GeoRF=0.4248, XGBoost=0.5089
+F1 Score (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.5903, GeoRF=0.5145, XGBoost=0.5818

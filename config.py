@@ -138,9 +138,9 @@ GROUP_SPLIT = {
 
 # Feature drop configuration (post temporal split, pre-training)
 FEATURE_DROP = {
-    'enable': False,
-    'cols': ['lat', 'lon', 'year', 'month'],
-    'patterns': ['year_*', 'month_*'],
+    'enable': True,
+    'cols': ['year', 'month','fews_ha','IPC_admin_code','ISO_encoded','years'],
+    'patterns': [],
 }
 
 # Backward compatible alias for lowercase access
