@@ -25,6 +25,11 @@ try:
 except ImportError:
     raise ImportError("XGBoost is required. Install with: pip install xgboost")
 
+try:
+    from imblearn.over_sampling import SMOTE
+except ImportError:  # pragma: no cover - SMOTE optional at runtime
+    SMOTE = None
+
 from sklearn.metrics import accuracy_score
 from config import *
 from src.helper.helper import get_X_branch_id_by_group
@@ -41,6 +46,8 @@ class XGBmodel():
                  max_model_depth=MAX_DEPTH,
                  mode=MODE, name='XGB', type='static',
                  sample_weights_by_class=None,
+                 use_smote=True,
+                 smote_k_neighbors=5,
                  # XGBoost specific parameters
                  learning_rate=0.1,
                  subsample=0.8,
@@ -106,7 +113,12 @@ class XGBmodel():
         self.name = 'XGB'
         self.type = type
         self.sample_weights_by_class = sample_weights_by_class
-        
+        self.use_smote = use_smote
+        self.smote_k_neighbors = smote_k_neighbors
+        self._smote_unavailable_warned = False
+        self._smote_skip_logged = set()
+        self._smote_failure_logged = set()
+
         # XGBoost-specific parameters optimized for food crisis prediction
         self.learning_rate = learning_rate
         self.subsample = subsample
@@ -124,7 +136,59 @@ class XGBmodel():
             print('Error: branch_id is required for the XGB version.')
             
         depth = len(branch_id)
-        self.model = self.get_new_xgb_model(X, y, sample_weights_by_class)
+        X_balanced, y_balanced = self._apply_smote_if_needed(X, y, branch_id)
+        self.model = self.get_new_xgb_model(X_balanced, y_balanced, sample_weights_by_class)
+
+    def _apply_smote_if_needed(self, X, y, branch_id):
+        """Balance training data with SMOTE when enabled and feasible."""
+
+        def _log_skip(message):
+            key = (branch_id, message)
+            if key not in self._smote_skip_logged:
+                print(message)
+                self._smote_skip_logged.add(key)
+
+        if not self.use_smote:
+            return X, y
+
+        if SMOTE is None:
+            if not self._smote_unavailable_warned:
+                print('SMOTE skipped: install imbalanced-learn to enable oversampling for XGB pipeline.')
+                self._smote_unavailable_warned = True
+            return X, y
+
+        X_arr = np.asarray(X)
+        y_arr = np.asarray(y)
+
+        unique_classes, counts = np.unique(y_arr, return_counts=True)
+        if unique_classes.shape[0] < 2:
+            _log_skip(f'SMOTE skipped for branch "{branch_id}": only one class present.')
+            return X, y
+
+        minority_count = counts.min()
+        if minority_count < 2:
+            _log_skip(f'SMOTE skipped for branch "{branch_id}": minority class has fewer than 2 samples.')
+            return X, y
+
+        k_neighbors = min(self.smote_k_neighbors, minority_count - 1)
+        if k_neighbors < 1:
+            _log_skip(f'SMOTE skipped for branch "{branch_id}": insufficient samples for synthetic neighbors.')
+            return X, y
+
+        smote = SMOTE(random_state=self.random_state, k_neighbors=k_neighbors)
+
+        try:
+            X_resampled, y_resampled = smote.fit_resample(X_arr, y_arr)
+            synthetic_count = len(y_resampled) - len(y_arr)
+            if synthetic_count > 0:
+                print(f'SMOTE applied on branch "{branch_id}": added {synthetic_count} synthetic samples (k_neighbors={k_neighbors}).')
+            return X_resampled, y_resampled
+        except Exception as exc:
+            key = (branch_id, str(exc))
+            if key not in self._smote_failure_logged:
+                print(f'SMOTE failed for branch "{branch_id}" ({exc}); proceeding without oversampling.')
+                self._smote_failure_logged.add(key)
+            return X, y
 
     def predict(self, X, prob=False):
         """Return predicted labels or probabilities."""

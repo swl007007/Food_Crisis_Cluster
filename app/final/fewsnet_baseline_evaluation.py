@@ -165,10 +165,10 @@ def evaluate_fewsnet_scope(df, forecasting_scope, start_year=2015, end_year=2024
     # Map forecasting scope to prediction column
     if forecasting_scope == 1:
         pred_col = 'pred_near_lag1'
-        lag_months = 3
+        lag_months = 4
     elif forecasting_scope == 2:
         pred_col = 'pred_med_lag2'
-        lag_months = 6
+        lag_months = 8
     else:
         raise ValueError(f"FEWSNET only supports forecasting scopes 1-2, got {forecasting_scope}")
     

@@ -117,10 +117,29 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=len(ACTIVE_LAGS)):
     # L1 features are all others
     l1_index = [i for i in range(X.shape[1]) if i not in l2_index]
     
-    # Apply imputation (reduced verbosity)
-    print("Applying imputation to missing values...")
-    X = comp_impute(X, strategy="max_plus", multiplier=100.0)
-    
+    # Apply imputation (XGBoost pipelines skip because model handles NaNs)
+    pipeline_flag = os.environ.get('GEORF_PIPELINE', '').strip().lower()
+    skip_impute = pipeline_flag in {'xgb', 'geoxgb'}
+    if skip_impute:
+        print("Skipping comp_impute for GeoXGB pipeline (XGBoost handles missing values natively)...")
+    else:
+        print("Applying imputation to missing values...")
+        X = comp_impute(X, strategy="max_plus", multiplier=100.0)
+
+    # Coerce to numeric to allow finite checks (object dtype can appear when imputation is skipped)
+    if not np.issubdtype(X.dtype, np.number):
+        try:
+            X = X.astype(np.float64)
+        except (TypeError, ValueError) as err:
+            raise ValueError("Feature matrix contains non-numeric entries; failed to convert to float before modeling.") from err
+
+    # Ensure no infinities propagate into downstream models (XGBoost cannot handle them)
+    inf_mask = np.isinf(X)
+    if inf_mask.any():
+        count_inf = int(np.sum(inf_mask))
+        print(f"Detected {count_inf} +/-inf values; replacing with 0 before modeling.")
+        X = np.where(inf_mask, 0.0, X)
+
     # Get years for temporal splitting
     years = df_sorted['years'].values
     # get terms within each year:group by FESNET_admin_code and year, set first month as 1, second months as 2

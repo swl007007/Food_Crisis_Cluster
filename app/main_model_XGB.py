@@ -19,6 +19,9 @@ Date: 2025-07-23
 import os
 import sys
 
+# Flag downstream modules to adapt behaviour for GeoXGB pipeline (e.g., skip imputation)
+os.environ['GEORF_PIPELINE'] = 'xgb'
+
 _ARGS = sys.argv[1:]
 
 try:

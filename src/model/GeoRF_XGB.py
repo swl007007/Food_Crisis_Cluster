@@ -236,15 +236,7 @@ class GeoRF_XGB():
             if len(feature_names) != X.shape[1]:
                 print(f'Warning: feature_names length ({len(feature_names)}) != X width ({X.shape[1]})')
             self._cached_feature_names = [str(raw_name) for raw_name in feature_names]
-            try:
-                ref_path = Path(self.model_dir) / 'feature_name_reference.csv'
-                reference_df = pd.DataFrame({
-                    'feature_index': np.arange(len(self._cached_feature_names), dtype=int),
-                    'feature_name': self._cached_feature_names
-                })
-                reference_df.to_csv(ref_path, index=False)
-            except Exception as ref_err:
-                print(f'Warning: could not write feature_name_reference.csv: {ref_err}')
+            self._persist_feature_reference(self._cached_feature_names, logger=logger)
         else:
             self._cached_feature_names = None
 
@@ -319,6 +311,7 @@ class GeoRF_XGB():
         X, updated_feature_names = self._prepare_feature_drop_after_split(X, self._cached_feature_names, logger=logger)
         if updated_feature_names is not None:
             self._cached_feature_names = [str(name) for name in updated_feature_names]
+            self._persist_feature_reference(self._cached_feature_names, logger=logger)
 
         train_indices_only = np.where(X_set == 0)[0]
         train_indices_flat = np.asarray(train_indices_only, dtype=int)
@@ -844,6 +837,26 @@ class GeoRF_XGB():
         if reference_names:
             self._cached_feature_names = [str(name) for name in reference_names]
         return reference_names
+
+    def _persist_feature_reference(self, feature_names, logger=None):
+        """Persist ordered feature name reference for later alignment."""
+        if not feature_names or not getattr(self, 'model_dir', None):
+            return
+        ref_path = Path(self.model_dir) / 'feature_name_reference.csv'
+        try:
+            reference_df = pd.DataFrame({
+                'feature_index': np.arange(len(feature_names), dtype=int),
+                'feature_name': [str(name) for name in feature_names]
+            })
+            reference_df.to_csv(ref_path, index=False)
+            if logger:
+                logger.info(f'feature_reference_saved count={len(feature_names)} path={ref_path}')
+        except Exception as ref_err:
+            message = f'feature_reference_save_failed path={ref_path} error={ref_err}'
+            if logger:
+                logger.warning(message)
+            else:
+                print(f'Warning: {message}')
 
     def _restrict_to_feature_reference(self, X_input, reference_names, logger=None, context_label='eval'):
         """Restrict features of X_input to match the persisted reference."""

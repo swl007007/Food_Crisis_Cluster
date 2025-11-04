@@ -1,20 +1,20 @@
-\n================================================================================
 CLASS 1 PERFORMANCE SUMMARY (Unweighted Averages)
 ================================================================================
 \n4-month lag forecasting:
 --------------------------------------------------
-Precision (Class 1): Probit=nan, FEWSNET=0.6931, GeoRF=0.8000, XGBoost=0.7509
-  Recall (Class 1): Probit=nan, FEWSNET=0.6785, GeoRF=0.4185, XGBoost=0.5057
-F1 Score (Class 1): Probit=nan, FEWSNET=0.6655, GeoRF=0.5085, XGBoost=0.5762
+Precision (Class 1): Probit=nan, FEWSNET=0.4878, GeoRF=0.7901, XGBoost=0.7319
+  Recall (Class 1): Probit=nan, FEWSNET=0.4379, GeoRF=0.3500, XGBoost=0.4191
+F1 Score (Class 1): Probit=nan, FEWSNET=0.4375, GeoRF=0.4404, XGBoost=0.4920
      Sample counts: Probit=0, FEWSNET=39, GeoRF=39, XGBoost=39
 \n8-month lag forecasting:
 --------------------------------------------------
-Precision (Class 1): Probit=nan, FEWSNET=0.6267, GeoRF=0.7976, XGBoost=0.7542
-  Recall (Class 1): Probit=nan, FEWSNET=0.5912, GeoRF=0.4131, XGBoost=0.5038
-F1 Score (Class 1): Probit=nan, FEWSNET=0.5903, GeoRF=0.5059, XGBoost=0.5781
+Precision (Class 1): Probit=nan, FEWSNET=0.4305, GeoRF=0.7691, XGBoost=0.7363
+  Recall (Class 1): Probit=nan, FEWSNET=0.3296, GeoRF=0.3650, XGBoost=0.4223
+F1 Score (Class 1): Probit=nan, FEWSNET=0.3429, GeoRF=0.4552, XGBoost=0.4987
      Sample counts: Probit=0, FEWSNET=39, GeoRF=39, XGBoost=39
 \n12-month lag forecasting:
 --------------------------------------------------
-Precision (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.6267, GeoRF=0.7938, XGBoost=0.7635
-  Recall (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.5912, GeoRF=0.4248, XGBoost=0.5089
-F1 Score (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.5903, GeoRF=0.5145, XGBoost=0.5818
+Precision (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.4305, GeoRF=0.7773, XGBoost=0.7281
+  Recall (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.3296, GeoRF=0.3764, XGBoost=0.4351
+F1 Score (Class 1): Probit=nan, FEWSNET (8mo-ext)=0.3429, GeoRF=0.4657, XGBoost=0.5076
+     Sample counts: Probit=0, FEWSNET (8mo-ext)=39, GeoRF=39, XGBoost=39

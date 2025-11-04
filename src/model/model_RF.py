@@ -22,6 +22,11 @@ from config import *
 from src.helper.helper import get_X_branch_id_by_group
 from src.metrics.metrics import *
 
+try:
+  from imblearn.over_sampling import SMOTE
+except ImportError:  # pragma: no cover - falls back when imbalanced-learn is missing
+  SMOTE = None
+
 # NUM_LAYERS = 8 #num_layers is the number of non-input layers
 
 '''Model can be easily customized to different deep network architectures.
@@ -46,7 +51,9 @@ class RFmodel():
                n_jobs = N_JOBS,
                max_model_depth = MAX_DEPTH,
                mode=MODE, name = 'RF', type = 'static',
-               sample_weights_by_class = None):#, path = CKPT_FOLDER_PATH
+               sample_weights_by_class = None,
+               use_smote=True,
+               smote_k_neighbors=5):#, path = CKPT_FOLDER_PATH
 
     '''
     path: folder path for intermediate models
@@ -75,6 +82,11 @@ class RFmodel():
     self.name = 'RF'
     self.type = type
     self.sample_weights_by_class = sample_weights_by_class
+    self.use_smote = use_smote
+    self.smote_k_neighbors = smote_k_neighbors
+    self._smote_unavailable_warned = False
+    self._smote_skip_logged = set()
+    self._smote_failure_logged = set()
 
 
   def train(self, X, y, branch_id = None, mode = MODE, sample_weights = None, sample_weights_by_class = None):#, num_layers = NUM_LAYERS_DNN
@@ -87,10 +99,61 @@ class RFmodel():
       print('Error: branch_id is required for the RF version.')
     depth = len(branch_id)
     # model_to_add = []
-    self.model = self.get_new_forest(X, y, sample_weights_by_class)#self.
+    X_balanced, y_balanced = self._apply_smote_if_needed(X, y, branch_id)
+    self.model = self.get_new_forest(X_balanced, y_balanced, sample_weights_by_class)#self.
 
     # if mode == 'classification':
     # else:
+
+  def _apply_smote_if_needed(self, X, y, branch_id):
+    def _log_skip(message):
+      key = (branch_id, message)
+      if key not in self._smote_skip_logged:
+        print(message)
+        self._smote_skip_logged.add(key)
+
+    if not self.use_smote:
+      return X, y
+
+    if SMOTE is None:
+      if not self._smote_unavailable_warned:
+        print('SMOTE skipped: install imbalanced-learn to enable oversampling.')
+        self._smote_unavailable_warned = True
+      return X, y
+
+    # Ensure numpy arrays for SMOTE compatibility
+    X_arr = np.asarray(X)
+    y_arr = np.asarray(y)
+
+    unique_classes, counts = np.unique(y_arr, return_counts=True)
+    if unique_classes.shape[0] < 2:
+      _log_skip(f'SMOTE skipped for branch "{branch_id}": only one class present.')
+      return X, y
+
+    minority_count = counts.min()
+    if minority_count < 2:
+      _log_skip(f'SMOTE skipped for branch "{branch_id}": minority class has fewer than 2 samples.')
+      return X, y
+
+    k_neighbors = min(self.smote_k_neighbors, minority_count - 1)
+    if k_neighbors < 1:
+      _log_skip(f'SMOTE skipped for branch "{branch_id}": insufficient samples for synthetic neighbors.')
+      return X, y
+
+    smote = SMOTE(random_state=self.random_state, k_neighbors=k_neighbors)
+
+    try:
+      X_resampled, y_resampled = smote.fit_resample(X_arr, y_arr)
+      synthetic_count = len(y_resampled) - len(y_arr)
+      if synthetic_count > 0:
+        print(f'SMOTE applied on branch "{branch_id}": added {synthetic_count} synthetic samples (k_neighbors={k_neighbors}).')
+      return X_resampled, y_resampled
+    except Exception as exc:
+      key = (branch_id, str(exc))
+      if key not in self._smote_failure_logged:
+        print(f'SMOTE failed for branch "{branch_id}" ({exc}); proceeding without oversampling.')
+        self._smote_failure_logged.add(key)
+      return X, y
 
   def predict(self, X, prob = False):
     """Return predicted labels or probabilities."""

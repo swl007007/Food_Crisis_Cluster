@@ -22,6 +22,9 @@ import pandas as pd
 import polars as pl
 import os
 import sys
+
+# Flag downstream modules to adapt behaviour for GeoXGB pipeline (e.g., skip imputation)
+os.environ['GEORF_PIPELINE'] = 'xgb'
 import gc
 import glob
 import warnings
