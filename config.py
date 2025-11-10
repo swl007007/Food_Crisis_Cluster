@@ -40,6 +40,13 @@ LEGACY_LAG_VALUES = {3, 6, 9}
 DEFAULT_LAGS_MONTHS: Sequence[int] = (4, 8, 12)
 LAGS_MONTHS = list(DEFAULT_LAGS_MONTHS)
 
+# Admin code column aliases (for flexible data source compatibility)
+ADMIN_CODE_ALIASES = ['FEWSNET_admin_code', 'admin_code', 'adm_code']
+
+# Production mode: Skip baseline 5-fold cross-validation during training
+# This validation is expensive and primarily useful for debugging/visualization
+DISABLE_BASELINE_CV_MAP = True
+
 
 def _validate_lag_schedule(lags: Sequence[int]) -> list[int]:
     resolved = list(lags)

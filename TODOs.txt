@@ -9,15 +9,15 @@ WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with onl
 
 Action Points:
 TODO(CRITICAL):
-0.assemble a different dataset from FEWSNET_zscore
-1. add growing windows from MODIS（area admin code, year, month, last season start, last season end, last_season_start_2, last_season_end_2, in-season?, current_season_start）
-2. append EVI, rainfall, temperature, GPP to growing windows df
-3.for data after 2012, for 4,8,12 months prediction scope, find respective "contemporary month", then according to the contemporary month find growing window variable
-4. create growing window mask for each month
-5. make sum, min, max, of GPP, temperature, rainfall, EVI for growing window periods, if the "current month" is in-season, find the mean of GPP, temperature, rainfall, EVI for in-season period
+1. add CH data set, go through data collection.
+
+
 
 
 Concurrent
+0. update the slides, also focus on post-2021 prediction
+1. for 2021-onward, plot yearly map of prediction errors
+2. for 2021-onward, plot quarterwise map of prediction errors
 
 
 
@@ -25,17 +25,26 @@ Concurrent
 
 
 KNOWN ISSUES:
-1.solve accuracy map axis name issue
-2.think about the architecture of two layer model
-3. xgboost name issue(the output name is not correct)
+2.think about the architecture of two layer model,2-layer model related papers
 4.use ChatGPT to parse pre-2017 locations to country ISO and admin1 codes
-5.skip baseline module in production mode
 
 
+
+
+
+
+[Hold]
+1. add growing windows from MODIS（area admin code, year, month, last season start, 
+last season end, last_season_start_2, last_season_end_2, in-season?, current_season_start）
+2. append EVI, rainfall, temperature, GPP to growing windows df
+3.for data after 2012, for 4,8,12 months prediction scope, find respective "contemporary month", 
+then according to the contemporary month find growing window variable
+4. create growing window mask for each month
+5. make sum, min, max, of GPP, temperature, rainfall, EVI for growing window periods, 
+if the "current month" is in-season, find the mean of GPP, temperature, rainfall, EVI for in-season period
 
 IMPORTANT NOTE
 for one round:
 parent RF -> using the parent RF validation/train to calculate groupwise metrics -> partition (LTSS/q) -> 
 partition contiguity refinement -> child model using child model specific validation/train -> child model performance metrics -> partition significance test ->
  in RF, can also copy parent RF weights to one of the child RF
-

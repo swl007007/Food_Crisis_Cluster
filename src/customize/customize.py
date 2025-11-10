@@ -325,7 +325,7 @@ def impute_missing_values(X, strategy='max_plus', multiplier=100.0, verbose=True
 
 
 
-def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_year=2024, input_terms=None, need_terms=None):
+def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_year=2024, input_terms=None, need_terms=None, admin_codes=None):
     '''Rolling window temporal splitting for 2024 quarterly evaluation.
 
     This function implements a rolling window approach where:
@@ -354,11 +354,15 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
     need_terms : int, optional
         Specific quarter to use as test set (1=Q1, 2=Q2, 3=Q3, 4=Q4).
         If None, uses traditional year-based splitting.
+    admin_codes : array-like, optional
+        Admin codes for each sample. If provided, will be split alongside other arrays.
 
     Returns
     -------
-    Tuple containing train and test splits in the same format as
-    ``train_test_split_all``.
+    Tuple containing train and test splits. If admin_codes is provided:
+        Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
+    Otherwise:
+        Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
     '''
     # Use the provided test_year parameter
     
@@ -377,18 +381,27 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         ytest = y[test_mask]
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
-        
+
+        # Split admin_codes if provided
+        if admin_codes is not None:
+            admin_codes_train = admin_codes[train_mask]
+            admin_codes_test = admin_codes[test_mask]
+
         #Xtest_group unique values
         X_test_unique = np.unique(Xtest_group)
-        
+
         # generate mask for Xtrain_group to only include groups present in Xtest_group
         train_group_mask = np.isin(Xtrain_group, X_test_unique)
-        
+
         # apply mask to Xtrain, ytrain, Xtrain_loc, Xtrain_group
         Xtrain = Xtrain[train_group_mask]
         ytrain = ytrain[train_group_mask]
         Xtrain_loc = Xtrain_loc[train_group_mask]
         Xtrain_group = Xtrain_group[train_group_mask]
+
+        # Apply group mask to admin_codes if provided
+        if admin_codes is not None:
+            admin_codes_train = admin_codes_train[train_group_mask]
         
     else:
         # Rolling window approach: 3 years before test term → test on specific 2024 term
@@ -439,7 +452,12 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         ytest = y[test_mask]
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
-        
+
+        # Split admin_codes if provided
+        if admin_codes is not None:
+            admin_codes_train = admin_codes[train_mask]
+            admin_codes_test = admin_codes[test_mask]
+
         # Ensure training groups overlap with test groups
         X_test_unique = np.unique(Xtest_group)
         train_group_mask = np.isin(Xtrain_group, X_test_unique)
@@ -447,19 +465,27 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         ytrain = ytrain[train_group_mask]
         Xtrain_loc = Xtrain_loc[train_group_mask]
         Xtrain_group = Xtrain_group[train_group_mask]
-        
+
+        # Apply group mask to admin_codes if provided
+        if admin_codes is not None:
+            admin_codes_train = admin_codes_train[train_group_mask]
+
         print(f"Rolling Window Split for Q{need_terms} {test_year}:")
         print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()} (5 years BEFORE test quarter)")
         print(f"  Test: {len(ytest)} samples from Q{need_terms} {test_year} ({test_quarter_start.date()} to {test_quarter_end.date()})")
         print(f"  No overlap: Training ends {train_end_date.date()}, Test starts {test_quarter_start.date()}")
-        
-        return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
+
+        if admin_codes is not None:
+            return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
+        else:
+            return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
         
     print(f"Train/Test split: {len(ytrain)} training samples (years < {test_year}), {len(ytest)} test samples (year = {test_year})")
-        
 
-
-    return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
+    if admin_codes is not None:
+        return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
+    else:
+        return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
 class GroupGenerator():
   '''
   Generate groups (minimum spatial units) for partitioning in GeoRF.

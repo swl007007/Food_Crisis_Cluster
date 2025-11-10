@@ -30,6 +30,8 @@ Usage:
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.ticker import PercentFormatter
 import seaborn as sns
 from pathlib import Path
 import warnings
@@ -452,19 +454,25 @@ def create_error_choropleth_maps(error_df, vis_dir, shapefile_path=None,
                 
                 # Plot polygons with valid data
                 try:
+                    # Plot without automatic legend
                     merged_gdf[data_mask].plot(
                         column=metric,
                         ax=ax,
                         cmap='Reds',
                         vmin=0.0,
                         vmax=1.0,
-                        legend=True,
-                        legend_kwds={
-                            'shrink': 0.8,
-                            'label': 'Error Rate',
-                            'format': '%.1%'
-                        }
+                        legend=False
                     )
+
+                    # Manually create colorbar with PercentFormatter
+                    sm = mpl.cm.ScalarMappable(
+                        norm=mpl.colors.Normalize(vmin=0.0, vmax=1.0),
+                        cmap='Reds'
+                    )
+                    sm.set_array([])
+                    cbar = fig.colorbar(sm, ax=ax, shrink=0.8, label='Error Rate')
+                    cbar.ax.yaxis.set_major_formatter(PercentFormatter(1.0, decimals=1))
+
                     print(f"  SUCCESS: Plotted polygons with valid data")
                 except Exception as e:
                     print(f"  ERROR: Failed to plot polygons with data: {e}")

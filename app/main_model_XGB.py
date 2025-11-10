@@ -66,6 +66,7 @@ if not IS_DRY_RUN:
     from src.preprocess.preprocess import load_and_preprocess_data, setup_spatial_groups
     from src.feature.feature import prepare_features, validate_polygon_contiguity, create_correspondence_table
     from src.utils.save_results import save_results
+    from src.utils.admin_code import resolve_admin_code_array
     from tqdm import tqdm
 
     if USE_ADJACENCY_MATRIX:
@@ -113,7 +114,7 @@ elif DATA_MODE == 'nogis':
 elif DATA_MODE == 'min':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
 elif DATA_MODE == 'unadjusted':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_unadjusted_bm.csv"
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 
@@ -212,7 +213,12 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     ])
     
     y_pred_test = pd.DataFrame(columns=['year', 'quarter', 'month', 'adm_code', 'fews_ipc_crisis_pred', 'fews_ipc_crisis_true'])
-    
+
+    # Extract admin codes from dataframe for test export
+    admin_code_aliases = getattr(sys.modules['config'], 'ADMIN_CODE_ALIASES', ['FEWSNET_admin_code', 'admin_code', 'adm_code'])
+    admin_codes = resolve_admin_code_array(df, admin_code_aliases)
+    print(f"Admin codes extracted: {len(admin_codes)} records, {len(np.unique(admin_codes))} unique admin units")
+
     # Setup correspondence table path for partition metrics tracking
     correspondence_table_path = None
     if track_partition_metrics:
@@ -379,9 +385,15 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         
         try:
             # Train-test split with rolling window (5 years before quarter end)
-            (Xtrain, ytrain, Xtrain_loc, Xtrain_group,
-             Xtest, ytest, Xtest_loc, Xtest_group) = train_test_split_rolling_window(
-                X, y, X_loc, X_group, years, dates, test_year=test_year, input_terms=input_terms, need_terms=quarter)
+            split_result = train_test_split_rolling_window(
+                X, y, X_loc, X_group, years, dates, test_year=test_year, input_terms=input_terms, need_terms=quarter, admin_codes=admin_codes)
+
+            # Unpack results (with or without admin_codes depending on return value)
+            if len(split_result) == 10:
+                Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test = split_result
+            else:
+                Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group = split_result
+                admin_codes_test = None
             
             ytrain = ytrain.astype(int)
             ytest = ytest.astype(int)
@@ -601,22 +613,31 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
             # Append row efficiently using pd.concat with list
             results_df = pd.concat([results_df, pd.DataFrame([new_result_row])], ignore_index=True)
             
-            # Store predictions - MEMORY FIX: Use more efficient approach  
+            # Store predictions - MEMORY FIX: Use more efficient approach
             try:
                 # CRITICAL MEMORY FIX: Avoid unnecessary array copies that cause memory bloat
                 # Create prediction data as dictionary first - avoid .copy() which doubles memory usage
+                # Use actual admin codes from test data split
                 pred_data = {
                     'year': np.full(len(ytest), test_year, dtype=np.int16),  # Use smaller dtypes
                     'quarter': np.full(len(ytest), quarter, dtype=np.int8),
                     'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Quarter end month (Mar, Jun, Sep, Dec)
-                    'adm_code': np.zeros(len(ytest), dtype=np.int32),  # Placeholder - would need actual admin codes
+                    'adm_code': admin_codes_test.astype(np.int32) if admin_codes_test is not None else np.zeros(len(ytest), dtype=np.int32),
                     'fews_ipc_crisis_pred': ypred,  # Don't copy - transfer ownership
                     'fews_ipc_crisis_true': ytest   # Don't copy - transfer ownership
                 }
-                
+
+                # Validate admin codes are not collapsed
+                if admin_codes_test is not None:
+                    unique_admin_count = len(np.unique(pred_data['adm_code']))
+                    if unique_admin_count == 1 and len(pred_data['adm_code']) > 1:
+                        print(f"WARNING: Admin codes collapsed to single value! unique={unique_admin_count}, total={len(pred_data['adm_code'])}")
+                    else:
+                        print(f"Admin codes OK: {unique_admin_count} unique admin units in {len(pred_data['adm_code'])} predictions")
+
                 # Append predictions efficiently
                 y_pred_test = pd.concat([y_pred_test, pd.DataFrame(pred_data)], ignore_index=True)
-                
+
             except Exception as e:
                 print(f"Warning: Error storing predictions: {e}")
                 # Fallback with placeholders - MEMORY OPTIMIZED
@@ -624,7 +645,7 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     'year': np.full(len(ytest), test_year, dtype=np.int16),
                     'quarter': np.full(len(ytest), quarter, dtype=np.int8),
                     'month': np.full(len(ytest), quarter * 3, dtype=np.int8),  # Quarter end month (Mar, Jun, Sep, Dec)
-                    'adm_code': np.zeros(len(ytest), dtype=np.int32),
+                    'adm_code': admin_codes_test.astype(np.int32) if admin_codes_test is not None else np.zeros(len(ytest), dtype=np.int32),
                     'fews_ipc_crisis_pred': ypred,  # Transfer ownership, don't copy
                     'fews_ipc_crisis_true': ytest   # Transfer ownership, don't copy
                 }
@@ -845,8 +866,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 pass
             
             # AGGRESSIVE memory cleanup to prevent hidden leaks
-            import sys
-            
+            # Note: sys already imported at module level, no need to re-import
+
             # CRITICAL FIX 2: Clear sklearn internal caches and memory pools more aggressively
             try:
                 # Clear sklearn joblib memory pools
@@ -1142,7 +1163,7 @@ def main():
         
         # Step 7: Save results
         call_graph_steps.append('save_results')
-        save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms=desire_terms, forecasting_scope=forecasting_scope, start_year=start_year, end_year=end_year)
+        save_results(results_df, y_pred_test, assignment, nowcasting, max_depth, desire_terms=desire_terms, forecasting_scope=forecasting_scope, start_year=start_year, end_year=end_year, model_prefix='xgb')
 
         # Step 8: Display summary (class 1 only)
         call_graph_steps.append('summary')

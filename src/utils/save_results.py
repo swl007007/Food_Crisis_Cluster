@@ -2,10 +2,10 @@ import pandas as pd
 import numpy as np 
 
 
-def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None, start_year=None, end_year=None):
+def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None, start_year=None, end_year=None, model_prefix=None):
     """
     Save evaluation results to CSV files.
-    
+
     Parameters:
     -----------
     results_df : pandas.DataFrame
@@ -26,10 +26,17 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
         Start year of evaluation period
     end_year : int or None
         End year of evaluation period
+    model_prefix : str or None
+        Model type prefix (e.g., 'xgb' for XGBoost, None for GeoRF default)
     """
     # Create file names based on assignment
     pred_test_name = 'y_pred_test_g'
     results_df_name = 'results_df_g'
+
+    # Add model prefix if specified (e.g., 'xgb' for XGBoost)
+    if model_prefix:
+        pred_test_name = f'y_pred_test_{model_prefix}_g'
+        results_df_name = f'results_df_{model_prefix}_g'
     
     assignment_suffixes = {
         'polygons': 'p',

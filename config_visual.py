@@ -19,6 +19,13 @@ MODEL_CHOICE = 'RF'
 #Task (only classification version for RF has been tested)
 MODE = 'classification'#'regression'
 
+# Admin code column aliases (for flexible data source compatibility)
+ADMIN_CODE_ALIASES = ['FEWSNET_admin_code', 'admin_code', 'adm_code']
+
+# Debug mode: Keep baseline 5-fold cross-validation during training for diagnostics
+# This validation generates error maps useful for debugging but is expensive
+DISABLE_BASELINE_CV_MAP = False
+
 # Visualization guardrails (applied in scoped round maps and terminal merge)
 VISUALIZE_ENFORCE_PARENT_SCOPE = True
 VISUALIZE_HIDE_UNASSIGNED = True

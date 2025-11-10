@@ -14,6 +14,7 @@ from config import *
 #visualization
 import matplotlib.pyplot as plt
 import matplotlib
+from matplotlib.ticker import PercentFormatter
 import seaborn as sns
 from PIL import Image
 
@@ -1287,7 +1288,7 @@ def plot_error_rate_choropleth(error_df, metric_col, shapefile_path=None,
             legend_kwds={
                 'shrink': 0.8,
                 'label': 'Error Rate',
-                'format': '%.0%'
+                'format': PercentFormatter(xmax=1.0, decimals=0)
             }
         )
     
