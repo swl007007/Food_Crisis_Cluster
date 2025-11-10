@@ -395,11 +395,21 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
             
             if 'xgboost' in filtered_datasets:
                 xgboost_values = filtered_datasets['xgboost'][metric].iloc[:min_length]
-                ax.plot(x_positions, xgboost_values, '^-', 
-                       color=colors['xgboost'], label='XGBoost', 
+                ax.plot(x_positions, xgboost_values, '^-',
+                       color=colors['xgboost'], label='XGBoost',
                        linewidth=2, markersize=4, alpha=0.8)
                 plotted_models.append('XGBoost')
-            
+
+            # Add vertical line at 2021-Q1 if it exists in the data
+            if filtered_datasets:
+                # Use any available dataset to find 2021-Q1 position
+                sample_df = list(filtered_datasets.values())[0]
+                year_quarters = sample_df['year_quarter'].iloc[:min_length].tolist()
+                if '2021-Q1' in year_quarters:
+                    vline_pos = year_quarters.index('2021-Q1')
+                    ax.axvline(x=vline_pos, color='gray', linestyle='--',
+                              linewidth=1.5, alpha=0.7, label='2021-Q1' if row == 0 and col == 2 else None)
+
             # Set subplot title and labels
             if row == 0:
                 ax.set_title(f'{metric_label}', fontsize=14, fontweight='bold')
