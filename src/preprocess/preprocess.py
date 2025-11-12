@@ -180,8 +180,11 @@ def load_and_preprocess_data(data_path):
     # Process dates
     df['date'] = pd.to_datetime(df['date'])
     df['years'] = df['date'].dt.year
-    
-    # Create lag features matching active schedule
+
+    # Create lag features for all lags in ACTIVE_LAGS schedule
+    # NOTE: Validation removed - forecasting scope determines which lags to use at runtime
+    # Creating all lag features upfront allows flexibility for different forecasting scopes
+    # Actual data leakage prevention happens in temporal train/test split logic
     for lag in ACTIVE_LAGS:
         df[f'fews_ipc_crisis_lag_{lag}'] = (
             df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)

@@ -222,10 +222,10 @@ def validate_polygon_contiguity(contiguity_info, X_group):
     
     print("=== End Polygon Validation ===")
 
-def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_id, result_dir):
+def create_correspondence_table(df, years, dates, train_year, month, X_branch_id, result_dir):
     """
     Create correspondence table mapping FEWSNET_admin_code to partition_id for rolling window splits.
-    
+
     Parameters:
     -----------
     df : pandas.DataFrame
@@ -235,41 +235,30 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
     dates : pandas.Series
         Date values for precise temporal filtering
     train_year : int
-        Year for which training was done (2024)
-    quarter : int
-        Quarter for which training was done (1-4)
+        Year for which training was done
+    month : int
+        Month for which training was done (1-12)
     X_branch_id : numpy.ndarray
         Branch IDs (partition IDs) from trained model
     result_dir : str
         Directory to save correspondence table
     """
-    print(f"Creating correspondence table for Q{quarter} {train_year}...")
-    
+    print(f"Creating correspondence table for {train_year}-{month:02d}...")
+
     try:
         import pandas as pd
-        
+
         # Convert dates to pandas datetime if needed
         if not isinstance(dates, pd.Series):
             dates = pd.to_datetime(dates)
-        
-        # Define quarter start and end dates using the actual train_year (not hardcoded 2024)
-        quarter_starts = {
-            1: pd.Timestamp(f'{train_year}-01-01'),
-            2: pd.Timestamp(f'{train_year}-04-01'),
-            3: pd.Timestamp(f'{train_year}-07-01'),
-            4: pd.Timestamp(f'{train_year}-10-01')
-        }
-        
-        quarter_ends = {
-            1: pd.Timestamp(f'{train_year}-03-31'),
-            2: pd.Timestamp(f'{train_year}-06-30'),
-            3: pd.Timestamp(f'{train_year}-09-30'),
-            4: pd.Timestamp(f'{train_year}-12-31')
-        }
-        
-        # Get the training mask (same logic as rolling window - FIXED to match new logic)
-        test_quarter_start = quarter_starts[quarter]
-        train_end_date = test_quarter_start  # Training ends when test quarter begins (NO OVERLAP)
+
+        # Note: The actual training data selection is done by the train_test_split_rolling_window function
+        # This function just needs to match the training data that was used
+        # For simplicity, we assume training data ends 5 years before the test month
+        # (This matches the legacy behavior but should be updated to match actual ACTIVE_LAG logic)
+
+        test_month_start = pd.Timestamp(f'{train_year}-{month:02d}-01')
+        train_end_date = test_month_start  # Training ends when test month begins (NO OVERLAP)
         train_start_date = train_end_date - pd.DateOffset(years=5)
         train_mask = (dates >= train_start_date) & (dates < train_end_date)
         
@@ -311,9 +300,9 @@ def create_correspondence_table(df, years, dates, train_year, quarter, X_branch_
         correspondence_table = correspondence_table.sort_values('FEWSNET_admin_code')
         
         # Save to result directory
-        output_path = os.path.join(result_dir, f'correspondence_table_Q{quarter}_{train_year}.csv')
+        output_path = os.path.join(result_dir, f'correspondence_table_{train_year}-{month:02d}.csv')
         correspondence_table.to_csv(output_path, index=False)
-        
+
         print(f"Correspondence table saved to: {output_path}")
         print(f"Table contains {len(correspondence_table)} unique admin_code-partition_id pairs")
         

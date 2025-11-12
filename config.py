@@ -64,6 +64,67 @@ def _validate_lag_schedule(lags: Sequence[int]) -> list[int]:
 
 
 LAGS_MONTHS = _validate_lag_schedule(LAGS_MONTHS)
+ACTIVE_LAGS = LAGS_MONTHS  # Alias for backward compatibility
+
+# Temporal train/test configuration
+TRAIN_WINDOW_MONTHS = 36  # Fixed 36-month rolling training window
+ACTIVE_LAG = min(ACTIVE_LAGS) if ACTIVE_LAGS else 4  # Default active lag (months before test month)
+
+# DESIRED_TERMS: List of test months to evaluate (YYYY-MM strings, datetime, or pd.Period)
+# Examples: ["2023-01", "2023-04"], [pd.Period("2023-01", "M")], or [datetime(2023, 1, 1)]
+# Can be overridden by DESIRED_TERMS environment variable (comma-separated: "2021-01,2021-02,...")
+import os
+_DESIRED_TERMS_ENV = os.getenv('DESIRED_TERMS')
+if _DESIRED_TERMS_ENV:
+    # Parse comma-separated month strings from environment variable
+    DESIRED_TERMS = [term.strip() for term in _DESIRED_TERMS_ENV.split(',') if term.strip()]
+    print(f"Using DESIRED_TERMS from environment: {DESIRED_TERMS[:3]}..." if len(DESIRED_TERMS) > 3 else f"Using DESIRED_TERMS from environment: {DESIRED_TERMS}")
+else:
+    DESIRED_TERMS = ["2023-01"]  # Default: single month for testing
+
+
+def _parse_month_term(term):
+    """Parse month term from string, datetime, or Period to pd.Period('M')."""
+    import pandas as pd
+    from datetime import datetime
+
+    if isinstance(term, pd.Period):
+        if term.freq != 'M':
+            raise ValueError(f"Period must be monthly frequency, got {term.freq}")
+        return term
+    elif isinstance(term, str):
+        # Try parsing YYYY-MM format
+        try:
+            return pd.Period(term, freq='M')
+        except (ValueError, pd.errors.ParserError) as e:
+            raise ValueError(f"Invalid month string '{term}'. Expected format: 'YYYY-MM' (e.g., '2023-01')") from e
+    elif isinstance(term, datetime):
+        return pd.Period(term, freq='M')
+    elif hasattr(term, 'year') and hasattr(term, 'month'):
+        # date-like object
+        return pd.Period(year=term.year, month=term.month, freq='M')
+    else:
+        raise TypeError(f"Unsupported DESIRED_TERMS type: {type(term)}. Use YYYY-MM string, datetime, or pd.Period.")
+
+
+def _validate_desired_terms(terms):
+    """Validate and parse DESIRED_TERMS list."""
+    import pandas as pd
+
+    if not isinstance(terms, (list, tuple)):
+        raise TypeError(f"DESIRED_TERMS must be a list or tuple, got {type(terms)}")
+    if len(terms) < 1:
+        raise ValueError("DESIRED_TERMS must contain at least one month")
+
+    parsed_terms = []
+    for term in terms:
+        parsed_terms.append(_parse_month_term(term))
+
+    return parsed_terms
+
+
+# Validate DESIRED_TERMS on import (comment out for dynamic configuration)
+# DESIRED_TERMS = _validate_desired_terms(DESIRED_TERMS)
 
 
 #------------------GeoRF parameters------------------

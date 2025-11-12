@@ -2,186 +2,97 @@
 setlocal enabledelayedexpansion
 set PYTHONPATH=%~dp0
 
-REM XGBoost Memory Management Batch Script
-REM This script iterates through time periods and forecasting scopes to avoid memory leakage
-REM Each batch cleans up results before proceeding to the next run
+REM XGBoost Monthly Evaluation Batch Script
+REM This script processes all 12 months of each year in a single batch
+REM Each batch cleans up memory to prevent leakage issues
 
-echo ===== Starting XGBoost Batch Processing =====
-echo This script will run XGBoost for multiple time periods and forecasting scopes
+echo ===== Starting XGBoost Monthly Batch Processing =====
+echo This script will run XGBoost for multiple years with monthly evaluation
 echo Active lag schedule: 4, 8, 12 months
+echo Each year will evaluate all 12 months (Jan-Dec)
 echo Each batch will clean up memory to prevent leakage issues
 echo.
 
 REM Counter for batch tracking
 set batch_count=0
 
-REM Individual year processing for memory management
-REM Each batch processes 1 year with 1 forecasting scope to minimize memory usage
+REM Process each year from 2013 to 2024 (12 years)
+for /L %%y in (2013,1,2024) do (
+    echo ==========================================
+    echo Processing year: %%y (all 12 months^)
+    echo ==========================================
 
-REM Year 2013 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2013
-echo ==========================================
-call :run_batch 2013 2013 1
-call :run_batch 2013 2013 2
-call :run_batch 2013 2013 3
+    REM Process all 3 forecasting scopes for this year
+    for /L %%f in (1,1,3) do (
+        set /a batch_count+=1
 
-REM Year 2014 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2014
-echo ==========================================
-call :run_batch 2014 2014 1
-call :run_batch 2014 2014 2
-call :run_batch 2014 2014 3
+        REM Set DESIRED_TERMS environment variable with all 12 months of this year
+        set "DESIRED_TERMS=%%y-01,%%y-02,%%y-03,%%y-04,%%y-05,%%y-06,%%y-07,%%y-08,%%y-09,%%y-10,%%y-11,%%y-12"
 
-REM Year 2015 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2015
-echo ==========================================
-call :run_batch 2015 2015 1
-call :run_batch 2015 2015 2
-call :run_batch 2015 2015 3
+        echo.
+        echo ------ Batch !batch_count!/36: Year %%y, Forecasting Scope %%f ------
+        echo Monthly evaluation: All 12 months of %%y
 
-REM Year 2016 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2016
-echo ==========================================
-call :run_batch 2016 2016 1
-call :run_batch 2016 2016 2
-call :run_batch 2016 2016 3
+        REM Pre-execution cleanup
+        echo Performing pre-execution cleanup...
+        call :cleanup_xgboost_directories
 
-REM Year 2017 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2017
-echo ==========================================
-call :run_batch 2017 2017 1
-call :run_batch 2017 2017 2
-call :run_batch 2017 2017 3
+        echo Running: python app/main_model_XGB.py --start_year %%y --end_year %%y --forecasting_scope %%f
+        echo Environment: DESIRED_TERMS=!DESIRED_TERMS!
 
-REM Year 2018 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2018
-echo ==========================================
-call :run_batch 2018 2018 1
-call :run_batch 2018 2018 2
-call :run_batch 2018 2018 3
+        REM Run the Python script
+        python app/main_model_XGB.py --start_year %%y --end_year %%y --forecasting_scope %%f
 
-REM Year 2019 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2019
-echo ==========================================
-call :run_batch 2019 2019 1
-call :run_batch 2019 2019 2
-call :run_batch 2019 2019 3
+        REM Check if script succeeded
+        if !errorlevel! neq 0 (
+            echo ERROR: XGBoost script failed for batch !batch_count!
+            echo Parameters: start_year=%%y, end_year=%%y, forecasting_scope=%%f
+            echo DESIRED_TERMS=!DESIRED_TERMS!
+            pause
+            goto :end
+        )
 
-REM Year 2020 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2020
-echo ==========================================
-call :run_batch 2020 2020 1
-call :run_batch 2020 2020 2
-call :run_batch 2020 2020 3
+        echo Batch !batch_count! completed successfully
+        echo Results saved to: results_df_xgb_gp_fs%%f_%%y_%%y.csv
 
-REM Year 2021 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2021
-echo ==========================================
-call :run_batch 2021 2021 1
-call :run_batch 2021 2021 2
-call :run_batch 2021 2021 3
+        REM Clean up results folders
+        echo Cleaning up XGBoost results folders...
+        call :cleanup_xgboost_directories
 
-REM Year 2022 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2022
-echo ==========================================
-call :run_batch 2022 2022 1
-call :run_batch 2022 2022 2
-call :run_batch 2022 2022 3
+        REM Clean up temporary files
+        if exist "temp_*" (
+            del /q temp_* 2>nul
+            echo Deleted temp files
+        )
 
-REM Year 2023 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2023
-echo ==========================================
-call :run_batch 2023 2023 1
-call :run_batch 2023 2023 2
-call :run_batch 2023 2023 3
+        REM Clean up pickle files
+        if exist "*.pkl" (
+            del /q *.pkl 2>nul
+            echo Deleted pickle files
+        )
 
-REM Year 2024 - All forecasting scopes
-echo ==========================================
-echo Processing year: 2024
-echo ==========================================
-call :run_batch 2024 2024 1
-call :run_batch 2024 2024 2
-call :run_batch 2024 2024 3
+        REM Clean up __pycache__
+        if exist "__pycache__" (
+            rmdir /s /q __pycache__ 2>nul
+            echo Deleted __pycache__ folders
+        )
+
+        REM Force memory cleanup
+        echo Forcing memory cleanup...
+        timeout /t 5 /nobreak >nul
+
+        echo Memory cleanup completed for XGBoost batch !batch_count!
+        echo.
+    )
+)
 
 echo.
 echo ===== All XGBoost batches completed successfully! =====
 echo Total batches processed: !batch_count!
-echo Years processed: 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
-echo Forecasting scopes: 1, 2, 3 (for each year)
-echo Memory-optimized: 1 year + 1 scope per batch (36 total batches)
+echo Years processed: 2013-2024 (12 years, each with 12 months)
+echo Forecasting scopes: 1, 2, 3 (4-month, 8-month, 12-month lags)
+echo Total configurations: 12 years × 3 scopes = 36 batches
 goto :end
-
-REM Function to run a single batch
-:run_batch
-set /a batch_count+=1
-set start_year=%1
-set end_year=%2
-set forecasting_scope=%3
-
-echo.
-echo ------ XGBoost Batch !batch_count!: Years %start_year%-%end_year%, Forecasting Scope %forecasting_scope% ------
-
-REM Pre-execution cleanup to ensure clean state
-echo Performing pre-execution cleanup...
-call :cleanup_xgboost_directories
-
-echo Running: python app/main_model_XGB.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
-
-REM Run the Python script with current parameters
-python app/main_model_XGB.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
-
-REM Check if the Python script succeeded
-if !errorlevel! neq 0 (
-    echo ERROR: XGBoost script failed for batch !batch_count!
-    echo Parameters: start_year=%start_year%, end_year=%end_year%, forecasting_scope=%forecasting_scope%
-    pause
-    goto :end
-)
-
-echo XGBoost Batch !batch_count! completed successfully
-
-REM Clean up XGBoost results folders and force garbage collection
-echo Cleaning up XGBoost results folders...
-
-REM Use robust cleanup with explicit enumeration and retry logic
-call :cleanup_xgboost_directories
-
-REM Clean up any temporary files
-if exist "temp_*" (
-    del /q temp_* 2>nul
-    echo Deleted temp files
-)
-
-REM Clean up any pickle files that might be holding memory
-if exist "*.pkl" (
-    del /q *.pkl 2>nul
-    echo Deleted pickle files
-)
-
-REM Clean up any matplotlib cache
-if exist "__pycache__" (
-    rmdir /s /q __pycache__ 2>nul
-    echo Deleted __pycache__ folders
-)
-
-REM Force Windows to release memory and wait
-echo Forcing memory cleanup...
-timeout /t 5 /nobreak >nul
-
-echo Memory cleanup completed for XGBoost batch !batch_count!
-echo.
-goto :eof
 
 :cleanup_xgboost_directories
 echo Performing robust XGBoost directory cleanup...
@@ -189,21 +100,21 @@ echo Performing robust XGBoost directory cleanup...
 REM Try to enumerate and delete each result_GeoXGB directory explicitly
 for /d %%D in (result_GeoXGB*) do (
     echo Attempting to delete XGBoost directory: %%D
-    
+
     REM First attempt - immediate deletion
     rmdir /s /q "%%D" 2>nul
-    
+
     REM Verify deletion
     if exist "%%D" (
         echo Directory %%D still exists, trying alternative cleanup...
-        
+
         REM Force close any open handles and retry
         timeout /t 2 /nobreak >nul
-        
+
         REM Second attempt with explicit file deletion first
         del /s /f /q "%%D\*" 2>nul
         rmdir /s /q "%%D" 2>nul
-        
+
         REM Final verification
         if exist "%%D" (
             echo WARNING: Failed to delete XGBoost directory %%D - may be locked by another process
@@ -215,7 +126,7 @@ for /d %%D in (result_GeoXGB*) do (
     )
 )
 
-REM Additional cleanup for numbered directories that might not match the pattern
+REM Additional cleanup for numbered directories
 for /L %%i in (0,1,50) do (
     if exist "result_GeoXGB_%%i" (
         echo Found numbered XGBoost directory result_GeoXGB_%%i, attempting deletion...

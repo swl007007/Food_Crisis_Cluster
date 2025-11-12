@@ -14,11 +14,6 @@ TODO(CRITICAL):
 
 
 
-Concurrent
-0. update the slides, also focus on post-2021 prediction
-1. for 2021-onward, plot yearly map of prediction errors
-2. for 2021-onward, plot quarterwise map of prediction errors
-
 
 
 

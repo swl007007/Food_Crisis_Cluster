@@ -2,7 +2,7 @@
 """
 Error Rate Choropleth Grid Generator
 Loads prediction CSVs, computes polygon-level error rates, and generates
-yearly and seasonal choropleth grids (4×3 layout).
+yearly and seasonal choropleth grids (4×3 yearly, 3×3 seasonal).
 """
 
 import argparse
@@ -28,20 +28,18 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 
 
 def map_month_to_season(month: int) -> str:
-    """Map month to season (DJF, MAM, JJA, SON). Dec → DJF of next year."""
-    if month in [12, 1, 2]:
-        return "DJF"
-    elif month in [3, 4, 5]:
-        return "MAM"
-    elif month in [6, 7, 8]:
-        return "JJA"
-    else:  # [9, 10, 11]
-        return "SON"
+    """Map month to season (DJFM, AMJJ, ASON). Dec-Mar → DJFM, Apr-Jul → AMJJ, Aug-Nov → ASON."""
+    if month in [12, 1, 2, 3]:
+        return "DJFM"
+    elif month in [4, 5, 6, 7]:
+        return "AMJJ"
+    elif month in [8, 9, 10, 11]:
+        return "ASON"
 
 
 def adjust_year_for_djf(row: pd.Series) -> int:
     """For DJF season, December uses next year's label."""
-    if row['season'] == 'DJF' and row['month'] == 12:
+    if row['season'] == 'DJFM' and row['month'] == 12:
         return row['year'] + 1
     return row['year']
 
@@ -277,7 +275,7 @@ def render_grid(
     verbose: bool
 ) -> Dict[str, int]:
     """
-    Render 4×3 grid of choropleth maps.
+    Render grid of choropleth maps (4×3 yearly, 3×3 seasonal).
     Returns dict of subplot counts for reporting.
     """
 
@@ -571,7 +569,7 @@ def main():
 
     # Get sorted years (up to 4)
     years = sorted(yearly_filt['year'].unique())[-4:]
-    seasons = ['DJF', 'MAM', 'JJA', 'SON']
+    seasons = ['DJFM', 'AMJJ', 'ASON']
 
     if len(years) == 0:
         print("\nWARNING: No years available for plotting")
@@ -609,7 +607,7 @@ def main():
         print("RENDERING SEASONAL GRID")
         print("=" * 60)
 
-        seasonal_png = args.out_dir / 'error_rate_seasonal_4x3.png'
+        seasonal_png = args.out_dir / 'error_rate_seasonal_3x3.png'
         seasonal_counts = render_grid(
             agg_df=seasonal_filt,
             polys=polys,

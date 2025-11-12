@@ -4,14 +4,14 @@ import numpy as np
 
 def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_depth=None, desire_terms=None, forecasting_scope=None, start_year=None, end_year=None, model_prefix=None):
     """
-    Save evaluation results to CSV files.
+    Save evaluation results to CSV files with monthly granularity.
 
     Parameters:
     -----------
     results_df : pandas.DataFrame
-        Evaluation results
+        Evaluation results with 'year' and 'month' columns (monthly granularity)
     y_pred_test : pandas.DataFrame
-        Prediction results
+        Prediction results with 'year' and 'month' columns (monthly granularity)
     assignment : str
         Spatial assignment method
     nowcasting : bool
@@ -19,15 +19,21 @@ def save_results(results_df, y_pred_test, assignment, nowcasting=False, max_dept
     max_depth : int or None
         Maximum depth setting
     desire_terms : int or None
-        Desired terms setting
+        [DEPRECATED] Legacy quarterly terms setting. Use DESIRED_TERMS config for monthly evaluation.
     forecasting_scope : int or None
         Forecasting scope (1-based index into canonical lag schedule)
     start_year : int or None
-        Start year of evaluation period
+        Start year of evaluation period (year range in filename reflects month range tested)
     end_year : int or None
         End year of evaluation period
     model_prefix : str or None
         Model type prefix (e.g., 'xgb' for XGBoost, None for GeoRF default)
+
+    Notes:
+    ------
+    - Results now use monthly granularity (not quarterly)
+    - DataFrames should contain 'month' column (1-12), not 'quarter' column (1-4)
+    - Filenames use year range to indicate temporal coverage
     """
     # Create file names based on assignment
     pred_test_name = 'y_pred_test_g'

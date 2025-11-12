@@ -325,13 +325,20 @@ def impute_missing_values(X, strategy='max_plus', multiplier=100.0, verbose=True
 
 
 
-def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_year=2024, input_terms=None, need_terms=None, admin_codes=None):
-    '''Rolling window temporal splitting for 2024 quarterly evaluation.
+def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_year=2024, input_terms=None, need_terms=None,
+                                     test_month=None, active_lag=None, train_window_months=36, admin_codes=None):
+    '''Rolling window temporal splitting for monthly or quarterly evaluation.
 
-    This function implements a rolling window approach where:
-    - For each 2024 quarter, uses 5 years of data before that quarter's end as training
-    - Tests on the specific quarter of 2024
-    - Enables more realistic temporal validation than fixed year-based splitting
+    This function implements a rolling window approach with two modes:
+    1. **New Monthly Mode** (test_month provided): Single-month TEST set with lag-adjusted TRAIN window
+       - TRAIN window: fixed number of months ending ACTIVE_LAG months before TEST
+       - TEST set: exactly one target month
+       - Example: test_month="2023-01", active_lag=4 → TRAIN=2019-09..2022-09, TEST=2023-01
+
+    2. **Legacy Quarterly Mode** (need_terms provided): Multi-month quarterly TEST set
+       - TRAIN window: 3 years ending when TEST quarter begins
+       - TEST set: one quarter (3 months)
+       - Deprecated: Use monthly mode for new code
 
     Parameters
     ----------
@@ -348,12 +355,19 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
     dates : array-like
         1-D array containing datetime values for precise temporal filtering.
     test_year : int, default=2024
-        Year used for the test set. Currently fixed to 2024.
+        Year used for the test set (legacy parameter, inferred from test_month if provided).
     input_terms : array-like, optional
-        Terms within each year (1-4 corresponding to quarters).
+        Terms within each year (1-4 for quarters, 1-12 for months).
     need_terms : int, optional
-        Specific quarter to use as test set (1=Q1, 2=Q2, 3=Q3, 4=Q4).
-        If None, uses traditional year-based splitting.
+        [LEGACY] Specific quarter to use as test set (1-4). Triggers quarterly mode.
+    test_month : str or pd.Period, optional
+        [NEW] Specific month for TEST set (e.g., "2023-01" or pd.Period("2023-01", "M")).
+        Triggers monthly mode with lag-adjusted TRAIN window.
+    active_lag : int, optional
+        [NEW] Number of months to offset TRAIN end before TEST (e.g., 4, 8, 12).
+        Required when test_month is provided.
+    train_window_months : int, default=36
+        [NEW] Fixed number of months for TRAIN window. Only used in monthly mode.
     admin_codes : array-like, optional
         Admin codes for each sample. If provided, will be split alongside other arrays.
 
@@ -364,14 +378,49 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
     Otherwise:
         Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
     '''
-    # Use the provided test_year parameter
-    
-    if need_terms is None:
-        # Training set: all years before test_year (fallback when need_terms is None)
-        train_mask = (years < test_year) & (years >= (test_year - 3))  # Limit to last 3 years for training
-        # Test set: only test_year
-        test_mask = years == test_year
+    import pandas as pd
 
+    # Convert dates to pandas datetime if not already
+    if not isinstance(dates, pd.Series):
+        dates = pd.to_datetime(dates)
+
+    # === NEW MONTHLY MODE ===
+    if test_month is not None:
+        # Validate inputs
+        if active_lag is None:
+            raise ValueError("active_lag must be provided when using test_month")
+        if active_lag <= 0:
+            raise ValueError(f"active_lag must be positive, got {active_lag}")
+        if train_window_months <= 0:
+            raise ValueError(f"train_window_months must be positive, got {train_window_months}")
+
+        # Parse test_month to pd.Period if needed
+        if isinstance(test_month, str):
+            test_month_period = pd.Period(test_month, freq='M')
+        elif isinstance(test_month, pd.Period):
+            if test_month.freq != 'M':
+                raise ValueError(f"test_month Period must have monthly frequency, got {test_month.freq}")
+            test_month_period = test_month
+        else:
+            raise TypeError(f"test_month must be str or pd.Period, got {type(test_month)}")
+
+        # Calculate temporal boundaries
+        test_month_start = test_month_period.to_timestamp()  # First day of test month
+        test_month_end = (test_month_period + 1).to_timestamp()  # First day of next month (exclusive end)
+
+        # TRAIN ends ACTIVE_LAG months before TEST starts
+        train_end = test_month_start - pd.DateOffset(months=active_lag)
+        train_start = train_end - pd.DateOffset(months=train_window_months - 1)  # -1 because end month is inclusive
+
+        # Integrity checks
+        if train_end >= test_month_start:
+            raise ValueError(f"TRAIN end ({train_end.date()}) must be before TEST start ({test_month_start.date()})")
+
+        # Create masks
+        train_mask = (dates >= train_start) & (dates < train_end)
+        test_mask = (dates >= test_month_start) & (dates < test_month_end)
+
+        # Apply masks
         Xtrain = X[train_mask]
         ytrain = y[train_mask]
         Xtrain_loc = X_loc[train_mask]
@@ -387,30 +436,39 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
             admin_codes_train = admin_codes[train_mask]
             admin_codes_test = admin_codes[test_mask]
 
-        #Xtest_group unique values
+        # Filter TRAIN to only include groups present in TEST
         X_test_unique = np.unique(Xtest_group)
-
-        # generate mask for Xtrain_group to only include groups present in Xtest_group
         train_group_mask = np.isin(Xtrain_group, X_test_unique)
-
-        # apply mask to Xtrain, ytrain, Xtrain_loc, Xtrain_group
         Xtrain = Xtrain[train_group_mask]
         ytrain = ytrain[train_group_mask]
         Xtrain_loc = Xtrain_loc[train_group_mask]
         Xtrain_group = Xtrain_group[train_group_mask]
 
-        # Apply group mask to admin_codes if provided
         if admin_codes is not None:
             admin_codes_train = admin_codes_train[train_group_mask]
-        
-    else:
-        # Rolling window approach: 3 years before test term → test on specific 2024 term
-        import pandas as pd
-        
-        # Convert dates to pandas datetime if not already
-        if not isinstance(dates, pd.Series):
-            dates = pd.to_datetime(dates)
-        
+
+        # Calculate actual train months
+        actual_train_months = len(pd.date_range(start=train_start, end=train_end - pd.DateOffset(months=1), freq='MS'))
+
+        # Logging
+        print(f"\n{'='*80}")
+        print(f"MONTHLY SPLIT | TEST={test_month_period} | LAG={active_lag} months")
+        print(f"{'='*80}")
+        print(f"TRAIN: {train_start.date()} to {(train_end - pd.DateOffset(days=1)).date()} ({actual_train_months} months, {len(ytrain)} samples)")
+        print(f"TEST:  {test_month_start.date()} to {(test_month_end - pd.DateOffset(days=1)).date()} (1 month, {len(ytest)} samples)")
+        print(f"TRAIN ends {active_lag} months before TEST | Gap ensures no leakage")
+        print(f"Disjoint: TRAIN < {train_end.date()} ≤ ... ≤ {test_month_start.date()} ≤ TEST")
+        print(f"{'='*80}\n")
+
+        if admin_codes is not None:
+            return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
+        else:
+            return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
+
+    # === LEGACY QUARTERLY MODE ===
+    elif need_terms is not None:
+        print("\n[DEPRECATION WARNING] Using legacy quarterly mode. Consider migrating to monthly mode with test_month parameter.\n")
+
         # Define quarter start and end dates for the test year
         quarter_starts = {
             1: pd.Timestamp(f'{test_year}-01-01'),
@@ -418,27 +476,25 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
             3: pd.Timestamp(f'{test_year}-07-01'),
             4: pd.Timestamp(f'{test_year}-10-01')
         }
-        
+
         quarter_ends = {
             1: pd.Timestamp(f'{test_year}-03-31'),
             2: pd.Timestamp(f'{test_year}-06-30'),
             3: pd.Timestamp(f'{test_year}-09-30'),
             4: pd.Timestamp(f'{test_year}-12-31')
         }
-        
-        # Get the start date for the test quarter (this is when test quarter begins)
+
+        # Get the start date for the test quarter
         test_quarter_start = quarter_starts[need_terms]
         test_quarter_end = quarter_ends[need_terms]
-        
+
         # Training set: 3 years of data ENDING BEFORE the test quarter starts
-        # This ensures NO OVERLAP between training and test
-        train_end_date = test_quarter_start  # Training ends when test quarter begins
+        train_end_date = test_quarter_start
         train_start_date = train_end_date - pd.DateOffset(years=3)
 
-        # Training mask: includes data from 3 years ago UP TO (but not including) test quarter start
         train_mask = (dates >= train_start_date) & (dates < train_end_date)
-        
-        # Test set: only the specific quarter of 2024
+
+        # Test set: only the specific quarter
         test_year_mask = years == test_year
         test_terms_mask = input_terms == need_terms
         test_mask = test_year_mask & test_terms_mask
@@ -453,12 +509,11 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         Xtest_loc = X_loc[test_mask]
         Xtest_group = X_group[test_mask]
 
-        # Split admin_codes if provided
         if admin_codes is not None:
             admin_codes_train = admin_codes[train_mask]
             admin_codes_test = admin_codes[test_mask]
 
-        # Ensure training groups overlap with test groups
+        # Filter TRAIN to only include groups present in TEST
         X_test_unique = np.unique(Xtest_group)
         train_group_mask = np.isin(Xtrain_group, X_test_unique)
         Xtrain = Xtrain[train_group_mask]
@@ -466,12 +521,11 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         Xtrain_loc = Xtrain_loc[train_group_mask]
         Xtrain_group = Xtrain_group[train_group_mask]
 
-        # Apply group mask to admin_codes if provided
         if admin_codes is not None:
             admin_codes_train = admin_codes_train[train_group_mask]
 
         print(f"Rolling Window Split for Q{need_terms} {test_year}:")
-        print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()} (5 years BEFORE test quarter)")
+        print(f"  Training: {len(ytrain)} samples from {train_start_date.date()} to {train_end_date.date()} (3 years BEFORE test quarter)")
         print(f"  Test: {len(ytest)} samples from Q{need_terms} {test_year} ({test_quarter_start.date()} to {test_quarter_end.date()})")
         print(f"  No overlap: Training ends {train_end_date.date()}, Test starts {test_quarter_start.date()}")
 
@@ -479,13 +533,47 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
             return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
         else:
             return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
-        
-    print(f"Train/Test split: {len(ytrain)} training samples (years < {test_year}), {len(ytest)} test samples (year = {test_year})")
 
-    if admin_codes is not None:
-        return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
+    # === FALLBACK ANNUAL MODE ===
     else:
-        return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
+        print("\n[DEPRECATION WARNING] Using fallback annual mode. Consider migrating to monthly mode with test_month parameter.\n")
+
+        # Training set: last 3 years before test_year
+        train_mask = (years < test_year) & (years >= (test_year - 3))
+        # Test set: entire test_year
+        test_mask = years == test_year
+
+        Xtrain = X[train_mask]
+        ytrain = y[train_mask]
+        Xtrain_loc = X_loc[train_mask]
+        Xtrain_group = X_group[train_mask]
+
+        Xtest = X[test_mask]
+        ytest = y[test_mask]
+        Xtest_loc = X_loc[test_mask]
+        Xtest_group = X_group[test_mask]
+
+        if admin_codes is not None:
+            admin_codes_train = admin_codes[train_mask]
+            admin_codes_test = admin_codes[test_mask]
+
+        # Filter TRAIN to only include groups present in TEST
+        X_test_unique = np.unique(Xtest_group)
+        train_group_mask = np.isin(Xtrain_group, X_test_unique)
+        Xtrain = Xtrain[train_group_mask]
+        ytrain = ytrain[train_group_mask]
+        Xtrain_loc = Xtrain_loc[train_group_mask]
+        Xtrain_group = Xtrain_group[train_group_mask]
+
+        if admin_codes is not None:
+            admin_codes_train = admin_codes_train[train_group_mask]
+
+        print(f"Train/Test split: {len(ytrain)} training samples (years < {test_year}), {len(ytest)} test samples (year = {test_year})")
+
+        if admin_codes is not None:
+            return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test
+        else:
+            return Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group
 class GroupGenerator():
   '''
   Generate groups (minimum spatial units) for partitioning in GeoRF.

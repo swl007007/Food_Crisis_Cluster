@@ -7,7 +7,26 @@
 
 import numpy as np
 
-from config import LAGS_MONTHS  # Reuse canonical lag schedule
+from config import (
+    LAGS_MONTHS,  # Reuse canonical lag schedule
+    _parse_month_term,  # Month term parsing
+    _validate_desired_terms,  # DESIRED_TERMS validation
+)
+
+# Reuse temporal configuration from main config
+ACTIVE_LAGS = LAGS_MONTHS
+TRAIN_WINDOW_MONTHS = 36
+ACTIVE_LAG = min(ACTIVE_LAGS) if ACTIVE_LAGS else 4
+
+# DESIRED_TERMS can be overridden by environment variable (comma-separated: "2021-01,2021-02,...")
+import os
+_DESIRED_TERMS_ENV = os.getenv('DESIRED_TERMS')
+if _DESIRED_TERMS_ENV:
+    # Parse comma-separated month strings from environment variable
+    DESIRED_TERMS = [term.strip() for term in _DESIRED_TERMS_ENV.split(',') if term.strip()]
+    print(f"[config_visual] Using DESIRED_TERMS from environment: {DESIRED_TERMS[:3]}..." if len(DESIRED_TERMS) > 3 else f"[config_visual] Using DESIRED_TERMS from environment: {DESIRED_TERMS}")
+else:
+    DESIRED_TERMS = ["2023-01"]  # Default: single month for visual debug testing
 
 #Note: Some of the parameters are for the deep learning version (commented).
 #They are for now kept as part of the config file in case some conditions

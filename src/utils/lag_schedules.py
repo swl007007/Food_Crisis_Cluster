@@ -64,3 +64,65 @@ def assert_no_legacy_values(sequence: Sequence[int], *, context: str) -> None:
         raise ValueError(
             f"Legacy lag month(s) {legacy_hits} detected in {context}; supported schedule is {_DEFAULT_LAGS_MONTHS}."
         )
+
+
+def validate_lag_boundaries(active_lag: int, train_end, test_start) -> None:
+    """
+    Validate that TRAIN window ends exactly ACTIVE_LAG months before TEST starts.
+
+    Parameters
+    ----------
+    active_lag : int
+        Active lag in months (e.g., 4, 8, 12)
+    train_end : datetime or pd.Timestamp
+        End of TRAIN window
+    test_start : datetime or pd.Timestamp
+        Start of TEST window
+
+    Raises
+    ------
+    ValueError
+        If train_end is not exactly active_lag months before test_start
+    """
+    import pandas as pd
+
+    if train_end >= test_start:
+        raise ValueError(
+            f"TRAIN end ({train_end.date()}) must be before TEST start ({test_start.date()})"
+        )
+
+    # Calculate expected train_end based on test_start and active_lag
+    expected_train_end = test_start - pd.DateOffset(months=active_lag)
+
+    # Allow for small timestamp differences (same month-start)
+    if train_end.to_period('M') != expected_train_end.to_period('M'):
+        raise ValueError(
+            f"TRAIN end month ({train_end.to_period('M')}) does not match "
+            f"expected end {active_lag} months before TEST ({expected_train_end.to_period('M')})"
+        )
+
+
+def assert_max_lag_valid(lags: Sequence[int], active_lag: int, *, context: str = "feature lags") -> None:
+    """
+    Assert that all lags are less than or equal to the active lag.
+
+    Parameters
+    ----------
+    lags : Sequence[int]
+        List of lag values used in feature engineering
+    active_lag : int
+        Maximum allowed lag (active lag for this evaluation)
+    context : str
+        Description of where lags are used (for error messages)
+
+    Raises
+    ------
+    ValueError
+        If any lag exceeds active_lag
+    """
+    max_lag = max(lags)
+    if max_lag > active_lag:
+        raise ValueError(
+            f"Maximum lag ({max_lag}) in {context} exceeds active lag ({active_lag}). "
+            f"This would cause data leakage from the test period into training features."
+        )

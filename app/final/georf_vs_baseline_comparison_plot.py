@@ -18,6 +18,54 @@ PROJECT_ROOT = str(REPO_ROOT / 'results')
 VIS_OUTPUT_DIR = REPO_ROOT / 'result_GeoRF' / 'vis'
 FEWSNET_EXTENSION_SOURCE: dict[int, int] = {}
 
+def convert_monthly_to_quarterly(df):
+    """
+    Convert monthly results to quarterly format by aggregating metrics.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        DataFrame with 'year', 'month' columns and metric columns
+
+    Returns:
+    --------
+    pd.DataFrame
+        DataFrame with 'year', 'quarter' columns and aggregated metrics
+    """
+    if 'month' not in df.columns:
+        # Already quarterly format or doesn't have month column
+        return df
+
+    if 'quarter' in df.columns:
+        # Already has quarter column, just return
+        return df
+
+    # Create quarter column from month (Q1=1-3, Q2=4-6, Q3=7-9, Q4=10-12)
+    df = df.copy()
+    df['quarter'] = ((df['month'] - 1) // 3 + 1).astype(int)
+
+    # Define aggregation rules for each column type
+    agg_dict = {}
+
+    # Metrics to average (precision, recall, F1 scores)
+    metric_cols = [col for col in df.columns if any(x in col for x in ['precision', 'recall', 'f1'])]
+    for col in metric_cols:
+        agg_dict[col] = 'mean'
+
+    # Sample counts to sum
+    sample_cols = [col for col in df.columns if 'num_samples' in col]
+    for col in sample_cols:
+        agg_dict[col] = 'sum'
+
+    # Group by year and quarter, aggregate
+    quarterly_df = df.groupby(['year', 'quarter'], as_index=False).agg(agg_dict)
+
+    # Drop the month column if it exists in the result
+    if 'month' in quarterly_df.columns:
+        quarterly_df = quarterly_df.drop(columns=['month'])
+
+    return quarterly_df
+
 def load_and_process_data(base_dir=PROJECT_ROOT):
     """
     Load probit, RF, and XGBoost results for comparison using auto-detection.
@@ -78,6 +126,7 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         lag_months = scope_to_lag[scope]
 
         df = pd.read_csv(file_path)
+        df = convert_monthly_to_quarterly(df)
         print(f"  Found probit results for forecasting scope {scope} ({lag_months}-month): {filename}")
 
         # Create year-quarter identifier if quarter column exists
@@ -108,6 +157,7 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         lag_months = scope_to_lag[scope]
 
         df = pd.read_csv(file_path)
+        df = convert_monthly_to_quarterly(df)
         print(f"  Found FEWSNET results for forecasting scope {scope} ({lag_months}-month): {filename}")
 
         # Create year-quarter identifier if quarter column exists
@@ -160,6 +210,7 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         lag_months = scope_to_lag[scope]
 
         df = pd.read_csv(file_path)
+        df = convert_monthly_to_quarterly(df)
         print(f"  Found GeoRF results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
 
         if lag_months not in rf_by_scope:
@@ -206,6 +257,7 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
         lag_months = scope_to_lag[scope]
 
         df = pd.read_csv(file_path)
+        df = convert_monthly_to_quarterly(df)
         print(f"  Found XGBoost results for scope {scope} ({lag_months}-month), years {start_year}-{end_year}: {filename}")
 
         if lag_months not in xgb_by_scope:

@@ -2,134 +2,97 @@
 setlocal enabledelayedexpansion
 set PYTHONPATH=%~dp0
 
-REM GeoRF Memory Management Batch Script
-REM This script iterates through time periods and forecasting scopes to avoid memory leakage
-REM Each batch cleans up results before proceeding to the next run
+REM GeoRF Monthly Evaluation Batch Script
+REM This script processes all 12 months of each year in a single batch
+REM Each batch cleans up memory to prevent leakage issues
 
-echo ===== Starting GeoRF Batch Processing =====
-echo This script will run GeoRF for multiple time periods and forecasting scopes
+echo ===== Starting GeoRF Monthly Batch Processing =====
+echo This script will run GeoRF for multiple years with monthly evaluation
 echo Active lag schedule: 4, 8, 12 months
+echo Each year will evaluate all 12 months (Jan-Dec)
 echo Each batch will clean up memory to prevent leakage issues
 echo.
 
 REM Counter for batch tracking
 set batch_count=0
 
-REM Time period 1: 2013-2014
-echo ==========================================
-echo Processing time period: 2013-2014
-echo ==========================================
-for /L %%f in (1,1,3) do (
-    call :run_batch 2013 2014 %%f
-)
+REM Process each year from 2013 to 2024 (12 years)
+for /L %%y in (2013,1,2024) do (
+    echo ==========================================
+    echo Processing year: %%y (all 12 months^)
+    echo ==========================================
 
-REM Time period 2: 2015-2016
-echo ==========================================
-echo Processing time period: 2015-2016
-echo ==========================================
-for /L %%f in (1,1,3) do (
-    call :run_batch 2015 2016 %%f
-)
+    REM Process all 3 forecasting scopes for this year
+    for /L %%f in (1,1,3) do (
+        set /a batch_count+=1
 
-REM Time period 3: 2017-2018
-echo ==========================================
-echo Processing time period: 2017-2018
-echo ==========================================
-for /L %%f in (1,1,3) do (
-    call :run_batch 2017 2018 %%f
-)
+        REM Set DESIRED_TERMS environment variable with all 12 months of this year
+        set "DESIRED_TERMS=%%y-01,%%y-02,%%y-03,%%y-04,%%y-05,%%y-06,%%y-07,%%y-08,%%y-09,%%y-10,%%y-11,%%y-12"
 
-REM Time period 4: 2019-2020
-echo ==========================================
-echo Processing time period: 2019-2020
-echo ==========================================
-for /L %%f in (1,1,3) do (
-    call :run_batch 2019 2020 %%f
-)
+        echo.
+        echo ------ Batch !batch_count!/36: Year %%y, Forecasting Scope %%f ------
+        echo Monthly evaluation: All 12 months of %%y
 
-REM Time period 5: 2021-2022
-echo ==========================================
-echo Processing time period: 2021-2022
-echo ==========================================
-for /L %%f in (1,1,3) do (
-    call :run_batch 2021 2022 %%f
-)
+        REM Pre-execution cleanup
+        echo Performing pre-execution cleanup...
+        call :cleanup_directories
 
-REM Time period 6: 2023-2024
-echo ==========================================
-echo Processing time period: 2023-2024
-echo ==========================================
-for /L %%f in (1,1,3) do (
-    call :run_batch 2023 2024 %%f
+        echo Running: python app/main_model_GF.py --start_year %%y --end_year %%y --forecasting_scope %%f
+        echo Environment: DESIRED_TERMS=!DESIRED_TERMS!
+
+        REM Run the Python script
+        python app/main_model_GF.py --start_year %%y --end_year %%y --forecasting_scope %%f
+
+        REM Check if script succeeded
+        if !errorlevel! neq 0 (
+            echo ERROR: Python script failed for batch !batch_count!
+            echo Parameters: start_year=%%y, end_year=%%y, forecasting_scope=%%f
+            echo DESIRED_TERMS=!DESIRED_TERMS!
+            pause
+            goto :end
+        )
+
+        echo Batch !batch_count! completed successfully
+        echo Results saved to: results_df_gp_fs%%f_%%y_%%y.csv
+
+        REM Clean up results folders
+        echo Cleaning up results folders...
+        call :cleanup_directories
+
+        REM Clean up temporary files
+        if exist "temp_*" (
+            del /q temp_* 2>nul
+            echo Deleted temp files
+        )
+
+        REM Clean up pickle files
+        if exist "*.pkl" (
+            del /q *.pkl 2>nul
+            echo Deleted pickle files
+        )
+
+        REM Clean up __pycache__
+        if exist "__pycache__" (
+            rmdir /s /q __pycache__ 2>nul
+            echo Deleted __pycache__ folders
+        )
+
+        REM Force memory cleanup
+        echo Forcing memory cleanup...
+        timeout /t 5 /nobreak >nul
+
+        echo Memory cleanup completed for batch !batch_count!
+        echo.
+    )
 )
 
 echo.
 echo ===== All batches completed successfully! =====
 echo Total batches processed: !batch_count!
-echo Time periods: 2013-2014, 2015-2016, 2017-2018, 2019-2020, 2021-2022, 2023-2024
-echo Forecasting scopes: 1, 2, 3 (for each time period)
+echo Years processed: 2013-2024 (12 years, each with 12 months)
+echo Forecasting scopes: 1, 2, 3 (4-month, 8-month, 12-month lags)
+echo Total configurations: 12 years × 3 scopes = 36 batches
 goto :end
-
-REM Function to run a single batch
-:run_batch
-set /a batch_count+=1
-set start_year=%1
-set end_year=%2
-set forecasting_scope=%3
-
-echo.
-echo ------ Batch !batch_count!: Years %start_year%-%end_year%, Forecasting Scope %forecasting_scope% ------
-
-REM Pre-execution cleanup to ensure clean state
-echo Performing pre-execution cleanup...
-call :cleanup_directories
-
-echo Running: python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
-
-REM Run the Python script with current parameters
-python app/main_model_GF.py --start_year %start_year% --end_year %end_year% --forecasting_scope %forecasting_scope%
-
-REM Check if the Python script succeeded
-if !errorlevel! neq 0 (
-    echo ERROR: Python script failed for batch !batch_count!
-    echo Parameters: start_year=%start_year%, end_year=%end_year%, forecasting_scope=%forecasting_scope%
-    pause
-    goto :end
-)
-
-echo Batch !batch_count! completed successfully
-
-REM Clean up results folders and force garbage collection
-echo Cleaning up results folders...
-
-REM Use robust cleanup with explicit enumeration and retry logic
-call :cleanup_directories
-
-REM Clean up any temporary files
-if exist "temp_*" (
-    del /q temp_* 2>nul
-    echo Deleted temp files
-)
-
-REM Clean up any pickle files that might be holding memory
-if exist "*.pkl" (
-    del /q *.pkl 2>nul
-    echo Deleted pickle files
-)
-
-REM Clean up any matplotlib cache
-if exist "__pycache__" (
-    rmdir /s /q __pycache__ 2>nul
-    echo Deleted __pycache__ folders
-)
-
-REM Force Windows to release memory and wait
-echo Forcing memory cleanup...
-timeout /t 5 /nobreak >nul
-
-echo Memory cleanup completed for batch !batch_count!
-echo.
-goto :eof
 
 :cleanup_directories
 echo Performing robust directory cleanup...
@@ -137,21 +100,21 @@ echo Performing robust directory cleanup...
 REM Try to enumerate and delete each result_GeoRF directory explicitly
 for /d %%D in (result_GeoRF*) do (
     echo Attempting to delete directory: %%D
-    
+
     REM First attempt - immediate deletion
     rmdir /s /q "%%D" 2>nul
-    
+
     REM Verify deletion
     if exist "%%D" (
         echo Directory %%D still exists, trying alternative cleanup...
-        
+
         REM Force close any open handles and retry
         timeout /t 2 /nobreak >nul
-        
+
         REM Second attempt with explicit file deletion first
         del /s /f /q "%%D\*" 2>nul
         rmdir /s /q "%%D" 2>nul
-        
+
         REM Final verification
         if exist "%%D" (
             echo WARNING: Failed to delete directory %%D - may be locked by another process
@@ -163,7 +126,7 @@ for /d %%D in (result_GeoRF*) do (
     )
 )
 
-REM Additional cleanup for numbered directories that might not match the pattern
+REM Additional cleanup for numbered directories
 for /L %%i in (0,1,50) do (
     if exist "result_GeoRF_%%i" (
         echo Found numbered directory result_GeoRF_%%i, attempting deletion...
