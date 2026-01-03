@@ -1,16 +1,6 @@
 {
   "files_loaded": 72,
-  "rows_after_filter": 1209042,
-  "date_range": {
-    "min": "2013-01-01 00:00:00",
-    "max": "2024-10-01 00:00:00"
-  },
-  "date_filter_applied": {
-    "start_date": null,
-    "end_date": null,
-    "start_year": null,
-    "end_year": null
-  },
+  "rows_after_filter": 373134,
   "filter_applied": "all",
   "filter_description": "No filter (all data)",
   "years_plotted": [
@@ -25,9 +15,9 @@
     "fs3"
   ],
   "season_counts": {
-    "DJFM": 17148,
-    "AMJJ": 17148,
-    "ASON": 17148
+    "DJFM": 17136,
+    "AMJJ": 17139,
+    "ASON": 17127
   },
   "yearly_polygons": {
     "2021_fs1": 5493,
@@ -44,14 +34,14 @@
     "2024_fs3": 5697
   },
   "seasonal_polygons": {
-    "DJFM_fs1": 5716,
-    "DJFM_fs2": 5716,
-    "DJFM_fs3": 5716,
-    "AMJJ_fs1": 5716,
-    "AMJJ_fs2": 5716,
-    "AMJJ_fs3": 5716,
-    "ASON_fs1": 5716,
-    "ASON_fs2": 5716,
-    "ASON_fs3": 5716
+    "DJFM_fs1": 5712,
+    "DJFM_fs2": 5712,
+    "DJFM_fs3": 5712,
+    "AMJJ_fs1": 5713,
+    "AMJJ_fs2": 5713,
+    "AMJJ_fs3": 5713,
+    "ASON_fs1": 5709,
+    "ASON_fs2": 5709,
+    "ASON_fs3": 5709
   }
 }

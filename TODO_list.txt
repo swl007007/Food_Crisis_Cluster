@@ -1,0 +1,35 @@
+IPC/CH model related:
+1. finish CH dataset collection.
+2. IPC/CH data set reestimation using FEWSNET geo-aware framework.
+
+
+FEWSNET model related
+1. add extra fewsnet indicator suggested by Chris.
+2. ask Zhe for growing season satellite data, MODIS Land Cover Dynamics product is too rough on second growing season.
+3. add lean wet season indicators on country level from crop calendar.
+4. see country level ablation test (remove one country data first in training set and then use the country data only as the test set)
+5. Ruth proposed extra unit grouping like AEZ, so that units within AEZ always stay together during the partition.
+6. doing nowcasting like we did in IPC paper (e.g. add second layer contemporaneous indicators to predict current month)
+7. predicting phases changes like Andree 2020
+8. two layer mode predicting phase4 (first layer predict crisis existence, second layer predict phase4 given crisis existence, should be similar to McFadden's nested choice model)
+
+
+Ruth email:
+I would really like to see results that allow us to understand whether the model performs well in each of these settings. This matches up with Chris’s questions I believe:
+Predicting food insecurity in a new place where data is not available in the model—either a region within a country or a new country. Can we do this? [Same as Chris’s question #4.]
+Nowcasting food insecurity accurately. (i.e. we have the covariates for the current period can we predict food insecurity accurately without using a model)
+Predicting changes in food insecurity. Is the model doing this accurately or is performance driven by accurately predicting food insecurity in places where food insecurity is not changing? [Same as Chris’s question #3.]
+Predicting moderate food insecurity (i.e. phase 3) versus more extreme food insecurity (i.e. phase 4 and 5) [Same as Chris’s question #3.]
+Answering these might also help us understand why southern Africa is more tricky.
+
+Chris email:
+Sounds good. Here are a few specific topics I'm hoping we can discuss.
+1. An overview of the new model results shared by Yanyan earlier this week. How did the results change? Why might the model be performing so poorly in Southern Africa?
+
+2. What specific information is needed to add a country to the current model? Is a time series of food security classification data needed, or just a couple of data points?
+
+3. How time consuming or computationally intensive is it to run other iterations of the model. For example, looking at predicting Phase 4+? Can we assess model performance by time of year (e.g., lean season vs non-lean season) or in terms of the models ability to predict an outcome that is different than usual?
+
+4. I'd love to hear a bit more about why we can use the model to predict food insecurity outside of countries with FEWS NET data. Is it that we can't or that the performance is weaker?
+
+5. I can explain a bit more about the microdata that FEWS NET has for some analyses.

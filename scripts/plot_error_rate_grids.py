@@ -53,9 +53,10 @@ def load_predictions(
     y_true_col: str,
     y_pred_col: str,
     start_date: str,
+    end_date: str,
     verbose: bool
 ) -> pd.DataFrame:
-    """Load and combine all prediction CSVs, extract scope, filter by date."""
+    """Load and combine all prediction CSVs, extract scope, filter by date range."""
 
     csv_files = sorted(pred_dir.glob(file_glob))
     if not csv_files:
@@ -153,12 +154,24 @@ def load_predictions(
                 print(f"WARNING: {invalid_dates} rows with invalid dates, dropping")
             combined = combined.dropna(subset=[date_col])
 
-    # Filter by start date
-    start = pd.to_datetime(start_date)
-    combined = combined[combined[date_col] >= start].copy()
+    # Filter by date range (optional)
+    if start_date is not None:
+        start = pd.to_datetime(start_date)
+        original_len = len(combined)
+        combined = combined[combined[date_col] >= start].copy()
+        if verbose:
+            print(f"Applied start date filter (>= {start_date}): {original_len} → {len(combined)} rows")
+        if len(combined) == 0:
+            raise ValueError(f"No data after filtering for dates >= {start_date}")
 
-    if len(combined) == 0:
-        raise ValueError(f"No data after filtering for dates >= {start_date}")
+    if end_date is not None:
+        end = pd.to_datetime(end_date)
+        original_len = len(combined)
+        combined = combined[combined[date_col] <= end].copy()
+        if verbose:
+            print(f"Applied end date filter (<= {end_date}): {original_len} → {len(combined)} rows")
+        if len(combined) == 0:
+            raise ValueError(f"No data after filtering for dates <= {end_date}")
 
     # Derive year, month, season
     combined['year'] = combined[date_col].dt.year
@@ -170,9 +183,454 @@ def load_predictions(
 
     if verbose:
         print(f"\nCombined: {len(combined)} rows from {combined['year'].min()} to {combined['year'].max()}")
+        print(f"Date range: {combined[date_col].min()} to {combined[date_col].max()}")
         print(f"Scopes: {sorted(combined['scope'].unique())}")
+        if start_date or end_date:
+            print(f"✓ Date filtering applied: {'start=' + str(start_date) if start_date else ''} {'end=' + str(end_date) if end_date else ''}")
 
     return combined
+
+
+def apply_truth_filter(
+    df: pd.DataFrame,
+    filter_type: str,
+    y_true_col: str,
+    verbose: bool
+) -> tuple[pd.DataFrame, str]:
+    """
+    Filter dataframe based on ground truth label to analyze errors on crisis vs non-crisis cases.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        Combined prediction dataframe
+    filter_type : str
+        Filter type: 'all' (no filter), 'crisis' (y_true==1), 'noncrisis' (y_true==0)
+    y_true_col : str
+        Name of ground truth column
+    verbose : bool
+        Print filtering information
+
+    Returns:
+    --------
+    tuple[pd.DataFrame, str]
+        Filtered dataframe and filename suffix (e.g., '_crisis', '_noncrisis', '')
+    """
+
+    original_len = len(df)
+
+    if filter_type == 'all':
+        # No filtering
+        filtered_df = df.copy()
+        suffix = ''
+        filter_desc = 'No filter (all data)'
+    elif filter_type == 'crisis':
+        # Only actual crisis cases
+        filtered_df = df[df[y_true_col] == 1].copy()
+        suffix = '_crisis'
+        filter_desc = 'Actual crisis cases only (fews_ipc_crisis_true==1)'
+    elif filter_type == 'noncrisis':
+        # Only actual non-crisis cases
+        filtered_df = df[df[y_true_col] == 0].copy()
+        suffix = '_noncrisis'
+        filter_desc = 'Actual non-crisis cases only (fews_ipc_crisis_true==0)'
+    else:
+        raise ValueError(f"Unknown filter type: {filter_type}")
+
+    if verbose:
+        print(f"\nApplying filter: {filter_desc}")
+        print(f"  Original rows: {original_len}")
+        print(f"  Filtered rows: {len(filtered_df)}")
+        print(f"  Retained: {len(filtered_df)/original_len*100:.1f}%")
+
+    if len(filtered_df) == 0:
+        raise ValueError(f"No data remaining after applying filter '{filter_type}'")
+
+    return filtered_df, suffix
+
+
+def _confusion_for_binary(y_true: np.ndarray, y_pred: np.ndarray, positive_label: int = 1) -> Dict[str, int]:
+    """
+    Compute confusion matrix for binary classification.
+
+    Parameters:
+    -----------
+    y_true : array-like
+        Ground truth labels
+    y_pred : array-like
+        Predicted labels
+    positive_label : int
+        Label for positive class (default: 1)
+
+    Returns:
+    --------
+    dict : {'tp': int, 'fp': int, 'tn': int, 'fn': int, 'support': int}
+    """
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+
+    # Positive class
+    tp = int(np.sum((y_true == positive_label) & (y_pred == positive_label)))
+    fp = int(np.sum((y_true != positive_label) & (y_pred == positive_label)))
+    fn = int(np.sum((y_true == positive_label) & (y_pred != positive_label)))
+    tn = int(np.sum((y_true != positive_label) & (y_pred != positive_label)))
+
+    support = len(y_true)
+
+    return {'tp': tp, 'fp': fp, 'tn': tn, 'fn': fn, 'support': support}
+
+
+def _safe_prf(tp: int, fp: int, fn: int) -> tuple:
+    """
+    Compute precision, recall, F1 with zero-division guards.
+
+    Parameters:
+    -----------
+    tp, fp, fn : int
+        Confusion matrix counts
+
+    Returns:
+    --------
+    tuple : (precision, recall, f1) where undefined values are np.nan
+    """
+    # Precision = TP / (TP + FP)
+    if tp + fp > 0:
+        precision = tp / (tp + fp)
+    else:
+        precision = np.nan
+
+    # Recall = TP / (TP + FN)
+    if tp + fn > 0:
+        recall = tp / (tp + fn)
+    else:
+        recall = np.nan
+
+    # F1 = 2 * P * R / (P + R)
+    if not np.isnan(precision) and not np.isnan(recall) and (precision + recall) > 0:
+        f1 = 2 * precision * recall / (precision + recall)
+    else:
+        f1 = np.nan
+
+    return precision, recall, f1
+
+
+def _get_builtin_region_map() -> Dict[str, str]:
+    """
+    Returns builtin ADMIN0 → region mapping for FEWS NET countries.
+
+    Regions: East Africa, West Africa, Southern Africa, North Africa,
+             Middle East, South Asia, Southeast Asia, Latin America
+
+    Returns:
+    --------
+    dict : Mapping from country name to region
+    """
+    return {
+        # East Africa
+        'Burundi': 'East Africa',
+        'Djibouti': 'East Africa',
+        'Eritrea': 'East Africa',
+        'Ethiopia': 'East Africa',
+        'Kenya': 'East Africa',
+        'Rwanda': 'East Africa',
+        'Somalia': 'East Africa',
+        'South Sudan': 'East Africa',
+        'Sudan': 'East Africa',
+        'Tanzania': 'East Africa',
+        'Uganda': 'East Africa',
+
+        # West Africa
+        'Burkina Faso': 'West Africa',
+        'Chad': 'West Africa',
+        'Gambia': 'West Africa',
+        'Ghana': 'West Africa',
+        'Guinea': 'West Africa',
+        'Liberia': 'West Africa',
+        'Mali': 'West Africa',
+        'Mauritania': 'West Africa',
+        'Niger': 'West Africa',
+        'Nigeria': 'West Africa',
+        'Senegal': 'West Africa',
+        'Sierra Leone': 'West Africa',
+        'Togo': 'West Africa',
+        'Benin': 'West Africa',
+        "Cote d'Ivoire": 'West Africa',
+        'Ivory Coast': 'West Africa',
+
+        # Southern Africa
+        'Angola': 'Southern Africa',
+        'Botswana': 'Southern Africa',
+        'Lesotho': 'Southern Africa',
+        'Madagascar': 'Southern Africa',
+        'Malawi': 'Southern Africa',
+        'Mozambique': 'Southern Africa',
+        'Namibia': 'Southern Africa',
+        'South Africa': 'Southern Africa',
+        'Swaziland': 'Southern Africa',
+        'Eswatini': 'Southern Africa',
+        'Zambia': 'Southern Africa',
+        'Zimbabwe': 'Southern Africa',
+
+        # North Africa
+        'Egypt': 'North Africa',
+        'Libya': 'North Africa',
+        'Morocco': 'North Africa',
+        'Tunisia': 'North Africa',
+        'Algeria': 'North Africa',
+
+        # Middle East
+        'Afghanistan': 'Middle East',
+        'Iraq': 'Middle East',
+        'Palestine': 'Middle East',
+        'Syria': 'Middle East',
+        'Yemen': 'Middle East',
+        'Jordan': 'Middle East',
+        'Lebanon': 'Middle East',
+
+        # South Asia
+        'Bangladesh': 'South Asia',
+        'Nepal': 'South Asia',
+        'Pakistan': 'South Asia',
+        'India': 'South Asia',
+        'Sri Lanka': 'South Asia',
+
+        # Southeast Asia
+        'Myanmar': 'Southeast Asia',
+        'Philippines': 'Southeast Asia',
+        'Cambodia': 'Southeast Asia',
+        'Laos': 'Southeast Asia',
+        'Thailand': 'Southeast Asia',
+        'Vietnam': 'Southeast Asia',
+        'Indonesia': 'Southeast Asia',
+
+        # Latin America
+        'El Salvador': 'Latin America',
+        'Guatemala': 'Latin America',
+        'Haiti': 'Latin America',
+        'Honduras': 'Latin America',
+        'Nicaragua': 'Latin America',
+        'Colombia': 'Latin America',
+        'Ecuador': 'Latin America',
+        'Peru': 'Latin America',
+        'Bolivia': 'Latin America',
+        'Venezuela': 'Latin America',
+    }
+
+
+def compute_admin0_and_region_metrics(
+    df: pd.DataFrame,
+    polys: gpd.GeoDataFrame,
+    scopes: List[str],
+    uid_col: str,
+    y_true_col: str,
+    y_pred_col: str,
+    admin0_col: str = 'ADMIN0',
+    positive_label: int = 1,
+    region_map_path: Path = None,
+    out_dir: Path = Path('.'),
+    verbose: bool = False
+) -> Dict[str, Any]:
+    """
+    Compute precision, recall, F1 metrics by country (ADMIN0) and region for each scope.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        Prediction dataframe with columns [uid_col, y_true_col, y_pred_col, scope]
+    polys : gpd.GeoDataFrame
+        Polygons with ADMIN0 column
+    scopes : List[str]
+        List of scopes to process (e.g., ['fs1', 'fs2', 'fs3'])
+    uid_col : str
+        UID column name for joining
+    y_true_col : str
+        Ground truth column
+    y_pred_col : str
+        Prediction column
+    admin0_col : str
+        Country column name in polys (default: 'ADMIN0')
+    positive_label : int
+        Positive class label (default: 1)
+    region_map_path : Path, optional
+        CSV file with [ADMIN0, region] columns
+    out_dir : Path
+        Output directory for CSVs
+    verbose : bool
+        Verbose output
+
+    Returns:
+    --------
+    dict : {'files': list of written file paths, 'admin0_list': list of countries}
+    """
+
+    # 1. Merge df with polys to get ADMIN0
+    if verbose:
+        print(f"\nMerging predictions with polygons to get {admin0_col}...")
+
+    # Find matching uid column in polys
+    uid_variations = [uid_col, 'uid', 'admin_code', 'adm_code', 'FEWSNET_admin_code']
+    found_uid = None
+    for var in uid_variations:
+        if var in polys.columns:
+            found_uid = var
+            break
+
+    if found_uid is None:
+        raise ValueError(f"Could not find uid column in polygons. Tried: {uid_variations}")
+
+    if found_uid != uid_col:
+        polys = polys.rename(columns={found_uid: uid_col})
+        if verbose:
+            print(f"  Renamed polygon column '{found_uid}' → '{uid_col}'")
+
+    # Check if ADMIN0 exists
+    if admin0_col not in polys.columns:
+        raise ValueError(f"Column '{admin0_col}' not found in polygons. Available: {list(polys.columns)}")
+
+    # Merge - keep only necessary columns from polys
+    polys_subset = polys[[uid_col, admin0_col]].copy()
+    merged = df.merge(polys_subset, on=uid_col, how='left')
+
+    if verbose:
+        print(f"  Merged: {len(merged)} rows")
+        null_admin0 = merged[admin0_col].isna().sum()
+        if null_admin0 > 0:
+            print(f"  WARNING: {null_admin0} rows ({null_admin0/len(merged)*100:.1f}%) have null {admin0_col}")
+
+    # Drop rows with null ADMIN0
+    merged = merged[merged[admin0_col].notna()].copy()
+
+    # 2. Print sorted unique ADMIN0 values
+    admin0_list = sorted(merged[admin0_col].unique())
+    print(f"\n{admin0_col} countries detected ({len(admin0_list)}):")
+    print(", ".join(admin0_list))
+
+    # 3. Load region mapping
+    if region_map_path and region_map_path.exists():
+        if verbose:
+            print(f"\nLoading region mapping from: {region_map_path}")
+        region_map_df = pd.read_csv(region_map_path)
+        if 'ADMIN0' not in region_map_df.columns or 'region' not in region_map_df.columns:
+            raise ValueError(f"Region map CSV must have columns 'ADMIN0' and 'region'")
+        region_map = dict(zip(region_map_df['ADMIN0'], region_map_df['region']))
+        print(f"  Region mapping source: CSV ({len(region_map)} entries)")
+    else:
+        region_map = _get_builtin_region_map()
+        print(f"  Region mapping source: builtin ({len(region_map)} entries)")
+
+    # Add region column
+    merged['region'] = merged[admin0_col].map(region_map)
+    # Unmapped countries → "Other"
+    unmapped = merged['region'].isna().sum()
+    if unmapped > 0:
+        unmapped_countries = merged[merged['region'].isna()][admin0_col].unique()
+        if verbose:
+            print(f"  {unmapped} rows from unmapped countries → 'Other': {list(unmapped_countries)}")
+        merged.loc[merged['region'].isna(), 'region'] = 'Other'
+
+    # 4. Process each scope
+    out_dir.mkdir(parents=True, exist_ok=True)
+    files_written = []
+
+    for scope in scopes:
+        if scope not in merged['scope'].values:
+            if verbose:
+                print(f"\n  WARNING: Scope '{scope}' not found in data, skipping")
+            continue
+
+        scope_df = merged[merged['scope'] == scope].copy()
+
+        if len(scope_df) == 0:
+            if verbose:
+                print(f"\n  WARNING: No data for scope '{scope}', skipping")
+            continue
+
+        if verbose:
+            print(f"\nProcessing scope: {scope} ({len(scope_df)} rows)")
+
+        # --- COUNTRY LEVEL ---
+        country_metrics = []
+
+        for country in sorted(scope_df[admin0_col].unique()):
+            country_data = scope_df[scope_df[admin0_col] == country]
+
+            # Compute confusion matrix
+            conf = _confusion_for_binary(
+                country_data[y_true_col].values,
+                country_data[y_pred_col].values,
+                positive_label=positive_label
+            )
+
+            # Compute metrics
+            precision, recall, f1 = _safe_prf(conf['tp'], conf['fp'], conf['fn'])
+
+            country_metrics.append({
+                'scope': scope,
+                admin0_col: country,
+                'support': conf['support'],
+                'tp': conf['tp'],
+                'fp': conf['fp'],
+                'fn': conf['fn'],
+                'precision': precision,
+                'recall': recall,
+                'f1': f1
+            })
+
+        # Convert to DataFrame and save
+        country_df = pd.DataFrame(country_metrics)
+        country_df = country_df.sort_values(['scope', admin0_col]).reset_index(drop=True)
+
+        country_file = out_dir / f'country_metrics_{scope}.csv'
+        country_df.to_csv(country_file, index=False)
+        files_written.append(str(country_file))
+
+        if verbose:
+            print(f"  Wrote {country_file.name} ({len(country_df)} countries)")
+
+        # --- REGION LEVEL ---
+        region_metrics = []
+
+        for region in sorted(scope_df['region'].unique()):
+            region_data = scope_df[scope_df['region'] == region]
+
+            # Compute confusion matrix
+            conf = _confusion_for_binary(
+                region_data[y_true_col].values,
+                region_data[y_pred_col].values,
+                positive_label=positive_label
+            )
+
+            # Compute metrics from aggregated counts (micro-averaging)
+            precision, recall, f1 = _safe_prf(conf['tp'], conf['fp'], conf['fn'])
+
+            region_metrics.append({
+                'scope': scope,
+                'region': region,
+                'support': conf['support'],
+                'tp': conf['tp'],
+                'fp': conf['fp'],
+                'fn': conf['fn'],
+                'precision': precision,
+                'recall': recall,
+                'f1': f1
+            })
+
+        # Convert to DataFrame and save
+        region_df = pd.DataFrame(region_metrics)
+        region_df = region_df.sort_values(['scope', 'region']).reset_index(drop=True)
+
+        region_file = out_dir / f'region_metrics_{scope}.csv'
+        region_df.to_csv(region_file, index=False)
+        files_written.append(str(region_file))
+
+        if verbose:
+            print(f"  Wrote {region_file.name} ({len(region_df)} regions)")
+
+    return {
+        'files': files_written,
+        'admin0_list': admin0_list,
+        'scopes_processed': scopes
+    }
 
 
 def aggregate_error_rate(
@@ -272,11 +730,17 @@ def render_grid(
     cmap_name: str,
     output_path: Path,
     add_basemap: bool,
-    verbose: bool
+    verbose: bool,
+    filter_label: str = ''
 ) -> Dict[str, int]:
     """
     Render grid of choropleth maps (4×3 yearly, 3×3 seasonal).
     Returns dict of subplot counts for reporting.
+
+    Parameters:
+    -----------
+    filter_label : str, optional
+        Label to append to subplot titles indicating filter applied (e.g., ' (Crisis only)')
     """
 
     n_rows = len(row_values)
@@ -321,7 +785,7 @@ def render_grid(
                 (agg_df[col_label] == col_val)
             ].copy()
 
-            title = f"{row_label.capitalize()} {row_val} — {col_val}"
+            title = f"{row_label.capitalize()} {row_val} — {col_val}{filter_label}"
 
             if len(subset) == 0:
                 # No data
@@ -467,8 +931,14 @@ def main():
                         help='Regex to extract scope from filename')
     parser.add_argument('--scopes', nargs='+', default=['fs1', 'fs2', 'fs3'],
                         help='Scopes to display')
-    parser.add_argument('--start', type=str, default='2021-01-01',
-                        help='Start date filter (YYYY-MM-DD)')
+    parser.add_argument('--start', type=str, default=None,
+                        help='Start date filter (YYYY-MM-DD), e.g., 2021-01-01. If not specified, includes all data from earliest date.')
+    parser.add_argument('--end', type=str, default=None,
+                        help='End date filter (YYYY-MM-DD), e.g., 2024-12-31. If not specified, includes all data up to latest date.')
+    parser.add_argument('--start-year', type=int, default=None,
+                        help='Start year filter (YYYY), e.g., 2021. Alternative to --start for year-level filtering.')
+    parser.add_argument('--end-year', type=int, default=None,
+                        help='End year filter (YYYY), e.g., 2024. Alternative to --end for year-level filtering.')
     parser.add_argument('--out-dir', type=Path, default=Path('.'),
                         help='Output directory')
     parser.add_argument('--vmin', type=float, default=0.0,
@@ -485,6 +955,12 @@ def main():
                         help='Add grey basemap for geographic context (default: True)')
     parser.add_argument('--no-basemap', dest='basemap', action='store_false',
                         help='Disable basemap')
+    parser.add_argument('--filter', type=str, choices=['all', 'crisis', 'noncrisis'], default='all',
+                        help="Filter by ground truth label: 'all' (no filter, default), 'crisis' (fews_ipc_crisis_true==1), 'noncrisis' (fews_ipc_crisis_true==0)")
+    parser.add_argument('--region-map', type=Path, default=None,
+                        help='Optional CSV mapping ADMIN0 to region (columns: ADMIN0,region)')
+    parser.add_argument('--metrics-out', type=Path, default=None,
+                        help='Output directory for country/region metrics CSVs (default: <out-dir>/metrics)')
     parser.add_argument('--verbose', action='store_true',
                         help='Verbose output')
 
@@ -507,6 +983,38 @@ def main():
     elif args.basemap and args.verbose:
         print("\nBasemap enabled: CartoDB.Positron\n")
 
+    # Handle year-based filtering (convert to date strings)
+    start_date = args.start
+    end_date = args.end
+
+    if args.start_year is not None:
+        if start_date is not None:
+            print("WARNING: Both --start and --start-year specified. Using --start-year.")
+        start_date = f"{args.start_year}-01-01"
+        if args.verbose:
+            print(f"Start year {args.start_year} converted to date: {start_date}")
+
+    if args.end_year is not None:
+        if end_date is not None:
+            print("WARNING: Both --end and --end-year specified. Using --end-year.")
+        end_date = f"{args.end_year}-12-31"
+        if args.verbose:
+            print(f"End year {args.end_year} converted to date: {end_date}")
+
+    # Print date filtering info
+    if start_date or end_date:
+        print("\nDate Filtering:")
+        if start_date:
+            print(f"  Start: {start_date}")
+        else:
+            print(f"  Start: (no filter, from earliest)")
+        if end_date:
+            print(f"  End: {end_date}")
+        else:
+            print(f"  End: (no filter, to latest)")
+    else:
+        print("\nDate Filtering: None (using all available data)")
+
     # Load predictions
     df = load_predictions(
         pred_dir=args.pred_dir,
@@ -516,9 +1024,26 @@ def main():
         date_col=args.date_col,
         y_true_col=args.y_true_col,
         y_pred_col=args.y_pred_col,
-        start_date=args.start,
+        start_date=start_date,
+        end_date=end_date,
         verbose=args.verbose
     )
+
+    # Apply truth filter (crisis/noncrisis/all)
+    df, filter_suffix = apply_truth_filter(
+        df=df,
+        filter_type=args.filter,
+        y_true_col=args.y_true_col,
+        verbose=args.verbose
+    )
+
+    # Create human-readable filter label for plot titles
+    if args.filter == 'crisis':
+        filter_label = ' (Crisis only)'
+    elif args.filter == 'noncrisis':
+        filter_label = ' (Non-crisis only)'
+    else:
+        filter_label = ''
 
     # Load polygons
     polys = prepare_polys(
@@ -541,7 +1066,7 @@ def main():
         verbose=args.verbose
     )
 
-    yearly_csv = args.out_dir / 'error_rate_yearly.csv'
+    yearly_csv = args.out_dir / f'error_rate_yearly{filter_suffix}.csv'
     yearly.to_csv(yearly_csv, index=False)
     print(f"Saved: {yearly_csv}")
 
@@ -559,9 +1084,44 @@ def main():
         verbose=args.verbose
     )
 
-    seasonal_csv = args.out_dir / 'error_rate_seasonal.csv'
+    seasonal_csv = args.out_dir / f'error_rate_seasonal{filter_suffix}.csv'
     seasonal.to_csv(seasonal_csv, index=False)
     print(f"Saved: {seasonal_csv}")
+
+    # Compute country and region metrics
+    metrics_dir = args.metrics_out if args.metrics_out else (args.out_dir / 'metrics')
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+
+    print("\n" + "=" * 60)
+    print("COMPUTING COUNTRY AND REGION METRICS")
+    print("=" * 60)
+    print(f"Using filtered dataset: {len(df)} rows")
+    if start_date or end_date:
+        print(f"Date range: {df[args.date_col].min()} to {df[args.date_col].max()}")
+        print(f"✓ Metrics will reflect date filtering: {'start=' + str(start_date) if start_date else ''} {'end=' + str(end_date) if end_date else ''}")
+
+    try:
+        metrics_summary = compute_admin0_and_region_metrics(
+            df=df,
+            polys=polys,
+            scopes=args.scopes,
+            uid_col=args.uid_col,
+            y_true_col=args.y_true_col,
+            y_pred_col=args.y_pred_col,
+            admin0_col='ADMIN0',
+            positive_label=1,
+            region_map_path=args.region_map,
+            out_dir=metrics_dir,
+            verbose=args.verbose
+        )
+
+        print(f"\nWrote {len(metrics_summary['files'])} metric files to {metrics_dir}")
+
+    except Exception as e:
+        print(f"\nWARNING: Could not compute country/region metrics: {e}")
+        if args.verbose:
+            import traceback
+            traceback.print_exc()
 
     # Filter to requested scopes
     yearly_filt = yearly[yearly['scope'].isin(args.scopes)].copy()
@@ -579,7 +1139,7 @@ def main():
         print("RENDERING YEARLY GRID")
         print("=" * 60)
 
-        yearly_png = args.out_dir / 'error_rate_yearly_4x3.png'
+        yearly_png = args.out_dir / f'error_rate_yearly_4x3{filter_suffix}.png'
         yearly_counts = render_grid(
             agg_df=yearly_filt,
             polys=polys,
@@ -596,7 +1156,8 @@ def main():
             cmap_name=args.cmap,
             output_path=yearly_png,
             add_basemap=args.basemap,
-            verbose=args.verbose
+            verbose=args.verbose,
+            filter_label=filter_label
         )
 
     if len(seasonal_filt) == 0:
@@ -607,7 +1168,7 @@ def main():
         print("RENDERING SEASONAL GRID")
         print("=" * 60)
 
-        seasonal_png = args.out_dir / 'error_rate_seasonal_3x3.png'
+        seasonal_png = args.out_dir / f'error_rate_seasonal_3x3{filter_suffix}.png'
         seasonal_counts = render_grid(
             agg_df=seasonal_filt,
             polys=polys,
@@ -624,13 +1185,32 @@ def main():
             cmap_name=args.cmap,
             output_path=seasonal_png,
             add_basemap=args.basemap,
-            verbose=args.verbose
+            verbose=args.verbose,
+            filter_label=filter_label
         )
 
     # Generate report (convert numpy types to Python native for JSON serialization)
+    filter_descriptions = {
+        'all': 'No filter (all data)',
+        'crisis': 'Actual crisis cases only (fews_ipc_crisis_true==1)',
+        'noncrisis': 'Actual non-crisis cases only (fews_ipc_crisis_true==0)'
+    }
+
     report = {
         'files_loaded': len(list(args.pred_dir.glob(args.file_glob))),
         'rows_after_filter': int(len(df)),
+        'date_range': {
+            'min': str(df[args.date_col].min()),
+            'max': str(df[args.date_col].max())
+        },
+        'date_filter_applied': {
+            'start_date': start_date,
+            'end_date': end_date,
+            'start_year': args.start_year,
+            'end_year': args.end_year
+        },
+        'filter_applied': args.filter,
+        'filter_description': filter_descriptions.get(args.filter, 'Unknown filter'),
         'years_plotted': [int(y) for y in years],
         'scopes_used': args.scopes,
         'season_counts': {
@@ -641,7 +1221,7 @@ def main():
         'seasonal_polygons': {k: int(v) for k, v in seasonal_counts.items()} if len(seasonal_filt) > 0 else {}
     }
 
-    report_json = args.out_dir / 'error_rate_extract_report.json'
+    report_json = args.out_dir / f'error_rate_extract_report{filter_suffix}.json'
     with open(report_json, 'w') as f:
         json.dump(report, f, indent=2)
 
@@ -649,6 +1229,13 @@ def main():
     print("COMPLETE")
     print("=" * 60)
     print(f"Report: {report_json}")
+    print(f"Data rows used: {report['rows_after_filter']}")
+    print(f"Date range in data: {report['date_range']['min']} to {report['date_range']['max']}")
+    if start_date or end_date:
+        print(f"Date filters applied: {f'start={start_date}' if start_date else ''} {f'end={end_date}' if end_date else ''}")
+        print("✓ All outputs (yearly, seasonal, country, region metrics) use this filtered dataset")
+    else:
+        print("Date filters: None (all available data used)")
     print(f"Years plotted: {report['years_plotted']}")
     print(f"Scopes used: {report['scopes_used']}")
 
