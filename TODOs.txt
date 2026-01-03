@@ -9,12 +9,21 @@ WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with onl
 
 Action Points:
 TODO(CRITICAL):
+
+IPC/CH model related:
 1. add CH data set, go through data collection.
+2. IPC/CH data set reestimation
 
 
-
-
-
+FEWSNET model related
+1. add extra fewsnet indicator
+2. ask Zhe growing growing season
+3. add lean wet season indicators on country level
+4. see country level ablation test
+5.extra grouping on AEZ
+6.nowcasting
+7. predicting phases changes like Andree
+8. two layer mode predicting phase4
 
 
 

@@ -4,7 +4,9 @@ import numpy as np
 import os
 import glob
 import sys
+import argparse
 from pathlib import Path
+from datetime import datetime
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -66,26 +68,82 @@ def convert_monthly_to_quarterly(df):
 
     return quarterly_df
 
-def load_and_process_data(base_dir=PROJECT_ROOT):
+def filter_data_by_date(df, cutoff_date):
+    """
+    Filter DataFrame to only include records after the cutoff date.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        DataFrame with 'year' column and optionally 'month' or 'quarter' columns
+    cutoff_date : str
+        Date string in format 'YYYY-MM-DD' (e.g., '2021-01-01')
+
+    Returns:
+    --------
+    pd.DataFrame
+        Filtered DataFrame with records after cutoff_date
+    """
+    if cutoff_date is None:
+        return df
+
+    df = df.copy()
+
+    # Parse cutoff date
+    try:
+        cutoff = datetime.strptime(cutoff_date, '%Y-%m-%d')
+        cutoff_year = cutoff.year
+        cutoff_month = cutoff.month
+    except ValueError as e:
+        print(f"Warning: Invalid date format '{cutoff_date}'. Expected YYYY-MM-DD. Skipping filtering.")
+        return df
+
+    # Filter based on available columns
+    if 'month' in df.columns:
+        # Monthly data - filter by year and month
+        mask = (df['year'] > cutoff_year) | \
+               ((df['year'] == cutoff_year) & (df['month'] >= cutoff_month))
+        filtered_df = df[mask].reset_index(drop=True)
+
+    elif 'quarter' in df.columns:
+        # Quarterly data - filter by year and quarter
+        cutoff_quarter = ((cutoff_month - 1) // 3 + 1)
+        mask = (df['year'] > cutoff_year) | \
+               ((df['year'] == cutoff_year) & (df['quarter'] >= cutoff_quarter))
+        filtered_df = df[mask].reset_index(drop=True)
+
+    else:
+        # Yearly data only - filter by year
+        filtered_df = df[df['year'] >= cutoff_year].reset_index(drop=True)
+
+    return filtered_df
+
+def load_and_process_data(base_dir=PROJECT_ROOT, cutoff_date=None):
     """
     Load probit, RF, and XGBoost results for comparison using auto-detection.
-    
+
     Expected file patterns:
     - Probit: baseline_probit_results/baseline_probit_results_fs{scope}.csv
-    - GeoRF: results_df_gp_fs{scope}_{start_year}_{end_year}.csv  
+    - GeoRF: results_df_gp_fs{scope}_{start_year}_{end_year}.csv
     - XGBoost: results_df_xgb_gp_fs{scope}_{start_year}_{end_year}.csv
-    
+
     Parameters:
     -----------
     base_dir : str, default='.'
         Base directory to search for files
-    
+    cutoff_date : str, optional
+        Date string in format 'YYYY-MM-DD' to filter data (only include records after this date)
+        Example: '2021-01-01' will only include data from 2021-01-01 onwards
+
     Returns:
     --------
     probit_data, rf_data, xgboost_data : dict
         Dictionaries with forecasting scope as key and DataFrames as values
     """
     print("Auto-detecting result files...")
+
+    if cutoff_date:
+        print(f"Filtering data to include only records after: {cutoff_date}")
 
     global FEWSNET_EXTENSION_SOURCE
     FEWSNET_EXTENSION_SOURCE.clear()
@@ -127,6 +185,14 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
 
         df = pd.read_csv(file_path)
         df = convert_monthly_to_quarterly(df)
+
+        # Apply date filtering if specified
+        df = filter_data_by_date(df, cutoff_date)
+
+        if len(df) == 0:
+            print(f"  Warning: No data remaining after cutoff date filter for {filename}")
+            continue
+
         print(f"  Found probit results for forecasting scope {scope} ({lag_months}-month): {filename}")
 
         # Create year-quarter identifier if quarter column exists
@@ -158,6 +224,14 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
 
         df = pd.read_csv(file_path)
         df = convert_monthly_to_quarterly(df)
+
+        # Apply date filtering if specified
+        df = filter_data_by_date(df, cutoff_date)
+
+        if len(df) == 0:
+            print(f"  Warning: No data remaining after cutoff date filter for {filename}")
+            continue
+
         print(f"  Found FEWSNET results for forecasting scope {scope} ({lag_months}-month): {filename}")
 
         # Create year-quarter identifier if quarter column exists
@@ -220,13 +294,20 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
     # Combine RF data across year ranges for each scope
     for lag_months, dfs in rf_by_scope.items():
         combined_df = pd.concat(dfs, ignore_index=True)
-        
+
+        # Apply date filtering if specified
+        combined_df = filter_data_by_date(combined_df, cutoff_date)
+
+        if len(combined_df) == 0:
+            print(f"  Warning: No GeoRF data remaining after cutoff date filter for {lag_months}-month lag")
+            continue
+
         # Create year-quarter identifier
         if 'quarter' in combined_df.columns:
             combined_df['year_quarter'] = combined_df['year'].astype(str) + '-Q' + combined_df['quarter'].astype(str)
         else:
             combined_df['year_quarter'] = combined_df['year'].astype(str)
-        
+
         combined_df = combined_df.sort_values(['year'] + (['quarter'] if 'quarter' in combined_df.columns else [])).reset_index(drop=True)
         rf_data[lag_months] = combined_df
         print(f"  Combined {len(dfs)} files for {lag_months}-month lag: {len(combined_df)} total records")
@@ -267,13 +348,20 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
     # Combine XGBoost data across year ranges for each scope
     for lag_months, dfs in xgb_by_scope.items():
         combined_df = pd.concat(dfs, ignore_index=True)
-        
+
+        # Apply date filtering if specified
+        combined_df = filter_data_by_date(combined_df, cutoff_date)
+
+        if len(combined_df) == 0:
+            print(f"  Warning: No XGBoost data remaining after cutoff date filter for {lag_months}-month lag")
+            continue
+
         # Create year-quarter identifier
         if 'quarter' in combined_df.columns:
             combined_df['year_quarter'] = combined_df['year'].astype(str) + '-Q' + combined_df['quarter'].astype(str)
         else:
             combined_df['year_quarter'] = combined_df['year'].astype(str)
-            
+
         combined_df = combined_df.sort_values(['year'] + (['quarter'] if 'quarter' in combined_df.columns else [])).reset_index(drop=True)
         xgboost_data[lag_months] = combined_df
         print(f"  Combined {len(dfs)} files for {lag_months}-month lag: {len(combined_df)} total records")
@@ -296,7 +384,7 @@ def load_and_process_data(base_dir=PROJECT_ROOT):
     return probit_data, fewsnet_data, rf_data, xgboost_data
 
 
-def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
+def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data, cutoff_date=None):
     """Create dynamic subplot grid comparing probit, FEWSNET, GeoRF, and XGBoost across available forecasting scopes and class 1 metrics"""
     global FEWSNET_EXTENSION_SOURCE
 
@@ -498,8 +586,11 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
                        fontsize=9, style='italic')
     
     # Add main title
-    fig.suptitle('Class 1 Performance Comparison Across Forecasting Scopes', 
-                 fontsize=16, fontweight='bold', y=0.98)
+    if cutoff_date:
+        title = f'Class 1 Performance Comparison Across Forecasting Scopes\n(Data after {cutoff_date})'
+    else:
+        title = 'Class 1 Performance Comparison Across Forecasting Scopes'
+    fig.suptitle(title, fontsize=16, fontweight='bold', y=0.98)
     
     # Adjust layout to prevent overlap
     plt.tight_layout()
@@ -507,16 +598,19 @@ def create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data):
     
     return fig
 
-def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
+def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data, cutoff_date=None):
     """Print class 1 performance statistics for each model and lag (unweighted averages)"""
-    
+
     # Use canonical lag periods
     available_lags = list(ACTIVE_LAGS)
     metrics = ['precision(1)', 'recall(1)', 'f1(1)']
     metric_names = ['Precision (Class 1)', 'Recall (Class 1)', 'F1 Score (Class 1)']
-    
+
     print("\\n" + "="*80)
-    print("CLASS 1 PERFORMANCE SUMMARY (Unweighted Averages)")
+    if cutoff_date:
+        print(f"CLASS 1 PERFORMANCE SUMMARY (Unweighted Averages) - Data after {cutoff_date}")
+    else:
+        print("CLASS 1 PERFORMANCE SUMMARY (Unweighted Averages)")
     print("="*80)
     
     for lag in available_lags:
@@ -552,11 +646,36 @@ def print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data):
             print(f"{'':>18}  * FEWSNET data extended using {extended_from}-month predictions")
 
 def main():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description='Compare GeoRF, XGBoost, and baseline models with optional date filtering',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Examples:
+  # Run without filtering
+  python georf_vs_baseline_comparison_plot.py
+
+  # Filter to only include data after 2021-01-01
+  python georf_vs_baseline_comparison_plot.py --cutoff_date 2021-01-01
+
+  # Filter to only include data after 2020-07-01
+  python georf_vs_baseline_comparison_plot.py --cutoff_date 2020-07-01
+        '''
+    )
+    parser.add_argument(
+        '--cutoff_date',
+        type=str,
+        default=None,
+        help='Filter data to only include records after this date (format: YYYY-MM-DD, e.g., 2021-01-01)'
+    )
+
+    args = parser.parse_args()
+
     base_dir = PROJECT_ROOT
-    
+
     # Load and process data using auto-detection
     print("Auto-detecting and loading comparison data...")
-    probit_data, fewsnet_data, rf_data, xgboost_data = load_and_process_data(base_dir)
+    probit_data, fewsnet_data, rf_data, xgboost_data = load_and_process_data(base_dir, cutoff_date=args.cutoff_date)
     
     # Check if any data was found
     if not probit_data and not fewsnet_data and not rf_data and not xgboost_data:
@@ -606,15 +725,20 @@ def main():
     # Create comparison plot only if we have data and visuals enabled
     if available_lags:
         print("\\nCreating class 1 performance comparison visualization...")
-        fig = create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data)
+        fig = create_comparison_plot(probit_data, fewsnet_data, rf_data, xgboost_data, cutoff_date=args.cutoff_date)
 
         if fig is not None:
             VIS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-            output_path = VIS_OUTPUT_DIR / f"georf_vs_baseline_lag_{'_'.join(str(lag) for lag in ACTIVE_LAGS)}.png"
+            # Add cutoff date to filename if specified
+            if args.cutoff_date:
+                cutoff_suffix = f"_after_{args.cutoff_date.replace('-', '')}"
+            else:
+                cutoff_suffix = ""
+            output_path = VIS_OUTPUT_DIR / f"georf_vs_baseline_lag_{'_'.join(str(lag) for lag in ACTIVE_LAGS)}{cutoff_suffix}.png"
             fig.savefig(output_path, dpi=300, bbox_inches='tight')
             print(f"Plot saved to: {output_path}")
 
-            print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data)
+            print_summary_statistics(probit_data, fewsnet_data, rf_data, xgboost_data, cutoff_date=args.cutoff_date)
             plt.show()
         else:
             print("No figure generated; skipping visualization export.")
