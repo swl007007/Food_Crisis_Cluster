@@ -13,7 +13,57 @@ For migration details, see `_migration_index.csv` and `_link_graph.md` in this d
 
 ## 1) Overview
 
-This document summarizes the end-to-end data pipeline, model training flow, partitioning algorithm, validation-coverage caveats, and inference routing for **GeoRF** with minimal edits to the original wording. File paths and key line references are retained for traceability.
+This document summarizes the end-to-end data pipeline, model training flow, partitioning algorithm, validation-coverage caveats, and inference routing for **GeoRF** and **GeoRF_XGB** (XGBoost variant) with minimal edits to the original wording. File paths and key line references are retained for traceability.
+
+**Key Framework Features:**
+- **Dual Model Support**: Random Forest (GeoRF) and XGBoost (GeoRF_XGB) with identical spatial partitioning logic
+- **Monthly Evaluation**: Evaluates all 12 months per year (not quarterly) for fine-grained temporal analysis
+- **Batch Processing**: 36 batches per model (12 years × 3 forecasting scopes) with memory management
+- **4-Model Comparison**: Includes probit regression and FEWSNET official predictions as baselines
+- **Crisis Prediction Focus**: Class 1 (crisis) metrics only - precision, recall, F1 score
+
+---
+
+## 1.5) Batch Processing and Evaluation Architecture
+
+### Monthly Evaluation System
+The framework evaluates food crisis predictions on a **monthly basis** (all 12 months per year), providing fine-grained temporal analysis. This is controlled by the `DESIRED_TERMS` environment variable in batch scripts.
+
+### Forecasting Scopes
+- **Scope 1**: 4-month lag forecasting (uses lag terms appropriate for 4-month prediction)
+- **Scope 2**: 8-month lag forecasting
+- **Scope 3**: 12-month lag forecasting
+
+### Batch Processing Architecture
+
+**GeoRF Batches (36 total):**
+- 12 years: 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+- Each year evaluates all 12 months (Jan-Dec) in a single batch
+- Each year runs 3 forecasting scopes
+- Memory cleanup between batches to prevent leakage
+
+**XGBoost Batches (36 total):**
+- Same 12 years and 3 forecasting scopes
+- Identical monthly evaluation approach
+- More aggressive memory cleanup due to XGBoost's higher memory requirements
+
+**Output Files:**
+- GeoRF: `results_df_gp_fs{scope}_{start_year}_{end_year}.csv`
+- XGBoost: `results_df_xgb_gp_fs{scope}_{start_year}_{end_year}.csv`
+- Each file contains all 12 months of data for that year
+
+### 4-Model Comparison Framework
+
+1. **Probit Baseline**: Simple regression with lagged crisis variables (all 3 scopes)
+2. **FEWSNET Baseline**: Official predictions from FEWS NET (scopes 1-2 only)
+3. **GeoRF**: Geo-aware Random Forest with spatial partitioning (all 3 scopes)
+4. **XGBoost**: XGBoost with same spatial partitioning (all 3 scopes)
+
+**FEWSNET Baseline Notes:**
+- Uses `pred_near_lag1` for scope 1 (4-month forecasting)
+- Uses `pred_med_lag2` for scope 2 (8-month forecasting)
+- Processes monthly FEWSNET data with monthly granularity
+- Only supports scopes 1-2 (no longer-term predictions available)
 
 ---
 

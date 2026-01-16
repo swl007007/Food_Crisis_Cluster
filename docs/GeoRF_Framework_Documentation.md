@@ -70,8 +70,8 @@ Originally developed for food crisis prediction using satellite and ground-based
 | **Training Speed** | Faster | Slower (more hyperparameters to tune) |
 | **Regularization** | Limited (max_depth, min_samples) | Extensive (L1, L2, sampling, early stopping) |
 | **Output Directories** | `result_GeoRF_*` | `result_GeoXGB_*` |
-| **Batch Processing** | 20 batches (5 time periods × 4 scopes) | 40 batches (10 years × 4 scopes, more granular) |
-| **Memory Cleanup** | Moderate (time period-based) | Aggressive (yearly cleanup) |
+| **Batch Processing** | 36 batches (12 years × 3 scopes, monthly evaluation) | 36 batches (12 years × 3 scopes, monthly evaluation) |
+| **Memory Cleanup** | Moderate (yearly cleanup) | Aggressive (yearly cleanup with XGBoost) |
 
 **Recommendation**: Start with Random Forest for quick prototyping, then use XGBoost for production deployments where performance is critical.
 
@@ -134,8 +134,8 @@ Food_Crisis_Cluster/
 │   ├── GeoRF_demo.py                 # Demonstration script
 │   └── data.py                       # Data loading utilities
 ├── config.py                         # Global configuration parameters
-├── run_georf_batches.bat             # GeoRF batch processing script (20 batches)
-├── run_xgboost_batches.bat           # XGBoost batch processing script (40 batches)
+├── run_georf_batches.bat             # GeoRF batch processing script (36 batches)
+├── run_xgboost_batches.bat           # XGBoost batch processing script (36 batches)
 ├── test_georf_batches.bat            # GeoRF testing script (4 batches)
 ├── test_xgboost_batches.bat          # XGBoost testing script (4 batches)
 └── result_GeoRF*/                    # Random Forest output directories
@@ -567,16 +567,15 @@ The framework now includes a comprehensive 4-model comparison system for acute f
 
 #### **4-Model Evaluation Framework:**
 
-1. **Probit Baseline**: Simple regression with lagged crisis variables (supports all 4 forecasting scopes)
-2. **FEWSNET Baseline**: Official predictions from FEWS NET system (supports scopes 1-2 only)  
-3. **GeoRF**: Geo-aware Random Forest with spatial partitioning (supports all 4 scopes)
-4. **XGBoost**: XGBoost with same spatial partitioning framework (supports all 4 scopes)
+1. **Probit Baseline**: Simple regression with lagged crisis variables (supports all 3 forecasting scopes)
+2. **FEWSNET Baseline**: Official predictions from FEWS NET system (supports scopes 1-2 only)
+3. **GeoRF**: Geo-aware Random Forest with spatial partitioning (supports all 3 scopes)
+4. **XGBoost**: XGBoost with same spatial partitioning framework (supports all 3 scopes)
 
 #### **Forecasting Scopes:**
-- **Scope 1**: 3-month lag forecasting (lag terms 1,2,3)
-- **Scope 2**: 6-month lag forecasting (lag terms 2,3,4)
-- **Scope 3**: 9-month lag forecasting (lag terms 3,4,5)  
-- **Scope 4**: 12-month lag forecasting (lag terms 4,5,6)
+- **Scope 1**: 4-month lag forecasting
+- **Scope 2**: 8-month lag forecasting
+- **Scope 3**: 12-month lag forecasting
 
 #### **Crisis Prediction Focus (Class 1 Metrics Only):**
 All models focus exclusively on crisis prediction (Class 1) performance:
@@ -624,23 +623,23 @@ python app/main_model_XGB.py --start_year 2023 --end_year 2024 --forecasting_sco
 
 **Command Line Arguments:**
 - `--start_year`: Start year for evaluation (default: 2024)
-- `--end_year`: End year for evaluation (default: 2024) 
-- `--forecasting_scope`: Forecasting scope 1-4 (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
+- `--end_year`: End year for evaluation (default: 2024)
+- `--forecasting_scope`: Forecasting scope 1-3 (1=4mo, 2=8mo, 3=12mo lag)
 
 #### **RECOMMENDED: Batch Processing for Memory Management**
 
 **GeoRF Batch Processing:**
 ```bash
-# Full production run (5 time periods × 4 forecasting scopes = 20 batches)
+# Full production run (12 years × 3 forecasting scopes = 36 batches, monthly evaluation)
 run_georf_batches.bat
 
-# Light testing (2 time periods × 2 forecasting scopes = 4 batches)
+# Light testing (2 years × 2 forecasting scopes = 4 batches)
 test_georf_batches.bat
 ```
 
 **XGBoost Batch Processing:**
 ```bash
-# Full production run (10 years × 4 forecasting scopes = 40 batches)
+# Full production run (12 years × 3 forecasting scopes = 36 batches, monthly evaluation)
 run_xgboost_batches.bat
 
 # Light testing (2 years × 2 forecasting scopes = 4 batches)
@@ -650,18 +649,21 @@ test_xgboost_batches.bat
 **Batch Processing Architecture:**
 
 **GeoRF Batches (`run_georf_batches.bat`):**
-- Processes 5 time periods: 2015-2016, 2017-2018, 2019-2020, 2021-2022, 2023-2024
-- Each time period runs 4 forecasting scopes (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
-- Total: 20 batches with memory optimization between each batch
+- Processes individual years: 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+- Each year evaluates all 12 months (Jan-Dec) in a single batch
+- Each year runs 3 forecasting scopes (1=4mo, 2=8mo, 3=12mo lag)
+- Total: 36 batches with memory optimization between each batch
 - Uses robust directory cleanup with retry logic for locked files
 - Includes pre-execution cleanup and post-execution garbage collection
+- DESIRED_TERMS environment variable controls monthly evaluation
 
 **XGBoost Batches (`run_xgboost_batches.bat`):**
-- Processes individual years: 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
-- Each year runs 4 forecasting scopes (1=3mo, 2=6mo, 3=9mo, 4=12mo lag)
-- Total: 40 batches with more granular memory management
+- Processes individual years: 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024
+- Each year evaluates all 12 months (Jan-Dec) in a single batch
+- Each year runs 3 forecasting scopes (1=4mo, 2=8mo, 3=12mo lag)
+- Total: 36 batches with granular memory management
 - More aggressive memory cleanup due to XGBoost's higher memory requirements
-- Single year processing to minimize memory footprint
+- DESIRED_TERMS environment variable controls monthly evaluation
 
 **Batch Processing Benefits:**
 - **Memory Cleanup**: Prevents memory leakage during long temporal evaluations
@@ -720,32 +722,32 @@ python app/final/georf_vs_baseline_comparison_plot.py
 **Pipeline Output Files:**
 
 **Baseline Results:**
-- `baseline_probit_results/baseline_probit_results_fs{1-4}.csv`
+- `baseline_probit_results/baseline_probit_results_fs{1-3}.csv`
 - `fewsnet_baseline_results/fewsnet_baseline_results_fs{1-2}.csv` (FEWSNET supports scopes 1-2 only)
 
-**GeoRF Results (20 batch files from time periods):**
-- `results_df_gf_fs{scope}_{start_year}_{end_year}.csv` - Main results with metrics
-- `y_pred_test_gf_fs{scope}_{start_year}_{end_year}.csv` - Prediction arrays
+**GeoRF Results (36 batch files from individual years):**
+- `results_df_gp_fs{scope}_{start_year}_{end_year}.csv` - Main results with metrics (all 12 months)
+- `y_pred_test_gp_fs{scope}_{start_year}_{end_year}.csv` - Prediction arrays
 - `result_GeoRF_{id}/` directories (cleaned up between batches)
 
-**XGBoost Results (40 batch files from individual years):**  
-- `results_df_xgb_fs{scope}_{start_year}_{end_year}.csv` - Main results with metrics
-- `y_pred_test_xgb_fs{scope}_{start_year}_{end_year}.csv` - Prediction arrays
+**XGBoost Results (36 batch files from individual years):**
+- `results_df_xgb_gp_fs{scope}_{start_year}_{end_year}.csv` - Main results with metrics (all 12 months)
+- `y_pred_test_xgb_gp_fs{scope}_{start_year}_{end_year}.csv` - Prediction arrays
 - `result_GeoXGB_{id}/` directories (cleaned up between batches)
 
 **File Naming Convention:**
-- `{model_type}`: `gf` (GeoRF), `xgb` (XGBoost), `baseline_probit`, `fewsnet_baseline`
-- `fs{scope}`: Forecasting scope (fs1=3mo, fs2=6mo, fs3=9mo, fs4=12mo)
-- `{start_year}_{end_year}`: Temporal range processed in the batch
+- `{model_type}`: `gp` (GeoRF polygons), `xgb_gp` (XGBoost polygons), `baseline_probit`, `fewsnet_baseline`
+- `fs{scope}`: Forecasting scope (fs1=4mo, fs2=8mo, fs3=12mo)
+- `{start_year}_{end_year}`: Temporal range processed in the batch (each file contains all 12 months)
 
 **Comparison Output:**
 - `model_comparison_class1_focus.png` - Dynamic 4-model performance visualization  
 - Console output with detailed summary statistics for all models and forecasting scopes
 
 **FEWSNET Baseline Details:**
-- Uses `pred_near_lag1` for scope 1 (3-month forecasting)
-- Uses `pred_med_lag2` for scope 2 (6-month forecasting)
-- Converts monthly FEWSNET data to quarterly format for consistency
+- Uses `pred_near_lag1` for scope 1 (4-month forecasting)
+- Uses `pred_med_lag2` for scope 2 (8-month forecasting)
+- Processes monthly FEWSNET data with monthly granularity
 - Applies temporal lags by admin unit for proper forecasting evaluation
 - Only supports scopes 1-2 as FEWSNET doesn't provide longer-term predictions
 
@@ -774,7 +776,12 @@ All models in the framework now focus exclusively on **Class 1 (crisis predictio
 - **Random Forest GeoRF**: F1 scores typically 0.65-0.75 for crisis prediction
 - **XGBoost GeoRF**: F1 scores typically 0.70-0.80 for crisis prediction (3-8% improvement)
 - **Baseline Models**: Probit ~0.55-0.65, FEWSNET ~0.60-0.70 F1 scores
-- **Performance varies by forecasting scope**: Shorter lags (3-month) typically perform better than longer lags (12-month)
+- **Performance varies by forecasting scope**: Shorter lags (4-month) typically perform better than longer lags (12-month)
+
+**Monthly Evaluation:**
+- Each batch processes all 12 months of data for that year
+- Provides fine-grained temporal analysis of model performance
+- Controlled by DESIRED_TERMS environment variable in batch scripts
 
 *Note: The XGBoost version (`app/main_model_XGB.py`) provides complete feature parity with the Random Forest pipeline including checkpoint recovery, rolling window evaluation, and partition metrics tracking.*
 
