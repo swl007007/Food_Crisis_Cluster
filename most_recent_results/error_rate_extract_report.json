@@ -1,0 +1,57 @@
+{
+  "files_loaded": 72,
+  "rows_after_filter": 1209042,
+  "date_range": {
+    "min": "2013-01-01 00:00:00",
+    "max": "2024-10-01 00:00:00"
+  },
+  "date_filter_applied": {
+    "start_date": null,
+    "end_date": null,
+    "start_year": null,
+    "end_year": null
+  },
+  "filter_applied": "all",
+  "filter_description": "No filter (all data)",
+  "years_plotted": [
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "scopes_used": [
+    "fs1",
+    "fs2",
+    "fs3"
+  ],
+  "season_counts": {
+    "DJFM": 17148,
+    "AMJJ": 17148,
+    "ASON": 17148
+  },
+  "yearly_polygons": {
+    "2021_fs1": 5493,
+    "2021_fs2": 5493,
+    "2021_fs3": 5493,
+    "2022_fs1": 5062,
+    "2022_fs2": 5062,
+    "2022_fs3": 5062,
+    "2023_fs1": 5567,
+    "2023_fs2": 5567,
+    "2023_fs3": 5567,
+    "2024_fs1": 5697,
+    "2024_fs2": 5697,
+    "2024_fs3": 5697
+  },
+  "seasonal_polygons": {
+    "DJFM_fs1": 5716,
+    "DJFM_fs2": 5716,
+    "DJFM_fs3": 5716,
+    "AMJJ_fs1": 5716,
+    "AMJJ_fs2": 5716,
+    "AMJJ_fs3": 5716,
+    "ASON_fs1": 5716,
+    "ASON_fs2": 5716,
+    "ASON_fs3": 5716
+  }
+}

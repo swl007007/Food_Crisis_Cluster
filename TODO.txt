@@ -1,0 +1,20 @@
+known situation:
+1. test and train data misalignment, alot of missing area
+2. majority voting system still implement 4/9 threshold
+3. accuracy in train and test seems different due to unkown issue
+4.use ChatGPT to parse pre-2017 locations to country ISO and admin1 codes
+
+
+
+ACTION：
+2. investigate why GeoXGB doesnt carry out the final_partition_map in the archiving function.
+3. think about a method to identify partition modes.
+
+
+IMPORTANT NOTE
+for one round:
+parent RF -> using the parent RF validation/train to calculate groupwise metrics -> partition (LTSS/q) -> 
+partition contiguity refinement -> child model using child model specific validation/train -> child model performance metrics -> partition significance test ->
+ in RF, can also copy parent RF weights to one of the child RF
+INVESTIGATION:
+WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with only 4% positive and 18.52% negative)
