@@ -483,7 +483,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         X_branch_id_path = os.path.join(model_2layer.dir_space, 'X_branch_id.npy')
                         if os.path.exists(X_branch_id_path):
                             X_branch_id = np.load(X_branch_id_path)
-                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id, model_2layer.model_dir)
+                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                       model_2layer.model_dir, active_lag, TRAIN_WINDOW_MONTHS, X_group)
                     except Exception as e:
                         print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
 
@@ -502,8 +503,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
 
                         # Verify correspondence table exists and is readable
+                        # IMPORTANT: Specify dtype to preserve partition_id as string
                         if correspondence_table_path and os.path.exists(correspondence_table_path):
-                            test_df = pd.read_csv(correspondence_table_path)
+                            test_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
                             print(f"Correspondence table loaded successfully with {len(test_df)} entries")
                             print(f"Columns: {test_df.columns.tolist()}")
                             print(f"Sample entries:\n{test_df.head()}")
@@ -599,9 +601,108 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
                         if os.path.exists(X_branch_id_path):
                             X_branch_id = np.load(X_branch_id_path)
-                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id, georf.model_dir)
+                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                       georf.model_dir, active_lag, TRAIN_WINDOW_MONTHS, X_group)
+
+                            # CRITICAL FIX: Update the metrics correspondence table with actual partition assignments
+                            # This ensures visualizations use the correct partition IDs from spatial partitioning
+                            if track_partition_metrics and correspondence_table_path and hasattr(georf, 'model_dir'):
+                                print(f"Updating metrics correspondence table with actual partition assignments...")
+
+                                # For polygon assignment, X_group contains admin codes directly
+                                # X_branch_id contains the partition IDs assigned during training
+                                # We need to map admin code -> partition ID
+
+                                # Verify lengths match
+                                if len(X_branch_id) != len(Xtrain_group):
+                                    print(f"Warning: Length mismatch - X_branch_id: {len(X_branch_id)}, Xtrain_group: {len(Xtrain_group)}")
+                                    print("Attempting to build correspondence anyway...")
+
+                                # Build the correspondence: admin code (from X_group) -> partition ID (from X_branch_id)
+                                correspondence_data = []
+                                skipped_empty = 0
+                                for i in range(min(len(X_branch_id), len(Xtrain_group))):
+                                    admin_code = Xtrain_group[i]  # X_group contains admin codes for polygon assignment
+                                    partition_id = X_branch_id[i]
+
+                                    # Skip empty or invalid partition IDs
+                                    if partition_id == '' or partition_id is None:
+                                        skipped_empty += 1
+                                        continue
+
+                                    # CRITICAL FIX: Keep partition_id as string to preserve hierarchical encoding
+                                    # Partition IDs like "00", "01", "10", "11" encode binary tree structure
+                                    # Converting to int would destroy this: "01" and "001" would both become 1
+                                    # The string format preserves depth and path information in the partition tree
+                                    try:
+                                        # Ensure partition_id is a string and validate it contains only 0s and 1s
+                                        partition_str = str(partition_id)
+                                        if not all(c in '01' for c in partition_str):
+                                            print(f"Warning: Invalid partition_id format: {partition_id}")
+                                            skipped_empty += 1
+                                            continue
+                                    except (ValueError, TypeError):
+                                        skipped_empty += 1
+                                        continue
+
+                                    correspondence_data.append({
+                                        'FEWSNET_admin_code': int(admin_code),
+                                        'partition_id': partition_str  # Keep as string!
+                                    })
+
+                                if skipped_empty > 0:
+                                    print(f"Skipped {skipped_empty} records with empty or invalid partition IDs")
+
+                                # Remove duplicates - take the MOST COMMON partition_id for each admin code
+                                # (An admin code should have ONE partition, but due to temporal records,
+                                # we need to pick the most frequent partition assignment)
+                                corr_df = pd.DataFrame(correspondence_data)
+
+                                # CRITICAL: Explicitly set partition_id to string dtype before any operations
+                                # This prevents pandas from auto-converting "00", "01" to integers 0, 1
+                                if len(corr_df) > 0 and 'partition_id' in corr_df.columns:
+                                    corr_df['partition_id'] = corr_df['partition_id'].astype(str)
+
+                                if len(corr_df) > 0:
+                                    # Group by admin code and take the most common partition_id
+                                    corr_df_grouped = corr_df.groupby('FEWSNET_admin_code')['partition_id'].agg(
+                                        lambda x: x.value_counts().index[0] if len(x) > 0 else x.iloc[0]
+                                    ).reset_index()
+
+                                    # Ensure partition_id remains string after groupby
+                                    corr_df_grouped['partition_id'] = corr_df_grouped['partition_id'].astype(str)
+
+                                    # Save the updated correspondence table
+                                    corr_df_grouped.to_csv(correspondence_table_path, index=False)
+                                    print(f"Updated correspondence table with {len(corr_df_grouped)} admin units and their final partition assignments")
+                                    print(f"Sample entries:")
+                                    print(corr_df_grouped.head())
+
+                                    # Validate that partition_id is saved as string (verification check)
+                                    validation_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
+                                    if 'partition_id' in validation_df.columns:
+                                        sample_ids = validation_df['partition_id'].head(5).tolist()
+                                        print(f"Validation: partition_id format preserved as strings: {sample_ids}")
+
+                                    # Verify data integrity: each admin code should have ONE partition
+                                    duplicate_check = corr_df_grouped.groupby('FEWSNET_admin_code').size()
+                                    if (duplicate_check > 1).any():
+                                        print(f"WARNING: Data integrity issue - {(duplicate_check > 1).sum()} admin codes have multiple partitions!")
+                                    else:
+                                        print("Data integrity check passed: Each admin code has exactly one partition ID")
+
+                                    # Additional check: verify no admin code maps to multiple partitions
+                                    original_partitions = corr_df.groupby('FEWSNET_admin_code')['partition_id'].nunique()
+                                    multi_partition_admins = original_partitions[original_partitions > 1]
+                                    if len(multi_partition_admins) > 0:
+                                        print(f"Note: {len(multi_partition_admins)} admin codes had multiple partition assignments (used most common)")
+                                        print(f"Examples: {multi_partition_admins.head()}")
+                                else:
+                                    print("Warning: Could not create correspondence data from partition assignments")
                     except Exception as e:
                         print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
+                        import traceback
+                        traceback.print_exc()
             
                 # Store results - MEMORY FIX: Use more efficient DataFrame appending
                 nsample_class = np.bincount(ytest)
@@ -1104,6 +1205,8 @@ def main():
         f"{ACTIVE_LAGS} (default: 1)"
     parser.add_argument('--forecasting_scope', type=int, default=1, choices=scope_choices,
                         help=scope_help)
+    parser.add_argument('--desired_terms', type=str, default=None,
+                        help='Comma-separated list of months to evaluate (e.g., "2024-01,2024-02"). Overrides DESIRED_TERMS environment variable.')
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     parser.add_argument('--dry-run', action='store_true',
@@ -1116,6 +1219,12 @@ def main():
     if hasattr(np, 'random') and hasattr(np.random, 'seed'):
         np.random.seed(GLOBAL_RANDOM_SEED)
     random.seed(GLOBAL_RANDOM_SEED)
+
+    # Override DESIRED_TERMS if provided via command line
+    if args.desired_terms:
+        import config
+        config.DESIRED_TERMS = [term.strip() for term in args.desired_terms.split(',') if term.strip()]
+        print(f"DESIRED_TERMS overridden from command line: {config.DESIRED_TERMS}")
 
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods

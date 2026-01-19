@@ -478,14 +478,15 @@ class GeoRF_XGB():
         # Save results
         print(self.s_branch)
         self.s_branch.to_pickle(self.dir_space + '/' + 's_branch.pkl')
-        np.save(self.dir_space + '/' + 'X_branch_id.npy', X_branch_id)
         np.save(self.dir_space + '/' + 'branch_table.npy', self.branch_table)
 
         print("Time: %f s" % (time.time() - start_time))
         logger.info("Time: %f s" % (time.time() - start_time))
 
-        # Contiguity refinement (same as original)
+        # Regenerate X_branch_id for consistency
         X_branch_id = get_X_branch_id_by_group(X_group, self.s_branch)
+        # FIX: Save X_branch_id AFTER consistency regeneration to prevent admin code fragmentation
+        np.save(self.dir_space + '/' + 'X_branch_id.npy', X_branch_id)
         
         print('Total unique partitions before contiguity refinement: ', len(np.unique(X_branch_id)))
 

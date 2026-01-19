@@ -420,7 +420,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         X_branch_id_path = os.path.join(geoxgb_2layer.dir_space, 'X_branch_id.npy')
                         if os.path.exists(X_branch_id_path):
                             X_branch_id = np.load(X_branch_id_path)
-                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id, geoxgb_2layer.model_dir)
+                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                       geoxgb_2layer.model_dir, ACTIVE_LAG, TRAIN_WINDOW_MONTHS, X_group)
                     except Exception as e:
                         print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
                 
@@ -447,8 +448,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
                     
                     # Verify correspondence table exists and is readable
+                    # IMPORTANT: Specify dtype to preserve partition_id as string
                     if correspondence_table_path and os.path.exists(correspondence_table_path):
-                        test_df = pd.read_csv(correspondence_table_path)
+                        test_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
                         print(f"Correspondence table loaded successfully with {len(test_df)} entries")
                         print(f"Columns: {test_df.columns.tolist()}")
                         print(f"Sample entries:\n{test_df.head()}")
@@ -541,7 +543,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     X_branch_id_path = os.path.join(geoxgb.dir_space, 'X_branch_id.npy')
                     if os.path.exists(X_branch_id_path):
                         X_branch_id = np.load(X_branch_id_path)
-                        create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id, geoxgb.model_dir)
+                        create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                   geoxgb.model_dir, ACTIVE_LAG, TRAIN_WINDOW_MONTHS, X_group)
                 except Exception as e:
                     print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
                 

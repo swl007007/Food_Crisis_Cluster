@@ -222,9 +222,13 @@ def validate_polygon_contiguity(contiguity_info, X_group):
     
     print("=== End Polygon Validation ===")
 
-def create_correspondence_table(df, years, dates, train_year, month, X_branch_id, result_dir):
+def create_correspondence_table(df, years, dates, train_year, month, X_branch_id, result_dir,
+                               active_lag, train_window_months, X_group):
     """
     Create correspondence table mapping FEWSNET_admin_code to partition_id for rolling window splits.
+
+    CRITICAL: Must replicate EXACT SAME filtering logic as train_test_split_rolling_window()
+    including both temporal filtering AND test group filtering.
 
     Parameters:
     -----------
@@ -242,70 +246,126 @@ def create_correspondence_table(df, years, dates, train_year, month, X_branch_id
         Branch IDs (partition IDs) from trained model
     result_dir : str
         Directory to save correspondence table
+    active_lag : int
+        Number of months between train_end and test_start (e.g., 4, 8, 12)
+        MUST match the active_lag used in train_test_split_rolling_window()
+    train_window_months : int
+        Number of months in training window (e.g., 36 for 3 years)
+        MUST match the train_window_months used in train_test_split_rolling_window()
+    X_group : numpy.ndarray
+        Group assignments for all data (needed for test group filtering)
     """
     print(f"Creating correspondence table for {train_year}-{month:02d}...")
 
     try:
         import pandas as pd
+        import numpy as np
 
         # Convert dates to pandas datetime if needed
         if not isinstance(dates, pd.Series):
             dates = pd.to_datetime(dates)
 
-        # Note: The actual training data selection is done by the train_test_split_rolling_window function
-        # This function just needs to match the training data that was used
-        # For simplicity, we assume training data ends 5 years before the test month
-        # (This matches the legacy behavior but should be updated to match actual ACTIVE_LAG logic)
+        # CRITICAL: Must match EXACT filtering logic used by train_test_split_rolling_window()
+        # This includes BOTH temporal filtering AND test group filtering (customize.py lines 439-448)
 
         test_month_start = pd.Timestamp(f'{train_year}-{month:02d}-01')
-        train_end_date = test_month_start  # Training ends when test month begins (NO OVERLAP)
-        train_start_date = train_end_date - pd.DateOffset(years=5)
+        test_month_end = (pd.Period(f'{train_year}-{month:02d}', freq='M') + 1).to_timestamp()
+
+        # TRAIN ends ACTIVE_LAG months before TEST starts (matches customize.py line 412)
+        train_end_date = test_month_start - pd.DateOffset(months=active_lag)
+
+        # TRAIN window length (matches customize.py line 413)
+        train_start_date = train_end_date - pd.DateOffset(months=train_window_months - 1)
+
+        # Step 1: Temporal filtering (matches customize.py line 420)
         train_mask = (dates >= train_start_date) & (dates < train_end_date)
-        
-        # Get the training subset of dataframe
-        df_train = df[train_mask].copy()
+        test_mask = (dates >= test_month_start) & (dates < test_month_end)
+
+        print(f"Temporal window (must match model training):")
+        print(f"  Train: {train_start_date.date()} to {(train_end_date - pd.DateOffset(days=1)).date()}")
+        print(f"  Test:  {test_month_start.date()}")
+        print(f"  Window: {train_window_months} months, Lag: {active_lag} months")
+
+        # Step 2: Get groups present in TEST set (matches customize.py line 440)
+        X_group_test = X_group[test_mask]
+        X_test_unique = np.unique(X_group_test)
+
+        # Step 3: Filter TRAIN to only include groups present in TEST (matches customize.py line 441)
+        X_group_train_temporal = X_group[train_mask]
+        train_group_mask = np.isin(X_group_train_temporal, X_test_unique)
+
+        # Apply both temporal AND group filtering to dataframe
+        df_train_temporal = df[train_mask].copy()
+        df_train = df_train_temporal[train_group_mask].copy()
+
         actual_train_length = len(df_train)
         branch_id_length = len(X_branch_id)
-        
+
         print(f"Correspondence table debug:")
-        print(f"  Training data length (from df): {actual_train_length}")
+        print(f"  After temporal filter: {len(df_train_temporal)} records")
+        print(f"  After group filter: {actual_train_length} records")
         print(f"  X_branch_id length (from model): {branch_id_length}")
-        
-        # Handle length mismatch gracefully
+        print(f"  Test groups: {len(X_test_unique)} unique groups")
+
+        # Validate exact match - any mismatch indicates bug in filtering logic
         if branch_id_length != actual_train_length:
-            print(f"Warning: Length mismatch detected")
-            
-            if branch_id_length < actual_train_length:
-                # Model has fewer partition IDs than training samples
-                # This can happen if some samples were filtered during model training
-                print(f"  Using first {branch_id_length} training samples to match X_branch_id")
-                df_train = df_train.iloc[:branch_id_length].copy()
-            else:
-                # More partition IDs than training samples (unusual)
-                print(f"  Truncating X_branch_id to match training data length")
-                X_branch_id = X_branch_id[:actual_train_length]
-        
-        # Ensure exact length match after adjustment
-        df_train = df_train.iloc[:len(X_branch_id)].copy()
-        
-        print(f"  Final lengths: df_train={len(df_train)}, X_branch_id={len(X_branch_id)}")
-        
+            error_msg = (
+                f"CRITICAL ERROR: Training data length mismatch!\n"
+                f"  Model's X_branch_id: {branch_id_length} records\n"
+                f"  Reconstructed df_train: {actual_train_length} records\n"
+                f"  This indicates filtering logic doesn't match model training.\n"
+                f"  Expected parameters: active_lag={active_lag}, train_window_months={train_window_months}\n"
+                f"  Train window: {train_start_date.date()} to {(train_end_date - pd.DateOffset(days=1)).date()}\n"
+                f"  After temporal filter: {len(df_train_temporal)} records\n"
+                f"  After group filter: {actual_train_length} records\n"
+                f"\n"
+                f"  Possible causes:\n"
+                f"  1. active_lag or train_window_months don't match train_test_split_rolling_window() call\n"
+                f"  2. X_group doesn't match the groups used during model training\n"
+                f"  3. Data was preprocessed differently between model training and this function\n"
+            )
+
+            # Save diagnostic info
+            import json
+            diagnostic_path = os.path.join(result_dir, f'MISMATCH_DIAGNOSTIC_{train_year}-{month:02d}.json')
+            with open(diagnostic_path, 'w') as f:
+                json.dump({
+                    'branch_id_length': int(branch_id_length),
+                    'actual_train_length': int(actual_train_length),
+                    'temporal_filter_length': int(len(df_train_temporal)),
+                    'active_lag': int(active_lag),
+                    'train_window_months': int(train_window_months),
+                    'train_start': str(train_start_date.date()),
+                    'train_end': str(train_end_date.date()),
+                    'test_month': f'{train_year}-{month:02d}',
+                    'test_groups_count': int(len(X_test_unique))
+                }, f, indent=2)
+
+            print(error_msg)
+            print(f"Diagnostic info saved to: {diagnostic_path}")
+            raise ValueError(error_msg)
+
+        print(f"  ✓ Lengths match perfectly: {branch_id_length} records")
+
         # Add partition IDs to training data
         df_train.loc[:, 'partition_id'] = X_branch_id
-        
+
         # Extract unique FEWSNET_admin_code and partition_id pairs
         correspondence_table = df_train[['FEWSNET_admin_code', 'partition_id']].drop_duplicates()
-        
+
+        # CRITICAL: Ensure partition_id is string to preserve "00", "01" format
+        correspondence_table['partition_id'] = correspondence_table['partition_id'].astype(str)
+
         # Sort by admin code for better readability
         correspondence_table = correspondence_table.sort_values('FEWSNET_admin_code')
-        
+
         # Save to result directory
         output_path = os.path.join(result_dir, f'correspondence_table_{train_year}-{month:02d}.csv')
         correspondence_table.to_csv(output_path, index=False)
 
         print(f"Correspondence table saved to: {output_path}")
         print(f"Table contains {len(correspondence_table)} unique admin_code-partition_id pairs")
-        
+
     except Exception as e:
         print(f"Error creating correspondence table: {e}")
         print("Continuing without correspondence table...")

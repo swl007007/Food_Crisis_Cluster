@@ -436,14 +436,15 @@ class GeoRF():
 		#Save s_branch
 		print(self.s_branch)
 		self.s_branch.to_pickle(self.dir_space + '/' + 's_branch.pkl')
-		np.save(self.dir_space + '/' + 'X_branch_id.npy', X_branch_id)
 		np.save(self.dir_space + '/' + 'branch_table.npy', self.branch_table)
 
 		print("Time: %f s" % (time.time() - start_time))
 		logger.info("Time: %f s" % (time.time() - start_time))
 
-		#update branch_id for test data
+		#update branch_id for test data - regenerate for consistency
 		X_branch_id = get_X_branch_id_by_group(X_group, self.s_branch)#should be the same (previously fixed some potential inconsistency)
+		# FIX: Save X_branch_id AFTER consistency regeneration to prevent admin code fragmentation
+		np.save(self.dir_space + '/' + 'X_branch_id.npy', X_branch_id)
 
 		#Optional: Improving Spatial Contiguity
 		#The default function only works for groups defined by a grid, where majority voting in local neighborhoods are used to remove
@@ -791,9 +792,26 @@ class GeoRF():
 		if X_array.ndim != 2:
 			raise ValueError(f'X input for {context_label} must be 2-dimensional; got shape {X_array.shape}')
 		if X_array.shape[1] != len(reference_names):
-			raise ValueError(
-				f'X input for {context_label} width mismatch: expected {len(reference_names)} features, got {X_array.shape[1]}'
+			# Enhanced error message with diagnostic info
+			error_msg = (
+				f'X input for {context_label} width mismatch:\n'
+				f'  Expected: {len(reference_names)} features\n'
+				f'  Got: {X_array.shape[1]} features\n'
+				f'  Missing: {len(reference_names) - X_array.shape[1]} features\n'
+				f'\n'
+				f'DIAGNOSTIC INFO:\n'
+				f'  Expected features are stored in: {self.model_dir}/feature_name_reference.csv\n'
+				f'  To see which features are missing, pass X as pandas DataFrame with column names,\n'
+				f'  or check the feature_name_reference.csv file.\n'
+				f'\n'
+				f'COMMON CAUSES:\n'
+				f'  1. Training and testing data have different preprocessing\n'
+				f'  2. Some features exist only in training data (e.g., time-based features)\n'
+				f'  3. Feature engineering differs between train and test\n'
 			)
+			if logger:
+				logger.error(f'feature_width_mismatch context={context_label} expected={len(reference_names)} got={X_array.shape[1]}')
+			raise ValueError(error_msg)
 		return X_array, None
 
 	def _write_feature_reference(self, names, logger=None):
