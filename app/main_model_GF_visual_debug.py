@@ -406,7 +406,8 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         X_branch_id_path = os.path.join(georf_2layer.dir_space, 'X_branch_id.npy')
                         if os.path.exists(X_branch_id_path):
                             X_branch_id = np.load(X_branch_id_path)
-                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id, georf_2layer.model_dir)
+                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                       georf_2layer.model_dir, ACTIVE_LAG, TRAIN_WINDOW_MONTHS, X_group)
                     except Exception as e:
                         print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
             
@@ -427,8 +428,9 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
                 
                 # Verify correspondence table exists and is readable
+                # IMPORTANT: Specify dtype to preserve partition_id as string
                 if correspondence_table_path and os.path.exists(correspondence_table_path):
-                    test_df = pd.read_csv(correspondence_table_path)
+                    test_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
                     print(f"Correspondence table loaded successfully with {len(test_df)} entries")
                     print(f"Columns: {test_df.columns.tolist()}")
                     print(f"Sample entries:\n{test_df.head()}")
@@ -532,9 +534,10 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
                 if os.path.exists(X_branch_id_path):
                     X_branch_id = np.load(X_branch_id_path)
-                    create_correspondence_table(df, years, dates, test_year, quarter, X_branch_id, georf.model_dir)
+                    create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                               georf.model_dir, ACTIVE_LAG, TRAIN_WINDOW_MONTHS, X_group)
             except Exception as e:
-                print(f"Warning: Could not create correspondence table for Q{quarter} {test_year}: {e}")
+                print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
             
                 # Store results - MEMORY FIX: Use more efficient DataFrame appending
                 nsample_class = np.bincount(ytest)
@@ -982,18 +985,26 @@ def main():
     scope_help = f"Forecasting scope (1-based index) for lag schedule {ACTIVE_LAGS} (default: 1)"
     parser.add_argument('--forecasting_scope', type=int, default=1, choices=scope_choices,
                         help=scope_help)
+    parser.add_argument('--desired_terms', type=str, default=None,
+                        help='Comma-separated list of months to evaluate (e.g., "2024-01,2024-02"). Overrides DESIRED_TERMS environment variable.')
     parser.add_argument('--force-visualize', action='store_true',
                         help='Force visualization generation even in degenerate cases (single partition, etc.)')
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     args = parser.parse_args()
-    
+
+    # Override DESIRED_TERMS if provided via command line
+    if args.desired_terms:
+        import config
+        config.DESIRED_TERMS = [term.strip() for term in args.desired_terms.split(',') if term.strip()]
+        print(f"DESIRED_TERMS overridden from command line: {config.DESIRED_TERMS}")
+
     # Set global visualization force flag from CLI argument
     if args.force_visualize:
         import config_visual
         config_visual.VISUALIZE_FORCE = True
         print("Force visualization enabled via --force-visualize flag")
-    
+
     forecasting_scope = args.forecasting_scope
     active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
     log_path = log_lag_schedule(ACTIVE_LAGS, ARTIFACTS_ROOT)

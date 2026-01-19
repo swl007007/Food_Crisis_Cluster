@@ -425,6 +425,9 @@ def partition(model, X, y,
               # Create DataFrame and save
               partition_df = pd.DataFrame(partition_data)
               partition_df = partition_df.drop_duplicates()
+              # CRITICAL: Ensure partition_id is string to preserve "00", "01" format
+              if 'partition_id' in partition_df.columns:
+                partition_df['partition_id'] = partition_df['partition_id'].astype(str)
               partition_df.to_csv(current_correspondence_path, index=False)
               
               # Generate partition map (strict gate)
@@ -454,6 +457,9 @@ def partition(model, X, y,
                 
                 prev_partition_df = pd.DataFrame(prev_partition_data)
                 prev_partition_df = prev_partition_df.drop_duplicates()
+                # CRITICAL: Ensure partition_id is string to preserve "00", "01" format
+                if 'partition_id' in prev_partition_df.columns:
+                  prev_partition_df['partition_id'] = prev_partition_df['partition_id'].astype(str)
                 prev_partition_df.to_csv(prev_correspondence_path, index=False)
                 
                 # Generate swap visualization
@@ -536,6 +542,9 @@ def partition(model, X, y,
               # Create DataFrame and save
               partition_df = pd.DataFrame(partition_data)
               partition_df = partition_df.drop_duplicates()
+              # CRITICAL: Ensure partition_id is string to preserve "00", "01" format
+              if 'partition_id' in partition_df.columns:
+                partition_df['partition_id'] = partition_df['partition_id'].astype(str)
               partition_df.to_csv(current_correspondence_path, index=False)
               
               # Generate partition map
@@ -567,6 +576,9 @@ def partition(model, X, y,
                 
                 prev_partition_df = pd.DataFrame(prev_partition_data)
                 prev_partition_df = prev_partition_df.drop_duplicates()
+                # CRITICAL: Ensure partition_id is string to preserve "00", "01" format
+                if 'partition_id' in prev_partition_df.columns:
+                  prev_partition_df['partition_id'] = prev_partition_df['partition_id'].astype(str)
                 prev_partition_df.to_csv(prev_correspondence_path, index=False)
                 
                 # Generate swap visualization

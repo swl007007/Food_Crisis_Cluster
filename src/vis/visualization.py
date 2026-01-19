@@ -388,9 +388,10 @@ def plot_partition_swaps(correspondence_before_path, correspondence_after_path,
         save_path = correspondence_after_path.replace('.csv', '_swaps_map.png')
     
     # Load correspondence tables
+    # IMPORTANT: Specify dtype to preserve partition_id as string (keeps "00", "01", "10", "11" format)
     try:
-        df_before = pd.read_csv(correspondence_before_path)
-        df_after = pd.read_csv(correspondence_after_path)
+        df_before = pd.read_csv(correspondence_before_path, dtype={'partition_id': str})
+        df_after = pd.read_csv(correspondence_after_path, dtype={'partition_id': str})
     except FileNotFoundError as e:
         raise FileNotFoundError(f"Correspondence table not found: {e}")
     
@@ -622,8 +623,9 @@ def plot_partition_map(correspondence_table_path,
     output_dir = Path(save_path).resolve().parent
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # IMPORTANT: Specify dtype to preserve partition_id as string (keeps "00", "01", "10", "11" format)
     try:
-        assignments_df = pd.read_csv(correspondence_table_path)
+        assignments_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
     except FileNotFoundError:
         raise FileNotFoundError(f"Correspondence table not found: {correspondence_table_path}")
 
@@ -975,8 +977,9 @@ def plot_metrics_improvement_map(metrics_csv_path,
             raise FileNotFoundError("No correspondence table found. Please provide correspondence_table_path parameter.")
     
     # Load correspondence table to map X_group to FEWSNET_admin_code
+    # IMPORTANT: Specify dtype to preserve partition_id as string (keeps "00", "01", "10", "11" format)
     try:
-        corr_df = pd.read_csv(correspondence_table_path)
+        corr_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
     except FileNotFoundError:
         raise FileNotFoundError(f"Correspondence table not found: {correspondence_table_path}")
     
