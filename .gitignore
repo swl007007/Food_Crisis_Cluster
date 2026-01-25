@@ -14,7 +14,9 @@ trial_*
 PARTITION_METRICS_INTEGRATION.md
 
 *.ipynb
-
+*.npz
+*.json
+*.pkl
 
 test_*
 
