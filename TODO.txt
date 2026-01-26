@@ -18,3 +18,5 @@ partition contiguity refinement -> child model using child model specific valida
  in RF, can also copy parent RF weights to one of the child RF
 INVESTIGATION:
 WARNING : 1.the heterogeneity of polygon gscore (most gscore(77%) is 0, with only 4% positive and 18.52% negative)
+
+
