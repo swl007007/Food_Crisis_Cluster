@@ -26,9 +26,14 @@ REM Python executable (adjust path if needed)
 set PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe
 
 REM Data paths
-set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv
+set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv
 set PARTITION_MAP=cluster_mapping_k40_nc4.csv
 set POLYGONS_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp
+
+REM Month-specific partition maps (used when MONTH_IND=1)
+set PARTITION_MAP_M2=cluster_mapping_k40_nc10_m2.csv
+set PARTITION_MAP_M6=cluster_mapping_k40_nc2_m6.csv
+set PARTITION_MAP_M10=cluster_mapping_k40_nc12_m10.csv
 
 REM Output directory
 set OUT_DIR=.\result_partition_k40_nc4_compare
@@ -39,7 +44,10 @@ set END_MONTH=2024-12
 
 REM Model parameters
 set TRAIN_WINDOW=36
-set FORECASTING_SCOPE=3
+set FORECASTING_SCOPE=1
+
+REM Month-specific partitions (set to 1 to enable, 0 to disable)
+set MONTH_IND=1
 
 REM --------------------------------------------------------------------------
 REM Check if Python exists
@@ -59,8 +67,18 @@ REM Parse command-line arguments
 REM --------------------------------------------------------------------------
 
 set VISUAL_FLAG=
+set MONTH_IND_FLAG=
+
 if "%~1"=="--visual" set VISUAL_FLAG=--visual
 if "%~1"=="-v" set VISUAL_FLAG=--visual
+if "%~2"=="--visual" set VISUAL_FLAG=--visual
+if "%~2"=="-v" set VISUAL_FLAG=--visual
+
+if "%~1"=="--month-ind" set MONTH_IND_FLAG=--month-ind
+if "%~2"=="--month-ind" set MONTH_IND_FLAG=--month-ind
+
+REM Also check environment variable
+if "%MONTH_IND%"=="1" set MONTH_IND_FLAG=--month-ind
 
 REM --------------------------------------------------------------------------
 REM Display configuration
@@ -70,6 +88,14 @@ echo Configuration:
 echo   Python:      %PYTHON_EXE%
 echo   Data:        %DATA_PATH%
 echo   Partition:   %PARTITION_MAP%
+if defined MONTH_IND_FLAG (
+    echo   Month-specific partitions^: ENABLED
+    echo     - Feb ^(m2^)^:  %PARTITION_MAP_M2%
+    echo     - Jun ^(m6^)^:  %PARTITION_MAP_M6%
+    echo     - Oct ^(m10^)^: %PARTITION_MAP_M10%
+) else (
+    echo   Month-specific partitions^: DISABLED
+)
 echo   Polygons:    %POLYGONS_PATH%
 echo   Output:      %OUT_DIR%
 echo   Period:      %START_MONTH% to %END_MONTH%
@@ -90,12 +116,16 @@ echo.
 "%PYTHON_EXE%" scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py ^
   --data "%DATA_PATH%" ^
   --partition-map "%PARTITION_MAP%" ^
+  --partition-map-m2 "%PARTITION_MAP_M2%" ^
+  --partition-map-m6 "%PARTITION_MAP_M6%" ^
+  --partition-map-m10 "%PARTITION_MAP_M10%" ^
   --polygons "%POLYGONS_PATH%" ^
   --out-dir "%OUT_DIR%" ^
   --start-month "%START_MONTH%" ^
   --end-month "%END_MONTH%" ^
   --train-window %TRAIN_WINDOW% ^
   --forecasting-scope %FORECASTING_SCOPE% ^
+  %MONTH_IND_FLAG% ^
   %VISUAL_FLAG%
 
 REM --------------------------------------------------------------------------

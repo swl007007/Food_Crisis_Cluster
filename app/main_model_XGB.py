@@ -98,7 +98,7 @@ CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
 GLOBAL_RANDOM_SEED = 42
 
 
-DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
+DATA_MODE = 'phase_change'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
@@ -114,7 +114,9 @@ elif DATA_MODE == 'nogis':
 elif DATA_MODE == 'min':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
 elif DATA_MODE == 'unadjusted':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_original.csv"
+elif DATA_MODE == 'phase_change':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 

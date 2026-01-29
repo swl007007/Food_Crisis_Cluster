@@ -54,7 +54,7 @@ warnings.filterwarnings('ignore')
 # Configuration and Defaults
 # ============================================================================
 
-DEFAULT_DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
+DEFAULT_DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv"
 DEFAULT_PARTITION_MAP = "cluster_mapping_k40_nc4.csv"
 DEFAULT_POLYGONS_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
 DEFAULT_OUT_DIR = r".\result_partition_k40_nc4_compare"
@@ -469,6 +469,10 @@ def main():
     parser.add_argument('--forecasting-scope', type=int, default=DEFAULT_FORECASTING_SCOPE,
                        choices=[1, 2, 3], help='Forecasting scope: 1=4mo, 2=8mo, 3=12mo lag')
     parser.add_argument('--visual', action='store_true', help='Enable visualization (creates exactly 4 maps)')
+    parser.add_argument('--month-ind', action='store_true', help='Enable month-specific partitions')
+    parser.add_argument('--partition-map-m2', default='cluster_mapping_k40_nc10_m2.csv', help='Partition map for February')
+    parser.add_argument('--partition-map-m6', default='cluster_mapping_k40_nc2_m6.csv', help='Partition map for June')
+    parser.add_argument('--partition-map-m10', default='cluster_mapping_k40_nc12_m10.csv', help='Partition map for October')
 
     args = parser.parse_args()
 
@@ -484,6 +488,13 @@ def main():
     print("=" * 80)
     print(f"Data: {args.data}")
     print(f"Partition map: {args.partition_map}")
+    if args.month_ind:
+        print(f"Month-specific partitions: ENABLED")
+        print(f"  - Feb (m2): {args.partition_map_m2}")
+        print(f"  - Jun (m6): {args.partition_map_m6}")
+        print(f"  - Oct (m10): {args.partition_map_m10}")
+    else:
+        print(f"Month-specific partitions: DISABLED")
     print(f"Evaluation period: {args.start_month} to {args.end_month}")
     print(f"Train window: {args.train_window} months")
     print(f"Forecasting scope: {args.forecasting_scope} ({active_lag}-month lag)")
@@ -499,11 +510,16 @@ def main():
     print(f"Loaded {len(df)} rows, {len(df.columns)} columns")
 
     # ========================================================================
-    # Step 2: Load partition mapping and create X_group
+    # Step 2: Load partition mapping and create X_group (only if not month-specific)
     # ========================================================================
-    print("\n[Step 2/6] Setting up partition groups...")
-    partition_df = load_partition_mapping(args.partition_map)
-    X_group, df_with_partition = create_partition_group_array(df, partition_df)
+    if not args.month_ind:
+        print("\n[Step 2/6] Setting up partition groups...")
+        partition_df = load_partition_mapping(args.partition_map)
+        X_group, df_with_partition = create_partition_group_array(df, partition_df)
+    else:
+        print("\n[Step 2/6] Month-specific partitions enabled - will load per test month...")
+        X_group = None  # Will be loaded per month
+        df_with_partition = None
 
     # Create X_loc (latitude, longitude) - required by prepare_features
     if 'latitude' in df.columns and 'longitude' in df.columns:
@@ -519,8 +535,12 @@ def main():
     # Step 3: Prepare features using GeoRF pipeline (creates lagged features!)
     # ========================================================================
     print(f"\n[Step 3/6] Preparing features with forecasting_scope={args.forecasting_scope}...")
+
+    # Use temporary X_group for feature preparation if month-specific mode
+    temp_X_group = X_group if X_group is not None else np.zeros(len(df), dtype=int)
+
     X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(
-        df, X_group, X_loc, forecasting_scope=args.forecasting_scope
+        df, temp_X_group, X_loc, forecasting_scope=args.forecasting_scope
     )
 
     print(f"✓ Features prepared: {X.shape}")
@@ -532,7 +552,7 @@ def main():
 
     # Extract admin codes for prediction tracking
     admin_codes = df['FEWSNET_admin_code'].values
-    partition_ids = X_group.copy()  # Save partition IDs for later use
+    # Note: partition_ids not needed here if month-specific mode (will be loaded per month)
 
     # ========================================================================
     # Step 4: Monthly evaluation loop using GeoRF train/test split
@@ -558,6 +578,27 @@ def main():
     for i, test_month in enumerate(test_months, 1):
         print(f"\n[{i}/{len(test_months)}] Test month: {test_month}")
         print("-" * 80)
+
+        # Load month-specific partition if MONTH_IND is enabled
+        if args.month_ind:
+            test_month_num = test_month.month
+
+            if test_month_num == 2:
+                current_partition_map = args.partition_map_m2
+                print(f"  Using February-specific partition: {current_partition_map}")
+            elif test_month_num == 6:
+                current_partition_map = args.partition_map_m6
+                print(f"  Using June-specific partition: {current_partition_map}")
+            elif test_month_num == 10:
+                current_partition_map = args.partition_map_m10
+                print(f"  Using October-specific partition: {current_partition_map}")
+            else:
+                current_partition_map = args.partition_map
+                print(f"  Using default partition: {current_partition_map}")
+
+            # Reload partition mapping for this month
+            partition_df = load_partition_mapping(current_partition_map)
+            X_group, _ = create_partition_group_array(df, partition_df)
 
         try:
             # Use GeoRF's train_test_split_rolling_window with monthly mode
@@ -715,9 +756,7 @@ def main():
         partitioned_metrics = metrics_df[metrics_df['model'] == 'partitioned']
 
         print(f"\nOverall Performance (Mean ± Std):")
-        print(f"  Pooled      F1: {pooled_metrics['f1'].mean():.4f} ± {pooled_metrics['f1'].std():.4f}")
         print(f"  Partitioned F1: {partitioned_metrics['f1'].mean():.4f} ± {partitioned_metrics['f1'].std():.4f}")
-        print(f"  F1 Improvement: {(partitioned_metrics['f1'].mean() - pooled_metrics['f1'].mean()):.4f}")
 
     if args.visual:
         print(f"\nVisualizations: 4 maps created in {out_dir / 'vis'}")
