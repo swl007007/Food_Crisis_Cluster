@@ -1,0 +1,24 @@
+GeoRF (1-partition)
+lag4: Partitioned F1: 0.6162 ± 0.1124 vs baseline = 0.600 2.7%
+lag8: Partitioned F1: 0.5985 ± 0.1040 vs baseline = 0.577 3.7%
+lag12: Partitioned F1: 0.5314 ± 0.0931 vs baseline = 0.533 -0.3%
+GeoXGB (1-partition)
+lag4: Partitioned F1: 0.6905 ± 0.0866 vs baseline = 0.642 7.5%
+lag8: Partitioned F1: 0.6618 ± 0.0960 vs baseline = 0.613 7.9%
+lag12: Partitioned F1: 0.6230 ± 0.0846 vs baseline = 0.591 5.4%
+GeoRF (3-partitions: Feb, Jun, Oct)
+lag4: Partitioned F1: 0.6319 ± 0.1080 vs baseline = 0.600 5.3%
+lag8: Partitioned F1: 0.6016 ± 0.1081 vs baseline = 0.577 4.3%
+GeoXGB (3-partitions: Feb, Jun, Oct)
+lag4: Partitioned F1: 0.6974 ± 0.0982 vs baseline = 0.642 8.6%
+lag8: Partitioned F1: 0.6605 ± 0.0897 vs baseline = 0.613 7.7%
+
+
+
+GeoRF (3-partitions: Feb, Jun, Oct)
+lag4:Partitioned F1: 0.2802 ± 0.1848 vs baseline = 0.600 -53.3%
+lag8:Partitioned F1: 0.2451 ± 0.1982 vs baseline = 0.577 -57.5%
+
+GeoXGB (3-partitions: Feb, Jun, Oct)
+lag4: Partitioned F1: 0.7420 ± 0.0993 vs baseline = 0.642 15.6%
+lag8: Partitioned F1: 0.7481 ± 0.0865 vs baseline = 0.613 22.1%

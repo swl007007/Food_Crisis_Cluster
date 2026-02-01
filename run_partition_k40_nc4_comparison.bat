@@ -6,8 +6,11 @@ REM
 REM This batch file runs the comparison script with default parameters.
 REM
 REM Usage:
-REM   run_partition_k40_nc4_comparison.bat                 (no visuals)
-REM   run_partition_k40_nc4_comparison.bat --visual        (with 4 maps)
+REM   run_partition_k40_nc4_comparison.bat                 (no visuals, no contiguity)
+REM   run_partition_k40_nc4_comparison.bat 1               (with contiguity, 2 iters)
+REM   run_partition_k40_nc4_comparison.bat 1 3             (with contiguity, 3 iters)
+REM   run_partition_k40_nc4_comparison.bat --visual        (with 4 maps, no contiguity)
+REM   run_partition_k40_nc4_comparison.bat 1 2 --visual    (all features)
 REM
 REM Customize by editing the variables below before running.
 REM ============================================================================
@@ -44,10 +47,16 @@ set END_MONTH=2024-12
 
 REM Model parameters
 set TRAIN_WINDOW=36
-set FORECASTING_SCOPE=1
+set FORECASTING_SCOPE=2
 
 REM Month-specific partitions (set to 1 to enable, 0 to disable)
 set MONTH_IND=1
+
+REM Contiguity refinement (set to 1 to enable, 0 to disable)
+set CONTIGUITY=1
+
+REM Refinement iterations (only used when CONTIGUITY=1)
+set REFINE_ITERS=3
 
 REM --------------------------------------------------------------------------
 REM Check if Python exists
@@ -69,16 +78,105 @@ REM --------------------------------------------------------------------------
 set VISUAL_FLAG=
 set MONTH_IND_FLAG=
 
-if "%~1"=="--visual" set VISUAL_FLAG=--visual
-if "%~1"=="-v" set VISUAL_FLAG=--visual
-if "%~2"=="--visual" set VISUAL_FLAG=--visual
-if "%~2"=="-v" set VISUAL_FLAG=--visual
+REM Parse command-line arguments for CONTIGUITY and REFINE_ITERS
+if not "%~1"=="" (
+    if "%~1"=="--visual" set VISUAL_FLAG=--visual
+    if "%~1"=="-v" set VISUAL_FLAG=--visual
+    if "%~1"=="--month-ind" set MONTH_IND_FLAG=--month-ind
+    REM Check if first arg is a number (CONTIGUITY)
+    set "temp=%~1"
+    set "temp=!temp:0=!"
+    set "temp=!temp:1=!"
+    if "!temp!"=="" if not "%~1"=="" set CONTIGUITY=%~1
+)
 
-if "%~1"=="--month-ind" set MONTH_IND_FLAG=--month-ind
-if "%~2"=="--month-ind" set MONTH_IND_FLAG=--month-ind
+if not "%~2"=="" (
+    if "%~2"=="--visual" set VISUAL_FLAG=--visual
+    if "%~2"=="-v" set VISUAL_FLAG=--visual
+    if "%~2"=="--month-ind" set MONTH_IND_FLAG=--month-ind
+    REM Check if second arg is a number (REFINE_ITERS)
+    set "temp=%~2"
+    set "temp=!temp:0=!"
+    set "temp=!temp:1=!"
+    set "temp=!temp:2=!"
+    set "temp=!temp:3=!"
+    set "temp=!temp:4=!"
+    set "temp=!temp:5=!"
+    set "temp=!temp:6=!"
+    set "temp=!temp:7=!"
+    set "temp=!temp:8=!"
+    set "temp=!temp:9=!"
+    if "!temp!"=="" if not "%~2"=="" set REFINE_ITERS=%~2
+)
+
+if "%~3"=="--visual" set VISUAL_FLAG=--visual
+if "%~3"=="-v" set VISUAL_FLAG=--visual
+if "%~3"=="--month-ind" set MONTH_IND_FLAG=--month-ind
 
 REM Also check environment variable
 if "%MONTH_IND%"=="1" set MONTH_IND_FLAG=--month-ind
+
+REM --------------------------------------------------------------------------
+REM Contiguity Refinement (if enabled)
+REM --------------------------------------------------------------------------
+
+set REFINED_DIR=%OUT_DIR%\refined
+set ADJACENCY_CACHE=.\src\adjacency\polygon_adjacency_cache.pkl
+
+if "%CONTIGUITY%"=="1" (
+    echo.
+    echo ============================================================================
+    echo CONTIGUITY REFINEMENT ENABLED
+    echo ============================================================================
+    echo   Iterations: %REFINE_ITERS%
+    echo   Adjacency cache: %ADJACENCY_CACHE%
+    echo   Output: %REFINED_DIR%
+    echo.
+
+    REM Check if adjacency cache exists
+    if not exist "%ADJACENCY_CACHE%" (
+        echo ERROR: Adjacency cache not found at %ADJACENCY_CACHE%
+        echo.
+        pause
+        exit /b 1
+    )
+
+    REM Refine month-specific partition maps
+    echo Refining partition maps...
+
+    "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in "%PARTITION_MAP_M2%" --out "%REFINED_DIR%" --iters %REFINE_ITERS%
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Refinement failed for %PARTITION_MAP_M2%
+        pause
+        exit /b %ERRORLEVEL%
+    )
+
+    "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in "%PARTITION_MAP_M6%" --out "%REFINED_DIR%" --iters %REFINE_ITERS%
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Refinement failed for %PARTITION_MAP_M6%
+        pause
+        exit /b %ERRORLEVEL%
+    )
+
+    "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in "%PARTITION_MAP_M10%" --out "%REFINED_DIR%" --iters %REFINE_ITERS%
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Refinement failed for %PARTITION_MAP_M10%
+        pause
+        exit /b %ERRORLEVEL%
+    )
+
+    echo Refinement complete.
+    echo.
+
+    REM Update partition map paths to use refined versions
+    set PARTITION_MAP_M2=%REFINED_DIR%\cluster_mapping_k40_nc10_m2_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M6=%REFINED_DIR%\cluster_mapping_k40_nc2_m6_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M10=%REFINED_DIR%\cluster_mapping_k40_nc12_m10_refined_contig%REFINE_ITERS%.csv
+) else (
+    echo.
+    echo Contiguity refinement: DISABLED
+    echo.
+)
 
 REM --------------------------------------------------------------------------
 REM Display configuration
@@ -95,6 +193,11 @@ if defined MONTH_IND_FLAG (
     echo     - Oct ^(m10^)^: %PARTITION_MAP_M10%
 ) else (
     echo   Month-specific partitions^: DISABLED
+)
+if "%CONTIGUITY%"=="1" (
+    echo   Contiguity Refinement^: ENABLED ^(%REFINE_ITERS% iterations^)
+) else (
+    echo   Contiguity Refinement^: DISABLED
 )
 echo   Polygons:    %POLYGONS_PATH%
 echo   Output:      %OUT_DIR%

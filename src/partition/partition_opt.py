@@ -637,14 +637,18 @@ def swap_partition_polygon(partition_assignments, polygon_neighbors, centroids=N
       partition_0_count = counts[unique_partitions == 0][0] if 0 in unique_partitions else 0
       partition_1_count = counts[unique_partitions == 1][0] if 1 in unique_partitions else 0
       total_count = partition_0_count + partition_1_count
-      
-      current_partition_count = partition_0_count if current_partition == 0 else partition_1_count
-      
-      # Use same threshold as grid-based: if current partition < 4/9 of total, switch
-      if current_partition_count / total_count < 4/9:
-        majority_partition = 1 - current_partition
-      else:
+
+      # Fallback: if no valid partitions (0 or 1) among neighbors, keep current
+      if total_count == 0:
         majority_partition = current_partition
+      else:
+        current_partition_count = partition_0_count if current_partition == 0 else partition_1_count
+
+        # Use same threshold as grid-based: if current partition < 4/9 of total, switch
+        if current_partition_count / total_count < 4/9:
+          majority_partition = 1 - current_partition
+        else:
+          majority_partition = current_partition
     else:
       # Multi-partition case: use simple majority
       majority_partition = unique_partitions[np.argmax(counts)]
