@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================================
-REM Partitioned (k40_nc4) vs Pooled RF Comparison - Windows Batch Script
+REM Partitioned (k40_nc4) RF Evaluation - Windows Batch Script
 REM ============================================================================
 REM
 REM This batch file runs the comparison script with default parameters.
@@ -9,7 +9,7 @@ REM Usage:
 REM   run_partition_k40_nc4_comparison.bat                 (no visuals, no contiguity)
 REM   run_partition_k40_nc4_comparison.bat 1               (with contiguity, 2 iters)
 REM   run_partition_k40_nc4_comparison.bat 1 3             (with contiguity, 3 iters)
-REM   run_partition_k40_nc4_comparison.bat --visual        (with 4 maps, no contiguity)
+REM   run_partition_k40_nc4_comparison.bat --visual        (with 2 maps, no contiguity)
 REM   run_partition_k40_nc4_comparison.bat 1 2 --visual    (all features)
 REM
 REM Customize by editing the variables below before running.
@@ -17,7 +17,7 @@ REM ============================================================================
 
 echo.
 echo ============================================================================
-echo PARTITIONED (k40_nc4) VS POOLED RF COMPARISON
+echo PARTITIONED (k40_nc4) RF EVALUATION - POOLED BASELINE DISABLED
 echo ============================================================================
 echo.
 
@@ -29,7 +29,7 @@ REM Python executable (adjust path if needed)
 set PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe
 
 REM Data paths
-set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv
+set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_original.csv
 set PARTITION_MAP=cluster_mapping_k40_nc4.csv
 set POLYGONS_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp
 
@@ -210,10 +210,14 @@ echo ===========================================================================
 echo.
 
 REM --------------------------------------------------------------------------
-REM Run comparison script
+REM Run partitioned evaluation script
 REM --------------------------------------------------------------------------
 
-echo Running comparison...
+echo.
+echo [INFO] POOLED BASELINE DISABLED - Partitioned-only evaluation
+echo.
+
+echo Running partitioned evaluation...
 echo.
 
 "%PYTHON_EXE%" scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py ^
@@ -238,7 +242,7 @@ REM --------------------------------------------------------------------------
 if %ERRORLEVEL% neq 0 (
     echo.
     echo ============================================================================
-    echo ERROR: Comparison script failed with exit code %ERRORLEVEL%
+    echo ERROR: Evaluation script failed with exit code %ERRORLEVEL%
     echo ============================================================================
     echo.
     pause
@@ -251,28 +255,26 @@ REM --------------------------------------------------------------------------
 
 echo.
 echo ============================================================================
-echo COMPARISON COMPLETED SUCCESSFULLY
+echo EVALUATION COMPLETED SUCCESSFULLY
 echo ============================================================================
 echo.
 echo Results saved to: %OUT_DIR%
 echo.
 echo CSV outputs:
-echo   - metrics_monthly.csv
-echo   - predictions_monthly.csv
-echo   - metrics_admin0_overall.csv
+echo   - metrics_monthly.csv (partitioned model only)
+echo   - predictions_monthly.csv (partitioned predictions)
+echo   - metrics_polygon_overall.csv (partitioned metrics by polygon)
 echo   - run_manifest.json
 echo.
 
 if defined VISUAL_FLAG (
-    echo Visualizations (4 maps):
-    echo   - final_f1_performance_map.png
+    echo Visualizations (2 maps):
     echo   - map_pct_err_all.png
     echo   - map_pct_err_class1.png
-    echo   - overall_f1_improvement_map.png
     echo.
 ) else (
     echo Visualizations: DISABLED
-    echo   (Re-run with --visual flag to create 4 maps^)
+    echo   (Re-run with --visual flag to create 2 maps^)
     echo.
 )
 

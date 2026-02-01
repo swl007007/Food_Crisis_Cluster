@@ -1,27 +1,25 @@
 #!/usr/bin/env python3
 """
-Partitioned (k40_nc4) vs Pooled RF Comparison Script
+Partitioned (k40_nc4) RF Evaluation Script
 
 Evaluates monthly from 2021-01 through 2024-12:
-- Pooled baseline: Single RF trained on all partitions together
 - Partitioned model: Separate RF per partition (cluster_id from cluster_mapping_k40_nc4.csv)
 
 Uses GeoRF pipeline utilities for proper feature preparation and temporal splitting.
 
 Outputs:
-- metrics_monthly.csv: Monthly precision/recall/F1 for both models
+- metrics_monthly.csv: Monthly precision/recall/F1 for partitioned model
 - predictions_monthly.csv: All predictions with uid/time/partition/y_true/y_pred
-- metrics_polygon_overall.csv: Polygon-level aggregated metrics and F1 improvement
+- metrics_polygon_overall.csv: Polygon-level aggregated metrics
 - run_manifest.json: Run parameters and diagnostics
 
 Visualization (VISUAL=True only):
-- final_f1_performance_map.png: Polygon F1 choropleth (pooled vs partitioned panels)
 - map_pct_err_all.png: Overall error rate by polygon
 - map_pct_err_class1.png: Class-1 specific error rate by polygon
-- overall_f1_improvement_map.png: F1 delta (partitioned - pooled) by polygon
 
 Author: Claude Code
 Date: 2026-01-25
+Updated: 2026-02-01 (Removed pooled baseline)
 """
 
 import os
@@ -64,7 +62,7 @@ DEFAULT_TRAIN_WINDOW = 36  # months
 DEFAULT_FORECASTING_SCOPE = 1  # 1=4mo, 2=8mo, 3=12mo lag
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF.py default)
 
-# RF hyperparameters (MUST match main GeoRF pipeline for pooled baseline comparison)
+# RF hyperparameters (MUST match main GeoRF pipeline)
 # See src/model/GeoRF.py line 51 for main pipeline defaults
 RF_PARAMS = {
     'n_estimators': 100,  # Main pipeline uses n_trees_unit=100 (NOT 500)
@@ -75,7 +73,7 @@ RF_PARAMS = {
     # NOTE: min_samples_leaf defaults to 1 (not explicitly set in main pipeline)
 }
 
-# Minimum samples per partition to train separate model (else fallback to pooled)
+# Minimum samples per partition to train separate model
 MIN_PARTITION_SAMPLES = 50
 
 
@@ -144,26 +142,20 @@ def create_partition_group_array(df: pd.DataFrame, partition_df: pd.DataFrame) -
 # Model Training and Prediction
 # ============================================================================
 
-def train_pooled_rf(X_train: np.ndarray, y_train: np.ndarray) -> RandomForestClassifier:
-    """Train single pooled RF on all training data."""
-
-    print(f"  Training pooled RF: {len(y_train)} samples, {X_train.shape[1]} features")
-
-    model = RandomForestClassifier(**RF_PARAMS)
-    model.fit(X_train, y_train)
-
-    return model
-
-
 def train_partitioned_rf(X_train: np.ndarray, y_train: np.ndarray,
                         X_group_train: np.ndarray,
                         min_samples: int = MIN_PARTITION_SAMPLES) -> Dict[int, RandomForestClassifier]:
-    """Train separate RF per partition (with pooled fallback for small partitions)."""
+    """Train separate RF per partition."""
 
     unique_partitions = np.unique(X_group_train)
     unique_partitions = unique_partitions[unique_partitions >= 0]  # Exclude -1 (unmapped)
 
     print(f"  Training partitioned RF: {len(unique_partitions)} partitions")
+
+    # Train pooled model for fallback (small partitions and unmapped regions)
+    print(f"  Training fallback RF for small partitions: {len(y_train)} samples")
+    fallback_model = RandomForestClassifier(**RF_PARAMS)
+    fallback_model.fit(X_train, y_train)
 
     models = {}
     fallback_count = 0
@@ -178,47 +170,42 @@ def train_partitioned_rf(X_train: np.ndarray, y_train: np.ndarray,
             model.fit(X_partition, y_partition)
             models[partition_id] = model
         else:
-            models[partition_id] = None  # Will use pooled fallback
+            models[partition_id] = None  # Will use fallback
             fallback_count += 1
 
     if fallback_count > 0:
-        print(f"    {fallback_count} partitions use pooled fallback (<{min_samples} samples)")
+        print(f"    {fallback_count} partitions use fallback (<{min_samples} samples)")
+
+    # Store fallback model in dictionary with key -999
+    models[-999] = fallback_model
 
     return models
 
 
-def predict_pooled(model: RandomForestClassifier, X_test: np.ndarray) -> np.ndarray:
-    """Predict using pooled model."""
-    return model.predict(X_test)
-
-
 def predict_partitioned(models: Dict[int, RandomForestClassifier],
-                       pooled_model: RandomForestClassifier,
                        X_test: np.ndarray,
                        X_group_test: np.ndarray) -> np.ndarray:
-    """Predict using partitioned models (with pooled fallback)."""
+    """Predict using partitioned models (with fallback for small partitions and unseen partitions)."""
 
-    y_pred = np.zeros(len(X_test), dtype=int)
+    fallback_model = models[-999]  # Get fallback model
 
+    # FIX: Start with fallback predictions for ALL samples (ensures full coverage)
+    y_pred = fallback_model.predict(X_test)
+
+    # Override with partition-specific predictions where available
     for partition_id, model in models.items():
+        if partition_id == -999:  # Skip fallback model entry
+            continue
+
         partition_mask = X_group_test == partition_id
 
         if partition_mask.sum() == 0:
             continue
 
-        X_partition = X_test[partition_mask]
-
         if model is not None:
-            # Use partition-specific model
-            y_pred[partition_mask] = model.predict(X_partition)
-        else:
-            # Fallback to pooled model
-            y_pred[partition_mask] = pooled_model.predict(X_partition)
-
-    # Handle unmapped partitions (-1) with pooled model
-    unmapped_mask = X_group_test == -1
-    if unmapped_mask.sum() > 0:
-        y_pred[unmapped_mask] = pooled_model.predict(X_test[unmapped_mask])
+            # Use partition-specific model (override fallback)
+            y_pred[partition_mask] = model.predict(X_test[partition_mask])
+        # else: keep fallback prediction (already set)
 
     return y_pred
 
@@ -266,7 +253,7 @@ def compute_binary_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict:
 
 
 def compute_polygon_metrics(df: pd.DataFrame, uid_col: str = 'FEWSNET_admin_code') -> pd.DataFrame:
-    """Compute polygon-level metrics from predictions."""
+    """Compute polygon-level metrics from predictions (partitioned-only)."""
 
     polygon_list = []
 
@@ -274,33 +261,25 @@ def compute_polygon_metrics(df: pd.DataFrame, uid_col: str = 'FEWSNET_admin_code
         polygon_df = df[df[uid_col] == polygon_id]
 
         y_true = polygon_df['y_true'].values
-        y_pred_pooled = polygon_df['y_pred_pooled'].values
         y_pred_partitioned = polygon_df['y_pred_partitioned'].values
 
-        metrics_pooled = compute_binary_metrics(y_true, y_pred_pooled)
-        metrics_partitioned = compute_binary_metrics(y_true, y_pred_partitioned)
+        metrics = compute_binary_metrics(y_true, y_pred_partitioned)
 
         polygon_list.append({
             uid_col: polygon_id,
-            'n': metrics_pooled['n'],
-            'f1_pooled': metrics_pooled['f1'],
-            'f1_partitioned': metrics_partitioned['f1'],
-            'f1_diff': metrics_partitioned['f1'] - metrics_pooled['f1'],
-            'precision_pooled': metrics_pooled['precision'],
-            'precision_partitioned': metrics_partitioned['precision'],
-            'recall_pooled': metrics_pooled['recall'],
-            'recall_partitioned': metrics_partitioned['recall'],
-            'pct_err_all_pooled': metrics_pooled['pct_err_all'],
-            'pct_err_all_partitioned': metrics_partitioned['pct_err_all'],
-            'pct_err_class1_pooled': metrics_pooled['pct_err_class1'],
-            'pct_err_class1_partitioned': metrics_partitioned['pct_err_class1']
+            'n': metrics['n'],
+            'f1': metrics['f1'],
+            'precision': metrics['precision'],
+            'recall': metrics['recall'],
+            'pct_err_all': metrics['pct_err_all'],
+            'pct_err_class1': metrics['pct_err_class1']
         })
 
     return pd.DataFrame(polygon_list)
 
 
 # ============================================================================
-# Visualization (Conditional, Exactly 4 Maps)
+# Visualization (Conditional, Partitioned-Only Maps)
 # ============================================================================
 
 def create_visualizations(predictions_df: pd.DataFrame,
@@ -309,19 +288,17 @@ def create_visualizations(predictions_df: pd.DataFrame,
                          out_dir: str,
                          visual: bool = False,
                          uid_col: str = 'FEWSNET_admin_code') -> None:
-    """Create exactly 4 maps when VISUAL=True, else nothing."""
+    """Create 2 partitioned-only maps when VISUAL=True, else nothing."""
 
     if not visual:
         print("VISUAL=False, skipping all visualizations")
         return
 
-    print("VISUAL=True, creating exactly 4 maps")
+    print("VISUAL=True, creating 2 partitioned-only maps")
 
     try:
         import geopandas as gpd
         import matplotlib.pyplot as plt
-        import matplotlib.colors as mcolors
-        from matplotlib.patches import Patch
     except ImportError as e:
         print(f"Visualization dependencies missing: {e}")
         print("Install with: pip install geopandas matplotlib")
@@ -364,93 +341,43 @@ def create_visualizations(predictions_df: pd.DataFrame,
     merged_gdf = gpd.GeoDataFrame(merged, geometry='geometry')
 
     # Check merge success
-    matched = merged['f1_pooled'].notna().sum()
+    matched = merged['f1'].notna().sum()
     total_polygons = len(polygon_metrics_df)
     print(f"Matched {matched} / {total_polygons} polygons to geometries")
 
     # ========================================================================
-    # Map 1: final_f1_performance_map.png (two panels: pooled vs partitioned)
-    # ========================================================================
-    fig, axes = plt.subplots(1, 2, figsize=(18, 8))
-
-    # Panel 1: Pooled F1
-    merged_gdf.plot(column='f1_pooled', ax=axes[0], cmap='YlGnBu', vmin=0, vmax=1,
-                    legend=True, edgecolor='black', linewidth=0.2, missing_kwds={'color': 'lightgray'},
-                    legend_kwds={'label': 'F1 Score (Pooled)', 'shrink': 0.8})
-    axes[0].set_title('Pooled RF - F1 Score by Polygon', fontsize=14, fontweight='bold')
-    axes[0].set_xlabel('Longitude')
-    axes[0].set_ylabel('Latitude')
-
-    # Panel 2: Partitioned F1
-    merged_gdf.plot(column='f1_partitioned', ax=axes[1], cmap='YlGnBu', vmin=0, vmax=1,
-                    legend=True, edgecolor='black', linewidth=0.2, missing_kwds={'color': 'lightgray'},
-                    legend_kwds={'label': 'F1 Score (Partitioned)', 'shrink': 0.8})
-    axes[1].set_title('Partitioned RF (k40_nc4) - F1 Score by Polygon', fontsize=14, fontweight='bold')
-    axes[1].set_xlabel('Longitude')
-    axes[1].set_ylabel('Latitude')
-
-    plt.tight_layout()
-    out_path_1 = vis_dir / 'final_f1_performance_map.png'
-    plt.savefig(out_path_1, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"  Saved: {out_path_1}")
-    plt.close()
-
-    # ========================================================================
-    # Map 2: map_pct_err_all.png (overall error rate, partitioned)
+    # Map 1: map_pct_err_all.png (overall error rate, partitioned)
     # ========================================================================
     fig, ax = plt.subplots(figsize=(12, 10))
-    merged_gdf.plot(column='pct_err_all_partitioned', ax=ax, cmap='Reds', vmin=0, vmax=1,
+    merged_gdf.plot(column='pct_err_all', ax=ax, cmap='Reds', vmin=0, vmax=1,
                     legend=True, edgecolor='black', linewidth=0.2, missing_kwds={'color': 'lightgray'},
                     legend_kwds={'label': 'Overall Error Rate', 'shrink': 0.8})
     ax.set_title('Partitioned RF - Overall Error Rate by Polygon', fontsize=14, fontweight='bold')
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
 
-    out_path_2 = vis_dir / 'map_pct_err_all.png'
-    plt.savefig(out_path_2, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"  Saved: {out_path_2}")
+    out_path_1 = vis_dir / 'map_pct_err_all.png'
+    plt.savefig(out_path_1, dpi=200, bbox_inches='tight', facecolor='white')
+    print(f"  Saved: {out_path_1}")
     plt.close()
 
     # ========================================================================
-    # Map 3: map_pct_err_class1.png (class-1 error rate, partitioned)
+    # Map 2: map_pct_err_class1.png (class-1 error rate, partitioned)
     # ========================================================================
     fig, ax = plt.subplots(figsize=(12, 10))
-    merged_gdf.plot(column='pct_err_class1_partitioned', ax=ax, cmap='Reds', vmin=0, vmax=1,
+    merged_gdf.plot(column='pct_err_class1', ax=ax, cmap='Reds', vmin=0, vmax=1,
                     legend=True, edgecolor='black', linewidth=0.2, missing_kwds={'color': 'lightgray'},
                     legend_kwds={'label': 'Class-1 Error Rate', 'shrink': 0.8})
     ax.set_title('Partitioned RF - Class-1 (Crisis) Error Rate by Polygon', fontsize=14, fontweight='bold')
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
 
-    out_path_3 = vis_dir / 'map_pct_err_class1.png'
-    plt.savefig(out_path_3, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"  Saved: {out_path_3}")
+    out_path_2 = vis_dir / 'map_pct_err_class1.png'
+    plt.savefig(out_path_2, dpi=200, bbox_inches='tight', facecolor='white')
+    print(f"  Saved: {out_path_2}")
     plt.close()
 
-    # ========================================================================
-    # Map 4: overall_f1_improvement_map.png (F1 delta: partitioned - pooled)
-    # ========================================================================
-    fig, ax = plt.subplots(figsize=(12, 10))
-
-    # Center colormap at zero for diverging colors
-    vmin_diff = merged_gdf['f1_diff'].min()
-    vmax_diff = merged_gdf['f1_diff'].max()
-    abs_max = max(abs(vmin_diff), abs(vmax_diff))
-    norm = mcolors.TwoSlopeNorm(vmin=-abs_max, vcenter=0, vmax=abs_max)
-
-    merged_gdf.plot(column='f1_diff', ax=ax, cmap='RdBu', norm=norm,
-                    legend=True, edgecolor='black', linewidth=0.2, missing_kwds={'color': 'lightgray'},
-                    legend_kwds={'label': 'F1 Improvement (Partitioned - Pooled)', 'shrink': 0.8})
-    ax.set_title('F1 Score Improvement: Partitioned vs Pooled by Polygon', fontsize=14, fontweight='bold')
-    ax.set_xlabel('Longitude')
-    ax.set_ylabel('Latitude')
-
-    out_path_4 = vis_dir / 'overall_f1_improvement_map.png'
-    plt.savefig(out_path_4, dpi=200, bbox_inches='tight', facecolor='white')
-    print(f"  Saved: {out_path_4}")
-    plt.close()
-
-    print("Exactly 4 maps created successfully")
+    print("2 partitioned-only maps created successfully")
 
 
 # ============================================================================
@@ -458,7 +385,7 @@ def create_visualizations(predictions_df: pd.DataFrame,
 # ============================================================================
 
 def main():
-    parser = argparse.ArgumentParser(description='Partitioned vs Pooled RF Comparison')
+    parser = argparse.ArgumentParser(description='Partitioned RF Evaluation')
     parser.add_argument('--data', default=DEFAULT_DATA_PATH, help='Path to panel dataset CSV')
     parser.add_argument('--partition-map', default=DEFAULT_PARTITION_MAP, help='Path to cluster_mapping CSV')
     parser.add_argument('--polygons', default=DEFAULT_POLYGONS_PATH, help='Path to admin boundaries shapefile')
@@ -468,7 +395,7 @@ def main():
     parser.add_argument('--train-window', type=int, default=DEFAULT_TRAIN_WINDOW, help='Training window (months)')
     parser.add_argument('--forecasting-scope', type=int, default=DEFAULT_FORECASTING_SCOPE,
                        choices=[1, 2, 3], help='Forecasting scope: 1=4mo, 2=8mo, 3=12mo lag')
-    parser.add_argument('--visual', action='store_true', help='Enable visualization (creates exactly 4 maps)')
+    parser.add_argument('--visual', action='store_true', help='Enable visualization (creates 2 maps)')
     parser.add_argument('--month-ind', action='store_true', help='Enable month-specific partitions')
     parser.add_argument('--partition-map-m2', default='cluster_mapping_k40_nc10_m2.csv', help='Partition map for February')
     parser.add_argument('--partition-map-m6', default='cluster_mapping_k40_nc2_m6.csv', help='Partition map for June')
@@ -484,7 +411,7 @@ def main():
     active_lag = forecasting_scope_to_lag(args.forecasting_scope, LAGS_MONTHS)
 
     print("=" * 80)
-    print("PARTITIONED (k40_nc4) VS POOLED RF COMPARISON")
+    print("PARTITIONED (k40_nc4) RF EVALUATION - POOLED BASELINE DISABLED")
     print("=" * 80)
     print(f"Data: {args.data}")
     print(f"Partition map: {args.partition_map}")
@@ -498,7 +425,7 @@ def main():
     print(f"Evaluation period: {args.start_month} to {args.end_month}")
     print(f"Train window: {args.train_window} months")
     print(f"Forecasting scope: {args.forecasting_scope} ({active_lag}-month lag)")
-    print(f"Visualization: {'ENABLED (4 maps)' if args.visual else 'DISABLED'}")
+    print(f"Visualization: {'ENABLED (2 maps)' if args.visual else 'DISABLED'}")
     print(f"Output directory: {out_dir}")
     print("=" * 80)
 
@@ -630,25 +557,14 @@ def main():
             print(f"  Skipping: {e}")
             continue
 
-        # Train pooled model
-        pooled_model = train_pooled_rf(Xtrain, ytrain)
-
-        # Train partitioned models
+        # Train partitioned models (includes fallback model)
         partitioned_models = train_partitioned_rf(Xtrain, ytrain, Xtrain_group)
 
-        # Predict
-        y_pred_pooled = predict_pooled(pooled_model, Xtest)
-        y_pred_partitioned = predict_partitioned(partitioned_models, pooled_model, Xtest, Xtest_group)
+        # Predict using partitioned models
+        y_pred_partitioned = predict_partitioned(partitioned_models, Xtest, Xtest_group)
 
         # Compute metrics
-        metrics_pooled = compute_binary_metrics(ytest, y_pred_pooled)
         metrics_partitioned = compute_binary_metrics(ytest, y_pred_partitioned)
-
-        monthly_metrics.append({
-            'test_month': str(test_month),
-            'model': 'pooled',
-            **metrics_pooled
-        })
 
         monthly_metrics.append({
             'test_month': str(test_month),
@@ -663,12 +579,10 @@ def main():
                 'month_start': test_month.to_timestamp(),
                 'partition_id': Xtest_group,
                 'y_true': ytest,
-                'y_pred_pooled': y_pred_pooled,
                 'y_pred_partitioned': y_pred_partitioned
             })
             all_predictions.append(pred_df)
 
-        print(f"  Pooled:      Precision={metrics_pooled['precision']:.4f}, Recall={metrics_pooled['recall']:.4f}, F1={metrics_pooled['f1']:.4f}")
         print(f"  Partitioned: Precision={metrics_partitioned['precision']:.4f}, Recall={metrics_partitioned['recall']:.4f}, F1={metrics_partitioned['f1']:.4f}")
 
     print("\n" + "=" * 80)
@@ -714,14 +628,15 @@ def main():
         'forecasting_scope': args.forecasting_scope,
         'active_lag_months': active_lag,
         'n_test_months': len(test_months),
-        'n_test_months_evaluated': len(monthly_metrics) // 2,
+        'n_test_months_evaluated': len(monthly_metrics),
         'n_predictions': len(predictions_df) if not predictions_df.empty else 0,
         'n_polygons': int(df['FEWSNET_admin_code'].nunique()),
         'n_partitions': int(partition_df['cluster_id'].nunique()),
         'rf_params': RF_PARAMS,
         'random_state': RANDOM_STATE,
         'visual_enabled': args.visual,
-        'pipeline_version': 'GeoRF_utilities_v1.0'
+        'pipeline_version': 'GeoRF_utilities_v1.0',
+        'model_type': 'partitioned_only'
     }
 
     manifest_path = out_dir / 'run_manifest.json'
@@ -742,7 +657,7 @@ def main():
     # Summary
     # ========================================================================
     print("\n" + "=" * 80)
-    print("COMPARISON COMPLETE")
+    print("EVALUATION COMPLETE")
     print("=" * 80)
     print(f"\nResults saved to: {out_dir}")
     print(f"Test months evaluated: {manifest['n_test_months_evaluated']} / {manifest['n_test_months']}")
@@ -752,14 +667,13 @@ def main():
 
     # Summary statistics
     if not metrics_df.empty:
-        pooled_metrics = metrics_df[metrics_df['model'] == 'pooled']
         partitioned_metrics = metrics_df[metrics_df['model'] == 'partitioned']
 
         print(f"\nOverall Performance (Mean ± Std):")
         print(f"  Partitioned F1: {partitioned_metrics['f1'].mean():.4f} ± {partitioned_metrics['f1'].std():.4f}")
 
     if args.visual:
-        print(f"\nVisualizations: 4 maps created in {out_dir / 'vis'}")
+        print(f"\nVisualizations: 2 maps created in {out_dir / 'vis'}")
     else:
         print(f"\nVisualizations: DISABLED (use --visual to enable)")
 

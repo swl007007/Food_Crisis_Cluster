@@ -98,7 +98,7 @@ CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
 GLOBAL_RANDOM_SEED = 42
 
 
-DATA_MODE = 'phase_change'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
+DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
