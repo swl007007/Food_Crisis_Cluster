@@ -90,7 +90,7 @@ else:
             raise RuntimeError('Dry-run adapter cannot instantiate models')
 
     MODEL_ADAPTER = DryRunAdapter()
-VIS_DEBUG_MODE =  True
+VIS_DEBUG_MODE =  False
 # Configuration
 ARTIFACTS_ROOT = os.path.join('result_GeoRF')
 PARITY_LOG_PATH = os.path.join(ARTIFACTS_ROOT, 'logs', 'parity_check.log')
@@ -1170,8 +1170,8 @@ def main():
     active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
     
     # Partition Metrics Tracking Configuration
-    track_partition_metrics = True  # Enable partition metrics tracking and visualization
-    enable_metrics_maps = True      # Create maps showing F1/accuracy improvements
+    track_partition_metrics = False  # Enable partition metrics tracking and visualization
+    enable_metrics_maps = False      # Create maps showing F1/accuracy improvements
     
     # start year and end year from command line arguments
     start_year = args.start_year

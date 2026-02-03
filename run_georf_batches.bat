@@ -16,8 +16,8 @@ echo.
 REM Counter for batch tracking
 set batch_count=0
 
-REM Process each year from 2013 to 2024 (12 years)
-for /L %%y in (2013,1,2024) do (
+REM Process each year from 2021 to 2024 (4 years)
+for /L %%y in (2021,1,2024) do (
     echo ==========================================
     echo Processing year: %%y (all 12 months^)
     echo ==========================================
@@ -89,9 +89,9 @@ for /L %%y in (2013,1,2024) do (
 echo.
 echo ===== All batches completed successfully! =====
 echo Total batches processed: !batch_count!
-echo Years processed: 2013-2024 (12 years, each with 12 months)
+echo Years processed: 2021-2024 (4 years, each with 12 months)
 echo Forecasting scopes: 1, 2, 3 (4-month, 8-month, 12-month lags)
-echo Total configurations: 12 years × 3 scopes = 36 batches
+echo Total configurations: 4 years × 3 scopes = 12 batches
 goto :end
 
 :cleanup_directories
