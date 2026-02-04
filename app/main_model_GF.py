@@ -106,7 +106,7 @@ elif DATA_MODE == 'nogis':
 elif DATA_MODE == 'min':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
 elif DATA_MODE == 'unadjusted':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_original.csv"
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
 elif DATA_MODE == 'phase_change':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv"
 else:
@@ -1238,7 +1238,7 @@ def main():
     
     # Partition Metrics Tracking Configuration
     track_partition_metrics = False  # Enable partition metrics tracking and visualization
-    enable_metrics_maps = False      # Create maps showing F1/accuracy improvements
+    enable_metrics_maps = False    # Create maps showing F1/accuracy improvements
     
     # start year and end year from command line arguments
     start_year = args.start_year
@@ -1300,7 +1300,24 @@ def main():
         # Step 3: Prepare features with forecasting scope
         call_graph_steps.append('prepare_features')
         X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
-        
+
+        # Drop rows with NaN in features (restore dd02796 baseline behavior)
+        # This is critical for reproducibility - removes rows with missing lag features
+        rows_before = len(X)
+        nan_mask = ~np.isnan(X).any(axis=1)
+        X = X[nan_mask]
+        y = y[nan_mask]
+        X_group = X_group[nan_mask]
+        X_loc = X_loc[nan_mask]
+        years = years[nan_mask]
+        terms = np.array(terms)[nan_mask] if not isinstance(terms, np.ndarray) else terms[nan_mask]
+        dates = np.array(dates)[nan_mask] if not isinstance(dates, np.ndarray) else dates[nan_mask]
+        # Note: l1_index and l2_index are feature indices, not sample indices - don't filter them
+        rows_after = len(X)
+        rows_dropped = rows_before - rows_after
+        print(f"Dropped {rows_dropped:,} rows with NaN features ({rows_dropped/rows_before*100:.1f}%)")
+        print(f"Remaining samples: {rows_after:,}")
+
         # Step 4: Validate polygon contiguity (if applicable) and track polygon counts
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
             validate_polygon_contiguity(contiguity_info, X_group)

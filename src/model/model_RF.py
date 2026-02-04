@@ -52,7 +52,7 @@ class RFmodel():
                max_model_depth = MAX_DEPTH,
                mode=MODE, name = 'RF', type = 'static',
                sample_weights_by_class = None,
-               use_smote=True,
+               use_smote=False,  # Disabled to match dd02796 baseline
                smote_k_neighbors=5):#, path = CKPT_FOLDER_PATH
 
     '''
