@@ -461,4 +461,4 @@ plan_weight = logit(f1_partitioned) - logit(f1_baseline)
 - **Consensus Clustering**: Monti et al. (2003) - Consensus clustering
 - **Spectral Clustering**: Ng et al. (2002) - Spectral clustering
 - **Spatial Weighting**: Tobler's First Law of Geography
-- **GeoRF Framework**: Shi et al. (2024) - Spatial partitioning for crisis prediction
+- **GeoRF Framework**: Xie et al. (2024) - Spatial partitioning for crisis prediction

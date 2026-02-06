@@ -47,16 +47,16 @@ set END_MONTH=2024-12
 
 REM Model parameters
 set TRAIN_WINDOW=36
-set FORECASTING_SCOPE=2
+set FORECASTING_SCOPE=1
 
 REM Month-specific partitions (set to 1 to enable, 0 to disable)
 set MONTH_IND=1
 
 REM Contiguity refinement (set to 1 to enable, 0 to disable)
-set CONTIGUITY=1
+set CONTIGUITY=0
 
 REM Refinement iterations (only used when CONTIGUITY=1)
-set REFINE_ITERS=3
+set REFINE_ITERS=0
 
 REM --------------------------------------------------------------------------
 REM Check if Python exists
