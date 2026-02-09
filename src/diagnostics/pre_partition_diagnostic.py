@@ -138,11 +138,11 @@ def compute_training_error_rates(df, y_true, y_pred, uid_col='FEWSNET_admin_code
     valid_err_cls1 = polygon_stats['pct_err_cls1'].dropna()
     
     if len(valid_err_all) > 0:
-        print(f"  Overall error rate: {valid_err_all.mean():.3f} ± {valid_err_all.std():.3f}")
+        print(f"  Overall error rate: {valid_err_all.mean():.3f} +- {valid_err_all.std():.3f}")
         print(f"  Error rate range: [{valid_err_all.min():.3f}, {valid_err_all.max():.3f}]")
     
     if len(valid_err_cls1) > 0:
-        print(f"  Class 1 error rate: {valid_err_cls1.mean():.3f} ± {valid_err_cls1.std():.3f}")
+        print(f"  Class 1 error rate: {valid_err_cls1.mean():.3f} +- {valid_err_cls1.std():.3f}")
         print(f"  Class 1 error range: [{valid_err_cls1.min():.3f}, {valid_err_cls1.max():.3f}]")
     
     # Keep only essential columns for output
@@ -613,16 +613,16 @@ def create_pre_partition_diagnostics(df_train, y_true, y_pred, vis_dir,
     valid_class1 = error_df['pct_err_cls1'].dropna()
     
     if len(valid_overall) > 0:
-        summary_lines.append(f"Overall Error Rate: {valid_overall.mean():.1%} (±{valid_overall.std():.1%})")
+        summary_lines.append(f"Overall Error Rate: {valid_overall.mean():.1%} (+-{valid_overall.std():.1%})")
         summary_lines.append(f"Error Range: [{valid_overall.min():.1%}, {valid_overall.max():.1%}]")
         
         # Identify hotspots (top 10% error rate)
         hotspot_threshold = valid_overall.quantile(0.9)
         hotspots = error_df[error_df['pct_err_all'] >= hotspot_threshold]
-        summary_lines.append(f"Error Hotspots (≥{hotspot_threshold:.1%}): {len(hotspots)} polygons")
+        summary_lines.append(f"Error Hotspots (>={hotspot_threshold:.1%}): {len(hotspots)} polygons")
     
     if len(valid_class1) > 0:
-        summary_lines.append(f"Class 1 Error Rate: {valid_class1.mean():.1%} (±{valid_class1.std():.1%})")
+        summary_lines.append(f"Class 1 Error Rate: {valid_class1.mean():.1%} (+-{valid_class1.std():.1%})")
         
     # NaN polygon statistics
     nan_overall = error_df['pct_err_all'].isna().sum()
@@ -692,16 +692,16 @@ def create_diagnostic_summary(error_df, vis_dir):
     valid_class1 = error_df['pct_err_cls1'].dropna()
     
     if len(valid_overall) > 0:
-        summary_lines.append(f"Overall Error Rate: {valid_overall.mean():.1%} (±{valid_overall.std():.1%})")
+        summary_lines.append(f"Overall Error Rate: {valid_overall.mean():.1%} (+-{valid_overall.std():.1%})")
         summary_lines.append(f"Error Range: [{valid_overall.min():.1%}, {valid_overall.max():.1%}]")
         
         # Identify hotspots (top 10% error rate)
         hotspot_threshold = valid_overall.quantile(0.9)
         hotspots = error_df[error_df['pct_err_all'] >= hotspot_threshold]
-        summary_lines.append(f"Error Hotspots (≥{hotspot_threshold:.1%}): {len(hotspots)} polygons")
+        summary_lines.append(f"Error Hotspots (>={hotspot_threshold:.1%}): {len(hotspots)} polygons")
     
     if len(valid_class1) > 0:
-        summary_lines.append(f"Class 1 Error Rate: {valid_class1.mean():.1%} (±{valid_class1.std():.1%})")
+        summary_lines.append(f"Class 1 Error Rate: {valid_class1.mean():.1%} (+-{valid_class1.std():.1%})")
         
     # NaN polygon statistics
     nan_overall = error_df['pct_err_all'].isna().sum()

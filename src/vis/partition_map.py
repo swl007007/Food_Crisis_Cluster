@@ -121,8 +121,8 @@ def render_round_map(
         filtered_df = df.copy()
 
     scoped_title = title or (
-        f"Round {round_id} • Branch {parent_label or 'root'}"
-        f" • scope={len(scope)}"
+        f"Round {round_id} - Branch {parent_label or 'root'}"
+        f" - scope={len(scope)}"
     )
 
     temp_path = None

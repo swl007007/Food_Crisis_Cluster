@@ -463,7 +463,7 @@ def plot_partition_swaps(correspondence_before_path, correspondence_after_path,
     # Create swap direction mapping for colors
     # Convert partition IDs to strings to avoid data type issues
     swapped_gdf['swap_direction'] = (swapped_gdf['partition_id_before'].astype(str) + 
-                                    ' → ' + 
+                                    ' -> ' + 
                                     swapped_gdf['partition_id_after'].astype(str))
     unique_swaps = swapped_gdf['swap_direction'].unique()
     n_swaps = len(unique_swaps)
@@ -814,7 +814,7 @@ def plot_partition_map(correspondence_table_path,
     ax.set_xlabel('Longitude', fontsize=12)
     ax.set_ylabel('Latitude', fontsize=12)
 
-    scoped_title = f"{title} • units={len(gdf_plot)} • categories={len(drawn_categories)}"
+    scoped_title = f"{title} - units={len(gdf_plot)} - categories={len(drawn_categories)}"
     ax.set_title(scoped_title, fontsize=16, fontweight='bold', pad=20)
 
     stats_text = (

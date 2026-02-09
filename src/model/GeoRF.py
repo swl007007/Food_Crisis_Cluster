@@ -177,7 +177,8 @@ class GeoRF():
 		#Logging: testing purpose only
 		logging.basicConfig(filename=self.model_dir + '/' + "model.log",
 						format='%(asctime)s %(message)s',
-						filemode='w')
+						filemode='w',
+						encoding='utf-8')
 		logger=logging.getLogger()
 		logger.setLevel(logging.INFO)
 
@@ -185,7 +186,7 @@ class GeoRF():
 		if print_to_file:
 			print('model_dir:', self.model_dir)
 			print_file = self.model_dir + '/' + 'log_print.txt'
-			sys.stdout = open(print_file, "w")
+			sys.stdout = open(print_file, "w", encoding="utf-8", errors="backslashreplace")
 
 		print('Options: ')
 		print('CONTIGUITY & REFINE_TIMES: ', CONTIGUITY, REFINE_TIMES)
@@ -1032,7 +1033,8 @@ class GeoRF():
 		# Logging
 		logging.basicConfig(filename=self.model_dir + '/' + "model_eval.log",
 						format='%(asctime)s %(message)s',
-						filemode='w')
+						filemode='w',
+						encoding='utf-8')
 		logger=logging.getLogger()
 		logger.setLevel(logging.INFO)
 
@@ -1041,7 +1043,7 @@ class GeoRF():
 			print('model_dir:', self.model_dir)
 			print('Printing to file.')
 			print_file = self.model_dir + '/' + 'log_print_eval.txt'
-			sys.stdout = open(print_file, "w")
+			sys.stdout = open(print_file, "w", encoding="utf-8", errors="backslashreplace")
 
 		Xtest = self._apply_feature_drop_inference(Xtest)
 
@@ -1518,7 +1520,7 @@ class GeoRF():
 			print('Evaluating 2-Layer Models...')
 			print_file = self.model_dir + '/' + 'log_print_eval_2layer.txt'
 			original_stdout = sys.stdout
-			sys.stdout = open(print_file, "w")
+			sys.stdout = open(print_file, "w", encoding="utf-8", errors="backslashreplace")
 		
 		# ============================================================
 		# 2-Layer GeoRF Evaluation

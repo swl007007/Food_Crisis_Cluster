@@ -52,7 +52,7 @@ def modify_file_setting(file_path, pattern, replacement, description):
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(new_content)
 
-        print(f"✓ {description}")
+        print(f"[OK] {description}")
         print(f"  File: {file_path}")
         print(f"  Changes: {count} replacement(s) made")
         return True
@@ -138,7 +138,7 @@ def enable_visual_debug():
     # Summary
     print("=" * 70)
     if success_count == total_changes:
-        print("✓ SUCCESS: All visual debug settings enabled!")
+        print("[OK] SUCCESS: All visual debug settings enabled!")
         print()
         print("Visual outputs will include:")
         print("  - Partition maps (result_Geo*/vis/partition_*.png)")
@@ -150,7 +150,7 @@ def enable_visual_debug():
         print("  - run_georf_batches_2021_2024_visual.bat")
         print("  - run_xgboost_batches_2021_2024_visual.bat")
     else:
-        print(f"⚠ WARNING: Only {success_count}/{total_changes} changes completed successfully")
+        print(f"[WARNING] WARNING: Only {success_count}/{total_changes} changes completed successfully")
         print("Please check the error messages above and manually verify the settings.")
     print("=" * 70)
 
@@ -231,7 +231,7 @@ def disable_visual_debug():
     # Summary
     print("=" * 70)
     if success_count == total_changes:
-        print("✓ SUCCESS: All visual debug settings disabled!")
+        print("[OK] SUCCESS: All visual debug settings disabled!")
         print()
         print("Production mode restored:")
         print("  - No visualization overhead")
@@ -242,7 +242,7 @@ def disable_visual_debug():
         print("  - run_georf_batches.bat (full 36-batch production run)")
         print("  - run_xgboost_batches.bat (full 36-batch production run)")
     else:
-        print(f"⚠ WARNING: Only {success_count}/{total_changes} changes completed successfully")
+        print(f"[WARNING] WARNING: Only {success_count}/{total_changes} changes completed successfully")
         print("Please check the error messages above and manually verify the settings.")
     print("=" * 70)
 

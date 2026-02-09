@@ -72,7 +72,7 @@ def preprocess_partition_table(df, name, admin_code_min=0, admin_code_max=5717):
     """
     # Extract only FEWSNET_admin_code and partition_id columns
     if 'FEWSNET_admin_code' not in df.columns or 'partition_id' not in df.columns:
-        print(f"  ⚠ {name}: Missing required columns")
+        print(f"  [WARNING] {name}: Missing required columns")
         print(f"    Available columns: {df.columns.tolist()}")
         return None
 
@@ -82,7 +82,7 @@ def preprocess_partition_table(df, name, admin_code_min=0, admin_code_max=5717):
     try:
         partition_df['FEWSNET_admin_code'] = partition_df['FEWSNET_admin_code'].astype(int)
     except Exception as e:
-        print(f"  ⚠ {name}: Error converting admin_code to int: {e}")
+        print(f"  [WARNING] {name}: Error converting admin_code to int: {e}")
         return None
 
     # Create complete range of admin codes
@@ -256,13 +256,13 @@ def generate_summary_report(main_df, partition_files, output_dir='linked_tables'
     report.append("4. FILE STRUCTURE")
     report.append("-" * 80)
     report.append("   linked_tables/")
-    report.append("   ├── main_index.csv                    # Main index table")
-    report.append("   ├── table_links.csv                   # Mapping between tables")
-    report.append("   ├── summary_report.txt                # This report")
-    report.append("   └── partitions/")
-    report.append("       ├── GeoRF_2021_02_fs1_partition.csv")
-    report.append("       ├── GeoRF_2021_02_fs2_partition.csv")
-    report.append("       └── ... (70 partition tables)")
+    report.append("   |-- main_index.csv                    # Main index table")
+    report.append("   |-- table_links.csv                   # Mapping between tables")
+    report.append("   |-- summary_report.txt                # This report")
+    report.append("   `-- partitions/")
+    report.append("       |-- GeoRF_2021_02_fs1_partition.csv")
+    report.append("       |-- GeoRF_2021_02_fs2_partition.csv")
+    report.append("       `-- ... (70 partition tables)")
     report.append("")
 
     # Usage instructions

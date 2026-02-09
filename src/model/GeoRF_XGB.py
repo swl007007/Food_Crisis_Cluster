@@ -211,7 +211,8 @@ class GeoRF_XGB():
         # Logging setup
         logging.basicConfig(filename=self.model_dir + '/' + "model.log",
                           format='%(asctime)s %(message)s',
-                          filemode='w')
+                          filemode='w',
+                          encoding='utf-8')
         logger = logging.getLogger()
         logger.setLevel(logging.INFO)
 
@@ -219,7 +220,7 @@ class GeoRF_XGB():
         if print_to_file:
             print('model_dir:', self.model_dir)
             print_file = self.model_dir + '/' + 'log_print.txt'
-            sys.stdout = open(print_file, "w")
+            sys.stdout = open(print_file, "w", encoding="utf-8", errors="backslashreplace")
 
         print('Options: ')
         print('CONTIGUITY & REFINE_TIMES: ', CONTIGUITY, REFINE_TIMES)
@@ -951,7 +952,7 @@ class GeoRF_XGB():
         logger = logging.getLogger(__name__)
         if print_to_file:
             print_file = self.model_dir + '/' + 'log_print.txt'
-            sys.stdout = open(print_file, "a")
+            sys.stdout = open(print_file, "a", encoding="utf-8", errors="backslashreplace")
 
         X = self._apply_feature_drop_inference(X)
 
@@ -1280,7 +1281,7 @@ class GeoRF_XGB():
         """Evaluate model performance group-wise with visualization."""
         if print_to_file:
             print_file = self.model_dir + '/' + 'log_print.txt'
-            sys.stdout = open(print_file, "a")
+            sys.stdout = open(print_file, "a", encoding="utf-8", errors="backslashreplace")
 
         X_branch_id = get_X_branch_id_by_group(X_group, self.s_branch)
         

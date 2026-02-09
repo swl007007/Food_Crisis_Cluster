@@ -97,10 +97,10 @@ try:
     vals_main, vecs_main = eigsh(L_main, k=n_eigs_main, which='SM', maxiter=5000)
     vals_main = np.sort(vals_main)
 
-    print(f"✓ Computed {len(vals_main)} eigenvalues")
+    print(f"[OK] Computed {len(vals_main)} eigenvalues")
     print(f"\nFirst 10 eigenvalues:")
     for i, v in enumerate(vals_main[:min(10, len(vals_main))]):
-        print(f"  λ_{i+1} = {v:.6f}")
+        print(f"  lambda_{i+1} = {v:.6f}")
 
     # Eigengap analysis
     eigengaps_main = np.diff(vals_main)
@@ -131,12 +131,12 @@ try:
 
     plt.tight_layout()
     plt.savefig('eigengap_main_component.png', dpi=300, bbox_inches='tight')
-    print(f"\n✓ Saved: eigengap_main_component.png")
+    print(f"\n[OK] Saved: eigengap_main_component.png")
 
     eigenvalue_success = True
 
 except Exception as e:
-    print(f"✗ Error: {e}")
+    print(f"[ERROR] Error: {e}")
     suggested_k_main = 3
     print(f"Using default: {suggested_k_main} clusters")
     eigenvalue_success = False
@@ -165,7 +165,7 @@ try:
 
     main_labels = sc.fit_predict(sub_affinity)
 
-    print(f"✓ Clustering complete!")
+    print(f"[OK] Clustering complete!")
 
     unique_main, counts_main = np.unique(main_labels, return_counts=True)
     print(f"\nCluster distribution (main component):")
@@ -176,7 +176,7 @@ try:
     clustering_success = True
 
 except Exception as e:
-    print(f"✗ Error: {e}")
+    print(f"[ERROR] Error: {e}")
     main_labels = None
     clustering_success = False
 
@@ -198,12 +198,12 @@ if clustering_success and len(outlier_indices) > 0:
     knn_classifier.fit(X_train, y_train)
     outlier_labels = knn_classifier.predict(X_outliers)
 
-    print(f"✓ Outliers assigned!")
+    print(f"[OK] Outliers assigned!")
 
     unique_outlier, counts_outlier = np.unique(outlier_labels, return_counts=True)
     print(f"\nOutlier distribution:")
     for cluster_id, count in zip(unique_outlier, counts_outlier):
-        print(f"  → Cluster {cluster_id}: {count} outliers")
+        print(f"  -> Cluster {cluster_id}: {count} outliers")
 
 elif clustering_success:
     print(f"\nNo outliers to assign!")
@@ -228,7 +228,7 @@ if clustering_success:
     if outlier_labels is not None and len(outlier_indices) > 0:
         final_labels[outlier_indices] = outlier_labels
 
-    print(f"✓ Final labels created!")
+    print(f"[OK] Final labels created!")
 
     unique_final, counts_final = np.unique(final_labels, return_counts=True)
     print(f"\nFINAL DISTRIBUTION:")
@@ -262,7 +262,7 @@ if final_labels is not None:
         main_indices=main_indices,
         outlier_indices=outlier_indices
     )
-    print(f"\n✓ Saved: final_cluster_labels_k{K_NEIGHBORS}_nc{N_CLUSTERS}.npz")
+    print(f"\n[OK] Saved: final_cluster_labels_k{K_NEIGHBORS}_nc{N_CLUSTERS}.npz")
 
     # Save mapping table
     cluster_mapping = pd.DataFrame({
@@ -277,7 +277,7 @@ if final_labels is not None:
         OUTPUT_DIR / f'cluster_mapping_k{K_NEIGHBORS}_nc{N_CLUSTERS}.csv',
         index=False
     )
-    print(f"✓ Saved: cluster_mapping_k{K_NEIGHBORS}_nc{N_CLUSTERS}.csv")
+    print(f"[OK] Saved: cluster_mapping_k{K_NEIGHBORS}_nc{N_CLUSTERS}.csv")
 
     # Update report
     report_file = OUTPUT_DIR / f'knn_analysis_report_k{K_NEIGHBORS}.json'
@@ -298,7 +298,7 @@ if final_labels is not None:
     with open(report_file, 'w') as f:
         json.dump(report, f, indent=2)
 
-    print(f"✓ Updated: {report_file.name}")
+    print(f"[OK] Updated: {report_file.name}")
 
     # Visualize
     print("\nGenerating visualization...")
@@ -324,7 +324,7 @@ if final_labels is not None:
 
     plt.tight_layout()
     plt.savefig('final_clustering_results.png', dpi=300, bbox_inches='tight')
-    print(f"✓ Saved: final_clustering_results.png")
+    print(f"[OK] Saved: final_clustering_results.png")
 
 print("\n" + "=" * 80)
 print("PIPELINE COMPLETE!")

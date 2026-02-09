@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 set PYTHONPATH=%~dp0
+set PYTHONUTF8=1
+set PYTHONIOENCODING=utf-8
 
 REM XGBoost Monthly-by-Month Evaluation Batch Script (2021-2024 with Visual Debug)
 REM This script processes EACH MONTH INDIVIDUALLY to prevent memory issues
@@ -35,7 +37,7 @@ echo Configuration summary:
 echo   - Years: 2021-2024 (4 years)
 echo   - Forecasting scopes: 3 (4-month, 8-month, 12-month lags)
 echo   - Months per year: 12 (Jan-Dec)
-echo   - Total batches: !total_batches! (4 years × 3 scopes × 12 months)
+echo   - Total batches: !total_batches! (4 years x 3 scopes x 12 months)
 echo   - Visual outputs: Partition maps, metrics CSV, improvement maps
 echo   - Memory management: One month at a time with cleanup
 echo.

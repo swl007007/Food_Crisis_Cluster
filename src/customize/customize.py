@@ -307,12 +307,12 @@ def impute_missing_values(X, strategy='max_plus', multiplier=100.0, verbose=True
         if len(imputed_cols) <= 10:
             for col in imputed_cols:
                 info = summary[col]
-                print(f"  Column {col}: {info['original_range']} → imputed with {info['imputed_value']:.3f}")
+                print(f"  Column {col}: {info['original_range']} -> imputed with {info['imputed_value']:.3f}")
         else:
             print(f"  Imputed {len(imputed_cols)} columns total (showing first 5):")
             for col in imputed_cols[:5]:
                 info = summary[col]
-                print(f"    Column {col}: {info['original_range']} → imputed with {info['imputed_value']:.3f}")
+                print(f"    Column {col}: {info['original_range']} -> imputed with {info['imputed_value']:.3f}")
             print(f"    ... and {len(imputed_cols) - 5} more columns")
         
         # Verify no missing values remain
@@ -333,7 +333,7 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
     1. **New Monthly Mode** (test_month provided): Single-month TEST set with lag-adjusted TRAIN window
        - TRAIN window: fixed number of months ending ACTIVE_LAG months before TEST
        - TEST set: exactly one target month
-       - Example: test_month="2023-01", active_lag=4 → TRAIN=2019-09..2022-09, TEST=2023-01
+       - Example: test_month="2023-01", active_lag=4 -> TRAIN=2019-09..2022-09, TEST=2023-01
 
     2. **Legacy Quarterly Mode** (need_terms provided): Multi-month quarterly TEST set
        - TRAIN window: 3 years ending when TEST quarter begins
@@ -457,7 +457,7 @@ def train_test_split_rolling_window(X, y, X_loc, X_group, years, dates, test_yea
         print(f"TRAIN: {train_start.date()} to {(train_end - pd.DateOffset(days=1)).date()} ({actual_train_months} months, {len(ytrain)} samples)")
         print(f"TEST:  {test_month_start.date()} to {(test_month_end - pd.DateOffset(days=1)).date()} (1 month, {len(ytest)} samples)")
         print(f"TRAIN ends {active_lag} months before TEST | Gap ensures no leakage")
-        print(f"Disjoint: TRAIN < {train_end.date()} ≤ ... ≤ {test_month_start.date()} ≤ TEST")
+        print(f"Disjoint: TRAIN < {train_end.date()} <= ... <= {test_month_start.date()} <= TEST")
         print(f"{'='*80}\n")
 
         if admin_codes is not None:

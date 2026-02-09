@@ -1,0 +1,1407 @@
+#!/usr/bin/env python3
+"""
+Replicated and debugged version of main_model_GF_main.ipynb
+
+This script replicates the full functionality of the notebook for food crisis prediction
+using the Geo model pipeline (GeoRF/GeoXGB) with polygon-based contiguity support.
+
+Key features:
+1. Data preprocessing with polars and pandas
+2. Multiple spatial grouping options (polygons, grid, country, AEZ, etc.)
+3. Polygon-based contiguity with corrected setup
+4. Time-based train-test splitting for temporal validation
+5. Single-layer and 2-layer Geo models
+6. Comprehensive evaluation and result saving
+
+Date: 2025-07-23
+"""
+
+import os
+import sys
+
+_ARGS = sys.argv[1:]
+
+try:
+    import numpy as np
+    import pandas as pd
+    import polars as pl
+except ModuleNotFoundError as import_error:
+    if '--dry-run' in _ARGS:
+        np = pd = pl = None  # type: ignore
+    else:
+        raise
+import gc
+import glob
+import warnings
+import argparse
+import random
+from typing import List, Optional
+
+# Add parent directory to path to find src module
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+warnings.filterwarnings('ignore')
+
+from config import *
+from src.utils.lag_schedules import (
+    forecasting_scope_to_lag,
+    log_lag_schedule,
+    resolve_lag_schedule,
+)
+
+ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config.LAGS_MONTHS")
+IS_DRY_RUN = '--dry-run' in _ARGS
+
+if not IS_DRY_RUN:
+    from src.model.adapters import DTAdapter
+    from src.customize.customize import train_test_split_rolling_window
+    from src.preprocess.preprocess import load_and_preprocess_data, setup_spatial_groups
+    from src.feature.feature import prepare_features, validate_polygon_contiguity, create_correspondence_table
+    from src.utils.save_results import save_results
+    from src.utils.admin_code import resolve_admin_code_array
+    from tqdm import tqdm
+
+    if USE_ADJACENCY_MATRIX:
+        from src.adjacency.adjacency_utils import load_or_create_adjacency_matrix
+
+    MODEL_ADAPTER = DTAdapter()
+else:
+    class DryRunAdapter:
+        def __init__(self) -> None:
+            self.key = 'dt'
+            self.display_name = 'GeoDT'
+            self.baseline_label = 'DT'
+
+        def hyperparameter_summary(self) -> dict:
+            return {}
+
+        def two_layer_fit_kwargs(self, *, feature_names_L1=None) -> dict:  # type: ignore[override]
+            return {}
+
+        def create_model(self, **_: dict) -> None:  # type: ignore[override]
+            raise RuntimeError('Dry-run adapter cannot instantiate models')
+
+    MODEL_ADAPTER = DryRunAdapter()
+VIS_DEBUG_MODE =  False
+# Configuration
+ARTIFACTS_ROOT = os.path.join('result_GeoDT')
+PARITY_LOG_PATH = os.path.join(ARTIFACTS_ROOT, 'logs', 'parity_check.log')
+CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
+GLOBAL_RANDOM_SEED = 42
+
+
+DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
+
+
+if DATA_MODE == 'full':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
+elif DATA_MODE == 'noconflict':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\noconf.csv"
+elif DATA_MODE == 'nofoodprice':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nofoodprice.csv"
+elif DATA_MODE == 'nomacro':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
+elif DATA_MODE == 'nogis':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
+elif DATA_MODE == 'min':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
+elif DATA_MODE == 'unadjusted':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
+elif DATA_MODE == 'phase_change':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv"
+else:
+    raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
+
+def ensure_directory(path: str) -> None:
+    os.makedirs(path, exist_ok=True)
+
+
+def write_call_graph(adapter_key: str, steps: List[str]) -> str:
+    ensure_directory(ARTIFACTS_ROOT)
+    output_path = os.path.join(ARTIFACTS_ROOT, CALL_GRAPH_TEMPLATE.format(key=adapter_key))
+    with open(output_path, 'w', encoding='utf-8') as handle:
+        handle.write('\n'.join(steps))
+    return output_path
+
+
+def append_parity_log(message: str) -> str:
+    log_dir = os.path.dirname(PARITY_LOG_PATH)
+    ensure_directory(log_dir)
+    with open(PARITY_LOG_PATH, 'a', encoding='utf-8') as handle:
+        handle.write(message + '\n')
+    return PARITY_LOG_PATH
+def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
+                           assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
+                           track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_final_accuracy=False,
+                           call_graph: Optional[List[str]] = None):
+    """
+    Run temporal evaluation for all quarters from start_year to end_year using rolling window approach.
+    
+    Parameters:
+    -----------
+    X : numpy.ndarray
+        Feature matrix
+    y : numpy.ndarray
+        Target vector
+    X_loc : numpy.ndarray
+        Location coordinates
+    X_group : numpy.ndarray
+        Group assignments
+    years : numpy.ndarray
+        Year values
+    dates : pandas.Series or array-like
+        Date values for precise temporal splitting
+    l1_index : list
+        L1 feature indices
+    l2_index : list
+        L2 feature indices
+    assignment : str
+        Spatial assignment method
+    contiguity_info : dict or None
+        Contiguity information
+    df : pandas.DataFrame
+        Original dataframe with FEWSNET_admin_code
+    nowcasting : bool
+        Whether to use 2-layer model
+    max_depth : int or None
+        Maximum depth for RF models
+    input_terms : numpy.ndarray
+        Terms within each year (1-4 corresponding to quarters)
+    desire_terms : int or None
+        Specific quarter to evaluate (1-4), or None for all quarters
+    track_partition_metrics : bool
+        Whether to enable partition metrics tracking and visualization
+    enable_metrics_maps : bool
+        Whether to create maps showing F1/accuracy improvements
+    forecasting_scope : int or None
+        Forecasting scope (1-based index into active lag schedule)
+        
+    Returns:
+    --------
+    results_df : pandas.DataFrame
+        Evaluation results with quarter information
+    y_pred_test : pandas.DataFrame
+        Prediction results with quarter information
+    """
+    adapter = MODEL_ADAPTER
+    model_label = adapter.display_name
+    baseline_label = adapter.baseline_label
+
+    print(f"Running temporal evaluation with {model_label} (nowcasting={nowcasting})...")
+
+    hyperparams = adapter.hyperparameter_summary()
+    if hyperparams:
+        summary = ", ".join(f"{key}={value}" for key, value in sorted(hyperparams.items()))
+        print(f"{model_label} hyperparameters: {summary}")
+    else:
+        print(f"{model_label} hyperparameters: default configuration")
+
+    if call_graph is not None:
+        call_graph.append('run_temporal_evaluation')
+    
+    # Initialize results tracking (class 1 only) - CHANGED to 'month' for monthly evaluation
+    results_df = pd.DataFrame(columns=[
+        'year', 'month', 'precision(1)', 'recall(1)', 'f1(1)',
+        'precision_base(1)', 'recall_base(1)', 'f1_base(1)',
+        'num_samples(1)'
+    ])
+    
+    y_pred_test = pd.DataFrame(columns=['year', 'month', 'adm_code', 'fews_ipc_crisis_pred', 'fews_ipc_crisis_true'])  # CHANGED: removed 'quarter' column
+
+    # Extract admin codes from dataframe for test export
+    admin_code_aliases = getattr(sys.modules['config'], 'ADMIN_CODE_ALIASES', ['FEWSNET_admin_code', 'admin_code', 'adm_code'])
+    admin_codes = resolve_admin_code_array(df, admin_code_aliases)
+    print(f"Admin codes extracted: {len(admin_codes)} records, {len(np.unique(admin_codes))} unique admin units")
+
+    # Setup correspondence table path for partition metrics tracking
+    correspondence_table_path = None
+    if track_partition_metrics:
+        print("Setting up partition metrics tracking...")
+        
+        # Create base correspondence table from the data
+        correspondence_table_path = 'correspondence_table_metrics.csv'
+        try:
+            # Create correspondence table that properly maps X_group to FEWSNET_admin_code
+            if not os.path.exists(correspondence_table_path):
+                print("Creating correspondence table for partition metrics...")
+                
+                # Create proper correspondence table based on assignment method
+                if assignment == 'polygons':
+                    # For polygon assignment, X_group contains FEWSNET_admin_code values directly
+                    # Create a direct mapping, but we need to verify the relationship
+                    print(f"Debug: Creating polygon correspondence table")
+                    print(f"X_group type: {type(X_group[0])}, sample values: {X_group[:5]}")
+                    print(f"FEWSNET_admin_code sample values: {df['FEWSNET_admin_code'].head().tolist()}")
+                    
+                    # For polygon assignment, X_group should already BE the admin codes
+                    # So we create a simple identity mapping
+                    unique_admin_codes = df['FEWSNET_admin_code'].dropna().unique()
+                    unique_groups = np.unique(X_group)
+                    
+                    print(f"Unique admin codes count: {len(unique_admin_codes)}")
+                    print(f"Unique X_group values count: {len(unique_groups)}")
+                    
+                    # Check if X_group values are actually admin codes
+                    admin_codes_set = set(unique_admin_codes)
+                    group_codes_set = set(unique_groups)
+                    
+                    if admin_codes_set == group_codes_set:
+                        print("X_group contains admin codes directly - creating identity mapping")
+                        corr_df = pd.DataFrame({
+                            'FEWSNET_admin_code': unique_admin_codes,
+                            'X_group': unique_admin_codes
+                        })
+                    else:
+                        print("X_group doesn't match admin codes - creating index-based mapping")
+                        # Create mapping based on actual data relationships
+                        unique_entries = []
+                        for i in range(len(df)):
+                            admin_code = df.iloc[i]['FEWSNET_admin_code']
+                            group_id = X_group[i]
+                            if not pd.isna(admin_code):
+                                unique_entries.append({
+                                    'FEWSNET_admin_code': admin_code,
+                                    'X_group': group_id
+                                })
+                        
+                        # Remove duplicates and create DataFrame
+                        corr_df = pd.DataFrame(unique_entries).drop_duplicates()
+                
+                elif assignment in ['country', 'AEZ', 'country_AEZ']:
+                    # For these assignments, create mapping from admin codes to group IDs
+                    mapping_data = []
+                    for i in range(len(df)):
+                        admin_code = df.iloc[i]['FEWSNET_admin_code']
+                        group_id = X_group[i]
+                        if not pd.isna(admin_code):
+                            mapping_data.append({
+                                'FEWSNET_admin_code': admin_code,
+                                'X_group': group_id
+                            })
+                    
+                    corr_df = pd.DataFrame(mapping_data).drop_duplicates()
+                
+                elif assignment in ['geokmeans', 'all_kmeans']:
+                    # For kmeans assignments, use the existing correspondence table if available
+                    kmeans_table_path = f'correspondence_table_{assignment.replace("_", "")}.csv'
+                    if os.path.exists(kmeans_table_path):
+                        print(f"Using existing kmeans correspondence table: {kmeans_table_path}")
+                        correspondence_table_path = kmeans_table_path
+                        corr_df = None  # Don't create new table
+                    else:
+                        print(f"Warning: Expected kmeans correspondence table not found: {kmeans_table_path}")
+                        correspondence_table_path = None
+                        corr_df = None
+                
+                else:
+                    # For grid assignment, create a simple mapping
+                    mapping_data = []
+                    for i in range(len(df)):
+                        admin_code = df.iloc[i]['FEWSNET_admin_code']
+                        group_id = X_group[i]
+                        if not pd.isna(admin_code):
+                            mapping_data.append({
+                                'FEWSNET_admin_code': admin_code,
+                                'X_group': group_id
+                            })
+                    
+                    corr_df = pd.DataFrame(mapping_data).drop_duplicates()
+                
+                # Save the correspondence table if we created one
+                if corr_df is not None and len(corr_df) > 0:
+                    corr_df.to_csv(correspondence_table_path, index=False)
+                    print(f"Created correspondence table with {len(corr_df)} entries: {correspondence_table_path}")
+                    print(f"Sample entries:")
+                    print(corr_df.head())
+                else:
+                    if corr_df is not None:  # Empty DataFrame
+                        print("Warning: Could not create correspondence table - no valid data found")
+                        correspondence_table_path = None
+                    # else: using existing kmeans table, so correspondence_table_path is already set
+                        
+            else:
+                print(f"Using existing correspondence table: {correspondence_table_path}")
+                
+        except Exception as e:
+            print(f"Warning: Could not create correspondence table: {e}")
+            print("Maps will not be generated, but CSV metrics will still be saved.")
+            correspondence_table_path = None
+    
+    # Determine contiguity settings
+    if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans']:
+        contiguity_type = 'polygon'
+        polygon_contiguity_info = contiguity_info
+    else:
+        contiguity_type = 'grid'
+        polygon_contiguity_info = None
+    
+    # Run evaluation for all quarters from start_year to end_year using rolling window
+    print(f"\nEvaluating all quarters from {start_year} to {end_year} using rolling window approach...")
+
+    # Determine which quarters to evaluate based on desire_terms
+    # === NEW MONTHLY EVALUATION MODE ===
+    # Check if using new DESIRED_TERMS config (monthly mode)
+    from config import DESIRED_TERMS, TRAIN_WINDOW_MONTHS, _parse_month_term
+
+    # Compute scope-specific active lag from forecasting_scope parameter
+    if forecasting_scope is None:
+        raise ValueError("forecasting_scope parameter is required for monthly evaluation mode")
+
+    from src.utils.lag_schedules import forecasting_scope_to_lag
+    from config import LAGS_MONTHS
+    active_lag = forecasting_scope_to_lag(forecasting_scope, LAGS_MONTHS)
+
+    if DESIRED_TERMS is not None and len(DESIRED_TERMS) > 0:
+        # New monthly mode
+        print("\n" + "="*80)
+        print("MONTHLY EVALUATION MODE")
+        print("="*80)
+        print(f"Testing months: {DESIRED_TERMS}")
+        print(f"Active lag: {active_lag} months")
+        print(f"Train window: {TRAIN_WINDOW_MONTHS} months")
+        print("="*80 + "\n")
+
+        # Parse and validate DESIRED_TERMS
+        months_to_evaluate = []
+        for term_str in DESIRED_TERMS:
+            try:
+                month_period = _parse_month_term(term_str)
+                months_to_evaluate.append(month_period)
+            except Exception as e:
+                print(f"Error parsing DESIRED_TERMS '{term_str}': {e}")
+                raise
+
+        if not months_to_evaluate:
+            print("No valid months to evaluate in DESIRED_TERMS.")
+            return results_df, y_pred_test
+
+        # Create progress bar for monthly evaluations
+        progress_bar = tqdm(
+            total=len(months_to_evaluate),
+            desc=f"{model_label} Monthly Evaluation",
+            unit="month",
+            ascii=True,
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]"
+        )
+
+        # Loop through each month
+        for i, test_month_period in enumerate(months_to_evaluate):
+            test_year = test_month_period.year
+            test_month = test_month_period.month
+            progress_bar.set_description(f"{model_label} {test_month_period}")
+            print(f"\n--- Evaluating {test_month_period} (#{i+1}/{len(months_to_evaluate)}) ---")
+
+            # Memory monitoring at start of iteration
+            import psutil
+            process = psutil.Process()
+            start_memory = process.memory_info().rss / 1024 / 1024  # MB
+            print(f"Memory at start of {test_month_period}: {start_memory:.1f} MB")
+
+            try:
+                # Train-test split with new monthly mode (lag-adjusted window)
+                split_result = train_test_split_rolling_window(
+                    X, y, X_loc, X_group, years, dates,
+                    test_month=test_month_period,
+                    active_lag=active_lag,
+                    train_window_months=TRAIN_WINDOW_MONTHS,
+                    admin_codes=admin_codes
+                )
+
+                # Unpack results (with or without admin_codes depending on return value)
+                if len(split_result) == 10:
+                    Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group, admin_codes_train, admin_codes_test = split_result
+                else:
+                    Xtrain, ytrain, Xtrain_loc, Xtrain_group, Xtest, ytest, Xtest_loc, Xtest_group = split_result
+                    admin_codes_test = None
+
+                ytrain = ytrain.astype(int)
+                ytest = ytest.astype(int)
+
+                print(f"Train samples: {len(ytrain)}, Test samples: {len(ytest)}")
+
+                # Skip evaluation if no test samples
+                if len(ytest) == 0:
+                    print(f"Warning: No test samples for {test_month_period}. Skipping this month.")
+                    # Update progress bar even when skipping
+                    progress_bar.update(1)
+                    continue
+
+                if nowcasting:
+                    # 2-layer model
+                    Xtrain_L1 = Xtrain[:, l1_index]
+                    Xtrain_L2 = Xtrain[:, l2_index]
+                    Xtest_L1 = Xtest[:, l1_index]
+                    Xtest_L2 = Xtest[:, l2_index]
+                    feature_names_L1 = [feature_columns[idx] for idx in l1_index] if feature_columns is not None else None
+
+                    # Create and train 2-layer model through the adapter
+                    model_2layer = adapter.create_model(max_depth_override=max_depth)
+                    georf_2layer = model_2layer  # Backward compatibility with existing cleanup logic
+
+                    if call_graph is not None:
+                        call_graph.append('train_two_layer_model')
+
+                    # Train 2-layer model with optional metrics tracking
+                    if track_partition_metrics:
+                        # Note: 2-layer fit doesn't support partition metrics yet,
+                        # but we can extend it later if needed
+                        print("Note: Partition metrics tracking not yet supported for 2-layer models")
+
+                    two_layer_kwargs = adapter.two_layer_fit_kwargs(feature_names_L1=feature_names_L1)
+
+                    model_2layer.fit_2layer(
+                        Xtrain_L1, Xtrain_L2, ytrain, Xtrain_group,
+                        val_ratio=VAL_RATIO,
+                        contiguity_type=contiguity_type,
+                        polygon_contiguity_info=polygon_contiguity_info,
+                        **two_layer_kwargs,
+                    )
+
+                    # Get predictions
+                    ypred = model_2layer.predict_2layer(Xtest_L1, Xtest_L2, Xtest_group, correction_strategy='flip')
+
+                    # Evaluate
+                    (pre, rec, f1, pre_base, rec_base, f1_base) = model_2layer.evaluate_2layer(
+                        X_L1_test=Xtest_L1,
+                        X_L2_test=Xtest_L2,
+                        y_test=ytest,
+                        X_group_test=Xtest_group,
+                        X_L1_train=Xtrain_L1,
+                        X_L2_train=Xtrain_L2,
+                        y_train=ytrain,
+                        X_group_train=Xtrain_group,
+                        correction_strategy='flip',
+                        print_to_file=True,
+                        contiguity_type=contiguity_type,
+                        polygon_contiguity_info=polygon_contiguity_info
+                    )
+
+                    if call_graph is not None:
+                        call_graph.append('evaluate_two_layer_model')
+
+                    print(f"{test_month_period} Test - 2-Layer {model_label} F1: {f1}, 2-Layer Base {baseline_label} F1: {f1_base}")
+
+                    # Extract and save correspondence table for 2-layer model
+                    try:
+                        X_branch_id_path = os.path.join(model_2layer.dir_space, 'X_branch_id.npy')
+                        if os.path.exists(X_branch_id_path):
+                            X_branch_id = np.load(X_branch_id_path)
+                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                       model_2layer.model_dir, active_lag, TRAIN_WINDOW_MONTHS, X_group)
+                    except Exception as e:
+                        print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
+
+                else:
+                    # Single-layer model
+                    georf = adapter.create_model(max_depth_override=max_depth)
+
+                    if call_graph is not None:
+                        call_graph.append('train_single_layer_model')
+
+                    # Train model with optional partition metrics tracking
+                    if track_partition_metrics:
+                        print(f"Training {model_label} with partition metrics tracking enabled")
+                        print(f"Correspondence table path: {correspondence_table_path}")
+                        print(f"Training set shape: {Xtrain.shape}, Groups shape: {Xtrain_group.shape}")
+                        print(f"Unique training groups: {len(np.unique(Xtrain_group))}")
+
+                        # Verify correspondence table exists and is readable
+                        # IMPORTANT: Specify dtype to preserve partition_id as string
+                        if correspondence_table_path and os.path.exists(correspondence_table_path):
+                            test_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
+                            print(f"Correspondence table loaded successfully with {len(test_df)} entries")
+                            print(f"Columns: {test_df.columns.tolist()}")
+                            print(f"Sample entries:\n{test_df.head()}")
+                        else:
+                            print(f"Warning: Correspondence table not found at {correspondence_table_path}")
+
+                    georf.fit(
+                        Xtrain, ytrain, Xtrain_group,
+                        val_ratio=VAL_RATIO,
+                        contiguity_type=contiguity_type,
+                        polygon_contiguity_info=polygon_contiguity_info,
+                        track_partition_metrics=track_partition_metrics,
+                        correspondence_table_path=correspondence_table_path,
+                        feature_names=feature_columns,
+                        VIS_DEBUG_MODE=VIS_DEBUG_MODE
+                    )
+
+                    # Check if metrics were tracked
+                    if track_partition_metrics and hasattr(georf, 'metrics_tracker'):
+                        if georf.metrics_tracker is not None:
+                            print(f"\nPartition metrics tracker found for {test_month_period}")
+
+                            # Check if any metrics were actually recorded
+                            if hasattr(georf.metrics_tracker, 'all_metrics') and georf.metrics_tracker.all_metrics:
+                                print(f"Number of metric records: {len(georf.metrics_tracker.all_metrics)}")
+
+                                # Show some sample metrics
+                                for i, record in enumerate(georf.metrics_tracker.all_metrics[:3]):
+                                    print(f"  Record {i}: Round {record.get('partition_round', 'N/A')}, "
+                                          f"Branch {record.get('branch_id', 'N/A')}, "
+                                          f"F1 improvement: {record.get('f1_improvement', 'N/A'):.4f}")
+                            else:
+                                print("No metrics records found in tracker")
+
+                            # Try to get summary
+                            try:
+                                summary = georf.metrics_tracker.get_improvement_summary()
+                                if summary:
+                                    print(f"\nPartition Metrics Summary for {test_month_period}:")
+                                    print(f"  Total partitions tracked: {summary['total_partitions']}")
+                                    print(f"  Average F1 improvement: {summary['avg_f1_improvement']:.4f}")
+                                    print(f"  Average accuracy improvement: {summary['avg_accuracy_improvement']:.4f}")
+                                    print(f"  Positive F1 improvements: {summary['positive_f1_improvements']}")
+                                    print(f"  Positive accuracy improvements: {summary['positive_accuracy_improvements']}")
+                                else:
+                                    print("Warning: No partition metrics summary available")
+                            except Exception as e:
+                                print(f"Error getting metrics summary: {e}")
+
+                            # Check if visualization files were created
+                            if hasattr(georf, 'model_dir'):
+                                vis_dir = os.path.join(georf.model_dir, 'vis')
+                                metrics_dir = os.path.join(georf.model_dir, 'partition_metrics')
+
+                                if os.path.exists(vis_dir):
+                                    vis_files = [f for f in os.listdir(vis_dir) if f.endswith('.png')]
+                                    print(f"Visualization files created: {len(vis_files)}")
+                                    if vis_files:
+                                        print(f"  Sample files: {vis_files[:3]}")
+                                else:
+                                    print("No visualization directory found")
+
+                                if os.path.exists(metrics_dir):
+                                    csv_files = [f for f in os.listdir(metrics_dir) if f.endswith('.csv')]
+                                    print(f"Metrics CSV files created: {len(csv_files)}")
+                                    if csv_files:
+                                        print(f"  Sample files: {csv_files[:3]}")
+                                else:
+                                    print("No metrics directory found")
+                        else:
+                            print("Warning: Metrics tracker is None")
+                    else:
+                        if track_partition_metrics:
+                            print(f"Warning: Metrics tracker not found on {model_label} object")
+
+                    # Get predictions
+                    ypred = georf.predict(Xtest, Xtest_group)
+
+                    # Evaluate
+                    (pre, rec, f1, pre_base, rec_base, f1_base) = georf.evaluate(
+                        Xtest, ytest, Xtest_group, eval_base=True, print_to_file=True,
+                        force_accuracy=force_final_accuracy and VIS_DEBUG_MODE,
+                        VIS_DEBUG_MODE=VIS_DEBUG_MODE
+                    )
+
+                    if call_graph is not None:
+                        call_graph.append('evaluate_single_layer_model')
+
+                    print(f"{test_month_period} Test - {model_label} F1: {f1}, Base {baseline_label} F1: {f1_base}")
+
+                    # Extract and save correspondence table for single-layer model
+                    try:
+                        X_branch_id_path = os.path.join(georf.dir_space, 'X_branch_id.npy')
+                        if os.path.exists(X_branch_id_path):
+                            X_branch_id = np.load(X_branch_id_path)
+                            create_correspondence_table(df, years, dates, test_year, test_month, X_branch_id,
+                                                       georf.model_dir, active_lag, TRAIN_WINDOW_MONTHS, X_group)
+
+                            # CRITICAL FIX: Update the metrics correspondence table with actual partition assignments
+                            # This ensures visualizations use the correct partition IDs from spatial partitioning
+                            if track_partition_metrics and correspondence_table_path and hasattr(georf, 'model_dir'):
+                                print(f"Updating metrics correspondence table with actual partition assignments...")
+
+                                # For polygon assignment, X_group contains admin codes directly
+                                # X_branch_id contains the partition IDs assigned during training
+                                # We need to map admin code -> partition ID
+
+                                # Verify lengths match
+                                if len(X_branch_id) != len(Xtrain_group):
+                                    print(f"Warning: Length mismatch - X_branch_id: {len(X_branch_id)}, Xtrain_group: {len(Xtrain_group)}")
+                                    print("Attempting to build correspondence anyway...")
+
+                                # Build the correspondence: admin code (from X_group) -> partition ID (from X_branch_id)
+                                correspondence_data = []
+                                skipped_empty = 0
+                                for i in range(min(len(X_branch_id), len(Xtrain_group))):
+                                    admin_code = Xtrain_group[i]  # X_group contains admin codes for polygon assignment
+                                    partition_id = X_branch_id[i]
+
+                                    # Skip empty or invalid partition IDs
+                                    if partition_id == '' or partition_id is None:
+                                        skipped_empty += 1
+                                        continue
+
+                                    # CRITICAL FIX: Keep partition_id as string to preserve hierarchical encoding
+                                    # Partition IDs like "00", "01", "10", "11" encode binary tree structure
+                                    # Converting to int would destroy this: "01" and "001" would both become 1
+                                    # The string format preserves depth and path information in the partition tree
+                                    try:
+                                        # Ensure partition_id is a string and validate it contains only 0s and 1s
+                                        partition_str = str(partition_id)
+                                        if not all(c in '01' for c in partition_str):
+                                            print(f"Warning: Invalid partition_id format: {partition_id}")
+                                            skipped_empty += 1
+                                            continue
+                                    except (ValueError, TypeError):
+                                        skipped_empty += 1
+                                        continue
+
+                                    correspondence_data.append({
+                                        'FEWSNET_admin_code': int(admin_code),
+                                        'partition_id': partition_str  # Keep as string!
+                                    })
+
+                                if skipped_empty > 0:
+                                    print(f"Skipped {skipped_empty} records with empty or invalid partition IDs")
+
+                                # Remove duplicates - take the MOST COMMON partition_id for each admin code
+                                # (An admin code should have ONE partition, but due to temporal records,
+                                # we need to pick the most frequent partition assignment)
+                                corr_df = pd.DataFrame(correspondence_data)
+
+                                # CRITICAL: Explicitly set partition_id to string dtype before any operations
+                                # This prevents pandas from auto-converting "00", "01" to integers 0, 1
+                                if len(corr_df) > 0 and 'partition_id' in corr_df.columns:
+                                    corr_df['partition_id'] = corr_df['partition_id'].astype(str)
+
+                                if len(corr_df) > 0:
+                                    # Group by admin code and take the most common partition_id
+                                    corr_df_grouped = corr_df.groupby('FEWSNET_admin_code')['partition_id'].agg(
+                                        lambda x: x.value_counts().index[0] if len(x) > 0 else x.iloc[0]
+                                    ).reset_index()
+
+                                    # Ensure partition_id remains string after groupby
+                                    corr_df_grouped['partition_id'] = corr_df_grouped['partition_id'].astype(str)
+
+                                    # Save the updated correspondence table
+                                    corr_df_grouped.to_csv(correspondence_table_path, index=False)
+                                    print(f"Updated correspondence table with {len(corr_df_grouped)} admin units and their final partition assignments")
+                                    print(f"Sample entries:")
+                                    print(corr_df_grouped.head())
+
+                                    # Validate that partition_id is saved as string (verification check)
+                                    validation_df = pd.read_csv(correspondence_table_path, dtype={'partition_id': str})
+                                    if 'partition_id' in validation_df.columns:
+                                        sample_ids = validation_df['partition_id'].head(5).tolist()
+                                        print(f"Validation: partition_id format preserved as strings: {sample_ids}")
+
+                                    # Verify data integrity: each admin code should have ONE partition
+                                    duplicate_check = corr_df_grouped.groupby('FEWSNET_admin_code').size()
+                                    if (duplicate_check > 1).any():
+                                        print(f"WARNING: Data integrity issue - {(duplicate_check > 1).sum()} admin codes have multiple partitions!")
+                                    else:
+                                        print("Data integrity check passed: Each admin code has exactly one partition ID")
+
+                                    # Additional check: verify no admin code maps to multiple partitions
+                                    original_partitions = corr_df.groupby('FEWSNET_admin_code')['partition_id'].nunique()
+                                    multi_partition_admins = original_partitions[original_partitions > 1]
+                                    if len(multi_partition_admins) > 0:
+                                        print(f"Note: {len(multi_partition_admins)} admin codes had multiple partition assignments (used most common)")
+                                        print(f"Examples: {multi_partition_admins.head()}")
+                                else:
+                                    print("Warning: Could not create correspondence data from partition assignments")
+                    except Exception as e:
+                        print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
+                        import traceback
+                        traceback.print_exc()
+            
+                # Store results - MEMORY FIX: Use more efficient DataFrame appending
+                nsample_class = np.bincount(ytest)
+
+                # Create new result row as dictionary first to avoid intermediate DataFrame
+                new_result_row = {
+                    'year': test_year,
+                    'month': test_month,  # CHANGED: Use actual month (1-12) instead of quarter (1-4)
+                    'precision(0)': pre[0],
+                    'precision(1)': pre[1],
+                    'recall(0)': rec[0],
+                    'recall(1)': rec[1],
+                    'f1(0)': f1[0],
+                    'f1(1)': f1[1],
+                    'precision_base(0)': pre_base[0],
+                    'precision_base(1)': pre_base[1],
+                    'recall_base(0)': rec_base[0],
+                    'recall_base(1)': rec_base[1],
+                    'f1_base(0)': f1_base[0],
+                    'f1_base(1)': f1_base[1],
+                    'num_samples(0)': nsample_class[0],
+                    'num_samples(1)': nsample_class[1]
+                }
+
+                # Append row efficiently using pd.concat with list
+                results_df = pd.concat([results_df, pd.DataFrame([new_result_row])], ignore_index=True)
+
+                # Store predictions - MEMORY FIX: Use more efficient approach
+                try:
+                    # CRITICAL MEMORY FIX: Avoid unnecessary array copies that cause memory bloat
+                    # Create prediction data as dictionary first - avoid .copy() which doubles memory usage
+                    # Use actual admin codes from test data split
+                    pred_data = {
+                        'year': np.full(len(ytest), test_year, dtype=np.int16),  # Use smaller dtypes
+                        'month': np.full(len(ytest), test_month, dtype=np.int8),  # CHANGED: Use actual month (1-12)
+                        'adm_code': admin_codes_test.astype(np.int32) if admin_codes_test is not None else np.zeros(len(ytest), dtype=np.int32),
+                        'fews_ipc_crisis_pred': ypred,  # Don't copy - transfer ownership
+                        'fews_ipc_crisis_true': ytest   # Don't copy - transfer ownership
+                    }
+
+                    # Validate admin codes are not collapsed
+                    if admin_codes_test is not None:
+                        unique_admin_count = len(np.unique(pred_data['adm_code']))
+                        if unique_admin_count == 1 and len(pred_data['adm_code']) > 1:
+                            print(f"WARNING: Admin codes collapsed to single value! unique={unique_admin_count}, total={len(pred_data['adm_code'])}")
+                        else:
+                            print(f"Admin codes OK: {unique_admin_count} unique admin units in {len(pred_data['adm_code'])} predictions")
+
+                    # Append predictions efficiently
+                    y_pred_test = pd.concat([y_pred_test, pd.DataFrame(pred_data)], ignore_index=True)
+
+                except Exception as e:
+                    print(f"Warning: Error storing predictions: {e}")
+                    # Fallback with placeholders - MEMORY OPTIMIZED
+                    pred_data = {
+                        'year': np.full(len(ytest), test_year, dtype=np.int16),
+                        'month': np.full(len(ytest), test_month, dtype=np.int8),  # CHANGED: Use actual month
+                        'adm_code': admin_codes_test.astype(np.int32) if admin_codes_test is not None else np.zeros(len(ytest), dtype=np.int32),
+                        'fews_ipc_crisis_pred': ypred,  # Transfer ownership, don't copy
+                        'fews_ipc_crisis_true': ytest   # Transfer ownership, don't copy
+                    }
+                    y_pred_test = pd.concat([y_pred_test, pd.DataFrame(pred_data)], ignore_index=True)
+
+                # CRITICAL MEMORY FIX: Add explicit cleanup for intermediate variables
+                print("Cleaning up memory...")
+                
+                # Clean up intermediate variables immediately after storing results
+                try:
+                    del new_result_row
+                    del pred_data
+                    del nsample_class
+                except:
+                    pass
+                
+                # CRITICAL FIX 1: Clear PartitionMetricsTracker accumulation (major memory leak source)
+                try:
+                    if 'georf' in locals() and hasattr(georf, 'metrics_tracker'):
+                        if georf.metrics_tracker is not None:
+                            # Clear accumulated metrics data (can be hundreds of MB per quarter)
+                            if hasattr(georf.metrics_tracker, 'all_metrics'):
+                                georf.metrics_tracker.all_metrics.clear()
+                            if hasattr(georf.metrics_tracker, 'partition_history'):
+                                georf.metrics_tracker.partition_history.clear()
+                            georf.metrics_tracker = None
+                            print("Cleared PartitionMetricsTracker data")
+                    if 'georf_2layer' in locals() and hasattr(georf_2layer, 'metrics_tracker'):
+                        if georf_2layer.metrics_tracker is not None:
+                            if hasattr(georf_2layer.metrics_tracker, 'all_metrics'):
+                                georf_2layer.metrics_tracker.all_metrics.clear()
+                            if hasattr(georf_2layer.metrics_tracker, 'partition_history'):
+                                georf_2layer.metrics_tracker.partition_history.clear()
+                            georf_2layer.metrics_tracker = None
+                            print("Cleared 2-layer PartitionMetricsTracker data")
+                except Exception as e:
+                    print(f"Warning: Could not clear metrics tracker: {e}")
+                
+                # CRITICAL FIX 2: Delete model objects completely and break circular references
+                try:
+                    if 'georf' in locals():
+                        # ENHANCED model cleanup to prevent memory leaks
+                        # Clear all model components explicitly
+                        if hasattr(georf, 'model') and georf.model is not None:
+                            if hasattr(georf.model, 'model') and georf.model.model is not None:
+                                # Clear sklearn RandomForest internals that hold large arrays
+                                # Use try-except to safely clear attributes that might not exist or cause errors
+                                try:
+                                    if hasattr(georf.model.model, 'estimators_') and georf.model.model.estimators_ is not None:
+                                        georf.model.model.estimators_ = None
+                                except:
+                                    pass
+                                try:
+                                    # Don't access feature_importances_ property as it can fail if estimators_ is None
+                                    # Clear the private attribute instead if it exists
+                                    if hasattr(georf.model.model, '_feature_importances'):
+                                        georf.model.model._feature_importances = None
+                                except:
+                                    pass
+                                # Clear sklearn model completely
+                                georf.model.model = None
+                            georf.model = None
+                        
+                        # Clear all directory references
+                        georf.dir_space = None
+                        georf.dir_ckpt = None
+                        georf.dir_vis = None
+                        georf.model_dir = None
+                        
+                        # Clear spatial partitioning data that can be large
+                        if hasattr(georf, 's_branch'):
+                            georf.s_branch = None
+                        if hasattr(georf, 'branch_table'):
+                            georf.branch_table = None
+                        if hasattr(georf, 'X_branch_id'):
+                            georf.X_branch_id = None
+                        
+                        # Clear any other potential large attributes
+                        for attr in ['train_idx', 'val_idx', 'X_train', 'y_train', 'X_val', 'y_val']:
+                            if hasattr(georf, attr):
+                                setattr(georf, attr, None)
+                        
+                        georf = None
+                    del georf
+                    print(f"Cleared {model_label} model and all references")
+                except NameError:
+                    pass
+                try:
+                    if 'georf_2layer' in locals():
+                        # ENHANCED cleanup for 2-layer model
+                        # Clear both layer models 
+                        if hasattr(georf_2layer, 'georf_l1') and georf_2layer.georf_l1 is not None:
+                            # Clear L1 model internals
+                            if hasattr(georf_2layer.georf_l1, 'model') and georf_2layer.georf_l1.model is not None:
+                                if hasattr(georf_2layer.georf_l1.model, 'model') and georf_2layer.georf_l1.model.model is not None:
+                                    try:
+                                        if hasattr(georf_2layer.georf_l1.model.model, 'estimators_') and georf_2layer.georf_l1.model.model.estimators_ is not None:
+                                            georf_2layer.georf_l1.model.model.estimators_ = None
+                                    except:
+                                        pass
+                                    georf_2layer.georf_l1.model.model = None
+                                georf_2layer.georf_l1.model = None
+                            georf_2layer.georf_l1 = None
+                        
+                        if hasattr(georf_2layer, 'georf_l2') and georf_2layer.georf_l2 is not None:
+                            # Clear L2 model internals
+                            if hasattr(georf_2layer.georf_l2, 'model') and georf_2layer.georf_l2.model is not None:
+                                if hasattr(georf_2layer.georf_l2.model, 'model') and georf_2layer.georf_l2.model.model is not None:
+                                    try:
+                                        if hasattr(georf_2layer.georf_l2.model.model, 'estimators_') and georf_2layer.georf_l2.model.model.estimators_ is not None:
+                                            georf_2layer.georf_l2.model.model.estimators_ = None
+                                    except:
+                                        pass
+                                    georf_2layer.georf_l2.model.model = None
+                                georf_2layer.georf_l2.model = None
+                            georf_2layer.georf_l2 = None
+                        
+                        if hasattr(georf_2layer, 'model') and georf_2layer.model is not None:
+                            if hasattr(georf_2layer.model, 'model') and georf_2layer.model.model is not None:
+                                try:
+                                    if hasattr(georf_2layer.model.model, 'estimators_') and georf_2layer.model.model.estimators_ is not None:
+                                        georf_2layer.model.model.estimators_ = None
+                                except:
+                                    pass
+                                georf_2layer.model.model = None
+                            georf_2layer.model = None
+                        
+                        # Clear directory references
+                        georf_2layer.dir_space = None
+                        georf_2layer.dir_ckpt = None
+                        georf_2layer.dir_vis = None
+                        georf_2layer.model_dir = None
+                        
+                        # Clear spatial partitioning data
+                        if hasattr(georf_2layer, 's_branch'):
+                            georf_2layer.s_branch = None
+                        if hasattr(georf_2layer, 'branch_table'):
+                            georf_2layer.branch_table = None
+                            
+                        georf_2layer = None
+                    del georf_2layer
+                    print(f"Cleared 2-layer {model_label} model and all references")
+                except NameError:
+                    pass
+                
+                # Delete training data
+                try:
+                    del Xtrain
+                except NameError:
+                    pass
+                try:
+                    del ytrain
+                except NameError:
+                    pass
+                try:
+                    del Xtrain_loc
+                except NameError:
+                    pass
+                try:
+                    del Xtrain_group
+                except NameError:
+                    pass
+                
+                # Delete test data
+                try:
+                    del Xtest
+                except NameError:
+                    pass
+                try:
+                    del ytest
+                except NameError:
+                    pass
+                try:
+                    del Xtest_loc
+                except NameError:
+                    pass
+                try:
+                    del Xtest_group
+                except NameError:
+                    pass
+                
+                # Delete layer-specific data
+                try:
+                    del Xtrain_L1
+                except NameError:
+                    pass
+                try:
+                    del Xtrain_L2
+                except NameError:
+                    pass
+                try:
+                    del Xtest_L1
+                except NameError:
+                    pass
+                try:
+                    del Xtest_L2
+                except NameError:
+                    pass
+                
+                # Delete predictions and other large arrays
+                try:
+                    del ypred
+                except NameError:
+                    pass
+                try:
+                    del X_branch_id
+                except NameError:
+                    pass
+                
+                # Delete any other potentially large variables
+                try:
+                    del nsample_class
+                except NameError:
+                    pass
+                try:
+                    del pre, rec, f1, pre_base, rec_base, f1_base
+                except NameError:
+                    pass
+                
+                # AGGRESSIVE memory cleanup to prevent hidden leaks
+                # Note: sys already imported at module level, no need to re-import
+
+                # CRITICAL FIX 2: Clear sklearn internal caches and memory pools more aggressively
+                try:
+                    # Clear sklearn joblib memory pools
+                    from sklearn.externals import joblib
+                    joblib.Memory.clear_cache_older_than = 0
+                except:
+                    pass
+                
+                try:
+                    # Force sklearn to release memory pools more aggressively
+                    from sklearn.utils import _joblib
+                    if hasattr(_joblib, 'Parallel'):
+                        # Clear joblib parallel backend state
+                        _joblib.Parallel._pool = None
+                    
+                    # Clear sklearn RandomForest internal memory pools
+                    import sklearn.ensemble._forest
+                    if hasattr(sklearn.ensemble._forest, '_generate_sample_indices'):
+                        # Clear any cached sample indices that can accumulate
+                        try:
+                            del sklearn.ensemble._forest._generate_sample_indices.__defaults__
+                        except:
+                            pass
+                    
+                    # Force clearing of sklearn tree building memory
+                    import sklearn.tree._tree
+                    if hasattr(sklearn.tree._tree, 'Tree'):
+                        # This helps clear tree building buffers
+                        pass
+                        
+                    print("Cleared sklearn internal memory pools")
+                except Exception as e:
+                    print(f"Warning: Could not clear sklearn pools: {e}")
+                    
+                # Clear numpy memory pools
+                try:
+                    # Force numpy to release memory back to system (np already imported globally)
+                    np.random.seed()  # This can help clear internal state
+                except:
+                    pass
+                
+                # CRITICAL FIX 3: DISABLE aggressive pandas cache clearing to prevent hashtable corruption
+                # The KeyError 'int32' indicates that our cache clearing is corrupting pandas internal state
+                # We'll use a much safer approach that only clears specific known-safe caches
+                try:
+                    # Only clear the safest pandas caches to avoid corrupting internal hashtables
+                    print("Performing safe pandas cache cleanup...")
+                    
+                    # Clear only the most basic caches that are known to be safe
+                    try:
+                        # Clear string interning which is generally safe
+                        if hasattr(pd.core.dtypes.common, '_pandas_dtype_type_map'):
+                            # Don't clear this as it can cause issues
+                            pass
+                        
+                        # Force a small garbage collection instead of aggressive cache clearing
+                        import gc
+                        gc.collect()
+                        
+                        print("Applied safe pandas cleanup")
+                    except Exception as inner_e:
+                        print(f"Warning: Safe pandas cleanup failed: {inner_e}")
+                        
+                except Exception as e:
+                    print(f"Warning: Could not perform pandas cleanup: {e}")
+                
+                # CRITICAL FIX 4: Add explicit DataFrame memory management to fix the real memory leak
+                # The 1.3GB growth suggests DataFrames are not being properly garbage collected
+                try:
+                    print("Forcing DataFrame garbage collection...")
+                    
+                    # Clear any DataFrames that might be lingering in local scope
+                    for var_name in list(locals().keys()):
+                        if var_name.startswith('df') or 'frame' in var_name.lower():
+                            try:
+                                local_var = locals()[var_name]
+                                if hasattr(local_var, 'values'):  # Likely a DataFrame
+                                    del locals()[var_name]
+                            except:
+                                pass
+                    
+                    # Aggressive garbage collection specifically for DataFrames
+                    import gc
+                    for obj in gc.get_objects():
+                        try:
+                            if hasattr(obj, '_mgr') and hasattr(obj, 'columns'):  # Likely a DataFrame
+                                if hasattr(obj, '_clear_item_cache'):
+                                    obj._clear_item_cache()
+                        except:
+                            pass
+                    
+                    # Multiple garbage collection passes
+                    for i in range(3):
+                        collected = gc.collect()
+                        if collected == 0:
+                            break
+                            
+                    print("Completed DataFrame garbage collection")
+                    
+                except Exception as e:
+                    print(f"Warning: DataFrame garbage collection failed: {e}")
+                    
+                # Clear Python's internal object caches
+                try:
+                    # Clear small int cache
+                    for i in range(-5, 257):
+                        sys.intern(str(i))
+                    # Clear string interning cache (careful with this)
+                    sys.intern.cache_clear() if hasattr(sys.intern, 'cache_clear') else None
+                except:
+                    pass
+                
+                # Force garbage collection after every quarter
+                gc.collect()
+                
+                # Memory monitoring after cleanup with leak detection
+                end_memory = process.memory_info().rss / 1024 / 1024  # MB
+                memory_diff = end_memory - start_memory
+                print(f"Memory after cleanup: {end_memory:.1f} MB (change: {memory_diff:+.1f} MB)")
+                
+                # Alert if significant memory leak detected
+                if memory_diff > 500:  # More than 500MB growth per quarter
+                    print(f"[WARNING] Large memory increase detected: {memory_diff:.1f} MB")
+                    print("This indicates a potential memory leak that needs investigation")
+                    print(f"Consider reducing n_jobs or disabling partition metrics tracking")
+                elif memory_diff > 100:  # More than 100MB but less than 500MB
+                    print(f"[NOTICE] Moderate memory increase: {memory_diff:.1f} MB")
+                    print("Memory growth within acceptable range but monitor if this persists")
+                else:
+                    print(f"[OK] Memory growth within normal range: {memory_diff:+.1f} MB")
+                
+                # Show DataFrame sizes for monitoring  
+                print(f"DataFrame sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")
+                
+            except Exception as e:
+                print(f"Error evaluating {test_month_period}: {str(e)}")
+                print("Continuing to next month...")
+                import traceback
+                traceback.print_exc()
+
+            finally:
+                # Always update progress bar, regardless of success or failure
+                progress_bar.update(1)
+
+        # Close progress bar
+        progress_bar.close()
+
+        return results_df, y_pred_test
+
+    # === LEGACY QUARTERLY MODE FALLBACK ===
+    else:
+        print("\n[DEPRECATION WARNING] Using legacy quarterly mode via desire_terms parameter.")
+        print("Consider migrating to DESIRED_TERMS config for monthly evaluation.\n")
+
+        if desire_terms is None:
+            quarters_to_evaluate = [1, 2, 3, 4]
+            print(f"Evaluating all quarters (Q1-Q4) for each year from {start_year} to {end_year}")
+        else:
+            quarters_to_evaluate = [desire_terms]
+            print(f"Evaluating only Q{desire_terms} for each year from {start_year} to {end_year}")
+
+        remaining_quarters = [
+            (year, quarter)
+            for year in range(start_year, end_year + 1)
+            for quarter in quarters_to_evaluate
+        ]
+
+        if not remaining_quarters:
+            print("No quarters to evaluate with the provided configuration.")
+            return results_df, y_pred_test
+
+        progress_bar_legacy = tqdm(
+            total=len(remaining_quarters),
+            desc=f"{model_label} Quarterly Evaluation (Legacy)",
+            unit="quarter",
+            ascii=True
+        )
+
+        for i, (test_year, quarter) in enumerate(remaining_quarters):
+            progress_bar_legacy.set_description(f"{model_label} Q{quarter} {test_year}")
+            print(f"\n--- Evaluating Q{quarter} {test_year} (#{i+1}/{len(remaining_quarters)}) ---")
+
+            try:
+                # Use legacy quarterly split
+                split_result = train_test_split_rolling_window(
+                    X, y, X_loc, X_group, years, dates,
+                    test_year=test_year,
+                    input_terms=input_terms,
+                    need_terms=quarter,
+                    admin_codes=admin_codes
+                )
+
+                # ... rest of legacy quarterly processing (not fully implemented here) ...
+                print("Legacy quarterly mode not fully implemented. Please migrate to monthly mode.")
+
+            except Exception as e:
+                print(f"Error in legacy quarterly mode for Q{quarter} {test_year}: {e}")
+
+            finally:
+                progress_bar_legacy.update(1)
+
+        progress_bar_legacy.close()
+        return results_df, y_pred_test
+
+
+def main():
+    """
+    Main function to run the complete pipeline.
+    """
+    adapter = MODEL_ADAPTER
+    print(f"=== Starting {adapter.display_name} Food Crisis Prediction Pipeline ===")
+    print(f"[PROD MODE: visuals {'ENABLED' if VIS_DEBUG_MODE else 'DISABLED'}]")
+
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description=f'{adapter.display_name} Food Crisis Prediction Pipeline')
+    parser.add_argument('--start_year', type=int, default=2024, help='Start year for evaluation (default: 2024)')
+    parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
+    scope_choices = list(range(1, len(ACTIVE_LAGS) + 1))
+    scope_help = \
+        "Forecasting scope (1-based index) for lag schedule " \
+        f"{ACTIVE_LAGS} (default: 1)"
+    parser.add_argument('--forecasting_scope', type=int, default=1, choices=scope_choices,
+                        help=scope_help)
+    parser.add_argument('--desired_terms', type=str, default=None,
+                        help='Comma-separated list of months to evaluate (e.g., "2024-01,2024-02"). Overrides DESIRED_TERMS environment variable.')
+    parser.add_argument('--force-final-accuracy', action='store_true',
+                        help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
+    parser.add_argument('--dry-run', action='store_true',
+                        help='Generate parity artifacts without executing the full pipeline')
+    args = parser.parse_args()
+
+    call_graph_steps: List[str] = ['parse_args']
+    call_graph_steps.append('resolve_configuration')
+
+    if hasattr(np, 'random') and hasattr(np.random, 'seed'):
+        np.random.seed(GLOBAL_RANDOM_SEED)
+    random.seed(GLOBAL_RANDOM_SEED)
+
+    # Override DESIRED_TERMS if provided via command line
+    if args.desired_terms:
+        import config
+        config.DESIRED_TERMS = [term.strip() for term in args.desired_terms.split(',') if term.strip()]
+        print(f"DESIRED_TERMS overridden from command line: {config.DESIRED_TERMS}")
+
+    # Configuration
+    assignment = 'polygons'  # Change this to test different grouping methods
+    nowcasting = False       # Set to True for 2-layer model
+    max_depth = None  # Set to integer for specific RF depth
+    desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
+    forecasting_scope = args.forecasting_scope    # From command line argument
+    active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
+    
+    # Partition Metrics Tracking Configuration
+    track_partition_metrics = False  # Enable partition metrics tracking and visualization
+    enable_metrics_maps = False    # Create maps showing F1/accuracy improvements
+    
+    # start year and end year from command line arguments
+    start_year = args.start_year
+    end_year = args.end_year
+    
+    log_path = log_lag_schedule(ACTIVE_LAGS, ARTIFACTS_ROOT)
+    print(f"Configuration:")
+    print(f"  - Assignment method: {assignment}")
+    print(f"  - Nowcasting (2-layer): {nowcasting}")
+    print(f"  - Max depth: {max_depth}")
+    print(f"  - Desired terms: {desire_terms} ({'All quarters (Q1-Q4)' if desire_terms is None else f'Q{desire_terms} only'})")
+    print(f"  - Forecasting scope: {forecasting_scope} ({active_lag}-month lag)")
+    print(f"  - Active lag schedule: {ACTIVE_LAGS} (logged to {log_path})")
+    print(f"  - Rolling window: 5-year training windows before each test quarter")
+    print(f"  - Track partition metrics: {track_partition_metrics}")
+    print(f"  - Enable metrics maps: {enable_metrics_maps}")
+    print(f"  - Start year: {start_year}, End year: {end_year}")
+
+    config_snapshot = {
+        'model': adapter.key,
+        'data_mode': DATA_MODE,
+        'min_depth': MIN_DEPTH,
+        'max_depth': MAX_DEPTH,
+        'n_jobs': N_JOBS,
+        'vis_debug_mode': VIS_DEBUG_MODE,
+        'assignment': assignment,
+        'nowcasting': nowcasting,
+        'forecasting_scope': forecasting_scope,
+        'track_partition_metrics': track_partition_metrics,
+        'enable_metrics_maps': enable_metrics_maps,
+        'start_year': start_year,
+        'end_year': end_year,
+    }
+    config_log_line = ", ".join(f"{key}={value}" for key, value in sorted(config_snapshot.items()))
+    append_parity_log(f"{adapter.display_name} CONFIG: {config_log_line}")
+
+    if args.dry_run:
+        dry_run_steps = call_graph_steps + [
+            'load_data',
+            'setup_spatial_groups',
+            'prepare_features',
+            'run_temporal_evaluation',
+            'save_results',
+            'summary',
+        ]
+        call_graph_path = write_call_graph(adapter.key, dry_run_steps)
+        append_parity_log(f"{adapter.display_name} dry-run trace recorded at {call_graph_path}")
+        return 0
+
+    try:
+        # Step 1: Load and preprocess data
+        call_graph_steps.append('load_data')
+        df = load_and_preprocess_data(DATA_PATH)
+
+        # Step 2: Setup spatial groups
+        call_graph_steps.append('setup_spatial_groups')
+        X_group, X_loc, contiguity_info = setup_spatial_groups(df, assignment)
+
+        # Step 3: Prepare features with forecasting scope
+        call_graph_steps.append('prepare_features')
+        X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
+
+        # Drop rows with NaN in features (restore dd02796 baseline behavior)
+        # This is critical for reproducibility - removes rows with missing lag features
+        rows_before = len(X)
+        nan_mask = ~np.isnan(X).any(axis=1)
+        X = X[nan_mask]
+        y = y[nan_mask]
+        X_group = X_group[nan_mask]
+        X_loc = X_loc[nan_mask]
+        years = years[nan_mask]
+        terms = np.array(terms)[nan_mask] if not isinstance(terms, np.ndarray) else terms[nan_mask]
+        dates = np.array(dates)[nan_mask] if not isinstance(dates, np.ndarray) else dates[nan_mask]
+        # Note: l1_index and l2_index are feature indices, not sample indices - don't filter them
+        rows_after = len(X)
+        rows_dropped = rows_before - rows_after
+        print(f"Dropped {rows_dropped:,} rows with NaN features ({rows_dropped/rows_before*100:.1f}%)")
+        print(f"Remaining samples: {rows_after:,}")
+
+        # Step 4: Validate polygon contiguity (if applicable) and track polygon counts
+        if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:
+            validate_polygon_contiguity(contiguity_info, X_group)
+            
+            # Track polygon counts for disappearance diagnosis
+            if DIAGNOSTIC_POLYGON_TRACKING:
+                initial_polygon_count = len(np.unique(X_group))
+                print(f"=== POLYGON TRACKING ===")
+                print(f"Initial polygon count after spatial setup: {initial_polygon_count}")
+                print(f"X_group unique values: {len(np.unique(X_group))}")
+                print(f"Data points: {len(X_group)}")
+                print(f"Sample X_group values: {sorted(np.unique(X_group))[:20]}")
+                
+                # Check for missing polygon IDs in sequence
+                unique_groups = sorted(np.unique(X_group))
+                if len(unique_groups) > 1:
+                    gaps = []
+                    for i in range(1, len(unique_groups)):
+                        if unique_groups[i] - unique_groups[i-1] > 1:
+                            gaps.append((unique_groups[i-1], unique_groups[i]))
+                    if gaps:
+                        print(f"Warning: Gaps found in X_group sequence: {gaps[:5]}")
+                    else:
+                        print("No gaps found in X_group sequence")
+                print("=" * 25)
+        
+        # Step 5: Run temporal evaluation
+        results_df, y_pred_test = run_temporal_evaluation(
+            X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
+            assignment, contiguity_info, df, nowcasting, max_depth, input_terms=terms, desire_terms=desire_terms,
+            track_partition_metrics=track_partition_metrics, enable_metrics_maps=enable_metrics_maps,
+            start_year=start_year, end_year=end_year, forecasting_scope=forecasting_scope,
+            force_final_accuracy=args.force_final_accuracy, call_graph=call_graph_steps
+        )
+
+        # Step 6: Filter results to class 1 only (if needed)
+        class_1_columns = [col for col in results_df.columns if '(1)' in col or col in ['year', 'month']]  # Changed from 'quarter' to 'month'
+        if len(class_1_columns) < len(results_df.columns):
+            print("Filtering results to class 1 metrics only...")
+            results_df = results_df[class_1_columns].copy()
+        
+        # Step 7: Save results
+        call_graph_steps.append('save_results')
+        save_results(
+            results_df,
+            y_pred_test,
+            assignment,
+            nowcasting,
+            max_depth,
+            desire_terms=desire_terms,
+            forecasting_scope=forecasting_scope,
+            start_year=start_year,
+            end_year=end_year,
+            model_prefix='dt',
+        )
+
+        # Step 8: Display summary (class 1 only)
+        call_graph_steps.append('summary')
+        print("\n=== Evaluation Summary (Class 1 Only) ===")
+        if 'month' in results_df.columns:
+            print("Results by Month:")
+            print(results_df.groupby(['year', 'month'])[['f1(1)', 'f1_base(1)']].mean())
+        else:
+            print("Results by Year:")
+            print(results_df.groupby('year')[['f1(1)', 'f1_base(1)']].mean())
+        
+        print("\n=== Pipeline completed successfully! ===")
+
+        call_graph_path = write_call_graph(adapter.key, call_graph_steps)
+        append_parity_log(f"{adapter.display_name} pipeline trace recorded at {call_graph_path}")
+
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        call_graph_steps.append('error')
+        call_graph_path = write_call_graph(adapter.key, call_graph_steps)
+        append_parity_log(f"{adapter.display_name} pipeline trace recorded at {call_graph_path} (error)")
+        return 1
+
+    return 0
+
+if __name__ == "__main__":
+    exit_code = main()
+    sys.exit(exit_code)

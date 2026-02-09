@@ -356,13 +356,13 @@ def partition(model, X, y,
             qscore_arr = np.asarray(qscore)
 
             if qscore_arr.ndim == 0:
-              # Scalar risk multiplier – broadcast to all groups.
+              # Scalar risk multiplier - broadcast to all groups.
               score_df_dict['qscore'] = np.full(gscore_unique.shape, float(qscore_arr), dtype=float)
             elif qscore_arr.ndim == 1:
               for cls_idx, cls_q in enumerate(qscore_arr):
                 score_df_dict[f'qscore_class_{cls_idx}'] = np.full(gscore_unique.shape, float(cls_q), dtype=float)
             else:
-              # Unexpected shape – fall back to per-row max to avoid crashes and log it.
+              # Unexpected shape - fall back to per-row max to avoid crashes and log it.
               flattened = float(np.max(qscore_arr))
               score_df_dict['qscore'] = np.full(gscore_unique.shape, flattened, dtype=float)
 
@@ -470,14 +470,14 @@ def partition(model, X, y,
                     correspondence_before_path=prev_correspondence_path,
                     correspondence_after_path=current_correspondence_path,
                     save_path=swap_map_path,
-                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
+                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} -> {i_refine + 1}',
                     figsize=(14, 12),
                     VIS_DEBUG_MODE=VIS_DEBUG_MODE
                   )
                   if swap_fig is not None:
                     print(f"Generated contiguity swap map: {swap_map_path}")
                   else:
-                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
+                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} -> {i_refine + 1}")
                 except Exception as swap_error:
                   print(f"ERROR: Failed to create swap visualization: {swap_error}")
                   import traceback
@@ -589,7 +589,7 @@ def partition(model, X, y,
                     correspondence_before_path=prev_correspondence_path,
                     correspondence_after_path=current_correspondence_path,
                     save_path=swap_map_path,
-                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} → {i_refine + 1}',
+                    title=f'Partition Swaps - Round {i}, Branch {branch_id if branch_id else "root"}, Epoch {i_refine} -> {i_refine + 1}',
                     figsize=(14, 12),
                     VIS_DEBUG_MODE=VIS_DEBUG_MODE
                   )
@@ -597,7 +597,7 @@ def partition(model, X, y,
                   if swap_fig is not None:
                     print(f"Generated contiguity swap map: {swap_map_path}")
                   else:
-                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} → {i_refine + 1}")
+                    print(f"No swaps detected for Round {i}, Branch {branch_id}, Epoch {i_refine} -> {i_refine + 1}")
                     
                 except Exception as swap_error:
                   print(f"ERROR: Failed to create swap visualization: {swap_error}")
@@ -698,7 +698,7 @@ def partition(model, X, y,
       sig = 1
       #test only if a new split will give a depth > MIN_DEPTH
       #otherwise directly split
-      if (len(branch_id)+1) > min_depth or model.name == 'RF':
+      if (len(branch_id)+1) > min_depth or model.name in ('RF', 'DT'):
         print("Training base branch:")
 
         #get base branch data
@@ -725,7 +725,7 @@ def partition(model, X, y,
 
         #additional step for random forest
         #evaluate if previous fuller branch may outperform one sub-branch
-        if model.name == 'RF':
+        if model.name in ('RF', 'DT'):
           #for quick testing of design
           #not considering efficiency here
           if MODE == 'classification':

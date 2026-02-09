@@ -364,7 +364,12 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
         print("="*80)
 
         months_to_evaluate = [_parse_month_term(term) for term in DESIRED_TERMS]
-        progress_bar = tqdm(total=len(months_to_evaluate), desc=f"{model_label} Monthly Evaluation", unit="month")
+        progress_bar = tqdm(
+            total=len(months_to_evaluate),
+            desc=f"{model_label} Monthly Evaluation",
+            unit="month",
+            ascii=True,
+        )
 
         for i, test_month_period in enumerate(months_to_evaluate):
             test_year = test_month_period.year
@@ -1090,14 +1095,14 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                 
                 # Alert if significant memory leak detected
                 if memory_diff > 500:  # More than 500MB growth per quarter
-                    print(f"🚨 WARNING: Large memory increase detected: {memory_diff:.1f} MB")
+                    print(f"[ALERT] WARNING: Large memory increase detected: {memory_diff:.1f} MB")
                     print("This indicates a potential memory leak that needs investigation")
                     print(f"Consider reducing n_jobs or disabling partition metrics tracking")
                 elif memory_diff > 100:  # More than 100MB but less than 500MB
-                    print(f"⚠️  NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
+                    print(f"[WARNING]  NOTICE: Moderate memory increase: {memory_diff:.1f} MB")
                     print("Memory growth within acceptable range but monitor if this persists")
                 else:
-                    print(f"✅ Memory growth within normal range: {memory_diff:+.1f} MB")
+                    print(f"[OK] Memory growth within normal range: {memory_diff:+.1f} MB")
                 
                 # Show DataFrame sizes for monitoring
                 print(f"DataFrame sizes: results_df={len(results_df)} rows, y_pred_test={len(y_pred_test)} rows")

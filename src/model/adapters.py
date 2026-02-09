@@ -90,3 +90,17 @@ class XGBAdapter(BaseAdapter):
     def two_layer_fit_kwargs(self, *, feature_names_L1: Optional[list] = None) -> Dict[str, Any]:
         return {"feature_names_L1": feature_names_L1}
 
+
+class DTAdapter(BaseAdapter):
+    """Adapter for the GeoRF pipeline backed by Decision Trees."""
+
+    def __init__(self) -> None:
+        from src.model.GeoRF_DT import GeoRF_DT  # Local import avoids circular deps
+
+        super().__init__(
+            key="dt",
+            display_name="GeoDT",
+            baseline_label="DT",
+            model_cls=GeoRF_DT,
+            init_kwargs={},
+        )

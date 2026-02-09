@@ -345,7 +345,7 @@ def create_correspondence_table(df, years, dates, train_year, month, X_branch_id
             print(f"Diagnostic info saved to: {diagnostic_path}")
             raise ValueError(error_msg)
 
-        print(f"  ✓ Lengths match perfectly: {branch_id_length} records")
+        print(f"  [OK] Lengths match perfectly: {branch_id_length} records")
 
         # Add partition IDs to training data
         df_train.loc[:, 'partition_id'] = X_branch_id

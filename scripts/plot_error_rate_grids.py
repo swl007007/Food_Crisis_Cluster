@@ -2,7 +2,7 @@
 """
 Error Rate Choropleth Grid Generator
 Loads prediction CSVs, computes polygon-level error rates, and generates
-yearly and seasonal choropleth grids (4×3 yearly, 3×3 seasonal).
+yearly and seasonal choropleth grids (4x3 yearly, 3x3 seasonal).
 """
 
 import argparse
@@ -28,7 +28,7 @@ warnings.filterwarnings('ignore', category=FutureWarning)
 
 
 def map_month_to_season(month: int) -> str:
-    """Map month to season (DJFM, AMJJ, ASON). Dec-Mar → DJFM, Apr-Jul → AMJJ, Aug-Nov → ASON."""
+    """Map month to season (DJFM, AMJJ, ASON). Dec-Mar -> DJFM, Apr-Jul -> AMJJ, Aug-Nov -> ASON."""
     if month in [12, 1, 2, 3]:
         return "DJFM"
     elif month in [4, 5, 6, 7]:
@@ -135,7 +135,7 @@ def load_predictions(
         frames.append(df)
 
         if verbose and len(frames) <= 3:  # Print first few
-            print(f"  Loaded {fpath.name} → {scope}: {len(df)} rows")
+            print(f"  Loaded {fpath.name} -> {scope}: {len(df)} rows")
 
     if verbose and len(frames) > 3:
         print(f"  ... loaded {len(frames)} files total")
@@ -160,7 +160,7 @@ def load_predictions(
         original_len = len(combined)
         combined = combined[combined[date_col] >= start].copy()
         if verbose:
-            print(f"Applied start date filter (>= {start_date}): {original_len} → {len(combined)} rows")
+            print(f"Applied start date filter (>= {start_date}): {original_len} -> {len(combined)} rows")
         if len(combined) == 0:
             raise ValueError(f"No data after filtering for dates >= {start_date}")
 
@@ -169,7 +169,7 @@ def load_predictions(
         original_len = len(combined)
         combined = combined[combined[date_col] <= end].copy()
         if verbose:
-            print(f"Applied end date filter (<= {end_date}): {original_len} → {len(combined)} rows")
+            print(f"Applied end date filter (<= {end_date}): {original_len} -> {len(combined)} rows")
         if len(combined) == 0:
             raise ValueError(f"No data after filtering for dates <= {end_date}")
 
@@ -186,7 +186,7 @@ def load_predictions(
         print(f"Date range: {combined[date_col].min()} to {combined[date_col].max()}")
         print(f"Scopes: {sorted(combined['scope'].unique())}")
         if start_date or end_date:
-            print(f"✓ Date filtering applied: {'start=' + str(start_date) if start_date else ''} {'end=' + str(end_date) if end_date else ''}")
+            print(f"[OK] Date filtering applied: {'start=' + str(start_date) if start_date else ''} {'end=' + str(end_date) if end_date else ''}")
 
     return combined
 
@@ -316,7 +316,7 @@ def _safe_prf(tp: int, fp: int, fn: int) -> tuple:
 
 def _get_builtin_region_map() -> Dict[str, str]:
     """
-    Returns builtin ADMIN0 → region mapping for FEWS NET countries.
+    Returns builtin ADMIN0 -> region mapping for FEWS NET countries.
 
     Regions: East Africa, West Africa, Southern Africa, North Africa,
              Middle East, South Asia, Southeast Asia, Latin America
@@ -481,7 +481,7 @@ def compute_admin0_and_region_metrics(
     if found_uid != uid_col:
         polys = polys.rename(columns={found_uid: uid_col})
         if verbose:
-            print(f"  Renamed polygon column '{found_uid}' → '{uid_col}'")
+            print(f"  Renamed polygon column '{found_uid}' -> '{uid_col}'")
 
     # Check if ADMIN0 exists
     if admin0_col not in polys.columns:
@@ -520,12 +520,12 @@ def compute_admin0_and_region_metrics(
 
     # Add region column
     merged['region'] = merged[admin0_col].map(region_map)
-    # Unmapped countries → "Other"
+    # Unmapped countries -> "Other"
     unmapped = merged['region'].isna().sum()
     if unmapped > 0:
         unmapped_countries = merged[merged['region'].isna()][admin0_col].unique()
         if verbose:
-            print(f"  {unmapped} rows from unmapped countries → 'Other': {list(unmapped_countries)}")
+            print(f"  {unmapped} rows from unmapped countries -> 'Other': {list(unmapped_countries)}")
         merged.loc[merged['region'].isna(), 'region'] = 'Other'
 
     # 4. Process each scope
@@ -696,7 +696,7 @@ def prepare_polys(
     if found_uid != uid_col:
         polys = polys.rename(columns={found_uid: uid_col})
         if verbose:
-            print(f"  Renamed polygon column '{found_uid}' → '{uid_col}'")
+            print(f"  Renamed polygon column '{found_uid}' -> '{uid_col}'")
 
     # Ensure valid geometries
     invalid = (~polys.geometry.is_valid).sum()
@@ -734,7 +734,7 @@ def render_grid(
     filter_label: str = ''
 ) -> Dict[str, int]:
     """
-    Render grid of choropleth maps (4×3 yearly, 3×3 seasonal).
+    Render grid of choropleth maps (4x3 yearly, 3x3 seasonal).
     Returns dict of subplot counts for reporting.
 
     Parameters:
@@ -785,7 +785,7 @@ def render_grid(
                 (agg_df[col_label] == col_val)
             ].copy()
 
-            title = f"{row_label.capitalize()} {row_val} — {col_val}{filter_label}"
+            title = f"{row_label.capitalize()} {row_val} - {col_val}{filter_label}"
 
             if len(subset) == 0:
                 # No data
@@ -1098,7 +1098,7 @@ def main():
     print(f"Using filtered dataset: {len(df)} rows")
     if start_date or end_date:
         print(f"Date range: {df[args.date_col].min()} to {df[args.date_col].max()}")
-        print(f"✓ Metrics will reflect date filtering: {'start=' + str(start_date) if start_date else ''} {'end=' + str(end_date) if end_date else ''}")
+        print(f"[OK] Metrics will reflect date filtering: {'start=' + str(start_date) if start_date else ''} {'end=' + str(end_date) if end_date else ''}")
 
     try:
         metrics_summary = compute_admin0_and_region_metrics(
@@ -1233,7 +1233,7 @@ def main():
     print(f"Date range in data: {report['date_range']['min']} to {report['date_range']['max']}")
     if start_date or end_date:
         print(f"Date filters applied: {f'start={start_date}' if start_date else ''} {f'end={end_date}' if end_date else ''}")
-        print("✓ All outputs (yearly, seasonal, country, region metrics) use this filtered dataset")
+        print("[OK] All outputs (yearly, seasonal, country, region metrics) use this filtered dataset")
     else:
         print("Date filters: None (all available data used)")
     print(f"Years plotted: {report['years_plotted']}")

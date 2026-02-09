@@ -138,7 +138,7 @@ def _apply_partition_smote(
 # ============================================================================
 
 def load_partition_mapping(partition_map_path: str) -> pd.DataFrame:
-    """Load cluster_mapping_k40_nc4.csv with FEWSNET_admin_code → cluster_id mapping."""
+    """Load cluster_mapping_k40_nc4.csv with FEWSNET_admin_code -> cluster_id mapping."""
 
     print(f"\nLoading partition mapping from {partition_map_path}")
     partition_df = pd.read_csv(partition_map_path)
@@ -600,7 +600,7 @@ def main():
         df, temp_X_group, X_loc, forecasting_scope=args.forecasting_scope
     )
 
-    print(f"✓ Features prepared: {X.shape}")
+    print(f"[OK] Features prepared: {X.shape}")
     print(f"  - Total features: {X.shape[1]}")
     print(f"  - L1 features (time-invariant): {len(l1_index)}")
     print(f"  - L2 features (time-variant + lagged): {len(l2_index)}")
@@ -828,11 +828,11 @@ def main():
         pooled_metrics = metrics_df[metrics_df['model'] == 'pooled']
         partitioned_metrics = metrics_df[metrics_df['model'] == 'partitioned']
 
-        print(f"\nOverall Performance (Mean ± Std):")
-        print(f"  Partitioned F1: {partitioned_metrics['f1'].mean():.4f} ± {partitioned_metrics['f1'].std():.4f}")
-        print(f"  Pooled F1:      {pooled_metrics['f1'].mean():.4f} ± {pooled_metrics['f1'].std():.4f}")
+        print(f"\nOverall Performance (Mean +- Std):")
+        print(f"  Partitioned F1: {partitioned_metrics['f1'].mean():.4f} +- {partitioned_metrics['f1'].std():.4f}")
+        print(f"  Pooled F1:      {pooled_metrics['f1'].mean():.4f} +- {pooled_metrics['f1'].std():.4f}")
         f1_diff = partitioned_metrics['f1'].values - pooled_metrics['f1'].values
-        print(f"  F1 Improvement: {f1_diff.mean():.4f} ± {f1_diff.std():.4f}")
+        print(f"  F1 Improvement: {f1_diff.mean():.4f} +- {f1_diff.std():.4f}")
     else:
         print("No monthly metrics available for summary.")
 

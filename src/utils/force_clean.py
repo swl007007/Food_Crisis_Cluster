@@ -20,7 +20,7 @@ def force_cleanup_directories(*, pipeline: str = "gf") -> None:
     Parameters
     ----------
     pipeline
-        Either ``"gf"`` for GeoRF or ``"xgb"`` for the XGBoost baseline.
+        ``"gf"`` for GeoRF, ``"xgb"`` for GeoXGB, or ``"dt"`` for GeoDT.
     """
 
     print("Performing force cleanup of result directories...")
@@ -28,6 +28,9 @@ def force_cleanup_directories(*, pipeline: str = "gf") -> None:
     if pipeline == "xgb":
         result_dirs = glob.glob("result_GeoXGB*")
         dir_label = "result_GeoXGB*"
+    elif pipeline == "dt":
+        result_dirs = glob.glob("result_GeoDT*")
+        dir_label = "result_GeoDT*"
     else:
         result_dirs = glob.glob("result_GeoRF*")
         dir_label = "result_GeoRF*"
@@ -54,14 +57,14 @@ def force_cleanup_directories(*, pipeline: str = "gf") -> None:
                 shutil.rmtree(result_dir, ignore_errors=True)
 
                 if not os.path.exists(result_dir):
-                    print(f"✓ Successfully deleted: {result_dir}")
+                    print(f"[OK] Successfully deleted: {result_dir}")
                     cleaned_count += 1
                 else:
-                    print(f"✗ Failed to delete: {result_dir} (still exists)")
+                    print(f"[ERROR] Failed to delete: {result_dir} (still exists)")
                     failed_count += 1
 
         except Exception as exc:  # pragma: no cover - best-effort cleanup
-            print(f"✗ Error deleting {result_dir}: {exc}")
+            print(f"[ERROR] Error deleting {result_dir}: {exc}")
             failed_count += 1
 
         time.sleep(0.1)
