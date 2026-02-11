@@ -13,11 +13,12 @@ import numpy as np
 # import tensorflow as tf
 import pandas as pd
 import os
+import hashlib
+import pickle
 
 import sklearn
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
-import pickle
 
 from config import *
 from src.helper.helper import get_X_branch_id_by_group
@@ -88,6 +89,8 @@ class DTmodel():
     self._smote_unavailable_warned = False
     self._smote_skip_logged = set()
     self._smote_failure_logged = set()
+    self._checkpoint_cache = {}
+    self._checkpoint_path_overrides = {}
 
 
   def train(self, X, y, branch_id = None, mode = MODE, sample_weights = None, sample_weights_by_class = None):#, num_layers = NUM_LAYERS_DNN
@@ -169,31 +172,120 @@ class DTmodel():
   def _normalize_branch_id(self, branch_id):
     """Normalize branch identifiers for Windows-safe checkpoint filenames."""
     bid = '' if branch_id is None else str(branch_id)
-    # Remove nulls/control whitespace that can produce invalid Windows paths.
-    cleaned = bid.replace('\x00', '').replace('\r', '').replace('\n', '').strip()
-    # Branch identifiers should be binary tree paths; keep only 0/1 chars.
+    # Remove all ASCII control chars, then keep only binary path chars.
+    cleaned = ''.join(ch for ch in bid if 32 <= ord(ch) <= 126).strip()
     normalized = ''.join(ch for ch in cleaned if ch in {'0', '1'})
+
+    # Preserve historic root checkpoint name: dt_ (empty branch suffix).
+    if cleaned == '':
+      return ''
+
+    # Fall back to deterministic hash for unexpected branch formats.
+    if normalized == '':
+      digest = hashlib.sha1(cleaned.encode('utf-8', errors='backslashreplace')).hexdigest()[:12]
+      normalized = f'id_{digest}'
+
     if normalized != cleaned:
       print(f'Warning: sanitized branch_id from {cleaned!r} to {normalized!r}')
     return normalized
+
+  def _normalize_checkpoint_dir(self):
+    """Normalize checkpoint directory path and remove invalid control chars."""
+    raw_path = '' if self.path is None else str(self.path)
+    safe_path = ''.join(ch for ch in raw_path if ord(ch) >= 32)
+    safe_path = safe_path.strip()
+    if safe_path == '':
+      safe_path = '.'
+    return os.path.normpath(safe_path)
+
+  def _get_checkpoint_path(self, branch_id):
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    filename = 'dt_' + safe_branch_id
+    ckpt_dir = self._normalize_checkpoint_dir()
+    return os.path.join(ckpt_dir, filename)
+
+  def _get_checkpoint_candidates(self, branch_id):
+    base_path = self._get_checkpoint_path(branch_id)
+    candidates = [base_path, os.path.abspath(base_path), base_path + '.pkl', os.path.abspath(base_path + '.pkl')]
+    deduped = []
+    for candidate in candidates:
+      if candidate not in deduped:
+        deduped.append(candidate)
+    return deduped
+
+  def _serialize_model(self):
+    return pickle.dumps(self.model, protocol=pickle.HIGHEST_PROTOCOL)
+
+  def _deserialize_model(self, payload):
+    self.model = pickle.loads(payload)
 
   def load(self, branch_id, fresh = True):
     '''
     fresh: clear current model and load the new one
     '''
-    filename_base = 'dt_'
     safe_branch_id = self._normalize_branch_id(branch_id)
-    with open(os.path.join(self.path, filename_base + safe_branch_id), 'rb') as file:
-      self.model = pickle.load(file)
+    candidates = []
+
+    override_path = self._checkpoint_path_overrides.get(safe_branch_id)
+    if override_path:
+      candidates.append(override_path)
+    candidates.extend(self._get_checkpoint_candidates(branch_id))
+
+    attempted = []
+    for ckpt_path in candidates:
+      if ckpt_path == '<memory>':
+        payload = self._checkpoint_cache.get(safe_branch_id)
+        if payload is not None:
+          self._deserialize_model(payload)
+          return
+        continue
+      attempted.append(ckpt_path)
+      if not os.path.exists(ckpt_path) or os.path.isdir(ckpt_path):
+        continue
+      try:
+        with open(ckpt_path, 'rb') as file:
+          self.model = pickle.load(file)
+        return
+      except OSError:
+        continue
+
+    payload = self._checkpoint_cache.get(safe_branch_id)
+    if payload is not None:
+      self._deserialize_model(payload)
+      return
+
+    raise FileNotFoundError(
+      f'Checkpoint not found for branch_id={branch_id!r}; attempted_paths={attempted!r}'
+    )
     # self.model = pickle.load(open(self.path + '/' + filename_base + branch_id, 'rb'))
 
   def save(self, branch_id):
     #only saves the current new forest (newly added one)
     safe_branch_id = self._normalize_branch_id(branch_id)
-    filename = 'dt_' + safe_branch_id
-    # pickle.dump(self.model[-1], open(self.path + filename, 'wb'))
-    with open(os.path.join(self.path, filename), 'wb') as file:
-      pickle.dump(self.model, file)
+    payload = self._serialize_model()
+    failures = []
+
+    for ckpt_path in self._get_checkpoint_candidates(branch_id):
+      ckpt_dir = os.path.dirname(ckpt_path)
+      try:
+        os.makedirs(ckpt_dir, exist_ok=True)
+        if os.path.isdir(ckpt_path):
+          raise IsADirectoryError(f'Checkpoint target is a directory: {ckpt_path!r}')
+        with open(ckpt_path, 'wb') as file:
+          file.write(payload)
+        self._checkpoint_path_overrides[safe_branch_id] = ckpt_path
+        return
+      except OSError as exc:
+        failures.append((ckpt_path, exc))
+      except Exception as exc:
+        failures.append((ckpt_path, exc))
+
+    # Final fallback keeps training/evaluation alive even when filesystem rejects writes.
+    self._checkpoint_cache[safe_branch_id] = payload
+    self._checkpoint_path_overrides[safe_branch_id] = '<memory>'
+    print(f'Warning: checkpoint file write failed for branch {branch_id!r}; using in-memory fallback.')
+    for failed_path, exc in failures[:2]:
+      print(f'  checkpoint_write_error path={failed_path!r} error={exc!r}')
     # pickle.dump(self.model, open(self.path + '/' + filename, 'wb'))
 
   def get_score(self, y_true, y_pred_prob):

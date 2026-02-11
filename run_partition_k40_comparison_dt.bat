@@ -1,23 +1,23 @@
 @echo off
 REM ============================================================================
-REM Partitioned (k40_nc4) vs Pooled RF Comparison - Windows Batch Script
+REM Partitioned (k40_nc4) vs Pooled DT Comparison - Windows Batch Script
 REM ============================================================================
 REM
 REM This batch file runs the comparison script with default parameters.
 REM
 REM Usage:
-REM   run_partition_k40_nc4_comparison.bat                 (no visuals, no contiguity)
-REM   run_partition_k40_nc4_comparison.bat 1               (with contiguity, 2 iters)
-REM   run_partition_k40_nc4_comparison.bat 1 3             (with contiguity, 3 iters)
-REM   run_partition_k40_nc4_comparison.bat --visual        (with 4 maps, no contiguity)
-REM   run_partition_k40_nc4_comparison.bat 1 2 --visual    (all features)
+REM   run_partition_k40_comparison_dt.bat                 (no visuals, no contiguity)
+REM   run_partition_k40_comparison_dt.bat 1               (with contiguity, 2 iters)
+REM   run_partition_k40_comparison_dt.bat 1 3             (with contiguity, 3 iters)
+REM   run_partition_k40_comparison_dt.bat --visual        (with 4 maps, no contiguity)
+REM   run_partition_k40_comparison_dt.bat 1 2 --visual    (all features)
 REM
 REM Customize by editing the variables below before running.
 REM ============================================================================
 
 echo.
 echo ============================================================================
-echo PARTITIONED (k40_nc4) VS POOLED RF COMPARISON
+echo PARTITIONED (k40_nc4) VS POOLED DT COMPARISON
 echo ============================================================================
 echo.
 
@@ -30,16 +30,16 @@ set PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe
 
 REM Data paths
 set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv
-set PARTITION_MAP=cluster_mapping_k40_nc10_general.csv
+set PARTITION_MAP=cluster_mapping_k40_nc6_general.csv
 set POLYGONS_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp
 
 REM Month-specific partition maps (used when MONTH_IND=1)
-set PARTITION_MAP_M2=cluster_mapping_k40_nc4_m2.csv
-set PARTITION_MAP_M6=cluster_mapping_k40_nc3_m6.csv
-set PARTITION_MAP_M10=cluster_mapping_k40_nc10_m10.csv
+set PARTITION_MAP_M2=cluster_mapping_k40_nc9_m2.csv
+set PARTITION_MAP_M6=cluster_mapping_k40_nc7_m6.csv
+set PARTITION_MAP_M10=cluster_mapping_k40_nc8_m10.csv
 
 REM Output directory
-set OUT_DIR=.\result_partition_k40_nc4_compare
+set OUT_DIR=.\result_partition_k40_nc4_compare_DT
 
 REM Evaluation period
 set START_MONTH=2021-01
@@ -169,9 +169,9 @@ if "%CONTIGUITY%"=="1" (
     echo.
 
     REM Update partition map paths to use refined versions
-    set PARTITION_MAP_M2=%REFINED_DIR%\cluster_mapping_k40_nc4_m2_refined_contig%REFINE_ITERS%.csv
-    set PARTITION_MAP_M6=%REFINED_DIR%\cluster_mapping_k40_nc3_m6_refined_contig%REFINE_ITERS%.csv
-    set PARTITION_MAP_M10=%REFINED_DIR%\cluster_mapping_k40_nc10_m10_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M2=%REFINED_DIR%\cluster_mapping_k40_nc9_m2_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M6=%REFINED_DIR%\cluster_mapping_k40_nc7_m6_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M10=%REFINED_DIR%\cluster_mapping_k40_nc8_m10_refined_contig%REFINE_ITERS%.csv
 ) else (
     echo.
     echo Contiguity refinement: DISABLED
@@ -213,7 +213,7 @@ REM --------------------------------------------------------------------------
 REM Run comparison script
 REM --------------------------------------------------------------------------
 
-echo Running comparison...
+echo Running DT comparison...
 echo.
 
 "%PYTHON_EXE%" scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py ^
@@ -228,6 +228,7 @@ echo.
   --end-month "%END_MONTH%" ^
   --train-window %TRAIN_WINDOW% ^
   --forecasting-scope %FORECASTING_SCOPE% ^
+  --lower-model dt ^
   %MONTH_IND_FLAG% ^
   %VISUAL_FLAG%
 

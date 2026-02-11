@@ -1,0 +1,75 @@
+================================================================================
+LINKED TABLES CREATION SUMMARY
+================================================================================
+
+1. MAIN INDEX TABLE
+--------------------------------------------------------------------------------
+   File: main_index.csv
+   Rows: 36
+   Columns: name, variant, year, month, forecasting_scope, f1(1), f1_base(1)
+
+   Summary by variant:
+     - GeoDT: 36
+
+   Summary by year:
+     - 2021: 9
+     - 2022: 9
+     - 2023: 9
+     - 2024: 9
+
+   Summary by forecasting scope:
+     - fs1: 12
+     - fs2: 12
+     - fs3: 12
+
+2. PARTITION TABLES
+--------------------------------------------------------------------------------
+   Directory: partitions/
+   Number of files: 36
+   Naming pattern: {name}_partition.csv
+   Columns: FEWSNET_admin_code, partition_id
+   Admin code range: 0 - 5717 (5718 total codes)
+   Missing partition indicator: 's-1'
+
+3. F1 SCORE STATISTICS
+--------------------------------------------------------------------------------
+   Mean f1(1): 0.5175
+   Mean f1_base(1): 0.5131
+   Mean improvement: 0.0044
+
+   By variant:
+     GeoDT:
+       f1(1): 0.5175
+       f1_base(1): 0.5131
+       improvement: 0.0044
+
+4. FILE STRUCTURE
+--------------------------------------------------------------------------------
+   linked_tables/
+   |-- main_index.csv                    # Main index table
+   |-- table_links.csv                   # Mapping between tables
+   |-- summary_report.txt                # This report
+   `-- partitions/
+       |-- GeoRF_2021_02_fs1_partition.csv
+       |-- GeoRF_2021_02_fs2_partition.csv
+       `-- ... (70 partition tables)
+
+5. USAGE INSTRUCTIONS
+--------------------------------------------------------------------------------
+   To use the linked tables:
+
+   import pandas as pd
+
+   # Load main index table
+   main_df = pd.read_csv('linked_tables/main_index.csv')
+
+   # Load specific partition table
+   name = 'GeoRF_2021_02_fs1'
+   partition_df = pd.read_csv(f'linked_tables/partitions/{name}_partition.csv')
+
+   # Or use the mapping file
+   links = pd.read_csv('linked_tables/table_links.csv')
+   partition_file = links[links['name'] == name]['partition_table_path'].iloc[0]
+   partition_df = pd.read_csv(f'linked_tables/{partition_file}')
+
+================================================================================

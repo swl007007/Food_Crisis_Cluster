@@ -30,13 +30,13 @@ set PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe
 
 REM Data paths
 set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv
-set PARTITION_MAP=cluster_mapping_k40_nc4.csv
+set PARTITION_MAP=cluster_mapping_k40_nc4_general.csv
 set POLYGONS_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp
 
 REM Month-specific partition maps (used when MONTH_IND=1)
-set PARTITION_MAP_M2=cluster_mapping_k40_nc10_m2.csv
-set PARTITION_MAP_M6=cluster_mapping_k40_nc2_m6.csv
-set PARTITION_MAP_M10=cluster_mapping_k40_nc12_m10.csv
+set PARTITION_MAP_M2=cluster_mapping_k40_nc3_m2.csv
+set PARTITION_MAP_M6=cluster_mapping_k40_nc1_m6.csv
+set PARTITION_MAP_M10=cluster_mapping_k40_nc10_m10.csv
 
 REM Output directory
 set OUT_DIR=.\result_partition_k40_nc4_compare_XGB
@@ -169,9 +169,9 @@ if "%CONTIGUITY%"=="1" (
     echo.
 
     REM Update partition map paths to use refined versions
-    set PARTITION_MAP_M2=%REFINED_DIR%\cluster_mapping_k40_nc10_m2_refined_contig%REFINE_ITERS%.csv
-    set PARTITION_MAP_M6=%REFINED_DIR%\cluster_mapping_k40_nc2_m6_refined_contig%REFINE_ITERS%.csv
-    set PARTITION_MAP_M10=%REFINED_DIR%\cluster_mapping_k40_nc12_m10_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M2=%REFINED_DIR%\cluster_mapping_k40_nc3_m2_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M6=%REFINED_DIR%\cluster_mapping_k40_nc1_m6_refined_contig%REFINE_ITERS%.csv
+    set PARTITION_MAP_M10=%REFINED_DIR%\cluster_mapping_k40_nc10_m10_refined_contig%REFINE_ITERS%.csv
 ) else (
     echo.
     echo Contiguity refinement: DISABLED
