@@ -5,6 +5,7 @@
 # @Last modified time: 2025-04-21
 # @License: MIT License
 
+import os
 import sys
 from typing import Sequence
 
@@ -70,10 +71,27 @@ ACTIVE_LAGS = LAGS_MONTHS  # Alias for backward compatibility
 TRAIN_WINDOW_MONTHS = 36  # Fixed 36-month rolling training window
 ACTIVE_LAG = min(ACTIVE_LAGS) if ACTIVE_LAGS else 4  # Default active lag (months before test month)
 
+def _parse_env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "y", "on"}:
+        return True
+    if value in {"0", "false", "no", "n", "off"}:
+        return False
+    print(f"Invalid boolean value for {name}={raw!r}; using default {default}.")
+    return default
+
+
+# DT rule export controls
+SAVE_DT_RULES = _parse_env_bool("SAVE_DT_RULES", True)
+SAVE_DT_NODE_DUMP = _parse_env_bool("SAVE_DT_NODE_DUMP", False)
+
+
 # DESIRED_TERMS: List of test months to evaluate (YYYY-MM strings, datetime, or pd.Period)
 # Examples: ["2023-01", "2023-04"], [pd.Period("2023-01", "M")], or [datetime(2023, 1, 1)]
 # Can be overridden by DESIRED_TERMS environment variable (comma-separated: "2021-01,2021-02,...")
-import os
 _DESIRED_TERMS_ENV = os.getenv('DESIRED_TERMS')
 if _DESIRED_TERMS_ENV:
     # Parse comma-separated month strings from environment variable

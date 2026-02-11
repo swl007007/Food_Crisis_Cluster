@@ -35,6 +35,9 @@ import glob
 import warnings
 import argparse
 import random
+import traceback
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import List, Optional
 
 # Add parent directory to path to find src module
@@ -54,9 +57,11 @@ IS_DRY_RUN = '--dry-run' in _ARGS
 
 if not IS_DRY_RUN:
     from src.model.adapters import DTAdapter
+    from sklearn.tree import DecisionTreeClassifier
     from src.customize.customize import train_test_split_rolling_window
     from src.preprocess.preprocess import load_and_preprocess_data, setup_spatial_groups
     from src.feature.feature import prepare_features, validate_polygon_contiguity, create_correspondence_table
+    from src.utils.dt_rule_export import export_dt_node_dump, export_dt_rules, sha256_file
     from src.utils.save_results import save_results
     from src.utils.admin_code import resolve_admin_code_array
     from tqdm import tqdm
@@ -130,6 +135,204 @@ def append_parity_log(message: str) -> str:
     with open(PARITY_LOG_PATH, 'a', encoding='utf-8') as handle:
         handle.write(message + '\n')
     return PARITY_LOG_PATH
+
+
+DT_RULES_SUBDIR = 'dt_rules'
+DT_RULES_MANIFEST_FILE = 'dt_rules_manifest.csv'
+DT_RULES_LOG_FILE = 'dt_rules_export.log'
+DT_RULES_MANIFEST_COLUMNS = [
+    'iteration_id',
+    'year',
+    'scope',
+    'test_month',
+    'model_path',
+    'model_hash_sha256',
+    'rows_exported',
+    'node_rows_exported',
+    'output_path',
+    'node_output_path',
+    'timestamp_utc',
+    'status',
+    'error',
+]
+
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+
+
+def _append_dt_export_log(model_dir: Path, message: str) -> None:
+    log_path = model_dir / 'logs' / DT_RULES_LOG_FILE
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(log_path, 'a', encoding='utf-8') as handle:
+        handle.write(message.rstrip() + '\n')
+
+
+def _resolve_dt_model_path_and_hash(model_wrapper) -> tuple[str, str]:
+    if model_wrapper is None:
+        return '', ''
+
+    candidates: list[str] = []
+    saw_memory_only = False
+
+    path_overrides = getattr(model_wrapper, '_checkpoint_path_overrides', None)
+    if isinstance(path_overrides, dict):
+        override = path_overrides.get('')
+        if override:
+            candidates.append(str(override))
+
+    if hasattr(model_wrapper, '_get_checkpoint_candidates'):
+        try:
+            for candidate in model_wrapper._get_checkpoint_candidates(''):
+                if candidate:
+                    candidates.append(str(candidate))
+        except Exception:
+            pass
+
+    seen: set[str] = set()
+    for candidate in candidates:
+        if candidate in seen:
+            continue
+        seen.add(candidate)
+        if candidate == '<memory>':
+            saw_memory_only = True
+            continue
+        candidate_path = Path(candidate)
+        if candidate_path.is_file():
+            return str(candidate_path), sha256_file(candidate_path)
+
+    if saw_memory_only:
+        return '<memory>', ''
+    return '', ''
+
+
+def _resolve_export_feature_names(georf, feature_columns, clf) -> list[str]:
+    n_features = int(getattr(clf, 'n_features_in_', 0) or getattr(clf.tree_, 'n_features', 0))
+    if n_features <= 0:
+        return []
+
+    candidate_names: list[str] = []
+    cached = getattr(georf, '_cached_feature_names', None)
+    if cached:
+        candidate_names = [str(name) for name in cached]
+    elif feature_columns is not None:
+        candidate_names = [str(name) for name in feature_columns]
+
+    if len(candidate_names) < n_features:
+        candidate_names.extend([f'feature_{idx}' for idx in range(len(candidate_names), n_features)])
+    return candidate_names[:n_features]
+
+
+def _append_dt_manifest_row(manifest_path: Path, row: dict) -> None:
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    row_df = pd.DataFrame([row], columns=DT_RULES_MANIFEST_COLUMNS)
+
+    if manifest_path.exists():
+        try:
+            existing_df = pd.read_csv(manifest_path)
+        except Exception:
+            existing_df = pd.DataFrame(columns=DT_RULES_MANIFEST_COLUMNS)
+        combined_df = pd.concat([existing_df, row_df], ignore_index=True)
+    else:
+        combined_df = row_df
+
+    for column in DT_RULES_MANIFEST_COLUMNS:
+        if column not in combined_df.columns:
+            combined_df[column] = ''
+
+    combined_df = combined_df[DT_RULES_MANIFEST_COLUMNS]
+    combined_df = combined_df.drop_duplicates(subset=['iteration_id'], keep='last')
+    combined_df.to_csv(manifest_path, index=False)
+
+
+def _export_dt_iteration_artifacts(georf, feature_columns, test_year: int, test_month: int, forecasting_scope: Optional[int]) -> None:
+    result_dir = getattr(georf, 'model_dir', None)
+    if not result_dir:
+        return
+
+    result_path = Path(str(result_dir))
+    scope_label = f'fs{int(forecasting_scope)}' if forecasting_scope is not None else 'fsNA'
+    test_month_token = f'{int(test_year):04d}-{int(test_month):02d}'
+    iteration_id = f'{int(test_year):04d}_{scope_label}_{test_month_token}'
+    dt_rules_dir = result_path / DT_RULES_SUBDIR
+    dt_rules_csv = dt_rules_dir / f'dt_rules_{int(test_year):04d}_{scope_label}_{test_month_token}.csv'
+    dt_nodes_csv = dt_rules_dir / f'dt_tree_nodes_{int(test_year):04d}_{scope_label}_{test_month_token}.csv'
+    manifest_path = dt_rules_dir / DT_RULES_MANIFEST_FILE
+    timestamp_utc = _utc_now_iso()
+
+    status = 'export_failed'
+    rows_exported = 0
+    node_rows_exported = 0
+    output_path = ''
+    node_output_path = ''
+    error_message = ''
+    model_path = ''
+    model_hash = ''
+
+    try:
+        model_wrapper = getattr(georf, 'model', None)
+        if model_wrapper is None:
+            raise ValueError('GeoDT model wrapper not found')
+
+        model_path, model_hash = _resolve_dt_model_path_and_hash(model_wrapper)
+        fallback_clf = getattr(model_wrapper, 'model', None)
+        try:
+            model_wrapper.load('')
+        except Exception:
+            pass
+        clf = getattr(model_wrapper, 'model', None)
+        if not isinstance(clf, DecisionTreeClassifier) or not hasattr(clf, 'tree_'):
+            clf = fallback_clf
+        if not isinstance(clf, DecisionTreeClassifier) or not hasattr(clf, 'tree_'):
+            raise TypeError('No fitted DecisionTreeClassifier found for rule export')
+
+        feature_names = _resolve_export_feature_names(georf, feature_columns, clf)
+        class_names = [str(name) for name in getattr(clf, 'classes_', [])] if hasattr(clf, 'classes_') else None
+        rows_exported = export_dt_rules(clf, feature_names, class_names, dt_rules_csv)
+        output_path = str(dt_rules_csv)
+
+        if SAVE_DT_NODE_DUMP:
+            node_rows_exported = export_dt_node_dump(clf, feature_names, class_names, dt_nodes_csv)
+            node_output_path = str(dt_nodes_csv)
+
+        status = 'ok'
+        _append_dt_export_log(
+            result_path,
+            f"{timestamp_utc} DT_RULE_EXPORT_OK iter={iteration_id} rows={rows_exported} "
+            f"nodes={node_rows_exported} output={output_path}",
+        )
+    except Exception as export_error:
+        error_message = str(export_error).replace('\n', ' ').strip()
+        _append_dt_export_log(
+            result_path,
+            f"{timestamp_utc} DT_RULE_EXPORT_FAIL iter={iteration_id} error={error_message}",
+        )
+        _append_dt_export_log(result_path, traceback.format_exc())
+
+    manifest_row = {
+        'iteration_id': iteration_id,
+        'year': int(test_year),
+        'scope': scope_label,
+        'test_month': test_month_token,
+        'model_path': model_path,
+        'model_hash_sha256': model_hash,
+        'rows_exported': int(rows_exported),
+        'node_rows_exported': int(node_rows_exported),
+        'output_path': output_path,
+        'node_output_path': node_output_path,
+        'timestamp_utc': timestamp_utc,
+        'status': status,
+        'error': error_message,
+    }
+    try:
+        _append_dt_manifest_row(manifest_path, manifest_row)
+    except Exception as manifest_error:
+        _append_dt_export_log(
+            result_path,
+            f"{_utc_now_iso()} DT_RULE_MANIFEST_FAIL iter={iteration_id} error={manifest_error}",
+        )
+
+
 def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_index, feature_columns,
                            assignment, contiguity_info, df, nowcasting=False, max_depth=None, input_terms=None, desire_terms=None,
                            track_partition_metrics=False, enable_metrics_maps=False, start_year=2015, end_year=2024, forecasting_scope=None, force_final_accuracy=False,
@@ -706,6 +909,17 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                         print(f"Warning: Could not create correspondence table for {test_month_period}: {e}")
                         import traceback
                         traceback.print_exc()
+
+                # Export DT rule artifacts once per executed monthly iteration.
+                # This runs after fit/eval and before end-of-iteration cleanup.
+                if SAVE_DT_RULES and not nowcasting and 'georf' in locals() and georf is not None:
+                    _export_dt_iteration_artifacts(
+                        georf=georf,
+                        feature_columns=feature_columns,
+                        test_year=test_year,
+                        test_month=test_month,
+                        forecasting_scope=forecasting_scope,
+                    )
             
                 # Store results - MEMORY FIX: Use more efficient DataFrame appending
                 nsample_class = np.bincount(ytest)
@@ -1257,6 +1471,8 @@ def main():
     print(f"  - Rolling window: 5-year training windows before each test quarter")
     print(f"  - Track partition metrics: {track_partition_metrics}")
     print(f"  - Enable metrics maps: {enable_metrics_maps}")
+    print(f"  - Save DT rules: {SAVE_DT_RULES}")
+    print(f"  - Save DT node dump: {SAVE_DT_NODE_DUMP}")
     print(f"  - Start year: {start_year}, End year: {end_year}")
 
     config_snapshot = {
@@ -1271,6 +1487,8 @@ def main():
         'forecasting_scope': forecasting_scope,
         'track_partition_metrics': track_partition_metrics,
         'enable_metrics_maps': enable_metrics_maps,
+        'save_dt_rules': SAVE_DT_RULES,
+        'save_dt_node_dump': SAVE_DT_NODE_DUMP,
         'start_year': start_year,
         'end_year': end_year,
     }

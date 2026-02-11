@@ -3,6 +3,8 @@ setlocal enabledelayedexpansion
 set PYTHONPATH=%~dp0
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
+set SAVE_DT_RULES=1
+set SAVE_DT_NODE_DUMP=0
 
 REM GeoDT Monthly-by-Month Evaluation Batch Script (2021-2024 with Visual Debug)
 REM This script processes EACH MONTH INDIVIDUALLY to prevent memory issues
@@ -31,6 +33,11 @@ REM Counter for batch tracking
 set batch_count=0
 set total_batches=144
 set monthly_result_count=0
+set "GLOBAL_DT_RULES_DIR=dt_rules"
+set "GLOBAL_LOG_DIR=logs"
+
+if not exist "%GLOBAL_DT_RULES_DIR%" mkdir "%GLOBAL_DT_RULES_DIR%"
+if not exist "%GLOBAL_LOG_DIR%" mkdir "%GLOBAL_LOG_DIR%"
 
 echo.
 echo Configuration summary:
@@ -40,6 +47,8 @@ echo   - Months per year: 12 (Jan-Dec)
 echo   - Total batches: !total_batches! (4 years x 3 scopes x 12 months)
 echo   - Visual outputs: Partition maps, metrics CSV, improvement maps
 echo   - Memory management: One month at a time with cleanup
+echo   - SAVE_DT_RULES=%SAVE_DT_RULES%
+echo   - SAVE_DT_NODE_DUMP=%SAVE_DT_NODE_DUMP%
 echo.
 
 REM Process each year from 2021 to 2024
@@ -437,6 +446,49 @@ if exist "!source_dir!\log_print.txt" (
     )
 ) else (
     echo   [SKIP] log_print.txt not found
+)
+
+REM Preserve DT rule artifacts and logs before cleanup deletes source folders
+if exist "!source_dir!\dt_rules" (
+    xcopy /E /I /Y "!source_dir!\dt_rules" "!archive_folder!\dt_rules\" >nul 2>&1
+    if exist "!archive_folder!\dt_rules\dt_rules_manifest.csv" (
+        echo   [OK] dt_rules folder archived
+        set /a copied_count+=1
+    ) else (
+        echo   [WARN] dt_rules folder copied but manifest missing
+    )
+
+    if exist "!source_dir!\dt_rules\dt_rules_*.csv" (
+        for %%F in ("!source_dir!\dt_rules\dt_rules_*.csv") do (
+            copy "%%F" "%GLOBAL_DT_RULES_DIR%\" >nul 2>&1
+        )
+    )
+    if exist "!source_dir!\dt_rules\dt_tree_nodes_*.csv" (
+        for %%F in ("!source_dir!\dt_rules\dt_tree_nodes_*.csv") do (
+            copy "%%F" "%GLOBAL_DT_RULES_DIR%\" >nul 2>&1
+        )
+    )
+
+    if exist "!source_dir!\dt_rules\dt_rules_manifest.csv" (
+        python -c "import pandas as pd; from pathlib import Path; src=Path(r'!source_dir!\dt_rules\dt_rules_manifest.csv'); dst=Path(r'%GLOBAL_DT_RULES_DIR%\dt_rules_manifest.csv'); src_df=pd.read_csv(src); dst_df=pd.read_csv(dst) if dst.exists() else pd.DataFrame(columns=src_df.columns); out=pd.concat([dst_df, src_df], ignore_index=True); out=out.drop_duplicates(subset=['iteration_id'], keep='last') if 'iteration_id' in out.columns else out; out.to_csv(dst, index=False)"
+        if exist "%GLOBAL_DT_RULES_DIR%\dt_rules_manifest.csv" (
+            echo   [OK] global dt_rules_manifest.csv updated
+        )
+    )
+) else (
+    echo   [SKIP] dt_rules folder not found
+)
+
+if exist "!source_dir!\logs\dt_rules_export.log" (
+    if not exist "!archive_folder!\logs" mkdir "!archive_folder!\logs"
+    copy "!source_dir!\logs\dt_rules_export.log" "!archive_folder!\logs\" >nul 2>&1
+    type "!source_dir!\logs\dt_rules_export.log" >> "%GLOBAL_LOG_DIR%\dt_rules_export.log" 2>nul
+    if exist "!archive_folder!\logs\dt_rules_export.log" (
+        echo   [OK] dt_rules_export.log archived
+        set /a copied_count+=1
+    )
+) else (
+    echo   [SKIP] dt_rules_export.log not found
 )
 
 echo Archive completed: !archive_folder!

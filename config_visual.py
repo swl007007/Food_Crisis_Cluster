@@ -28,6 +28,24 @@ if _DESIRED_TERMS_ENV:
 else:
     DESIRED_TERMS = ["2023-01"]  # Default: single month for visual debug testing
 
+
+def _parse_env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    value = raw.strip().lower()
+    if value in {"1", "true", "yes", "y", "on"}:
+        return True
+    if value in {"0", "false", "no", "n", "off"}:
+        return False
+    print(f"[config_visual] Invalid boolean value for {name}={raw!r}; using default {default}.")
+    return default
+
+
+# DT rule export controls
+SAVE_DT_RULES = _parse_env_bool("SAVE_DT_RULES", True)
+SAVE_DT_NODE_DUMP = _parse_env_bool("SAVE_DT_NODE_DUMP", False)
+
 #Note: Some of the parameters are for the deep learning version (commented).
 #They are for now kept as part of the config file in case some conditions
 #were used in some function definitions in the code repo.
