@@ -1,8 +1,8 @@
-# GeoRF/XGBoost Spatial Clustering Pipeline Workflow
+# GeoRF/XGBoost/GeoDT Spatial Clustering Pipeline Workflow
 
 ## Overview
 
-This document describes the complete workflow for generating spatial partitions using the GeoRF/XGBoost framework with consensus clustering.
+This document describes the complete workflow for generating spatial partitions using the GeoRF/XGBoost/GeoDT framework with consensus clustering. Each model type (Random Forest, XGBoost, Decision Tree) follows the same four-stage pipeline independently, producing its own partitions and comparison results.
 
 ## Pipeline Architecture
 
@@ -12,17 +12,16 @@ This document describes the complete workflow for generating spatial partitions 
 │                      Generate Monthly Partition Results                 │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
-                                    ▼
-        ┌─────────────────────────────────────────────────┐
-        │  run_georf_batches_2021_2024_visual_monthly.bat │
-        │  run_xgboost_batches_2021_2024_visual_monthly.bat│
-        └─────────────────────────────────────────────────┘
-                                    │
-                    Generates monthly results:
-                    - result_GeoRF_YYYY_fsX_YYYY-MM_*/
-                    - result_GeoXGB_YYYY_fsX_YYYY-MM_*/
-                    - correspondence_table_YYYY-MM.csv
-                    - partition files per month
+          ┌─────────────────────────┼─────────────────────────┐
+          ▼                         ▼                         ▼
+ ┌──────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
+ │ run_georf_batches│  │ run_xgboost_batches  │  │ run_geodt_batches    │
+ │ _2021_2024_      │  │ _2021_2024_          │  │ _2021_2024_          │
+ │ visual_monthly   │  │ visual_monthly       │  │ visual_monthly       │
+ │ .bat             │  │ .bat                 │  │ .bat                 │
+ └──────────────────┘  └──────────────────────┘  └──────────────────────┘
+          │                         │                         │
+   result_GeoRF_*           result_GeoXGB_*           result_GeoDT_*
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -30,94 +29,80 @@ This document describes the complete workflow for generating spatial partitions 
 │         Generate General & Month-Specific Partitions (Manual)          │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
-                        ┌───────────┴───────────┐
-                        ▼                       ▼
-            ┌───────────────────┐   ┌──────────────────────┐
-            │  Python Scripts   │   │ Jupyter Notebooks    │
-            │  (Automated)      │   │ (Interactive)        │
-            └───────────────────┘   └──────────────────────┘
-                        │                       │
-         ┌──────────────┼───────────────────────┤
-         │              │                       │
-         ▼              ▼                       ▼
-    step1*.py      step3*.py              step1*.ipynb
-    step2*.py      step6*.py              step2*.ipynb
-                                          step4*.ipynb
-                                          step5*.ipynb
-                        │
-        ┌───────────────┼───────────────┐
-        │               │               │
-        ▼               ▼               ▼
-   Step 1:         Step 2:         Step 3:
-   Merge          Load Corr.       Create
-   Results        Tables          Linked Tables
-        │               │               │
-        └───────────────┴───────────────┘
-                        │
-                        ▼
-                   Step 4:
-            Compute Similarity Matrix
-            (General or Month-Specific)
-                        │
-            ┌───────────┴────────────┐
-            │                        │
-            ▼                        ▼
-       General                 Month-Specific
-       (All months)           (Filter by month)
-            │                        │
-            └───────────┬────────────┘
-                        ▼
-                   Step 5:
-          KNN Sparsification & Eigengap
-                        │
-                        ▼
-                   Step 6:
-             Spectral Clustering
-                        │
-          Generates partition files:
-          - cluster_mapping_k40_nc4.csv (general)
-          - cluster_mapping_k40_nc4_m02.csv (Feb)
-          - cluster_mapping_k40_nc4_m06.csv (Jun)
-          - cluster_mapping_k40_nc4_m10.csv (Oct)
-                        │
-                        ▼
+          ┌─────────────────────────┼─────────────────────────┐
+          ▼                         ▼                         ▼
+  GeoRFExperiment/          GeoXGBExperiment/         GeoDTExperiment/
+  step1-step6               step1-step6               step1-step6
+  (GeoRF-specific)          (GeoXGB-specific)         (GeoDT-specific)
+                                    │
+        ┌───────────────────────────┼───────────────────────────┐
+        ▼                           ▼                           ▼
+   Step 1: Merge Results       Step 2: Load Corr.         Step 3: Create
+   with Correspondence         Tables                     Linked Tables
+        └───────────────────────────┼───────────────────────────┘
+                                    ▼
+                               Step 4:
+                    Compute Similarity Matrix
+                    (General or Month-Specific)
+                                    │
+                                    ▼
+                               Step 5:
+                  KNN Sparsification & Eigengap
+                                    │
+                                    ▼
+                               Step 6:
+                         Spectral Clustering
+                                    │
+              Generates partition files (per model type):
+              - cluster_mapping_k40_nc*.csv (general)
+              - cluster_mapping_k40_nc*_m02.csv (Feb)
+              - cluster_mapping_k40_nc*_m06.csv (Jun)
+              - cluster_mapping_k40_nc*_m10.csv (Oct)
+                                    │
+                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                STAGE 4: PARTITIONED MODEL COMPARISON                    │
 │          Re-run Models with Generated Spatial Partitions                │
 └─────────────────────────────────────────────────────────────────────────┘
-                        │
-        ┌───────────────┴────────────────┐
-        ▼                                ▼
-┌─────────────────────┐      ┌─────────────────────────┐
-│ run_partition_k40_  │      │ run_partition_k40_      │
-│ clustered_          │      │ clustered_              │
-│ comparison_GF.bat   │      │ comparison_XGB.bat      │
-└─────────────────────┘      └─────────────────────────┘
-        │                                │
-        └────────────┬───────────────────┘
-                     ▼
-         Final comparison results:
-         - Pooled vs Partitioned
-         - General vs Month-Specific
-         - Performance metrics & plots
+                                    │
+        ┌───────────────────────────┼───────────────────────┐
+        ▼                           ▼                       ▼
+┌─────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
+│ run_partition_k40_  │  │ run_partition_k40_ │  │ run_partition_k40_ │
+│ clustered_          │  │ clustered_         │  │ comparison_dt.bat  │
+│ comparison_GF.bat   │  │ comparison_XGB.bat │  │                    │
+└─────────────────────┘  └────────────────────┘  └────────────────────┘
+        │                           │                       │
+        └───────────────────────────┼───────────────────────┘
+                                    ▼
+                     Final comparison results:
+                     - Pooled vs Partitioned
+                     - General vs Month-Specific
+                     - Performance metrics & plots
 ```
 
 ## Detailed Stage Breakdown
 
 ### Stage 1: Model Training & Monthly Partition Generation
 
-**Purpose**: Train GeoRF/XGBoost models for each month, generating baseline partitions.
+**Purpose**: Train GeoRF/XGBoost/GeoDT models for each month, generating baseline partitions.
 
 **Scripts**:
-- `run_georf_batches_2021_2024_visual_monthly.bat`
-- `run_xgboost_batches_2021_2024_visual_monthly.bat`
+- `run_georf_batches_2021_2024_visual_monthly.bat` (Random Forest)
+- `run_xgboost_batches_2021_2024_visual_monthly.bat` (XGBoost)
+- `run_geodt_batches_2021_2024_visual_monthly.bat` (Decision Tree)
 
 **Configuration**:
 ```batch
+# GeoRF/GeoXGB
 YEARS_START=2021
 YEARS_END=2024
 FORECASTING_SCOPES=1,2,3
 VISUAL=1  # Enable visualizations
+
+# GeoDT (additional env vars)
+SAVE_DT_RULES=1         # Export decision tree rules per partition
+SAVE_DT_NODE_DUMP=0     # Optional detailed node dump
 ```
 
 **Inputs**:
@@ -137,45 +122,105 @@ result_GeoRF_YYYY_fsX_YYYY-MM_*/
 
 result_GeoXGB_YYYY_fsX_YYYY-MM_*/
 └── (same structure)
+
+result_GeoDT_YYYY_fsX_YYYY-MM_visual/
+├── correspondence_table_YYYY-MM.csv
+├── vis/
+│   ├── comprehensive_partition_metrics.csv
+│   ├── final_f1_performance_map.png
+│   ├── final_partition_map.png
+│   └── score_details_*.csv
+├── dt_rules/                          # DT-specific: exported tree rules
+│   ├── dt_rules_manifest.csv
+│   └── dt_rules_*.csv
+└── log_print.txt
+
+# GeoDT combined results (produced after all 12 months per year+scope):
+results_df_dt_gp_fsX_YYYY_YYYY.csv    # Yearly combined
+y_pred_test_dt_gp_fsX_YYYY_YYYY.csv   # Yearly combined predictions
 ```
 
-**Duration**: ~6-8 hours (full 4-year × 3-scope run)
+**GeoDT-specific behavior**:
+- Processes **one month at a time** to manage memory (144 total batches: 4 years x 3 scopes x 12 months)
+- Archives visual files into `result_GeoDT_YYYY_fsX_YYYY-MM_visual/` folders before cleanup
+- Combines 12 monthly CSVs into yearly result files after each year+scope completes
+- Accumulates DT rules into a global `dt_rules/` directory with merged manifest
+
+**Duration**: ~6-8 hours per model (full 4-year × 3-scope run)
 
 ---
 
-### Stage 2-3: Consensus Clustering (Manual Workflow)
+### Stage 2-3: Consensus Clustering (Per-Model Experiment Directories)
 
 **Purpose**: Aggregate monthly partitions into stable general and month-specific cluster assignments.
 
-**Tools**: Jupyter notebooks (.ipynb) or Python scripts (.py)
+**Tools**: Jupyter notebooks (.ipynb) and Python scripts (.py)
+
+> **Important**: Each model type has its own self-contained experiment directory with a dedicated copy of step1-step6. The root-level `step1*.ipynb`/`step2*.ipynb`/`step3*.py`/`step4*.ipynb`/`step5*.ipynb`/`step6*.py` are **deprecated** (retained for reference only). Always run clustering from the model-specific experiment directory.
+
+| Model | Experiment Directory | Result Prefix | Results Subdirectory |
+|-------|---------------------|---------------|----------------------|
+| GeoRF | `GeoRFExperiment/` | `GeoRF_` | `GeoRFResults/` |
+| GeoXGB | `GeoXGBExperiment/` | `GeoXGB_` | `GeoXgboostResults/` |
+| GeoDT | `GeoDTExperiment/` | `GeoDT_` | `GeoDTResults/` |
+
+Each experiment directory has the same internal structure:
+```
+Geo{Model}Experiment/
+├── step1_merge_results_with_correspondence.ipynb
+├── step2_load_correspondence_tables.ipynb
+├── step3_create_linked_tables.py
+├── step4_compute_similarity_matrix.ipynb
+├── step5_sparsification_connectivity_check.ipynb
+├── step6_complete_clustering_pipeline.py
+├── FEWSNET_admin_code_lat_lon.csv
+├── Geo{Model}Results/                    # Stage 1 result CSVs (copied here)
+│   ├── results_df_*_fsX_YYYY_YYYY.csv
+│   └── y_pred_test_*_fsX_YYYY_YYYY.csv
+├── merged_correspondence_tables.pkl      # Step 1 output
+├── merged_correspondence_tables/         # Step 1 output (per-plan CSVs)
+├── correspondence_tables_loaded.pkl      # Step 2 output
+├── linked_tables/                        # Step 3 output
+│   ├── main_index.csv
+│   ├── table_links.csv
+│   ├── summary_report.txt
+│   └── partitions/
+├── similarity_matrices/                  # Step 4 output (general)
+├── similarity_matrices_m02/              # Step 4 output (Feb, if generated)
+├── similarity_matrices_m06/              # Step 4 output (Jun, if generated)
+├── similarity_matrices_m10/              # Step 4 output (Oct, if generated)
+└── knn_sparsification_results/           # Step 5-6 output
+    ├── knn_graph_k40.npz
+    ├── connected_components_k40.npz
+    ├── knn_analysis_report_k40.json
+    ├── cluster_mapping_k40_nc{N}_general.csv
+    └── final_cluster_labels_k40_nc{N}.npz
+```
+
+All steps below are run **from within** the experiment directory (e.g., `cd GeoRFExperiment/`). The description applies identically to all three model types; only the naming prefix and input result files differ.
 
 #### Step 1: Merge Results with Correspondence Tables
 
-**Files**:
-- `step1_merge_results_with_correspondence.ipynb`
-- `step1_merge_results_with_correspondence.py` (if automated)
+**File**: `step1_merge_results_with_correspondence.ipynb`
 
 **Purpose**: Combine model results with correspondence tables that map admin codes to partition IDs.
 
 **Inputs**:
-- `result_GeoRF_*/correspondence_table_*.csv`
-- `result_GeoXGB_*/correspondence_table_*.csv`
-- `results_df_*.csv` (performance metrics)
+- `result_Geo{Model}_*/correspondence_table_*.csv` (from Stage 1, referenced or copied into experiment dir)
+- `Geo{Model}Results/results_df_*.csv` (performance metrics)
 
 **Outputs**:
 - `merged_correspondence_tables.pkl`
-- `merged_correspondence_tables/*.csv` (one per month)
+- `merged_correspondence_tables/Geo{Model}_YYYY_MM_fsX_merged.csv` (one per plan)
 
 **Key Operations**:
-- Extract metadata (year, month, forecasting_scope) from directory names
+- Extract metadata (year, month, forecasting_scope) from directory/file names
 - Merge performance metrics with partition assignments
 - Create unified format across all months
 
 #### Step 2: Load Correspondence Tables
 
-**Files**:
-- `step2_load_correspondence_tables.ipynb`
-- `step2_load_correspondence_tables.py`
+**File**: `step2_load_correspondence_tables.ipynb`
 
 **Purpose**: Validate and prepare correspondence tables for clustering.
 
@@ -184,8 +229,7 @@ result_GeoXGB_YYYY_fsX_YYYY-MM_*/
 
 #### Step 3: Create Linked Tables
 
-**Files**:
-- `step3_create_linked_tables.py` (script only)
+**File**: `step3_create_linked_tables.py`
 
 **Purpose**: Create indexed tables linking partitions to performance metrics.
 
@@ -195,24 +239,24 @@ result_GeoXGB_YYYY_fsX_YYYY-MM_*/
 **Outputs**:
 ```
 linked_tables/
-├── main_index.csv (70-72 rows: GeoRF + XGBoost × months × scopes)
+├── main_index.csv (36 rows per single-model experiment)
 ├── table_links.csv
+├── summary_report.txt
 └── partitions/
-    ├── GeoRF_2021_02_fs1_partition.csv
-    ├── GeoRF_2021_02_fs2_partition.csv
-    └── ... (70-72 files)
+    ├── Geo{Model}_2021_02_fs1_partition.csv
+    ├── Geo{Model}_2021_02_fs2_partition.csv
+    └── ... (~36 partition tables)
 ```
 
 **Main Index Columns**:
-- `name`: Unique partition identifier
+- `name`: Unique partition identifier (e.g., `GeoRF_2021_02_fs1`)
 - `year`, `month`, `forecasting_scope`
 - `f1(1)`, `f1_base(1)`: Performance metrics for weighting
 - `partition_file`: Link to partition CSV
 
 #### Step 4: Compute Similarity Matrix
 
-**Files**:
-- `step4_compute_similarity_matrix.ipynb`
+**File**: `step4_compute_similarity_matrix.ipynb`
 
 **Purpose**: Compute weighted similarity between admin units based on co-grouping frequency across partitions.
 
@@ -240,9 +284,9 @@ linked_tables/
 
 **Outputs**:
 - `similarity_matrices/similarity_matrices.npz` (general)
-- `similarity_matrices_m02/similarity_matrices_m02.npz` (February)
-- `similarity_matrices_m06/similarity_matrices_m06.npz` (June)
-- `similarity_matrices_m10/similarity_matrices_m10.npz` (October)
+- `similarity_matrices_m02/similarity_matrices_m02.npz` (February, if generated)
+- `similarity_matrices_m06/similarity_matrices_m06.npz` (June, if generated)
+- `similarity_matrices_m10/similarity_matrices_m10.npz` (October, if generated)
 
 **Matrix Properties**:
 - Shape: (5718, 5718) for FEWSNET admin units
@@ -251,8 +295,7 @@ linked_tables/
 
 #### Step 5: KNN Sparsification & Eigengap Analysis
 
-**Files**:
-- `step5_sparsification_connectivity_check.ipynb`
+**File**: `step5_sparsification_connectivity_check.ipynb`
 
 **Purpose**: Build sparse KNN graph and determine optimal cluster count via eigengap.
 
@@ -263,7 +306,7 @@ linked_tables/
 1. **KNN Graph**: Keep only k=40 nearest neighbors per admin unit
 2. **Connectivity**: Analyze connected components
 3. **Laplacian Eigenvalues**: Compute spectrum of graph Laplacian
-4. **Eigengap**: Find largest gap between eigenvalues → optimal cluster count
+4. **Eigengap**: Find largest gap between eigenvalues -> optimal cluster count
 
 **Outputs**:
 - `knn_sparsification_results/knn_graph_k40.npz`
@@ -272,21 +315,20 @@ linked_tables/
 - Recommended cluster count (printed to console)
 
 **Typical Results**:
-- Cluster count: 2-6 (determined by eigengap)
+- Cluster count: 2-10 (determined by eigengap; varies by model type)
 - Main component: ~67% of admin units
 - Minor components: Isolated regions
 
 #### Step 6: Spectral Clustering
 
-**Files**:
-- `step6_complete_clustering_pipeline.py` (script only)
+**File**: `step6_complete_clustering_pipeline.py`
 
 **Purpose**: Apply spectral clustering to generate final partition assignments.
 
 **Inputs**:
-- `knn_graph_k40.npz`
-- `connected_components_k40.npz`
-- `similarity_matrices.npz`
+- `knn_sparsification_results/knn_graph_k40.npz`
+- `knn_sparsification_results/connected_components_k40.npz`
+- `similarity_matrices/similarity_matrices.npz`
 - `--n-clusters` (from Step 5 eigengap analysis)
 
 **Algorithm**:
@@ -297,28 +339,26 @@ linked_tables/
 **Outputs**:
 ```
 knn_sparsification_results/
-├── cluster_mapping_k40_nc4.csv (general partition)
-├── cluster_labels_k40_nc4.npy
+├── cluster_mapping_k40_nc{N}_general.csv (general partition)
+├── cluster_mapping_k40_nc{N}_m2.csv     (February-specific, if generated)
+├── cluster_mapping_k40_nc{N}_m6.csv     (June-specific, if generated)
+├── cluster_mapping_k40_nc{N}_m10.csv    (October-specific, if generated)
+├── final_cluster_labels_k40_nc{N}.npz
 └── knn_analysis_report_k40.json (updated with clustering results)
-
-similarity_matrices_m02/
-└── cluster_mapping_k40_nc4_m02.csv (February-specific)
-
-similarity_matrices_m06/
-└── cluster_mapping_k40_nc4_m06.csv (June-specific)
-
-similarity_matrices_m10/
-└── cluster_mapping_k40_nc4_m10.csv (October-specific)
 ```
 
 **Cluster Mapping Format**:
 ```csv
-admin_code,cluster_id
-2901,0
-2902,1
-2903,0
+FEWSNET_admin_code,cluster_id,latitude,longitude,is_outlier
+0,2,8.123,38.456,False
+1,0,7.890,37.123,False
 ...
 ```
+
+> **Note**: The cluster count `nc{N}` differs across models because eigengap analysis operates on model-specific similarity matrices. Observed values:
+> - **GeoRF**: nc4 (general) — not yet available for month-specific
+> - **GeoXGB**: nc4 (general), nc3 (Feb), nc1 (Jun), nc10 (Oct)
+> - **GeoDT**: nc6 (general), nc9 (Feb), nc7 (Jun), nc8 (Oct)
 
 ---
 
@@ -327,10 +367,11 @@ admin_code,cluster_id
 **Purpose**: Re-run models using generated partitions to evaluate partitioned vs pooled performance.
 
 **Scripts**:
-- `run_partition_k40_clustered_comparison_GF.bat`
-- `run_partition_k40_clustered_comparison_XGB.bat`
+- `run_partition_k40_clustered_comparison_GF.bat` (Random Forest)
+- `run_partition_k40_clustered_comparison_XGB.bat` (XGBoost)
+- `run_partition_k40_comparison_dt.bat` (Decision Tree)
 
-**Configuration**:
+**Configuration (GeoRF/GeoXGB)**:
 ```batch
 # Partition to use
 PARTITION_FILE=cluster_mapping_k40_nc4.csv (general)
@@ -341,15 +382,42 @@ PARTITION_FILE=cluster_mapping_k40_nc4_m02.csv (February-specific)
 COMPARISON=partitioned_vs_pooled
 ```
 
+**Configuration (GeoDT)**:
+```batch
+# General partition
+PARTITION_MAP=cluster_mapping_k40_nc6_general.csv
+
+# Month-specific partitions
+PARTITION_MAP_M2=cluster_mapping_k40_nc9_m2.csv
+PARTITION_MAP_M6=cluster_mapping_k40_nc7_m6.csv
+PARTITION_MAP_M10=cluster_mapping_k40_nc8_m10.csv
+
+# Model selector
+--lower-model dt
+
+# Month-specific mode
+MONTH_IND=1
+
+# Contiguity refinement
+CONTIGUITY=1
+REFINE_ITERS=3
+
+# Output
+OUT_DIR=.\result_partition_k40_nc4_compare_DT
+```
+
 **Comparisons**:
 1. **Pooled**: Single model trained on all data
 2. **Partitioned**: Separate model per cluster
-3. **General**: Year-round partition (k40_nc4.csv)
+3. **General**: Year-round partition (k40_nc*.csv)
 4. **Month-Specific**: Season-specific partitions (m02, m06, m10)
 
-**Outputs**:
-- Performance comparison CSVs
-- F1 improvement plots
+**Outputs** (per model type):
+- `metrics_monthly.csv` - Monthly performance comparison
+- `predictions_monthly.csv` - Monthly predictions
+- `metrics_admin0_overall.csv` - Country-level metrics
+- `run_manifest.json` - Run configuration record
+- F1 improvement plots (with `--visual` flag)
 - Cluster-wise metrics
 
 **Typical Results**:
@@ -365,9 +433,12 @@ COMPARISON=partitioned_vs_pooled
 ```
 result_GeoRF_{YEAR}_fs{SCOPE}_{YEAR}-{MONTH}_{TIMESTAMP}/
 result_GeoXGB_{YEAR}_fs{SCOPE}_{YEAR}-{MONTH}_{TIMESTAMP}/
+result_GeoDT_{YEAR}_fs{SCOPE}_{YEAR}-{MONTH}_visual/
 ```
 
-Example: `result_GeoRF_2024_fs1_2024-02_20260203_103045/`
+Examples:
+- `result_GeoRF_2024_fs1_2024-02_20260203_103045/`
+- `result_GeoDT_2024_fs1_2024-02_visual/` (GeoDT uses `_visual` suffix instead of timestamp)
 
 ### Partition Files
 ```
@@ -417,7 +488,7 @@ plan_weight = logit(f1_partitioned) - logit(f1_baseline)
 
 ### Data Preparation
 1. **Ensure Complete Runs**: Stage 1 must complete all months before Stage 2
-2. **Check File Counts**: Verify 70-72 partition files in `linked_tables/partitions/`
+2. **Check File Counts**: Verify ~36 partition files in `Geo{Model}Experiment/linked_tables/partitions/` per model
 3. **Validate Correspondence**: Check that admin codes match across files
 
 ### Partition Generation
@@ -439,15 +510,16 @@ plan_weight = logit(f1_partitioned) - logit(f1_baseline)
 
 ## Performance Expectations
 
-### Runtime
-- **Stage 1**: 6-8 hours (4 years × 3 scopes × 12 months)
+### Runtime (per model type)
+- **Stage 1**: 6-8 hours (4 years x 3 scopes x 12 months)
 - **Stage 2-3 (Steps 1-6)**: 30-60 minutes (manual, interactive)
 - **Stage 4**: 4-6 hours (re-training with partitions)
+- **Full pipeline (all 3 models)**: ~30-50 hours total
 
 ### Resource Requirements
 - **CPU**: 32 cores recommended (N_JOBS=32)
 - **RAM**: 16GB minimum, 32GB recommended
-- **Disk**: ~50GB for full 4-year results
+- **Disk**: ~50GB per model for full 4-year results (~150GB total for all 3 models)
 
 ### Expected Improvements
 - **Partitioned vs Pooled**: +5-15% F1 score
