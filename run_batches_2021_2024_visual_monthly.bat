@@ -1,0 +1,622 @@
+@echo off
+setlocal enabledelayedexpansion
+set PYTHONPATH=%~dp0
+set PYTHONUTF8=1
+set PYTHONIOENCODING=utf-8
+
+REM ============================================================================
+REM Unified Monthly-by-Month Model Training Batch Script (2021-2024)
+REM ============================================================================
+REM
+REM Usage:
+REM   run_batches_2021_2024_visual_monthly.bat georf
+REM   run_batches_2021_2024_visual_monthly.bat geoxgb
+REM   run_batches_2021_2024_visual_monthly.bat geodt
+REM   run_batches_2021_2024_visual_monthly.bat geodt --no-dt-rules
+REM
+REM Processes EACH MONTH INDIVIDUALLY to prevent memory issues.
+REM Visual debug mode requires processing one month at a time.
+REM ============================================================================
+
+REM --------------------------------------------------------------------------
+REM Parse command-line arguments
+REM --------------------------------------------------------------------------
+if "%~1"=="" (
+    echo ERROR: Model type is required.
+    echo.
+    echo Usage: %~nx0 ^<model_type^> [options]
+    echo.
+    echo Model types:
+    echo   georf   - GeoRF Random Forest
+    echo   geoxgb  - GeoXGB XGBoost
+    echo   geodt   - GeoDT Decision Tree
+    echo.
+    echo Options:
+    echo   --no-dt-rules   Disable DT rule export (geodt only^)
+    echo.
+    pause
+    exit /b 1
+)
+
+set "MODEL_TYPE=%~1"
+set "DT_RULES_ENABLED=1"
+
+REM Parse optional flags
+:parse_args
+shift
+if "%~1"=="" goto :done_args
+if "%~1"=="--no-dt-rules" set "DT_RULES_ENABLED=0"
+goto :parse_args
+:done_args
+
+REM --------------------------------------------------------------------------
+REM Load model-specific configuration
+REM --------------------------------------------------------------------------
+call :load_model_config %MODEL_TYPE%
+if !errorlevel! neq 0 (
+    echo ERROR: Invalid model type "%MODEL_TYPE%"
+    echo Valid options: georf, geoxgb, geodt
+    pause
+    exit /b 1
+)
+
+REM --------------------------------------------------------------------------
+REM Display configuration
+REM --------------------------------------------------------------------------
+echo.
+echo ============================================================================
+echo %MODEL_DISPLAY% Monthly-by-Month Batch Processing (2021-2024, Visual Debug)
+echo ============================================================================
+echo.
+echo This script will run %MODEL_DISPLAY% processing ONE MONTH AT A TIME
+echo Active lag schedule: 4, 8, 12 months
+echo Each month evaluated individually to manage memory
+echo Visual debug mode: ENABLED
+echo Results combined at the end of each year+scope
+echo.
+
+if "%IS_DT%"=="1" (
+    echo DT-specific settings:
+    echo   SAVE_DT_RULES=%SAVE_DT_RULES%
+    echo   SAVE_DT_NODE_DUMP=%SAVE_DT_NODE_DUMP%
+    echo.
+)
+
+echo Please ensure the following are enabled:
+echo   1. config.py: VIS_DEBUG_MODE = True
+echo   2. %ENTRYPOINT%: track_partition_metrics = True
+echo   3. %ENTRYPOINT%: enable_metrics_maps = True
+echo.
+echo Press CTRL+C to cancel if not configured, or any key to continue...
+pause
+
+REM Counter for batch tracking
+set batch_count=0
+set total_batches=144
+set monthly_result_count=0
+
+REM DT-specific: create global directories
+if "%IS_DT%"=="1" (
+    set "GLOBAL_DT_RULES_DIR=dt_rules"
+    set "GLOBAL_LOG_DIR=logs"
+    if not exist "!GLOBAL_DT_RULES_DIR!" mkdir "!GLOBAL_DT_RULES_DIR!"
+    if not exist "!GLOBAL_LOG_DIR!" mkdir "!GLOBAL_LOG_DIR!"
+)
+
+echo.
+echo Configuration summary:
+echo   - Model: %MODEL_DISPLAY%
+echo   - Entrypoint: %ENTRYPOINT%
+echo   - Years: 2021-2024 (4 years)
+echo   - Forecasting scopes: 3 (4-month, 8-month, 12-month lags)
+echo   - Months per year: 12 (Jan-Dec)
+echo   - Total batches: !total_batches! (4 years x 3 scopes x 12 months)
+echo   - Visual outputs: Partition maps, metrics CSV, improvement maps
+echo   - Memory management: One month at a time with cleanup
+echo.
+
+REM ============================================================================
+REM MAIN PROCESSING LOOP
+REM ============================================================================
+
+REM Process each year from 2021 to 2024
+for /L %%y in (2021,1,2024) do (
+    set "current_year=%%y"
+    echo ==========================================
+    echo Processing year: !current_year!
+    echo ==========================================
+
+    REM Process all 3 forecasting scopes for this year
+    for /L %%f in (1,1,3) do (
+        set "current_scope=%%f"
+
+        echo.
+        echo ====== Year !current_year!, Forecasting Scope !current_scope! ======
+        echo Processing 12 months individually...
+
+        REM Initialize monthly results tracking
+        set "monthly_result_count=0"
+
+        REM Process each month individually
+        for %%m in (01 02 03 04 05 06 07 08 09 10 11 12) do (
+            call :process_single_month !current_year! !current_scope! %%m
+
+            REM Check if processing failed
+            if !errorlevel! neq 0 (
+                echo ERROR: Failed processing month %%m
+                pause
+                goto :end
+            )
+        )
+
+        REM After all 12 months, combine results into yearly file
+        echo.
+        echo Combining monthly results for year !current_year!, scope !current_scope!...
+        call :combine_monthly_results !current_year! !current_scope!
+
+        echo Year !current_year!, Scope !current_scope! completed successfully
+        echo.
+    )
+)
+
+echo.
+echo ===== All %MODEL_DISPLAY% batches completed successfully! =====
+echo Total monthly batches processed: !batch_count!
+echo Years processed: 2021-2024 (4 years, each with 12 months)
+echo Forecasting scopes: 1, 2, 3 (4-month, 8-month, 12-month lags)
+echo Processing mode: One month at a time (144 total)
+echo.
+echo Visual outputs archived in folders: %RESULT_PREFIX%_YEAR_fsN_YYYY-MM_visual
+echo Combined results: %RESULTS_CSV_PREFIX%fsN_YEAR_YEAR.csv (12 months combined)
+echo.
+echo All temporary %RESULT_PREFIX%_* directories have been cleaned up.
+echo Archived visual folders are preserved for analysis.
+goto :end
+
+REM ============================================================================
+REM MODEL CONFIGURATION SUBROUTINE
+REM ============================================================================
+
+:load_model_config
+REM Sets all model-specific variables based on model type argument
+REM Args: %1 = model type (georf, geoxgb, geodt)
+
+if /i "%~1"=="georf" (
+    set "MODEL_DISPLAY=GeoRF"
+    set "ENTRYPOINT=app/main_model_GF.py"
+    set "RESULT_PREFIX=result_GeoRF"
+    set "RESULTS_CSV_PREFIX=results_df_gp_"
+    set "PRED_CSV_PREFIX=y_pred_test_gp_"
+    set "IS_DT=0"
+    exit /b 0
+)
+
+if /i "%~1"=="geoxgb" (
+    set "MODEL_DISPLAY=GeoXGB"
+    set "ENTRYPOINT=app/main_model_XGB.py"
+    set "RESULT_PREFIX=result_GeoXGB"
+    set "RESULTS_CSV_PREFIX=results_df_xgb_gp_"
+    set "PRED_CSV_PREFIX=y_pred_test_xgb_gp_"
+    set "IS_DT=0"
+    exit /b 0
+)
+
+if /i "%~1"=="geodt" (
+    set "MODEL_DISPLAY=GeoDT"
+    set "ENTRYPOINT=app/main_model_DT.py"
+    set "RESULT_PREFIX=result_GeoDT"
+    set "RESULTS_CSV_PREFIX=results_df_dt_gp_"
+    set "PRED_CSV_PREFIX=y_pred_test_dt_gp_"
+    set "IS_DT=1"
+    if "%DT_RULES_ENABLED%"=="1" (
+        set "SAVE_DT_RULES=1"
+    ) else (
+        set "SAVE_DT_RULES=0"
+    )
+    set "SAVE_DT_NODE_DUMP=0"
+    exit /b 0
+)
+
+REM Unknown model type
+exit /b 1
+
+REM ============================================================================
+REM PROCESS SINGLE MONTH
+REM ============================================================================
+
+:process_single_month
+REM Args: %1 = year, %2 = forecasting scope, %3 = month (01-12)
+set "proc_year=%1"
+set "proc_scope=%2"
+set "proc_month=%3"
+set /a batch_count+=1
+
+REM Set DESIRED_TERMS to only this single month
+set "DESIRED_TERMS=%proc_year%-%proc_month%"
+
+echo.
+echo ------ Batch !batch_count!/!total_batches!: Year %proc_year%, Scope %proc_scope%, Month %proc_month% ------
+echo Monthly evaluation: %proc_year%-%proc_month% ONLY
+echo Visual debug: Enabled (creating partition maps and metrics)
+
+REM Pre-execution cleanup
+echo Performing pre-execution cleanup...
+call :cleanup_directories
+
+echo Running: python %ENTRYPOINT% --start_year %proc_year% --end_year %proc_year% --forecasting_scope %proc_scope%
+echo Environment: DESIRED_TERMS=%DESIRED_TERMS%
+
+REM Run the Python script for this single month
+python %ENTRYPOINT% --start_year %proc_year% --end_year %proc_year% --forecasting_scope %proc_scope%
+
+REM Check if script succeeded
+if !errorlevel! neq 0 (
+    echo ERROR: Python script failed for batch !batch_count!
+    echo Parameters: start_year=%proc_year%, end_year=%proc_year%, forecasting_scope=%proc_scope%, month=%proc_month%
+    echo DESIRED_TERMS=%DESIRED_TERMS%
+    exit /b 1
+)
+
+echo Batch !batch_count! completed successfully
+
+REM Extract this month's results and save separately
+echo Extracting monthly results for %proc_year%-%proc_month%...
+call :extract_monthly_results %proc_year% %proc_scope% %proc_month%
+
+REM Archive important visual debug files
+echo Archiving visual debug files for %proc_year%-%proc_month%...
+call :archive_visual_files %proc_year% %proc_scope% %proc_month%
+
+REM Clean up results folders
+echo Cleaning up results folders...
+call :cleanup_directories
+
+REM Clean up temporary files
+if exist "temp_*" (
+    del /q temp_* 2>nul
+)
+REM Clean up model-generated pkl files in repo root only
+REM (Stage 2 pkl files live in experiment dirs and are not affected)
+if exist "*.pkl" (
+    del /q *.pkl 2>nul
+)
+if exist "__pycache__" (
+    rmdir /s /q __pycache__ 2>nul
+)
+
+REM Force memory cleanup
+echo Forcing memory cleanup...
+timeout /t 3 /nobreak >nul
+
+echo Month %proc_month% processing completed
+echo.
+exit /b 0
+
+REM ============================================================================
+REM EXTRACT MONTHLY RESULTS
+REM ============================================================================
+
+:extract_monthly_results
+REM Args: %1 = year, %2 = scope, %3 = month
+set "ext_year=%1"
+set "ext_scope=%2"
+set "ext_month=%3"
+
+REM Create monthly results directory if it doesn't exist
+if not exist "monthly_results" mkdir "monthly_results"
+
+REM Monthly result files
+set "monthly_result_file=monthly_results\%RESULTS_CSV_PREFIX%fs%ext_scope%_%ext_year%_%ext_month%.csv"
+set "monthly_pred_file=monthly_results\%PRED_CSV_PREFIX%fs%ext_scope%_%ext_year%_%ext_month%.csv"
+
+REM Find the most recent results file (should be from current run)
+set "source_result_file="
+for %%F in (%RESULTS_CSV_PREFIX%fs%ext_scope%_*.csv) do (
+    set "source_result_file=%%F"
+)
+
+REM Find the most recent prediction file
+set "source_pred_file="
+for %%F in (%PRED_CSV_PREFIX%fs%ext_scope%_*.csv) do (
+    set "source_pred_file=%%F"
+)
+
+REM Copy results to monthly files
+if defined source_result_file (
+    if exist "!source_result_file!" (
+        copy "!source_result_file!" "%monthly_result_file%" >nul 2>&1
+        echo   - Saved: %monthly_result_file%
+    )
+)
+
+if defined source_pred_file (
+    if exist "!source_pred_file!" (
+        copy "!source_pred_file!" "%monthly_pred_file%" >nul 2>&1
+        echo   - Saved: %monthly_pred_file%
+    )
+)
+
+REM Clean up the original files after copying
+if defined source_result_file (
+    if exist "!source_result_file!" del "!source_result_file!" 2>nul
+)
+if defined source_pred_file (
+    if exist "!source_pred_file!" del "!source_pred_file!" 2>nul
+)
+
+goto :eof
+
+REM ============================================================================
+REM COMBINE MONTHLY RESULTS
+REM ============================================================================
+
+:combine_monthly_results
+REM Args: %1 = year, %2 = scope
+set "comb_year=%1"
+set "comb_scope=%2"
+
+echo Combining 12 monthly result files into yearly summary...
+
+REM Output files
+set "combined_result_file=%RESULTS_CSV_PREFIX%fs%comb_scope%_%comb_year%_%comb_year%.csv"
+set "combined_pred_file=%PRED_CSV_PREFIX%fs%comb_scope%_%comb_year%_%comb_year%.csv"
+
+REM Use Python to combine the monthly CSV files
+python -c "import pandas as pd; import glob; pattern='monthly_results/%RESULTS_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv'; files=sorted(glob.glob(pattern)); df=pd.concat([pd.read_csv(f) for f in files], ignore_index=True); df.to_csv('%combined_result_file%', index=False); print(f'Combined {len(files)} monthly result files')"
+
+python -c "import pandas as pd; import glob; pattern='monthly_results/%PRED_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv'; files=sorted(glob.glob(pattern)); df=pd.concat([pd.read_csv(f) for f in files], ignore_index=True); df.to_csv('%combined_pred_file%', index=False); print(f'Combined {len(files)} monthly prediction files')"
+
+echo   - Created: %combined_result_file%
+echo   - Created: %combined_pred_file%
+
+REM Clean up monthly files after combining
+echo Cleaning up monthly intermediate files...
+del /q "monthly_results\%RESULTS_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv" 2>nul
+del /q "monthly_results\%PRED_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv" 2>nul
+
+goto :eof
+
+REM ============================================================================
+REM ARCHIVE VISUAL FILES
+REM ============================================================================
+
+:archive_visual_files
+REM Args: %1 = year, %2 = scope, %3 = month
+set "archive_year=%1"
+set "archive_scope=%2"
+set "archive_month=%3"
+
+REM Find the result directory - check common patterns in priority order
+set "source_dir="
+
+REM First check base name (no number suffix)
+if exist "%RESULT_PREFIX%" (
+    if exist "%RESULT_PREFIX%\vis" (
+        set "source_dir=%RESULT_PREFIX%"
+        goto :found_source_dir
+    )
+)
+
+REM Then check numbered versions: 0 through 20
+for /L %%N in (0,1,20) do (
+    if exist "%RESULT_PREFIX%_%%N" (
+        if exist "%RESULT_PREFIX%_%%N\vis" (
+            set "source_dir=%RESULT_PREFIX%_%%N"
+            goto :found_source_dir
+        )
+    )
+)
+
+REM Search for any matching dir that's NOT archived (doesn't end with _visual)
+for /d %%D in (%RESULT_PREFIX%_*) do (
+    set "temp_dir=%%D"
+    set "last_7=!temp_dir:~-7!"
+    if not "!last_7!"=="_visual" (
+        if exist "%%D\vis" (
+            set "source_dir=%%D"
+            goto :found_source_dir
+        )
+    )
+)
+
+echo WARNING: No valid %RESULT_PREFIX%* directory with /vis folder found to archive
+goto :eof
+
+:found_source_dir
+echo Found source directory: !source_dir!
+
+REM Check if vis directory exists
+if not exist "!source_dir!\vis" (
+    echo WARNING: vis directory not found in !source_dir!
+    goto :eof
+)
+
+REM Create descriptive archive folder name with month
+set "archive_folder=%RESULT_PREFIX%_%archive_year%_fs%archive_scope%_%archive_year%-%archive_month%_visual"
+echo Creating archive folder: !archive_folder!
+
+REM Create archive directory structure
+if exist "!archive_folder!" (
+    echo Archive folder already exists, removing old version...
+    rmdir /s /q "!archive_folder!" 2>nul
+)
+mkdir "!archive_folder!"
+mkdir "!archive_folder!\vis"
+
+echo Copying files from !source_dir! to !archive_folder!...
+set copied_count=0
+
+REM Copy important files from /vis directory with verification
+for %%V in (
+    comprehensive_partition_metrics.csv
+    final_f1_performance_map.png
+    final_partition_map.png
+    overall_f1_improvement_map.png
+    map_pct_err_all.png
+    map_pct_err_class1.png
+    train_error_by_polygon.csv
+) do (
+    if exist "!source_dir!\vis\%%V" (
+        copy "!source_dir!\vis\%%V" "!archive_folder!\vis\" >nul 2>&1
+        if exist "!archive_folder!\vis\%%V" (
+            echo   [OK] %%V
+            set /a copied_count+=1
+        ) else (
+            echo   [FAILED] %%V
+        )
+    ) else (
+        echo   [SKIP] %%V not found
+    )
+)
+
+REM Copy all score_details_*.csv files
+set score_count=0
+for %%F in ("!source_dir!\vis\score_details_*.csv") do (
+    copy "%%F" "!archive_folder!\vis\" >nul 2>&1
+    if exist "!archive_folder!\vis\%%~nxF" (
+        echo   [OK] %%~nxF
+        set /a copied_count+=1
+        set /a score_count+=1
+    ) else (
+        echo   [FAILED] %%~nxF
+    )
+)
+if !score_count! equ 0 (
+    echo   [SKIP] No score_details_*.csv files found
+)
+
+REM Copy correspondence tables
+if exist "!source_dir!\correspondence_table_*.csv" (
+    for %%F in ("!source_dir!\correspondence_table_*.csv") do (
+        copy "%%F" "!archive_folder!\" >nul 2>&1
+        if exist "!archive_folder!\%%~nxF" (
+            echo   [OK] %%~nxF
+            set /a copied_count+=1
+        ) else (
+            echo   [FAILED] %%~nxF
+        )
+    )
+) else (
+    echo   [SKIP] No correspondence_table_*.csv found
+)
+
+REM Copy log file
+if exist "!source_dir!\log_print.txt" (
+    copy "!source_dir!\log_print.txt" "!archive_folder!\" >nul 2>&1
+    if exist "!archive_folder!\log_print.txt" (
+        echo   [OK] log_print.txt
+        set /a copied_count+=1
+    ) else (
+        echo   [FAILED] log_print.txt
+    )
+) else (
+    echo   [SKIP] log_print.txt not found
+)
+
+REM DT-specific: archive dt_rules and logs
+if "%IS_DT%"=="1" (
+    if exist "!source_dir!\dt_rules" (
+        xcopy /E /I /Y "!source_dir!\dt_rules" "!archive_folder!\dt_rules\" >nul 2>&1
+        if exist "!archive_folder!\dt_rules\dt_rules_manifest.csv" (
+            echo   [OK] dt_rules folder archived
+            set /a copied_count+=1
+        ) else (
+            echo   [WARN] dt_rules folder copied but manifest missing
+        )
+
+        if exist "!source_dir!\dt_rules\dt_rules_*.csv" (
+            for %%F in ("!source_dir!\dt_rules\dt_rules_*.csv") do (
+                copy "%%F" "!GLOBAL_DT_RULES_DIR!\" >nul 2>&1
+            )
+        )
+        if exist "!source_dir!\dt_rules\dt_tree_nodes_*.csv" (
+            for %%F in ("!source_dir!\dt_rules\dt_tree_nodes_*.csv") do (
+                copy "%%F" "!GLOBAL_DT_RULES_DIR!\" >nul 2>&1
+            )
+        )
+
+        if exist "!source_dir!\dt_rules\dt_rules_manifest.csv" (
+            python -c "import pandas as pd; from pathlib import Path; src=Path(r'!source_dir!\dt_rules\dt_rules_manifest.csv'); dst=Path(r'!GLOBAL_DT_RULES_DIR!\dt_rules_manifest.csv'); src_df=pd.read_csv(src); dst_df=pd.read_csv(dst) if dst.exists() else pd.DataFrame(columns=src_df.columns); out=pd.concat([dst_df, src_df], ignore_index=True); out=out.drop_duplicates(subset=['iteration_id'], keep='last') if 'iteration_id' in out.columns else out; out.to_csv(dst, index=False)"
+            if exist "!GLOBAL_DT_RULES_DIR!\dt_rules_manifest.csv" (
+                echo   [OK] global dt_rules_manifest.csv updated
+            )
+        )
+    ) else (
+        echo   [SKIP] dt_rules folder not found
+    )
+
+    if exist "!source_dir!\logs\dt_rules_export.log" (
+        if not exist "!archive_folder!\logs" mkdir "!archive_folder!\logs"
+        copy "!source_dir!\logs\dt_rules_export.log" "!archive_folder!\logs\" >nul 2>&1
+        type "!source_dir!\logs\dt_rules_export.log" >> "!GLOBAL_LOG_DIR!\dt_rules_export.log" 2>nul
+        if exist "!archive_folder!\logs\dt_rules_export.log" (
+            echo   [OK] dt_rules_export.log archived
+            set /a copied_count+=1
+        )
+    ) else (
+        echo   [SKIP] dt_rules_export.log not found
+    )
+)
+
+echo Archive completed: !archive_folder!
+echo Total files copied: !copied_count!
+
+REM Verify archive folder still exists before cleanup
+if exist "!archive_folder!" (
+    echo Archive folder verified: !archive_folder!
+) else (
+    echo ERROR: Archive folder disappeared: !archive_folder!
+)
+
+goto :eof
+
+REM ============================================================================
+REM CLEANUP DIRECTORIES
+REM ============================================================================
+
+:cleanup_directories
+echo Performing robust directory cleanup...
+
+REM Phase 1: Wildcard pattern cleanup (skip archived folders ending with _visual)
+for /d %%D in (%RESULT_PREFIX%*) do (
+    call :check_and_delete_folder "%%D"
+)
+
+REM Phase 2: Explicit cleanup for base folder and numbered versions (0-20)
+if exist "%RESULT_PREFIX%" (
+    call :check_and_delete_folder "%RESULT_PREFIX%"
+)
+
+for /L %%i in (0,1,20) do (
+    if exist "%RESULT_PREFIX%_%%i" (
+        call :check_and_delete_folder "%RESULT_PREFIX%_%%i"
+    )
+)
+
+REM Clean up temp files and caches
+del /f /q *.tmp 2>nul
+for /d /r %%D in (__pycache__) do @if exist "%%D" rd /s /q "%%D" 2>nul
+
+echo Cleanup completed
+goto :eof
+
+:check_and_delete_folder
+REM Args: %1 = folder name
+set "folder_to_check=%~1"
+set "last_7=%folder_to_check:~-7%"
+if "%last_7%"=="_visual" (
+    echo   Skipping archived folder: %folder_to_check%
+) else (
+    echo   Attempting to delete: %folder_to_check%
+    rmdir /s /q "%folder_to_check%" 2>nul
+    if exist "%folder_to_check%" (
+        timeout /t 2 /nobreak >nul
+        del /s /f /q "%folder_to_check%\*" 2>nul
+        rmdir /s /q "%folder_to_check%" 2>nul
+    )
+)
+goto :eof
+
+:end
+echo Script finished.
+pause

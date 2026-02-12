@@ -12,25 +12,27 @@ This project applies the GeoRF framework to **FEWSNET food crisis prediction** i
 
 ## Quick Start
 
-### Complete Workflow (4 Stages)
+### Complete Workflow (3 Stages)
 
-See **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)** for detailed documentation.
+See **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)** for detailed documentation. All stages use unified batch scripts that accept a model type argument (`georf`, `geoxgb`, or `geodt`).
 
 **Stage 1**: Generate monthly partition results (~6-8 hours)
 ```batch
-run_georf_batches_2021_2024_visual_monthly.bat
-run_xgboost_batches_2021_2024_visual_monthly.bat
+run_batches_2021_2024_visual_monthly.bat georf
+run_batches_2021_2024_visual_monthly.bat geoxgb
 ```
 
-**Stage 2-3**: Generate spatial partitions (manual, ~30-60 min)
-- Run Jupyter notebooks: `step1*.ipynb` → `step2*.ipynb` → `step4*.ipynb` → `step5*.ipynb`
-- Run Python scripts: `step3_create_linked_tables.py` → `step6_complete_clustering_pipeline.py`
-- Output: `cluster_mapping_k40_nc4.csv` (general partition)
-
-**Stage 4**: Evaluate partitioned models (~4-6 hours)
+**Stage 2**: Generate spatial partitions (automated, ~30-60 min)
 ```batch
-run_partition_k40_clustered_comparison_GF.bat
-run_partition_k40_clustered_comparison_XGB.bat
+spatial_weighted_consensus_clustering.bat georf
+spatial_weighted_consensus_clustering.bat geoxgb
+```
+Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv` + `cluster_mapping_manifest.json`
+
+**Stage 3**: Evaluate partitioned models (~4-6 hours)
+```batch
+run_partition_k40_comparison_unified.bat georf --visual --month-ind
+run_partition_k40_comparison_unified.bat geoxgb --visual --month-ind
 ```
 
 ## Key Features
@@ -44,7 +46,8 @@ run_partition_k40_clustered_comparison_XGB.bat
 ### Model Types
 - **GeoRF**: Random Forest with spatial partitioning
 - **GeoXGB**: XGBoost with spatial partitioning
-- Both share identical partitioning logic for fair comparison
+- **GeoDT**: Decision Tree with spatial partitioning
+- All three share identical partitioning logic for fair comparison
 
 ### Partition Types
 - **General Partition**: Year-round clustering (all months aggregated)
@@ -77,16 +80,22 @@ Food_Crisis_Cluster/
 │   ├── preprocess/               # Data loading & cleaning
 │   └── vis/                      # Visualization
 ├── scripts/
-│   └── statlearn/                # Consensus clustering scripts (deprecated)
-├── step*.py                      # Clustering pipeline (Python)
-├── step*.ipynb                   # Clustering pipeline (Jupyter)
-├── run_georf_batches*.bat        # Batch processing scripts
-└── run_partition*.bat            # Partition comparison scripts
+│   ├── step1_merge_results.py    # Clustering step 1 (refactored)
+│   ├── step2_load_correspondence.py  # Clustering step 2 (refactored)
+│   ├── step4_similarity_matrix.py    # Clustering step 4 (refactored)
+│   ├── step5_sparsification.py       # Clustering step 5 (refactored)
+│   └── compare_partitioned_vs_pooled_*.py  # Stage 3 comparison scripts
+├── GeoRFExperiment/              # GeoRF clustering workspace
+├── GeoXGBExperiment/             # GeoXGB clustering workspace
+├── GeoDTExperiment/              # GeoDT clustering workspace
+├── run_batches_2021_2024_visual_monthly.bat        # Stage 1: model training
+├── spatial_weighted_consensus_clustering.bat        # Stage 2: clustering
+└── run_partition_k40_comparison_unified.bat         # Stage 3: comparison
 ```
 
 ## Documentation
 
-- **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)**: Complete 4-stage workflow
+- **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)**: Complete 3-stage workflow
 - **[CLAUDE.md](CLAUDE.md)**: AI assistant guide with troubleshooting
 - **[CRITICAL_PIPELINE_FIXES.md](CRITICAL_PIPELINE_FIXES.md)**: Known issues & fixes
 
@@ -120,24 +129,27 @@ result_GeoRF_YYYY_fsX_YYYY-MM_*/
 └── space_partitions/
 ```
 
-### Spatial Partitions (Stage 2-3)
+### Spatial Partitions (Stage 2)
 ```
-cluster_mapping_k40_nc4.csv         # General partition (all months)
-cluster_mapping_k40_nc4_m02.csv     # February partition
-cluster_mapping_k40_nc4_m06.csv     # June partition
-cluster_mapping_k40_nc4_m10.csv     # October partition
+{ExperimentDir}/knn_sparsification_results/
+├── cluster_mapping_k40_nc*_general.csv   # General partition (all months)
+├── cluster_mapping_k40_nc*_m2.csv        # February partition
+├── cluster_mapping_k40_nc*_m6.csv        # June partition
+├── cluster_mapping_k40_nc*_m10.csv       # October partition
+└── cluster_mapping_manifest.json          # Paths to all partition files
 ```
 
-### Comparison Results (Stage 4)
+### Comparison Results (Stage 3)
 - Partitioned vs pooled F1 comparisons
 - Cluster-wise performance metrics
 - Spatial visualization of clusters
 
 ## Known Issues
 
-**Automated Pipeline (Deprecated)**:
+**Legacy Files**:
 - The end-to-end pipeline (`run_full_ablation.bat`) has been deprecated
-- Use semi-automated workflow with manual Jupyter notebook steps instead
+- Root-level `step*.ipynb` / `step*.py` files are deprecated; use the unified batch scripts instead
+- Model-specific batch files (`run_georf_batches_*`, `run_xgboost_batches_*`, etc.) have been superseded by unified versions
 
 **Unicode Encoding**:
 - Fixed for Windows Chinese locale (GBK encoding)

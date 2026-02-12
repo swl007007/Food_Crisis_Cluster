@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the complete workflow for generating spatial partitions using the GeoRF/XGBoost/GeoDT framework with consensus clustering. Each model type (Random Forest, XGBoost, Decision Tree) follows the same four-stage pipeline independently, producing its own partitions and comparison results.
+This document describes the complete workflow for generating spatial partitions using the GeoRF/XGBoost/GeoDT framework with consensus clustering. Each model type (Random Forest, XGBoost, Decision Tree) follows the same three-stage pipeline independently, producing its own partitions and comparison results. All three stages use unified batch scripts that accept the model type as an argument.
 
 ## Pipeline Architecture
 
@@ -12,74 +12,78 @@ This document describes the complete workflow for generating spatial partitions 
 │                      Generate Monthly Partition Results                 │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
-          ┌─────────────────────────┼─────────────────────────┐
-          ▼                         ▼                         ▼
- ┌──────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
- │ run_georf_batches│  │ run_xgboost_batches  │  │ run_geodt_batches    │
- │ _2021_2024_      │  │ _2021_2024_          │  │ _2021_2024_          │
- │ visual_monthly   │  │ visual_monthly       │  │ visual_monthly       │
- │ .bat             │  │ .bat                 │  │ .bat                 │
- └──────────────────┘  └──────────────────────┘  └──────────────────────┘
-          │                         │                         │
-   result_GeoRF_*           result_GeoXGB_*           result_GeoDT_*
+                              ┌──────────────────────────────────┐
+                              │   run_batches_2021_2024_         │
+                              │   visual_monthly.bat             │
+                              │   <model_type>                   │
+                              │   (georf | geoxgb | geodt)      │
+                              └──────────────────────────────────┘
+                                              │
+                              result_GeoRF_* / result_GeoXGB_* / result_GeoDT_*
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                    STAGE 2-3: CONSENSUS CLUSTERING                      │
-│         Generate General & Month-Specific Partitions (Manual)          │
+│                    STAGE 2: CONSENSUS CLUSTERING                        │
+│            Generate General & Month-Specific Partitions                 │
 └─────────────────────────────────────────────────────────────────────────┘
-                                    │
-          ┌─────────────────────────┼─────────────────────────┐
-          ▼                         ▼                         ▼
-  GeoRFExperiment/          GeoXGBExperiment/         GeoDTExperiment/
-  step1-step6               step1-step6               step1-step6
-  (GeoRF-specific)          (GeoXGB-specific)         (GeoDT-specific)
-                                    │
-        ┌───────────────────────────┼───────────────────────────┐
-        ▼                           ▼                           ▼
-   Step 1: Merge Results       Step 2: Load Corr.         Step 3: Create
-   with Correspondence         Tables                     Linked Tables
-        └───────────────────────────┼───────────────────────────┘
-                                    ▼
-                               Step 4:
-                    Compute Similarity Matrix
-                    (General or Month-Specific)
-                                    │
-                                    ▼
-                               Step 5:
-                  KNN Sparsification & Eigengap
-                                    │
-                                    ▼
-                               Step 6:
-                         Spectral Clustering
-                                    │
-              Generates partition files (per model type):
-              - cluster_mapping_k40_nc*.csv (general)
-              - cluster_mapping_k40_nc*_m02.csv (Feb)
-              - cluster_mapping_k40_nc*_m06.csv (Jun)
-              - cluster_mapping_k40_nc*_m10.csv (Oct)
+                                     │
+                              ┌──────────────────────────────────┐
+                              │   spatial_weighted_consensus_    │
+                              │   clustering.bat                 │
+                              │   <model_type>                   │
+                              │   (georf | geoxgb | geodt)      │
+                              └──────────────────────────────────┘
+                                              │
+                              Part 1 (shared): step1->step2->step3
+                              Part 2 (general): step4->step5->step6
+                              Part 3 (monthly): step4->step5->step6
+                                     x3 (Feb, Jun, Oct)
+                                              │
+                              Generates partition files:
+                              - cluster_mapping_k40_nc*_general.csv
+                              - cluster_mapping_k40_nc*_m2.csv (Feb)
+                              - cluster_mapping_k40_nc*_m6.csv (Jun)
+                              - cluster_mapping_k40_nc*_m10.csv (Oct)
+                              - cluster_mapping_manifest.json
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                STAGE 4: PARTITIONED MODEL COMPARISON                    │
+│                STAGE 3: PARTITIONED MODEL COMPARISON                    │
 │          Re-run Models with Generated Spatial Partitions                │
 └─────────────────────────────────────────────────────────────────────────┘
-                                    │
-        ┌───────────────────────────┼───────────────────────┐
-        ▼                           ▼                       ▼
-┌─────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
-│ run_partition_k40_  │  │ run_partition_k40_ │  │ run_partition_k40_ │
-│ clustered_          │  │ clustered_         │  │ comparison_dt.bat  │
-│ comparison_GF.bat   │  │ comparison_XGB.bat │  │                    │
-└─────────────────────┘  └────────────────────┘  └────────────────────┘
-        │                           │                       │
-        └───────────────────────────┼───────────────────────┘
-                                    ▼
+                                     │
+                              ┌──────────────────────────────────┐
+                              │   run_partition_k40_comparison_  │
+                              │   unified.bat                    │
+                              │   <model_type> [options]         │
+                              │   (georf | geoxgb | geodt)      │
+                              └──────────────────────────────────┘
+                                     │
+                                     ▼
                      Final comparison results:
                      - Pooled vs Partitioned
                      - General vs Month-Specific
                      - Performance metrics & plots
 ```
+
+### Pipeline Flow Summary
+
+The complete workflow uses **three unified batch scripts**, each accepting a model type argument:
+
+| Stage | Script | Purpose | Duration |
+|-------|--------|---------|----------|
+| 1 | `run_batches_2021_2024_visual_monthly.bat <model>` | Train models, generate monthly partitions | ~6-8 hrs |
+| 2 | `spatial_weighted_consensus_clustering.bat <model>` | Aggregate partitions into spatial clusters | ~30-60 min |
+| 3 | `run_partition_k40_comparison_unified.bat <model>` | Compare partitioned vs pooled models | ~4-6 hrs |
+
+**Example (full pipeline for GeoRF)**:
+```batch
+run_batches_2021_2024_visual_monthly.bat georf
+spatial_weighted_consensus_clustering.bat georf
+run_partition_k40_comparison_unified.bat georf --visual --month-ind
+```
+
+---
 
 ## Detailed Stage Breakdown
 
@@ -87,10 +91,15 @@ This document describes the complete workflow for generating spatial partitions 
 
 **Purpose**: Train GeoRF/XGBoost/GeoDT models for each month, generating baseline partitions.
 
-**Scripts**:
-- `run_georf_batches_2021_2024_visual_monthly.bat` (Random Forest)
-- `run_xgboost_batches_2021_2024_visual_monthly.bat` (XGBoost)
-- `run_geodt_batches_2021_2024_visual_monthly.bat` (Decision Tree)
+**Script**: `run_batches_2021_2024_visual_monthly.bat <model_type>`
+
+Unified batch script that accepts a model type argument:
+```batch
+run_batches_2021_2024_visual_monthly.bat georf    # Random Forest
+run_batches_2021_2024_visual_monthly.bat geoxgb   # XGBoost
+run_batches_2021_2024_visual_monthly.bat geodt    # Decision Tree
+run_batches_2021_2024_visual_monthly.bat geodt --no-dt-rules  # DT without rule export
+```
 
 **Configuration**:
 ```batch
@@ -150,13 +159,30 @@ y_pred_test_dt_gp_fsX_YYYY_YYYY.csv   # Yearly combined predictions
 
 ---
 
-### Stage 2-3: Consensus Clustering (Per-Model Experiment Directories)
+### Stage 2: Consensus Clustering (Per-Model Experiment Directories)
 
 **Purpose**: Aggregate monthly partitions into stable general and month-specific cluster assignments.
 
-**Tools**: Jupyter notebooks (.ipynb) and Python scripts (.py)
+**Script**: `spatial_weighted_consensus_clustering.bat <model_type>`
 
-> **Important**: Each model type has its own self-contained experiment directory with a dedicated copy of step1-step6. The root-level `step1*.ipynb`/`step2*.ipynb`/`step3*.py`/`step4*.ipynb`/`step5*.ipynb`/`step6*.py` are **deprecated** (retained for reference only). Always run clustering from the model-specific experiment directory.
+Automated batch that orchestrates the complete clustering pipeline (step1 through step6), producing both general and month-specific (Feb, Jun, Oct) spatial partitions.
+
+```batch
+spatial_weighted_consensus_clustering.bat georf    # GeoRF partitions
+spatial_weighted_consensus_clustering.bat geoxgb   # GeoXGB partitions
+spatial_weighted_consensus_clustering.bat geodt    # GeoDT partitions
+```
+
+The batch script runs three parts:
+- **Part 1 (shared)**: step1 -> step2 -> step3 (merge, load, link)
+- **Part 2 (general)**: step4 -> step5 -> step6 (general partition, all months aggregated)
+- **Part 3 (monthly)**: step4 -> step5 -> step6, repeated for months 2, 6, 10
+
+It uses refactored Python scripts in `scripts/` for step1-2 and step4-5, and the experiment directory's own `step3_create_linked_tables.py` and `step6_complete_clustering_pipeline.py`.
+
+> **Note**: Each model type has its own experiment directory. The root-level `step1*.ipynb` through `step6*.py` are **deprecated** legacy files retained for reference only.
+
+> **Manual alternative**: You can still run steps individually from within the experiment directory using the Jupyter notebooks and Python scripts. See the Step 1-6 descriptions below.
 
 | Model | Experiment Directory | Result Prefix | Results Subdirectory |
 |-------|---------------------|---------------|----------------------|
@@ -362,48 +388,37 @@ FEWSNET_admin_code,cluster_id,latitude,longitude,is_outlier
 
 ---
 
-### Stage 4: Partitioned Model Comparison
+### Stage 3: Partitioned Model Comparison
 
 **Purpose**: Re-run models using generated partitions to evaluate partitioned vs pooled performance.
 
-**Scripts**:
-- `run_partition_k40_clustered_comparison_GF.bat` (Random Forest)
-- `run_partition_k40_clustered_comparison_XGB.bat` (XGBoost)
-- `run_partition_k40_comparison_dt.bat` (Decision Tree)
+**Script**: `run_partition_k40_comparison_unified.bat <model_type> [options]`
 
-**Configuration (GeoRF/GeoXGB)**:
+Unified comparison script that auto-discovers partition files from `cluster_mapping_manifest.json` (written by Stage 2).
+
 ```batch
-# Partition to use
-PARTITION_FILE=cluster_mapping_k40_nc4.csv (general)
-# or
-PARTITION_FILE=cluster_mapping_k40_nc4_m02.csv (February-specific)
-
-# Comparison mode
-COMPARISON=partitioned_vs_pooled
+run_partition_k40_comparison_unified.bat georf                # Default settings
+run_partition_k40_comparison_unified.bat geoxgb --visual      # With maps
+run_partition_k40_comparison_unified.bat geodt 1 3 --visual   # Contiguity + maps
 ```
 
-**Configuration (GeoDT)**:
+**Options**:
+- First numeric arg = `CONTIGUITY` (0 or 1, default 1)
+- Second numeric arg = `REFINE_ITERS` (default 3)
+- `--visual` / `-v` = Enable visualization maps
+- `--month-ind` = Enable month-specific partitions (enabled by default when `MONTH_IND=1`)
+
+**Auto-discovery**: The script looks for `{ExperimentDir}/knn_sparsification_results/cluster_mapping_manifest.json` to locate partition files. Falls back to pattern matching (`cluster_mapping_k40_nc*_general.csv`) if manifest is missing.
+
+**Configuration** (defaults inside batch, overridable via args):
 ```batch
-# General partition
-PARTITION_MAP=cluster_mapping_k40_nc6_general.csv
-
-# Month-specific partitions
-PARTITION_MAP_M2=cluster_mapping_k40_nc9_m2.csv
-PARTITION_MAP_M6=cluster_mapping_k40_nc7_m6.csv
-PARTITION_MAP_M10=cluster_mapping_k40_nc8_m10.csv
-
-# Model selector
---lower-model dt
-
-# Month-specific mode
-MONTH_IND=1
-
-# Contiguity refinement
-CONTIGUITY=1
-REFINE_ITERS=3
-
-# Output
-OUT_DIR=.\result_partition_k40_nc4_compare_DT
+START_MONTH=2021-01
+END_MONTH=2024-12
+TRAIN_WINDOW=36
+FORECASTING_SCOPE=2
+MONTH_IND=1          # Month-specific partitions enabled
+CONTIGUITY=1         # Contiguity refinement enabled
+REFINE_ITERS=3       # Refinement iterations
 ```
 
 **Comparisons**:
@@ -512,8 +527,8 @@ plan_weight = logit(f1_partitioned) - logit(f1_baseline)
 
 ### Runtime (per model type)
 - **Stage 1**: 6-8 hours (4 years x 3 scopes x 12 months)
-- **Stage 2-3 (Steps 1-6)**: 30-60 minutes (manual, interactive)
-- **Stage 4**: 4-6 hours (re-training with partitions)
+- **Stage 2 (Steps 1-6)**: 30-60 minutes (automated via batch)
+- **Stage 3**: 4-6 hours (re-training with partitions)
 - **Full pipeline (all 3 models)**: ~30-50 hours total
 
 ### Resource Requirements
