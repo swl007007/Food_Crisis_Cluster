@@ -248,16 +248,22 @@ def train_partitioned_model(X_train: np.ndarray, y_train: np.ndarray,
         X_partition = X_train[partition_mask]
         y_partition = y_train[partition_mask]
 
-        if len(y_partition) >= min_samples:
+        unique_classes = np.unique(y_partition)
+        if len(y_partition) < min_samples:
+            models[partition_id] = None  # Will use pooled fallback
+            fallback_count += 1
+        elif len(unique_classes) < 2:
+            # Single-class partition: classifier needs both classes for meaningful training
+            print(f"    Partition {partition_id}: only one class present ({len(y_partition)} samples, class={unique_classes[0]}). Using pooled fallback.")
+            models[partition_id] = None
+            fallback_count += 1
+        else:
             X_partition_balanced, y_partition_balanced = _apply_partition_smote(
                 X_partition, y_partition, partition_id
             )
             model = _create_model(lower_model)
             model.fit(X_partition_balanced, y_partition_balanced)
             models[partition_id] = model
-        else:
-            models[partition_id] = None  # Will use pooled fallback
-            fallback_count += 1
 
     if fallback_count > 0:
         print(f"    {fallback_count} partitions use pooled fallback (<{min_samples} samples)")

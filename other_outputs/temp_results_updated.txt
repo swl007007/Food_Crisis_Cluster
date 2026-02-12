@@ -1,40 +1,40 @@
 GeoRF (1-partition)
-lag4:Partitioned F1: 0.6759 ± 0.0954 vs Pooled F1: 0.6080 ± 0.1334 (0.6759-0.6080)/0.6080 = 11.2% improvement
-lag8:Partitioned F1: 0.6537 ± 0.0831 vs Pooled F1: 0.5856 ± 0.1389 (0.6537-0.5856)/0.5856 = 11.6% improvement
+lag4:Partitioned F1: 0.6781 ± 0.0935 vs Pooled F1: 0.6080 ± 0.1334 (0.6781-0.6080)/0.6080 = 11.5% improvement
+lag8:Partitioned F1: 0.6496 ± 0.0977 vs Pooled F1: 0.5856 ± 0.1389 (0.6496-0.5856)/0.5856 = 11.0% improvement
 
 GeoDT (1-partition)
-lag4: Partitioned F1: 0.5614 ± 0.0600 vs Pooled F1: 0.5401 ± 0.0893 (0.5614-0.5401)/0.5401 = 4.0% improvement
-lag8: Partitioned F1: 0.5393 ± 0.0629 vs Pooled F1: 0.5131 ± 0.1052 (0.5393-0.5131)/0.5131 = 5.1% improvement
+lag4: Partitioned F1: 0.5624 ± 0.0826 vs Pooled F1: 0.5401 ± 0.0893 (0.5624-0.5401)/0.5401 = 4.2% improvement
+lag8: Partitioned F1: 0.5275 ± 0.0898 vs Pooled F1: 0.5131 ± 0.1052 (0.5275-0.5131)/0.5131 = 2.8% improvement
 
 GeoXGB (1-partition)
-lag4: Partitioned F1: 0.6992 ± 0.0759 vs Pooled F1: 0.6872 ± 0.0929 (0.6992-0.6872)/0.6872 = 1.7% improvement
-lag8: Partitioned F1: 0.6725 ± 0.0786 vs Pooled F1: 0.6506 ± 0.0980 (0.6725-0.6506)/0.6506 = 3.3% improvement
+lag4: Partitioned F1: 0.7031 ± 0.0673 vs Pooled F1: 0.6872 ± 0.0929 (0.7031-0.6872)/0.6872 = 2.3% improvement
+lag8: Partitioned F1: 0.6683 ± 0.07426 vs Pooled F1: 0.6506 ± 0.0980 (0.6683-0.6506)/0.6506 = 2.7% improvement
 ----------------------------------------------------------------------------------------------------------------
 GeoRF (3-partitions: Feb, Jun, Oct)
-lag4:Partitioned F1: 0.6730 ± 0.1043 vs Pooled F1: 0.6080 ± 0.1334 (0.6730-0.6080)/0.6080 = 10.7% improvement
-lag8:Partitioned F1: 0.6444 ± 0.1044 vs Pooled F1: 0.5856 ± 0.1389 (0.6444-0.5856)/0.5856 = 10.1% improvement
+lag4:Partitioned F1: 0.6786 ± 0.0993 vs Pooled F1: 0.6080 ± 0.1334 (0.6786-0.6080)/0.6080 = 11.6% improvement
+lag8:Partitioned F1: 0.6420 ± 0.1100 vs Pooled F1: 0.5856 ± 0.1389 (0.6420-0.5856)/0.5856 = 9.7% improvement
 
 GeoDT (3-partitions: Feb, Jun, Oct)
-lag4:  Partitioned F1: 0.5782 ± 0.0481 vs Pooled F1: 0.5401 ± 0.0893 (0.5782-0.5401)/0.5401 = 7.1% improvement
-lag8:  Partitioned F1: 0.5385 ± 0.0675 vs Pooled F1: 0.5131 ± 0.1052 (0.5385-0.5131)/0.5131 = 4.9% improvement
+lag4:  Partitioned F1: 0.5747 +- 0.0565 vs Pooled F1: 0.5401 ± 0.0893 (0.5747-0.5401)/0.5401 = 6.4% improvement
+lag8:  Partitioned F1: 0.5631 ± 0.0715 vs Pooled F1: 0.5131 ± 0.1052 (0.5631-0.5131)/0.5131 = 9.8% improvement
 
 GeoXGB (3-partitions: Feb, Jun, Oct)
-lag4:Partitioned F1: 0.6843 ± 0.0874 vs Pooled F1: 0.6872 ± 0.0929 (0.6843-0.6872)/0.6872 = -0.4% improvement
-lag8:Partitioned F1: 0.6531 ± 0.0850 vs Pooled F1: 0.6506 ± 0.0980 (0.6531-0.6506)/0.6506 = 0.4% improvement
+lag4:Partitioned F1: 0.7072 ± 0.0753 vs Pooled F1: 0.6872 ± 0.0929 (0.7072-0.6872)/0.6872 = 2.9% improvement
+lag8:Partitioned F1: 0.6856 ± 0.0738 vs Pooled F1: 0.6506 ± 0.0980 (0.6856-0.6506)/0.6506 = 5.3% improvement
 
 ---------------------------------------------------------------------------------------------------------------
 
 GeoRF (3-partitions + 3 rounds contiguity refinement)
-lag4:Partitioned F1: 0.6676 ± 0.1033 vs Pooled F1: 0.6080 ± 0.1334 (0.6676-0.6080)/0.6080 = 9.7% improvement
-lag8:Partitioned F1: 0.6450 ± 0.1008 vs Pooled F1: 0.5856 ± 0.1389 (0.6450-0.5856)/0.5856 = 10.2% improvement
+lag4:Partitioned F1: 0.6786 ± 0.0993 vs Pooled F1: 0.6080 ± 0.1334 (0.6786-0.6080)/0.6080 = 11.6% improvement
+lag8: Partitioned F1: 0.6420 +- 0.1100 vs Pooled F1: 0.5856 ± 0.1389 (0.6420-0.5856)/0.5856 = 9.7% improvement
 
 GeoDT (3-partitions + 3 rounds contiguity refinement)
-lag4: Partitioned F1: 0.5782 ± 0.0481 vs Pooled F1: 0.5401 ± 0.0893 (0.5782-0.5401)/0.5401 = 7.1% improvement
-lag8:  Partitioned F1: 0.5385 ± 0.0675 vs Pooled F1: 0.5131 ± 0.1052 (0.5385-0.5131)/0.5131 = 4.9% improvement
+lag4: Partitioned F1: 0.5747 ± 0.0565 vs Pooled F1: 0.5401 ± 0.0893 (0.5747-0.5401)/0.5401 = 6.4% improvement
+lag8: Partitioned F1: 0.5631 ± 0.0715 vs Pooled F1: 0.5131 ± 0.1052 (0.5631-0.5131)/0.5131 = 9.8% improvement
 
 GeoXGB (3-partitions + 3 rounds contiguity refinement)
-lag4:Partitioned F1: 0.6886 ± 0.0891 vs Pooled F1: 0.6872 ± 0.0929 (0.6886-0.6872)/0.6872 = 0.2% improvement
-lag8:Partitioned F1: 0.6538 ± 0.0849 vs Pooled F1: 0.6506 ± 0.0980 (0.6538-0.6506)/0.6506 = 0.5% improvement
+lag4:Partitioned F1: 0.7072 ± 0.0753 vs Pooled F1: 0.6872 ± 0.0929 (0.7072-0.6872)/0.6872 = 2.9% improvement
+lag8:Partitioned F1: 0.6856 +- 0.0738 vs Pooled F1: 0.6506 ± 0.0980 (0.6856-0.6506)/0.6506 = 5.3% improvement
 
 
 
