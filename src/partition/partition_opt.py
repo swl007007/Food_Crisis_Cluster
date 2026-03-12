@@ -583,10 +583,14 @@ def get_polygon_neighbors(centroids, neighbor_distance_threshold=None, adjacency
 def swap_partition_polygon(partition_assignments, polygon_neighbors, centroids=None):
   '''Polygon version of swap_partition_general using majority voting among neighbors.
   
+  Supports arbitrary partition IDs (not just binary 0/1), making it compatible
+  with both Stage 1 binary tree splits and Stage 3 multi-cluster consensus
+  partitions (e.g., cluster IDs 0-17).
+  
   Parameters:
   -----------
   partition_assignments : array-like, shape (n_polygons,)
-      Current partition assignments (0 or 1) for each polygon
+      Current partition assignments for each polygon (arbitrary integer IDs)
   polygon_neighbors : dict
       Dictionary where keys are polygon indices and values are lists of neighbor indices
   centroids : array-like, shape (n_polygons, 2), optional
@@ -604,50 +608,64 @@ def swap_partition_polygon(partition_assignments, polygon_neighbors, centroids=N
   for poly_idx in range(len(partition_assignments)):
     current_partition = partition_assignments[poly_idx]
     
+    # Skip invalid assignments (e.g., -1 for unmapped polygons)
+    if current_partition < 0:
+      continue
+    
     # Handle isolated polygons (polygons with no neighbors)
     if poly_idx not in polygon_neighbors or len(polygon_neighbors[poly_idx]) == 0:
       try:
         from config import PRESERVE_ISOLATED_POLYGONS, DIAGNOSTIC_POLYGON_TRACKING
         if PRESERVE_ISOLATED_POLYGONS:
-          # Keep isolated polygon with its original assignment
           partition_assignments_new[poly_idx] = current_partition
           if DIAGNOSTIC_POLYGON_TRACKING:
             print(f"Preserving isolated polygon {poly_idx} with partition {current_partition}")
           continue
         else:
-          continue  # Original behavior: skip isolated polygons
-      except:
-        continue  # Fallback to original behavior
+          continue
+      except Exception:
+        continue
     
-    # Get neighbor partition assignments
+    # Get neighbor partition assignments (only valid ones, i.e. >= 0)
     neighbor_indices = polygon_neighbors[poly_idx]
     neighbor_partitions = partition_assignments[neighbor_indices]
+    valid_neighbor_mask = neighbor_partitions >= 0
+    neighbor_partitions = neighbor_partitions[valid_neighbor_mask]
+    
+    if len(neighbor_partitions) == 0:
+      # No valid neighbors — keep current assignment
+      continue
     
     # Include current polygon in the voting
     all_partitions = np.append(neighbor_partitions, current_partition)
     
     # Count partition assignments
     unique_partitions, counts = np.unique(all_partitions, return_counts=True)
+    total_count = int(np.sum(counts))
+    
+    if total_count == 0:
+      # Defensive: should not happen after the checks above, but guard anyway
+      continue
     
     if len(unique_partitions) == 1:
-      # All neighbors have same partition
+      # All neighbors (and self) have same partition — no change needed
       majority_partition = unique_partitions[0]
-    elif len(unique_partitions) == 2:
-      # Binary case: use threshold similar to grid-based (4/9)
-      partition_0_count = counts[unique_partitions == 0][0] if 0 in unique_partitions else 0
-      partition_1_count = counts[unique_partitions == 1][0] if 1 in unique_partitions else 0
-      total_count = partition_0_count + partition_1_count
+    else:
+      # General case (works for both binary and multi-cluster partitions):
+      # Find current partition's count among neighbors+self
+      current_mask = unique_partitions == current_partition
+      current_count = int(counts[current_mask][0]) if np.any(current_mask) else 0
       
-      current_partition_count = partition_0_count if current_partition == 0 else partition_1_count
-      
-      # Use same threshold as grid-based: if current partition < 4/9 of total, switch
-      if current_partition_count / total_count < 4/9:
-        majority_partition = 1 - current_partition
+      # If current partition holds < 4/9 of the vote, switch to the
+      # most popular *other* partition among neighbors
+      if current_count / total_count < 4 / 9:
+        # Pick the most popular partition that is NOT the current one
+        other_mask = unique_partitions != current_partition
+        other_partitions = unique_partitions[other_mask]
+        other_counts = counts[other_mask]
+        majority_partition = other_partitions[np.argmax(other_counts)]
       else:
         majority_partition = current_partition
-    else:
-      # Multi-partition case: use simple majority
-      majority_partition = unique_partitions[np.argmax(counts)]
     
     partition_assignments_new[poly_idx] = majority_partition
   

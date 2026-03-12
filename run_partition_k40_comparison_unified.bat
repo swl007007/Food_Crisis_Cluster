@@ -188,8 +188,15 @@ if "%CONTIGUITY%"=="1" (
         exit /b 1
     )
 
-    REM Refine month-specific partition maps
+    REM Refine all partition maps (general + month-specific)
     echo Refining partition maps...
+
+    "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in "%PARTITION_MAP%" --out "%REFINED_DIR%" --iters %REFINE_ITERS%
+    if %ERRORLEVEL% neq 0 (
+        echo ERROR: Refinement failed for %PARTITION_MAP%
+        pause
+        exit /b %ERRORLEVEL%
+    )
 
     "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in "%PARTITION_MAP_M2%" --out "%REFINED_DIR%" --iters %REFINE_ITERS%
     if %ERRORLEVEL% neq 0 (
@@ -217,9 +224,11 @@ if "%CONTIGUITY%"=="1" (
 
     REM Update partition map paths to use refined versions
     REM Extract base names for refined file naming
+    for %%F in ("%PARTITION_MAP%") do set "GEN_BASE=%%~nF"
     for %%F in ("%PARTITION_MAP_M2%") do set "M2_BASE=%%~nF"
     for %%F in ("%PARTITION_MAP_M6%") do set "M6_BASE=%%~nF"
     for %%F in ("%PARTITION_MAP_M10%") do set "M10_BASE=%%~nF"
+    set PARTITION_MAP=%REFINED_DIR%\!GEN_BASE!_refined_contig%REFINE_ITERS%.csv
     set PARTITION_MAP_M2=%REFINED_DIR%\!M2_BASE!_refined_contig%REFINE_ITERS%.csv
     set PARTITION_MAP_M6=%REFINED_DIR%\!M6_BASE!_refined_contig%REFINE_ITERS%.csv
     set PARTITION_MAP_M10=%REFINED_DIR%\!M10_BASE!_refined_contig%REFINE_ITERS%.csv
