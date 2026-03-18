@@ -2,13 +2,9 @@ known situation:
 1. test and train data misalignment, alot of missing area
 2. majority voting system still implement 4/9 threshold
 3. accuracy in train and test seems different due to unkown issue
-4.use ChatGPT to parse pre-2017 locations to country ISO and admin1 codes
 
 
 
-ACTION：
-2. investigate why GeoXGB doesnt carry out the final_partition_map in the archiving function.
-3. think about a method to identify partition modes.
 
 
 IMPORTANT NOTE

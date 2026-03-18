@@ -1447,7 +1447,7 @@ def main():
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
-    max_depth = 5  # Set to integer for specific RF depth
+    max_depth = None  # Set to integer for specific RF depth
     desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = args.forecasting_scope    # From command line argument
     active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)

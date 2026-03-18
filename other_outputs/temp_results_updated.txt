@@ -39,3 +39,16 @@ lag8:Partitioned F1: 0.6853 +- 0.0763 vs Pooled F1: 0.6506 ± 0.0980 (0.6853-0.6
 
 
 
+GeoDT (3-partitions + 3 rounds contiguity refinement + lag8 + max_depth = 5)
+Partitioned F1: 0.5510 +- 0.0936
+Pooled F1:      0.5131 +- 0.1052
+F1 Improvement: 0.0379 +- 0.0877
+
+GeoDT (3-partitions + 3 rounds contiguity refinement + lag4 + max_depth = 5)
+Overall Performance (Mean +- Std):
+  Partitioned F1: 0.5953 +- 0.0658
+  Pooled F1:      0.5401 +- 0.0893
+  F1 Improvement: 0.0553 +- 0.0681
+
+
+

@@ -310,14 +310,15 @@ set "monthly_result_file=monthly_results\%RESULTS_CSV_PREFIX%fs%ext_scope%_%ext_
 set "monthly_pred_file=monthly_results\%PRED_CSV_PREFIX%fs%ext_scope%_%ext_year%_%ext_month%.csv"
 
 REM Find the most recent results file (should be from current run)
+REM Use broad glob to match optional suffixes (e.g., _d5 from max_depth setting)
 set "source_result_file="
-for %%F in (%RESULTS_CSV_PREFIX%fs%ext_scope%_*.csv) do (
+for %%F in (%RESULTS_CSV_PREFIX%*fs%ext_scope%_*.csv) do (
     set "source_result_file=%%F"
 )
 
 REM Find the most recent prediction file
 set "source_pred_file="
-for %%F in (%PRED_CSV_PREFIX%fs%ext_scope%_*.csv) do (
+for %%F in (%PRED_CSV_PREFIX%*fs%ext_scope%_*.csv) do (
     set "source_pred_file=%%F"
 )
 
@@ -361,13 +362,13 @@ REM Output files
 set "combined_result_file=%RESULTS_CSV_PREFIX%fs%comb_scope%_%comb_year%_%comb_year%.csv"
 set "combined_pred_file=%PRED_CSV_PREFIX%fs%comb_scope%_%comb_year%_%comb_year%.csv"
 
-REM Use Python to combine the monthly CSV files
-python -c "import pandas as pd; import glob; pattern='monthly_results/%RESULTS_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv'; files=sorted(glob.glob(pattern)); df=pd.concat([pd.read_csv(f) for f in files], ignore_index=True); df.to_csv('%combined_result_file%', index=False); print(f'Combined {len(files)} monthly result files')"
+REM Use Python to combine the monthly CSV files (with empty-list guard)
+python -c "import pandas as pd; import glob; pattern='monthly_results/%RESULTS_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv'; files=sorted(glob.glob(pattern)); assert files, f'No monthly result files found matching {pattern}'; df=pd.concat([pd.read_csv(f) for f in files], ignore_index=True); df.to_csv('%combined_result_file%', index=False); print(f'Combined {len(files)} monthly result files into %combined_result_file%')"
 
-python -c "import pandas as pd; import glob; pattern='monthly_results/%PRED_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv'; files=sorted(glob.glob(pattern)); df=pd.concat([pd.read_csv(f) for f in files], ignore_index=True); df.to_csv('%combined_pred_file%', index=False); print(f'Combined {len(files)} monthly prediction files')"
+python -c "import pandas as pd; import glob; pattern='monthly_results/%PRED_CSV_PREFIX%fs%comb_scope%_%comb_year%_*.csv'; files=sorted(glob.glob(pattern)); assert files, f'No monthly prediction files found matching {pattern}'; df=pd.concat([pd.read_csv(f) for f in files], ignore_index=True); df.to_csv('%combined_pred_file%', index=False); print(f'Combined {len(files)} monthly prediction files into %combined_pred_file%')"
 
-echo   - Created: %combined_result_file%
-echo   - Created: %combined_pred_file%
+if exist "%combined_result_file%" ( echo   - Created: %combined_result_file% ) else ( echo   - WARNING: %combined_result_file% was NOT created )
+if exist "%combined_pred_file%" ( echo   - Created: %combined_pred_file% ) else ( echo   - WARNING: %combined_pred_file% was NOT created )
 
 REM Clean up monthly files after combining
 echo Cleaning up monthly intermediate files...

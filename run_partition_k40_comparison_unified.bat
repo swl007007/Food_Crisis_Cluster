@@ -74,7 +74,7 @@ set END_MONTH=2024-12
 
 REM Model parameters
 set TRAIN_WINDOW=36
-set FORECASTING_SCOPE=2
+set FORECASTING_SCOPE=1
 
 REM Month-specific partitions (set to 1 to enable, 0 to disable)
 set MONTH_IND=1
