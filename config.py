@@ -88,6 +88,10 @@ def _parse_env_bool(name: str, default: bool) -> bool:
 SAVE_DT_RULES = _parse_env_bool("SAVE_DT_RULES", True)
 SAVE_DT_NODE_DUMP = _parse_env_bool("SAVE_DT_NODE_DUMP", False)
 
+# DT max_depth auto-selection via validation data.
+# Set to a list of candidates to enable (e.g. [3, 5, 7, 10, 15, 20, None]).
+# Set to None to disable auto-selection and use the fixed depth from main_model_DT.py.
+DT_MAX_DEPTH_CANDIDATES = [3, 5, 7, 10, 15, 20, None]
 
 # DESIRED_TERMS: List of test months to evaluate (YYYY-MM strings, datetime, or pd.Period)
 # Examples: ["2023-01", "2023-04"], [pd.Period("2023-01", "M")], or [datetime(2023, 1, 1)]

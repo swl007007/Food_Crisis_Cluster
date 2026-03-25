@@ -476,3 +476,106 @@ def predict_test_group_wise(model, X, y, X_group, s_branch, prf = True, base = F
 
 
   return result, groups, total_number
+
+
+def select_dt_max_depth(X_train, y_train, X_group, feature_names,
+                        candidates, val_ratio=0.20, random_state=42):
+    """Select optimal DecisionTreeClassifier max_depth using validation Class-1 F1.
+
+    Reproduces the same train/val split as GeoRF_DT.fit() and applies the same
+    FEATURE_DROP so the selection DT sees identical features.
+
+    Parameters
+    ----------
+    X_train : np.ndarray
+        Full training feature matrix (before internal train/val split).
+    y_train : np.ndarray
+        Full training labels.
+    X_group : np.ndarray
+        Group assignments for group-aware splitting.
+    feature_names : list[str] or None
+        Column names aligned with X_train columns.
+    candidates : list
+        max_depth values to evaluate (may include None for unconstrained).
+    val_ratio : float
+        Validation ratio (should match VAL_RATIO from config).
+    random_state : int
+        Random state for reproducibility.
+
+    Returns
+    -------
+    best_depth : int or None
+    selection_log : list[dict]
+        Per-candidate metrics for logging.
+    """
+    from sklearn.tree import DecisionTreeClassifier
+    from sklearn.metrics import f1_score
+
+    # ---- Reproduce train/val split identical to GeoRF_DT.fit() ----
+    from config import GROUP_SPLIT as group_split_cfg
+    group_split_enabled = bool(group_split_cfg.get('enable', False))
+
+    if group_split_enabled:
+        from src.utils.split import group_aware_train_val_split
+        split_result = group_aware_train_val_split(
+            groups=np.asarray(X_group),
+            val_ratio=val_ratio,
+            min_val_per_group=int(group_split_cfg.get('min_val_per_group', 1)),
+            random_state=group_split_cfg.get('random_state', random_state),
+            skip_singleton_groups=bool(group_split_cfg.get('skip_singleton_groups', True)),
+        )
+        X_set = split_result['X_set']
+    else:
+        from src.initialization.initialization import train_val_split
+        X_set = train_val_split(X_train, val_ratio=val_ratio)
+
+    train_mask = (X_set == 0)
+    val_mask = (X_set == 1)
+
+    # ---- Apply FEATURE_DROP to match GeoRF_DT._prepare_feature_drop_after_split ----
+    X_sel = np.array(X_train, copy=True)
+    from config import FEATURE_DROP
+    if FEATURE_DROP.get('enable', False) and feature_names is not None:
+        drop_cols = [str(c) for c in FEATURE_DROP.get('cols', []) if c is not None]
+        name_list = [str(n) for n in feature_names]
+        drop_indices = [i for i, n in enumerate(name_list) if n in drop_cols]
+        if drop_indices:
+            X_sel = np.delete(X_sel, drop_indices, axis=1)
+
+    X_tr, y_tr = X_sel[train_mask], y_train[train_mask]
+    X_val, y_val = X_sel[val_mask], y_train[val_mask]
+
+    selection_log = []
+    best_depth = candidates[0]
+    best_val_f1 = -1.0
+
+    for depth in candidates:
+        dt = DecisionTreeClassifier(max_depth=depth, random_state=random_state)
+        dt.fit(X_tr, y_tr)
+
+        y_pred_tr = dt.predict(X_tr)
+        train_f1 = f1_score(y_tr, y_pred_tr, pos_label=1, zero_division=0)
+
+        y_pred_val = dt.predict(X_val)
+        val_f1 = f1_score(y_val, y_pred_val, pos_label=1, zero_division=0)
+
+        selection_log.append({
+            'max_depth': depth,
+            'train_f1_class1': round(float(train_f1), 4),
+            'val_f1_class1': round(float(val_f1), 4),
+            'train_samples': int(train_mask.sum()),
+            'val_samples': int(val_mask.sum()),
+        })
+
+        if val_f1 > best_val_f1:
+            best_val_f1 = val_f1
+            best_depth = depth
+
+    # Fallback: if every candidate scored 0, pick the median candidate
+    if best_val_f1 <= 0.0:
+        mid = len(candidates) // 2
+        best_depth = candidates[mid]
+        print(f"  WARNING: All depth candidates scored val F1=0. "
+              f"Falling back to median candidate max_depth={best_depth}.")
+
+    return best_depth, selection_log

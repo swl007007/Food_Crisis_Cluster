@@ -5,27 +5,27 @@ LINKED TABLES CREATION SUMMARY
 1. MAIN INDEX TABLE
 --------------------------------------------------------------------------------
    File: main_index.csv
-   Rows: 34
+   Rows: 36
    Columns: name, variant, year, month, forecasting_scope, f1(1), f1_base(1)
 
    Summary by variant:
-     - GeoDT: 34
+     - GeoDT: 36
 
    Summary by year:
      - 2021: 9
      - 2022: 9
-     - 2023: 8
-     - 2024: 8
+     - 2023: 9
+     - 2024: 9
 
    Summary by forecasting scope:
      - fs1: 12
-     - fs2: 10
+     - fs2: 12
      - fs3: 12
 
 2. PARTITION TABLES
 --------------------------------------------------------------------------------
    Directory: partitions/
-   Number of files: 34
+   Number of files: 36
    Naming pattern: {name}_partition.csv
    Columns: FEWSNET_admin_code, partition_id
    Admin code range: 0 - 5717 (5718 total codes)
@@ -33,15 +33,15 @@ LINKED TABLES CREATION SUMMARY
 
 3. F1 SCORE STATISTICS
 --------------------------------------------------------------------------------
-   Mean f1(1): 0.5568
-   Mean f1_base(1): 0.5092
-   Mean improvement: 0.0476
+   Mean f1(1): 0.5261
+   Mean f1_base(1): 0.5259
+   Mean improvement: 0.0003
 
    By variant:
      GeoDT:
-       f1(1): 0.5568
-       f1_base(1): 0.5092
-       improvement: 0.0476
+       f1(1): 0.5261
+       f1_base(1): 0.5259
+       improvement: 0.0003
 
 4. FILE STRUCTURE
 --------------------------------------------------------------------------------

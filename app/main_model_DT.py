@@ -637,8 +637,29 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
                     Xtest_L2 = Xtest[:, l2_index]
                     feature_names_L1 = [feature_columns[idx] for idx in l1_index] if feature_columns is not None else None
 
+                    # --- Validation-based max_depth selection (2-layer) ---
+                    from config import DT_MAX_DEPTH_CANDIDATES
+                    if DT_MAX_DEPTH_CANDIDATES is not None:
+                        from src.model.model_DT import select_dt_max_depth
+                        selected_depth, depth_log = select_dt_max_depth(
+                            Xtrain_L1, ytrain, Xtrain_group, feature_names_L1,
+                            candidates=DT_MAX_DEPTH_CANDIDATES,
+                            val_ratio=VAL_RATIO,
+                        )
+                        print(f"\n  max_depth selection (2-layer) for {test_month_period}:")
+                        print(f"  {'depth':>8s} | {'train_F1':>10s} | {'val_F1':>10s}")
+                        print(f"  {'-'*8} | {'-'*10} | {'-'*10}")
+                        for entry in depth_log:
+                            d = str(entry['max_depth']) if entry['max_depth'] is not None else 'None'
+                            print(f"  {d:>8s} | {entry['train_f1_class1']:>10.4f} | {entry['val_f1_class1']:>10.4f}")
+                        best_entry = next(e for e in depth_log if e['max_depth'] == selected_depth)
+                        print(f"  -> Selected max_depth={selected_depth} (val F1={best_entry['val_f1_class1']:.4f})\n")
+                        effective_max_depth_2l = selected_depth
+                    else:
+                        effective_max_depth_2l = max_depth
+
                     # Create and train 2-layer model through the adapter
-                    model_2layer = adapter.create_model(max_depth_override=max_depth)
+                    model_2layer = adapter.create_model(max_depth_override=effective_max_depth_2l)
                     georf_2layer = model_2layer  # Backward compatibility with existing cleanup logic
 
                     if call_graph is not None:
@@ -696,7 +717,28 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
 
                 else:
                     # Single-layer model
-                    georf = adapter.create_model(max_depth_override=max_depth)
+                    # --- Validation-based max_depth selection ---
+                    from config import DT_MAX_DEPTH_CANDIDATES
+                    if DT_MAX_DEPTH_CANDIDATES is not None:
+                        from src.model.model_DT import select_dt_max_depth
+                        selected_depth, depth_log = select_dt_max_depth(
+                            Xtrain, ytrain, Xtrain_group, feature_columns,
+                            candidates=DT_MAX_DEPTH_CANDIDATES,
+                            val_ratio=VAL_RATIO,
+                        )
+                        print(f"\n  max_depth selection for {test_month_period}:")
+                        print(f"  {'depth':>8s} | {'train_F1':>10s} | {'val_F1':>10s}")
+                        print(f"  {'-'*8} | {'-'*10} | {'-'*10}")
+                        for entry in depth_log:
+                            d = str(entry['max_depth']) if entry['max_depth'] is not None else 'None'
+                            print(f"  {d:>8s} | {entry['train_f1_class1']:>10.4f} | {entry['val_f1_class1']:>10.4f}")
+                        best_entry = next(e for e in depth_log if e['max_depth'] == selected_depth)
+                        print(f"  -> Selected max_depth={selected_depth} (val F1={best_entry['val_f1_class1']:.4f})\n")
+                        effective_max_depth = selected_depth
+                    else:
+                        effective_max_depth = max_depth
+
+                    georf = adapter.create_model(max_depth_override=effective_max_depth)
 
                     if call_graph is not None:
                         call_graph.append('train_single_layer_model')
@@ -1447,7 +1489,7 @@ def main():
     # Configuration
     assignment = 'polygons'  # Change this to test different grouping methods
     nowcasting = False       # Set to True for 2-layer model
-    max_depth = 5  # Set to integer for specific RF depth
+    max_depth = 5  # Fallback depth (used only when DT_MAX_DEPTH_CANDIDATES is None in config)
     desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = args.forecasting_scope    # From command line argument
     active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
@@ -1464,7 +1506,9 @@ def main():
     print(f"Configuration:")
     print(f"  - Assignment method: {assignment}")
     print(f"  - Nowcasting (2-layer): {nowcasting}")
-    print(f"  - Max depth: {max_depth}")
+    from config import DT_MAX_DEPTH_CANDIDATES
+    print(f"  - Max depth (fallback): {max_depth}")
+    print(f"  - DT max_depth candidates: {DT_MAX_DEPTH_CANDIDATES}")
     print(f"  - Desired terms: {desire_terms} ({'All quarters (Q1-Q4)' if desire_terms is None else f'Q{desire_terms} only'})")
     print(f"  - Forecasting scope: {forecasting_scope} ({active_lag}-month lag)")
     print(f"  - Active lag schedule: {ACTIVE_LAGS} (logged to {log_path})")
@@ -1489,6 +1533,7 @@ def main():
         'enable_metrics_maps': enable_metrics_maps,
         'save_dt_rules': SAVE_DT_RULES,
         'save_dt_node_dump': SAVE_DT_NODE_DUMP,
+        'dt_max_depth_candidates': DT_MAX_DEPTH_CANDIDATES,
         'start_year': start_year,
         'end_year': end_year,
     }

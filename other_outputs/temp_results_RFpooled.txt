@@ -36,11 +36,3 @@ GeoXGB (3-partitions + 3 rounds contiguity refinement)
 lag4: Partitioned F1: 0.6994 ± 0.0891 vs Pooled F1: 0.6872 ± 0.0929 (0.6994-0.6872)/0.6872 = 1.8% improvement
 lag8: Partitioned F1: 0.6722 ± 0.0750 vs Pooled F1: 0.6506 ± 0.0980 (0.6722-0.6506)/0.6506 = 3.3% improvement
 
-
-
-[DT partition vs other visualization]
-[DT-> decision rule]
-
-
-
-2021-2024 2 6 10                 4*3=12
