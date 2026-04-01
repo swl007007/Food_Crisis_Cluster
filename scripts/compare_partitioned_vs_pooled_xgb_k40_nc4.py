@@ -25,6 +25,7 @@ Date: 2026-01-25
 """
 
 import os
+os.environ['PYTHONHASHSEED'] = '5'
 import sys
 import json
 import argparse
@@ -32,9 +33,13 @@ import warnings
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 import numpy as np
+import random
 import pandas as pd
 from datetime import datetime
 from sklearn.metrics import confusion_matrix
+
+np.random.seed(5)
+random.seed(5)
 
 # XGBoost import
 try:
@@ -75,23 +80,21 @@ DEFAULT_FORECASTING_SCOPE = 1  # 1=4mo, 2=8mo, 3=12mo lag
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF_XGB.py default)
 SMOTE_K_NEIGHBORS = 5
 
-# XGBoost hyperparameters (MUST match main GeoRF_XGB pipeline for pooled baseline comparison)
-# See src/model/GeoRF_XGB.py line 63 for main pipeline defaults
 XGB_PARAMS = {
-    'n_estimators': 100,  # Main pipeline uses n_trees_unit=100 (NOT 500)
-    'max_depth': 6,  # XGBoost default (None causes issues with XGBoost)
-    'learning_rate': 0.1,  # Main pipeline default
-    'subsample': 0.8,  # Main pipeline default
-    'colsample_bytree': 0.8,  # Main pipeline default
-    'reg_alpha': 0.1,  # Main pipeline default
-    'reg_lambda': 1.0,  # Main pipeline default
-    'random_state': RANDOM_STATE,  # Main pipeline uses random_state=5 (NOT 42)
-    'n_jobs': -1,
-    'tree_method': 'hist',  # Faster training
+    'n_estimators': 100,
+    'max_depth': 6,
+    'learning_rate': 0.1,
+    'subsample': 0.8,
+    'colsample_bytree': 0.8,
+    'reg_alpha': 0.1,
+    'reg_lambda': 1.0,
+    'random_state': RANDOM_STATE,
+    'n_jobs': 1,
+    'tree_method': 'hist',
     'objective': 'binary:logistic',
     'eval_metric': 'logloss',
-    'scale_pos_weight': 1,  # Will be computed from class distribution
-    'verbosity': 0  # Suppress XGBoost warnings
+    'scale_pos_weight': 1,
+    'verbosity': 0
 }
 
 # Minimum samples per partition to train separate model (else fallback to pooled)

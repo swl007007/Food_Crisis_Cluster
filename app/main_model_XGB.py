@@ -98,21 +98,17 @@ CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
 GLOBAL_RANDOM_SEED = 42
 
 
-DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
+DATA_MODE = 'past_only'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
-elif DATA_MODE == 'noconflict':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\noconf.csv"
-elif DATA_MODE == 'nofoodprice':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nofoodprice.csv"
-elif DATA_MODE == 'nomacro':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
-elif DATA_MODE == 'nogis':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
-elif DATA_MODE == 'min':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
+elif DATA_MODE == 'past_only':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\PAST_only.csv"
+elif DATA_MODE == 'exogeneous_only':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Exogeneous_only.csv"
+elif DATA_MODE == 'past_exogeneous':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\PastExogeneous.csv"
 elif DATA_MODE == 'unadjusted':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
 elif DATA_MODE == 'phase_change':
@@ -220,6 +216,11 @@ def run_temporal_evaluation(X, y, X_loc, X_group, years, dates, l1_index, l2_ind
     admin_code_aliases = getattr(sys.modules['config'], 'ADMIN_CODE_ALIASES', ['FEWSNET_admin_code', 'admin_code', 'adm_code'])
     admin_codes = resolve_admin_code_array(df, admin_code_aliases)
     print(f"Admin codes extracted: {len(admin_codes)} records, {len(np.unique(admin_codes))} unique admin units")
+    if len(admin_codes) != len(X):
+        raise ValueError(
+            f"Admin code length mismatch: admin_codes={len(admin_codes)}, samples={len(X)}. "
+            "Ensure df is filtered with the same mask used for X/y before evaluation."
+        )
 
     # Setup correspondence table path for partition metrics tracking
     correspondence_table_path = None
@@ -1239,22 +1240,14 @@ def main():
         call_graph_steps.append('prepare_features')
         X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
 
-        # Drop rows with NaN in features (restore dd02796 baseline behavior)
-        # This is critical for reproducibility - removes rows with missing lag features
-        rows_before = len(X)
-        nan_mask = ~np.isnan(X).any(axis=1)
-        X = X[nan_mask]
-        y = y[nan_mask]
-        X_group = X_group[nan_mask]
-        X_loc = X_loc[nan_mask]
-        years = years[nan_mask]
-        terms = np.array(terms)[nan_mask] if not isinstance(terms, np.ndarray) else terms[nan_mask]
-        dates = np.array(dates)[nan_mask] if not isinstance(dates, np.ndarray) else dates[nan_mask]
-        # Note: l1_index and l2_index are feature indices, not sample indices - don't filter them
-        rows_after = len(X)
-        rows_dropped = rows_before - rows_after
-        print(f"Dropped {rows_dropped:,} rows with NaN features ({rows_dropped/rows_before*100:.1f}%)")
-        print(f"Remaining samples: {rows_after:,}")
+        # XGBoost handles NaN natively — do NOT drop rows with missing features.
+        # GeoRF/GeoDT impute NaNs before this point so their drop is a no-op;
+        # here imputation is skipped, so dropping would remove most/all data.
+        nan_count = int(np.isnan(X).sum())
+        nan_row_count = int(np.isnan(X).any(axis=1).sum())
+        print(f"GeoXGB: Retaining all {len(X):,} samples "
+              f"({nan_row_count:,} rows contain NaN, {nan_count:,} total NaN cells)")
+        print(f"XGBoost will handle missing values natively during training.")
 
         # Step 4: Validate polygon contiguity (if applicable) and track polygon counts
         if assignment in ['polygons', 'country', 'AEZ', 'country_AEZ', 'geokmeans', 'all_kmeans'] and contiguity_info is not None:

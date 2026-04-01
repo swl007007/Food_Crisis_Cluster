@@ -69,9 +69,6 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=len(ACTIVE_LAGS)):
     # For other forecasting scopes, we'll create lagged features dynamically
     time_variants_list = time_variants.copy()
     
-    # Get target variable
-    y = df['fews_ipc_crisis'].values
-    
     # Create comprehensive correspondence table with X_group mapping
     correspondence_df = df[['FEWSNET_admin_code', 'AEZ_group', 'AEZ_country_group', 'ISO_encoded']].copy()
     correspondence_df['X_group'] = X_group
@@ -80,6 +77,11 @@ def prepare_features(df, X_group, X_loc, forecasting_scope=len(ACTIVE_LAGS)):
     
     # Sort by admin code and date
     df_sorted = df.sort_values(by=['FEWSNET_admin_code', 'date'])
+    
+    # CRITICAL: Extract target AFTER sorting so y aligns with X, years, and dates
+    # (all derived from df_sorted). Previously y was extracted from unsorted df,
+    # causing a silent misalignment when the input CSV was not pre-sorted.
+    y = df_sorted['fews_ipc_crisis'].values
     
     # Create lag features based on forecasting scope
     print(f"Creating lag features for forecasting scope {forecasting_scope} ({lag_months} months)...")

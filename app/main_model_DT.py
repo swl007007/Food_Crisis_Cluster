@@ -95,21 +95,17 @@ CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
 GLOBAL_RANDOM_SEED = 42
 
 
-DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
+DATA_MODE = 'past_only'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_IPC_train_lag_forecast_v06252025.csv"
-elif DATA_MODE == 'noconflict':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\noconf.csv"
-elif DATA_MODE == 'nofoodprice':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nofoodprice.csv"
-elif DATA_MODE == 'nomacro':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nomacro.csv"
-elif DATA_MODE == 'nogis':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\nogis.csv"
-elif DATA_MODE == 'min':
-    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\minimal_viable_df.csv"
+elif DATA_MODE == 'past_only':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\PAST_only.csv"
+elif DATA_MODE == 'exogeneous_only':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Exogeneous_only.csv"
+elif DATA_MODE == 'past_exogeneous':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\PastExogeneous.csv"
 elif DATA_MODE == 'unadjusted':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
 elif DATA_MODE == 'phase_change':

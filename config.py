@@ -84,6 +84,15 @@ def _parse_env_bool(name: str, default: bool) -> bool:
     return default
 
 
+# Target variable lag feature gate
+# When True (default), lag columns for fews_ipc_crisis and fews_ipc are created
+# during preprocessing (e.g. fews_ipc_crisis_lag_4, fews_ipc_lag_8, ...).
+# When False, these target-variable lags are skipped.
+# NOTE: This does NOT affect time-variant feature lags in prepare_features(),
+# which are always generated to prevent feature leakage across forecasting scopes.
+# Override at runtime: set ENABLE_LAG_FEATURES=false
+ENABLE_LAG_FEATURES = _parse_env_bool("ENABLE_LAG_FEATURES", True)
+
 # DT rule export controls
 SAVE_DT_RULES = _parse_env_bool("SAVE_DT_RULES", True)
 SAVE_DT_NODE_DUMP = _parse_env_bool("SAVE_DT_NODE_DUMP", False)

@@ -9,6 +9,7 @@ import numpy as np
 
 from config import (
     LAGS_MONTHS,  # Reuse canonical lag schedule
+    ENABLE_LAG_FEATURES,  # Lag feature generation gate
     _parse_month_term,  # Month term parsing
     _validate_desired_terms,  # DESIRED_TERMS validation
 )

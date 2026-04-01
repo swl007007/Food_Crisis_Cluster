@@ -148,8 +148,10 @@ def load_and_preprocess_data(data_path):
         "fews_proj_near", "fews_proj_near_ha", "fews_proj_med",
         "fews_proj_med_ha", "ADMIN0", "ADMIN1", "ADMIN2", "ADMIN3"
     ]
-    data = data.drop(cols_to_drop)
-    
+    # loop over cols to drop, if exist drop, if not ignore
+    for col in cols_to_drop:
+        if col in data.columns:
+            data = data.drop([col])
     
     # Filter for non-null crisis data
     data = data.filter(pl.col("fews_ipc_crisis").is_not_null())
@@ -181,18 +183,19 @@ def load_and_preprocess_data(data_path):
     df['date'] = pd.to_datetime(df['date'])
     df['years'] = df['date'].dt.year
 
-    # Create lag features for all lags in ACTIVE_LAGS schedule
-    # NOTE: Validation removed - forecasting scope determines which lags to use at runtime
-    # Creating all lag features upfront allows flexibility for different forecasting scopes
-    # Actual data leakage prevention happens in temporal train/test split logic
-    for lag in ACTIVE_LAGS:
-        df[f'fews_ipc_crisis_lag_{lag}'] = (
-            df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
-        )
-    for lag in ACTIVE_LAGS:
-        df[f'fews_ipc_lag_{lag}'] = (
-            df.groupby('FEWSNET_admin_code')['fews_ipc'].shift(lag)
-        )
+    if ENABLE_LAG_FEATURES:
+        for lag in ACTIVE_LAGS:
+            df[f'fews_ipc_crisis_lag_{lag}'] = (
+                df.groupby('FEWSNET_admin_code')['fews_ipc_crisis'].shift(lag)
+            )
+        for lag in ACTIVE_LAGS:
+            df[f'fews_ipc_lag_{lag}'] = (
+                df.groupby('FEWSNET_admin_code')['fews_ipc'].shift(lag)
+            )
+        print(f"Created target variable lag features for lags {list(ACTIVE_LAGS)}")
+    else:
+        print("Target variable lag features DISABLED (ENABLE_LAG_FEATURES=False). "
+              "Skipping fews_ipc_crisis and fews_ipc lag columns.")
     
     # drop fews_ipc
     df = df.drop(columns=['fews_ipc'])
@@ -213,8 +216,12 @@ def load_and_preprocess_data(data_path):
     df = feature_engineering_3(df,feature_3_list)
     # Create AEZ groups
     aez_columns = [col for col in df.columns if col.startswith('AEZ_')]
-    df['AEZ_group'] = df.groupby(aez_columns).ngroup()
-    df['AEZ_country_group'] = df.groupby(['AEZ_group', 'ISO_encoded']).ngroup()
+    if aez_columns:
+        df['AEZ_group'] = df.groupby(aez_columns).ngroup()
+        df['AEZ_country_group'] = df.groupby(['AEZ_group', 'ISO_encoded']).ngroup()
+    else:
+        df['AEZ_group'] = 0
+        df['AEZ_country_group'] = 0
 
     print(f"Data loaded: {df.shape[0]} rows, {df.shape[1]} columns")
 
@@ -535,9 +542,10 @@ def feature_engineering_1(df,feature_list):
     """
  #group by FEWSNET_admin_code and calculate rolling mean
     for feature in feature_list:
-        df[feature + '_m4'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=4).sum()
-        df[feature + '_m12'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=12).sum()
-    return df
+        if feature in df.columns:
+            df[feature + '_m4'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=4).sum()
+            df[feature + '_m12'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=12).sum()
+        return df
 
 def feature_engineering_2(df,feature_list):
     """
@@ -556,8 +564,9 @@ def feature_engineering_2(df,feature_list):
         Dataframe with new features added
     """
     for feature in feature_list:
-        df[feature +'_m12'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=12).sum()
-    return df
+        if feature in df.columns:
+            df[feature +'_m12'] = df.groupby('FEWSNET_admin_code')[feature].shift(1).rolling(window=12).sum()
+        return df
 
 def feature_engineering_3(df,feature_list):
     """
@@ -577,5 +586,6 @@ def feature_engineering_3(df,feature_list):
     """
     for feature in feature_list:
         for lag in range(1, 13):
-            df[feature + f'_l{lag}'] = df.groupby('FEWSNET_admin_code')[feature].shift(lag)    
-    return df
+            if feature in df.columns:
+                df[feature + f'_l{lag}'] = df.groupby('FEWSNET_admin_code')[feature].shift(lag)    
+        return df

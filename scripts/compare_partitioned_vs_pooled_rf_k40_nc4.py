@@ -25,6 +25,7 @@ Date: 2026-01-25
 """
 
 import os
+os.environ['PYTHONHASHSEED'] = '5'
 import sys
 import json
 import argparse
@@ -32,11 +33,15 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
+import random
 import pandas as pd
 from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
+
+np.random.seed(5)
+random.seed(5)
 
 try:
     from imblearn.over_sampling import SMOTE
@@ -71,15 +76,11 @@ DEFAULT_FORECASTING_SCOPE = 1  # 1=4mo, 2=8mo, 3=12mo lag
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF.py default)
 SMOTE_K_NEIGHBORS = 5
 
-# RF hyperparameters (MUST match main GeoRF pipeline for pooled baseline comparison)
-# See src/model/GeoRF.py line 51 for main pipeline defaults
 RF_PARAMS = {
-    'n_estimators': 100,  # Main pipeline uses n_trees_unit=100 (NOT 500)
-    'max_depth': None,     # Main pipeline uses max_depth=None (unlimited tree depth)
-    'random_state': RANDOM_STATE,  # Main pipeline uses random_state=5 (NOT 42)
-    'n_jobs': -1
-    # NOTE: class_weight is NOT set in main pipeline (defaults to None, NOT 'balanced')
-    # NOTE: min_samples_leaf defaults to 1 (not explicitly set in main pipeline)
+    'n_estimators': 100,
+    'max_depth': None,
+    'random_state': RANDOM_STATE,
+    'n_jobs': 1
 }
 
 # DT hyperparameters (MUST match main GeoDT pipeline for pooled baseline comparison)
