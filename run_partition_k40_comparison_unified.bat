@@ -67,8 +67,8 @@ REM --------------------------------------------------------------------------
 set VISUAL_FLAG=
 set MONTH_IND_FLAG=
 set SCOPE_FILTER=
-set CONTIGUITY=0
-set REFINE_ITERS=0
+set CONTIGUITY=1
+set REFINE_ITERS=3
 set PARSED_CONTIGUITY=
 
 shift
