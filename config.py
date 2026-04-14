@@ -91,7 +91,7 @@ def _parse_env_bool(name: str, default: bool) -> bool:
 # NOTE: This does NOT affect time-variant feature lags in prepare_features(),
 # which are always generated to prevent feature leakage across forecasting scopes.
 # Override at runtime: set ENABLE_LAG_FEATURES=false
-ENABLE_LAG_FEATURES = _parse_env_bool("ENABLE_LAG_FEATURES", False)
+ENABLE_LAG_FEATURES = _parse_env_bool("ENABLE_LAG_FEATURES", True)
 
 # DT rule export controls
 SAVE_DT_RULES = _parse_env_bool("SAVE_DT_RULES", True)

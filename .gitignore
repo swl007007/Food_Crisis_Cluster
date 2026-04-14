@@ -24,3 +24,6 @@ test_*
 deliverables/*
 
 march2026_*
+*.xlsx
+
+summary_report.txt
