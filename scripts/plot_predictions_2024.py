@@ -30,7 +30,7 @@ except ImportError:
 
 
 PREDICTIONS_FILE = Path(
-    r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\regional_ablation_results\Nigeria_experiments_local\result_partition_k40_compare_GF_fs2\predictions_monthly.csv'
+    r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\regional_ablation_results\Nigeria_experiment_local_fs0\result_partition_k40_compare_GF_fs0\predictions_monthly.csv'
 )
 SHAPEFILE = Path(
     r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis'

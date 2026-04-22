@@ -1,9 +1,12 @@
 import os
+import sys
 import csv
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+FS0_ONLY = "--fs0-only" in sys.argv
 
 def _candidates(suffix, fs):
     """Return list of candidate paths in priority order: new _fsN dir, then legacy dir without suffix."""
@@ -12,30 +15,41 @@ def _candidates(suffix, fs):
         os.path.join(BASE, f"result_partition_k40_compare_{suffix}", "metrics_monthly.csv"),
     ]
 
-RESULT_CANDIDATES = {
-    ("GeoRF", 1): _candidates("GF", 1),
-    ("GeoRF", 2): _candidates("GF", 2),
-    ("GeoRF", 3): _candidates("GF", 3),
-    ("GeoXGB", 1): _candidates("XGB", 1),
-    ("GeoXGB", 2): _candidates("XGB", 2),
-    ("GeoXGB", 3): _candidates("XGB", 3),
-    ("GeoDT", 1): _candidates("DT", 1),
-    ("GeoDT", 2): _candidates("DT", 2),
-    ("GeoDT", 3): _candidates("DT", 3),
-}
+if FS0_ONLY:
+    SCOPES = (0,)
+    FS_TO_LAG = {0: 1}
+    RESULT_CANDIDATES = {
+        ("GeoRF", 0): _candidates("GF", 0),
+        ("GeoXGB", 0): _candidates("XGB", 0),
+        ("GeoDT", 0): _candidates("DT", 0),
+    }
+    FEWSNET_MAP = {}
+    OUTPUT_XLSX = "Table_Format_fs0.xlsx"
+else:
+    SCOPES = (1, 2, 3)
+    FS_TO_LAG = {1: 4, 2: 8, 3: 12}
+    RESULT_CANDIDATES = {
+        ("GeoRF", 1): _candidates("GF", 1),
+        ("GeoRF", 2): _candidates("GF", 2),
+        ("GeoRF", 3): _candidates("GF", 3),
+        ("GeoXGB", 1): _candidates("XGB", 1),
+        ("GeoXGB", 2): _candidates("XGB", 2),
+        ("GeoXGB", 3): _candidates("XGB", 3),
+        ("GeoDT", 1): _candidates("DT", 1),
+        ("GeoDT", 2): _candidates("DT", 2),
+        ("GeoDT", 3): _candidates("DT", 3),
+    }
+    FEWSNET_MAP = {
+        1: os.path.join(BASE, "fewsnet_baseline_results", "fewsnet_baseline_results_fs1.csv"),
+        2: os.path.join(BASE, "fewsnet_baseline_results", "fewsnet_baseline_results_fs2.csv"),
+    }
+    OUTPUT_XLSX = "Table_Format.xlsx"
 
 def resolve_path(candidates):
     for p in candidates:
         if os.path.exists(p):
             return p
     return None
-
-FEWSNET_MAP = {
-    1: os.path.join(BASE, "fewsnet_baseline_results", "fewsnet_baseline_results_fs1.csv"),
-    2: os.path.join(BASE, "fewsnet_baseline_results", "fewsnet_baseline_results_fs2.csv"),
-}
-
-FS_TO_LAG = {1: 4, 2: 8, 3: 12}
 
 
 def read_metrics(path):
@@ -95,7 +109,7 @@ def aggregate_fewsnet(path, min_year=2021):
 
 data = {}
 
-print("Loading results...")
+print(f"Loading results (mode={'fs0-only' if FS0_ONLY else 'fs1+fs2+fs3'})...")
 for (model, fs), candidates in RESULT_CANDIDATES.items():
     path = resolve_path(candidates)
     if path:
@@ -111,11 +125,14 @@ for fs, path in FEWSNET_MAP.items():
         m = data[("FEWSNET (baseline)", fs)]
         print(f"  FEWSNET fs{fs}: {m['n_months']} quarters, f1={m['split_f1']:.4f}")
 
-if ("FEWSNET (baseline)", 3) not in data and ("FEWSNET (baseline)", 2) in data:
+if not FS0_ONLY and ("FEWSNET (baseline)", 3) not in data and ("FEWSNET (baseline)", 2) in data:
     data[("FEWSNET (baseline)", 3)] = data[("FEWSNET (baseline)", 2)].copy()
     print(f"  FEWSNET fs3: extended from fs2 (8-month predictions used as 12-month proxy)")
 
-MODELS = ["GeoRF", "GeoXGB", "GeoDT", "FEWSNET (baseline)"]
+if FS0_ONLY:
+    MODELS = ["GeoRF", "GeoXGB", "GeoDT"]
+else:
+    MODELS = ["GeoRF", "GeoXGB", "GeoDT", "FEWSNET (baseline)"]
 
 hfont = Font(bold=True, size=11)
 hfill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
@@ -151,7 +168,7 @@ for c, h in enumerate(headers, 1):
 row = 3
 for model in MODELS:
     first = True
-    for fs in (1, 2, 3):
+    for fs in SCOPES:
         lag = FS_TO_LAG[fs]
         m = data.get((model, fs))
 
@@ -185,7 +202,7 @@ for col in "CDEFGH":
     ws.column_dimensions[col].width = 14
 ws.column_dimensions["I"].width = 24
 
-out_path = os.path.join(BASE, "other_outputs", "Table_Format.xlsx")
+out_path = os.path.join(BASE, "other_outputs", OUTPUT_XLSX)
 wb.save(out_path)
 print(f"\nSaved: {out_path}")
 
@@ -194,9 +211,9 @@ fmt = f"{'Model':<22} {'Lag':>3} | {'P(split)':>10} {'R(split)':>10} {'F1(split)
 print(fmt)
 print("-" * 130)
 for model in MODELS:
-    for fs in (1, 2, 3):
+    for fs in SCOPES:
         m = data.get((model, fs))
-        label = model if fs == 1 else ""
+        label = model if fs == SCOPES[0] else ""
         lag = FS_TO_LAG[fs]
         if m:
             sp = f"{m['split_precision']:.4f}" if m['split_precision'] is not None else "    -"

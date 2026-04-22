@@ -553,7 +553,8 @@ def main():
     parser.add_argument('--end-month', default=DEFAULT_END_MONTH, help='End month (YYYY-MM)')
     parser.add_argument('--train-window', type=int, default=DEFAULT_TRAIN_WINDOW, help='Training window (months)')
     parser.add_argument('--forecasting-scope', type=int, default=DEFAULT_FORECASTING_SCOPE,
-                       choices=[1, 2, 3], help='Forecasting scope: 1=4mo, 2=8mo, 3=12mo lag')
+                       choices=[0, 1, 2, 3],
+                       help='Forecasting scope: 0=1mo (fs0, stand-alone), 1=4mo, 2=8mo, 3=12mo lag')
     parser.add_argument('--visual', action='store_true', help='Enable visualization (creates exactly 4 maps)')
     parser.add_argument('--month-ind', action='store_true', help='Enable month-specific partitions')
     parser.add_argument('--partition-map-m2', default='cluster_mapping_k40_nc10_m2.csv', help='Partition map for February')

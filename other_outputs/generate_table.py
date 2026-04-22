@@ -1,9 +1,21 @@
 import os
+import sys
 import csv
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 
 BASE = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster"
+
+FS0_ONLY = "--fs0-only" in sys.argv
+
+if FS0_ONLY:
+    SCOPES = (0,)
+    FS_TO_LAG = {0: 1}
+    OUTPUT_NAMES = ("Table_Format_fs0.xlsx", "Model_Comparison_Table_fs0.xlsx")
+else:
+    SCOPES = (1, 2, 3)
+    FS_TO_LAG = {1: 4, 2: 8, 3: 12}
+    OUTPUT_NAMES = ("Table_Format.xlsx", "Model_Comparison_Table.xlsx")
 
 def read_csv(path):
     with open(path, newline="", encoding="utf-8-sig") as f:
@@ -43,7 +55,9 @@ def collect_fewsnet_metrics(rows):
 
 def load_model_data(results_dir, prefix):
     out = {}
-    for fs in (1, 2, 3):
+    if not os.path.isdir(results_dir):
+        return out
+    for fs in SCOPES:
         all_rows = []
         matched_files = []
         for fname in sorted(os.listdir(results_dir)):
@@ -62,27 +76,33 @@ geoxgb = load_model_data(os.path.join(BASE, "GeoXGBExperiment", "GeoXgboostResul
 geodt = load_model_data(os.path.join(BASE, "GeoDTExperiment", "GeoDTResults"), "results_df_dt_gp_")
 
 fewsnet = {}
-for fs in (1, 2):
-    fpath = os.path.join(BASE, "deliverables", "fewsnet_baseline_results", f"fewsnet_baseline_results_fs{fs}.csv")
-    if os.path.exists(fpath):
-        rows = read_csv(fpath)
-        fewsnet[fs] = collect_fewsnet_metrics(rows)
-        fewsnet[fs]["files"] = [(os.path.basename(fpath), len(rows))]
+if not FS0_ONLY:
+    for fs in (1, 2):
+        fpath = os.path.join(BASE, "deliverables", "fewsnet_baseline_results", f"fewsnet_baseline_results_fs{fs}.csv")
+        if os.path.exists(fpath):
+            rows = read_csv(fpath)
+            fewsnet[fs] = collect_fewsnet_metrics(rows)
+            fewsnet[fs]["files"] = [(os.path.basename(fpath), len(rows))]
 
-FS_TO_LAG = {1: 4, 2: 8, 3: 12}
-
-MODEL_ROWS = [
-    ("GeoRF", georf),
-    ("GeoXGB", geoxgb),
-    ("GeoDT", geodt),
-    ("FEWSNET (baseline)", fewsnet),
-]
+if FS0_ONLY:
+    MODEL_ROWS = [
+        ("GeoRF", georf),
+        ("GeoXGB", geoxgb),
+        ("GeoDT", geodt),
+    ]
+else:
+    MODEL_ROWS = [
+        ("GeoRF", georf),
+        ("GeoXGB", geoxgb),
+        ("GeoDT", geodt),
+        ("FEWSNET (baseline)", fewsnet),
+    ]
 
 print("=" * 100)
 print("DATA SOURCE AUDIT")
 print("=" * 100)
 for model_name, data in MODEL_ROWS:
-    for fs in (1, 2, 3):
+    for fs in SCOPES:
         m = data.get(fs)
         if m:
             print(f"\n{model_name} fs{fs} (lag={FS_TO_LAG[fs]}) -- {m['n']} total rows from:")
@@ -131,7 +151,7 @@ def build_workbook():
     row = 3
     for model_name, data in MODEL_ROWS:
         first = True
-        for fs in (1, 2, 3):
+        for fs in SCOPES:
             lag = FS_TO_LAG[fs]
             m = data.get(fs)
 
@@ -168,12 +188,12 @@ def build_workbook():
     return wb
 
 wb = build_workbook()
-path1 = os.path.join(BASE, "other_outputs", "Table_Format.xlsx")
+path1 = os.path.join(BASE, "other_outputs", OUTPUT_NAMES[0])
 wb.save(path1)
 print(f"\nSaved: {path1}")
 
 wb2 = build_workbook()
-path2 = os.path.join(BASE, "other_outputs", "Model_Comparison_Table.xlsx")
+path2 = os.path.join(BASE, "other_outputs", OUTPUT_NAMES[1])
 wb2.save(path2)
 print(f"Saved: {path2}")
 
@@ -184,9 +204,9 @@ fmt = f"{'Model':<22} {'Lag':>3} | {'Split P':>14} {'Split R':>14} {'Split F1':>
 print(fmt)
 print("-" * 130)
 for model_name, data in MODEL_ROWS:
-    for fs in (1, 2, 3):
+    for fs in SCOPES:
         m = data.get(fs)
-        label = model_name if fs == 1 else ""
+        label = model_name if fs == SCOPES[0] else ""
         lag = FS_TO_LAG[fs]
         if m:
             sp = f"{m['split_precision']:.10f}"

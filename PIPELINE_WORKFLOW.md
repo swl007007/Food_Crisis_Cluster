@@ -1,8 +1,8 @@
-# GeoRF/XGBoost/GeoDT Spatial Clustering Pipeline Workflow
+# GeoRF/GeoXGB/GeoDT Spatial Clustering Pipeline Workflow
 
 ## Overview
 
-This document describes the complete workflow for generating spatial partitions using the GeoRF/XGBoost/GeoDT framework with consensus clustering. Each model type (Random Forest, XGBoost, Decision Tree) follows the same three-stage pipeline independently, producing its own partitions and comparison results. All three stages use unified batch scripts that accept the model type as an argument.
+This document describes the complete workflow for generating spatial partitions using the GeoRF/GeoXGB/GeoDT framework with consensus clustering. Each model type (Random Forest, XGBoost, Decision Tree) follows the same three-stage pipeline independently, producing its own partitions and comparison results. All three stages use unified batch scripts that accept the model type as an argument.
 
 ## Pipeline Architecture
 
@@ -34,7 +34,7 @@ This document describes the complete workflow for generating spatial partitions 
                               │   (georf | geoxgb | geodt)      │
                               └──────────────────────────────────┘
                                               │
-                              Part 1 (shared): step1->step2->step3
+                              Part 1 (shared): step1->step3
                               Part 2 (general): step4->step5->step6
                               Part 3 (monthly): step4->step5->step6
                                      x3 (Feb, Jun, Oct)
@@ -76,12 +76,72 @@ The complete workflow uses **three unified batch scripts**, each accepting a mod
 | 2 | `spatial_weighted_consensus_clustering.bat <model>` | Aggregate partitions into spatial clusters | ~30-60 min |
 | 3 | `run_partition_k40_comparison_unified.bat <model>` | Compare partitioned vs pooled models | ~4-6 hrs |
 
+Key handoff outputs:
+- Stage 1 -> Stage 2: combined `results_df_*_fsN_YYYY_YYYY.csv` / `y_pred_test_*_fsN_YYYY_YYYY.csv` plus archived `result_Geo{Model}_YYYY_fsN_YYYY-MM_visual/`
+- Stage 2 -> Stage 3: `cluster_mapping_k40_nc*_general.csv`, optional `cluster_mapping_k40_nc*_m2/_m6/_m10.csv`, and `cluster_mapping_manifest.json`
+- Stage 3 final deliverables: `result_partition_k40_compare_{GF,XGB,DT}_fsN/`, `other_outputs/Table_Format.xlsx`, and `other_outputs/Model_Comparison_Table.xlsx`
+
 **Example (full pipeline for GeoRF)**:
 ```batch
 run_batches_2021_2024_visual_monthly.bat georf
 spatial_weighted_consensus_clustering.bat georf
 run_partition_k40_comparison_unified.bat georf --visual --month-ind
 ```
+
+---
+
+## FS0-Only Mode (Stand-Alone Lag-1 Pipeline)
+
+`fs0` is a separate forecasting scope with **lag = 1 month** that runs alongside — not in place of — the standard fs1+fs2+fs3 pipeline. It was added without modifying `ACTIVE_LAGS = (4, 8, 12)` or any fs1/fs2/fs3 code path. Running or not running fs0 has zero impact on fs1/fs2/fs3 behavior and artifacts.
+
+### When to use fs0
+
+- You need a very short-horizon forecast (1 month out) alongside the longer-horizon fs1/fs2/fs3 forecasts.
+- You want to compare concurrent-feature-plus-lag1 performance against concurrent-feature-plus-lag4/8/12 performance under otherwise identical model/partition logic.
+- You want a stand-alone deliverable (`Table_Format_fs0.xlsx`) that does not co-mingle with the main fs1/2/3 comparison table.
+
+### Activation
+
+Pass `--fs0-only` to **every** stage in the same run. Do not mix modes across stages.
+
+```batch
+run_batches_2021_2024_visual_monthly.bat <model> --fs0-only
+spatial_weighted_consensus_clustering.bat <model> --fs0-only
+run_partition_k40_comparison_unified.bat <model> --fs0-only
+```
+
+`<model>` is one of `georf`, `geoxgb`, `geodt`. The standard 3-stage ordering is unchanged.
+
+### Stage-by-stage differences
+
+| Concern | Default pipeline | `--fs0-only` pipeline |
+|---|---|---|
+| Stage 1 scope loop | `SCOPE_LIST="1 2 3"` | `SCOPE_LIST="0"` |
+| Stage 1 batch count | 144 (4 y × 3 s × 12 m) | 48 (4 y × 1 s × 12 m) |
+| Stage 1 combined CSVs | `results_df_*_fs{1,2,3}_YYYY_YYYY.csv` | `results_df_*_fs0_YYYY_YYYY.csv` |
+| Stage 1 visual archives | `result_Geo{Model}_*_fs{1,2,3}_*_visual/` | `result_Geo{Model}_*_fs0_*_visual/` |
+| Stage 2 input glob | `results_df_*_fs*.csv` | `results_df_*_fs0_*.csv` |
+| Stage 2 Part 3 (m2/m6/m10) | Runs | **Skipped** (fs0 alone produces too few candidate partitions for month-specific consensus) |
+| Stage 2 partition outputs | general + m2 + m6 + m10 | **general only** |
+| Stage 3 scope list | `SCOPES="1 2 3"` (or `--scope N` for N ∈ 1..3) | Forced to `SCOPES="0"` |
+| Stage 3 `--month-ind` | Honored | **Forcibly cleared** regardless of what is passed |
+| Stage 3 contiguity refinement | General + m2 + m6 + m10 | General only |
+| Stage 3 output dirs | `result_partition_k40_compare_{GF,XGB,DT}_fs{1,2,3}` | `result_partition_k40_compare_{GF,XGB,DT}_fs0` |
+| Stage 3 aggregated table | `other_outputs/Table_Format.xlsx` | `other_outputs/Table_Format_fs0.xlsx` |
+| FEWSNET baseline rows | Included (fs1, fs2; fs3 extrapolated) | Omitted (no fs0 ground truth in FEWSNET) |
+
+### Implementation notes
+
+- `fs0` is defined in `src/utils/lag_schedules.py` as module constants `FS0_SCOPE = 0` and `FS0_LAG_MONTHS = 1`. `forecasting_scope_to_lag(0, lags)` returns `1` via an early-return branch **before** the normal range check, so scopes 1/2/3 take the identical code path as before.
+- The three `main_model_*.py` entry points expose `--forecasting_scope {0,1,2,3}` with default `1`. Default runs are unaffected.
+- Aggregation scripts `other_outputs/aggregate_results.py` and `other_outputs/generate_table.py` both accept `--fs0-only` and emit distinct xlsx filenames (`*_fs0.xlsx`) to avoid clobbering fs1/2/3 tables.
+- Feature engineering is unchanged: `prepare_features` already includes both the concurrent original columns and `{variant}_lag{N}m` columns. With fs0 it simply produces `{variant}_lag1m`.
+
+### What fs0 does NOT change
+
+- `ACTIVE_LAGS` stays `(4, 8, 12)`. Extending it to `(1, 4, 8, 12)` would silently reindex every `len(ACTIVE_LAGS)`-based loop and break fs1/fs2/fs3 artifacts. The config validator rejects any such change.
+- The `nowcasting` parameter in `main_model_*.py` (a 2-layer-model toggle, hardcoded `False`) is untouched.
+- Running the default pipeline without the flag is byte-for-byte equivalent to pre-fs0 behavior.
 
 ---
 
@@ -99,6 +159,7 @@ run_batches_2021_2024_visual_monthly.bat georf    # Random Forest
 run_batches_2021_2024_visual_monthly.bat geoxgb   # XGBoost
 run_batches_2021_2024_visual_monthly.bat geodt    # Decision Tree
 run_batches_2021_2024_visual_monthly.bat geodt --no-dt-rules  # DT without rule export
+run_batches_2021_2024_visual_monthly.bat georf --fs0-only     # Stand-alone fs0 (lag-1) pipeline
 ```
 
 **Configuration**:
@@ -106,7 +167,8 @@ run_batches_2021_2024_visual_monthly.bat geodt --no-dt-rules  # DT without rule 
 # GeoRF/GeoXGB
 YEARS_START=2021
 YEARS_END=2024
-FORECASTING_SCOPES=1,2,3
+FORECASTING_SCOPES=1,2,3  # fs1/fs2/fs3, default pipeline
+                          # --fs0-only narrows this to SCOPE_LIST="0" (fs0, lag=1)
 VISUAL=1  # Enable visualizations
 
 # GeoDT (additional env vars)
@@ -165,20 +227,23 @@ y_pred_test_dt_gp_fsX_YYYY_YYYY.csv   # Yearly combined predictions
 
 **Script**: `spatial_weighted_consensus_clustering.bat <model_type>`
 
-Automated batch that orchestrates the complete clustering pipeline (step1 through step6), producing both general and month-specific (Feb, Jun, Oct) spatial partitions.
+Automated batch that orchestrates the shared/linking and clustering steps used by the current Stage 2 workflow, producing both general and month-specific (Feb, Jun, Oct) spatial partitions.
 
 ```batch
-spatial_weighted_consensus_clustering.bat georf    # GeoRF partitions
-spatial_weighted_consensus_clustering.bat geoxgb   # GeoXGB partitions
-spatial_weighted_consensus_clustering.bat geodt    # GeoDT partitions
+spatial_weighted_consensus_clustering.bat georf                # GeoRF partitions
+spatial_weighted_consensus_clustering.bat geoxgb               # GeoXGB partitions
+spatial_weighted_consensus_clustering.bat geodt                # GeoDT partitions
+spatial_weighted_consensus_clustering.bat georf --fs0-only     # Stand-alone fs0 (Part 3 skipped)
 ```
 
 The batch script runs three parts:
-- **Part 1 (shared)**: step1 -> step2 -> step3 (merge, load, link)
+- **Part 1 (shared)**: step1 -> step3 (merge, link)
 - **Part 2 (general)**: step4 -> step5 -> step6 (general partition, all months aggregated)
 - **Part 3 (monthly)**: step4 -> step5 -> step6, repeated for months 2, 6, 10
 
-It uses refactored Python scripts in `scripts/` for step1-2 and step4-5, and the experiment directory's own `step3_create_linked_tables.py` and `step6_complete_clustering_pipeline.py`.
+> **fs0-only mode**: Part 3 is skipped entirely because fs0 alone does not produce enough candidate partitions for month-specific consensus clustering. Only the general partition is generated.
+
+The batch uses refactored root-level scripts for step1, step4, and step5, plus `scripts\step3_create_linked_tables.py` and `scripts\step6_complete_clustering_pipeline.py`. `step2_load_correspondence.py` remains in the repo as a legacy helper, but the unified Stage 2 batch skips it because its `correspondence_tables_loaded.pkl` output is not consumed downstream.
 
 > **Note**: Each model type has its own experiment directory. The root-level `step1*.ipynb` through `step6*.py` are **deprecated** legacy files retained for reference only.
 
@@ -205,7 +270,6 @@ Geo{Model}Experiment/
 │   └── y_pred_test_*_fsX_YYYY_YYYY.csv
 ├── merged_correspondence_tables.pkl      # Step 1 output
 ├── merged_correspondence_tables/         # Step 1 output (per-plan CSVs)
-├── correspondence_tables_loaded.pkl      # Step 2 output
 ├── linked_tables/                        # Step 3 output
 │   ├── main_index.csv
 │   ├── table_links.csv
@@ -244,14 +308,16 @@ All steps below are run **from within** the experiment directory (e.g., `cd GeoR
 - Merge performance metrics with partition assignments
 - Create unified format across all months
 
-#### Step 2: Load Correspondence Tables
+#### Step 2: Load Correspondence Tables (Legacy / Manual Only)
 
 **File**: `step2_load_correspondence_tables.ipynb`
 
-**Purpose**: Validate and prepare correspondence tables for clustering.
+**Purpose**: Validate and prepare correspondence tables for clustering in the older notebook-driven flow.
 
 **Outputs**:
 - `correspondence_tables_loaded.pkl`
+
+> The unified `spatial_weighted_consensus_clustering.bat` workflow does **not** run this step because `correspondence_tables_loaded.pkl` is not consumed by downstream scripts. Keep it only for manual inspection or notebook-based troubleshooting.
 
 #### Step 3: Create Linked Tables
 
@@ -400,6 +466,7 @@ Unified comparison script that auto-discovers partition files from `cluster_mapp
 run_partition_k40_comparison_unified.bat georf                # Default settings
 run_partition_k40_comparison_unified.bat geoxgb --visual      # With maps
 run_partition_k40_comparison_unified.bat geodt 1 3 --visual   # Contiguity + maps
+run_partition_k40_comparison_unified.bat georf --fs0-only     # Stand-alone fs0 run
 ```
 
 **Options**:
@@ -407,6 +474,8 @@ run_partition_k40_comparison_unified.bat geodt 1 3 --visual   # Contiguity + map
 - Second numeric arg = `REFINE_ITERS` (default 3)
 - `--visual` / `-v` = Enable visualization maps
 - `--month-ind` = Enable month-specific partitions (enabled by default when `MONTH_IND=1`)
+- `--scope N` = Run only scope N, where N ∈ {0, 1, 2, 3}. Default: all of 1..3.
+- `--fs0-only` = Stand-alone fs0 mode. Forces `SCOPES=0` and clears `--month-ind` regardless of other flags. Aggregation writes to `Table_Format_fs0.xlsx` instead of `Table_Format.xlsx`.
 
 **Auto-discovery**: The script looks for `{ExperimentDir}/knn_sparsification_results/cluster_mapping_manifest.json` to locate partition files. Falls back to pattern matching (`cluster_mapping_k40_nc*_general.csv`) if manifest is missing.
 
