@@ -90,7 +90,7 @@ CALL_GRAPH_TEMPLATE = "call_graph_trace_{key}.txt"
 GLOBAL_RANDOM_SEED = 42
 
 
-DATA_MODE = 'unadjusted'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
+DATA_MODE = 'NGA_only'  # Options: 'full', 'noconflict', 'nofoodprice', 'nomacro', 'nogis', 'min', 'unadjusted'
 
 
 if DATA_MODE == 'full':
@@ -129,6 +129,8 @@ elif DATA_MODE == 'geographic_exclude':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\geographic_exclude.csv"
 elif DATA_MODE == 'conflict_exclude':
     DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\conflict_exclude.csv"
+elif DATA_MODE == 'NGA_only':
+    DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_NGA.csv"
 else:
     raise ValueError(f"Invalid DATA_MODE: {DATA_MODE}")
 

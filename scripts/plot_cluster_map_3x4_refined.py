@@ -33,10 +33,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "cluster_map_3x4_refined.png"
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
-    r"\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
+    r"\FEWSNET_IPC\FEWS NET Admin Boundaries\Nigeria.shp"
 )
 
-BACKUP_DIR = REPO_ROOT / "march2026_main_backup_cont3"
+BACKUP_DIR = REPO_ROOT / "Nigeria_experiment"
 
 MODEL_ORDER = ("GeoDT", "GeoRF", "GeoXGB")
 MODEL_DIRS = {

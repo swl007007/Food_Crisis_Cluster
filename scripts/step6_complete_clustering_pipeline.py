@@ -159,6 +159,16 @@ def main() -> int:
         if "lat_lon_data" not in matrix_data:
             raise KeyError(f"lat_lon_data missing from {similarity_npz}")
         lat_lon_data = matrix_data["lat_lon_data"]
+        if "admin_codes" in matrix_data.files:
+            admin_codes = matrix_data["admin_codes"].astype(np.int64)
+        else:
+            # Legacy NPZ (pre-scoping): admin_code == row index
+            admin_codes = np.arange(lat_lon_data.shape[0], dtype=np.int64)
+        if admin_codes.shape[0] != lat_lon_data.shape[0]:
+            raise ValueError(
+                f"admin_codes length ({admin_codes.shape[0]}) does not match "
+                f"lat_lon_data rows ({lat_lon_data.shape[0]}) in {similarity_npz}"
+            )
 
         counts = np.bincount(component_labels)
         main_component_id = int(np.argmax(counts))
@@ -195,7 +205,7 @@ def main() -> int:
         np.savez_compressed(
             labels_npz,
             cluster_labels=final_labels,
-            admin_codes=np.arange(n),
+            admin_codes=admin_codes,
             n_clusters=np.int32(n_clusters),
             k_neighbors=np.int32(K_NEIGHBORS),
             main_indices=main_indices,
@@ -203,14 +213,16 @@ def main() -> int:
         )
         print(f"Saved labels: {labels_npz}")
 
+        is_outlier_mask = np.zeros(n, dtype=bool)
+        is_outlier_mask[outlier_indices] = True
         mapping_file = output_dir / f"cluster_mapping_k{K_NEIGHBORS}_nc{n_clusters}_{args.suffix}.csv"
         cluster_mapping = pd.DataFrame(
             {
-                "FEWSNET_admin_code": np.arange(n),
+                "FEWSNET_admin_code": admin_codes,
                 "cluster_id": final_labels,
                 "latitude": lat_lon_data[:, 0],
                 "longitude": lat_lon_data[:, 1],
-                "is_outlier": np.isin(np.arange(n), outlier_indices),
+                "is_outlier": is_outlier_mask,
             }
         )
         cluster_mapping.to_csv(mapping_file, index=False)

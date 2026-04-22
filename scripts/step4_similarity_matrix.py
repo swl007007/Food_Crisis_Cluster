@@ -13,8 +13,8 @@ from scipy.special import logit
 from sklearn.metrics.pairwise import haversine_distances
 
 
-N_ADMIN_CODES = 5718
 SIGMA_DEGREES = 5.0
+OUT_OF_SCOPE_LABEL = "s-1"
 
 
 def parse_args() -> argparse.Namespace:
@@ -26,6 +26,16 @@ def parse_args() -> argparse.Namespace:
         choices=[2, 6, 10],
         default=None,
         help="Optional month filter (2, 6, 10); omit for general matrix",
+    )
+    parser.add_argument(
+        "--full-universe",
+        action="store_true",
+        help=(
+            "Build the similarity matrix over all FEWSNET admin codes found in the "
+            "partition files (legacy behavior). Default is to restrict to the "
+            "in-scope admin codes derived from the partition files "
+            "(partition_id != 's-1')."
+        ),
     )
     return parser.parse_args()
 
@@ -54,7 +64,7 @@ def compute_plan_weights(main_df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def load_partition_labels(partition_file: Path, n_admin_codes: int) -> NDArray[np.int32]:
+def _read_partition_csv(partition_file: Path) -> pd.DataFrame:
     if not partition_file.exists():
         raise FileNotFoundError(f"Partition file not found: {partition_file}")
 
@@ -63,24 +73,63 @@ def load_partition_labels(partition_file: Path, n_admin_codes: int) -> NDArray[n
     missing = required - set(partition_df.columns)
     if missing:
         raise ValueError(f"Partition file {partition_file} missing columns: {sorted(missing)}")
+    return partition_df
 
-    partition_df = partition_df.sort_values("FEWSNET_admin_code").reset_index(drop=True)
-    labels = np.full(n_admin_codes, -1, dtype=np.int32)
+
+def discover_admin_codes(
+    partition_files: list[Path],
+    *,
+    full_universe: bool,
+) -> NDArray[np.int64]:
+    """Scan partition files and return the sorted set of admin codes to materialize.
+
+    By default (``full_universe=False``) only codes that appear with a non-``s-1``
+    partition id in at least one plan are retained — this is the true in-scope
+    set for the experiment. When ``full_universe=True`` the union of all admin
+    codes listed in the partition files is returned (legacy behavior)."""
+    collected: set[int] = set()
+    for part_file in partition_files:
+        df = _read_partition_csv(part_file)
+        if full_universe:
+            codes = df["FEWSNET_admin_code"].astype(int).to_numpy()
+        else:
+            mask = df["partition_id"].astype(str) != OUT_OF_SCOPE_LABEL
+            codes = df.loc[mask, "FEWSNET_admin_code"].astype(int).to_numpy()
+        if codes.size:
+            collected.update(codes.tolist())
+    if not collected:
+        raise RuntimeError(
+            "No admin codes discovered from partition files; either the files are "
+            "empty or every row is marked out-of-scope (partition_id == 's-1')."
+        )
+    return np.array(sorted(collected), dtype=np.int64)
+
+
+def load_partition_labels(
+    partition_file: Path, admin_code_to_index: dict[int, int]
+) -> NDArray[np.int32]:
+    partition_df = _read_partition_csv(partition_file)
+
+    n = len(admin_code_to_index)
+    labels = np.full(n, -1, dtype=np.int32)
 
     unique_partitions = partition_df["partition_id"].astype(str).unique()
     partition_to_int: dict[str, int] = {
-        pid: idx for idx, pid in enumerate(unique_partitions) if pid != "s-1"
+        pid: idx
+        for idx, pid in enumerate(unique_partitions)
+        if pid != OUT_OF_SCOPE_LABEL
     }
 
     for _, row in partition_df.iterrows():
         admin_code = int(row["FEWSNET_admin_code"])
-        if admin_code < 0 or admin_code >= n_admin_codes:
+        idx = admin_code_to_index.get(admin_code)
+        if idx is None:
             continue
         pid = str(row["partition_id"])
-        if pid == "s-1":
-            labels[admin_code] = -1
+        if pid == OUT_OF_SCOPE_LABEL:
+            labels[idx] = -1
         else:
-            labels[admin_code] = partition_to_int[pid]
+            labels[idx] = partition_to_int[pid]
 
     return labels
 
@@ -112,7 +161,9 @@ def accumulate_similarity(plans: list[dict[str, Any]], n_admin_codes: int) -> ND
     return similarity
 
 
-def load_lat_lon(exp_dir: Path, n_admin_codes: int) -> NDArray[np.float64]:
+def load_lat_lon(
+    exp_dir: Path, admin_codes: NDArray[np.int64]
+) -> NDArray[np.float64]:
     latlon_path = Path(r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_admin_code_lat_lon.csv")
     if not latlon_path.exists():
         raise FileNotFoundError(f"Missing lat/lon file: {latlon_path}")
@@ -123,13 +174,15 @@ def load_lat_lon(exp_dir: Path, n_admin_codes: int) -> NDArray[np.float64]:
     if missing:
         raise ValueError(f"Lat/lon file missing columns: {sorted(missing)}")
 
-    latlon_df = latlon_df.sort_values("FEWSNET_admin_code").reset_index(drop=True)
-    coords = latlon_df[["lat", "lon"]].to_numpy(dtype=np.float64)
-    if coords.shape[0] < n_admin_codes:
+    latlon_df = latlon_df.set_index("FEWSNET_admin_code")
+    missing_codes = [int(c) for c in admin_codes if int(c) not in latlon_df.index]
+    if missing_codes:
         raise ValueError(
-            f"Lat/lon file has {coords.shape[0]} rows, expected at least {n_admin_codes}"
+            f"Lat/lon file is missing entries for {len(missing_codes)} admin code(s): "
+            f"{missing_codes[:10]}{'...' if len(missing_codes) > 10 else ''}"
         )
-    return coords[:n_admin_codes]
+    coords = latlon_df.loc[admin_codes.tolist(), ["lat", "lon"]].to_numpy(dtype=np.float64)
+    return coords
 
 
 def gaussian_spatial_weight(
@@ -183,17 +236,34 @@ def main() -> int:
         if weighted_df.empty:
             raise RuntimeError("No plans available after filtering")
 
+        partition_files = [
+            partition_dir / f"{str(row['name'])}_partition.csv"
+            for _, row in weighted_df.iterrows()
+        ]
+        admin_codes = discover_admin_codes(
+            partition_files, full_universe=args.full_universe
+        )
+        n_admin_codes = int(admin_codes.size)
+        admin_code_to_index: dict[int, int] = {
+            int(code): idx for idx, code in enumerate(admin_codes)
+        }
+        scope_label = "full universe" if args.full_universe else "in-scope only"
+        print(
+            f"Scope: {scope_label} — {n_admin_codes} admin codes "
+            f"(min={int(admin_codes.min())}, max={int(admin_codes.max())})"
+        )
+
         plans: list[dict[str, Any]] = []
-        for idx, row in weighted_df.iterrows():
-            name = str(row["name"])
-            part_file = partition_dir / f"{name}_partition.csv"
-            labels = load_partition_labels(part_file, N_ADMIN_CODES)
-            plans.append({"name": name, "weight": float(row["weight"]), "labels": labels})
+        for part_file in partition_files:
+            name = part_file.stem.removesuffix("_partition")
+            weight_row = weighted_df.loc[weighted_df["name"].astype(str) == name].iloc[0]
+            labels = load_partition_labels(part_file, admin_code_to_index)
+            plans.append({"name": name, "weight": float(weight_row["weight"]), "labels": labels})
             if (len(plans) % 10 == 0) or (len(plans) == len(weighted_df)):
                 print(f"  Loaded partition labels: {len(plans)}/{len(weighted_df)}")
 
-        similarity_matrix = accumulate_similarity(plans, N_ADMIN_CODES)
-        lat_lon_data = load_lat_lon(exp_dir, N_ADMIN_CODES)
+        similarity_matrix = accumulate_similarity(plans, n_admin_codes)
+        lat_lon_data = load_lat_lon(exp_dir, admin_codes)
         spatial_weight, distance_matrix = gaussian_spatial_weight(lat_lon_data, SIGMA_DEGREES)
         final_matrix = similarity_matrix * spatial_weight
         final_matrix = normalize_matrix(final_matrix)
@@ -213,12 +283,17 @@ def main() -> int:
             final_matrix=final_matrix,
             distance_matrix=distance_matrix,
             lat_lon_data=lat_lon_data.astype(np.float32),
+            admin_codes=admin_codes.astype(np.int64),
             sigma_degrees=np.float32(SIGMA_DEGREES),
             month_filter=-1 if args.month is None else int(args.month),
+            full_universe=np.bool_(args.full_universe),
         )
 
         summary = {
-            "n_admin_codes": int(N_ADMIN_CODES),
+            "n_admin_codes": int(n_admin_codes),
+            "scope": "full_universe" if args.full_universe else "in_scope_only",
+            "admin_code_min": int(admin_codes.min()),
+            "admin_code_max": int(admin_codes.max()),
             "n_plans": int(len(plans)),
             "month_filter": None if args.month is None else int(args.month),
             "sigma_degrees": float(SIGMA_DEGREES),

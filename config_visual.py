@@ -237,7 +237,7 @@ POLYGON_CONTIGUITY_INFO = None  # Set this to polygon contiguity info dict when 
 
 # Adjacency matrix parameters for polygon-based contiguity
 USE_ADJACENCY_MATRIX = True  # If True, use true polygon adjacency instead of distance-based neighbors
-ADJACENCY_SHAPEFILE_PATH = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp'
+ADJACENCY_SHAPEFILE_PATH = r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\Nigeria.shp'
 ADJACENCY_POLYGON_ID_COLUMN = 'admin_code'  # Column name for polygon identifiers in shapefile
 ADJACENCY_CACHE_DIR = None  # Directory for caching adjacency matrix (None = current directory)
 ADJACENCY_FORCE_REGENERATE = False  # If True, regenerate adjacency matrix even if cache exists
