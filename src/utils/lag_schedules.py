@@ -13,6 +13,13 @@ except Exception:  # pragma: no cover - fallback for import-order edge cases
     _DEFAULT_LAGS_MONTHS = (4, 8, 12)
     _LEGACY_LAG_VALUES = {3, 6, 9}
 
+# fs0 (lag-1) forecasting scope: a stand-alone special case that is
+# intentionally NOT part of ACTIVE_LAGS / DEFAULT_LAGS_MONTHS. This keeps
+# the fs1/fs2/fs3 schedule and every len(ACTIVE_LAGS)-based code path
+# completely unchanged. fs0 is only accessible via forecasting_scope=0.
+FS0_SCOPE = 0
+FS0_LAG_MONTHS = 1
+
 
 def resolve_lag_schedule(lags: Sequence[int], *, context: str = "lag schedule") -> list[int]:
     """Validate and return the active lag schedule."""
@@ -38,9 +45,12 @@ def resolve_lag_schedule(lags: Sequence[int], *, context: str = "lag schedule") 
 def forecasting_scope_to_lag(scope: int, lags: Sequence[int]) -> int:
     """Map forecasting scope index to lag months with bounds checking."""
 
+    if scope == FS0_SCOPE:
+        return FS0_LAG_MONTHS
     if scope < 1 or scope > len(lags):
         raise ValueError(
-            f"Forecasting scope {scope} is out of range for {len(lags)} lag options {list(lags)}."
+            f"Forecasting scope {scope} is out of range. Use {FS0_SCOPE} "
+            f"(fs0, lag={FS0_LAG_MONTHS}) or 1..{len(lags)} for lags {list(lags)}."
         )
     return lags[scope - 1]
 

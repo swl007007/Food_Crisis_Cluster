@@ -2,35 +2,55 @@
 setlocal enabledelayedexpansion
 
 REM ============================================================================
-REM Unified Partitioned (k40) vs Pooled Model Comparison - Windows Batch Script
+REM Stage 3 of 3: Unified Partitioned (k40) vs Pooled Model Comparison
 REM ============================================================================
 REM
 REM Usage:
-REM   run_partition_k40_comparison_unified.bat all                   (run all 9 combos)
+REM   run_partition_k40_comparison_unified.bat all                   (run all models for the active scope set)
 REM   run_partition_k40_comparison_unified.bat georf                 (single model, all scopes)
 REM   run_partition_k40_comparison_unified.bat geoxgb --visual       (with maps)
 REM   run_partition_k40_comparison_unified.bat geodt 1 3 --visual    (contiguity + maps)
+REM   run_partition_k40_comparison_unified.bat georf --fs0-only      (stand-alone fs0 run)
 REM
 REM Arguments:
 REM   %1  = model type: georf, geoxgb, geodt, or "all" (REQUIRED)
-REM         "all" loops over georf, geoxgb, geodt x scopes 1,2,3
+REM         "all" loops over georf, geoxgb, geodt x the active scope set
 REM   Optional positional/flags:
 REM     First numeric arg  = CONTIGUITY (0 or 1, default from config)
 REM     Second numeric arg = REFINE_ITERS (default from config)
 REM     --visual / -v      = Enable visualization maps
 REM     --month-ind        = Enable month-specific partitions
-REM     --scope N          = Run only scope N (1, 2, or 3); default: all three
+REM     --scope N          = Run only scope N (0, 1, 2, or 3); default: all fs1-fs3
+REM     --fs0-only         = Stand-alone fs0 mode: force SCOPES=0 and disable
+REM                           month-ind regardless of other flags. Does NOT
+REM                           affect fs1+fs2+fs3 behavior in separate runs.
 REM
 REM The script auto-discovers partition files from the experiment directory's
 REM cluster_mapping_manifest.json (written by Stage 2). Falls back to pattern
 REM matching if manifest is missing.
 REM
 REM After all runs complete, calls aggregate_results.py to build Table_Format.xlsx.
+REM When --fs0-only is set, the same aggregator is invoked with --fs0-only and
+REM produces Table_Format_fs0.xlsx instead (does not overwrite the fs1/2/3 table).
+REM
+REM Default mode:
+REM   SCOPES = "1 2 3" (or --scope N for a single scope in 1..3)
+REM   Per-model output dirs: result_partition_k40_compare_{GF,XGB,DT}_fs{1,2,3}
+REM   Aggregate output:      other_outputs/Table_Format.xlsx
+REM   FEWSNET baseline rows: included (fs1, fs2; fs3 extrapolated from fs2)
+REM
+REM --fs0-only mode:
+REM   SCOPES = "0" (forced; any --month-ind is cleared)
+REM   Per-model output dirs: result_partition_k40_compare_{GF,XGB,DT}_fs0
+REM   Aggregate output:      other_outputs/Table_Format_fs0.xlsx
+REM   FEWSNET baseline rows: omitted (FEWSNET has no fs0 ground truth)
+REM   Contiguity refinement: general partition only (m2/m6/m10 not generated
+REM                           by Stage 2 in fs0-only mode)
 REM ============================================================================
 
 echo.
 echo ============================================================================
-echo UNIFIED PARTITIONED (k40) VS POOLED MODEL COMPARISON
+echo STAGE 3 OF 3: UNIFIED PARTITIONED (k40) VS POOLED MODEL COMPARISON
 echo ============================================================================
 echo.
 
@@ -51,7 +71,7 @@ REM --------------------------------------------------------------------------
 if "%~1"=="" (
     echo ERROR: Model type is required.
     echo.
-    echo Usage: %~nx0 ^<model_type^|all^> [--scope N] [--visual] [--month-ind]
+    echo Usage: %~nx0 ^<model_type^|all^> [--scope N] [--visual] [--month-ind] [--fs0-only]
     echo.
     echo Model types: georf, geoxgb, geodt, all
     echo.
@@ -67,6 +87,7 @@ REM --------------------------------------------------------------------------
 set VISUAL_FLAG=
 set MONTH_IND_FLAG=
 set SCOPE_FILTER=
+set FS0_ONLY=0
 set CONTIGUITY=1
 set REFINE_ITERS=3
 set PARSED_CONTIGUITY=
@@ -77,6 +98,7 @@ if "%~1"=="" goto :done_global_args
 if "%~1"=="--visual" ( set VISUAL_FLAG=--visual& goto :next_global_arg )
 if "%~1"=="-v"       ( set VISUAL_FLAG=--visual& goto :next_global_arg )
 if "%~1"=="--month-ind" ( set MONTH_IND_FLAG=--month-ind& goto :next_global_arg )
+if "%~1"=="--fs0-only" ( set FS0_ONLY=1& goto :next_global_arg )
 if "%~1"=="--scope" (
     shift
     set "SCOPE_FILTER=%~1"
@@ -111,6 +133,30 @@ REM Also check environment variable for month-ind
 if "%MONTH_IND%"=="1" set MONTH_IND_FLAG=--month-ind
 
 REM --------------------------------------------------------------------------
+REM If the caller explicitly requests scope 0, treat that as fs0-only mode.
+REM This keeps aggregation targets and month-ind handling consistent even when
+REM the user supplies --scope 0 instead of --fs0-only.
+REM --------------------------------------------------------------------------
+if defined SCOPE_FILTER (
+    if "%SCOPE_FILTER%"=="0" (
+        if not "%FS0_ONLY%"=="1" (
+            echo [FS0 MODE] --scope 0 requested; enabling fs0-only semantics
+        )
+        set "FS0_ONLY=1"
+    )
+)
+
+REM --------------------------------------------------------------------------
+REM FS0-ONLY mode: override scope list to {0} and force-disable month-ind.
+REM This keeps the default fs1+fs2+fs3 path completely unaffected.
+REM --------------------------------------------------------------------------
+if "%FS0_ONLY%"=="1" (
+    echo [FS0-ONLY MODE] Forcing scopes=0 and disabling --month-ind
+    set "SCOPE_FILTER=0"
+    set MONTH_IND_FLAG=
+)
+
+REM --------------------------------------------------------------------------
 REM Determine which scopes to iterate
 REM --------------------------------------------------------------------------
 if defined SCOPE_FILTER (
@@ -119,11 +165,45 @@ if defined SCOPE_FILTER (
     set "SCOPES=1 2 3"
 )
 
+set "AGGREGATE_TARGET=other_outputs\Table_Format.xlsx"
+set "AGGREGATE_MODEL_TARGET=other_outputs\Model_Comparison_Table.xlsx"
+if "%FS0_ONLY%"=="1" (
+    set "RUN_MODE_LABEL=FS0-ONLY ^(scope 0 only, --month-ind disabled^)"
+    set "AGGREGATE_TARGET=other_outputs\Table_Format_fs0.xlsx"
+    set "AGGREGATE_MODEL_TARGET=other_outputs\Model_Comparison_Table_fs0.xlsx"
+) else (
+    set "RUN_MODE_LABEL=standard fs1+fs2+fs3 pipeline"
+)
+
+if defined MONTH_IND_FLAG (
+    set "MONTH_PARTITION_MODE=enabled"
+) else (
+    set "MONTH_PARTITION_MODE=disabled"
+)
+
+if defined VISUAL_FLAG (
+    set "VISUAL_MODE=enabled"
+) else (
+    set "VISUAL_MODE=disabled"
+)
+
+echo Stage:               3 of 3 ^(partitioned vs pooled comparison^)
+echo Run mode:            %RUN_MODE_LABEL%
+echo Requested model set: %FIRST_ARG%
+echo Scope list:          %SCOPES%
+echo Contiguity refine:   %CONTIGUITY% ^(iters=%REFINE_ITERS%^)
+echo Visual outputs:      %VISUAL_MODE%
+echo Month partitions:    %MONTH_PARTITION_MODE%
+echo Partition discovery: cluster_mapping_manifest.json, then fallback glob
+echo Aggregate outputs:   %AGGREGATE_TARGET%
+echo                     %AGGREGATE_MODEL_TARGET%
+echo.
+
 REM --------------------------------------------------------------------------
 REM "all" mode: loop over all 3 models, each with all scopes
 REM --------------------------------------------------------------------------
 if /i "%FIRST_ARG%"=="all" (
-    echo MODE: Running ALL models x ALL scopes
+    echo MODE: Running ALL models x scopes %SCOPES%
     echo ============================================================================
     set "ALL_FAIL=0"
     for %%M in (georf geoxgb geodt) do (
@@ -231,8 +311,12 @@ echo.
 echo ============================================================================
 echo AGGREGATING RESULTS INTO TABLE
 echo ============================================================================
+echo Target workbook: %AGGREGATE_TARGET%
 
-"%PYTHON_EXE%" other_outputs\aggregate_results.py
+set "AGG_FS0_FLAG="
+if "%FS0_ONLY%"=="1" set "AGG_FS0_FLAG=--fs0-only"
+
+"%PYTHON_EXE%" other_outputs\aggregate_results.py %AGG_FS0_FLAG%
 if %ERRORLEVEL% neq 0 (
     echo WARNING: Aggregation script failed.
 )
@@ -297,18 +381,28 @@ if not exist "%ADJACENCY_CACHE%" (
     echo ERROR: Adjacency cache not found at %ADJACENCY_CACHE%
     exit /b 1
 )
-for %%P in ("!PARTITION_MAP!" "!PARTITION_MAP_M2!" "!PARTITION_MAP_M6!" "!PARTITION_MAP_M10!") do (
-    "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in %%P --out "!REFINED_DIR!" --iters %REFINE_ITERS%
-    if !errorlevel! neq 0 exit /b 1
-)
+
+REM Always refine the general partition
+"%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in "!PARTITION_MAP!" --out "!REFINED_DIR!" --iters %REFINE_ITERS%
+if !errorlevel! neq 0 exit /b 1
 for %%F in ("!PARTITION_MAP!") do set "GEN_BASE=%%~nF"
-for %%F in ("!PARTITION_MAP_M2!") do set "M2_BASE=%%~nF"
-for %%F in ("!PARTITION_MAP_M6!") do set "M6_BASE=%%~nF"
-for %%F in ("!PARTITION_MAP_M10!") do set "M10_BASE=%%~nF"
 set "PARTITION_MAP=!REFINED_DIR!\!GEN_BASE!_refined_contig%REFINE_ITERS%.csv"
-set "PARTITION_MAP_M2=!REFINED_DIR!\!M2_BASE!_refined_contig%REFINE_ITERS%.csv"
-set "PARTITION_MAP_M6=!REFINED_DIR!\!M6_BASE!_refined_contig%REFINE_ITERS%.csv"
-set "PARTITION_MAP_M10=!REFINED_DIR!\!M10_BASE!_refined_contig%REFINE_ITERS%.csv"
+
+REM In fs0-only mode, month-specific partition maps do not exist (Stage 2
+REM skipped them) and --month-ind is forced off, so refining them is
+REM unnecessary and would fail. Skip when FS0_ONLY=1.
+if not "%FS0_ONLY%"=="1" (
+    for %%P in ("!PARTITION_MAP_M2!" "!PARTITION_MAP_M6!" "!PARTITION_MAP_M10!") do (
+        "%PYTHON_EXE%" scripts\refine_partitions_contiguity.py --adj "%ADJACENCY_CACHE%" --in %%P --out "!REFINED_DIR!" --iters %REFINE_ITERS%
+        if !errorlevel! neq 0 exit /b 1
+    )
+    for %%F in ("!PARTITION_MAP_M2!") do set "M2_BASE=%%~nF"
+    for %%F in ("!PARTITION_MAP_M6!") do set "M6_BASE=%%~nF"
+    for %%F in ("!PARTITION_MAP_M10!") do set "M10_BASE=%%~nF"
+    set "PARTITION_MAP_M2=!REFINED_DIR!\!M2_BASE!_refined_contig%REFINE_ITERS%.csv"
+    set "PARTITION_MAP_M6=!REFINED_DIR!\!M6_BASE!_refined_contig%REFINE_ITERS%.csv"
+    set "PARTITION_MAP_M10=!REFINED_DIR!\!M10_BASE!_refined_contig%REFINE_ITERS%.csv"
+)
 exit /b 0
 
 REM ============================================================================

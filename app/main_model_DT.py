@@ -47,6 +47,7 @@ warnings.filterwarnings('ignore')
 
 from config import *
 from src.utils.lag_schedules import (
+    FS0_SCOPE,
     forecasting_scope_to_lag,
     log_lag_schedule,
     resolve_lag_schedule,
@@ -1481,9 +1482,10 @@ def main():
     parser = argparse.ArgumentParser(description=f'{adapter.display_name} Food Crisis Prediction Pipeline')
     parser.add_argument('--start_year', type=int, default=2024, help='Start year for evaluation (default: 2024)')
     parser.add_argument('--end_year', type=int, default=2024, help='End year for evaluation (default: 2024)')
-    scope_choices = list(range(1, len(ACTIVE_LAGS) + 1))
+    scope_choices = [FS0_SCOPE] + list(range(1, len(ACTIVE_LAGS) + 1))
     scope_help = \
-        "Forecasting scope (1-based index) for lag schedule " \
+        "Forecasting scope. " \
+        f"0=fs0 (lag=1, stand-alone); 1..{len(ACTIVE_LAGS)}=fs1..fs{len(ACTIVE_LAGS)} for lag schedule " \
         f"{ACTIVE_LAGS} (default: 1)"
     parser.add_argument('--forecasting_scope', type=int, default=1, choices=scope_choices,
                         help=scope_help)
