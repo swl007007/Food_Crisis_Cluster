@@ -27,3 +27,7 @@ march2026_*
 *.xlsx
 
 summary_report.txt
+
+.codex
+
+memory/

@@ -372,6 +372,48 @@ class RFmodel():
 
     return y_pred_full
 
+  def predict_proba_georf(self, X, X_group, s_branch, X_branch_id = None):
+    """Branch-dispatched class-1 probability for the predict-only flow.
+
+    Returns a 1-D array of class-1 probabilities. Mirrors predict_georf's
+    branch dispatch. If a branch was trained on a single class only,
+    sklearn's predict_proba returns shape (n, 1); fill the absent class
+    column with 0.0 so output is always 2-class. Logs one warning per
+    such branch.
+    """
+    proba_full = np.zeros(X.shape[0], dtype=float)
+
+    if X_branch_id is None:
+      X_branch_id = get_X_branch_id_by_group(X_group, s_branch)
+
+    for branch_id in np.unique(X_branch_id):
+      id_list = np.where(X_branch_id == branch_id)
+      X_part = X[id_list]
+
+      self.load(branch_id)
+      proba = self.model.predict_proba(X_part)
+      classes = getattr(self.model, 'classes_', np.array([0, 1]))
+
+      if proba.shape[1] == 1:
+        only_class = int(classes[0])
+        print(
+          f'[predict_proba_georf] branch "{branch_id}" trained on a single '
+          f'class ({only_class}); filling absent class probability with 0.0.'
+        )
+        prob_class1 = np.full(X_part.shape[0], 1.0 if only_class == 1 else 0.0)
+      else:
+        # Locate the column for class 1
+        class1_idx = np.where(classes == 1)[0]
+        if class1_idx.size == 0:
+          # Defensive: no class 1 in classes_; treat as zero
+          prob_class1 = np.zeros(X_part.shape[0])
+        else:
+          prob_class1 = proba[:, class1_idx[0]]
+
+      proba_full[id_list] = prob_class1
+
+    return proba_full
+
 
 
 def save_single(model, path, name = 'single'):

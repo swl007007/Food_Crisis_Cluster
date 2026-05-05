@@ -123,25 +123,36 @@ def handle_infinite_values(X):
     
     return X
 
-def load_and_preprocess_data(data_path):
+def load_and_preprocess_data(data_path, predict_target_months=None, impute_gap_months=None):
     """
     Load and preprocess the FEWSNET data.
-    
+
     Parameters:
     -----------
     data_path : str
         Path to the CSV data file
-        
+    predict_target_months : sequence of str | pd.Period | None, default None
+        Strict whitelist of YYYY-MM target months whose null-labeled rows must
+        be retained for forward prediction. Default None preserves the original
+        behavior (drop every null-labeled row). Not a permissive cutoff: only
+        the listed months are allowed past the filter.
+    impute_gap_months : sequence of str | None, default None
+        FEWSNET non-publication months (e.g. ('2025-02', '2025-06')) for which
+        fews_ipc_crisis is forward-filled per FEWSNET_admin_code from the most
+        recent prior labeled month, BEFORE lag-feature construction. Forward
+        fill is capped at one month per gap. Default None disables imputation
+        (preserves fs1/fs2/fs3 backtest parity).
+
     Returns:
     --------
     df : pandas.DataFrame
         Preprocessed dataframe
     """
     print("Loading data...")
-    
+
     # Load data with polars
     data = pl.read_csv(data_path)
-    
+
     # Drop unnecessary columns
     cols_to_drop = [
         "ISO3", "fews_ipc_adjusted", "fews_proj_med_adjusted",
@@ -152,9 +163,26 @@ def load_and_preprocess_data(data_path):
     for col in cols_to_drop:
         if col in data.columns:
             data = data.drop([col])
-    
-    # Filter for non-null crisis data
-    data = data.filter(pl.col("fews_ipc_crisis").is_not_null())
+
+    # Filter for non-null crisis data, optionally retaining a strict whitelist
+    # of forward-prediction target months (predict-only pipeline).
+    if predict_target_months:
+        target_starts = [
+            pd.Period(str(m), freq='M').start_time for m in predict_target_months
+        ]
+        # polars `date` column is a string; compare via cast.
+        target_iso = [t.strftime('%Y-%m-%d') for t in target_starts]
+        data = data.filter(
+            pl.col("fews_ipc_crisis").is_not_null()
+            | pl.col("date").is_in(target_iso)
+        )
+        kept = data.filter(pl.col("fews_ipc_crisis").is_null()).height
+        print(
+            f"[predict-only] Retained {kept} unlabeled rows for target months "
+            f"{list(predict_target_months)}"
+        )
+    else:
+        data = data.filter(pl.col("fews_ipc_crisis").is_not_null())
     
     # Encode ISO
     data = data.with_columns([
@@ -182,6 +210,45 @@ def load_and_preprocess_data(data_path):
     # Process dates
     df['date'] = pd.to_datetime(df['date'])
     df['years'] = df['date'].dt.year
+
+    # Optional: forward-fill fews_ipc_crisis at FEWSNET non-publication slots
+    # (e.g. 2025-02, 2025-06) using the most recent prior labeled month per
+    # polygon. Cap forward fill at one step so longer real gaps still surface
+    # as NaN. Default-off (impute_gap_months=None) preserves fs1/fs2/fs3 parity.
+    impute_report = []
+    if impute_gap_months:
+        gap_periods = [pd.Period(str(m), freq='M') for m in impute_gap_months]
+        df_period = df['date'].dt.to_period('M')
+        for gap in gap_periods:
+            gap_mask = df_period == gap
+            if not gap_mask.any():
+                impute_report.append((str(gap), 0, 'no rows for gap month'))
+                continue
+            already_labeled = df.loc[gap_mask, 'fews_ipc_crisis'].notna().sum()
+            if already_labeled > 0:
+                impute_report.append((str(gap), 0, f'{already_labeled} rows already labeled; skipping'))
+                continue
+            # For every polygon with a row in `gap`, copy that polygon's most
+            # recent labeled fews_ipc_crisis (and fews_ipc) at any month <= gap.
+            gap_start = gap.start_time
+            prior_labeled = df.loc[
+                (df['date'] < gap_start) & df['fews_ipc_crisis'].notna(),
+                ['FEWSNET_admin_code', 'date', 'fews_ipc_crisis', 'fews_ipc']
+            ].sort_values('date')
+            latest_per_poly = (
+                prior_labeled.groupby('FEWSNET_admin_code', as_index=False).tail(1)
+                .set_index('FEWSNET_admin_code')[['fews_ipc_crisis', 'fews_ipc']]
+            )
+            gap_idx = df.index[gap_mask]
+            poly_at_gap = df.loc[gap_idx, 'FEWSNET_admin_code']
+            mapped_crisis = poly_at_gap.map(latest_per_poly['fews_ipc_crisis'])
+            mapped_ipc = poly_at_gap.map(latest_per_poly['fews_ipc'])
+            df.loc[gap_idx, 'fews_ipc_crisis'] = mapped_crisis.values
+            df.loc[gap_idx, 'fews_ipc'] = mapped_ipc.values
+            n_filled = mapped_crisis.notna().sum()
+            impute_report.append((str(gap), int(n_filled), 'forward-filled'))
+        for gap, n, note in impute_report:
+            print(f"[gap-fill] {gap}: filled {n} rows ({note})")
 
     if ENABLE_LAG_FEATURES:
         for lag in ACTIVE_LAGS:
