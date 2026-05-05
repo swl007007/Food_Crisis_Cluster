@@ -1006,6 +1006,24 @@ class GeoRF():
 
 		return y_pred
 
+	def predict_proba(self, X, X_group):
+		"""Class-1 probability under the partitioned model (predict-only flow).
+
+		Mirrors `predict()` dispatch. Returns a 1-D float array aligned with
+		rows of `X`; values are in [0, 1]. Single-class branches contribute
+		0.0 or 1.0 deterministically (see model_RF.predict_proba_georf).
+		"""
+		X_processed = self._apply_feature_drop_inference(X)
+		if hasattr(X_processed, 'to_numpy'):
+			X_matrix = X_processed.to_numpy()
+		else:
+			X_matrix = np.asarray(X_processed)
+
+		X_branch_id = get_X_branch_id_by_group(X_group, self.s_branch)
+		return self.model.predict_proba_georf(
+			X_matrix, X_group, self.s_branch, X_branch_id=X_branch_id
+		)
+
 	def evaluate(self, Xtest, ytest, Xtest_group, eval_base = False, print_to_file = True, force_accuracy = False, VIS_DEBUG_MODE=None):
 		"""
 		Evaluating GeoRF and/or RF.

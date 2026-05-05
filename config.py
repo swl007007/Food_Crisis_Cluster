@@ -71,6 +71,14 @@ ACTIVE_LAGS = LAGS_MONTHS  # Alias for backward compatibility
 TRAIN_WINDOW_MONTHS = 36  # Fixed 36-month rolling training window
 ACTIVE_LAG = min(ACTIVE_LAGS) if ACTIVE_LAGS else 4  # Default active lag (months before test month)
 
+# Predict-only pipeline configuration (default-off; opt-in via the standalone
+# prediction pipeline only — fs1/fs2/fs3 backtest paths must remain unchanged).
+PREDICTION_THRESHOLD = 0.5  # prob_class1 >= threshold -> pred = 1
+# Months where FEWSNET did not publish IPC; predict-only flow forward-fills
+# fews_ipc_crisis from the most recent prior labeled month (per polygon) so
+# downstream lag features are not silently NaN-dropped. Empty tuple = disabled.
+IMPUTE_FEWSNET_GAPS: Sequence[str] = ()
+
 def _parse_env_bool(name: str, default: bool) -> bool:
     raw = os.getenv(name)
     if raw is None:
