@@ -31,3 +31,7 @@ summary_report.txt
 .codex
 
 memory/
+
+.claude/*
+.agents/*
+.specify/*
