@@ -31,7 +31,9 @@ spatial_weighted_consensus_clustering.bat georf
 spatial_weighted_consensus_clustering.bat geoxgb
 spatial_weighted_consensus_clustering.bat geodt
 ```
-Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv` + `cluster_mapping_manifest.json`
+Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv` + `cluster_mapping_manifest.json`.
+
+Naming note: `k40` is the KNN graph-neighbor parameter, not 40 clusters. The selected cluster count is the `nc*` token. Partition filenames use `_m2`, `_m6`, `_m10`; manifest keys use `m02`, `m06`, `m10`.
 
 **Stage 3**: Evaluate partitioned models (~4-6 hours)
 ```batch
@@ -57,6 +59,30 @@ What changes in fs0-only mode:
 - **Stage 1**: Runs 48 batches (4 years × 1 scope × 12 months) instead of 144. Produces `results_df_*_fs0_*.csv` and `result_Geo{Model}_*_fs0_*_visual/` archives only.
 - **Stage 2**: Copies only fs0 artifacts; generates the **general** consensus partition only. Month-specific partitions (m2/m6/m10) are skipped because fs0 alone does not yield enough candidate partitions.
 - **Stage 3**: Forces `SCOPES=0` and disables `--month-ind`; writes results to `result_partition_k40_compare_{GF,XGB,DT}_fs0/` and aggregates to `other_outputs/Table_Format_fs0.xlsx` (separate from the fs1/2/3 `Table_Format.xlsx`).
+
+### Standalone 2026-2027 Prediction Pipeline
+
+GeoRF-only forward prediction for Jun 2026 and Feb 2027 uses batch launchers under
+`prediction_pipeline/`:
+```batch
+prediction_pipeline\spatial_weighted_consensus_clustering_predict.bat georf
+prediction_pipeline\run_predict_2026_2027.bat georf
+prediction_pipeline\run_partition_predict_unified.bat georf
+prediction_pipeline\run_scenario_predict_jun2026_feb2027.bat
+```
+Standard outputs go to `deliverables\predict_2026_2027\`; synthetic scenario outputs go
+to `deliverables\predict_scenario_jun2026_feb2027\` and should not be treated as standard
+forecasts.
+
+Standard prediction uses per-scope staged maps: `fs1_general.csv` for Jun 2026 and
+`fs3_general.csv` for Feb 2027. The scenario launcher also uses per-scope maps but remains a
+separate synthetic overlay, not a standard forecast. Standard prediction uses
+`PREDICTION_THRESHOLD = 0.5`; the scenario overlay reports its own assumptions
+(`--base-threshold 0.50`, `--scenario-threshold 0.40`) and those scenario thresholds are not
+standard forecast thresholds. Map-rendering workflows must name the shapefile source and
+geographic scope: the standard prediction launchers pass the global FEWSNET shapefile by
+default for production Sub-Saharan Africa coverage. Use Nigeria-specific or other
+single-country shapefiles only for explicit single-country analysis.
 
 ## Key Features
 
@@ -109,7 +135,10 @@ Food_Crisis_Cluster/
 │   ├── step4_similarity_matrix.py    # Clustering step 4 (refactored)
 │   ├── step5_sparsification.py       # Clustering step 5 (refactored)
 │   ├── step6_complete_clustering_pipeline.py  # Clustering step 6
+│   ├── predict_partitioned_2026_2027.py       # Standalone GeoRF prediction
+│   ├── predict_scenario_2026_2027.py          # Synthetic scenario overlay
 │   └── compare_partitioned_vs_pooled_*.py  # Stage 3 comparison scripts
+├── prediction_pipeline/          # Standalone 2026-2027 prediction launchers
 ├── GeoRFExperiment/              # GeoRF clustering workspace
 ├── GeoXGBExperiment/             # GeoXGB clustering workspace
 ├── GeoDTExperiment/              # GeoDT clustering workspace
@@ -140,7 +169,7 @@ MAX_DEPTH = 4                      # Maximum partition depth
 MIN_BRANCH_SAMPLE_SIZE = 5         # Minimum samples per partition
 
 # Consensus Clustering
-K = 40                             # KNN graph neighbors
+K = 40                             # KNN graph neighbors, not cluster count
 SIGMA = 5.0                        # Spatial kernel bandwidth
 ```
 
@@ -165,6 +194,7 @@ result_Geo{RF,XGB,DT}_YYYY_fsN_YYYY-MM_visual/
 ├── cluster_mapping_k40_nc*_m10.csv       # October partition
 └── cluster_mapping_manifest.json          # Paths to all partition files
 ```
+`k40` means 40 nearest neighbors in graph construction; the selected cluster count is recorded by `nc*`, not by `k40`.
 
 ### Comparison Results (Stage 3)
 - Partitioned vs pooled F1 comparisons
@@ -181,8 +211,8 @@ result_Geo{RF,XGB,DT}_YYYY_fsN_YYYY-MM_visual/
 - Model-specific batch files (`run_georf_batches_*`, `run_xgboost_batches_*`, etc.) have been superseded by the unified 3-stage scripts
 
 **Unicode Encoding**:
-- Fixed for Windows Chinese locale (GBK encoding)
-- All print statements use ASCII-safe characters
+- Windows CMD-facing batch `echo` and status output must be ASCII-safe for Chinese locale (GBK encoding)
+- Avoid emoji, box-drawing characters, smart quotes, special arrows, em dashes, and other non-ASCII punctuation unless encoding is explicitly set and documented
 
 ## Citation
 

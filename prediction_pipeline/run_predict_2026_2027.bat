@@ -1,6 +1,8 @@
 @echo off
 setlocal
-set PYTHONPATH=%~dp0
+set "LAUNCHER_DIR=%~dp0"
+for %%I in ("%LAUNCHER_DIR%..") do set "REPO_ROOT=%%~fI\"
+set "PYTHONPATH=%REPO_ROOT%"
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
 
@@ -38,11 +40,12 @@ if /I not "%MODEL_TYPE%"=="georf" (
     exit /b 1
 )
 
-set "PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe"
-set "REPO_ROOT=%~dp0"
+if not defined PYTHON_EXE set "PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe"
+if not exist "%PYTHON_EXE%" set "PYTHON_EXE=python"
 set "STAGED_DIR=%REPO_ROOT%deliverables\predict_2026_2027\cluster_mappings"
 set "PARTITION_MAP=%STAGED_DIR%\fs1_general.csv"
 set "OUT_DIR=%REPO_ROOT%deliverables\predict_2026_2027\smoke"
+set "GLOBAL_SHAPE=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
 
 if not exist "%PARTITION_MAP%" (
     echo ERROR: staged partition map not found at:
@@ -50,15 +53,23 @@ if not exist "%PARTITION_MAP%" (
     echo Run spatial_weighted_consensus_clustering_predict.bat georf first.
     exit /b 1
 )
+if not exist "%GLOBAL_SHAPE%" (
+    echo ERROR: global FEWSNET shapefile not found at:
+    echo   %GLOBAL_SHAPE%
+    echo Set GLOBAL_SHAPE in this launcher for explicit single-country analysis if needed.
+    exit /b 1
+)
 
 echo ============================================================================
 echo Stage 1-pred (smoke): GeoRF pure-prediction diagnostic
 echo Partition map: %PARTITION_MAP%
+echo Shapefile:     %GLOBAL_SHAPE%
 echo Output dir:    %OUT_DIR%
 echo ============================================================================
 
 "%PYTHON_EXE%" "%REPO_ROOT%scripts\predict_partitioned_2026_2027.py" ^
     --partition-map "%PARTITION_MAP%" ^
+    --polygons "%GLOBAL_SHAPE%" ^
     --out-dir "%OUT_DIR%" ^
     --smoke
 set "RC=%ERRORLEVEL%"

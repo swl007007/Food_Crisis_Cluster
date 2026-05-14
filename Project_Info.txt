@@ -33,3 +33,15 @@ Sounds good. Here are a few specific topics I'm hoping we can discuss.
 4. I'd love to hear a bit more about why we can use the model to predict food insecurity outside of countries with FEWS NET data. Is it that we can't or that the performance is weaker?
 
 5. I can explain a bit more about the microdata that FEWS NET has for some analyses.
+
+Standard develop procedure with Spec-kit
+1. /speckit.constitution
+2. /speckit.specify
+3. /speckit.clarify
+4. /speckit.plan
+5. /speckit.checklist
+6. /speckit.tasks
+7. /speckit.analyze
+8. /speckit.implement
+9. 手动测试 / 复制错误给 Claude Code 修
+10. PR / review / 再迭代 spec

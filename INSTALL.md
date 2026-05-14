@@ -62,11 +62,17 @@ pip install Pillow shap tqdm
 
 ## Windows-Specific Setup
 
-If using Windows with the specific Python path mentioned in the documentation:
+Use a Windows Python 3.12 resolution strategy rather than assuming one collaborator-specific path:
+
+1. Prefer an activated project environment (`georf-env\Scripts\activate` or conda).
+2. If using the Windows Python launcher, verify Python 3.12 is selected.
+3. If this workstation uses the documented local override, run:
 
 ```bash
 C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe -m pip install -r requirements.txt
 ```
+
+That absolute path is a local default/override for this machine, not a portable assumption for all collaborators. Batch files may also honor a caller-provided `PYTHON_EXE` and fall back to `python` when the local override is unavailable.
 
 ## Verification
 
@@ -100,8 +106,8 @@ conda install -c conda-forge shapely
 ```
 
 **4. Memory issues during model training:**
-- Use the batch processing scripts (`run_georf_batches.bat`, `run_xgboost_batches.bat`)
-- These scripts handle memory cleanup between iterations
+- Use the unified batch processing script (`run_batches_2021_2024_visual_monthly.bat <model>`)
+- This script handles month-level isolation and cleanup between iterations
 
 ### Platform-Specific Notes
 

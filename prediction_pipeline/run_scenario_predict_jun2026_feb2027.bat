@@ -1,6 +1,8 @@
 @echo off
 setlocal
-set PYTHONPATH=%~dp0
+set "LAUNCHER_DIR=%~dp0"
+for %%I in ("%LAUNCHER_DIR%..") do set "REPO_ROOT=%%~fI\"
+set "PYTHONPATH=%REPO_ROOT%"
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
 
@@ -19,7 +21,8 @@ REM      - Iran-oil price shock (+200% on fs3, +100% on fs1) -> WFP_Price* + FAO
 REM      - El Nino weather z-shift (+1.5 fs3, +1.0 fs1)
 REM      Applied ONLY to Greater Horn of Africa polygons (ETH,SOM,SDN,SSD,KEN,UGA;
 REM      ERI and DJI are not present in the FEWSNET dataset and are skipped).
-REM   3) Predicts at threshold 0.40 (vs 0.50 standard).
+REM   3) Predicts at --scenario-threshold 0.40 by default (vs 0.50 standard).
+REM      This is a scenario-only assumption, not the standard forecast threshold.
 REM   4) Writes deliverables to: deliverables/predict_scenario_jun2026_feb2027/
 REM
 REM Usage:
@@ -27,14 +30,14 @@ REM   run_scenario_predict_jun2026_feb2027.bat
 REM   run_scenario_predict_jun2026_feb2027.bat --smoke
 REM ============================================================================
 
-set "PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe"
-set "REPO_ROOT=%~dp0"
+if not defined PYTHON_EXE set "PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe"
+if not exist "%PYTHON_EXE%" set "PYTHON_EXE=python"
 set "STAGED_DIR=%REPO_ROOT%deliverables\predict_2026_2027\cluster_mappings"
 set "PARTITION_MAP_FS1=%STAGED_DIR%\fs1_general.csv"
 set "PARTITION_MAP_FS3=%STAGED_DIR%\fs3_general.csv"
 set "OUT_DIR=%REPO_ROOT%deliverables\predict_scenario_jun2026_feb2027"
 
-REM Continental shapefile (5718 polygons, 22 countries — full FEWSNET coverage).
+REM Continental shapefile (5718 polygons, 22 countries - full FEWSNET coverage).
 REM config.py defaults to Nigeria.shp which would crop the maps to Nigeria only,
 REM so we override here with the global shape used in production.
 set "GLOBAL_SHAPE=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
