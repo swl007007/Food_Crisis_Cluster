@@ -88,6 +88,25 @@ spatial_weighted_consensus_clustering.bat georf
 run_partition_k40_comparison_unified.bat georf --visual --month-ind
 ```
 
+A separate GeoRF-only 2026-2027 pure-prediction workflow lives in `prediction_pipeline/`.
+It reuses staged partition maps and writes forward-prediction deliverables under
+`deliverables/predict_2026_2027/`; synthetic scenario overlays write to a separate
+`deliverables/predict_scenario_jun2026_feb2027/` directory.
+
+Prediction governance notes:
+- Standard prediction uses per-scope staged maps: `fs1_general.csv` for Jun 2026 and
+  `fs3_general.csv` for Feb 2027.
+- Scenario prediction also uses per-scope maps (`fs1_general.csv` and `fs3_general.csv`) but
+  must remain separate from the standard forecast because it applies scenario-only feature and
+  threshold assumptions.
+- Standard prediction uses `PREDICTION_THRESHOLD = 0.5`. Scenario runs use their own threshold
+  assumptions (`--base-threshold 0.50`, `--scenario-threshold 0.40` by default) and must not
+  report scenario-only thresholds as standard forecast thresholds.
+- Map-rendering and shapefile-joining steps must name the shapefile source and geographic
+  scope. Standard prediction launchers pass the global FEWSNET shapefile by default for
+  production Sub-Saharan Africa coverage. Nigeria-only or other single-country shapefiles are
+  for explicit single-country analysis.
+
 ---
 
 ## FS0-Only Mode (Stand-Alone Lag-1 Pipeline)
@@ -493,8 +512,8 @@ REFINE_ITERS=3       # Refinement iterations
 **Comparisons**:
 1. **Pooled**: Single model trained on all data
 2. **Partitioned**: Separate model per cluster
-3. **General**: Year-round partition (k40_nc*.csv)
-4. **Month-Specific**: Season-specific partitions (m02, m06, m10)
+3. **General**: Year-round partition (`cluster_mapping_k40_nc*_general.csv`)
+4. **Month-Specific**: Season-specific partitions. Filenames use `_m2`, `_m6`, `_m10`; manifest keys use `m02`, `m06`, `m10`.
 
 **Outputs** (per model type):
 - `metrics_monthly.csv` - Monthly performance comparison
@@ -527,15 +546,17 @@ Examples:
 ### Partition Files
 ```
 # General partition (all months)
-cluster_mapping_k{K}_nc{NC}.csv
+cluster_mapping_k{K}_nc{NC}_general.csv
 
-# Month-specific partitions
+# Month-specific partitions; filenames are not zero-padded
 cluster_mapping_k{K}_nc{NC}_m{MONTH}.csv
 ```
 
-Example:
-- `cluster_mapping_k40_nc4.csv` (4 clusters, k=40 neighbors)
-- `cluster_mapping_k40_nc4_m02.csv` (February-specific, 4 clusters)
+Examples:
+- `cluster_mapping_k40_nc4_general.csv` (4 selected clusters, k=40 graph neighbors)
+- `cluster_mapping_k40_nc4_m2.csv` (February-specific, 4 selected clusters)
+
+`kXX` tokens are graph-neighbor parameters, not selected cluster counts. The selected cluster count is recorded by `nc{NC}`. Manifest keys may use zero-padded month labels (`m02`, `m06`, `m10`) even though filenames use `_m2`, `_m6`, `_m10`.
 
 ### Correspondence Tables
 ```
@@ -587,7 +608,7 @@ plan_weight = logit(f1_partitioned) - logit(f1_baseline)
 
 ### Common Issues
 1. **Missing Files**: If Step 1 fails, check that Stage 1 results exist
-2. **Encoding Errors**: All Python scripts now use ASCII-safe characters for Windows GBK
+2. **Encoding Errors**: Python status text and Windows CMD-facing batch `echo` output should be ASCII-safe for Windows GBK
 3. **Memory Issues**: Step 4 (distance matrix) requires ~8GB RAM for 5718 admin units
 
 ---

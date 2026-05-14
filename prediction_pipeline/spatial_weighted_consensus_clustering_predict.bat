@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
-set PYTHONPATH=%~dp0
+set "LAUNCHER_DIR=%~dp0"
+for %%I in ("%LAUNCHER_DIR%..") do set "REPO_ROOT=%%~fI\"
+set "PYTHONPATH=%REPO_ROOT%"
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
 
@@ -31,8 +33,8 @@ if /I not "%MODEL_TYPE%"=="georf" (
     exit /b 1
 )
 
-set "PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe"
-set "REPO_ROOT=%~dp0"
+if not defined PYTHON_EXE set "PYTHON_EXE=C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe"
+if not exist "%PYTHON_EXE%" set "PYTHON_EXE=python"
 set "OUT_DIR=%REPO_ROOT%deliverables\predict_2026_2027\cluster_mappings"
 
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
@@ -101,7 +103,7 @@ sys.exit(0 if (len(missing1)/max(1,len(polys)) < 0.01 and len(missing3)/max(1,le
 set "RC=%ERRORLEVEL%"
 if not "%RC%"=="0" (
     echo WARNING: cluster mappings have ^>1%% unmapped polygons; Stage 3-pred will route them to the pooled fallback.
-    echo (continuing — fallback is documented in the deliverable manifest)
+    echo (continuing -- fallback is documented in the deliverable manifest)
 )
 
 echo Stage 2-pred OK.
