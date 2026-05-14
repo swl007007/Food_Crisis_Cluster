@@ -1,6 +1,11 @@
 # gitignore
 # ignore .pyc .csv .png files in this directory
 *.pyc
+__pycache__/
+.venv/
+venv/
+dist/
+*.egg-info/
 *.csv
 *.png
 CLAUDE.md
@@ -16,6 +21,7 @@ PARTITION_METRICS_INTEGRATION.md
 *.ipynb
 *.npz
 *.json
+!specs/**/*.json
 *.pkl
 
 test_*
@@ -25,6 +31,13 @@ deliverables/*
 
 march2026_*
 *.xlsx
+
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
 
 summary_report.txt
 
