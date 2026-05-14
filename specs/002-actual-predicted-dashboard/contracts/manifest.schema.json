@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ActualPredictedDashboardManifest",
+  "type": "object",
+  "required": [
+    "workflow_mode",
+    "production_status",
+    "source_directory",
+    "included_sources",
+    "excluded_sources",
+    "shapefile_path",
+    "join_key",
+    "available_models",
+    "available_scopes",
+    "available_dates",
+    "label_contract",
+    "threshold_contract",
+    "output_html",
+    "smoke_test"
+  ],
+  "properties": {
+    "workflow_mode": {"const": "exploratory diagnostics/tooling"},
+    "production_status": {"const": "exploratory"},
+    "source_directory": {"type": "string", "minLength": 1},
+    "included_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["model", "model_token", "scope", "path", "row_count", "available_dates"],
+        "properties": {
+          "model": {"enum": ["GeoRF", "GeoDT"]},
+          "model_token": {"enum": ["GF", "DT"]},
+          "scope": {"enum": ["fs1", "fs2", "fs3"]},
+          "path": {"type": "string", "minLength": 1},
+          "row_count": {"type": "integer", "minimum": 1},
+          "available_dates": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "excluded_sources": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "shapefile_path": {"type": "string", "pattern": "FEWS_Admin_LZ_v3\\.shp$"},
+    "join_key": {"const": "FEWSNET_admin_code"},
+    "available_models": {
+      "type": "array",
+      "items": {"enum": ["GeoRF", "GeoDT"]},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "available_scopes": {
+      "type": "array",
+      "items": {"enum": ["fs1", "fs2", "fs3"]},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "available_dates": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "label_contract": {
+      "type": "object",
+      "required": ["actual_field", "predicted_field", "non_crisis_value", "crisis_value"],
+      "properties": {
+        "actual_field": {"const": "y_true"},
+        "predicted_field": {"const": "y_pred_partitioned"},
+        "non_crisis_value": {"const": 0},
+        "crisis_value": {"const": 1}
+      },
+      "additionalProperties": true
+    },
+    "threshold_contract": {"const": "none; existing binary labels only"},
+    "output_html": {"type": "string", "minLength": 1},
+    "optional_assets": {"type": "array", "items": {"type": "string"}},
+    "smoke_test": {
+      "type": "object",
+      "required": ["model", "scope", "date", "join_rows", "passed"],
+      "properties": {
+        "model": {"enum": ["GeoRF", "GeoDT"]},
+        "scope": {"enum": ["fs1", "fs2", "fs3"]},
+        "date": {"type": "string"},
+        "join_rows": {"type": "integer", "minimum": 0},
+        "passed": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "omissions_or_warnings": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}
