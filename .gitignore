@@ -48,3 +48,4 @@ memory/
 .claude/*
 .agents/*
 .specify/*
+regional_ablation_results/*
