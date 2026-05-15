@@ -196,8 +196,6 @@ def load_prediction_datasets(
 
 def load_global_shapefile(shapefile_path: Path, simplify_tolerance: float) -> tuple[list[dict[str, str]], set[str], list[str]]:
     resolved = resolve_path(shapefile_path)
-    if resolved.name != "FEWS_Admin_LZ_v3.shp":
-        raise DashboardError(f"Global FEWSNET shapefile required; got {shapefile_path}")
     if not resolved.exists():
         raise DashboardError(f"Shapefile not found: {resolved}")
 
