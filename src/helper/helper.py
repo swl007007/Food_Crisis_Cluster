@@ -254,7 +254,7 @@ def branch_id_to_loop_id(branch_id):
 
   return loop_id
 
-def init_s_branch(n_groups, max_depth = MAX_DEPTH):
+def init_s_branch(n_groups, max_depth = MAX_DEPTH, group_ids = None):
   #potential increase in number of grid cells due to imbalance partition (e.g., 0.25 + 0.75)
   max_diviation_rate = (((0.5 + FLEX_RATIO)**2)*4)**np.floor((max_depth-1)/2)
   max_size_needed = np.ceil(n_groups*max_diviation_rate).astype(int)
@@ -263,11 +263,16 @@ def init_s_branch(n_groups, max_depth = MAX_DEPTH):
   s_branch = pd.DataFrame(-np.ones(max_size_needed, dtype = np.int32))
   s_branch = s_branch.rename(columns={0: ''})
 
-  gid_list = np.empty(n_groups, dtype = np.int16)
-  for i in range(n_groups):
-      gid_list[i] = i#.astype(int)
+  if group_ids is None:
+    gid_list = np.arange(n_groups, dtype = np.int32)
+  else:
+    gid_list = np.asarray(group_ids, dtype = np.int32)
+    if gid_list.ndim != 1:
+      raise ValueError('group_ids must be one-dimensional')
+    if gid_list.shape[0] != n_groups:
+      raise ValueError('group_ids length must match n_groups')
 
-  s_branch[''][:gid_list.shape[0]] = gid_list
+  s_branch.loc[:gid_list.shape[0] - 1, ''] = gid_list
 
   return s_branch, max_size_needed
 

@@ -3,6 +3,7 @@
 *.pyc
 __pycache__/
 .venv/
+.venv-geodt-diagnostic/
 venv/
 dist/
 *.egg-info/
@@ -25,6 +26,10 @@ PARTITION_METRICS_INTEGRATION.md
 *.pkl
 
 test_*
+!src/tests/test_*.py
+
+# ignore real-run diagnostic output artifacts
+other_outputs/geodt_branch_tree_diagnostic_real_run/
 
 # ignore everything in deliverables subfolder
 deliverables/*
@@ -35,6 +40,7 @@ march2026_*
 .DS_Store
 Thumbs.db
 *.tmp
+*.tmp.*
 *.swp
 .vscode/
 .idea/
