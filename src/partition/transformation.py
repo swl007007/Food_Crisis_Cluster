@@ -154,7 +154,14 @@ def partition(model, X, y,
   #init s list: a dictionary
   #all all cells to initial branch with id==''
   #dict #rows must be consistent
-  s_branch, max_size_needed = init_s_branch(n_groups = N_GROUPS)#grid_dim = GRID_DIM
+  if contiguity_type == 'polygon' and X_group is not None:
+    active_group_ids = np.unique(np.asarray(X_group, dtype = np.int32))
+    s_branch, max_size_needed = init_s_branch(
+      n_groups = active_group_ids.shape[0],
+      group_ids = active_group_ids
+    )
+  else:
+    s_branch, max_size_needed = init_s_branch(n_groups = N_GROUPS)#grid_dim = GRID_DIM
 
   # Train and save initial base model for the root branch (branch_id = '')
   print("Training initial base model for root branch...")
