@@ -16,6 +16,7 @@ import polars as pl
 import os
 import sys
 import warnings
+from pathlib import Path
 
 # Add parent directory to path to find src module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -30,6 +31,17 @@ from src.utils.force_clean import *
 from src.utils.lag_schedules import resolve_lag_schedule
 
 ACTIVE_LAGS = resolve_lag_schedule(LAGS_MONTHS, context="config_visual.LAGS_MONTHS")
+
+
+def resolve_local_path(path: str) -> str:
+    candidate = Path(path)
+    if candidate.exists():
+        return str(candidate)
+    if len(path) >= 2 and path[1] == ":":
+        alt = Path("/mnt") / path[0].lower() / path[2:].replace("\\", "/").lstrip("/")
+        if alt.exists():
+            return str(alt)
+    return path
 
 
 # Import adjacency matrix utilities
@@ -151,7 +163,7 @@ def load_and_preprocess_data(data_path, predict_target_months=None, impute_gap_m
     print("Loading data...")
 
     # Load data with polars
-    data = pl.read_csv(data_path)
+    data = pl.read_csv(resolve_local_path(str(data_path)))
 
     # Drop unnecessary columns
     cols_to_drop = [
@@ -356,7 +368,7 @@ def setup_spatial_groups(df, assignment='polygons'):
             try:
                 print("Loading adjacency matrix for polygon-based contiguity...")
                 adj_dict_raw, polygon_id_mapping, adj_centroids = load_or_create_adjacency_matrix(
-                    shapefile_path=ADJACENCY_SHAPEFILE_PATH,
+                    shapefile_path=resolve_local_path(ADJACENCY_SHAPEFILE_PATH),
                     polygon_id_column=ADJACENCY_POLYGON_ID_COLUMN,
                     cache_dir=ADJACENCY_CACHE_DIR,
                     force_regenerate=ADJACENCY_FORCE_REGENERATE

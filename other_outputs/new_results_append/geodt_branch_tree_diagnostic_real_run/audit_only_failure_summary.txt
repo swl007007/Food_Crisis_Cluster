@@ -1,0 +1,74 @@
+No archive satisfied the minimum required branch-specific artifact set; root/global dt_rules archives are incomplete for branch diagnostics.
+{
+  "candidate_archive_decisions": [
+    {
+      "path": "deliverables/GeoDTExperiment_archived/GeoDTResults/result_GeoDT_2024_fs1_2024-10_visual",
+      "artifact_provider_path": "result_GeoDT_0",
+      "minimum_required_artifact_completeness": false,
+      "missing_or_invalid_artifacts": [
+        "at least two loadable branch-specific checkpoints",
+        "at least two eligible assigned branch checkpoints",
+        "feature-name source",
+        "feature-name source missing"
+      ],
+      "artifact_characterization": {
+        "artifact_roots": [
+          "deliverables/GeoDTExperiment_archived/GeoDTResults/result_GeoDT_2024_fs1_2024-10_visual",
+          "result_GeoDT_0"
+        ],
+        "checkpoint_files": [
+          "result_GeoDT_0/checkpoints/dt_"
+        ],
+        "checkpoint_records": [
+          {
+            "path": "result_GeoDT_0/checkpoints/dt_",
+            "filename": "dt_",
+            "parsed_branch_id": "",
+            "classification": "root/global",
+            "parsing_method": "DTmodel dt_<normalized-branch-id> filename convention",
+            "load_status": "loadable",
+            "mismatch_reason": null
+          }
+        ],
+        "root_global_checkpoint": "result_GeoDT_0/checkpoints/dt_",
+        "branch_checkpoint_files": [],
+        "partition_artifacts": [],
+        "correspondence_tables": [
+          "deliverables/GeoDTExperiment_archived/GeoDTResults/result_GeoDT_2024_fs1_2024-10_visual/correspondence_table_2024-10.csv"
+        ],
+        "assignment_source": {
+          "path": "deliverables/GeoDTExperiment_archived/GeoDTResults/result_GeoDT_2024_fs1_2024-10_visual/correspondence_table_2024-10.csv",
+          "type": "correspondence_table",
+          "status": "selected"
+        },
+        "rejected_assignment_sources": [],
+        "feature_name_candidates": [],
+        "feature_name_source": null,
+        "feature_name_errors": [
+          "feature-name source missing"
+        ],
+        "branch_eligibility": [
+          {
+            "branch_id": "",
+            "checkpoint_path": "result_GeoDT_0/checkpoints/dt_",
+            "checkpoint_classification": "root/global",
+            "eligible": false,
+            "assigned_count": 0,
+            "assigned_count_type": "assigned admin/group count",
+            "prediction_row_count": null,
+            "assigned_admin_group_count": 0,
+            "training_sample_count": null,
+            "exclusion_reasons": [
+              "root/global checkpoint is excluded unless explicitly terminal",
+              "checkpoint classification is root/global",
+              "branch has no assignment count in selected source",
+              "feature source is incompatible"
+            ]
+          }
+        ],
+        "dt_rules_boundary": null
+      },
+      "decision": "rejected"
+    }
+  ]
+}
