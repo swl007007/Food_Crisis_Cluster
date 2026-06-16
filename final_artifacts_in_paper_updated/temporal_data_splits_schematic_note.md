@@ -12,8 +12,8 @@
 - Stage 1 recursive split acceptance 使用该运行 rolling training window 内部的 validation subset；当前 `GROUP_SPLIT` 为 `val_ratio=0.20`、`min_val_per_group=1`、`skip_singleton_groups=True`、`random_state=42`。
 - Stage 2 consensus clustering 只使用 Stage 1 产出的 linked partition plans 和对应 performance-derived weights，不使用 2021-2024 final test outcomes。
 - 当前 Stage 2 产物中，GeoRF general consensus 使用 24 个 linked plans，m2/m6/m10 各使用 8 个 linked plans；GeoDT general consensus 使用 27 个 linked plans，m2/m6/m10 各使用 9 个 linked plans。
-- Stage 3 configured candidate loop 覆盖 2021-01 到 2024-12，run manifest 记录 `n_test_months=48`。当前有 evaluated result rows 的 target months 只有 2021-2024 年的 February、June、October，run manifest 记录 `n_test_months_evaluated=12` per scope。对 target month `T` 和 horizon `h`，当前代码使用 `[T - h - 35 months, T - h)` 作为 rolling training mask，使用 `[T, T + 1 month)` 作为 final test mask。
-- 当前 `temporal_data_splits_table.csv` 只列出 actual evaluated rows：2021-2024 年 February、June、October x fs1/fs2/fs3，共 36 行。这些 rows 对应 m2/m6/m10 month-specific maps；general maps 只用于说明非 2/6/10 月如果在未来被 evaluation 覆盖时的配置规则。
+- Stage 3 configured candidate loop 覆盖 2021-01 到 2024-12，run manifest 记录 `n_test_months=48`。当前有 evaluated result rows 的 target months 只有 2021-2024 年的 February、June、October，run manifest 记录 `n_test_months_evaluated=12` per forecasting horizon。对 target month `T` 和 horizon `h`，当前代码使用 `[T - h - 35 months, T - h)` 作为 rolling training mask，使用 `[T, T + 1 month)` 作为 final test mask。
+- 当前 `temporal_data_splits_table.csv` 只列出 actual evaluated rows：2021-2024 年 February、June、October x 4-month、8-month、12-month lag，共 36 行。这些 rows 对应 m2/m6/m10 month-specific maps；general maps 只用于说明非 2/6/10 月如果在未来被 evaluation 覆盖时的配置规则。
 
 ### 不写入 appendix 的额外承诺
 
@@ -23,7 +23,7 @@
 
 ## Appendix: Temporal Data-Use Schematic and Split Rules
 
-The main workflow uses a no-leak temporal separation between partition learning, consensus construction, and final evaluation. Stage 1 learns recursive partition candidates on 2018-2020 target months. Stage 2 constructs fixed consensus maps from those Stage 1 partition plans. Stage 3 is configured with a candidate target-month loop from 2021-01 through 2024-12 (`n_test_months=48` in run manifests), but current evaluated result rows exist only for February, June, and October in each year (`n_test_months_evaluated=12` per scope).
+The main workflow uses a no-leak temporal separation between partition learning, consensus construction, and final evaluation. Stage 1 learns recursive partition candidates on 2018-2020 target months. Stage 2 constructs fixed consensus maps from those Stage 1 partition plans. Stage 3 is configured with a candidate target-month loop from 2021-01 through 2024-12 (`n_test_months=48` in run manifests), but current evaluated result rows exist only for February, June, and October in each year (`n_test_months_evaluated=12` per forecasting horizon).
 
 ```text
 Stage 1: 2018-2020 partition-learning runs
@@ -60,13 +60,13 @@ TRAIN mask  = [train_start, train_end)
 TEST mask   = [T, T + 1 month)
 ```
 
-| Forecasting scope | Horizon `h` | Stage 3 training period for target month `T` | Split-acceptance validation data | Final test data |
+| Forecasting horizon | Horizon `h` | Stage 3 training period for target month `T` | Split-acceptance validation data | Final test data |
 |---|---:|---|---|---|
-| fs1 | 4 months | `[T - 39 months, T - 4 months)` | Stage 1 uses an internal validation subset from the corresponding Stage 1 rolling training window. Current group-aware split settings are `val_ratio=0.20`, `min_val_per_group=1`, `skip_singleton_groups=True`, `random_state=42`. | `[T, T + 1 month)` |
-| fs2 | 8 months | `[T - 43 months, T - 8 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
-| fs3 | 12 months | `[T - 47 months, T - 12 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
+| 4-month lag | 4 months | `[T - 39 months, T - 4 months)` | Stage 1 uses an internal validation subset from the corresponding Stage 1 rolling training window. Current group-aware split settings are `val_ratio=0.20`, `min_val_per_group=1`, `skip_singleton_groups=True`, `random_state=42`. | `[T, T + 1 month)` |
+| 8-month lag | 8 months | `[T - 43 months, T - 8 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
+| 12-month lag | 12 months | `[T - 47 months, T - 12 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
 
-For example, the implemented rule maps evaluated `T=2021-02` and `fs1` to a Stage 3 training mask of `[2017-11-01, 2020-10-01)` and a final test mask of `[2021-02-01, 2021-03-01)`.
+For example, the implemented rule maps evaluated `T=2021-02` and the 4-month lag to a Stage 3 training mask of `[2017-11-01, 2020-10-01)` and a final test mask of `[2021-02-01, 2021-03-01)`.
 
 ### Table A3. Stage 3 Partition Map Selection by Target Calendar Month
 
@@ -85,4 +85,4 @@ For example, the implemented rule maps evaluated `T=2021-02` and `fs1` to a Stag
 | November | General partition if evaluated in a future run | No month filter | No current final-test result rows |
 | December | General partition if evaluated in a future run | No month filter | No current final-test result rows |
 
-A machine-readable audit companion, `temporal_data_splits_table.csv`, is included in this artifact folder. It enumerates the current evaluated result rows only: February, June, and October for 2021-2024 across fs1/fs2/fs3, for 36 rows using the same date formula. These rows use the m2/m6/m10 month-specific maps. Non-2/6/10 months are configured candidates that would use the general partition if evaluated, but they do not have final test rows in the current results.
+A machine-readable audit companion, `temporal_data_splits_table.csv`, is included in this artifact folder. It enumerates the current evaluated result rows only: February, June, and October for 2021-2024 across the 4-month, 8-month, and 12-month lags, for 36 rows using the same date formula. These rows use the m2/m6/m10 month-specific maps. Non-2/6/10 months are configured candidates that would use the general partition if evaluated, but they do not have final test rows in the current results.

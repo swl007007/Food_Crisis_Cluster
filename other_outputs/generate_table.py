@@ -136,7 +136,7 @@ def build_workbook():
     ws["F1"].alignment = center_align
     ws["F1"].fill = header_fill
 
-    headers = ["", "lag(months)", "Precision", "Recall", "F1",
+    headers = ["", "Forecasting horizon (month lag)", "Precision", "Recall", "F1",
                "precision", "recall", "F1", "F1 Improvement Percentage"]
     for c, h in enumerate(headers, 1):
         cell = ws.cell(row=2, column=c, value=h)
@@ -149,6 +149,8 @@ def build_workbook():
     for model_name, data in MODEL_ROWS:
         first = True
         for fs in SCOPES:
+            if model_name == "FEWSNET (baseline)" and fs not in data:
+                continue
             lag = FS_TO_LAG[fs]
             m = data.get(fs)
 
@@ -177,7 +179,7 @@ def build_workbook():
             row += 1
 
     ws.column_dimensions["A"].width = 22
-    ws.column_dimensions["B"].width = 14
+    ws.column_dimensions["B"].width = 28
     for col in "CDEFGH":
         ws.column_dimensions[col].width = 14
     ws.column_dimensions["I"].width = 24

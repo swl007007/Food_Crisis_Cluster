@@ -32,7 +32,7 @@ SCOPE_TO_LAG = {1: 4, 2: 8, 3: 12}
 
 HEADERS = [
     "",
-    "lag(months)",
+    "Forecasting horizon (month lag)",
     "Precision",
     "Recall",
     "F1",

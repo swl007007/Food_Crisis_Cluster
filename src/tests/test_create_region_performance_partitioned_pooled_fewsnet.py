@@ -62,7 +62,7 @@ class RegionPerformanceFewsnetTests(unittest.TestCase):
 
         table = module.build_table(model_df, fewsnet_df, region_lookup, ["fs3"], helpers)
 
-        self.assertEqual(int(table.loc[0, "fewsnet_valid_support"]), 0)
+        self.assertTrue(pd.isna(table.loc[0, "fewsnet_valid_support"]))
         self.assertTrue(pd.isna(table.loc[0, "fewsnet_expert_f1"]))
         self.assertTrue(pd.isna(table.loc[0, "delta_partitioned_minus_fewsnet_expert_f1"]))
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot GeoDT branch 1 and branch 011 locations for the 2024-10 fs1 diagnostic pair."""
+"""Plot GeoDT branch 1 and branch 011 locations for the 2024-10 4-month-lag diagnostic pair."""
 
 from __future__ import annotations
 
@@ -135,10 +135,16 @@ def plot_branch_locations(
         )
         for branch_id in branches
     ]
-    legend_handles.append(mpatches.Patch(facecolor="#eeeeee", edgecolor="#9a9a9a", label="Other global 2024-10 GeoDT fs1 areas"))
+    legend_handles.append(
+        mpatches.Patch(
+            facecolor="#eeeeee",
+            edgecolor="#9a9a9a",
+            label="Other global 2024-10 GeoDT 4-month-lag areas",
+        )
+    )
     fig.legend(handles=legend_handles, loc="lower center", ncol=3, frameon=True, fontsize=10)
     fig.suptitle(
-        "Global spatial locations of GeoDT branch-specific local DecisionTree comparison pair (2024-10, fs1)",
+        "Global spatial locations of GeoDT branch-specific local DecisionTree comparison pair (2024-10, 4-month lag)",
         fontsize=14,
         fontweight="bold",
     )

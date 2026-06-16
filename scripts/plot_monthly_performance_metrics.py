@@ -34,10 +34,11 @@ MODEL_CONFIG = {
     },
 }
 SCOPES = ("fs1", "fs2", "fs3")
+SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
 METRICS = (("precision", "Precision"), ("recall", "Recall"), ("f1", "F1"))
 MODEL_SERIES = ("partitioned", "pooled")
 FEWSNET_COLOR = "#2ca02c"
-FEWSNET_REUSED_LABEL = "FEWSNET baseline (fs2 reused for fs3)"
+FEWSNET_REUSED_LABEL = "FEWSNET baseline (8-month lag reused for 12-month lag)"
 QUARTER_TO_MONTH = {"1": "02", "2": "06", "4": "10"}
 
 MODEL_COLUMNS = {"test_month", "model", "precision", "recall", "f1"}
@@ -53,11 +54,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--model", choices=("geodt", "georf", "all"), default="all")
     parser.add_argument(
-        "--no-extend-fewsnet",
+        "--extend-fewsnet",
         dest="extend_fewsnet",
-        action="store_false",
-        default=True,
-        help="Do not reuse FEWSNET fs2 baseline values for fs3.",
+        action="store_true",
+        default=False,
+        help="Reuse FEWSNET 8-month baseline values for the 12-month lag as an explicitly labeled diagnostic.",
     )
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -104,6 +105,11 @@ def model_metrics_path(ablation_root: Path, model_key: str, scope: str) -> Path:
 def fewsnet_path(fewsnet_root: Path, scope: str) -> Path:
     source_scope = "fs2" if scope == "fs3" else scope
     return fewsnet_root / f"fewsnet_baseline_results_{source_scope}.csv"
+
+
+def scope_label(scope: str) -> str:
+    horizon = SCOPE_TO_HORIZON.get(scope)
+    return f"{horizon}-month lag" if horizon is not None else scope
 
 
 def load_model_metrics(ablation_root: Path, models: list[str]) -> tuple[pd.DataFrame, list[str]]:
@@ -240,7 +246,7 @@ def build_plot_payload(
                             fewsnet_label,
                             metric,
                             month,
-                            "FEWSNET fs3 extension disabled"
+                            "No native FEWSNET 12-month baseline"
                             if scope == "fs3" and not extend_fewsnet
                             else "missing aligned baseline",
                         )
@@ -296,7 +302,7 @@ def render_model_figure(
             if row == 0:
                 ax.set_title(metric_label)
             if col == 0:
-                ax.set_ylabel(f"{scope}\nMetric value")
+                ax.set_ylabel(f"{scope_label(scope)}\nMetric value")
             if row == len(SCOPES) - 1:
                 ax.set_xlabel("Test month")
             ax.set_xticks(x)
@@ -305,7 +311,7 @@ def render_model_figure(
                 ax.text(
                     0.01,
                     0.04,
-                    "FEWSNET fs2 reused for fs3",
+                    "FEWSNET 8-month baseline reused for 12-month lag",
                     transform=ax.transAxes,
                     fontsize=8,
                     color=FEWSNET_COLOR,
@@ -340,11 +346,13 @@ def validation_summary(payload: dict, models: list[str], mode: str, extend_fewsn
         for scope in SCOPES:
             months = payload[model_key][scope]["months"]
             chronological = months == sorted(months, key=lambda m: pd.Period(m, freq="M"))
-            subplot_series = {metric: 3 for metric, _ in METRICS}
+            series_count = 2 if scope == "fs3" and not extend_fewsnet else 3
+            subplot_series = {metric: series_count for metric, _ in METRICS}
             summary["models"][model_key][scope] = {
                 "months": months,
                 "chronological": chronological,
                 "series_per_subplot": subplot_series,
+                "display_label": scope_label(scope),
             }
     return summary
 
@@ -377,8 +385,11 @@ def make_manifest(
             "fewsnet_baselines": sorted(FEWSNET_COLUMNS),
         },
         "scope_contract": {
-            "rows": list(SCOPES),
-            "fs3_fewsnet_source": "fs2" if extend_fewsnet else None,
+            "rows": [
+                {"internal_scope": scope, "display_label": scope_label(scope), "horizon_months": SCOPE_TO_HORIZON[scope]}
+                for scope in SCOPES
+            ],
+            "12_month_fewsnet_source": "8-month lag" if extend_fewsnet else None,
         },
         "series_contract": {
             "partitioned": "solid model-color line from model == partitioned",
@@ -392,9 +403,9 @@ def make_manifest(
             "ignored_quarters": ["3"],
         },
         "fewsnet_fs3_assumption": (
-            "FEWSNET has no native fs3 baseline; fs2 values are reused for fs3 as a labeled comparison proxy."
+            "FEWSNET has no native 12-month baseline; 8-month values are reused for the 12-month lag as a labeled comparison proxy."
             if extend_fewsnet
-            else "FEWSNET fs3 is not plotted."
+            else "FEWSNET has no native 12-month baseline and is not plotted for the 12-month lag."
         ),
         "generated_artifacts": generated_artifacts,
         "missing_points": missing_points,
@@ -407,8 +418,8 @@ def print_summary(manifest: dict) -> None:
     print(f"Mode: {manifest['validation_summary']['mode']}")
     print(f"Models: {', '.join(manifest['validation_summary']['models'])}")
     print(f"Model selection: {', '.join(manifest['model_selection'])}")
-    print(f"FEWSNET fs3 extended: {manifest['validation_summary']['fewsnet_fs3_extended']}")
-    print(f"FEWSNET fs3 label: {manifest['validation_summary']['fewsnet_fs3_label']}")
+    print(f"FEWSNET 12-month baseline extended: {manifest['validation_summary']['fewsnet_fs3_extended']}")
+    print(f"FEWSNET 12-month label: {manifest['validation_summary']['fewsnet_fs3_label']}")
     print(f"Missing plotted points: {len(manifest['missing_points'])}")
     for artifact in manifest["generated_artifacts"]:
         print(f"Generated: {artifact}")

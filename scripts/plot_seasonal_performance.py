@@ -2,7 +2,7 @@
 """
 Seasonal Performance Maps & Tables Generator
 =============================================
-Loads predictions_monthly.csv files (fs1/fs2/fs3), generates:
+Loads predictions_monthly.csv files for the 4-, 8-, and 12-month lags, generates:
   - 3 seasonal choropleth maps (all / crisis-only / noncrisis-only)
   - Table 1: model performance by season
   - Table 2: model performance by region (builtin FEWSNET mapping)
@@ -29,6 +29,21 @@ except ImportError:
     ctx = None
 
 warnings.filterwarnings('ignore', category=FutureWarning)
+
+SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
+
+
+def scope_label(scope: str) -> str:
+    horizon = SCOPE_TO_HORIZON.get(str(scope))
+    return f"{horizon}-month lag" if horizon is not None else str(scope)
+
+
+def with_horizon_labels(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    if 'scope' in out.columns:
+        out = out.rename(columns={'scope': 'forecasting_horizon'})
+        out['forecasting_horizon'] = out['forecasting_horizon'].map(scope_label)
+    return out
 
 # ---------------------------------------------------------------------------
 # Reusable helpers (adapted from plot_error_rate_grids.py)
@@ -277,7 +292,7 @@ def render_seasonal_grid(
         for j, scope in enumerate(scopes):
             ax = axes[i, j]
             sub = agg_df[(agg_df['season'] == season) & (agg_df['scope'] == scope)]
-            title = f"{season} - {scope}{title_suffix}"
+            title = f"{season} - {scope_label(scope)}{title_suffix}"
 
             if len(sub) == 0:
                 polys_plot.plot(ax=ax, color=missing_color, edgecolor='white',
@@ -467,7 +482,7 @@ def main():
         )
 
         out_csv = args.out_dir / f'error_rate_seasonal{suffix}.csv'
-        agg.to_csv(out_csv, index=False)
+        with_horizon_labels(agg).to_csv(out_csv, index=False)
         print(f"  Saved csv: {out_csv}")
 
     # ---- Table 1: season performance ---------------------------------------
@@ -477,7 +492,7 @@ def main():
 
     tbl1 = compute_season_table(df, scopes)
     tbl1_path = args.out_dir / 'table1_season_performance.csv'
-    tbl1.to_csv(tbl1_path, index=False)
+    with_horizon_labels(tbl1).to_csv(tbl1_path, index=False)
     print(f"Saved: {tbl1_path}")
     print(tbl1.to_string(index=False))
 
@@ -488,7 +503,7 @@ def main():
 
     tbl2 = compute_region_table(df, polys, scopes)
     tbl2_path = args.out_dir / 'table2_region_performance.csv'
-    tbl2.to_csv(tbl2_path, index=False)
+    with_horizon_labels(tbl2).to_csv(tbl2_path, index=False)
     print(f"Saved: {tbl2_path}")
     print(tbl2.to_string(index=False))
 

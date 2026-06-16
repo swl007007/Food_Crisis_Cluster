@@ -279,6 +279,31 @@ def predict_pooled(model: Any, X_test: np.ndarray) -> np.ndarray:
     return model.predict(X_test)
 
 
+def predict_class1_probability(model: Any, X_test: np.ndarray) -> np.ndarray:
+    """Return class-1 probabilities from a fitted classifier.
+
+    Single-class classifiers expose one probability column. In that case,
+    class 1 receives probability 1.0 when the only fitted class is 1 and 0.0
+    when the only fitted class is 0.
+    """
+    proba = model.predict_proba(X_test)
+    classes = np.asarray(getattr(model, "classes_", []))
+    if proba.shape[1] == 1:
+        only_class = int(classes[0]) if classes.size else 0
+        return np.ones(len(X_test), dtype=float) if only_class == 1 else np.zeros(len(X_test), dtype=float)
+
+    class1_idx = np.where(classes == 1)[0]
+    if class1_idx.size:
+        return proba[:, class1_idx[0]].astype(float)
+
+    return np.zeros(len(X_test), dtype=float)
+
+
+def predict_pooled_probability(model: Any, X_test: np.ndarray) -> np.ndarray:
+    """Predict class-1 probabilities using pooled model."""
+    return predict_class1_probability(model, X_test)
+
+
 def predict_partitioned(models: Dict[int, Any],
                        pooled_model: Any,
                        X_test: np.ndarray,
@@ -308,6 +333,36 @@ def predict_partitioned(models: Dict[int, Any],
         y_pred[unmapped_mask] = pooled_model.predict(X_test[unmapped_mask])
 
     return y_pred
+
+
+def predict_partitioned_probability(models: Dict[int, Any],
+                                    pooled_model: Any,
+                                    X_test: np.ndarray,
+                                    X_group_test: np.ndarray) -> np.ndarray:
+    """Predict class-1 probabilities using partitioned models with pooled fallback."""
+
+    y_prob = np.zeros(len(X_test), dtype=float)
+    handled = np.zeros(len(X_test), dtype=bool)
+
+    for partition_id, model in models.items():
+        partition_mask = X_group_test == partition_id
+
+        if partition_mask.sum() == 0:
+            continue
+
+        X_partition = X_test[partition_mask]
+
+        if model is not None:
+            y_prob[partition_mask] = predict_class1_probability(model, X_partition)
+        else:
+            y_prob[partition_mask] = predict_class1_probability(pooled_model, X_partition)
+        handled[partition_mask] = True
+
+    fallback_mask = ~handled
+    if fallback_mask.sum() > 0:
+        y_prob[fallback_mask] = predict_class1_probability(pooled_model, X_test[fallback_mask])
+
+    return y_prob
 
 
 # ============================================================================
@@ -750,6 +805,8 @@ def main():
         # Predict
         y_pred_pooled = predict_pooled(pooled_model, Xtest)
         y_pred_partitioned = predict_partitioned(partitioned_models, pooled_model, Xtest, Xtest_group)
+        y_prob_pooled = predict_pooled_probability(pooled_model, Xtest)
+        y_prob_partitioned = predict_partitioned_probability(partitioned_models, pooled_model, Xtest, Xtest_group)
 
         # Compute metrics
         metrics_pooled = compute_binary_metrics(ytest, y_pred_pooled)
@@ -775,7 +832,9 @@ def main():
                 'partition_id': Xtest_group,
                 'y_true': ytest,
                 'y_pred_pooled': y_pred_pooled,
-                'y_pred_partitioned': y_pred_partitioned
+                'y_pred_partitioned': y_pred_partitioned,
+                'y_prob_pooled': y_prob_pooled,
+                'y_prob_partitioned': y_prob_partitioned
             })
             all_predictions.append(pred_df)
 

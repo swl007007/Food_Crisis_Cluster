@@ -27,6 +27,7 @@ DEFAULT_OUTPUT = (
     / "seasonal_performance_GF"
     / "table2_region_performance_partitioned_pooled_fewsnet.csv"
 )
+SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
 
 
 def resolve_local_path(path: Path) -> Path:
@@ -42,6 +43,11 @@ def resolve_local_path(path: Path) -> Path:
 
 def normalize_admin_code(series: pd.Series) -> pd.Series:
     return series.astype(str).str.strip().str.replace(r"\.0$", "", regex=True)
+
+
+def scope_label(scope: str) -> str:
+    horizon = SCOPE_TO_HORIZON.get(str(scope))
+    return f"{horizon}-month lag" if horizon is not None else str(scope)
 
 
 def load_seasonal_helpers():
@@ -65,11 +71,11 @@ def parse_args(argv=None) -> argparse.Namespace:
     parser.add_argument("--model-token", default="GF", help="Stage-3 result folder token, e.g. GF.")
     parser.add_argument("--scopes", nargs="+", default=["fs1", "fs2", "fs3"], choices=["fs1", "fs2", "fs3"])
     parser.add_argument(
-        "--no-extend-fewsnet",
+        "--extend-fewsnet",
         dest="extend_fewsnet",
-        action="store_false",
-        default=True,
-        help="Do not reuse FEWSNET fs2 expert predictions for fs3.",
+        action="store_true",
+        default=False,
+        help="Reuse FEWSNET 8-month expert predictions for the 12-month lag as a labeled diagnostic.",
     )
     return parser.parse_args(argv)
 
@@ -168,6 +174,7 @@ def build_table(
     merged = model_df.merge(fewsnet_df, on=["FEWSNET_admin_code", "date", "scope"], how="left")
     merged = merged.merge(region_lookup, on="FEWSNET_admin_code", how="left")
     merged = merged[merged["ADMIN0"].notna()].copy()
+    native_fewsnet_scopes = set(fewsnet_df["scope"].dropna().astype(str).unique())
 
     rows = []
     for scope in scopes:
@@ -177,10 +184,19 @@ def build_table(
                 continue
             partitioned = metrics_for(sub, "y_pred_partitioned", helpers)
             pooled = metrics_for(sub, "y_pred_pooled", helpers)
-            fewsnet = metrics_for(sub, "y_pred_fewsnet", helpers)
+            if scope in native_fewsnet_scopes:
+                fewsnet = metrics_for(sub, "y_pred_fewsnet", helpers)
+            else:
+                fewsnet = {
+                    "support": np.nan,
+                    "precision": np.nan,
+                    "recall": np.nan,
+                    "f1": np.nan,
+                    "accuracy": np.nan,
+                }
 
             row = {
-                "scope": scope,
+                "forecasting_horizon": scope_label(scope),
                 "region": region,
                 "support": partitioned["support"],
                 "fewsnet_valid_support": fewsnet["support"],
@@ -225,7 +241,7 @@ def main(argv=None) -> None:
     print(f"FEWSNET unique admin codes: {fewsnet_source['admin_code'].nunique()}")
     print(f"FEWSNET countries with admin_code: {fewsnet_source['country'].nunique()}")
     print(f"Model unique admin codes: {model_df['FEWSNET_admin_code'].nunique()}")
-    print(f"FEWSNET fs3 extended from fs2: {args.extend_fewsnet}")
+    print(f"FEWSNET 12-month baseline extended from 8-month lag: {args.extend_fewsnet}")
     print(f"Wrote: {args.output}")
     print(f"Rows: {len(result)}, columns: {len(result.columns)}")
 

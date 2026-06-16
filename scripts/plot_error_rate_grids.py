@@ -26,6 +26,26 @@ except ImportError:
 
 warnings.filterwarnings('ignore', category=FutureWarning)
 
+SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
+
+
+def display_axis_value(label: str, value: Any) -> str:
+    if label == "scope":
+        horizon = SCOPE_TO_HORIZON.get(str(value))
+        if horizon is not None:
+            return f"{horizon}-month lag"
+    return str(value)
+
+
+def with_horizon_labels(df: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    if 'scope' in out.columns:
+        out = out.rename(columns={'scope': 'forecasting_horizon'})
+        out['forecasting_horizon'] = out['forecasting_horizon'].map(
+            lambda value: display_axis_value('scope', value)
+        )
+    return out
+
 
 def map_month_to_season(month: int) -> str:
     """Map month to season (DJFM, AMJJ, ASON). Dec-Mar -> DJFM, Apr-Jul -> AMJJ, Aug-Nov -> ASON."""
@@ -785,7 +805,9 @@ def render_grid(
                 (agg_df[col_label] == col_val)
             ].copy()
 
-            title = f"{row_label.capitalize()} {row_val} - {col_val}{filter_label}"
+            row_display = display_axis_value(row_label, row_val)
+            col_display = display_axis_value(col_label, col_val)
+            title = f"{row_label.capitalize()} {row_display} - {col_display}{filter_label}"
 
             if len(subset) == 0:
                 # No data
@@ -1067,7 +1089,7 @@ def main():
     )
 
     yearly_csv = args.out_dir / f'error_rate_yearly{filter_suffix}.csv'
-    yearly.to_csv(yearly_csv, index=False)
+    with_horizon_labels(yearly).to_csv(yearly_csv, index=False)
     print(f"Saved: {yearly_csv}")
 
     # Aggregate seasonal
@@ -1085,7 +1107,7 @@ def main():
     )
 
     seasonal_csv = args.out_dir / f'error_rate_seasonal{filter_suffix}.csv'
-    seasonal.to_csv(seasonal_csv, index=False)
+    with_horizon_labels(seasonal).to_csv(seasonal_csv, index=False)
     print(f"Saved: {seasonal_csv}")
 
     # Compute country and region metrics

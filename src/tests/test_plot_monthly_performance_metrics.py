@@ -56,7 +56,7 @@ class MonthlyPerformanceMetricsTests(unittest.TestCase):
             any(
                 point["source_kind"] == "fewsnet"
                 and point["scope"] == "fs3"
-                and point["reason"] == "FEWSNET fs3 extension disabled"
+                and point["reason"] == "No native FEWSNET 12-month baseline"
                 for point in missing
             )
         )
@@ -83,7 +83,10 @@ class MonthlyPerformanceMetricsTests(unittest.TestCase):
 
         self.assertEqual(manifest["model_selection"], ["georf"])
         self.assertIsNone(manifest["validation_summary"]["fewsnet_fs3_label"])
-        self.assertEqual(manifest["fewsnet_fs3_assumption"], "FEWSNET fs3 is not plotted.")
+        self.assertEqual(
+            manifest["fewsnet_fs3_assumption"],
+            "FEWSNET has no native 12-month baseline and is not plotted for the 12-month lag.",
+        )
 
 
 if __name__ == "__main__":

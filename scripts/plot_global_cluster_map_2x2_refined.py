@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create separate fs1 2x2 Global partition map figures for GeoRF and GeoDT."""
+"""Create separate 4-month-lag 2x2 Global partition map figures for GeoRF and GeoDT."""
 
 from __future__ import annotations
 
@@ -102,7 +102,7 @@ except AttributeError:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Plot separate fs1 2x2 Global refined partition maps for GeoRF and GeoDT."
+        description="Plot separate 4-month-lag 2x2 Global refined partition maps for GeoRF and GeoDT."
     )
     parser.add_argument(
         "--source-dir",
@@ -322,7 +322,7 @@ def plot_model_grid(
         handletextpad=0.35,
     )
     fig.suptitle(
-        f"{model} fs1 Global Refined Partition Mapping (k=40)",
+        f"{model} 4-month lag Global Refined Partition Mapping (k=40)",
         fontsize=16,
         fontweight="bold",
     )
@@ -354,7 +354,7 @@ def main() -> None:
 
     for model in MODEL_SPECS:
         csvs = discover_model_csvs(args.source_dir, model)
-        print(f"\n{model} fs1 mappings:")
+        print(f"\n{model} 4-month lag mappings:")
         for panel in PANEL_ORDER:
             print(f"  {panel:7s} -> {csvs[panel]}")
         output_path = args.output_dir / MODEL_SPECS[model]["output"]
