@@ -71,11 +71,10 @@ CLASS_1_SIGNIFICANCE_TESTING = True
 
 ### 7. Crisis-class weighting
 
-当前 crisis emphasis 主要通过三处实现：
+当前 crisis emphasis 主要通过两处实现：
 
 1. `SELECT_CLASS=np.array([1])` 使 split statistics 聚焦 crisis class。
 2. `GOVERNING_METRIC='class_1_f1'` 和 `CRISIS_FOCUSED_OPTIMIZATION=True` 让 partition scoring 使用 class-1 focused score。
-3. Stage 3 local RF training 在 eligible partitions 上尝试 SMOTE oversampling。
 
 RF 本身没有使用 sklearn `class_weight`，`src/model/model_RF.py` 中当前 `class_weight = None`。Stage 3 comparison script 的 `RF_PARAMS` 也没有设置 `class_weight`。标准 Stage 3 comparison 使用 hard class predictions，而不是 calibration 后的 probability threshold search。
 
@@ -138,7 +137,7 @@ random_state = 5
 n_jobs = 1
 ```
 
-每个 partition 单独训练 local RF。若 partition training samples 少于 `MIN_PARTITION_SAMPLES=50`，或该 partition training window 中只出现一个 class，则该 partition 使用 pooled fallback。eligible partitions 会尝试 SMOTE；如果 `imbalanced-learn` 不可用、minority class 太少或 SMOTE 失败，则继续用原始 training data。
+每个 partition 单独训练 local RF。若 partition training samples 少于 `MIN_PARTITION_SAMPLES=50`，或该 partition training window 中只出现一个 class，则该 partition 使用 pooled fallback。
 
 当前 standard Stage 3 comparison 不做 probability calibration，也不调低或调高 prediction threshold；它使用 sklearn classifier 的 hard class predictions。
 
@@ -182,4 +181,4 @@ L = I - D^{-1/2} A D^{-1/2}.
 
 The implementation computes up to 20 smallest-magnitude eigenvalues and selects the first largest eigengap. Final cluster labels are produced with scikit-learn `SpectralClustering` using precomputed affinity, k-means label assignment, and `random_state=42`. Clustering is applied to the largest connected component; nodes outside that component are assigned to the nearest learned cluster by one-nearest-neighbor classification in latitude/longitude space.
 
-For final 2021-2024 evaluation, each consensus cluster receives a local Random Forest when enough training data are available. The Stage 3 GeoRF comparison uses `n_estimators=100`, `max_depth=None`, `random_state=5`, and `n_jobs=1` for both pooled and local Random Forests. A cluster falls back to the pooled model if it has fewer than 50 training samples or only one observed class in the training window. Eligible local partitions attempt SMOTE oversampling when the dependency is available and the minority class has enough samples. The reported polygon-level evaluation summaries aggregate hard binary predictions by `FEWSNET_admin_code`, including observation count, class-1 precision, class-1 recall, class-1 F1, overall binary error rate, and class-1 binary error rate.
+For final 2021-2024 evaluation, each consensus cluster receives a local Random Forest when enough training data are available. The Stage 3 GeoRF comparison uses `n_estimators=100`, `max_depth=None`, `random_state=5`, and `n_jobs=1` for both pooled and local Random Forests. A cluster falls back to the pooled model if it has fewer than 50 training samples or only one observed class in the training window. The reported polygon-level evaluation summaries aggregate hard binary predictions by `FEWSNET_admin_code`, including observation count, class-1 precision, class-1 recall, class-1 F1, overall binary error rate, and class-1 binary error rate.
