@@ -18,7 +18,7 @@
 
 ### 4. Probability calibration、log loss、AUC
 
-当前 standard Stage 3 comparison 使用 hard class predictions。没有 probability calibration、log-loss optimization、AUC optimization 或 probability-threshold tuning进入主结果。scenario scripts 中的 threshold 设定不属于 standard comparison，不应混入本 appendix。
+当前 standard Stage 3 comparison 使用 hard class predictions。没有 probability calibration、log-loss optimization、AUC optimization 或 probability-threshold tuning 进入主结果。scenario scripts 中的 threshold 设定不属于 standard comparison，不应混入本 appendix。
 
 ### 5. Precision-recall tradeoff formal rule
 
