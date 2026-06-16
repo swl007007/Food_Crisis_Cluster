@@ -1,101 +1,173 @@
 # Final Paper Artifacts
 
 This is the active final artifact folder for the current no-temporal-leak
-workflow. The legacy `final_artifacts_in_paper/` folder is not present in the
-current workspace.
+workflow. Files are grouped by paper use case so the root stays navigable.
 
-## Core Tables
+## Folder Index
 
-- `main_month_ind_cont3.xlsx`: main GeoRF/GeoDT/FEWSNET comparison table for
-  the current fixed-partition, month-indicator, contiguity-refined setup.
-- `ablation_feature_exclude.xlsx`: fixed-partition GeoRF feature-exclude
-  ablation workbook generated from
+- `01_main_results/`: core result tables, main performance figures, cluster
+  maps, prediction maps, and the feature-ablation workbook.
+- `02_methods_and_temporal_scope/`: workflow notes, temporal split table,
+  technical-detail notes, and method schematic figures.
+- `03_class_prevalence/`: region-level class prevalence figure/table and
+  FEWSNET crisis-stack context figure.
+- `04_error_analysis/`: seasonal error-rate figures and source tables.
+- `05_partition_diagnostics/`: GeoRF partition-stability and adjacency
+  refinement appendix diagnostics.
+- `06_cluster_profiles/`: GeoRF m2 local-domain profile tables, similarity
+  figure, and note.
+- `07_probability_uncertainty/`: GeoRF probability export, reliability, Brier,
+  and bootstrap uncertainty diagnostics.
+- `08_geodt_diagnostics/`: auxiliary GeoDT branch-location and branch-tree
+  diagnostic figures.
+
+## 01 Main Results
+
+- `01_main_results/main_month_ind_cont3.xlsx`: main GeoRF/GeoDT/FEWSNET
+  comparison table for the current fixed-partition, month-indicator,
+  contiguity-refined setup.
+- `01_main_results/ablation_feature_exclude.xlsx`: fixed-partition GeoRF
+  feature-exclude ablation workbook generated from
   `main_ablation_exclude_updated_stage3_fixed_partitions/`.
-- `table1_season_performance.csv`: season-level paper table.
-- `table2_region_performance.csv`: region-level paper table.
-- `table2_region_performance_partitioned_pooled_fewsnet.csv`: region-level
-  partitioned/pooled/FEWSNET comparison table.
-- `region_class_prevalence_2021_2024.csv`: test-period class prevalence by
-  FEWSNET region and evaluated target month. The Middle East rows for
-  2021-10 through 2023-02 are flagged as `data not validated`.
+- `01_main_results/table1_season_performance.csv`: season-level paper table.
+- `01_main_results/table2_region_performance.csv`: region-level paper table.
+- `01_main_results/table2_region_performance_partitioned_pooled_fewsnet.csv`:
+  region-level partitioned/pooled/FEWSNET comparison table.
+- `01_main_results/georf_monthly_performance.png`: monthly GeoRF performance
+  comparison.
+- `01_main_results/global_cluster_map_2x2_georf_refined.png`: refined GeoRF
+  global cluster map.
+- `01_main_results/global_cluster_map_2x2_geodt_refined.png`: refined GeoDT
+  global cluster map.
+- `01_main_results/predictions_2024_feb_jun_oct.png`: 2024 actual vs
+  predicted GeoRF map.
+- `01_main_results/monthly_performance_manifest.json`: manifest for the
+  monthly performance figure generation.
 
-## Core Figures
+## 02 Methods And Temporal Scope
 
-- `georf_monthly_performance.png`: monthly GeoRF performance comparison.
-- `global_cluster_map_2x2_georf_refined.png`: refined GeoRF global cluster map.
-- `global_cluster_map_2x2_geodt_refined.png`: refined GeoDT global cluster map.
-- `predictions_2024_feb_jun_oct.png`: 2024 actual vs predicted GeoRF map.
-- `error_rate_seasonal_3x3.png`: seasonal error-rate panel.
-- `error_rate_seasonal_3x3_crisis.png`: crisis-only seasonal error-rate panel.
-- `error_rate_seasonal_3x3_noncrisis.png`: non-crisis seasonal error-rate panel.
-- `fewsnet_crisis_stack_2018.png`: FEWSNET crisis stack figure.
-- `region_class_prevalence_2021_2024.png`: region-level stacked class
-  prevalence over the 2021-2024 evaluated test months, with the Middle East
-  2021-10 through 2023-02 interval shaded as data not validated.
-- `georf_stage1_partition_stability.png`: GeoRF-only Stage 1 partition
-  stability overview with ARI/NMI boxplots and cluster-size distributions.
-- `georf_m2_adjacency_refinement_1x3.png`: GeoRF m2 pre/post adjacency
-  refinement example with reassigned polygons highlighted.
-- `georf_m2_cluster_profile_similarity.png`: market-access,
-  conflict-exposure, and error-mode inter-cluster similarity heatmaps with
-  within-cluster cohesion bars for the representative GeoRF m2 local-model
+- `02_methods_and_temporal_scope/technical_details_review_note.md`: Chinese
+  reviewer-facing technical detail note plus English appendix text for
+  implemented methods.
+- `02_methods_and_temporal_scope/technical_details_unimplemented_patch_note.md`:
+  items that are not implemented and therefore should not be described in the
+  paper appendix.
+- `02_methods_and_temporal_scope/temporal_data_splits_table.csv`: compact
+  target-month and forecasting-horizon data-split table.
+- `02_methods_and_temporal_scope/temporal_data_splits_schematic_note.md`:
+  temporal split schematic note.
+- `02_methods_and_temporal_scope/feature_engineering.png`: feature engineering
+  explanatory figure.
+- `02_methods_and_temporal_scope/walkthrough.png`: workflow walkthrough figure.
+
+## 03 Class Prevalence
+
+- `03_class_prevalence/region_class_prevalence_2021_2024.csv`: test-period
+  class prevalence by FEWSNET region and evaluated target month. The Middle
+  East rows for 2021-10 through 2023-02 are flagged as `data not validated`.
+- `03_class_prevalence/region_class_prevalence_2021_2024.png`: region-level
+  stacked class prevalence over the 2021-2024 evaluated test months.
+- `03_class_prevalence/fewsnet_crisis_stack_2018.png`: FEWSNET crisis-stack
+  context figure.
+
+## 04 Error Analysis
+
+- `04_error_analysis/error_rate_seasonal.csv`: source table for the seasonal
+  error-rate panel.
+- `04_error_analysis/error_rate_seasonal_crisis.csv`: crisis-only seasonal
+  error-rate source table.
+- `04_error_analysis/error_rate_seasonal_noncrisis.csv`: non-crisis seasonal
+  error-rate source table.
+- `04_error_analysis/error_rate_seasonal_3x3.png`: seasonal error-rate panel.
+- `04_error_analysis/error_rate_seasonal_3x3_crisis.png`: crisis-only
+  seasonal error-rate panel.
+- `04_error_analysis/error_rate_seasonal_3x3_noncrisis.png`: non-crisis
+  seasonal error-rate panel.
+
+## 05 Partition Diagnostics
+
+- `05_partition_diagnostics/georf_stage1_partition_stability.png`: GeoRF-only
+  Stage 1 partition stability overview with ARI/NMI boxplots and cluster-size
+  distributions.
+- `05_partition_diagnostics/georf_stage1_partition_stability_pairwise.csv`:
+  pairwise ARI/NMI for GeoRF Stage 1 partition plans across years, months, and
+  forecasting horizons / lags.
+- `05_partition_diagnostics/georf_stage1_partition_stability_summary.csv`:
+  comparison-axis summary of pairwise stability metrics.
+- `05_partition_diagnostics/georf_stage1_partition_stability_appendix_table.csv`:
+  compact appendix-ready version of the GeoRF Stage 1 partition-stability
+  summary.
+- `05_partition_diagnostics/georf_stage1_partition_stability_appendix_table.md`:
+  Markdown rendering of the compact appendix-ready stability table.
+- `05_partition_diagnostics/georf_stage1_partition_cluster_sizes.csv`:
+  per-plan cluster-size summary after excluding out-of-scope `s-1`
+  assignments.
+- `05_partition_diagnostics/georf_stage1_partition_cluster_size_distribution.csv`:
+  per-cluster size records used for the distribution panel.
+- `05_partition_diagnostics/georf_stage1_partition_stability_note.md`: Chinese
+  reviewer-facing note and English appendix text for the partition-stability
+  diagnostic.
+- `05_partition_diagnostics/georf_m2_adjacency_refinement_1x3.png`: GeoRF m2
+  pre/post adjacency refinement example with reassigned polygons highlighted.
+- `05_partition_diagnostics/georf_m2_adjacency_refinement_summary.csv`: GeoRF
+  m2 adjacency-refinement reassignment counts and proportions.
+- `05_partition_diagnostics/georf_m2_adjacency_refinement_note.md`: Chinese
+  reviewer-facing note and English appendix text for the adjacency-refinement
+  example.
+
+## 06 Cluster Profiles
+
+- `06_cluster_profiles/georf_m2_cluster_profile_similarity.png`:
+  market-access, conflict-exposure, and error-mode inter-cluster similarity
+  heatmaps with within-cluster cohesion bars for the representative GeoRF m2
+  local-model partition.
+- `06_cluster_profiles/georf_m2_cluster_profile_table.csv`: descriptive
+  cluster-level profiles for the representative GeoRF m2 refined local-model
   partition.
-- `georf_probability_reliability.png`: GeoRF pooled vs partitioned probability
-  reliability curves by forecasting horizon / lag.
-- GeoDT 4-month-lag branch location diagnostic.
-- GeoDT 4-month-lag branch tree diagnostic.
-- `feature_engineering.png` and `walkthrough.png`: static explanatory figures.
+- `06_cluster_profiles/georf_m2_cluster_profile_similarity_matrices.csv`:
+  long-format inter-cluster similarity matrices for market access, conflict
+  exposure, and error-mode composition.
+- `06_cluster_profiles/georf_m2_cluster_profile_cohesion.csv`: within-cluster
+  cohesion values paired with the similarity heatmaps.
+- `06_cluster_profiles/georf_m2_cluster_profile_note.md`: Chinese
+  reviewer-facing note and English appendix text for the cluster profile
+  diagnostics.
 
-## Diagnostic Data
+## 07 Probability Uncertainty
 
-- `error_rate_seasonal.csv`
-- `error_rate_seasonal_crisis.csv`
-- `error_rate_seasonal_noncrisis.csv`
-- `monthly_performance_manifest.json`
-- `georf_stage1_partition_stability_pairwise.csv`: pairwise ARI/NMI for
-  GeoRF Stage 1 partition plans across years, months, and forecasting
-  horizons / lags.
-- `georf_stage1_partition_stability_summary.csv`: comparison-axis summary of
-  the pairwise stability metrics.
-- `georf_stage1_partition_stability_appendix_table.csv`: compact appendix-ready
-  version of the GeoRF Stage 1 partition stability summary.
-- `georf_stage1_partition_stability_appendix_table.md`: Markdown rendering of
-  the compact appendix-ready stability table.
-- `georf_stage1_partition_cluster_sizes.csv`: per-plan cluster-size summary
-  after excluding out-of-scope `s-1` assignments.
-- `georf_stage1_partition_cluster_size_distribution.csv`: per-cluster size
-  records used for the distribution panel in the stability figure.
-- `georf_stage1_partition_stability_note.md`: Chinese reviewer-facing note and
-  English appendix text for the GeoRF Stage 1 partition-stability diagnostic.
-- `georf_m2_adjacency_refinement_summary.csv`: GeoRF m2 adjacency-refinement
-  reassignment counts and proportions for the pre/post figure.
-- `georf_m2_adjacency_refinement_note.md`: Chinese reviewer-facing note and
-  English appendix text for the GeoRF m2 adjacency-refinement example.
-- `georf_m2_cluster_profile_table.csv`: descriptive cluster-level profiles for
-  the representative GeoRF m2 refined local-model partition.
-- `georf_m2_cluster_profile_similarity_matrices.csv`: long-format
-  inter-cluster similarity matrices for market access, conflict exposure, and
-  error-mode composition.
-- `georf_m2_cluster_profile_cohesion.csv`: within-cluster cohesion values
-  paired with the similarity heatmaps.
-- `georf_m2_cluster_profile_note.md`: Chinese reviewer-facing note and English
-  appendix text for the cluster profile diagnostics.
-- `georf_probability_bootstrap_ci.csv`: GeoRF pooled vs partitioned paired
-  country-clustered bootstrap confidence intervals for precision, recall, F1,
-  and Brier score by forecasting horizon / lag.
-- `georf_probability_bootstrap_compact_table.csv`: compact appendix-ready
-  paired-bootstrap delta table with one row per forecasting horizon / lag.
-- `georf_probability_bootstrap_compact_table.md`: Markdown rendering of the
-  compact appendix-ready paired-bootstrap delta table.
-- `georf_probability_bootstrap_region_ci.csv`: region-specific version of the
-  paired country-clustered bootstrap confidence intervals.
-- `georf_probability_brier_reliability.csv`: Brier scores and probability
-  reliability-bin summaries for GeoRF pooled and partitioned models.
-- `georf_probability_uncertainty_summary.csv`: descriptive probability
-  uncertainty summaries by model and forecasting horizon / lag.
-- `georf_probability_uncertainty_note.md`: Chinese reviewer-facing note and
-  English appendix text for probability export, threshold framing, calibration
-  diagnostics, Brier score, and uncertainty intervals.
+- `07_probability_uncertainty/georf_probability_reliability.png`: GeoRF pooled
+  vs partitioned probability reliability curves by forecasting horizon / lag.
+- `07_probability_uncertainty/georf_probability_bootstrap_ci.csv`: GeoRF
+  pooled vs partitioned paired country-clustered bootstrap confidence intervals
+  for precision, recall, F1, and Brier score by forecasting horizon / lag.
+- `07_probability_uncertainty/georf_probability_bootstrap_compact_table.csv`:
+  compact appendix-ready paired-bootstrap delta table with one row per
+  forecasting horizon / lag.
+- `07_probability_uncertainty/georf_probability_bootstrap_compact_table.md`:
+  Markdown rendering of the compact appendix-ready paired-bootstrap delta
+  table.
+- `07_probability_uncertainty/georf_probability_bootstrap_region_ci.csv`:
+  region-specific version of the paired country-clustered bootstrap confidence
+  intervals.
+- `07_probability_uncertainty/georf_probability_brier_reliability.csv`: Brier
+  scores and probability reliability-bin summaries for GeoRF pooled and
+  partitioned models.
+- `07_probability_uncertainty/georf_probability_uncertainty_summary.csv`:
+  descriptive probability uncertainty summaries by model and forecasting
+  horizon / lag.
+- `07_probability_uncertainty/georf_probability_uncertainty_note.md`: Chinese
+  reviewer-facing note and English appendix text for probability export,
+  threshold framing, calibration diagnostics, Brier score, and uncertainty
+  intervals.
+
+## 08 GeoDT Diagnostics
+
+- `08_geodt_diagnostics/geodt_branch_1_vs_001_locations_2024-10_fs1_global.png`:
+  GeoDT 4-month-lag branch location diagnostic.
+- `08_geodt_diagnostics/geodt_branch_tree_compare_2024-10_fs1_001_vs_1.png`:
+  GeoDT 4-month-lag branch tree diagnostic.
+- `08_geodt_diagnostics/geodt_branch_tree_compare_2024-10_fs1_001_vs_1_2.png`:
+  alternate GeoDT branch tree diagnostic render.
 
 ## Reproduction Checks
 
