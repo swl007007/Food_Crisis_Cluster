@@ -20,7 +20,6 @@ if FS0_ONLY:
     FS_TO_LAG = {0: 1}
     RESULT_CANDIDATES = {
         ("GeoRF", 0): _candidates("GF", 0),
-        ("GeoXGB", 0): _candidates("XGB", 0),
         ("GeoDT", 0): _candidates("DT", 0),
     }
     FEWSNET_MAP = {}
@@ -32,9 +31,6 @@ else:
         ("GeoRF", 1): _candidates("GF", 1),
         ("GeoRF", 2): _candidates("GF", 2),
         ("GeoRF", 3): _candidates("GF", 3),
-        ("GeoXGB", 1): _candidates("XGB", 1),
-        ("GeoXGB", 2): _candidates("XGB", 2),
-        ("GeoXGB", 3): _candidates("XGB", 3),
         ("GeoDT", 1): _candidates("DT", 1),
         ("GeoDT", 2): _candidates("DT", 2),
         ("GeoDT", 3): _candidates("DT", 3),
@@ -130,9 +126,9 @@ if not FS0_ONLY and ("FEWSNET (baseline)", 3) not in data and ("FEWSNET (baselin
     print(f"  FEWSNET fs3: extended from fs2 (8-month predictions used as 12-month proxy)")
 
 if FS0_ONLY:
-    MODELS = ["GeoRF", "GeoXGB", "GeoDT"]
+    MODELS = ["GeoRF", "GeoDT"]
 else:
-    MODELS = ["GeoRF", "GeoXGB", "GeoDT", "FEWSNET (baseline)"]
+    MODELS = ["GeoRF", "GeoDT", "FEWSNET (baseline)"]
 
 hfont = Font(bold=True, size=11)
 hfill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")

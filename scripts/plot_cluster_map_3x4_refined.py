@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Create a 3x4 spatial cluster map figure from refined cluster mapping CSVs.
+Create a 2x4 spatial cluster map figure from refined cluster mapping CSVs.
 
 Rows:
   1) GeoDT
   2) GeoRF
-  3) GeoXGB
 
 Columns:
   1) general
@@ -13,7 +12,7 @@ Columns:
   3) m6
   4) m10
 
-Data source: march2026_main_backup_month_ind_cont3/result_partition_k40_compare_{DT,GF,XGB}_fs1/refined/
+Data source: Nigeria_experiment/result_partition_k40_compare_{DT,GF}_fs1/refined/
 """
 
 from __future__ import annotations
@@ -38,11 +37,10 @@ DEFAULT_SHAPEFILE = Path(
 
 BACKUP_DIR = REPO_ROOT / "Nigeria_experiment"
 
-MODEL_ORDER = ("GeoDT", "GeoRF", "GeoXGB")
+MODEL_ORDER = ("GeoDT", "GeoRF")
 MODEL_DIRS = {
     "GeoDT": BACKUP_DIR / "result_partition_k40_compare_DT_fs1" / "refined",
     "GeoRF": BACKUP_DIR / "result_partition_k40_compare_GF_fs1" / "refined",
-    "GeoXGB": BACKUP_DIR / "result_partition_k40_compare_XGB_fs1" / "refined",
 }
 COLUMN_ORDER = ("general", "m2", "m6", "m10")
 
@@ -57,7 +55,7 @@ TAG_PATTERN = re.compile(
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Plot a 3x4 panel of refined cluster maps for GeoDT/GeoRF/GeoXGB."
+        description="Plot a 2x4 panel of refined cluster maps for GeoDT/GeoRF."
     )
     parser.add_argument(
         "--shapefile",
@@ -178,7 +176,7 @@ def plot_grid(
     output_path: Path,
     dpi: int,
 ) -> None:
-    """Create and save the 3x4 panel figure."""
+    """Create and save the panel figure."""
     panel_data: Dict[Tuple[str, str], Tuple[gpd.GeoDataFrame, Path]] = {}
     all_partition_ids: set[int] = set()
 
@@ -266,7 +264,7 @@ def plot_grid(
     )
 
     fig.suptitle(
-        "Refined Cluster Mapping (k=40): GeoDT / GeoRF / GeoXGB\n"
+        "Refined Cluster Mapping (k=40): GeoDT / GeoRF\n"
         "Columns: general, m2, m6, m10  (contiguity-refined)",
         fontsize=14,
         fontweight="bold",
@@ -275,11 +273,11 @@ def plot_grid(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
-    print(f"\nSaved 3x4 figure: {output_path}")
+    print(f"\nSaved refined cluster map figure: {output_path}")
 
 
 def main() -> None:
-    """Run the 3x4 refined map plotting workflow."""
+    """Run the refined map plotting workflow."""
     args = parse_args()
     print("Discovering refined CSVs...")
     csv_map = discover_csvs()

@@ -7,7 +7,6 @@ REM ============================================================================
 REM
 REM Usage:
 REM   spatial_weighted_consensus_clustering.bat georf
-REM   spatial_weighted_consensus_clustering.bat geoxgb
 REM   spatial_weighted_consensus_clustering.bat geodt
 REM   spatial_weighted_consensus_clustering.bat georf --fs0-only
 REM
@@ -62,7 +61,6 @@ if "%~1"=="" (
     echo.
     echo Model types:
     echo   georf   - GeoRF Random Forest
-    echo   geoxgb  - GeoXGB XGBoost
     echo   geodt   - GeoDT Decision Tree
     echo.
     echo Options:
@@ -89,7 +87,7 @@ REM --------------------------------------------------------------------------
 call :load_model_config %MODEL_TYPE%
 if !errorlevel! neq 0 (
     echo ERROR: Invalid model type "%MODEL_TYPE%"
-    echo Valid options: georf, geoxgb, geodt
+    echo Valid options: georf, geodt
     pause
     exit /b 1
 )
@@ -116,13 +114,13 @@ echo Experiment Dir:   %EXPERIMENT_DIR%
 echo Results Subdir:   %RESULTS_SUBDIR%
 if "%FS0_ONLY%"=="1" (
     echo Mode:             FS0-ONLY ^(stand-alone lag-1 pipeline^)
-    set "STAGE1_HINT=run_batches_2021_2024_visual_monthly.bat %MODEL_TYPE% --fs0-only"
+    set "STAGE1_HINT=run_batches_2018_2020_partition_learning_visual_monthly.bat %MODEL_TYPE% --fs0-only"
     set "RESULTS_GLOB_HINT=*fs0_*.csv"
     set "ARCHIVE_GLOB_HINT=result_Geo{Model}_*_fs0_*_visual"
     set "STAGE3_HINT=run_partition_k40_comparison_unified.bat %MODEL_TYPE% --fs0-only"
 ) else (
     echo Mode:             standard fs1+fs2+fs3 pipeline
-    set "STAGE1_HINT=run_batches_2021_2024_visual_monthly.bat %MODEL_TYPE%"
+    set "STAGE1_HINT=run_batches_2018_2020_partition_learning_visual_monthly.bat %MODEL_TYPE%"
     set "RESULTS_GLOB_HINT=*fs*.csv"
     set "ARCHIVE_GLOB_HINT=result_Geo{Model}_*_visual"
     set "STAGE3_HINT=run_partition_k40_comparison_unified.bat %MODEL_TYPE% --visual --month-ind"
@@ -171,11 +169,9 @@ echo Copying results CSV files...
 
 if "%FS0_ONLY%"=="1" (
     if /i "%MODEL_TYPE%"=="georf" set "RESULTS_GLOB=results_df_gp_fs0_*.csv"
-    if /i "%MODEL_TYPE%"=="geoxgb" set "RESULTS_GLOB=results_df_xgb_gp_fs0_*.csv"
     if /i "%MODEL_TYPE%"=="geodt" set "RESULTS_GLOB=results_df_dt_gp_fs0_*.csv"
 ) else (
     if /i "%MODEL_TYPE%"=="georf" set "RESULTS_GLOB=results_df_gp_fs1_*.csv results_df_gp_fs2_*.csv results_df_gp_fs3_*.csv"
-    if /i "%MODEL_TYPE%"=="geoxgb" set "RESULTS_GLOB=results_df_xgb_gp_fs1_*.csv results_df_xgb_gp_fs2_*.csv results_df_xgb_gp_fs3_*.csv"
     if /i "%MODEL_TYPE%"=="geodt" set "RESULTS_GLOB=results_df_dt_gp_fs1_*.csv results_df_dt_gp_fs2_*.csv results_df_dt_gp_fs3_*.csv"
 )
 
@@ -189,11 +185,9 @@ echo Copying archived visual directories...
 
 if "%FS0_ONLY%"=="1" (
     if /i "%MODEL_TYPE%"=="georf" set "ARCHIVE_GLOB=result_GeoRF_*_fs0_*_visual"
-    if /i "%MODEL_TYPE%"=="geoxgb" set "ARCHIVE_GLOB=result_GeoXGB_*_fs0_*_visual"
     if /i "%MODEL_TYPE%"=="geodt" set "ARCHIVE_GLOB=result_GeoDT_*_fs0_*_visual"
 ) else (
     if /i "%MODEL_TYPE%"=="georf" set "ARCHIVE_GLOB=result_GeoRF_*_fs1_*_visual result_GeoRF_*_fs2_*_visual result_GeoRF_*_fs3_*_visual"
-    if /i "%MODEL_TYPE%"=="geoxgb" set "ARCHIVE_GLOB=result_GeoXGB_*_fs1_*_visual result_GeoXGB_*_fs2_*_visual result_GeoXGB_*_fs3_*_visual"
     if /i "%MODEL_TYPE%"=="geodt" set "ARCHIVE_GLOB=result_GeoDT_*_fs1_*_visual result_GeoDT_*_fs2_*_visual result_GeoDT_*_fs3_*_visual"
 )
 
@@ -215,8 +209,8 @@ for %%F in (%RESULTS_GLOB%) do (
 )
 
 set "HAS_ARCHIVES="
-for %%D in (%ARCHIVE_GLOB%) do (
-    if exist "%TARGET_RESULTS_DIR%\%%D" set "HAS_ARCHIVES=1"
+for /d %%D in (%ARCHIVE_GLOB%) do (
+    if exist "%TARGET_RESULTS_DIR%\%%~nxD" set "HAS_ARCHIVES=1"
 )
 
 if not defined HAS_RESULTS (
@@ -466,19 +460,12 @@ REM ============================================================================
 
 :load_model_config
 REM Sets all model-specific variables based on model type argument
-REM Args: %1 = model type (georf, geoxgb, geodt)
+REM Args: %1 = model type (georf, geodt)
 
 if /i "%~1"=="georf" (
     set "MODEL_DISPLAY=GeoRF"
     set "EXPERIMENT_DIR=GeoRFExperiment"
     set "RESULTS_SUBDIR=GeoRFResults"
-    exit /b 0
-)
-
-if /i "%~1"=="geoxgb" (
-    set "MODEL_DISPLAY=GeoXGB"
-    set "EXPERIMENT_DIR=GeoXGBExperiment"
-    set "RESULTS_SUBDIR=GeoXgboostResults"
     exit /b 0
 )
 

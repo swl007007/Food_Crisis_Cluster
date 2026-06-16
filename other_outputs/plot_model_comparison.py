@@ -15,9 +15,6 @@ RESULT_DIRS = {
     ("GeoRF", 1): BASE / "result_partition_k40_compare_GF_fs1",
     ("GeoRF", 2): BASE / "result_partition_k40_compare_GF_fs2",
     ("GeoRF", 3): BASE / "result_partition_k40_compare_GF_fs3",
-    ("GeoXGB", 1): BASE / "result_partition_k40_compare_XGB_fs1",
-    ("GeoXGB", 2): BASE / "result_partition_k40_compare_XGB_fs2",
-    ("GeoXGB", 3): BASE / "result_partition_k40_compare_XGB_fs3",
     ("GeoDT", 1): BASE / "result_partition_k40_compare_DT_fs1",
     ("GeoDT", 2): BASE / "result_partition_k40_compare_DT_fs2",
     ("GeoDT", 3): BASE / "result_partition_k40_compare_DT_fs3",
@@ -73,14 +70,14 @@ for fs, path in FEWSNET_FILES.items():
 if fewsnet_data and 3 not in fewsnet_data and 2 in fewsnet_data:
     fewsnet_data[3] = fewsnet_data[2].copy()
 
-MODELS = ["GeoRF", "GeoXGB", "GeoDT"]
+MODELS = ["GeoRF", "GeoDT"]
 METRICS = [("precision", "Precision (Class 1)"),
            ("recall", "Recall (Class 1)"),
            ("f1", "F1 Score (Class 1)")]
 SCOPES = [1, 2, 3]
 
-COLORS = {"GeoRF": "#1f77b4", "GeoXGB": "#2ca02c", "GeoDT": "#9467bd", "FEWSNET": "#ff7f0e"}
-MARKERS = {"GeoRF": "s", "GeoXGB": "^", "GeoDT": "D", "FEWSNET": "o"}
+COLORS = {"GeoRF": "#1f77b4", "GeoDT": "#9467bd", "FEWSNET": "#ff7f0e"}
+MARKERS = {"GeoRF": "s", "GeoDT": "D", "FEWSNET": "o"}
 
 fig, axes = plt.subplots(len(SCOPES), len(METRICS), figsize=(20, 4.5 * len(SCOPES)),
                          constrained_layout=True)

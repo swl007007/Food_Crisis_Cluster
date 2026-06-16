@@ -6,7 +6,7 @@ dependencies:
   - python=3.12
 
   # Core Data Processing
-  - numpy>=1.24.0
+  - numpy>=1.24.0,<2.3
   - pandas>=2.0.0
   - polars>=0.19.0
 

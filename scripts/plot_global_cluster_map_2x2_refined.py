@@ -63,7 +63,7 @@ REGION_ABBREVIATIONS = {
 }
 REGION_SUBPALETTES = {
     "West Africa": ["#2b8cbe", "#4eb3d3", "#7bccc4", "#a8ddb5", "#43a2ca", "#74a9cf", "#3690c0"],
-    "East Africa": ["#31a354", "#74c476", "#a1d99b", "#41ab5d", "#78c679", "#addd8e", "#2ca25f", "#66c2a4", "#99d8c9"],
+    "East Africa": ["#31a354", "#74c476", "#a1d99b", "#41ab5d", "#78c679", "#addd8e", "#2ca25f", "#66c2a4", "#99d8c9", "#006d2c"],
     "Central Africa": ["#fdae6b", "#fd8d3c", "#f16913", "#fdd0a2", "#e6550d", "#fdae61"],
     "Southern Africa": ["#807dba", "#9e9ac8", "#bcbddc", "#756bb1", "#8c6bb1", "#b2abd2"],
     "Middle East & Afghanistan": ["#d8b365", "#c7a76c", "#bf812d", "#dfc27d", "#a6611a"],
@@ -169,10 +169,10 @@ def choose_mapping(refined_dir: Path, tag: str) -> Path:
         match = TAG_PATTERN.search(csv_path.name)
         if not match or match.group("tag") != tag:
             continue
-        candidates.append((int(match.group("nc")), len(csv_path.name), csv_path))
+        candidates.append((csv_path.stat().st_mtime, int(match.group("nc")), csv_path.name, csv_path))
     if not candidates:
         raise FileNotFoundError(f"No {tag} cluster mapping CSV found in {refined_dir}")
-    return max(candidates)[2]
+    return max(candidates)[3]
 
 
 def discover_model_csvs(source_dir: Path, model: str) -> Dict[str, Path]:

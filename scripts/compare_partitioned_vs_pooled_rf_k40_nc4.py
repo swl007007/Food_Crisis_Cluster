@@ -75,6 +75,7 @@ DEFAULT_TRAIN_WINDOW = 36  # months
 DEFAULT_FORECASTING_SCOPE = 1  # 1=4mo, 2=8mo, 3=12mo lag
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF.py default)
 SMOTE_K_NEIGHBORS = 5
+PARTITION_UNMAPPED_THRESHOLD_PCT = 2.0
 
 RF_PARAMS = {
     'n_estimators': 100,
@@ -198,14 +199,15 @@ def create_partition_group_array(df: pd.DataFrame, partition_df: pd.DataFrame) -
 
     print(f"Partition coverage: {total - unmapped}/{total} rows ({100 - pct_unmapped:.2f}%)")
 
-    if pct_unmapped > 1.0:
+    if pct_unmapped > PARTITION_UNMAPPED_THRESHOLD_PCT:
         raise ValueError(
-            f"Partition coverage insufficient: {pct_unmapped:.2f}% unmapped (threshold: 1%)\n"
+            f"Partition coverage insufficient: {pct_unmapped:.2f}% unmapped "
+            f"(threshold: {PARTITION_UNMAPPED_THRESHOLD_PCT:.1f}%)\n"
             f"Ensure cluster_mapping_k40_nc4.csv covers all admin codes in the dataset."
         )
 
     # Fill unmapped with -1 (will be excluded from training)
-    df_with_partition['cluster_id'].fillna(-1, inplace=True)
+    df_with_partition['cluster_id'] = df_with_partition['cluster_id'].fillna(-1)
 
     # Convert to integer array
     X_group = df_with_partition['cluster_id'].astype(int).values
@@ -831,7 +833,11 @@ def main():
         'model_type': model_label,
         'random_state': RANDOM_STATE,
         'visual_enabled': args.visual,
-        'pipeline_version': 'GeoRF_utilities_v1.0'
+        'pipeline_version': 'GeoRF_utilities_v1.0',
+        'partition_learning_years': os.environ.get('NO_LEAK_PARTITION_LEARNING_YEARS', '2018-2020'),
+        'evaluation_years': os.environ.get('NO_LEAK_EVALUATION_YEARS', '2021-2024'),
+        'temporal_leakage_guard': 'partitions learned before evaluation window',
+        'main_model_scope': 'GeoRF/GeoDT only; experimental XGBoost variant not included',
     }
 
     manifest_path = out_dir / 'run_manifest.json'

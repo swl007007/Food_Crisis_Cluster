@@ -1,12 +1,11 @@
-# GeoRF/GeoXGB/GeoDT Food Crisis Prediction with Spatial Consensus Clustering
+# GeoRF/GeoDT Food Crisis Prediction with No-Leak Spatial Consensus Clustering
 
-Spatial transformation framework for food security crisis prediction using geo-aware machine learning (GeoRF/GeoXGB/GeoDT) with consensus-based spatial partitioning.
+Spatial transformation framework for food security crisis prediction using GeoRF and GeoDT with consensus-based spatial partitioning. The main results workflow learns partitions on 2018-2020 and evaluates fixed partitions on 2021-2024 to avoid temporal leakage. The XGBoost variant remains experimental and is not part of the main workflow.
 
 ## Overview
 
 This project applies the GeoRF framework to **FEWSNET food crisis prediction** in Sub-Saharan Africa, using:
 - **GeoRF**: Spatially-partitioned Random Forest
-- **GeoXGB**: Spatially-partitioned XGBoost
 - **GeoDT**: Spatially-partitioned Decision Tree
 - **Consensus Clustering**: Aggregate monthly partitions into stable spatial clusters
 - **Month-Specific Partitions**: Season-aware clustering for improved temporal adaptation
@@ -15,20 +14,18 @@ This project applies the GeoRF framework to **FEWSNET food crisis prediction** i
 
 ### Complete Workflow (3 Stages)
 
-See **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)** for detailed documentation. All stages use unified batch scripts that accept a model type argument (`georf`, `geoxgb`, or `geodt`).
+See **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)** for detailed documentation. The active main workflow accepts `georf` or `geodt`.
 
-**Stage 1**: Generate monthly partition results (~6-8 hours)
+**Stage 1**: Learn monthly partition candidates on 2018-2020 (~4-6 hours)
 ```batch
-run_batches_2021_2024_visual_monthly.bat georf
-run_batches_2021_2024_visual_monthly.bat geoxgb
-run_batches_2021_2024_visual_monthly.bat geodt
+run_batches_2018_2020_partition_learning_visual_monthly.bat georf
+run_batches_2018_2020_partition_learning_visual_monthly.bat geodt
 ```
 Output: yearly combined `results_df_*_fsN_YYYY_YYYY.csv` / `y_pred_test_*_fsN_YYYY_YYYY.csv` plus archived `result_Geo{Model}_YYYY_fsN_YYYY-MM_visual/` folders used by Stage 2.
 
 **Stage 2**: Generate spatial partitions (automated, ~30-60 min)
 ```batch
 spatial_weighted_consensus_clustering.bat georf
-spatial_weighted_consensus_clustering.bat geoxgb
 spatial_weighted_consensus_clustering.bat geodt
 ```
 Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv` + `cluster_mapping_manifest.json`.
@@ -38,10 +35,10 @@ Naming note: `k40` is the KNN graph-neighbor parameter, not 40 clusters. The sel
 **Stage 3**: Evaluate partitioned models (~4-6 hours)
 ```batch
 run_partition_k40_comparison_unified.bat georf --visual --month-ind
-run_partition_k40_comparison_unified.bat geoxgb --visual --month-ind
 run_partition_k40_comparison_unified.bat geodt --visual --month-ind
+run_partition_k40_comparison_unified.bat all --visual --month-ind
 ```
-Output: `result_partition_k40_compare_{GF,XGB,DT}_fsN/` plus aggregated tables in `other_outputs/Table_Format.xlsx` and `other_outputs/Model_Comparison_Table.xlsx`
+Output: `result_partition_k40_compare_{GF,DT}_fsN/` plus aggregated tables in `other_outputs/Table_Format.xlsx` and `other_outputs/Model_Comparison_Table.xlsx`
 
 ### Stand-Alone fs0 (Lag-1) Pipeline
 
@@ -49,16 +46,16 @@ fs0 is a separate forecasting scope with **lag = 1 month**. It is orthogonal to 
 
 Run all three stages with the same `--fs0-only` flag:
 ```batch
-run_batches_2021_2024_visual_monthly.bat <model> --fs0-only
+run_batches_2018_2020_partition_learning_visual_monthly.bat <model> --fs0-only
 spatial_weighted_consensus_clustering.bat <model> --fs0-only
 run_partition_k40_comparison_unified.bat <model> --fs0-only
 ```
-`<model>` is `georf`, `geoxgb`, or `geodt`. Keep the mode consistent across all three stages.
+`<model>` is `georf` or `geodt` for the main workflow. Keep the mode consistent across all three stages.
 
 What changes in fs0-only mode:
-- **Stage 1**: Runs 48 batches (4 years × 1 scope × 12 months) instead of 144. Produces `results_df_*_fs0_*.csv` and `result_Geo{Model}_*_fs0_*_visual/` archives only.
+- **Stage 1**: Runs 36 batches (3 years x 1 scope x 12 months) instead of 108. Produces `results_df_*_fs0_*.csv` and `result_Geo{Model}_*_fs0_*_visual/` archives only.
 - **Stage 2**: Copies only fs0 artifacts; generates the **general** consensus partition only. Month-specific partitions (m2/m6/m10) are skipped because fs0 alone does not yield enough candidate partitions.
-- **Stage 3**: Forces `SCOPES=0` and disables `--month-ind`; writes results to `result_partition_k40_compare_{GF,XGB,DT}_fs0/` and aggregates to `other_outputs/Table_Format_fs0.xlsx` (separate from the fs1/2/3 `Table_Format.xlsx`).
+- **Stage 3**: Forces `SCOPES=0` and disables `--month-ind`; writes results to `result_partition_k40_compare_{GF,DT}_fs0/` and aggregates to `other_outputs/Table_Format_fs0.xlsx` (separate from the fs1/2/3 `Table_Format.xlsx`).
 
 ### Standalone 2026-2027 Prediction Pipeline
 
@@ -92,11 +89,10 @@ single-country shapefiles only for explicit single-country analysis.
 - **Spatial weighting** using haversine distance kernel
 - **Spectral clustering** with eigengap-based cluster count selection
 
-### Model Types
+### Main Model Types
 - **GeoRF**: Random Forest with spatial partitioning
-- **GeoXGB**: XGBoost with spatial partitioning
 - **GeoDT**: Decision Tree with spatial partitioning
-- All three share identical partitioning logic for fair comparison
+- Both share identical partitioning logic for fair comparison
 
 ### Partition Types
 - **General Partition**: Year-round clustering (all months aggregated)
@@ -142,7 +138,7 @@ Food_Crisis_Cluster/
 ├── GeoRFExperiment/              # GeoRF clustering workspace
 ├── GeoXGBExperiment/             # GeoXGB clustering workspace
 ├── GeoDTExperiment/              # GeoDT clustering workspace
-├── run_batches_2021_2024_visual_monthly.bat        # Stage 1: model training
+├── run_batches_2018_2020_partition_learning_visual_monthly.bat # Stage 1
 ├── spatial_weighted_consensus_clustering.bat        # Stage 2: clustering
 └── run_partition_k40_comparison_unified.bat         # Stage 3: comparison
 ```
@@ -179,7 +175,7 @@ SIGMA = 5.0                        # Spatial kernel bandwidth
 ```
 results_df_*_fsN_YYYY_YYYY.csv
 y_pred_test_*_fsN_YYYY_YYYY.csv
-result_Geo{RF,XGB,DT}_YYYY_fsN_YYYY-MM_visual/
+result_Geo{RF,DT}_YYYY_fsN_YYYY-MM_visual/
 ├── correspondence_table_YYYY-MM.csv
 ├── vis/
 └── space_partitions/

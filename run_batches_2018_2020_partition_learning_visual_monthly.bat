@@ -3,17 +3,20 @@ setlocal enabledelayedexpansion
 set PYTHONPATH=%~dp0
 set PYTHONUTF8=1
 set PYTHONIOENCODING=utf-8
+if not defined BASELINE_SHAP_MAX_SAMPLES set BASELINE_SHAP_MAX_SAMPLES=512
 
 REM ============================================================================
-REM Stage 1 of 3: Unified Monthly-by-Month Model Training Batch Script (2021-2024)
+REM Stage 1 of 3: No-Leak Partition Candidate Learning Batch Script (2018-2020)
 REM ============================================================================
 REM
 REM Usage:
-REM   run_batches_2021_2024_visual_monthly.bat georf
-REM   run_batches_2021_2024_visual_monthly.bat geoxgb
-REM   run_batches_2021_2024_visual_monthly.bat geodt
-REM   run_batches_2021_2024_visual_monthly.bat geodt --no-dt-rules
-REM   run_batches_2021_2024_visual_monthly.bat georf --fs0-only
+REM   run_batches_2018_2020_partition_learning_visual_monthly.bat georf
+REM   run_batches_2018_2020_partition_learning_visual_monthly.bat geodt
+REM   run_batches_2018_2020_partition_learning_visual_monthly.bat geodt --no-dt-rules
+REM   run_batches_2018_2020_partition_learning_visual_monthly.bat georf --fs0-only
+REM
+REM This stage learns partition candidates on 2018-2020 only. Stage 3 applies
+REM the learned partitions to the held-out 2021-2024 evaluation window.
 REM
 REM Processes EACH MONTH INDIVIDUALLY to prevent memory issues.
 REM Visual debug mode requires processing one month at a time.
@@ -31,12 +34,12 @@ REM path. When --fs0-only is set, the standard run pattern is unchanged; only
 REM the scope loop and batch-count are narrowed.
 REM
 REM Default mode (no --fs0-only):
-REM   SCOPE_LIST = "1 2 3", total_batches = 144 (4 years x 3 scopes x 12 months)
+REM   SCOPE_LIST = "1 2 3", total_batches = 108 (3 years x 3 scopes x 12 months)
 REM   Combined artifacts: results_df_*_fs{1,2,3}_YYYY_YYYY.csv
 REM   Stage 2 handoff:     result_Geo{Model}_YYYY_fsN_YYYY-MM_visual archives
 REM
 REM --fs0-only mode:
-REM   SCOPE_LIST = "0",     total_batches =  48 (4 years x 1 scope  x 12 months)
+REM   SCOPE_LIST = "0",     total_batches =  36 (3 years x 1 scope  x 12 months)
 REM   Combined artifacts: results_df_*_fs0_YYYY_YYYY.csv
 REM   Archive folders:    result_Geo{Model}_YYYY_fs0_YYYY-MM_visual
 REM ============================================================================
@@ -51,7 +54,6 @@ if "%~1"=="" (
     echo.
     echo Model types:
     echo   georf   - GeoRF Random Forest
-    echo   geoxgb  - GeoXGB XGBoost
     echo   geodt   - GeoDT Decision Tree
     echo.
     echo Options:
@@ -79,13 +81,13 @@ REM Configure scope list and batch total based on fs0-only mode
 if "%FS0_ONLY%"=="1" (
     set "SCOPE_LIST=0"
     set "SCOPE_SUMMARY=1 (fs0 only, lag=1 month, stand-alone)"
-    set "total_batches=48"
+    set "total_batches=36"
     set "STAGE2_HINT=spatial_weighted_consensus_clustering.bat %MODEL_TYPE% --fs0-only"
     set "RESULT_FILE_PATTERN=*fs0_YYYY_YYYY.csv"
 ) else (
     set "SCOPE_LIST=1 2 3"
     set "SCOPE_SUMMARY=3 (4-month, 8-month, 12-month lags)"
-    set "total_batches=144"
+    set "total_batches=108"
     set "STAGE2_HINT=spatial_weighted_consensus_clustering.bat %MODEL_TYPE%"
     set "RESULT_FILE_PATTERN=*fs{1,2,3}_YYYY_YYYY.csv"
 )
@@ -96,7 +98,7 @@ REM --------------------------------------------------------------------------
 call :load_model_config %MODEL_TYPE%
 if !errorlevel! neq 0 (
     echo ERROR: Invalid model type "%MODEL_TYPE%"
-    echo Valid options: georf, geoxgb, geodt
+    echo Valid options: georf, geodt
     pause
     exit /b 1
 )
@@ -112,7 +114,7 @@ REM Display configuration
 REM --------------------------------------------------------------------------
 echo.
 echo ============================================================================
-echo STAGE 1 OF 3: %MODEL_DISPLAY% Monthly-by-Month Batch Processing (2021-2024, Visual Debug)
+echo STAGE 1 OF 3: %MODEL_DISPLAY% Partition Candidate Learning (2018-2020, Visual Debug)
 echo ============================================================================
 echo.
 echo This script will run %MODEL_DISPLAY% processing ONE MONTH AT A TIME
@@ -160,7 +162,7 @@ echo Configuration summary:
 echo   - Stage: 1 of 3 ^(model training and month-level archive creation^)
 echo   - Model: %MODEL_DISPLAY%
 echo   - Entrypoint: %ENTRYPOINT%
-echo   - Years: 2021-2024 (4 years)
+echo   - Years: 2018-2020 (3 years)
 echo   - Run mode: %SCOPE_SUMMARY%
 echo   - Forecasting scopes: %SCOPE_SUMMARY%
 echo   - Scope list: %SCOPE_LIST%
@@ -178,8 +180,8 @@ REM ============================================================================
 REM MAIN PROCESSING LOOP
 REM ============================================================================
 
-REM Process each year from 2021 to 2024
-for /L %%y in (2021,1,2024) do (
+REM Process each year from 2018 to 2020
+for /L %%y in (2018,1,2020) do (
     set "current_year=%%y"
     echo ==========================================
     echo Processing year: !current_year!
@@ -221,7 +223,7 @@ for /L %%y in (2021,1,2024) do (
 echo.
 echo ===== All %MODEL_DISPLAY% batches completed successfully! =====
 echo Total monthly batches processed: !batch_count!
-echo Years processed: 2021-2024 (4 years, each with 12 months)
+echo Years processed: 2018-2020 (3 years, each with 12 months)
 if "%FS0_ONLY%"=="1" (
     echo Forecasting scopes: 0 ^(fs0, lag=1 month, stand-alone^)
     echo Processing mode: One month at a time ^(!total_batches! total^)
@@ -244,7 +246,7 @@ REM ============================================================================
 
 :load_model_config
 REM Sets all model-specific variables based on model type argument
-REM Args: %1 = model type (georf, geoxgb, geodt)
+REM Args: %1 = model type (georf, geodt)
 
 if /i "%~1"=="georf" (
     set "MODEL_DISPLAY=GeoRF"
@@ -252,16 +254,6 @@ if /i "%~1"=="georf" (
     set "RESULT_PREFIX=result_GeoRF"
     set "RESULTS_CSV_PREFIX=results_df_gp_"
     set "PRED_CSV_PREFIX=y_pred_test_gp_"
-    set "IS_DT=0"
-    exit /b 0
-)
-
-if /i "%~1"=="geoxgb" (
-    set "MODEL_DISPLAY=GeoXGB"
-    set "ENTRYPOINT=app/main_model_XGB.py"
-    set "RESULT_PREFIX=result_GeoXGB"
-    set "RESULTS_CSV_PREFIX=results_df_xgb_gp_"
-    set "PRED_CSV_PREFIX=y_pred_test_xgb_gp_"
     set "IS_DT=0"
     exit /b 0
 )

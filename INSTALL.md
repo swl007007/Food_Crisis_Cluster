@@ -106,7 +106,8 @@ conda install -c conda-forge shapely
 ```
 
 **4. Memory issues during model training:**
-- Use the unified batch processing script (`run_batches_2021_2024_visual_monthly.bat <model>`)
+- Use the unified no-leak Stage 1 script (`run_batches_2018_2020_partition_learning_visual_monthly.bat <model>`)
+- For main results, `<model>` is `georf` or `geodt`.
 - This script handles month-level isolation and cleanup between iterations
 
 ### Platform-Specific Notes

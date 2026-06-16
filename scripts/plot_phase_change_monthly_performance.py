@@ -193,18 +193,6 @@ def discover_included_sources(ablation_root: Path, models: list[str], scopes: li
     return sources
 
 
-def discover_excluded_sources(ablation_root: Path) -> list[str]:
-    patterns = (
-        "result_partition_k40_compare_XGB_fs*/predictions_monthly.csv",
-        "result_partition_k40_compare_GeoXGB_fs*/predictions_monthly.csv",
-        "*XGBoost*/predictions_monthly.csv",
-    )
-    paths = set()
-    for pattern in patterns:
-        paths.update(ablation_root.glob(pattern))
-    return [relative_path(path) for path in sorted(paths)]
-
-
 def require_columns(df: pd.DataFrame, source: Path) -> None:
     missing = sorted(set(REQUIRED_COLUMNS) - set(df.columns))
     if missing:
@@ -600,7 +588,6 @@ def build_manifest(
     models: list[str],
     scopes: list[str],
     source_manifest: list[dict[str, Any]],
-    excluded_sources: list[str],
     row_counts: dict[str, Any],
     duplicate_flags: dict[str, Any],
     no_retained_months: list[dict[str, Any]],
@@ -628,7 +615,6 @@ def build_manifest(
         "model_selection": models,
         "scope_selection": scopes,
         "included_source_files": source_manifest,
-        "excluded_source_files": excluded_sources,
         "column_contract": {
             "required": list(REQUIRED_COLUMNS),
             "optional_audit": list(OPTIONAL_AUDIT_COLUMNS),
@@ -662,7 +648,7 @@ def print_console_summary(manifest: dict[str, Any], summary_df: pd.DataFrame) ->
     print(f"Mode: {manifest['mode']}")
     print(f"Filter mode: {manifest['filter_mode']}")
     print(f"Included source files: {len(manifest['included_source_files'])}")
-    print(f"Excluded XGB source files: {len(manifest['excluded_source_files'])}")
+    print(f"Model selection: {', '.join(manifest['model_selection'])}")
     print(f"Output directory: {manifest['output_dir']}")
     for key in sorted(manifest["row_counts"]):
         counts = manifest["row_counts"][key]
@@ -763,7 +749,6 @@ def run_analysis(args: argparse.Namespace) -> tuple[dict[str, Any], pd.DataFrame
     mode = "dry-run" if args.dry_run else "smoke" if args.smoke else "full"
 
     sources = discover_included_sources(ablation_root, models, scopes)
-    excluded_sources = discover_excluded_sources(ablation_root)
     source_df, source_manifest = load_sources(sources)
     duplicate_flags = detect_duplicates(source_df)
     prepared_df = add_filter_fields(source_df)
@@ -787,7 +772,6 @@ def run_analysis(args: argparse.Namespace) -> tuple[dict[str, Any], pd.DataFrame
         models,
         scopes,
         source_manifest,
-        excluded_sources,
         row_counts,
         duplicate_flags,
         no_retained_months,

@@ -52,6 +52,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fewsnet-root", type=Path, default=DEFAULT_FEWSNET_ROOT)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--model", choices=("geodt", "georf", "all"), default="all")
+    parser.add_argument(
+        "--no-extend-fewsnet",
+        dest="extend_fewsnet",
+        action="store_false",
+        default=True,
+        help="Do not reuse FEWSNET fs2 baseline values for fs3.",
+    )
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
@@ -177,6 +184,7 @@ def build_plot_payload(
     model_df: pd.DataFrame,
     baselines: dict[str, pd.DataFrame],
     models: list[str],
+    extend_fewsnet: bool = True,
 ) -> tuple[dict, list[dict]]:
     payload = {}
     missing_points = []
@@ -187,8 +195,8 @@ def build_plot_payload(
             scoped = model_df[(model_df["model_key"] == model_key) & (model_df["scope"] == scope)]
             months = sorted(scoped["test_month"].dropna().unique(), key=lambda m: pd.Period(m, freq="M"))
             payload[model_key][scope] = {"months": months, "metrics": {}}
-            baseline_scope = "fs2" if scope == "fs3" else scope
-            baseline = baselines[baseline_scope]
+            baseline_scope = "fs2" if scope == "fs3" and extend_fewsnet else scope
+            baseline = baselines.get(baseline_scope)
             for metric, _ in METRICS:
                 payload[model_key][scope]["metrics"][metric] = {}
                 for series in MODEL_SERIES:
@@ -209,10 +217,19 @@ def build_plot_payload(
                                 "missing row or metric value",
                             )
                     payload[model_key][scope]["metrics"][metric][series] = values
-                fewsnet_label = FEWSNET_REUSED_LABEL if scope == "fs3" else "FEWSNET baseline"
+                fewsnet_label = (
+                    FEWSNET_REUSED_LABEL
+                    if scope == "fs3" and extend_fewsnet
+                    else "FEWSNET baseline"
+                )
                 values = []
                 for month in months:
-                    value = baseline_value_for_month(baseline, month, metric)
+                    if scope == "fs3" and not extend_fewsnet:
+                        value = np.nan
+                    elif baseline is not None:
+                        value = baseline_value_for_month(baseline, month, metric)
+                    else:
+                        value = np.nan
                     values.append(value)
                     if np.isnan(value):
                         add_missing(
@@ -223,18 +240,20 @@ def build_plot_payload(
                             fewsnet_label,
                             metric,
                             month,
-                            "missing aligned baseline",
+                            "FEWSNET fs3 extension disabled"
+                            if scope == "fs3" and not extend_fewsnet
+                            else "missing aligned baseline",
                         )
                 payload[model_key][scope]["metrics"][metric]["fewsnet"] = values
     return payload, missing_points
 
 
-def existing_excluded_paths(ablation_root: Path) -> list[str]:
-    paths = sorted(ablation_root.glob("result_partition_k40_compare_XGB_fs*/metrics_monthly.csv"))
-    return [str(path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path) for path in paths]
-
-
-def render_model_figure(model_key: str, payload: dict, output_path: Path | None = None) -> None:
+def render_model_figure(
+    model_key: str,
+    payload: dict,
+    output_path: Path | None = None,
+    extend_fewsnet: bool = True,
+) -> None:
     config = MODEL_CONFIG[model_key]
     fig, axes = plt.subplots(len(SCOPES), len(METRICS), figsize=(17, 10), sharey=True)
     for row, scope in enumerate(SCOPES):
@@ -262,15 +281,16 @@ def render_model_figure(model_key: str, payload: dict, output_path: Path | None 
                 alpha=0.75,
                 label="pooled",
             )
-            ax.plot(
-                x,
-                metric_payload["fewsnet"],
-                color=FEWSNET_COLOR,
-                linestyle="-.",
-                marker="^",
-                linewidth=2,
-                label=FEWSNET_REUSED_LABEL if scope == "fs3" else "FEWSNET baseline",
-            )
+            if scope != "fs3" or extend_fewsnet:
+                ax.plot(
+                    x,
+                    metric_payload["fewsnet"],
+                    color=FEWSNET_COLOR,
+                    linestyle="-.",
+                    marker="^",
+                    linewidth=2,
+                    label=FEWSNET_REUSED_LABEL if scope == "fs3" else "FEWSNET baseline",
+                )
             ax.set_ylim(0, 1)
             ax.grid(True, alpha=0.25)
             if row == 0:
@@ -281,7 +301,7 @@ def render_model_figure(model_key: str, payload: dict, output_path: Path | None 
                 ax.set_xlabel("Test month")
             ax.set_xticks(x)
             ax.set_xticklabels(months, rotation=45, ha="right")
-            if scope == "fs3":
+            if scope == "fs3" and extend_fewsnet:
                 ax.text(
                     0.01,
                     0.04,
@@ -295,8 +315,11 @@ def render_model_figure(model_key: str, payload: dict, output_path: Path | None 
         Line2D([0], [0], color=config["color"], linestyle="-", marker="o", linewidth=2, label="partitioned"),
         Line2D([0], [0], color=config["color"], linestyle="--", marker="s", linewidth=2, alpha=0.75, label="pooled"),
         Line2D([0], [0], color=FEWSNET_COLOR, linestyle="-.", marker="^", linewidth=2, label="FEWSNET baseline"),
-        Line2D([0], [0], color=FEWSNET_COLOR, linestyle="-.", marker="^", linewidth=2, label=FEWSNET_REUSED_LABEL),
     ]
+    if extend_fewsnet:
+        legend_handles.append(
+            Line2D([0], [0], color=FEWSNET_COLOR, linestyle="-.", marker="^", linewidth=2, label=FEWSNET_REUSED_LABEL)
+        )
     fig.suptitle(f"{config['label']} monthly crisis-class performance", fontsize=16)
     fig.legend(handles=legend_handles, loc="lower center", ncol=4, frameon=False)
     fig.tight_layout(rect=(0, 0.06, 1, 0.95))
@@ -305,8 +328,13 @@ def render_model_figure(model_key: str, payload: dict, output_path: Path | None 
     plt.close(fig)
 
 
-def validation_summary(payload: dict, models: list[str], mode: str) -> dict:
-    summary = {"mode": mode, "models": {}, "geo_xgb_excluded": True, "fewsnet_fs3_label": FEWSNET_REUSED_LABEL}
+def validation_summary(payload: dict, models: list[str], mode: str, extend_fewsnet: bool = True) -> dict:
+    summary = {
+        "mode": mode,
+        "models": {},
+        "fewsnet_fs3_extended": extend_fewsnet,
+        "fewsnet_fs3_label": FEWSNET_REUSED_LABEL if extend_fewsnet else None,
+    }
     for model_key in models:
         summary["models"][model_key] = {}
         for scope in SCOPES:
@@ -331,6 +359,7 @@ def make_manifest(
     missing_points: list[dict],
     payload: dict,
     mode: str,
+    extend_fewsnet: bool = True,
 ) -> dict:
     generated_artifacts = []
     if mode == "full":
@@ -340,14 +369,17 @@ def make_manifest(
         "workflow_mode": "baseline comparison",
         "status": "exploratory diagnostics",
         "entry_point": "scripts/plot_monthly_performance_metrics.py",
+        "model_selection": models,
         "source_roots": {"ablation_root": str(ablation_root), "fewsnet_root": str(fewsnet_root)},
         "source_paths": {"model_metrics": model_sources, "fewsnet_baselines": fewsnet_sources},
-        "excluded_paths": existing_excluded_paths(ablation_root),
         "column_contract": {
             "model_metrics": sorted(MODEL_COLUMNS),
             "fewsnet_baselines": sorted(FEWSNET_COLUMNS),
         },
-        "scope_contract": {"rows": list(SCOPES), "fs3_fewsnet_source": "fs2"},
+        "scope_contract": {
+            "rows": list(SCOPES),
+            "fs3_fewsnet_source": "fs2" if extend_fewsnet else None,
+        },
         "series_contract": {
             "partitioned": "solid model-color line from model == partitioned",
             "pooled": "dashed same-family model-color line from model == pooled",
@@ -359,10 +391,14 @@ def make_manifest(
             "4": "YYYY-10",
             "ignored_quarters": ["3"],
         },
-        "fewsnet_fs3_assumption": "FEWSNET has no native fs3 baseline; fs2 values are reused for fs3 as a labeled comparison proxy.",
+        "fewsnet_fs3_assumption": (
+            "FEWSNET has no native fs3 baseline; fs2 values are reused for fs3 as a labeled comparison proxy."
+            if extend_fewsnet
+            else "FEWSNET fs3 is not plotted."
+        ),
         "generated_artifacts": generated_artifacts,
         "missing_points": missing_points,
-        "validation_summary": validation_summary(payload, models, mode),
+        "validation_summary": validation_summary(payload, models, mode, extend_fewsnet),
     }
 
 
@@ -370,7 +406,8 @@ def print_summary(manifest: dict) -> None:
     print("Monthly performance plot validation")
     print(f"Mode: {manifest['validation_summary']['mode']}")
     print(f"Models: {', '.join(manifest['validation_summary']['models'])}")
-    print(f"GeoXGB excluded: {manifest['validation_summary']['geo_xgb_excluded']}")
+    print(f"Model selection: {', '.join(manifest['model_selection'])}")
+    print(f"FEWSNET fs3 extended: {manifest['validation_summary']['fewsnet_fs3_extended']}")
     print(f"FEWSNET fs3 label: {manifest['validation_summary']['fewsnet_fs3_label']}")
     print(f"Missing plotted points: {len(manifest['missing_points'])}")
     for artifact in manifest["generated_artifacts"]:
@@ -389,12 +426,17 @@ def main() -> int:
 
     model_df, model_sources = load_model_metrics(ablation_root, models)
     baselines, fewsnet_sources = load_fewsnet_baselines(fewsnet_root)
-    payload, missing_points = build_plot_payload(model_df, baselines, models)
+    payload, missing_points = build_plot_payload(
+        model_df,
+        baselines,
+        models,
+        extend_fewsnet=args.extend_fewsnet,
+    )
 
     mode = "dry-run" if args.dry_run else "smoke" if args.smoke else "full"
     if args.smoke:
         for model_key in models:
-            render_model_figure(model_key, payload)
+            render_model_figure(model_key, payload, extend_fewsnet=args.extend_fewsnet)
 
     manifest = make_manifest(
         ablation_root,
@@ -406,12 +448,18 @@ def main() -> int:
         missing_points,
         payload,
         mode,
+        extend_fewsnet=args.extend_fewsnet,
     )
 
     if not args.dry_run and not args.smoke:
         output_dir.mkdir(parents=True, exist_ok=True)
         for model_key in models:
-            render_model_figure(model_key, payload, output_dir / MODEL_CONFIG[model_key]["filename"])
+            render_model_figure(
+                model_key,
+                payload,
+                output_dir / MODEL_CONFIG[model_key]["filename"],
+                extend_fewsnet=args.extend_fewsnet,
+            )
         manifest_path = output_dir / "monthly_performance_manifest.json"
         manifest["generated_artifacts"] = [str(output_dir / MODEL_CONFIG[m]["filename"]) for m in models]
         manifest["generated_artifacts"].append(str(manifest_path))

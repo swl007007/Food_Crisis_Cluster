@@ -17,6 +17,9 @@ import sklearn
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 import pickle
+from pathlib import Path
+import hashlib
+import os
 
 from config import *
 from src.helper.helper import get_X_branch_id_by_group
@@ -87,6 +90,8 @@ class RFmodel():
     self._smote_unavailable_warned = False
     self._smote_skip_logged = set()
     self._smote_failure_logged = set()
+    self._checkpoint_cache = {}
+    self._checkpoint_path_overrides = {}
 
 
   def train(self, X, y, branch_id = None, mode = MODE, sample_weights = None, sample_weights_by_class = None):#, num_layers = NUM_LAYERS_DNN
@@ -165,22 +170,117 @@ class RFmodel():
 
     return self.model.predict(X)
 
+  def _normalize_branch_id(self, branch_id):
+    """Normalize branch identifiers for Windows-safe checkpoint filenames."""
+    bid = '' if branch_id is None else str(branch_id)
+    cleaned = ''.join(ch for ch in bid if 32 <= ord(ch) <= 126).strip()
+    normalized = ''.join(ch for ch in cleaned if ch in {'0', '1'})
+
+    if cleaned == '':
+      return ''
+
+    if normalized == '':
+      digest = hashlib.sha1(cleaned.encode('utf-8', errors='backslashreplace')).hexdigest()[:12]
+      normalized = f'id_{digest}'
+
+    if normalized != cleaned:
+      print(f'Warning: sanitized branch_id from {cleaned!r} to {normalized!r}')
+    return normalized
+
+  def _normalize_checkpoint_dir(self):
+    raw_path = '' if self.path is None else str(self.path)
+    safe_path = ''.join(ch for ch in raw_path if ord(ch) >= 32).strip()
+    if safe_path == '':
+      safe_path = '.'
+    return os.path.normpath(safe_path)
+
+  def _checkpoint_path(self, branch_id):
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    return Path(self._normalize_checkpoint_dir()) / f'rf_{safe_branch_id}'
+
+  def _checkpoint_candidates(self, branch_id):
+    base_path = self._checkpoint_path(branch_id)
+    candidates = [
+      base_path,
+      Path(os.path.abspath(base_path)),
+      Path(str(base_path) + '.pkl'),
+      Path(os.path.abspath(str(base_path) + '.pkl')),
+    ]
+    deduped = []
+    for candidate in candidates:
+      if candidate not in deduped:
+        deduped.append(candidate)
+    return deduped
+
+  def _serialize_model(self):
+    return pickle.dumps(self.model, protocol=pickle.HIGHEST_PROTOCOL)
+
+  def _deserialize_model(self, payload):
+    self.model = pickle.loads(payload)
+
   def load(self, branch_id, fresh = True):
     '''
     fresh: clear current model and load the new one
     '''
-    filename_base = 'rf_'
-    with open(self.path + '/' + filename_base + branch_id, 'rb') as file:
-      self.model = pickle.load(file)
-    # self.model = pickle.load(open(self.path + '/' + filename_base + branch_id, 'rb'))
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    candidates = []
+
+    override_path = self._checkpoint_path_overrides.get(safe_branch_id)
+    if override_path:
+      candidates.append(override_path)
+    candidates.extend(self._checkpoint_candidates(branch_id))
+
+    attempted = []
+    for checkpoint_path in candidates:
+      if checkpoint_path == '<memory>':
+        payload = self._checkpoint_cache.get(safe_branch_id)
+        if payload is not None:
+          self._deserialize_model(payload)
+          return
+        continue
+      checkpoint_path = Path(checkpoint_path)
+      attempted.append(str(checkpoint_path))
+      if not checkpoint_path.exists() or checkpoint_path.is_dir():
+        continue
+      try:
+        with checkpoint_path.open('rb') as file:
+          self.model = pickle.load(file)
+        return
+      except OSError:
+        continue
+
+    payload = self._checkpoint_cache.get(safe_branch_id)
+    if payload is not None:
+      self._deserialize_model(payload)
+      return
+
+    raise FileNotFoundError(
+      f'Checkpoint not found for branch_id={branch_id!r}; attempted_paths={attempted!r}'
+    )
 
   def save(self, branch_id):
     #only saves the current new forest (newly added one)
-    filename = 'rf_' + branch_id
-    # pickle.dump(self.model[-1], open(self.path + filename, 'wb'))
-    with open(self.path + '/' + filename, 'wb') as file:
-      pickle.dump(self.model, file)
-    # pickle.dump(self.model, open(self.path + '/' + filename, 'wb'))
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    payload = self._serialize_model()
+    failures = []
+
+    for checkpoint_path in self._checkpoint_candidates(branch_id):
+      try:
+        checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+        if checkpoint_path.is_dir():
+          raise IsADirectoryError(f'Checkpoint target is a directory: {str(checkpoint_path)!r}')
+        with checkpoint_path.open('wb') as file:
+          file.write(payload)
+        self._checkpoint_path_overrides[safe_branch_id] = checkpoint_path
+        return
+      except Exception as exc:
+        failures.append((str(checkpoint_path), exc))
+
+    self._checkpoint_cache[safe_branch_id] = payload
+    self._checkpoint_path_overrides[safe_branch_id] = '<memory>'
+    print(f'Warning: checkpoint file write failed for branch {branch_id!r}; using in-memory fallback.')
+    for failed_path, exc in failures[:2]:
+      print(f'  checkpoint_write_error path={failed_path!r} error={exc!r}')
 
   def get_score(self, y_true, y_pred_prob):
     y_pred = np.argmax(y_pred_prob, axis=1)

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Create a 3x4 spatial cluster map figure from model-specific cluster mapping CSVs.
+Create a 2x4 spatial cluster map figure from model-specific cluster mapping CSVs.
 
 Rows are fixed as:
 1) GeoDT
 2) GeoRF
-3) GeoXGB
 
 Columns are fixed as:
 1) general
@@ -34,11 +33,10 @@ DEFAULT_SHAPEFILE = Path(
     r"\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
 )
 
-MODEL_ORDER = ("GeoDT", "GeoRF", "GeoXGB")
+MODEL_ORDER = ("GeoDT", "GeoRF")
 MODEL_DIRS = {
     "GeoDT": REPO_ROOT / "GeoDTExperiment" / "knn_sparsification_results",
     "GeoRF": REPO_ROOT / "GeoRFExperiment" / "knn_sparsification_results",
-    "GeoXGB": REPO_ROOT / "GeoXGBExperiment" / "knn_sparsification_results",
 }
 COLUMN_ORDER = ("general", "m2", "m6", "m10")
 FILE_PATTERN = re.compile(
@@ -49,7 +47,7 @@ FILE_PATTERN = re.compile(
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Plot a 3x4 panel of cluster maps for GeoDT/GeoRF/GeoXGB."
+        description="Plot a 2x4 panel of cluster maps for GeoDT/GeoRF."
     )
     parser.add_argument(
         "--shapefile",
@@ -139,7 +137,7 @@ def plot_grid(
     output_path: Path,
     dpi: int,
 ) -> None:
-    """Create and save the 3x4 panel figure."""
+    """Create and save the panel figure."""
     panel_data: Dict[tuple[str, str], tuple[gpd.GeoDataFrame, Path]] = {}
     all_partition_ids: set[int] = set()
     for model in MODEL_ORDER:
@@ -227,7 +225,7 @@ def plot_grid(
     )
 
     fig.suptitle(
-        "Cluster Mapping (k=40): GeoDT / GeoRF / GeoXGB\n"
+        "Cluster Mapping (k=40): GeoDT / GeoRF\n"
         "Columns: general, m2, m6, m10",
         fontsize=14,
         fontweight="bold",
@@ -239,12 +237,12 @@ def plot_grid(
 
 
 def main() -> None:
-    """Run the 3x4 map plotting workflow."""
+    """Run the 2x4 map plotting workflow."""
     args = parse_args()
     base_gdf = load_shapefile(args.shapefile)
     csv_map = discover_csvs()
     plot_grid(base_gdf, csv_map, args.output, args.dpi)
-    print(f"Saved 3x4 figure: {args.output}")
+    print(f"Saved cluster map figure: {args.output}")
 
 
 if __name__ == "__main__":

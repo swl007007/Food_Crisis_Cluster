@@ -47,6 +47,13 @@ Thumbs.db
 
 summary_report.txt
 
+badpath/
+logs/
+run_logs/
+archived/*
+!archived/no_leak_partition_learning_2018_2020_20260616/
+!archived/no_leak_partition_learning_2018_2020_20260616/README.md
+
 .codex
 
 memory/

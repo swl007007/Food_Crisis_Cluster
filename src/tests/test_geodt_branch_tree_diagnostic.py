@@ -4,12 +4,17 @@ import importlib.util
 import json
 import subprocess
 import sys
+import unittest
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import pytest
 from sklearn.tree import DecisionTreeClassifier
+
+try:
+    import pytest
+except ModuleNotFoundError as exc:
+    raise unittest.SkipTest("pytest is required for GeoDT diagnostic tests") from exc
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

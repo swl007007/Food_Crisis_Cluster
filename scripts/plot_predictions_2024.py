@@ -18,6 +18,7 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import argparse
 from matplotlib.colors import ListedColormap
 from pathlib import Path
 
@@ -29,13 +30,12 @@ except ImportError:
     print("Proceeding without basemap.")
 
 
-PREDICTIONS_FILE = Path(
-    r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\regional_ablation_results\Nigeria_experiment_local_fs0\result_partition_k40_compare_GF_fs0\predictions_monthly.csv'
-)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+PREDICTIONS_FILE = REPO_ROOT / 'result_partition_k40_compare_GF_fs2' / 'predictions_monthly.csv'
 SHAPEFILE = Path(
     r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis'
     r'\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries'
-    r'\Nigeria.shp'
+    r'\FEWS_Admin_LZ_v3.shp'
 )
 OUTPUT_FILE = Path('predictions_2024_feb_jun_oct.png')
 DPI = 300
@@ -52,6 +52,19 @@ ROWS = [
     ('Actual', TRUE_COLUMN),
     ('Predicted', PRED_COLUMN),
 ]
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(
+        description='Plot 2024 February, June, and October actual vs predicted GeoRF maps.'
+    )
+    parser.add_argument('--predictions', type=Path, default=PREDICTIONS_FILE)
+    parser.add_argument('--shapefile', type=Path, default=SHAPEFILE)
+    parser.add_argument('--output-file', type=Path, default=OUTPUT_FILE)
+    parser.add_argument('--dpi', type=int, default=DPI)
+    parser.add_argument('--title-source', type=str, default='result_partition_k40_compare_GF_fs2')
+    parser.add_argument('--no-basemap', action='store_true')
+    return parser.parse_args(argv)
 
 CLASS_COLORS = {
     0: '#2ca02c',  # non-crisis - green
@@ -76,6 +89,10 @@ def load_predictions(pred_file: Path) -> pd.DataFrame:
     return df
 
 
+def normalize_admin_code(series: pd.Series) -> pd.Series:
+    return series.astype(str).str.strip().str.replace(r'\.0$', '', regex=True)
+
+
 def load_shapefile(shapefile_path: Path) -> gpd.GeoDataFrame:
     print(f"\nLoading shapefile from {shapefile_path.name}...")
     gdf = gpd.read_file(shapefile_path)
@@ -91,6 +108,7 @@ def load_shapefile(shapefile_path: Path) -> gpd.GeoDataFrame:
     if found_col != 'FEWSNET_admin_code':
         gdf = gdf.rename(columns={found_col: 'FEWSNET_admin_code'})
         print(f"  Renamed '{found_col}' -> 'FEWSNET_admin_code'")
+    gdf['FEWSNET_admin_code'] = normalize_admin_code(gdf['FEWSNET_admin_code'])
 
     invalid = (~gdf.geometry.is_valid).sum()
     if invalid:
@@ -164,10 +182,11 @@ def plot_panel(
     gdf_latam: gpd.GeoDataFrame,
     value_col: str,
     title: str,
+    add_basemap: bool,
 ) -> None:
     assigned = _plot_choropleth(ax, gdf_main, value_col)
 
-    if ctx is not None:
+    if add_basemap and ctx is not None:
         try:
             ctx.add_basemap(
                 ax,
@@ -207,6 +226,8 @@ def plot_predictions(
     merged_4326: gpd.GeoDataFrame,
     output_file: Path,
     dpi: int = 300,
+    title_source: str = 'result_partition_k40_compare_GF_fs2',
+    add_basemap: bool = True,
 ) -> None:
     print("\nCreating 2x3 actual-vs-predicted map figure...")
 
@@ -247,7 +268,7 @@ def plot_predictions(
             panel_title = f"{row_label} - {month_label}"
             print(f"  {panel_title}: main={len(subset_main):,}  "
                   f"latam={len(subset_latam):,}")
-            plot_panel(ax, subset_main, subset_latam, value_col, panel_title)
+            plot_panel(ax, subset_main, subset_latam, value_col, panel_title, add_basemap)
 
     for row_idx, (row_label, _) in enumerate(ROWS):
         axes[row_idx, 0].text(
@@ -278,24 +299,27 @@ def plot_predictions(
 
     fig.suptitle(
         'GeoRF: Actual vs Partitioned Predicted Food Crisis - 2024\n'
-        '(result_partition_k40_compare_GF_fs2)',
+        f'({title_source})',
         fontsize=15,
         weight='bold',
         y=0.98,
     )
 
     plt.tight_layout(rect=[0.02, 0.04, 1, 0.95])
+    output_file.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(output_file, dpi=dpi, bbox_inches='tight')
     print(f"Saved: {output_file}")
     plt.close(fig)
 
 
-def main() -> None:
+def main(argv=None) -> None:
+    args = parse_args(argv)
     print("=" * 80)
     print("2024 ACTUAL vs PREDICTED MAP (Feb / Jun / Oct)")
     print("=" * 80)
 
-    df = load_predictions(PREDICTIONS_FILE)
+    df = load_predictions(args.predictions)
+    df['FEWSNET_admin_code'] = normalize_admin_code(df['FEWSNET_admin_code'])
 
     target_keys = [m[0] for m in TARGET_MONTHS]
     df = df[df['month_start'].isin(target_keys)].copy()
@@ -303,7 +327,7 @@ def main() -> None:
     for key, label in TARGET_MONTHS:
         sub = df[df['month_start'] == key]
         if len(sub) == 0:
-            raise ValueError(f"No rows for {label} ({key}) in {PREDICTIONS_FILE}")
+            raise ValueError(f"No rows for {label} ({key}) in {args.predictions}")
         n_crisis_true = int((sub[TRUE_COLUMN] == 1).sum())
         n_crisis_pred = int((sub[PRED_COLUMN] == 1).sum())
         print(f"  {label}: {len(sub):,} rows | "
@@ -312,7 +336,7 @@ def main() -> None:
               f"pred crisis={n_crisis_pred:,} "
               f"({n_crisis_pred / len(sub) * 100:.1f}%)")
 
-    gdf = load_shapefile(SHAPEFILE)
+    gdf = load_shapefile(args.shapefile)
 
     print("\nMerging predictions with geometries...")
     merge_cols = ['FEWSNET_admin_code', 'month_start', TRUE_COLUMN, PRED_COLUMN]
@@ -322,18 +346,25 @@ def main() -> None:
     if len(merged_4326) == 0:
         raise ValueError("No features matched! Check FEWSNET_admin_code alignment.")
 
-    if ctx is not None:
+    if not args.no_basemap and ctx is not None:
         print("  Reprojecting main panels to EPSG:3857 for basemap...")
         merged_3857 = merged_4326.to_crs(epsg=3857)
     else:
         merged_3857 = merged_4326
 
-    plot_predictions(merged_3857, merged_4326, OUTPUT_FILE, DPI)
+    plot_predictions(
+        merged_3857,
+        merged_4326,
+        args.output_file,
+        args.dpi,
+        args.title_source,
+        add_basemap=not args.no_basemap,
+    )
 
     print("\n" + "=" * 80)
     print("VISUALIZATION COMPLETE")
     print("=" * 80)
-    print(f"Output: {OUTPUT_FILE.resolve()}")
+    print(f"Output: {args.output_file.resolve()}")
 
 
 if __name__ == '__main__':

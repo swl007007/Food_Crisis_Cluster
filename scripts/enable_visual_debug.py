@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Helper script to enable visual debug settings for GeoRF and XGBoost batch runs.
+Helper script to enable visual debug settings for GeoRF and GeoDT batch runs.
 
 This script automatically modifies:
 1. config.py: VIS_DEBUG_MODE = True
 2. app/main_model_GF.py: track_partition_metrics = True, enable_metrics_maps = True
-3. app/main_model_XGB.py: track_partition_metrics = True, enable_metrics_maps = True
+3. app/main_model_DT.py: track_partition_metrics = True, enable_metrics_maps = True
 
 Usage:
     python enable_visual_debug.py          # Enable visual debug
@@ -109,29 +109,29 @@ def enable_visual_debug():
         success_count += 1
     print()
 
-    # 3. Enable partition metrics in main_model_XGB.py
-    print("[3/3] Enabling partition metrics tracking in app/main_model_XGB.py...")
-    xgb_changes = 0
+    # 3. Enable partition metrics in main_model_DT.py
+    print("[3/3] Enabling partition metrics tracking in app/main_model_DT.py...")
+    dt_changes = 0
 
     # Enable track_partition_metrics
     if modify_file_setting(
-        'app/main_model_XGB.py',
+        'app/main_model_DT.py',
         r'track_partition_metrics\s*=\s*False\s*#',
         'track_partition_metrics = True  #',
-        'Set track_partition_metrics = True in main_model_XGB.py'
+        'Set track_partition_metrics = True in main_model_DT.py'
     ):
-        xgb_changes += 1
+        dt_changes += 1
 
     # Enable enable_metrics_maps
     if modify_file_setting(
-        'app/main_model_XGB.py',
+        'app/main_model_DT.py',
         r'enable_metrics_maps\s*=\s*False\s*#',
         'enable_metrics_maps = True      #',
-        'Set enable_metrics_maps = True in main_model_XGB.py'
+        'Set enable_metrics_maps = True in main_model_DT.py'
     ):
-        xgb_changes += 1
+        dt_changes += 1
 
-    if xgb_changes == 2:
+    if dt_changes == 2:
         success_count += 1
     print()
 
@@ -147,8 +147,8 @@ def enable_visual_debug():
         print("  - Improvement maps (result_Geo*/partition_metrics/*_improvement.png)")
         print()
         print("You can now run:")
-        print("  - run_georf_batches_2021_2024_visual.bat")
-        print("  - run_xgboost_batches_2021_2024_visual.bat")
+        print("  - run_batches_2018_2020_partition_learning_visual_monthly.bat georf")
+        print("  - run_batches_2018_2020_partition_learning_visual_monthly.bat geodt")
     else:
         print(f"[WARNING] WARNING: Only {success_count}/{total_changes} changes completed successfully")
         print("Please check the error messages above and manually verify the settings.")
@@ -202,29 +202,29 @@ def disable_visual_debug():
         success_count += 1
     print()
 
-    # 3. Disable partition metrics in main_model_XGB.py
-    print("[3/3] Disabling partition metrics tracking in app/main_model_XGB.py...")
-    xgb_changes = 0
+    # 3. Disable partition metrics in main_model_DT.py
+    print("[3/3] Disabling partition metrics tracking in app/main_model_DT.py...")
+    dt_changes = 0
 
     # Disable track_partition_metrics
     if modify_file_setting(
-        'app/main_model_XGB.py',
+        'app/main_model_DT.py',
         r'track_partition_metrics\s*=\s*True\s*#',
         'track_partition_metrics = False #',
-        'Set track_partition_metrics = False in main_model_XGB.py'
+        'Set track_partition_metrics = False in main_model_DT.py'
     ):
-        xgb_changes += 1
+        dt_changes += 1
 
     # Disable enable_metrics_maps
     if modify_file_setting(
-        'app/main_model_XGB.py',
+        'app/main_model_DT.py',
         r'enable_metrics_maps\s*=\s*True\s*#',
         'enable_metrics_maps = False     #',
-        'Set enable_metrics_maps = False in main_model_XGB.py'
+        'Set enable_metrics_maps = False in main_model_DT.py'
     ):
-        xgb_changes += 1
+        dt_changes += 1
 
-    if xgb_changes == 2:
+    if dt_changes == 2:
         success_count += 1
     print()
 
@@ -239,8 +239,8 @@ def disable_visual_debug():
         print("  - Minimal debug output")
         print()
         print("You can now run:")
-        print("  - run_georf_batches.bat (full 36-batch production run)")
-        print("  - run_xgboost_batches.bat (full 36-batch production run)")
+        print("  - run_batches_2018_2020_partition_learning_visual_monthly.bat georf")
+        print("  - run_batches_2018_2020_partition_learning_visual_monthly.bat geodt")
     else:
         print(f"[WARNING] WARNING: Only {success_count}/{total_changes} changes completed successfully")
         print("Please check the error messages above and manually verify the settings.")
@@ -257,6 +257,11 @@ def main():
 
     if not os.path.exists('app/main_model_GF.py'):
         print("ERROR: app/main_model_GF.py not found")
+        print("Please run this script from the Food_Crisis_Cluster directory")
+        sys.exit(1)
+
+    if not os.path.exists('app/main_model_DT.py'):
+        print("ERROR: app/main_model_DT.py not found")
         print("Please run this script from the Food_Crisis_Cluster directory")
         sys.exit(1)
 

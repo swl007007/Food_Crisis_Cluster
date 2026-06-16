@@ -72,7 +72,6 @@ def load_model_data(results_dir, prefix):
     return out
 
 georf = load_model_data(os.path.join(BASE, "GeoRFExperiment", "GeoRFResults"), "results_df_gp_")
-geoxgb = load_model_data(os.path.join(BASE, "GeoXGBExperiment", "GeoXgboostResults"), "results_df_xgb_gp_")
 geodt = load_model_data(os.path.join(BASE, "GeoDTExperiment", "GeoDTResults"), "results_df_dt_gp_")
 
 fewsnet = {}
@@ -87,13 +86,11 @@ if not FS0_ONLY:
 if FS0_ONLY:
     MODEL_ROWS = [
         ("GeoRF", georf),
-        ("GeoXGB", geoxgb),
         ("GeoDT", geodt),
     ]
 else:
     MODEL_ROWS = [
         ("GeoRF", georf),
-        ("GeoXGB", geoxgb),
         ("GeoDT", geodt),
         ("FEWSNET (baseline)", fewsnet),
     ]

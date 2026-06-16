@@ -54,7 +54,7 @@ def load_seasonal_helpers():
     return module
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Generate region-level partitioned vs pooled vs FEWSNET expert comparison table."
     )
@@ -64,7 +64,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--model-token", default="GF", help="Stage-3 result folder token, e.g. GF.")
     parser.add_argument("--scopes", nargs="+", default=["fs1", "fs2", "fs3"], choices=["fs1", "fs2", "fs3"])
-    return parser.parse_args()
+    parser.add_argument(
+        "--no-extend-fewsnet",
+        dest="extend_fewsnet",
+        action="store_false",
+        default=True,
+        help="Do not reuse FEWSNET fs2 expert predictions for fs3.",
+    )
+    return parser.parse_args(argv)
 
 
 def load_model_predictions(source_dir: Path, model_token: str, scopes: list[str]) -> pd.DataFrame:
@@ -84,7 +91,11 @@ def load_model_predictions(source_dir: Path, model_token: str, scopes: list[str]
     return combined
 
 
-def load_fewsnet_expert_predictions(fewsnet_path: Path, scopes: list[str]) -> pd.DataFrame:
+def load_fewsnet_expert_predictions(
+    fewsnet_path: Path,
+    scopes: list[str],
+    extend_fewsnet: bool = True,
+) -> pd.DataFrame:
     df = pd.read_csv(
         resolve_local_path(fewsnet_path),
         usecols=["country", "admin_code", "year", "month", "fews_proj_near", "fews_proj_med"],
@@ -113,7 +124,7 @@ def load_fewsnet_expert_predictions(fewsnet_path: Path, scopes: list[str]) -> pd
             .rename(columns={"fewsnet_expert_fs2": "y_pred_fewsnet"})
             .assign(scope="fs2")
         )
-    if "fs3" in scopes:
+    if "fs3" in scopes and extend_fewsnet:
         parts.append(
             df[["FEWSNET_admin_code", "date", "fewsnet_expert_fs2"]]
             .rename(columns={"fewsnet_expert_fs2": "y_pred_fewsnet"})
@@ -195,11 +206,15 @@ def build_table(
     return pd.DataFrame(rows)
 
 
-def main() -> None:
-    args = parse_args()
+def main(argv=None) -> None:
+    args = parse_args(argv)
     helpers = load_seasonal_helpers()
     model_df = load_model_predictions(args.source_dir, args.model_token, args.scopes)
-    fewsnet_df = load_fewsnet_expert_predictions(args.fewsnet, args.scopes)
+    fewsnet_df = load_fewsnet_expert_predictions(
+        args.fewsnet,
+        args.scopes,
+        extend_fewsnet=args.extend_fewsnet,
+    )
     region_lookup = load_region_lookup(args.shapefile, helpers.REGION_MAP)
     result = build_table(model_df, fewsnet_df, region_lookup, args.scopes, helpers)
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -210,6 +225,7 @@ def main() -> None:
     print(f"FEWSNET unique admin codes: {fewsnet_source['admin_code'].nunique()}")
     print(f"FEWSNET countries with admin_code: {fewsnet_source['country'].nunique()}")
     print(f"Model unique admin codes: {model_df['FEWSNET_admin_code'].nunique()}")
+    print(f"FEWSNET fs3 extended from fs2: {args.extend_fewsnet}")
     print(f"Wrote: {args.output}")
     print(f"Rows: {len(result)}, columns: {len(result.columns)}")
 

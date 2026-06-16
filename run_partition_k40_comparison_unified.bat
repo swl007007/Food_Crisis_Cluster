@@ -6,15 +6,17 @@ REM Stage 3 of 3: Unified Partitioned (k40) vs Pooled Model Comparison
 REM ============================================================================
 REM
 REM Usage:
-REM   run_partition_k40_comparison_unified.bat all                   (run all models for the active scope set)
-REM   run_partition_k40_comparison_unified.bat georf                 (single model, all scopes)
-REM   run_partition_k40_comparison_unified.bat geoxgb --visual       (with maps)
-REM   run_partition_k40_comparison_unified.bat geodt 1 3 --visual    (contiguity + maps)
+REM   run_partition_k40_comparison_unified.bat all                   (GeoRF + GeoDT)
+REM   run_partition_k40_comparison_unified.bat georf --visual --month-ind
+REM   run_partition_k40_comparison_unified.bat geodt 1 3 --visual
 REM   run_partition_k40_comparison_unified.bat georf --fs0-only      (stand-alone fs0 run)
 REM
+REM Stage 3 evaluates 2021-2024 using partitions learned from the
+REM 2018-2020 Stage 1 + Stage 2 partition-learning workflow.
+REM
 REM Arguments:
-REM   %1  = model type: georf, geoxgb, geodt, or "all" (REQUIRED)
-REM         "all" loops over georf, geoxgb, geodt x the active scope set
+REM   %1  = model type: georf, geodt, or "all" (REQUIRED)
+REM         "all" loops over georf and geodt x the active scope set
 REM   Optional positional/flags:
 REM     First numeric arg  = CONTIGUITY (0 or 1, default from config)
 REM     Second numeric arg = REFINE_ITERS (default from config)
@@ -35,13 +37,13 @@ REM produces Table_Format_fs0.xlsx instead (does not overwrite the fs1/2/3 table
 REM
 REM Default mode:
 REM   SCOPES = "1 2 3" (or --scope N for a single scope in 1..3)
-REM   Per-model output dirs: result_partition_k40_compare_{GF,XGB,DT}_fs{1,2,3}
+REM   Per-model output dirs: result_partition_k40_compare_{GF,DT}_fs{1,2,3}
 REM   Aggregate output:      other_outputs/Table_Format.xlsx
 REM   FEWSNET baseline rows: included (fs1, fs2; fs3 extrapolated from fs2)
 REM
 REM --fs0-only mode:
 REM   SCOPES = "0" (forced; any --month-ind is cleared)
-REM   Per-model output dirs: result_partition_k40_compare_{GF,XGB,DT}_fs0
+REM   Per-model output dirs: result_partition_k40_compare_{GF,DT}_fs0
 REM   Aggregate output:      other_outputs/Table_Format_fs0.xlsx
 REM   FEWSNET baseline rows: omitted (FEWSNET has no fs0 ground truth)
 REM   Contiguity refinement: general partition only (m2/m6/m10 not generated
@@ -73,7 +75,7 @@ if "%~1"=="" (
     echo.
     echo Usage: %~nx0 ^<model_type^|all^> [--scope N] [--visual] [--month-ind] [--fs0-only]
     echo.
-    echo Model types: georf, geoxgb, geodt, all
+    echo Model types: georf, geodt, all
     echo.
     pause
     exit /b 1
@@ -165,6 +167,11 @@ if defined SCOPE_FILTER (
     set "SCOPES=1 2 3"
 )
 
+set START_MONTH=2021-01
+set END_MONTH=2024-12
+set PARTITION_LEARNING_YEARS=2018-2020
+set EVALUATION_YEARS=2021-2024
+
 set "AGGREGATE_TARGET=other_outputs\Table_Format.xlsx"
 set "AGGREGATE_MODEL_TARGET=other_outputs\Model_Comparison_Table.xlsx"
 if "%FS0_ONLY%"=="1" (
@@ -194,6 +201,8 @@ echo Scope list:          %SCOPES%
 echo Contiguity refine:   %CONTIGUITY% ^(iters=%REFINE_ITERS%^)
 echo Visual outputs:      %VISUAL_MODE%
 echo Month partitions:    %MONTH_PARTITION_MODE%
+echo Partition learning:  %PARTITION_LEARNING_YEARS% ^(fixed partitions from Stage 2^)
+echo Evaluation window:   %START_MONTH% to %END_MONTH%
 echo Partition discovery: cluster_mapping_manifest.json, then fallback glob
 echo Aggregate outputs:   %AGGREGATE_TARGET%
 echo                     %AGGREGATE_MODEL_TARGET%
@@ -206,7 +215,7 @@ if /i "%FIRST_ARG%"=="all" (
     echo MODE: Running ALL models x scopes %SCOPES%
     echo ============================================================================
     set "ALL_FAIL=0"
-    for %%M in (georf geoxgb geodt) do (
+    for %%M in (georf geodt) do (
         for %%S in (%SCOPES%) do (
             echo.
             echo ************************************************************
@@ -228,7 +237,7 @@ REM --------------------------------------------------------------------------
 call :load_model_config %FIRST_ARG%
 if !errorlevel! neq 0 (
     echo ERROR: Invalid model type "%FIRST_ARG%"
-    echo Valid options: georf, geoxgb, geodt, all
+    echo Valid options: georf, geodt, all
     pause
     exit /b 1
 )
@@ -279,6 +288,9 @@ if "%CONTIGUITY%"=="1" (
 
 echo   Model: !MODEL_DISPLAY!  Scope: %RSC_SCOPE%  Out: !RSC_OUT_DIR!
 
+set NO_LEAK_PARTITION_LEARNING_YEARS=%PARTITION_LEARNING_YEARS%
+set NO_LEAK_EVALUATION_YEARS=%EVALUATION_YEARS%
+
 "%PYTHON_EXE%" !COMPARISON_SCRIPT! ^
   --data "%DATA_PATH%" ^
   --partition-map "!PARTITION_MAP!" ^
@@ -328,6 +340,8 @@ echo ===========================================================================
 
 if "%ALL_FAIL%"=="1" (
     echo Some runs failed. Check output above for details.
+    pause
+    exit /b 1
 )
 
 pause
@@ -338,10 +352,12 @@ REM MODEL CONFIGURATION SUBROUTINE
 REM ============================================================================
 
 :load_model_config
-set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_NGA.csv
-set POLYGONS_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\Nigeria.shp
+set DATA_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv
+set POLYGONS_PATH=C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp
 set START_MONTH=2021-01
 set END_MONTH=2024-12
+set PARTITION_LEARNING_YEARS=2018-2020
+set EVALUATION_YEARS=2021-2024
 set TRAIN_WINDOW=36
 
 if /i "%~1"=="georf" (
@@ -350,14 +366,6 @@ if /i "%~1"=="georf" (
     set "COMPARISON_SCRIPT=scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py"
     set "LOWER_MODEL_FLAG="
     set "OUT_DIR=.\result_partition_k40_compare_GF"
-    exit /b 0
-)
-if /i "%~1"=="geoxgb" (
-    set "MODEL_DISPLAY=GeoXGB"
-    set "EXPERIMENT_DIR=GeoXGBExperiment"
-    set "COMPARISON_SCRIPT=scripts\compare_partitioned_vs_pooled_xgb_k40_nc4.py"
-    set "LOWER_MODEL_FLAG="
-    set "OUT_DIR=.\result_partition_k40_compare_XGB"
     exit /b 0
 )
 if /i "%~1"=="geodt" (
@@ -412,9 +420,13 @@ REM ============================================================================
 :discover_partition_maps
 set "KNN_DIR=%EXPERIMENT_DIR%\knn_sparsification_results"
 set "MANIFEST_FILE=%KNN_DIR%\cluster_mapping_manifest.json"
+set "PARTITION_MAP="
+set "PARTITION_MAP_M2="
+set "PARTITION_MAP_M6="
+set "PARTITION_MAP_M10="
 
 if exist "%MANIFEST_FILE%" (
-    for /f "tokens=1,* delims==" %%A in ('"%PYTHON_EXE%" -c "import json; m=json.load(open(r'%MANIFEST_FILE%')); gp=lambda k: (m.get(k) or {}).get('path','') if isinstance(m.get(k),dict) else (m.get(k) or ''); print('PARTITION_MAP=' + gp('general')); print('PARTITION_MAP_M2=' + gp('m02')); print('PARTITION_MAP_M6=' + gp('m06')); print('PARTITION_MAP_M10=' + gp('m10'))"') do (
+    for /f "usebackq tokens=1,* delims==" %%A in (`"%PYTHON_EXE%" -c "import json; m=json.load(open(r'%MANIFEST_FILE%')); gp=lambda k: (m.get(k) or {}).get('path','') if isinstance(m.get(k),dict) else (m.get(k) or ''); print('PARTITION_MAP=' + gp('general')); print('PARTITION_MAP_M2=' + gp('m02')); print('PARTITION_MAP_M6=' + gp('m06')); print('PARTITION_MAP_M10=' + gp('m10'))"`) do (
         set "%%A=%%B"
     )
     if not exist "!PARTITION_MAP!" goto :discover_by_pattern
@@ -422,16 +434,12 @@ if exist "%MANIFEST_FILE%" (
 )
 
 :discover_by_pattern
-set "PARTITION_MAP="
 for %%F in ("%KNN_DIR%\cluster_mapping_k40_nc*_general.csv") do set "PARTITION_MAP=%%F"
 if not defined PARTITION_MAP (
     echo ERROR: No general partition found in %KNN_DIR%
     exit /b 1
 )
-set "PARTITION_MAP_M2="
 for %%F in ("%KNN_DIR%\cluster_mapping_k40_nc*_m2.csv") do set "PARTITION_MAP_M2=%%F"
-set "PARTITION_MAP_M6="
 for %%F in ("%KNN_DIR%\cluster_mapping_k40_nc*_m6.csv") do set "PARTITION_MAP_M6=%%F"
-set "PARTITION_MAP_M10="
 for %%F in ("%KNN_DIR%\cluster_mapping_k40_nc*_m10.csv") do set "PARTITION_MAP_M10=%%F"
 exit /b 0

@@ -1142,6 +1142,23 @@ class GeoRF():
 			# Compute SHAP values for base RF with feature-aware outputs
 			explainer = shap.TreeExplainer(baseline_wrapper.model)
 			X_baseline = Xtest_for_shap
+			try:
+				max_shap_samples = int(os.environ.get('BASELINE_SHAP_MAX_SAMPLES', '0') or 0)
+			except ValueError:
+				max_shap_samples = 0
+			if max_shap_samples > 0:
+				n_baseline_rows = getattr(X_baseline, 'shape', (0,))[0]
+				if n_baseline_rows > max_shap_samples:
+					if hasattr(X_baseline, 'iloc'):
+						X_baseline = X_baseline.iloc[:max_shap_samples].copy()
+					else:
+						X_baseline = np.asarray(X_baseline)[:max_shap_samples]
+					logger.info(
+						'baseline_shap_sampled rows=%d max_samples=%d',
+						n_baseline_rows,
+						max_shap_samples,
+					)
+					print(f'SHAP debug: sampled baseline rows {n_baseline_rows} -> {max_shap_samples}')
 			shape_info = getattr(X_baseline, 'shape', None)
 			print(f'SHAP debug: X_baseline shape={shape_info}')
 			logger.info(f'shap_debug_X_baseline_shape={shape_info}')
