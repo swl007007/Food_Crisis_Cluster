@@ -24,6 +24,8 @@ workflow. Files are grouped by paper use case so the root stays navigable.
   using raw FEWSNET population.
 - `10_false_negative_error_modes/`: GeoRF partitioned false-negative crisis
   error-mode diagnostics for selected hotspots.
+- `11_threshold_free_metrics/`: GeoRF PR-AUC and fixed precision/recall
+  operating-point diagnostics from existing probability outputs.
 
 ## 01 Main Results
 
@@ -205,6 +207,19 @@ workflow. Files are grouped by paper use case so the root stays navigable.
 - `10_false_negative_error_modes/georf_partitioned_false_negative_note.md`:
   Chinese reviewer-facing note and English appendix text for GeoRF partitioned
   crisis false-negative error modes.
+
+## 11 Threshold-Free Metrics
+
+- `11_threshold_free_metrics/georf_threshold_free_metrics.csv`: long-format
+  GeoRF pooled and partitioned PR-AUC and fixed operating-point metrics by
+  forecasting horizon / lag.
+- `11_threshold_free_metrics/georf_threshold_free_metrics_compact_table.csv`:
+  compact appendix-ready comparison table with partitioned-minus-pooled deltas.
+- `11_threshold_free_metrics/georf_threshold_free_metrics_compact_table.md`:
+  Markdown rendering of the compact threshold-free metrics table.
+- `11_threshold_free_metrics/georf_threshold_free_metrics_note.md`: Chinese
+  reviewer-facing note and English appendix text for PR-AUC and fixed
+  precision/recall diagnostics.
 
 ## Reproduction Checks
 
