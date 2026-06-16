@@ -1,0 +1,5 @@
+| scope | forecasting_horizon | pooled_missed_crisis_population | partitioned_missed_crisis_population | delta_missed_crisis_population | pooled_false_alert_population | partitioned_false_alert_population | delta_false_alert_population | pooled_population_weighted_recall | partitioned_population_weighted_recall | delta_population_weighted_recall | pooled_population_weighted_precision | partitioned_population_weighted_precision | delta_population_weighted_precision |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fs1 | 4-month lag | 884,797,441 | 766,982,811 | -117,814,630 | 263,194,575 | 342,051,026 | 78,856,451 | 0.559 | 0.618 | 0.059 | 0.810 | 0.784 | -0.026 |
+| fs2 | 8-month lag | 916,660,247 | 800,096,008 | -116,564,239 | 260,035,754 | 336,893,871 | 76,858,117 | 0.544 | 0.602 | 0.058 | 0.808 | 0.782 | -0.026 |
+| fs3 | 12-month lag | 990,307,562 | 908,008,121 | -82,299,441 | 316,008,679 | 394,352,713 | 78,344,034 | 0.507 | 0.548 | 0.041 | 0.763 | 0.736 | -0.027 |

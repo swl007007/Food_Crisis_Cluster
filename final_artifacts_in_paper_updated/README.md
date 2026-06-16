@@ -20,6 +20,10 @@ workflow. Files are grouped by paper use case so the root stays navigable.
   and bootstrap uncertainty diagnostics.
 - `08_geodt_diagnostics/`: auxiliary GeoDT branch-location and branch-tree
   diagnostic figures.
+- `09_humanitarian_metrics/`: GeoRF population-weighted humanitarian metrics
+  using raw FEWSNET population.
+- `10_false_negative_error_modes/`: GeoRF partitioned false-negative crisis
+  error-mode diagnostics for selected hotspots.
 
 ## 01 Main Results
 
@@ -168,6 +172,39 @@ workflow. Files are grouped by paper use case so the root stays navigable.
   GeoDT 4-month-lag branch tree diagnostic.
 - `08_geodt_diagnostics/geodt_branch_tree_compare_2024-10_fs1_001_vs_1_2.png`:
   alternate GeoDT branch tree diagnostic render.
+
+## 09 Humanitarian Metrics
+
+- `09_humanitarian_metrics/georf_humanitarian_population_compact_table.csv`:
+  compact appendix-ready GeoRF population-weighted humanitarian metrics by
+  forecasting horizon / lag.
+- `09_humanitarian_metrics/georf_humanitarian_population_compact_table.md`:
+  Markdown rendering of the compact humanitarian population metrics table.
+- `09_humanitarian_metrics/georf_humanitarian_population_summary.csv`:
+  long-format horizon-level population-month metrics for GeoRF pooled and
+  partitioned models.
+- `09_humanitarian_metrics/georf_humanitarian_population_by_month.csv`:
+  month-level diagnostic population-month metrics by horizon and model.
+- `09_humanitarian_metrics/georf_humanitarian_population_bars.png`: compact
+  missed-crisis and false-alert population-month bar figure.
+- `09_humanitarian_metrics/georf_humanitarian_population_note.md`: Chinese
+  reviewer-facing note and English appendix text for population-weighted
+  humanitarian metrics.
+
+## 10 False Negative Error Modes
+
+- `10_false_negative_error_modes/georf_partitioned_false_negative_hotspot_summary.csv`:
+  hotspot-by-horizon GeoRF partitioned false-negative counts, population-months,
+  probability, seasonal crisis-error context, and missed-crisis shares.
+- `10_false_negative_error_modes/georf_partitioned_false_negative_error_modes.csv`:
+  hotspot-level descriptive proxy evidence for conflict, prices, lagged
+  outcomes, covariate missingness, near-threshold predictions, and boundary
+  context.
+- `10_false_negative_error_modes/georf_partitioned_false_negative_hotspot_compact_table.md`:
+  compact appendix-ready Markdown table for selected hotspot error modes.
+- `10_false_negative_error_modes/georf_partitioned_false_negative_note.md`:
+  Chinese reviewer-facing note and English appendix text for GeoRF partitioned
+  crisis false-negative error modes.
 
 ## Reproduction Checks
 
