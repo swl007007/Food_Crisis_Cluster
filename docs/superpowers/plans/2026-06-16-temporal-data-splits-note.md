@@ -4,7 +4,7 @@
 
 **Goal:** Add a compact reviewer-response temporal split note and audit CSV under `final_artifacts_in_paper_updated/`.
 
-**Architecture:** This is a documentation artifact change only. The Markdown note presents compact appendix-ready tables and formulas; the CSV companion enumerates the 48 target months x 3 horizons for audit without bloating the appendix.
+**Architecture:** This is a documentation artifact change only. The Markdown note presents compact appendix-ready tables and formulas; the CSV companion enumerates the actually evaluated final-test months only: February, June, and October for 2021-2024 across fs1/fs2/fs3.
 
 **Tech Stack:** Markdown, CSV, Python standard library/pandas for deterministic date generation, existing repository artifacts for verification.
 
@@ -15,7 +15,7 @@
 - Create: `final_artifacts_in_paper_updated/temporal_data_splits_schematic_note.md`
   - Responsibility: bilingual reviewer note with Chinese audit first and English appendix-ready text last.
 - Create: `final_artifacts_in_paper_updated/temporal_data_splits_table.csv`
-  - Responsibility: audit companion with 144 computed rows for `2021-01` through `2024-12` and scopes `fs1`, `fs2`, `fs3`.
+  - Responsibility: audit companion with 36 computed rows for the evaluated 2021-2024 February/June/October target months and scopes `fs1`, `fs2`, `fs3`.
 - Reference only: `docs/superpowers/specs/2026-06-16-temporal-data-splits-note-design.md`
   - Responsibility: approved design source.
 - Reference only: `src/customize/customize.py`
@@ -105,7 +105,7 @@ maps ['general', 'm02', 'm06', 'm10']
 **Files:**
 - Create: `final_artifacts_in_paper_updated/temporal_data_splits_table.csv`
 
-- [ ] **Step 1: Generate deterministic 144-row CSV**
+- [ ] **Step 1: Generate deterministic 36-row CSV**
 
 Run:
 
@@ -118,57 +118,58 @@ out = Path("final_artifacts_in_paper_updated/temporal_data_splits_table.csv")
 scope_lags = [("fs1", 4), ("fs2", 8), ("fs3", 12)]
 rows = []
 
-for target in pd.period_range("2021-01", "2024-12", freq="M"):
-    target_start = target.to_timestamp()
-    target_end_exclusive = (target + 1).to_timestamp()
-    calendar_month = int(target.month)
-    if calendar_month == 2:
-        stage3_partition_map_rule = "m2 month-specific partition"
-        stage2_consensus_input_filter = "month == 2"
-    elif calendar_month == 6:
-        stage3_partition_map_rule = "m6 month-specific partition"
-        stage2_consensus_input_filter = "month == 6"
-    elif calendar_month == 10:
-        stage3_partition_map_rule = "m10 month-specific partition"
-        stage2_consensus_input_filter = "month == 10"
-    else:
-        stage3_partition_map_rule = "general partition"
-        stage2_consensus_input_filter = "no month filter"
+for year in range(2021, 2025):
+    for month in (2, 6, 10):
+        target = pd.Period(f"{year}-{month:02d}", freq="M")
+        target_start = target.to_timestamp()
+        target_end_exclusive = (target + 1).to_timestamp()
+        calendar_month = int(target.month)
+        if calendar_month == 2:
+            stage3_partition_map_rule = "m2 month-specific partition"
+            stage2_consensus_input_filter = "month == 2"
+        elif calendar_month == 6:
+            stage3_partition_map_rule = "m6 month-specific partition"
+            stage2_consensus_input_filter = "month == 6"
+        elif calendar_month == 10:
+            stage3_partition_map_rule = "m10 month-specific partition"
+            stage2_consensus_input_filter = "month == 10"
+        else:
+            raise AssertionError(f"Unexpected evaluated month: {calendar_month}")
 
-    for scope, horizon in scope_lags:
-        train_end = target_start - pd.DateOffset(months=horizon)
-        train_start = train_end - pd.DateOffset(months=36 - 1)
-        rows.append({
-            "target_month": str(target),
-            "forecasting_scope": scope,
-            "horizon_months": horizon,
-            "stage3_train_start_inclusive": train_start.date().isoformat(),
-            "stage3_train_end_exclusive": train_end.date().isoformat(),
-            "stage3_train_end_inclusive": (train_end - pd.DateOffset(days=1)).date().isoformat(),
-            "stage3_final_test_start_inclusive": target_start.date().isoformat(),
-            "stage3_final_test_end_exclusive": target_end_exclusive.date().isoformat(),
-            "stage3_final_test_end_inclusive": (target_end_exclusive - pd.DateOffset(days=1)).date().isoformat(),
-            "stage1_split_acceptance_validation_data": (
-                "Internal validation subset drawn from that Stage 1 run's rolling training window; "
-                "current GROUP_SPLIT uses val_ratio=0.20, min_val_per_group=1, "
-                "skip_singleton_groups=True, random_state=42."
-            ),
-            "stage2_consensus_data": (
-                "2018-2020 linked Stage 1 partition plans only; current artifacts contain "
-                "GeoRF general=24, GeoRF month-specific=8 per m2/m6/m10, "
-                "GeoDT general=27, GeoDT month-specific=9 per m2/m6/m10."
-            ),
-            "stage2_consensus_input_filter": stage2_consensus_input_filter,
-            "stage3_partition_map_rule": stage3_partition_map_rule,
-            "threshold_selection_data": (
-                "No separate threshold-selection data in standard Stage 3; comparison uses classifier hard predictions."
-            ),
-            "hyperparameter_selection_data": (
-                "GeoRF: fixed hyperparameters. GeoDT Stage 1: max_depth selected on the internal validation subset "
-                "using class-1 F1 when DT_MAX_DEPTH_CANDIDATES is enabled. Stage 3 comparison: fixed RF/DT parameters."
-            ),
-            "final_test_data": f"{target} target-month observations only",
-        })
+        for scope, horizon in scope_lags:
+            train_end = target_start - pd.DateOffset(months=horizon)
+            train_start = train_end - pd.DateOffset(months=36 - 1)
+            rows.append({
+                "target_month": str(target),
+                "forecasting_scope": scope,
+                "horizon_months": horizon,
+                "stage3_train_start_inclusive": train_start.date().isoformat(),
+                "stage3_train_end_exclusive": train_end.date().isoformat(),
+                "stage3_train_end_inclusive": (train_end - pd.DateOffset(days=1)).date().isoformat(),
+                "stage3_final_test_start_inclusive": target_start.date().isoformat(),
+                "stage3_final_test_end_exclusive": target_end_exclusive.date().isoformat(),
+                "stage3_final_test_end_inclusive": (target_end_exclusive - pd.DateOffset(days=1)).date().isoformat(),
+                "stage1_split_acceptance_validation_data": (
+                    "Internal validation subset drawn from that Stage 1 run's rolling training window; "
+                    "current GROUP_SPLIT uses val_ratio=0.20, min_val_per_group=1, "
+                    "skip_singleton_groups=True, random_state=42."
+                ),
+                "stage2_consensus_data": (
+                    "2018-2020 linked Stage 1 partition plans only; current artifacts contain "
+                    "GeoRF general=24, GeoRF month-specific=8 per m2/m6/m10, "
+                    "GeoDT general=27, GeoDT month-specific=9 per m2/m6/m10."
+                ),
+                "stage2_consensus_input_filter": stage2_consensus_input_filter,
+                "stage3_partition_map_rule": stage3_partition_map_rule,
+                "threshold_selection_data": (
+                    "No separate threshold-selection data in standard Stage 3; comparison uses classifier hard predictions."
+                ),
+                "hyperparameter_selection_data": (
+                    "GeoRF: fixed hyperparameters. GeoDT Stage 1: max_depth selected on the internal validation subset "
+                    "using class-1 F1 when DT_MAX_DEPTH_CANDIDATES is enabled. Stage 3 comparison: fixed RF/DT parameters."
+                ),
+                "final_test_data": f"{target} target-month observations only",
+            })
 
 df = pd.DataFrame(rows)
 df.to_csv(out, index=False)
@@ -183,7 +184,7 @@ Expected:
 
 ```text
 final_artifacts_in_paper_updated/temporal_data_splits_table.csv
-(144, 16)
+(36, 16)
 ```
 
 - [ ] **Step 2: Verify row count, scope coverage, and date sentinels**
@@ -196,17 +197,23 @@ import pandas as pd
 
 path = "final_artifacts_in_paper_updated/temporal_data_splits_table.csv"
 df = pd.read_csv(path)
-assert len(df) == 144, len(df)
-assert df["target_month"].nunique() == 48, df["target_month"].nunique()
+assert len(df) == 36, len(df)
+assert df["target_month"].nunique() == 12, df["target_month"].nunique()
 assert sorted(df["forecasting_scope"].unique().tolist()) == ["fs1", "fs2", "fs3"]
+assert df["stage3_partition_map_rule"].value_counts().to_dict() == {
+    "m2 month-specific partition": 12,
+    "m6 month-specific partition": 12,
+    "m10 month-specific partition": 12,
+}, df["stage3_partition_map_rule"].value_counts().to_dict()
+assert not df["stage3_partition_map_rule"].str.contains("general", case=False).any()
 
 checks = {
-    ("2021-01", "fs1"): ("2017-10-01", "2020-09-01", "2021-01-01", "2021-02-01"),
-    ("2021-01", "fs2"): ("2017-06-01", "2020-05-01", "2021-01-01", "2021-02-01"),
-    ("2021-01", "fs3"): ("2017-02-01", "2020-01-01", "2021-01-01", "2021-02-01"),
-    ("2024-12", "fs1"): ("2021-09-01", "2024-08-01", "2024-12-01", "2025-01-01"),
-    ("2024-12", "fs2"): ("2021-05-01", "2024-04-01", "2024-12-01", "2025-01-01"),
-    ("2024-12", "fs3"): ("2021-01-01", "2023-12-01", "2024-12-01", "2025-01-01"),
+    ("2021-02", "fs1"): ("2017-11-01", "2020-10-01", "2021-02-01", "2021-03-01"),
+    ("2021-02", "fs2"): ("2017-07-01", "2020-06-01", "2021-02-01", "2021-03-01"),
+    ("2021-02", "fs3"): ("2017-03-01", "2020-02-01", "2021-02-01", "2021-03-01"),
+    ("2024-10", "fs1"): ("2021-07-01", "2024-06-01", "2024-10-01", "2024-11-01"),
+    ("2024-10", "fs2"): ("2021-03-01", "2024-02-01", "2024-10-01", "2024-11-01"),
+    ("2024-10", "fs3"): ("2020-11-01", "2023-10-01", "2024-10-01", "2024-11-01"),
 }
 for key, expected in checks.items():
     row = df[(df["target_month"] == key[0]) & (df["forecasting_scope"] == key[1])].iloc[0]
@@ -245,7 +252,7 @@ Use `apply_patch` to add `final_artifacts_in_paper_updated/temporal_data_splits_
 
 ### 写作原则
 
-本 note 只描述当前 no-leak GeoRF/GeoDT 主 workflow 已实现的数据使用方式。审稿人要求的 full target-month x horizon 展示，不在 appendix 中打印 144 行明细；appendix 使用公式表、stage-level table 和 target calendar month map-selection table 来覆盖所有 target months 和 horizons。完整 144 行核查表保存在同一文件夹的 `temporal_data_splits_table.csv`，作为 artifact-level audit companion。
+本 note 只描述当前 no-leak GeoRF/GeoDT 主 workflow 已实现的数据使用方式。appendix 不枚举全部 configured candidate target-month x horizon 组合；appendix 使用公式表、stage-level table 和 target calendar month map-selection table 区分 configured candidate window 和 current evaluated result rows。当前 36 行核查表保存在同一文件夹的 `temporal_data_splits_table.csv`，作为 artifact-level audit companion。
 
 ### 数据窗口总览
 
@@ -253,7 +260,7 @@ Use `apply_patch` to add `final_artifacts_in_paper_updated/temporal_data_splits_
 - Stage 1 recursive split acceptance 使用该运行 rolling training window 内部的 validation subset；当前 `GROUP_SPLIT` 为 `val_ratio=0.20`、`min_val_per_group=1`、`skip_singleton_groups=True`、`random_state=42`。
 - Stage 2 consensus clustering 只使用 Stage 1 产出的 linked partition plans 和对应 performance-derived weights，不使用 2021-2024 final test outcomes。
 - 当前 Stage 2 产物中，GeoRF general consensus 使用 24 个 linked plans，m2/m6/m10 各使用 8 个 linked plans；GeoDT general consensus 使用 27 个 linked plans，m2/m6/m10 各使用 9 个 linked plans。
-- Stage 3 fixed-partition evaluation 覆盖 2021-01 到 2024-12。对 target month `T` 和 horizon `h`，当前代码使用 `[T - h - 35 months, T - h)` 作为 rolling training mask，使用 `[T, T + 1 month)` 作为 final test mask。
+- Stage 3 configured candidate loop 覆盖 2021-01 到 2024-12，run manifest 记录 `n_test_months=48`。当前有 evaluated result rows 的 target months 只有 2021-2024 年的 February、June、October，run manifest 记录 `n_test_months_evaluated=12` per scope。对 target month `T` 和 horizon `h`，当前代码使用 `[T - h - 35 months, T - h)` 作为 rolling training mask，使用 `[T, T + 1 month)` 作为 final test mask。
 
 ### 不写入 appendix 的额外承诺
 
@@ -263,7 +270,7 @@ Use `apply_patch` to add `final_artifacts_in_paper_updated/temporal_data_splits_
 
 ## Appendix: Temporal Data-Use Schematic and Split Rules
 
-The main workflow uses a no-leak temporal separation between partition learning, consensus construction, and final evaluation. Stage 1 learns recursive partition candidates on 2018-2020 target months. Stage 2 constructs fixed consensus maps from those Stage 1 partition plans. Stage 3 evaluates the fixed partitions on 2021-01 through 2024-12.
+The main workflow uses a no-leak temporal separation between partition learning, consensus construction, and final evaluation. Stage 1 learns recursive partition candidates on 2018-2020 target months. Stage 2 constructs fixed consensus maps from those Stage 1 partition plans. Stage 3 is configured with a candidate target-month loop from 2021-01 through 2024-12 (`n_test_months=48` in run manifests), but current evaluated result rows exist only for February, June, and October in each year (`n_test_months_evaluated=12` per scope).
 
 ```text
 Stage 1: 2018-2020 partition-learning runs
@@ -274,7 +281,8 @@ Stage 2: consensus maps from 2018-2020 linked plans only
     general map + month-specific maps for February, June, and October
         |
         v
-Stage 3: 2021-01..2024-12 fixed-partition evaluation
+Stage 3: configured 2021-01..2024-12 candidate loop
+    current evaluated rows: February, June, October only
     rolling temporal train window -> fixed model parameters -> final target month T
 ```
 
@@ -284,7 +292,7 @@ Stage 3: 2021-01..2024-12 fixed-partition evaluation
 |---|---|---|---|---|
 | Stage 1 partition learning | 2018-2020 target months | Learns recursive partition candidates | Each run uses a rolling temporal training window and an internal validation subset for split acceptance. | Final 2021-2024 test outcomes are not used to learn partition candidates. |
 | Stage 2 consensus clustering | Linked Stage 1 plans from 2018-2020 only | Builds fixed general and month-specific consensus maps | Current artifacts contain GeoRF general=24 plans and GeoRF m2/m6/m10=8 plans each; GeoDT general=27 plans and GeoDT m2/m6/m10=9 plans each. | Consensus maps are created before Stage 3 final evaluation and do not use 2021-2024 outcomes. |
-| Stage 3 final evaluation | 2021-01 through 2024-12 target months | Tests pooled and fixed-partition local models | Each target month uses the rolling training rule in Table A2 and tests on the target month only. | Fixed partitions from Stage 2 are applied; final test labels are used only for evaluation. |
+| Stage 3 final evaluation | Configured candidate window: 2021-01 through 2024-12; current evaluated result rows: February, June, October for 2021-2024 | Tests pooled and fixed-partition local models | Each evaluated target month uses the rolling training rule in Table A2 and tests on the target month only. | Fixed partitions from Stage 2 are applied; final test labels are used only for evaluation. |
 | Threshold selection | Not a separate data split in the standard comparison | Not tuned in this workflow | Standard Stage 3 comparison uses classifier hard predictions. | No final-test-period threshold tuning is performed. |
 | Hyperparameter selection | Model-specific | GeoRF fixed; GeoDT Stage 1 depth selection | GeoRF uses fixed hyperparameters. GeoDT Stage 1 selects `max_depth` on the internal validation subset using class-1 F1 when `DT_MAX_DEPTH_CANDIDATES` is enabled. Stage 3 comparison uses fixed RF/DT parameters. | GeoDT Stage 1 selection is confined to the Stage 1 rolling training window; Stage 3 does not tune on final test labels. |
 
@@ -305,26 +313,26 @@ TEST mask   = [T, T + 1 month)
 | fs2 | 8 months | `[T - 43 months, T - 8 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
 | fs3 | 12 months | `[T - 47 months, T - 12 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
 
-For example, the implemented rule maps `T=2021-01` and `fs1` to a Stage 3 training mask of `[2017-10-01, 2020-09-01)` and a final test mask of `[2021-01-01, 2021-02-01)`.
+For example, the implemented rule maps evaluated `T=2021-02` and `fs1` to a Stage 3 training mask of `[2017-11-01, 2020-10-01)` and a final test mask of `[2021-02-01, 2021-03-01)`.
 
 ### Table A3. Stage 3 Partition Map Selection by Target Calendar Month
 
 | Target calendar month | Stage 3 partition map used | Stage 2 consensus input filter |
 |---|---|---|
-| January | General partition | No month filter |
+| January | General partition if evaluated in a future run; no current final-test result rows | No month filter |
 | February | February-specific `m2` partition | `month == 2` |
-| March | General partition | No month filter |
-| April | General partition | No month filter |
-| May | General partition | No month filter |
+| March | General partition if evaluated in a future run; no current final-test result rows | No month filter |
+| April | General partition if evaluated in a future run; no current final-test result rows | No month filter |
+| May | General partition if evaluated in a future run; no current final-test result rows | No month filter |
 | June | June-specific `m6` partition | `month == 6` |
-| July | General partition | No month filter |
-| August | General partition | No month filter |
-| September | General partition | No month filter |
+| July | General partition if evaluated in a future run; no current final-test result rows | No month filter |
+| August | General partition if evaluated in a future run; no current final-test result rows | No month filter |
+| September | General partition if evaluated in a future run; no current final-test result rows | No month filter |
 | October | October-specific `m10` partition | `month == 10` |
-| November | General partition | No month filter |
-| December | General partition | No month filter |
+| November | General partition if evaluated in a future run; no current final-test result rows | No month filter |
+| December | General partition if evaluated in a future run; no current final-test result rows | No month filter |
 
-A machine-readable audit companion, `temporal_data_splits_table.csv`, is included in this artifact folder. It enumerates all 2021-2024 target months and fs1/fs2/fs3 horizons using the same date formula, but those 144 rows are not printed in the appendix.
+A machine-readable audit companion, `temporal_data_splits_table.csv`, is included in this artifact folder. It enumerates the current evaluated result rows only: February, June, and October for 2021-2024 across fs1/fs2/fs3, for 36 rows using the same date formula. Non-2/6/10 months are configured candidates that would use the general partition if evaluated, but they do not have final test rows in the current results.
 ```
 
 - [ ] **Step 2: Check the note does not overclaim unimplemented methods**
@@ -332,7 +340,7 @@ A machine-readable audit companion, `temporal_data_splits_table.csv`, is include
 Run:
 
 ```bash
-rg -n "tuned|calibration|AUC|log-loss|sensitivity|2021-2024 outcomes are used|144 rows are printed" final_artifacts_in_paper_updated/temporal_data_splits_schematic_note.md
+rg -n "tuned|calibration|AUC|log-loss|sensitivity|2021-2024 outcomes are used|all candidate rows are printed" final_artifacts_in_paper_updated/temporal_data_splits_schematic_note.md
 ```
 
 Expected:
@@ -383,7 +391,7 @@ expected_columns = [
     "final_test_data",
 ]
 assert df.columns.tolist() == expected_columns, df.columns.tolist()
-assert len(df) == 144, len(df)
+assert len(df) == 36, len(df)
 print("artifact schema checks passed")
 PY
 ```

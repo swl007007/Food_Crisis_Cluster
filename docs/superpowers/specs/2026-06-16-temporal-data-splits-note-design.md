@@ -9,9 +9,10 @@ compact tables showing, for each target-month/horizon rule, the training period,
 split-acceptance validation data, Stage 2 consensus data, threshold-selection
 data, hyperparameter-selection data, and final test data.
 
-The appendix should not enumerate all 144 target-month x horizon rows. Instead,
-it should define the implemented formula and use compact tables that cover all
-target months and horizons.
+The appendix should not enumerate all candidate target-month x horizon rows.
+Instead, it should define the implemented formula and use compact tables that
+distinguish the configured Stage 3 candidate window from the currently
+evaluated result rows.
 
 ## Scope
 
@@ -25,10 +26,12 @@ Planned final artifacts:
    - Chinese audit section first.
    - English appendix-ready section last.
    - Includes a compact ASCII schematic.
-   - Includes compact tables, not a 144-row appendix table.
+   - Includes compact tables, not an all-candidate appendix table.
 2. `final_artifacts_in_paper_updated/temporal_data_splits_table.csv`
-   - Audit/reproducibility companion table with one row per 2021-2024 target
-     month and forecasting scope.
+   - Audit/reproducibility companion table with one row per actually evaluated
+     final-test target month and forecasting scope.
+   - Current evaluated result rows cover February, June, and October for
+     2021-2024 across `fs1`, `fs2`, and `fs3`, for 36 rows total.
    - May be referenced as an artifact-folder companion, but the appendix text
      should remain compact and formula-based.
 
@@ -69,7 +72,10 @@ Summarize the implemented temporal separation:
 
 - Stage 1 learns partition candidates on 2018-2020 target months.
 - Stage 2 builds consensus maps only from Stage 1 linked partition plans.
-- Stage 3 evaluates fixed consensus maps on 2021-01 through 2024-12.
+- Stage 3 is configured with a candidate target-month loop from 2021-01 through
+  2024-12 (`n_test_months=48` in run manifests), but current evaluated result
+  rows exist only for February, June, and October in each year
+  (`n_test_months_evaluated=12` per scope in run manifests).
 - The appendix will not claim independent threshold tuning or extra sensitivity
   analyses that are not implemented.
 
@@ -86,7 +92,8 @@ Stage 2: consensus maps from 2018-2020 linked plans only
     general map + month-specific maps for Feb/Jun/Oct
         |
         v
-Stage 3: 2021-01..2024-12 fixed-partition evaluation
+Stage 3: configured 2021-01..2024-12 candidate loop
+    current evaluated rows: February, June, October only
     rolling temporal train window -> fixed model params -> final test month T
 ```
 
@@ -114,17 +121,22 @@ Table 3: partition-map selection by target calendar month.
 - Rows: 12 calendar months.
 - Columns: Stage 3 partition map used and Stage 2 consensus input filter.
 - February uses `m2`, June uses `m6`, October uses `m10`; other months use
-  `general`.
+  `general` if they are configured candidates with result data in a future run.
+- The table must not imply that non-2/6/10 months have final test rows in the
+  current results. It should explicitly state that current evaluated result rows
+  are only for February, June, and October.
 
-The full 144-row companion CSV can include exact computed date ranges for audit,
-but the appendix text should only cite compact rules and examples.
+The 36-row companion CSV should include exact computed date ranges for the
+actually evaluated result rows, while the appendix text should cite compact
+rules and examples.
 
 ## Paper-Facing Claims Allowed
 
 The English appendix may state:
 
-- Stage 1/2 use 2018-2020 partition-learning data and Stage 3 uses 2021-2024
-  final evaluation data.
+- Stage 1/2 use 2018-2020 partition-learning data. Stage 3 is configured with
+  2021-01 through 2024-12 candidate target months, while the current evaluated
+  final-test result rows cover February, June, and October for 2021-2024.
 - For each Stage 3 target month `T` and horizon `h`, the rolling train/test
   dates are determined by the code formula above.
 - Stage 1 split acceptance uses an internal validation subset from the rolling
@@ -146,7 +158,9 @@ The English appendix may state:
 
 The appendix must not claim:
 
-- A 144-row table is printed in the paper appendix.
+- The appendix or companion CSV covers all configured 2021-2024 candidate
+  months as evaluated final-test rows.
+- Non-2/6/10 target months have current final-test result rows.
 - Stage 3 threshold tuning, probability calibration, AUC/log-loss optimization,
   or an independent threshold-selection validation set.
 - A separate final-test-period hyperparameter tuning step.
@@ -160,12 +174,14 @@ Implementation verification should check:
 
 - `temporal_data_splits_schematic_note.md` exists and ends with the English
   appendix-ready section.
-- The appendix uses compact tables and formula-based coverage, not a 144-row
-  printed table.
-- `temporal_data_splits_table.csv` exists and has 144 rows for 48 target months
-  x 3 scopes, if the companion CSV is created.
+- The appendix uses compact tables and formula-based coverage, not an
+  all-candidate printed table.
+- `temporal_data_splits_table.csv` exists and has 36 rows for 4 years x 3
+  evaluated calendar months x 3 scopes, if the companion CSV is created.
 - Computed CSV dates match `train_test_split_rolling_window`:
   `[T - h - 35 months, T - h)` for training and `[T, T + 1 month)` for test.
+- CSV targets are limited to 2021-2024 February, June, and October, with 12
+  unique target months per scope.
 - Stage 2 plan counts in the note match current summary artifacts.
 - `git diff --check` passes.
 
