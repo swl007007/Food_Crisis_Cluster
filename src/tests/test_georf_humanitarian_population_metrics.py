@@ -13,6 +13,16 @@ spec.loader.exec_module(humanitarian)
 
 
 class GeoRFHumanitarianPopulationMetricsTests(unittest.TestCase):
+    def test_scope_display_labels_use_horizon_wording(self):
+        self.assertEqual(
+            humanitarian.HORIZONS,
+            {
+                "fs1": "4-month horizon",
+                "fs2": "8-month horizon",
+                "fs3": "12-month horizon",
+            },
+        )
+
     def test_compute_population_metrics_uses_population_confusion_totals(self):
         df = pd.DataFrame(
             {
@@ -37,7 +47,7 @@ class GeoRFHumanitarianPopulationMetricsTests(unittest.TestCase):
         df = pd.DataFrame(
             {
                 "scope": ["fs1"] * 4,
-                "forecasting_horizon": ["4-month lag"] * 4,
+                "forecasting_horizon": ["4-month horizon"] * 4,
                 "month_start": pd.to_datetime(["2021-02-01"] * 4),
                 "y_true": [1, 1, 0, 0],
                 "y_pred_pooled": [1, 0, 1, 0],
@@ -53,7 +63,7 @@ class GeoRFHumanitarianPopulationMetricsTests(unittest.TestCase):
         self.assertEqual(compact.shape, (1, 14))
         row = compact.iloc[0]
         self.assertEqual(row["scope"], "fs1")
-        self.assertEqual(row["forecasting_horizon"], "4-month lag")
+        self.assertEqual(row["forecasting_horizon"], "4-month horizon")
         self.assertAlmostEqual(row["delta_missed_crisis_population"], -200.0)
         self.assertAlmostEqual(row["delta_false_alert_population"], -300.0)
         self.assertAlmostEqual(row["delta_population_weighted_recall"], 2.0 / 3.0)
@@ -82,7 +92,7 @@ class GeoRFHumanitarianPopulationMetricsTests(unittest.TestCase):
                 "FEWSNET_admin_code": [10, 20],
                 "month_start": pd.to_datetime(["2021-02-01", "2021-02-01"]),
                 "scope": ["fs1", "fs1"],
-                "forecasting_horizon": ["4-month lag", "4-month lag"],
+                "forecasting_horizon": ["4-month horizon", "4-month horizon"],
                 "y_true": [1, 0],
                 "y_pred_pooled": [1, 0],
                 "y_pred_partitioned": [1, 0],
@@ -102,7 +112,7 @@ class GeoRFHumanitarianPopulationMetricsTests(unittest.TestCase):
     def test_write_markdown_table_has_no_optional_dependency(self):
         table = pd.DataFrame(
             {
-                "forecasting_horizon": ["4-month lag"],
+                "forecasting_horizon": ["4-month horizon"],
                 "partitioned_population_weighted_recall": [0.75],
             }
         )
@@ -113,7 +123,7 @@ class GeoRFHumanitarianPopulationMetricsTests(unittest.TestCase):
 
             text = path.read_text(encoding="utf-8")
             self.assertIn("| forecasting_horizon | partitioned_population_weighted_recall |", text)
-            self.assertIn("| 4-month lag | 0.75 |", text)
+            self.assertIn("| 4-month horizon | 0.75 |", text)
 
 
 if __name__ == "__main__":

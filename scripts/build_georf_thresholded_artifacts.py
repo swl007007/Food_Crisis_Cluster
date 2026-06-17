@@ -9,14 +9,15 @@ from pathlib import Path
 
 import pandas as pd
 
+try:
+    from paper_horizon_labels import HORIZON_LABELS
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_LABELS
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "12_thresholded_georf_results"
-HORIZONS = {
-    "fs1": "4-month lag",
-    "fs2": "8-month lag",
-    "fs3": "12-month lag",
-}
+HORIZONS = HORIZON_LABELS
 
 
 def load_thresholded_results(source_dir: Path, scopes: list[str]) -> tuple[pd.DataFrame, pd.DataFrame]:

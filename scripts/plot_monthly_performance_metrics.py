@@ -13,6 +13,11 @@ import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
 
+try:
+    from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ABLATION_ROOT = Path("main_ablation_results/march2026_main_backup_month_ind_cont3")
@@ -34,11 +39,11 @@ MODEL_CONFIG = {
     },
 }
 SCOPES = ("fs1", "fs2", "fs3")
-SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
+SCOPE_TO_HORIZON = HORIZON_MONTHS_BY_SCOPE
 METRICS = (("precision", "Precision"), ("recall", "Recall"), ("f1", "F1"))
 MODEL_SERIES = ("partitioned", "pooled")
 FEWSNET_COLOR = "#2ca02c"
-FEWSNET_REUSED_LABEL = "FEWSNET baseline (8-month lag reused for 12-month lag)"
+FEWSNET_REUSED_LABEL = "FEWSNET baseline (8-month horizon reused for 12-month horizon)"
 QUARTER_TO_MONTH = {"1": "02", "2": "06", "4": "10"}
 
 MODEL_COLUMNS = {"test_month", "model", "precision", "recall", "f1"}
@@ -58,7 +63,7 @@ def parse_args() -> argparse.Namespace:
         dest="extend_fewsnet",
         action="store_true",
         default=False,
-        help="Reuse FEWSNET 8-month baseline values for the 12-month lag as an explicitly labeled diagnostic.",
+        help="Reuse FEWSNET 8-month baseline values for the 12-month horizon as an explicitly labeled diagnostic.",
     )
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
@@ -108,8 +113,7 @@ def fewsnet_path(fewsnet_root: Path, scope: str) -> Path:
 
 
 def scope_label(scope: str) -> str:
-    horizon = SCOPE_TO_HORIZON.get(scope)
-    return f"{horizon}-month lag" if horizon is not None else scope
+    return label_for_scope(scope)
 
 
 def load_model_metrics(ablation_root: Path, models: list[str]) -> tuple[pd.DataFrame, list[str]]:
@@ -311,7 +315,7 @@ def render_model_figure(
                 ax.text(
                     0.01,
                     0.04,
-                    "FEWSNET 8-month baseline reused for 12-month lag",
+                    "FEWSNET 8-month baseline reused for 12-month horizon",
                     transform=ax.transAxes,
                     fontsize=8,
                     color=FEWSNET_COLOR,
@@ -389,7 +393,7 @@ def make_manifest(
                 {"internal_scope": scope, "display_label": scope_label(scope), "horizon_months": SCOPE_TO_HORIZON[scope]}
                 for scope in SCOPES
             ],
-            "12_month_fewsnet_source": "8-month lag" if extend_fewsnet else None,
+            "12_month_fewsnet_source": "8-month horizon" if extend_fewsnet else None,
         },
         "series_contract": {
             "partitioned": "solid model-color line from model == partitioned",
@@ -403,9 +407,9 @@ def make_manifest(
             "ignored_quarters": ["3"],
         },
         "fewsnet_fs3_assumption": (
-            "FEWSNET has no native 12-month baseline; 8-month values are reused for the 12-month lag as a labeled comparison proxy."
+            "FEWSNET has no native 12-month baseline; 8-month values are reused for the 12-month horizon as a labeled comparison proxy."
             if extend_fewsnet
-            else "FEWSNET has no native 12-month baseline and is not plotted for the 12-month lag."
+            else "FEWSNET has no native 12-month baseline and is not plotted for the 12-month horizon."
         ),
         "generated_artifacts": generated_artifacts,
         "missing_points": missing_points,

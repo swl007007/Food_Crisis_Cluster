@@ -2,7 +2,7 @@
 """
 Seasonal Performance Maps & Tables Generator
 =============================================
-Loads predictions_monthly.csv files for the 4-, 8-, and 12-month lags, generates:
+Loads predictions_monthly.csv files for the 4-, 8-, and 12-month horizons, generates:
   - 3 seasonal choropleth maps (all / crisis-only / noncrisis-only)
   - Table 1: model performance by season
   - Table 2: model performance by region (builtin FEWSNET mapping)
@@ -24,18 +24,20 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import BoundaryNorm
 
 try:
+    from paper_horizon_labels import label_for_scope
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import label_for_scope
+
+try:
     import contextily as ctx
 except ImportError:
     ctx = None
 
 warnings.filterwarnings('ignore', category=FutureWarning)
 
-SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
-
 
 def scope_label(scope: str) -> str:
-    horizon = SCOPE_TO_HORIZON.get(str(scope))
-    return f"{horizon}-month lag" if horizon is not None else str(scope)
+    return label_for_scope(str(scope))
 
 
 def with_horizon_labels(df: pd.DataFrame) -> pd.DataFrame:

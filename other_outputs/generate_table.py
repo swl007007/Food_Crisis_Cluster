@@ -1,10 +1,16 @@
 import os
 import sys
 import csv
+from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 
 BASE = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster"
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = REPO_ROOT / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 
 FS0_ONLY = "--fs0-only" in sys.argv
 
@@ -14,8 +20,12 @@ if FS0_ONLY:
     OUTPUT_NAMES = ("Table_Format_fs0.xlsx", "Model_Comparison_Table_fs0.xlsx")
 else:
     SCOPES = (1, 2, 3)
-    FS_TO_LAG = {1: 4, 2: 8, 3: 12}
+    FS_TO_LAG = {int(scope.removeprefix("fs")): months for scope, months in HORIZON_MONTHS_BY_SCOPE.items()}
     OUTPUT_NAMES = ("Table_Format.xlsx", "Model_Comparison_Table.xlsx")
+
+
+def fs_label(fs):
+    return f"{FS_TO_LAG[fs]}-month horizon" if fs == 0 else label_for_scope(f"fs{fs}")
 
 def read_csv(path):
     with open(path, newline="", encoding="utf-8-sig") as f:
@@ -136,7 +146,7 @@ def build_workbook():
     ws["F1"].alignment = center_align
     ws["F1"].fill = header_fill
 
-    headers = ["", "Forecasting horizon (month lag)", "Precision", "Recall", "F1",
+    headers = ["", "Forecasting horizon", "Precision", "Recall", "F1",
                "precision", "recall", "F1", "F1 Improvement Percentage"]
     for c, h in enumerate(headers, 1):
         cell = ws.cell(row=2, column=c, value=h)
@@ -156,7 +166,7 @@ def build_workbook():
 
             if first:
                 ws.cell(row=row, column=1, value=model_name).font = model_font
-            ws.cell(row=row, column=2, value=lag).alignment = center_align
+            ws.cell(row=row, column=2, value=fs_label(fs)).alignment = center_align
 
             if m:
                 for ci, key in enumerate(["split_precision", "split_recall", "split_f1"], 3):

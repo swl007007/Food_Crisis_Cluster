@@ -7,9 +7,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 BASE = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = BASE / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+
 MIN_YEAR = 2021
 
-FS_TO_LAG = {1: 4, 2: 8, 3: 12}
+FS_TO_LAG = {int(scope.removeprefix("fs")): months for scope, months in HORIZON_MONTHS_BY_SCOPE.items()}
 
 RESULT_DIRS = {
     ("GeoRF", 1): BASE / "result_partition_k40_compare_GF_fs1",
@@ -124,7 +129,7 @@ for row, fs in enumerate(SCOPES):
         if row == 0:
             ax.set_title(metric_label, fontsize=14, fontweight="bold")
         if col == 0:
-            ax.set_ylabel(f"Lag {lag} months", fontsize=12, fontweight="bold")
+            ax.set_ylabel(label_for_scope(f"fs{fs}"), fontsize=12, fontweight="bold")
         if row == len(SCOPES) - 1:
             ax.set_xlabel("Time Period", fontsize=11)
             step = max(1, len(common) // 8)

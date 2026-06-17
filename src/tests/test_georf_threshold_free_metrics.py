@@ -14,6 +14,16 @@ spec.loader.exec_module(threshold_metrics)
 
 
 class GeoRFThresholdFreeMetricsTests(unittest.TestCase):
+    def test_scope_display_labels_use_horizon_wording(self):
+        self.assertEqual(
+            threshold_metrics.HORIZONS,
+            {
+                "fs1": "4-month horizon",
+                "fs2": "8-month horizon",
+                "fs3": "12-month horizon",
+            },
+        )
+
     def test_average_precision_matches_sklearn(self):
         y_true = pd.Series([0, 1, 1, 0])
         y_prob = pd.Series([0.10, 0.70, 0.40, 0.20])
@@ -54,7 +64,7 @@ class GeoRFThresholdFreeMetricsTests(unittest.TestCase):
             [
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "pooled",
                     "support": 4,
                     "positive_cases": 2,
@@ -66,7 +76,7 @@ class GeoRFThresholdFreeMetricsTests(unittest.TestCase):
                 },
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "partitioned",
                     "support": 4,
                     "positive_cases": 2,

@@ -10,14 +10,15 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import average_precision_score
 
+try:
+    from paper_horizon_labels import HORIZON_LABELS
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_LABELS
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "11_threshold_free_metrics"
-HORIZONS = {
-    "fs1": "4-month lag",
-    "fs2": "8-month lag",
-    "fs3": "12-month lag",
-}
+HORIZONS = HORIZON_LABELS
 MODEL_PROB_COLUMNS = {
     "pooled": "y_prob_pooled",
     "partitioned": "y_prob_partitioned",

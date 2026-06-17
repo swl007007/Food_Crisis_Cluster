@@ -11,6 +11,11 @@ import pandas as pd
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
+try:
+    from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_RUN_ROOT = REPO_ROOT / "main_ablation_exclude_updated_stage3_fixed_partitions"
@@ -28,11 +33,11 @@ FEATURE_GROUPS = {
     "lag_exclude": "Lag Exclude",
 }
 
-SCOPE_TO_LAG = {1: 4, 2: 8, 3: 12}
+SCOPE_TO_LAG = {int(scope.removeprefix("fs")): months for scope, months in HORIZON_MONTHS_BY_SCOPE.items()}
 
 HEADERS = [
     "",
-    "Forecasting horizon (month lag)",
+    "Forecasting horizon",
     "Precision",
     "Recall",
     "F1",

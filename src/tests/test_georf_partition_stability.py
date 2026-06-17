@@ -1,4 +1,5 @@
 import importlib.util
+import inspect
 import math
 import unittest
 from pathlib import Path
@@ -13,6 +14,12 @@ spec.loader.exec_module(stability)
 
 
 class GeoRFPartitionStabilityTests(unittest.TestCase):
+    def test_partition_stability_plot_uses_horizon_axis_label(self):
+        source = inspect.getsource(stability.render_figure)
+
+        self.assertIn('"Forecasting horizon"', source)
+        self.assertNotIn("Forecasting horizon / lag", source)
+
     def test_pairwise_metrics_align_common_valid_admin_units(self):
         left = pd.DataFrame(
             {

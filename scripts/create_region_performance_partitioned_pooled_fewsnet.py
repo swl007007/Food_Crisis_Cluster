@@ -11,6 +11,11 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
+try:
+    from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE_DIR = REPO_ROOT / "main_ablation_results" / "march2026_main_backup_month_ind_cont3"
@@ -27,7 +32,7 @@ DEFAULT_OUTPUT = (
     / "seasonal_performance_GF"
     / "table2_region_performance_partitioned_pooled_fewsnet.csv"
 )
-SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
+SCOPE_TO_HORIZON = HORIZON_MONTHS_BY_SCOPE
 
 
 def resolve_local_path(path: Path) -> Path:
@@ -46,8 +51,7 @@ def normalize_admin_code(series: pd.Series) -> pd.Series:
 
 
 def scope_label(scope: str) -> str:
-    horizon = SCOPE_TO_HORIZON.get(str(scope))
-    return f"{horizon}-month lag" if horizon is not None else str(scope)
+    return label_for_scope(str(scope))
 
 
 def load_seasonal_helpers():
@@ -75,7 +79,7 @@ def parse_args(argv=None) -> argparse.Namespace:
         dest="extend_fewsnet",
         action="store_true",
         default=False,
-        help="Reuse FEWSNET 8-month expert predictions for the 12-month lag as a labeled diagnostic.",
+        help="Reuse FEWSNET 8-month expert predictions for the 12-month horizon as a labeled diagnostic.",
     )
     return parser.parse_args(argv)
 
@@ -241,7 +245,7 @@ def main(argv=None) -> None:
     print(f"FEWSNET unique admin codes: {fewsnet_source['admin_code'].nunique()}")
     print(f"FEWSNET countries with admin_code: {fewsnet_source['country'].nunique()}")
     print(f"Model unique admin codes: {model_df['FEWSNET_admin_code'].nunique()}")
-    print(f"FEWSNET 12-month baseline extended from 8-month lag: {args.extend_fewsnet}")
+    print(f"FEWSNET 12-month baseline extended from 8-month horizon: {args.extend_fewsnet}")
     print(f"Wrote: {args.output}")
     print(f"Rows: {len(result)}, columns: {len(result.columns)}")
 

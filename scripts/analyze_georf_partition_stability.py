@@ -11,6 +11,11 @@ from typing import Iterable
 import pandas as pd
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 
+try:
+    from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INDEX = REPO_ROOT / "GeoRFExperiment" / "linked_tables" / "main_index.csv"
@@ -18,7 +23,7 @@ DEFAULT_PARTITION_DIR = REPO_ROOT / "GeoRFExperiment" / "linked_tables" / "parti
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated"
 
 INVALID_PARTITION_LABELS = {"", "nan", "none", "null", "na", "n/a", "s-1"}
-HORIZON_MONTHS = {"fs1": 4, "fs2": 8, "fs3": 12}
+HORIZON_MONTHS = HORIZON_MONTHS_BY_SCOPE
 COMPARISON_ORDER = ["across_years", "across_horizons", "across_months", "mixed"]
 
 
@@ -270,7 +275,7 @@ def render_figure(
     ]
     axes[2].boxplot(size_values, tick_labels=[f"{int(h)} mo" for h in horizons], showmeans=True)
     axes[2].set_title("Stage 1 cluster-size distribution", fontweight="bold")
-    axes[2].set_xlabel("Forecasting horizon / lag")
+    axes[2].set_xlabel("Forecasting horizon")
     axes[2].set_ylabel("Polygons per cluster")
     axes[2].grid(axis="y", alpha=0.25)
 

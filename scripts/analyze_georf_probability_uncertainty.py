@@ -13,6 +13,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+try:
+    from paper_horizon_labels import HORIZON_LABELS
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_LABELS
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated"
@@ -20,11 +25,7 @@ DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
     r"\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
 )
-HORIZONS = {
-    "fs1": "4-month lag",
-    "fs2": "8-month lag",
-    "fs3": "12-month lag",
-}
+HORIZONS = HORIZON_LABELS
 MODEL_COLUMNS = {
     "pooled": ("y_pred_pooled", "y_prob_pooled"),
     "partitioned": ("y_pred_partitioned", "y_prob_partitioned"),

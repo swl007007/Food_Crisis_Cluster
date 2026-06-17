@@ -14,6 +14,16 @@ spec.loader.exec_module(probability)
 
 
 class GeoRFProbabilityUncertaintyTests(unittest.TestCase):
+    def test_scope_display_labels_use_horizon_wording(self):
+        self.assertEqual(
+            probability.HORIZONS,
+            {
+                "fs1": "4-month horizon",
+                "fs2": "8-month horizon",
+                "fs3": "12-month horizon",
+            },
+        )
+
     def test_resolve_path_keeps_windows_drive_paths_under_windows_python(self):
         raw = Path(r"C:\Users\swl00\data\file.shp")
 
@@ -115,7 +125,7 @@ class GeoRFProbabilityUncertaintyTests(unittest.TestCase):
             [
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "metric": metric,
                     "delta_point": value,
                     "delta_ci_low": value - 0.01,
@@ -131,7 +141,7 @@ class GeoRFProbabilityUncertaintyTests(unittest.TestCase):
             + [
                 {
                     "scope": "fs2",
-                    "forecasting_horizon": "8-month lag",
+                    "forecasting_horizon": "8-month horizon",
                     "metric": metric,
                     "delta_point": value,
                     "delta_ci_low": value - 0.01,
@@ -149,7 +159,7 @@ class GeoRFProbabilityUncertaintyTests(unittest.TestCase):
         compact = probability.build_compact_bootstrap_table(bootstrap)
 
         self.assertEqual(compact.shape, (2, 6))
-        self.assertEqual(compact["forecasting_horizon"].tolist(), ["4-month lag", "8-month lag"])
+        self.assertEqual(compact["forecasting_horizon"].tolist(), ["4-month horizon", "8-month horizon"])
         self.assertIn("delta_precision", compact.columns)
         self.assertIn("delta_brier", compact.columns)
         self.assertEqual(compact.loc[0, "delta_recall"], "0.080 [0.070, 0.090]")
@@ -157,7 +167,7 @@ class GeoRFProbabilityUncertaintyTests(unittest.TestCase):
     def test_write_markdown_table_does_not_require_optional_tabulate(self):
         table = pd.DataFrame(
             {
-                "forecasting_horizon": ["4-month lag"],
+                "forecasting_horizon": ["4-month horizon"],
                 "delta_f1": ["0.041 [0.019, 0.063]"],
             }
         )
@@ -168,7 +178,7 @@ class GeoRFProbabilityUncertaintyTests(unittest.TestCase):
 
             text = path.read_text(encoding="utf-8")
             self.assertIn("| forecasting_horizon | delta_f1 |", text)
-            self.assertIn("| 4-month lag | 0.041 [0.019, 0.063] |", text)
+            self.assertIn("| 4-month horizon | 0.041 [0.019, 0.063] |", text)
 
     def test_region_specific_ci_skips_regions_with_too_few_countries(self):
         df = pd.DataFrame(

@@ -14,6 +14,16 @@ spec.loader.exec_module(false_modes)
 
 
 class GeoRFFalseNegativeErrorModeTests(unittest.TestCase):
+    def test_scope_display_labels_use_horizon_wording(self):
+        self.assertEqual(
+            false_modes.HORIZONS,
+            {
+                "fs1": "4-month horizon",
+                "fs2": "8-month horizon",
+                "fs3": "12-month horizon",
+            },
+        )
+
     def test_assign_hotspots_uses_country_and_latitude_rules(self):
         df = pd.DataFrame(
             {
@@ -93,7 +103,7 @@ class GeoRFFalseNegativeErrorModeTests(unittest.TestCase):
             {
                 "hotspot": ["Sudan", "Sudan", "Sudan"],
                 "scope": ["fs1", "fs1", "fs1"],
-                "forecasting_horizon": ["4-month lag"] * 3,
+                "forecasting_horizon": ["4-month horizon"] * 3,
                 "month_start": pd.to_datetime(["2021-02-01", "2021-02-01", "2021-06-01"]),
                 "y_true": [1, 1, 1],
                 "y_pred_partitioned": [0, 1, 0],

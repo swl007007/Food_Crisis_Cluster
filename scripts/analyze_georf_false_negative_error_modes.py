@@ -14,6 +14,11 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
+try:
+    from paper_horizon_labels import HORIZON_LABELS
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import HORIZON_LABELS
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA = Path(
@@ -26,11 +31,7 @@ DEFAULT_SEASONAL_CRISIS = (
 DEFAULT_ADJACENCY_CACHE = REPO_ROOT / "src" / "adjacency" / "polygon_adjacency_cache.pkl"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "10_false_negative_error_modes"
 
-HORIZONS = {
-    "fs1": "4-month lag",
-    "fs2": "8-month lag",
-    "fs3": "12-month lag",
-}
+HORIZONS = HORIZON_LABELS
 LAG_PHASE_COLUMNS = {
     "fs1": "fews_overall_phase_lagone",
     "fs2": "fews_overall_phase_lagtwo",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create separate 4-month-lag 2x2 Global partition map figures for GeoRF and GeoDT."""
+"""Create separate 4-month-horizon 2x2 Global partition map figures for GeoRF and GeoDT."""
 
 from __future__ import annotations
 
@@ -14,6 +14,11 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.colors import ListedColormap
+
+try:
+    from paper_horizon_labels import label_for_scope
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import label_for_scope
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -322,7 +327,7 @@ def plot_model_grid(
         handletextpad=0.35,
     )
     fig.suptitle(
-        f"{model} 4-month lag Global Refined Partition Mapping (k=40)",
+        f"{model} {label_for_scope('fs1')} Global Refined Partition Mapping (k=40)",
         fontsize=16,
         fontweight="bold",
     )
@@ -354,7 +359,7 @@ def main() -> None:
 
     for model in MODEL_SPECS:
         csvs = discover_model_csvs(args.source_dir, model)
-        print(f"\n{model} 4-month lag mappings:")
+        print(f"\n{model} {label_for_scope('fs1')} mappings:")
         for panel in PANEL_ORDER:
             print(f"  {panel:7s} -> {csvs[panel]}")
         output_path = args.output_dir / MODEL_SPECS[model]["output"]

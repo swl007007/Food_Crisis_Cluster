@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plot GeoDT branch 1 and branch 011 locations for the 2024-10 4-month-lag diagnostic pair."""
+"""Plot GeoDT branch 1 and branch 011 locations for the 2024-10 4-month-horizon diagnostic pair."""
 
 from __future__ import annotations
 
@@ -11,6 +11,11 @@ import geopandas as gpd
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import pandas as pd
+
+try:
+    from paper_horizon_labels import label_for_scope
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import label_for_scope
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -139,12 +144,12 @@ def plot_branch_locations(
         mpatches.Patch(
             facecolor="#eeeeee",
             edgecolor="#9a9a9a",
-            label="Other global 2024-10 GeoDT 4-month-lag areas",
+            label=f"Other global 2024-10 GeoDT {label_for_scope('fs1')} areas",
         )
     )
     fig.legend(handles=legend_handles, loc="lower center", ncol=3, frameon=True, fontsize=10)
     fig.suptitle(
-        "Global spatial locations of GeoDT branch-specific local DecisionTree comparison pair (2024-10, 4-month lag)",
+        f"Global spatial locations of GeoDT branch-specific local DecisionTree comparison pair (2024-10, {label_for_scope('fs1')})",
         fontsize=14,
         fontweight="bold",
     )

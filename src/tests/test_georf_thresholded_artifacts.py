@@ -13,12 +13,22 @@ spec.loader.exec_module(builder)
 
 
 class GeoRFThresholdedArtifactsTests(unittest.TestCase):
+    def test_scope_display_labels_use_horizon_wording(self):
+        self.assertEqual(
+            builder.HORIZONS,
+            {
+                "fs1": "4-month horizon",
+                "fs2": "8-month horizon",
+                "fs3": "12-month horizon",
+            },
+        )
+
     def test_build_horizon_metrics_uses_monthly_macro_mean(self):
         metrics = pd.DataFrame(
             [
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "partitioned",
                     "n": 100,
                     "tp": 90,
@@ -31,7 +41,7 @@ class GeoRFThresholdedArtifactsTests(unittest.TestCase):
                 },
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "partitioned",
                     "n": 100,
                     "tp": 1,
@@ -61,7 +71,7 @@ class GeoRFThresholdedArtifactsTests(unittest.TestCase):
             [
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "pooled",
                     "precision": 0.7,
                     "recall": 0.5,
@@ -69,7 +79,7 @@ class GeoRFThresholdedArtifactsTests(unittest.TestCase):
                 },
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "partitioned",
                     "precision": 0.75,
                     "recall": 0.6,
@@ -77,7 +87,7 @@ class GeoRFThresholdedArtifactsTests(unittest.TestCase):
                 },
                 {
                     "scope": "fs1",
-                    "forecasting_horizon": "4-month lag",
+                    "forecasting_horizon": "4-month horizon",
                     "model": "partitioned_thresholded",
                     "precision": 0.70,
                     "recall": 0.7,
@@ -97,7 +107,7 @@ class GeoRFThresholdedArtifactsTests(unittest.TestCase):
 
     def test_format_compact_rounds_numeric_columns(self):
         compact = pd.DataFrame(
-            [{"scope": "fs1", "forecasting_horizon": "4-month lag", "partitioned_thresholded_f1": 0.70321}]
+            [{"scope": "fs1", "forecasting_horizon": "4-month horizon", "partitioned_thresholded_f1": 0.70321}]
         )
 
         formatted = builder.format_for_markdown(compact)

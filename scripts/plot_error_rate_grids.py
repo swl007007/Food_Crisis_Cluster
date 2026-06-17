@@ -20,20 +20,21 @@ from matplotlib.colors import BoundaryNorm
 import numpy as np
 
 try:
+    from paper_horizon_labels import label_for_scope
+except ModuleNotFoundError:
+    from scripts.paper_horizon_labels import label_for_scope
+
+try:
     import contextily as ctx
 except ImportError:
     ctx = None
 
 warnings.filterwarnings('ignore', category=FutureWarning)
 
-SCOPE_TO_HORIZON = {"fs1": 4, "fs2": 8, "fs3": 12}
-
 
 def display_axis_value(label: str, value: Any) -> str:
     if label == "scope":
-        horizon = SCOPE_TO_HORIZON.get(str(value))
-        if horizon is not None:
-            return f"{horizon}-month lag"
+        return label_for_scope(str(value))
     return str(value)
 
 
