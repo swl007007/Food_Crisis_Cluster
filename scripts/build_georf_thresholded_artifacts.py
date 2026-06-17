@@ -63,9 +63,6 @@ def _aggregate_model_metrics(group: pd.DataFrame) -> pd.Series:
     fp = group["fp"].sum()
     fn = group["fn"].sum()
     tn = group["tn"].sum()
-    precision = tp / (tp + fp) if (tp + fp) else float("nan")
-    recall = tp / (tp + fn) if (tp + fn) else float("nan")
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else float("nan")
     return pd.Series(
         {
             "support": int(group["n"].sum()),
@@ -73,20 +70,21 @@ def _aggregate_model_metrics(group: pd.DataFrame) -> pd.Series:
             "fp": int(fp),
             "fn": int(fn),
             "tn": int(tn),
-            "precision": precision,
-            "recall": recall,
-            "f1": f1,
+            "precision": group["precision"].mean(),
+            "recall": group["recall"].mean(),
+            "f1": group["f1"].mean(),
         }
     )
 
 
 def build_horizon_metrics(metrics: pd.DataFrame) -> pd.DataFrame:
-    grouped = (
-        metrics.groupby(["scope", "forecasting_horizon", "model"], sort=True)
-        .apply(_aggregate_model_metrics)
-        .reset_index()
-    )
-    return grouped
+    rows = []
+    group_columns = ["scope", "forecasting_horizon", "model"]
+    for keys, group in metrics.groupby(group_columns, sort=True):
+        row = dict(zip(group_columns, keys))
+        row.update(_aggregate_model_metrics(group).to_dict())
+        rows.append(row)
+    return pd.DataFrame(rows)
 
 
 def build_compact_table(horizon_metrics: pd.DataFrame) -> pd.DataFrame:
@@ -141,6 +139,7 @@ def write_note(output_dir: Path) -> None:
                 "该 appendix 只针对 GeoRF partitioned/local RF 模型的 thresholded diagnostic。",
                 "Threshold 在每个 rolling training window 的 validation subset 上选择，目标是最大化 class-1 F1。",
                 "选出的 threshold 只应用于随后 held-out target month 的 test probabilities；没有使用 test labels 选择 threshold。",
+                "Horizon-level precision、recall 和 F1 使用 target-month macro mean，与 01_main_results 的主表口径一致。",
                 "原始 pooled 和 partitioned hard-prediction 结果保留，用于对照。",
                 "这些结果先写入独立 artifact folder，尚不覆盖主文 01-11 artifacts。",
                 "",
@@ -149,6 +148,7 @@ def write_note(output_dir: Path) -> None:
                 "We evaluate a validation-selected probability threshold for the GeoRF partitioned RF model.",
                 "For each forecasting horizon and target month, the threshold is selected on a validation subset from the rolling training window by maximizing class-1 F1, then applied to the held-out target-month probabilities.",
                 "The procedure does not use test labels for threshold selection.",
+                "Horizon-level precision, recall, and F1 are reported as target-month macro means, matching the aggregation convention used in the main results table.",
                 "Pooled and original partitioned hard-prediction results are retained as comparators.",
                 "",
             ]
@@ -195,6 +195,8 @@ def main(argv=None) -> None:
                     for scope in args.scopes
                 },
                 "provider_details": provider_details,
+                "metric_aggregation": "target_month_macro_mean_for_precision_recall_f1",
+                "count_aggregation": "summed_across_target_months_for_support_tp_fp_fn_tn",
                 "n_monthly_metric_rows": int(len(metrics)),
                 "n_threshold_rows": int(len(thresholds)),
             },

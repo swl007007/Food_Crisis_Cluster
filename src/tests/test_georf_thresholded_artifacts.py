@@ -13,6 +13,49 @@ spec.loader.exec_module(builder)
 
 
 class GeoRFThresholdedArtifactsTests(unittest.TestCase):
+    def test_build_horizon_metrics_uses_monthly_macro_mean(self):
+        metrics = pd.DataFrame(
+            [
+                {
+                    "scope": "fs1",
+                    "forecasting_horizon": "4-month lag",
+                    "model": "partitioned",
+                    "n": 100,
+                    "tp": 90,
+                    "fp": 10,
+                    "fn": 10,
+                    "tn": 0,
+                    "precision": 0.90,
+                    "recall": 0.90,
+                    "f1": 0.90,
+                },
+                {
+                    "scope": "fs1",
+                    "forecasting_horizon": "4-month lag",
+                    "model": "partitioned",
+                    "n": 100,
+                    "tp": 1,
+                    "fp": 0,
+                    "fn": 99,
+                    "tn": 0,
+                    "precision": 1.00,
+                    "recall": 0.01,
+                    "f1": 0.019801980198019802,
+                },
+            ]
+        )
+
+        horizon = builder.build_horizon_metrics(metrics)
+        row = horizon.iloc[0]
+
+        self.assertEqual(row["support"], 200)
+        self.assertEqual(row["tp"], 91)
+        self.assertEqual(row["fp"], 10)
+        self.assertEqual(row["fn"], 109)
+        self.assertAlmostEqual(row["precision"], 0.95)
+        self.assertAlmostEqual(row["recall"], 0.455)
+        self.assertAlmostEqual(row["f1"], 0.4599009900990099)
+
     def test_build_compact_table_pivots_three_models(self):
         metrics = pd.DataFrame(
             [
