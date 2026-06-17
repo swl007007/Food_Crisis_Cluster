@@ -22,7 +22,7 @@ DEFAULT_MAPPING = (
 DEFAULT_PREDICTIONS = REPO_ROOT / "result_partition_k40_compare_GF_fs1" / "predictions_monthly.csv"
 DEFAULT_PANEL = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data"
-    r"\FEWSNET_forecast_unadjusted_bm_phase_change.csv"
+    r"\FEWSNET_forecast_unadjusted_bm.csv"
 )
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data"

@@ -65,7 +65,7 @@ warnings.filterwarnings('ignore')
 # Configuration and Defaults
 # ============================================================================
 
-DEFAULT_DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm_phase_change.csv"
+DEFAULT_DATA_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
 DEFAULT_PARTITION_MAP = "cluster_mapping_k40_nc4.csv"
 DEFAULT_POLYGONS_PATH = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
 DEFAULT_OUT_DIR = r".\result_partition_k40_nc4_compare"

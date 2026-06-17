@@ -7,6 +7,7 @@ from scripts.audit_final_artifact_sources import (
     CLEAN_PANEL_BASENAME,
     PHASE_CHANGE_BASENAME,
     audit_provider_manifest,
+    audit_script_default,
     classify_source_text,
     write_audit_outputs,
 )
@@ -68,3 +69,16 @@ def test_write_audit_outputs_writes_csv_and_markdown(tmp_path: Path):
     df = pd.read_csv(csv_path)
     assert df.loc[0, "status"] == "clean"
     assert "result_partition_k40_compare_GF_fs1" in md_path.read_text(encoding="utf-8")
+
+
+def test_paper_facing_script_defaults_do_not_reference_phase_change():
+    repo_root = Path(__file__).resolve().parents[2]
+    scripts = [
+        repo_root / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py",
+        repo_root / "scripts" / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
+        repo_root / "scripts" / "analyze_georf_m2_cluster_profiles.py",
+        repo_root / "scripts" / "analyze_georf_false_negative_error_modes.py",
+    ]
+    for script in scripts:
+        row = audit_script_default(script.as_posix(), script)
+        assert row["status"] == "clean", row
