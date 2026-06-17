@@ -76,6 +76,10 @@ DEFAULT_FORECASTING_SCOPE = 1  # 1=4mo, 2=8mo, 3=12mo lag
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF.py default)
 SMOTE_K_NEIGHBORS = 5
 PARTITION_UNMAPPED_THRESHOLD_PCT = 2.0
+DEFAULT_THRESHOLD_VALIDATION_MONTHS = 6
+DEFAULT_THRESHOLD_LOWER_BOUND = 0.05
+DEFAULT_THRESHOLD_UPPER_BOUND = 0.95
+DEFAULT_PARTITIONED_THRESHOLD = 0.5
 
 RF_PARAMS = {
     'n_estimators': 100,
@@ -407,6 +411,137 @@ def compute_binary_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict:
     }
 
 
+def apply_probability_threshold(y_prob: np.ndarray, threshold: float) -> np.ndarray:
+    """Convert class-1 probabilities to binary labels using >= threshold."""
+    probabilities = np.asarray(y_prob, dtype=float)
+    return (probabilities >= float(threshold)).astype(int)
+
+
+def candidate_thresholds_from_probabilities(
+    y_prob: np.ndarray,
+    bounds: Tuple[float, float] = (DEFAULT_THRESHOLD_LOWER_BOUND, DEFAULT_THRESHOLD_UPPER_BOUND),
+) -> np.ndarray:
+    """Return stable candidate thresholds from validation probabilities."""
+    probabilities = np.asarray(y_prob, dtype=float)
+    probabilities = probabilities[~np.isnan(probabilities)]
+    if probabilities.size == 0:
+        return np.array([], dtype=float)
+    lower, upper = bounds
+    candidates = np.unique(np.round(probabilities, 2))
+    candidates = candidates[(candidates >= lower) & (candidates <= upper)]
+    return np.sort(candidates)[::-1]
+
+
+def select_max_f1_threshold(
+    y_true: np.ndarray,
+    y_prob: np.ndarray,
+    candidate_thresholds: Optional[np.ndarray] = None,
+    bounds: Tuple[float, float] = (DEFAULT_THRESHOLD_LOWER_BOUND, DEFAULT_THRESHOLD_UPPER_BOUND),
+    default_threshold: float = DEFAULT_PARTITIONED_THRESHOLD,
+) -> Dict[str, Any]:
+    """Select the validation threshold that maximizes class-1 F1."""
+    y_true = np.asarray(y_true, dtype=int)
+    y_prob = np.asarray(y_prob, dtype=float)
+    valid = ~np.isnan(y_prob)
+    y_true = y_true[valid]
+    y_prob = y_prob[valid]
+
+    base: Dict[str, Any] = {
+        "selected_threshold": float(default_threshold),
+        "validation_precision": np.nan,
+        "validation_recall": np.nan,
+        "validation_f1": np.nan,
+        "validation_support": int(len(y_true)),
+        "validation_positive_cases": int((y_true == 1).sum()),
+        "fallback_reason": "",
+    }
+    if len(y_true) == 0:
+        base["fallback_reason"] = "no_validation_observations"
+        return base
+    if int((y_true == 1).sum()) == 0:
+        base["fallback_reason"] = "no_validation_positive_cases"
+        return base
+
+    if candidate_thresholds is None:
+        candidates = candidate_thresholds_from_probabilities(y_prob, bounds=bounds)
+    else:
+        candidates = np.asarray(candidate_thresholds, dtype=float)
+    candidates = np.sort(np.unique(np.round(candidates, 2)))[::-1]
+    if candidates.size == 0:
+        base["fallback_reason"] = "no_candidate_thresholds"
+        return base
+
+    rows = []
+    for threshold in candidates:
+        y_pred = apply_probability_threshold(y_prob, threshold)
+        metrics = compute_binary_metrics(y_true, y_pred)
+        rows.append(
+            {
+                "threshold": float(threshold),
+                "precision": metrics["precision"],
+                "recall": metrics["recall"],
+                "f1": metrics["f1"],
+            }
+        )
+    metrics_df = pd.DataFrame(rows)
+    finite = metrics_df[np.isfinite(metrics_df["f1"])]
+    if finite.empty:
+        base["fallback_reason"] = "no_finite_validation_f1"
+        return base
+
+    max_f1 = float(finite["f1"].max())
+    tied = finite[np.isclose(finite["f1"], max_f1, rtol=1e-12, atol=1e-12)]
+    selected = tied.sort_values("threshold", ascending=False).iloc[0]
+    return {
+        **base,
+        "selected_threshold": float(selected["threshold"]),
+        "validation_precision": float(selected["precision"]),
+        "validation_recall": float(selected["recall"]),
+        "validation_f1": float(selected["f1"]),
+    }
+
+
+def split_training_validation_by_dates(
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    X_group_train: np.ndarray,
+    train_dates: pd.Series | np.ndarray,
+    validation_months: int = DEFAULT_THRESHOLD_VALIDATION_MONTHS,
+) -> Dict[str, np.ndarray]:
+    """Split training rows into earlier fit rows and latest-month validation rows."""
+    train_dates = pd.to_datetime(pd.Series(train_dates)).reset_index(drop=True)
+    if len(train_dates) != len(y_train):
+        raise ValueError(f"train_dates length {len(train_dates)} does not match y_train length {len(y_train)}")
+    if validation_months <= 0:
+        raise ValueError(f"validation_months must be positive, got {validation_months}")
+    if len(y_train) == 0:
+        raise ValueError("Cannot split empty training data")
+
+    latest_month = train_dates.max().to_period("M").to_timestamp()
+    validation_start = latest_month - pd.DateOffset(months=validation_months - 1)
+    validation_mask = train_dates >= validation_start
+    fit_mask = ~validation_mask
+
+    if int(validation_mask.sum()) == 0 or int(fit_mask.sum()) == 0:
+        raise ValueError(
+            f"Validation split failed: fit={int(fit_mask.sum())}, validation={int(validation_mask.sum())}, "
+            f"validation_months={validation_months}"
+        )
+
+    return {
+        "X_fit": X_train[fit_mask],
+        "y_fit": y_train[fit_mask],
+        "group_fit": X_group_train[fit_mask],
+        "X_val": X_train[validation_mask],
+        "y_val": y_train[validation_mask],
+        "group_val": X_group_train[validation_mask],
+        "fit_start": train_dates[fit_mask].min(),
+        "fit_end": train_dates[fit_mask].max(),
+        "validation_start": train_dates[validation_mask].min(),
+        "validation_end": train_dates[validation_mask].max(),
+    }
+
+
 def compute_polygon_metrics(df: pd.DataFrame, uid_col: str = 'FEWSNET_admin_code') -> pd.DataFrame:
     """Compute polygon-level metrics from predictions."""
 
@@ -619,6 +754,14 @@ def main():
     parser.add_argument('--partition-map-m10', default='cluster_mapping_k40_nc12_m10.csv', help='Partition map for October')
     parser.add_argument('--lower-model', choices=['rf', 'dt'], default='rf',
                         help='Lower-layer base model: rf (default) or dt')
+    parser.add_argument('--enable-validation-threshold', action='store_true',
+                        help='Add partitioned_thresholded results using validation-selected max-F1 thresholds')
+    parser.add_argument('--threshold-validation-months', type=int, default=DEFAULT_THRESHOLD_VALIDATION_MONTHS,
+                        help='Number of latest training-window months held out for threshold validation')
+    parser.add_argument('--threshold-lower-bound', type=float, default=DEFAULT_THRESHOLD_LOWER_BOUND,
+                        help='Lower bound for candidate probability thresholds')
+    parser.add_argument('--threshold-upper-bound', type=float, default=DEFAULT_THRESHOLD_UPPER_BOUND,
+                        help='Upper bound for candidate probability thresholds')
 
     args = parser.parse_args()
 
@@ -646,6 +789,10 @@ def main():
     print(f"Train window: {args.train_window} months")
     print(f"Forecasting scope: {args.forecasting_scope} ({active_lag}-month lag)")
     print(f"Lower model: {model_label}")
+    print(f"Validation thresholding: {'ENABLED' if args.enable_validation_threshold else 'DISABLED'}")
+    if args.enable_validation_threshold:
+        print(f"  - Validation months: {args.threshold_validation_months}")
+        print(f"  - Candidate bounds: [{args.threshold_lower_bound}, {args.threshold_upper_bound}]")
     print(f"Visualization: {'ENABLED (4 maps)' if args.visual else 'DISABLED'}")
     print(f"Output directory: {out_dir}")
     print("=" * 80)
@@ -722,6 +869,7 @@ def main():
 
     monthly_metrics = []
     all_predictions = []
+    threshold_provenance = []
 
     for i, test_month in enumerate(test_months, 1):
         print(f"\n[{i}/{len(test_months)}] Test month: {test_month}")
@@ -784,6 +932,29 @@ def main():
 
             ytrain_partitioned = ytrain_partitioned.astype(int)
 
+            baseline_train_dates = None
+            partition_train_dates = None
+            if args.enable_validation_threshold:
+                row_indices = np.arange(len(y))
+                baseline_index_split = train_test_split_rolling_window(
+                    X, y, X_loc, baseline_groups, years, dates,
+                    test_month=test_month,
+                    active_lag=active_lag,
+                    train_window_months=args.train_window,
+                    admin_codes=row_indices,
+                )
+                partition_index_split = train_test_split_rolling_window(
+                    X, y, X_loc, X_group, years, dates,
+                    test_month=test_month,
+                    active_lag=active_lag,
+                    train_window_months=args.train_window,
+                    admin_codes=row_indices,
+                )
+                baseline_train_indices = baseline_index_split[8]
+                partition_train_indices = partition_index_split[8]
+                baseline_train_dates = pd.to_datetime(pd.Series(dates).iloc[baseline_train_indices]).reset_index(drop=True)
+                partition_train_dates = pd.to_datetime(pd.Series(dates).iloc[partition_train_indices]).reset_index(drop=True)
+
             print(f"  Train (pooled): {len(ytrain_pooled)} samples | Train (partitioned): {len(ytrain_partitioned)} samples | Test: {len(ytest)} samples")
 
             if len(ytest) == 0:
@@ -793,6 +964,71 @@ def main():
         except Exception as e:
             print(f"  Skipping: {e}")
             continue
+
+        threshold_record: Dict[str, Any] = {
+            "test_month": str(test_month),
+            "forecasting_scope": args.forecasting_scope,
+            "active_lag_months": active_lag,
+            "threshold_enabled": bool(args.enable_validation_threshold),
+            "selected_threshold": DEFAULT_PARTITIONED_THRESHOLD,
+            "fallback_reason": "thresholding_disabled",
+        }
+        if args.enable_validation_threshold:
+            try:
+                baseline_tv = split_training_validation_by_dates(
+                    Xtrain_pooled,
+                    ytrain_pooled,
+                    np.zeros_like(ytrain_pooled),
+                    baseline_train_dates,
+                    validation_months=args.threshold_validation_months,
+                )
+                partition_tv = split_training_validation_by_dates(
+                    Xtrain_partitioned,
+                    ytrain_partitioned,
+                    Xtrain_group_partitioned,
+                    partition_train_dates,
+                    validation_months=args.threshold_validation_months,
+                )
+                threshold_pooled_model = train_pooled_model(
+                    baseline_tv["X_fit"],
+                    baseline_tv["y_fit"].astype(int),
+                    args.lower_model,
+                )
+                threshold_partitioned_models = train_partitioned_model(
+                    partition_tv["X_fit"],
+                    partition_tv["y_fit"].astype(int),
+                    partition_tv["group_fit"],
+                    args.lower_model,
+                )
+                y_prob_val_partitioned = predict_partitioned_probability(
+                    threshold_partitioned_models,
+                    threshold_pooled_model,
+                    partition_tv["X_val"],
+                    partition_tv["group_val"],
+                )
+                threshold_record.update(
+                    select_max_f1_threshold(
+                        partition_tv["y_val"].astype(int),
+                        y_prob_val_partitioned,
+                        bounds=(args.threshold_lower_bound, args.threshold_upper_bound),
+                        default_threshold=DEFAULT_PARTITIONED_THRESHOLD,
+                    )
+                )
+                threshold_record.update(
+                    {
+                        "fit_start": str(pd.Timestamp(partition_tv["fit_start"]).date()),
+                        "fit_end": str(pd.Timestamp(partition_tv["fit_end"]).date()),
+                        "validation_start": str(pd.Timestamp(partition_tv["validation_start"]).date()),
+                        "validation_end": str(pd.Timestamp(partition_tv["validation_end"]).date()),
+                    }
+                )
+            except Exception as exc:
+                threshold_record.update(
+                    {
+                        "selected_threshold": DEFAULT_PARTITIONED_THRESHOLD,
+                        "fallback_reason": f"validation_threshold_error: {exc}",
+                    }
+                )
 
         # Train pooled model (full window)
         pooled_model = train_pooled_model(Xtrain_pooled, ytrain_pooled, args.lower_model)
@@ -811,6 +1047,26 @@ def main():
         # Compute metrics
         metrics_pooled = compute_binary_metrics(ytest, y_pred_pooled)
         metrics_partitioned = compute_binary_metrics(ytest, y_pred_partitioned)
+        y_pred_partitioned_thresholded = None
+        metrics_partitioned_thresholded = None
+        if args.enable_validation_threshold:
+            y_pred_partitioned_thresholded = apply_probability_threshold(
+                y_prob_partitioned,
+                threshold_record["selected_threshold"],
+            )
+            metrics_partitioned_thresholded = compute_binary_metrics(ytest, y_pred_partitioned_thresholded)
+            threshold_record.update(
+                {
+                    "test_precision": metrics_partitioned_thresholded["precision"],
+                    "test_recall": metrics_partitioned_thresholded["recall"],
+                    "test_f1": metrics_partitioned_thresholded["f1"],
+                    "test_tp": metrics_partitioned_thresholded["tp"],
+                    "test_fp": metrics_partitioned_thresholded["fp"],
+                    "test_fn": metrics_partitioned_thresholded["fn"],
+                    "test_tn": metrics_partitioned_thresholded["tn"],
+                }
+            )
+            threshold_provenance.append(threshold_record)
 
         monthly_metrics.append({
             'test_month': str(test_month),
@@ -823,6 +1079,12 @@ def main():
             'model': 'partitioned',
             **metrics_partitioned
         })
+        if args.enable_validation_threshold and metrics_partitioned_thresholded is not None:
+            monthly_metrics.append({
+                'test_month': str(test_month),
+                'model': 'partitioned_thresholded',
+                **metrics_partitioned_thresholded,
+            })
 
         # Store predictions with admin codes and partition IDs
         if admin_codes_test is not None:
@@ -836,10 +1098,20 @@ def main():
                 'y_prob_pooled': y_prob_pooled,
                 'y_prob_partitioned': y_prob_partitioned
             })
+            if args.enable_validation_threshold and y_pred_partitioned_thresholded is not None:
+                pred_df["selected_threshold"] = float(threshold_record["selected_threshold"])
+                pred_df["y_pred_partitioned_thresholded"] = y_pred_partitioned_thresholded
             all_predictions.append(pred_df)
 
         print(f"  Pooled:      Precision={metrics_pooled['precision']:.4f}, Recall={metrics_pooled['recall']:.4f}, F1={metrics_pooled['f1']:.4f}")
         print(f"  Partitioned: Precision={metrics_partitioned['precision']:.4f}, Recall={metrics_partitioned['recall']:.4f}, F1={metrics_partitioned['f1']:.4f}")
+        if args.enable_validation_threshold and metrics_partitioned_thresholded is not None:
+            print(
+                f"  Thresholded: Precision={metrics_partitioned_thresholded['precision']:.4f}, "
+                f"Recall={metrics_partitioned_thresholded['recall']:.4f}, "
+                f"F1={metrics_partitioned_thresholded['f1']:.4f}, "
+                f"Threshold={threshold_record['selected_threshold']:.2f}"
+            )
 
     print("\n" + "=" * 80)
     print("MONTHLY EVALUATION COMPLETE")
@@ -856,14 +1128,23 @@ def main():
     metrics_df.to_csv(metrics_path, index=False)
     print(f"  Saved: {metrics_path}")
 
-    # 2. Predictions
+    # 2. Threshold provenance
+    if threshold_provenance:
+        threshold_df = pd.DataFrame(threshold_provenance)
+        threshold_path = out_dir / 'threshold_provenance.csv'
+        threshold_df.to_csv(threshold_path, index=False)
+        print(f"  Saved: {threshold_path}")
+    else:
+        threshold_df = pd.DataFrame()
+
+    # 3. Predictions
     if all_predictions:
         predictions_df = pd.concat(all_predictions, ignore_index=True)
         predictions_path = out_dir / 'predictions_monthly.csv'
         predictions_df.to_csv(predictions_path, index=False)
         print(f"  Saved: {predictions_path}")
 
-        # 3. Polygon-level metrics
+        # 4. Polygon-level metrics
         polygon_metrics_df = compute_polygon_metrics(predictions_df)
         polygon_path = out_dir / 'metrics_polygon_overall.csv'
         polygon_metrics_df.to_csv(polygon_path, index=False)
@@ -884,7 +1165,7 @@ def main():
         'forecasting_scope': args.forecasting_scope,
         'active_lag_months': active_lag,
         'n_test_months': len(test_months),
-        'n_test_months_evaluated': len(monthly_metrics) // 2,
+        'n_test_months_evaluated': int(metrics_df['test_month'].nunique()) if not metrics_df.empty else 0,
         'n_predictions': len(predictions_df) if not predictions_df.empty else 0,
         'n_polygons': int(df['FEWSNET_admin_code'].nunique()),
         'n_partitions': int(partition_df['cluster_id'].nunique()),
@@ -897,6 +1178,11 @@ def main():
         'evaluation_years': os.environ.get('NO_LEAK_EVALUATION_YEARS', '2021-2024'),
         'temporal_leakage_guard': 'partitions learned before evaluation window',
         'main_model_scope': 'GeoRF/GeoDT only; experimental XGBoost variant not included',
+        'validation_threshold_enabled': bool(args.enable_validation_threshold),
+        'threshold_selection_metric': 'class_1_f1' if args.enable_validation_threshold else None,
+        'threshold_validation_months': args.threshold_validation_months if args.enable_validation_threshold else None,
+        'threshold_candidate_bounds': [args.threshold_lower_bound, args.threshold_upper_bound] if args.enable_validation_threshold else None,
+        'threshold_default': DEFAULT_PARTITIONED_THRESHOLD if args.enable_validation_threshold else None,
     }
 
     manifest_path = out_dir / 'run_manifest.json'
@@ -931,12 +1217,18 @@ def main():
     if not metrics_df.empty:
         pooled_metrics = metrics_df[metrics_df['model'] == 'pooled']
         partitioned_metrics = metrics_df[metrics_df['model'] == 'partitioned']
+        thresholded_metrics = metrics_df[metrics_df['model'] == 'partitioned_thresholded']
 
         print(f"\nOverall Performance (Mean +- Std):")
         print(f"  Partitioned F1: {partitioned_metrics['f1'].mean():.4f} +- {partitioned_metrics['f1'].std():.4f}")
+        if not thresholded_metrics.empty:
+            print(f"  Thresholded F1: {thresholded_metrics['f1'].mean():.4f} +- {thresholded_metrics['f1'].std():.4f}")
         print(f"  Pooled F1:      {pooled_metrics['f1'].mean():.4f} +- {pooled_metrics['f1'].std():.4f}")
         f1_diff = partitioned_metrics['f1'].values - pooled_metrics['f1'].values
         print(f"  F1 Improvement: {f1_diff.mean():.4f} +- {f1_diff.std():.4f}")
+        if not thresholded_metrics.empty:
+            thresholded_diff = thresholded_metrics['f1'].values - partitioned_metrics['f1'].values
+            print(f"  Thresholded vs Partitioned F1: {thresholded_diff.mean():.4f} +- {thresholded_diff.std():.4f}")
     else:
         print("No monthly metrics available for summary.")
 

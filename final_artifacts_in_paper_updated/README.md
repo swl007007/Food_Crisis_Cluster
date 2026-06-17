@@ -26,6 +26,8 @@ workflow. Files are grouped by paper use case so the root stays navigable.
   error-mode diagnostics for selected hotspots.
 - `11_threshold_free_metrics/`: GeoRF PR-AUC and fixed precision/recall
   operating-point diagnostics from existing probability outputs.
+- `12_thresholded_georf_results/`: validation-selected max-F1 thresholded
+  GeoRF partitioned results and threshold provenance.
 
 ## 01 Main Results
 
@@ -220,6 +222,25 @@ workflow. Files are grouped by paper use case so the root stays navigable.
 - `11_threshold_free_metrics/georf_threshold_free_metrics_note.md`: Chinese
   reviewer-facing note and English appendix text for PR-AUC and fixed
   precision/recall diagnostics.
+
+## 12 Thresholded GeoRF Results
+
+- `12_thresholded_georf_results/georf_thresholded_compact_table.csv`:
+  compact horizon-level pooled, partitioned, and partitioned-thresholded
+  precision, recall, and F1 comparison.
+- `12_thresholded_georf_results/georf_thresholded_compact_table.md`:
+  Markdown rendering of the compact thresholded GeoRF comparison table.
+- `12_thresholded_georf_results/georf_thresholded_horizon_metrics.csv`:
+  long-format horizon-level metrics for pooled, partitioned, and
+  partitioned-thresholded models.
+- `12_thresholded_georf_results/georf_thresholded_monthly_metrics.csv`:
+  monthly metrics from the thresholded Stage 3 result folders.
+- `12_thresholded_georf_results/georf_thresholded_threshold_provenance.csv`:
+  selected validation thresholds and validation/test metrics by horizon and
+  evaluated target month.
+- `12_thresholded_georf_results/georf_thresholded_note.md`: Chinese
+  reviewer-facing note and English appendix text for validation-selected
+  max-F1 thresholding.
 
 ## Reproduction Checks
 

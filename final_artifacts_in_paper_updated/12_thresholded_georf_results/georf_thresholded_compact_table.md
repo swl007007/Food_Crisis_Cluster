@@ -1,0 +1,5 @@
+| scope | forecasting_horizon | pooled_precision | pooled_recall | pooled_f1 | partitioned_precision | partitioned_recall | partitioned_f1 | partitioned_thresholded_precision | partitioned_thresholded_recall | partitioned_thresholded_f1 | delta_thresholded_minus_partitioned_precision | delta_thresholded_minus_pooled_precision | delta_thresholded_minus_partitioned_recall | delta_thresholded_minus_pooled_recall | delta_thresholded_minus_partitioned_f1 | delta_thresholded_minus_pooled_f1 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fs1 | 4-month lag | 0.961 | 0.439 | 0.603 | 0.893 | 0.263 | 0.406 | 0.617 | 0.562 | 0.588 | -0.276 | -0.344 | 0.299 | 0.123 | 0.182 | -0.015 |
+| fs2 | 8-month lag | 0.964 | 0.450 | 0.613 | 0.842 | 0.213 | 0.339 | 0.534 | 0.573 | 0.553 | -0.309 | -0.430 | 0.360 | 0.123 | 0.213 | -0.061 |
+| fs3 | 12-month lag | 0.957 | 0.447 | 0.610 | 0.830 | 0.196 | 0.317 | 0.494 | 0.606 | 0.544 | -0.337 | -0.464 | 0.411 | 0.159 | 0.228 | -0.066 |
