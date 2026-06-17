@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import unittest
 from pathlib import Path
 
@@ -59,6 +60,31 @@ class GeoRFThresholdedArtifactsTests(unittest.TestCase):
         formatted = builder.format_for_markdown(compact)
 
         self.assertEqual(formatted.loc[0, "partitioned_thresholded_f1"], "0.703")
+
+
+def test_load_provider_manifests_keeps_partition_and_runtime_details(tmp_path: Path):
+    provider = tmp_path / "result_partition_k40_compare_GF_thresholded_fs1"
+    provider.mkdir()
+    manifest = {
+        "data_path": r"C:\data\FEWSNET_forecast_unadjusted_bm.csv",
+        "month_ind_enabled": True,
+        "partition_map_path": "general.csv",
+        "partition_map_m2_path": "m2.csv",
+        "partition_map_m6_path": "m6.csv",
+        "partition_map_m10_path": "m10.csv",
+        "partition_map_hashes": {"general": "a" * 64, "m2": "b" * 64, "m6": "c" * 64, "m10": "d" * 64},
+        "smote_available": True,
+        "imblearn_version": "0.14.1",
+        "python_executable": "python3.12.exe",
+    }
+    (provider / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    details = builder.load_provider_manifests(tmp_path, ["fs1"])
+
+    assert details["fs1"]["month_ind_enabled"] is True
+    assert details["fs1"]["partition_map_m2_path"] == "m2.csv"
+    assert details["fs1"]["smote_available"] is True
+    assert details["fs1"]["partition_map_hashes"]["m10"] == "d" * 64
 
 
 if __name__ == "__main__":

@@ -35,16 +35,27 @@ def load_thresholded_results(source_dir: Path, scopes: list[str]) -> tuple[pd.Da
     return pd.concat(metrics_frames, ignore_index=True), pd.concat(threshold_frames, ignore_index=True)
 
 
-def load_provider_sources(source_dir: Path, scopes: list[str]) -> dict[str, str]:
-    """Return source data paths recorded by thresholded provider manifests."""
-    sources = {}
+def load_provider_manifests(source_dir: Path, scopes: list[str]) -> dict[str, dict]:
+    """Return selected provenance fields from thresholded provider manifests."""
+    details: dict[str, dict] = {}
     for scope in scopes:
         result_dir = source_dir / f"result_partition_k40_compare_GF_thresholded_{scope}"
         manifest_path = result_dir / "run_manifest.json"
         with manifest_path.open(encoding="utf-8") as handle:
             manifest = json.load(handle)
-        sources[scope] = str(manifest.get("data_path", ""))
-    return sources
+        details[scope] = {
+            "data_path": str(manifest.get("data_path", "")),
+            "month_ind_enabled": bool(manifest.get("month_ind_enabled", False)),
+            "partition_map_path": manifest.get("partition_map_path"),
+            "partition_map_m2_path": manifest.get("partition_map_m2_path"),
+            "partition_map_m6_path": manifest.get("partition_map_m6_path"),
+            "partition_map_m10_path": manifest.get("partition_map_m10_path"),
+            "partition_map_hashes": manifest.get("partition_map_hashes", {}),
+            "smote_available": manifest.get("smote_available"),
+            "imblearn_version": manifest.get("imblearn_version"),
+            "python_executable": manifest.get("python_executable"),
+        }
+    return details
 
 
 def _aggregate_model_metrics(group: pd.DataFrame) -> pd.Series:
@@ -167,7 +178,11 @@ def main(argv=None) -> None:
     compact.to_csv(args.output_dir / "georf_thresholded_compact_table.csv", index=False)
     write_markdown_table(format_for_markdown(compact), args.output_dir / "georf_thresholded_compact_table.md")
     write_note(args.output_dir)
-    provider_sources = load_provider_sources(args.source_dir, args.scopes)
+    provider_details = load_provider_manifests(args.source_dir, args.scopes)
+    provider_sources = {
+        scope: str(details.get("data_path", ""))
+        for scope, details in provider_details.items()
+    }
     (args.output_dir / "artifact_source_manifest.json").write_text(
         json.dumps(
             {
@@ -179,6 +194,7 @@ def main(argv=None) -> None:
                     scope: str(args.source_dir / f"result_partition_k40_compare_GF_thresholded_{scope}" / "run_manifest.json")
                     for scope in args.scopes
                 },
+                "provider_details": provider_details,
                 "n_monthly_metric_rows": int(len(metrics)),
                 "n_threshold_rows": int(len(thresholds)),
             },
