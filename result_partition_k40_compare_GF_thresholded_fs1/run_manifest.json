@@ -1,7 +1,6 @@
 {
-  "timestamp": "2026-06-16T20:51:48.479834",
+  "timestamp": "2026-06-16T22:10:07.808445",
   "data_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
-  "partition_map_path": "result_partition_k40_compare_GF_fs1/refined/cluster_mapping_k40_nc17_general_refined_contig3.csv",
   "start_month": "2021-01",
   "end_month": "2024-12",
   "train_window_months": 36,
@@ -33,5 +32,20 @@
     0.05,
     0.95
   ],
-  "threshold_default": 0.5
+  "threshold_default": 0.5,
+  "month_ind_enabled": true,
+  "partition_map_path": "result_partition_k40_compare_GF_fs1/refined/cluster_mapping_k40_nc17_general_refined_contig3.csv",
+  "partition_map_m2_path": "result_partition_k40_compare_GF_fs1/refined/cluster_mapping_k40_nc13_m2_refined_contig3.csv",
+  "partition_map_m6_path": "result_partition_k40_compare_GF_fs1/refined/cluster_mapping_k40_nc11_m6_refined_contig3.csv",
+  "partition_map_m10_path": "result_partition_k40_compare_GF_fs1/refined/cluster_mapping_k40_nc16_m10_refined_contig3.csv",
+  "partition_map_hashes": {
+    "general": "4723cae57c07229973559f1fe62fb13bae818c2b2de71e171ce3b2eaf5c2152b",
+    "m2": "41512a9c4a7033f274463f9145fe99d6cd3d436145ec8b68f94a7be3bfadaba9",
+    "m6": "8669fec090723c7dc171b191a7acabe01b0b16d989ed7b6e2068ab112b7f403f",
+    "m10": "4f652483f604e4f224928758049a2d434d055036d6779e8e9e219fab85bced74"
+  },
+  "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+  "python_version": "3.12.10",
+  "smote_available": true,
+  "imblearn_version": "0.14.1"
 }
