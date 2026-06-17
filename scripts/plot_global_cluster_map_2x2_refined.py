@@ -107,7 +107,7 @@ except AttributeError:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Plot separate 4-month-lag 2x2 Global refined partition maps for GeoRF and GeoDT."
+        description="Plot separate 4-month horizon 2x2 Global refined partition maps for GeoRF and GeoDT."
     )
     parser.add_argument(
         "--source-dir",

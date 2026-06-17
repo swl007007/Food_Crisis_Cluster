@@ -1,4 +1,5 @@
 import importlib.util
+import inspect
 import os
 import sys
 import tempfile
@@ -29,6 +30,13 @@ def load_script_module():
 
 
 class GlobalClusterMapSelectionTests(unittest.TestCase):
+    def test_cli_description_uses_horizon_wording(self):
+        module = load_script_module()
+        source = inspect.getsource(module.parse_args)
+
+        self.assertIn("4-month horizon", source)
+        self.assertNotIn("4-month" + "-lag", source)
+
     def test_choose_mapping_prefers_latest_file_over_stale_higher_nc(self):
         module = load_script_module()
         with tempfile.TemporaryDirectory() as tmp:

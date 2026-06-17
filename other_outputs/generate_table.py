@@ -5,7 +5,10 @@ from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 
-BASE = r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster"
+BASE = os.environ.get(
+    "FOOD_CRISIS_CLUSTER_BASE",
+    r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster",
+)
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = REPO_ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
@@ -112,7 +115,7 @@ for model_name, data in MODEL_ROWS:
     for fs in SCOPES:
         m = data.get(fs)
         if m:
-            print(f"\n{model_name} fs{fs} (lag={FS_TO_LAG[fs]}) -- {m['n']} total rows from:")
+            print(f"\n{model_name} fs{fs} ({fs_label(fs)}) -- {m['n']} total rows from:")
             for fname, nrows in m.get("files", []):
                 print(f"    {fname} ({nrows} rows)")
             print(f"  -> split:  P={m['split_precision']:.10f}  R={m['split_recall']:.10f}  F1={m['split_f1']:.10f}")
@@ -121,7 +124,7 @@ for model_name, data in MODEL_ROWS:
             else:
                 print(f"  -> pooled: (none)")
         else:
-            print(f"\n{model_name} fs{fs} (lag={FS_TO_LAG[fs]}) -- NO DATA")
+            print(f"\n{model_name} fs{fs} ({fs_label(fs)}) -- NO DATA")
 
 header_font = Font(bold=True, size=11)
 header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
@@ -209,14 +212,14 @@ print(f"Saved: {path2}")
 print("\n" + "=" * 100)
 print("FINAL CELL VALUES (full precision, written to xlsx)")
 print("=" * 100)
-fmt = f"{'Model':<22} {'Lag':>3} | {'Split P':>14} {'Split R':>14} {'Split F1':>14} | {'Pool P':>14} {'Pool R':>14} {'Pool F1':>14} | {'Impr%':>10}"
+fmt = f"{'Model':<22} {'Forecasting horizon':>20} | {'Split P':>14} {'Split R':>14} {'Split F1':>14} | {'Pool P':>14} {'Pool R':>14} {'Pool F1':>14} | {'Impr%':>10}"
 print(fmt)
 print("-" * 130)
 for model_name, data in MODEL_ROWS:
     for fs in SCOPES:
         m = data.get(fs)
         label = model_name if fs == SCOPES[0] else ""
-        lag = FS_TO_LAG[fs]
+        horizon = fs_label(fs)
         if m:
             sp = f"{m['split_precision']:.10f}"
             sr = f"{m['split_recall']:.10f}"
@@ -229,7 +232,7 @@ for model_name, data in MODEL_ROWS:
                 imp = f"{(m['split_f1'] - pf_val) / pf_val * 100:+.6f}%"
             else:
                 imp = "      -"
-            print(f"{label:<22} {lag:>3} | {sp:>14} {sr:>14} {sf:>14} | {pp:>14} {pr:>14} {pf:>14} | {imp:>10}")
+            print(f"{label:<22} {horizon:>20} | {sp:>14} {sr:>14} {sf:>14} | {pp:>14} {pr:>14} {pf:>14} | {imp:>10}")
         else:
-            print(f"{label:<22} {lag:>3} | {'        -':>14} {'        -':>14} {'        -':>14} | {'        -':>14} {'        -':>14} {'        -':>14} | {'     -':>10}")
+            print(f"{label:<22} {horizon:>20} | {'        -':>14} {'        -':>14} {'        -':>14} | {'        -':>14} {'        -':>14} {'        -':>14} | {'     -':>10}")
     print("-" * 130)

@@ -48,7 +48,7 @@ class GeoRFPartitionStabilityTests(unittest.TestCase):
             note_path = stability.write_note(Path(tmp), summary, cluster_summary)
             text = note_path.read_text(encoding="utf-8")
         old_lower = "forecasting horizon" + " / " + "lag"
-        old_title = "Forecasting Horizon" + " / " + "Lag"
+        old_title = "Forecasting Horizon" + " / " + "La" + "g"
 
         self.assertIn("forecasting horizon", text)
         self.assertIn("## Cluster-Size Summary by Forecasting Horizon", text)

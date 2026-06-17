@@ -107,10 +107,10 @@ def main():
 
     # Plot each panel
     print("Creating plots...")
-    norm = plot_map(axes[0, 0], georf_lag1, 'GeoRF - Lag 1 (4-month forecasting)', vmin, vmax)
-    plot_map(axes[0, 1], georf_lag2, 'GeoRF - Lag 2 (8-month forecasting)', vmin, vmax)
-    plot_map(axes[1, 0], xgb_lag1, 'XGBoost - Lag 1 (4-month forecasting)', vmin, vmax)
-    plot_map(axes[1, 1], xgb_lag2, 'XGBoost - Lag 2 (8-month forecasting)', vmin, vmax)
+    norm = plot_map(axes[0, 0], georf_lag1, 'GeoRF - 4-month horizon', vmin, vmax)
+    plot_map(axes[0, 1], georf_lag2, 'GeoRF - 8-month horizon', vmin, vmax)
+    plot_map(axes[1, 0], xgb_lag1, 'XGBoost - 4-month horizon', vmin, vmax)
+    plot_map(axes[1, 1], xgb_lag2, 'XGBoost - 8-month horizon', vmin, vmax)
 
     # Add shared colorbar
     fig.subplots_adjust(right=0.92)

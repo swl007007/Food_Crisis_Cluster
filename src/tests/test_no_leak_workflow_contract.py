@@ -1,6 +1,13 @@
 from pathlib import Path
+import csv
+import os
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
+
+from openpyxl import load_workbook
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -90,6 +97,58 @@ class NoLeakWorkflowContractTests(unittest.TestCase):
         self.assertIn("label_for_scope", aggregate)
         self.assertNotIn("lag" + "(months)", aggregate)
         self.assertNotIn("8-month predictions used as " + "12-month proxy", aggregate)
+
+    def test_generate_table_console_and_workbook_use_horizon_labels(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            (base / "GeoRFExperiment" / "GeoRFResults").mkdir(parents=True)
+            (base / "GeoDTExperiment" / "GeoDTResults").mkdir(parents=True)
+            (base / "other_outputs").mkdir()
+            rows = [
+                {
+                    "precision(1)": "0.7",
+                    "recall(1)": "0.6",
+                    "f1(1)": "0.65",
+                    "precision_base(1)": "0.5",
+                    "recall_base(1)": "0.4",
+                    "f1_base(1)": "0.45",
+                }
+            ]
+            for prefix, directory in [
+                ("results_df_gp_", base / "GeoRFExperiment" / "GeoRFResults"),
+                ("results_df_dt_gp_", base / "GeoDTExperiment" / "GeoDTResults"),
+            ]:
+                for fs in (1, 2, 3):
+                    path = directory / f"{prefix}fs{fs}_sample.csv"
+                    with path.open("w", newline="", encoding="utf-8") as handle:
+                        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+                        writer.writeheader()
+                        writer.writerows(rows)
+
+            env = dict(os.environ)
+            env["FOOD_CRISIS_CLUSTER_BASE"] = str(base)
+            result = subprocess.run(
+                [sys.executable, str(REPO_ROOT / "other_outputs" / "generate_table.py")],
+                check=False,
+                cwd=REPO_ROOT,
+                env=env,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            workbook = load_workbook(base / "other_outputs" / "Table_Format.xlsx", data_only=True).active
+
+        output = result.stdout + result.stderr
+        forbidden_lag_marker = "(" + "lag="
+        forbidden_header = " " + "La" + "g" + " "
+        self.assertEqual(result.returncode, 0, output)
+        self.assertIn("Forecasting horizon", output)
+        self.assertIn("4-month horizon", output)
+        self.assertNotIn(forbidden_lag_marker, output)
+        self.assertNotIn(forbidden_header, output)
+        self.assertEqual(workbook["B2"].value, "Forecasting horizon")
+        self.assertEqual(workbook["B3"].value, "4-month horizon")
 
     def test_user_docs_do_not_advertise_old_stage1_or_geoxgb_main_workflow(self):
         docs = "\n".join(
