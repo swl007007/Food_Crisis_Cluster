@@ -15,10 +15,12 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-from scripts.audit_final_artifact_sources import build_audit_rows, write_audit_outputs
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.audit_final_artifact_sources import build_audit_rows, write_audit_outputs
 
 SCOPES = {1: 4, 2: 8, 3: 12}
 
@@ -53,27 +55,27 @@ FEATURE_GROUPS = (
 )
 
 FINAL_ARTIFACTS = (
-    "main_month_ind_cont3.xlsx",
-    "ablation_feature_exclude.xlsx",
-    "georf_monthly_performance.png",
-    "global_cluster_map_2x2_georf_refined.png",
-    "global_cluster_map_2x2_geodt_refined.png",
-    "predictions_2024_feb_jun_oct.png",
-    "table1_season_performance.csv",
-    "table2_region_performance.csv",
-    "table2_region_performance_partitioned_pooled_fewsnet.csv",
-    "error_rate_seasonal.csv",
-    "error_rate_seasonal_crisis.csv",
-    "error_rate_seasonal_noncrisis.csv",
-    "error_rate_seasonal_3x3.png",
-    "error_rate_seasonal_3x3_crisis.png",
-    "error_rate_seasonal_3x3_noncrisis.png",
-    "monthly_performance_manifest.json",
-    "feature_engineering.png",
-    "walkthrough.png",
-    "fewsnet_crisis_stack_2018.png",
-    "geodt_branch_1_vs_001_locations_2024-10_fs1_global.png",
-    "geodt_branch_tree_compare_2024-10_fs1_001_vs_1.png",
+    "01_main_results/main_month_ind_cont3.xlsx",
+    "01_main_results/ablation_feature_exclude.xlsx",
+    "01_main_results/georf_monthly_performance.png",
+    "01_main_results/global_cluster_map_2x2_georf_refined.png",
+    "01_main_results/global_cluster_map_2x2_geodt_refined.png",
+    "01_main_results/predictions_2024_feb_jun_oct.png",
+    "01_main_results/table1_season_performance.csv",
+    "01_main_results/table2_region_performance.csv",
+    "01_main_results/table2_region_performance_partitioned_pooled_fewsnet.csv",
+    "01_main_results/monthly_performance_manifest.json",
+    "02_methods_and_temporal_scope/feature_engineering.png",
+    "02_methods_and_temporal_scope/walkthrough.png",
+    "03_class_prevalence/fewsnet_crisis_stack_2018.png",
+    "04_error_analysis/error_rate_seasonal.csv",
+    "04_error_analysis/error_rate_seasonal_crisis.csv",
+    "04_error_analysis/error_rate_seasonal_noncrisis.csv",
+    "04_error_analysis/error_rate_seasonal_3x3.png",
+    "04_error_analysis/error_rate_seasonal_3x3_crisis.png",
+    "04_error_analysis/error_rate_seasonal_3x3_noncrisis.png",
+    "08_geodt_diagnostics/geodt_branch_1_vs_001_locations_2024-10_fs1_global.png",
+    "08_geodt_diagnostics/geodt_branch_tree_compare_2024-10_fs1_001_vs_1.png",
 )
 
 
@@ -298,7 +300,7 @@ def verify_final_artifacts(verifier: Verifier) -> None:
         if path.suffix == ".xlsx" and path.exists():
             verifier.check(zipfile.is_zipfile(path), f"final workbook is a valid xlsx zip: {filename}")
 
-    monthly_manifest = current_final / "monthly_performance_manifest.json"
+    monthly_manifest = current_final / "01_main_results" / "monthly_performance_manifest.json"
     if monthly_manifest.exists():
         manifest = load_json(monthly_manifest)
         for source in manifest.get("source_paths", {}).get("model_metrics", []):
