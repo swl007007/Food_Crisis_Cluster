@@ -23,7 +23,6 @@ DEFAULT_FIGURE = "region_class_prevalence_2021_2024.png"
 
 CRISIS_COLOR = "#d73027"
 NON_CRISIS_COLOR = "#2ca25f"
-UNVALIDATED_COLOR = "#bdbdbd"
 UNVALIDATED_REGION = "Middle East"
 UNVALIDATED_MONTHS = {
     "2021-10",
@@ -32,6 +31,9 @@ UNVALIDATED_MONTHS = {
     "2022-10",
     "2023-02",
 }
+MIDDLE_EAST_CRISIS_NOTE = (
+    "Note: Middle East FEWS NET records from 2021-10 to 2023-02 are all marked as crisis."
+)
 REGION_ORDER = [
     "East Africa",
     "West Africa",
@@ -214,25 +216,6 @@ def render_prevalence_figure(table: pd.DataFrame, output_path: Path, dpi: int) -
         total = int(crisis.sum() + non_crisis.sum())
         prevalence = total_crisis / total if total else 0
         ax.stackplot(x, crisis, non_crisis, colors=[CRISIS_COLOR, NON_CRISIS_COLOR], alpha=0.95)
-        unvalidated_positions = [
-            idx
-            for idx, month in enumerate(months)
-            if str(sub.loc[month, "validation_status"]) == "data not validated"
-        ]
-        for idx in unvalidated_positions:
-            ax.axvspan(idx - 0.5, idx + 0.5, color=UNVALIDATED_COLOR, alpha=0.28, linewidth=0)
-        if unvalidated_positions:
-            start, end = min(unvalidated_positions), max(unvalidated_positions)
-            y_top = max((crisis + non_crisis).max(), 1)
-            ax.text(
-                (start + end) / 2,
-                y_top * 0.92,
-                "data not validated",
-                ha="center",
-                va="top",
-                fontsize=9,
-                color="#4d4d4d",
-            )
         ax.set_title(f"{region} (crisis prevalence={prevalence:.1%})", fontsize=12, fontweight="bold")
         ax.set_ylim(bottom=0)
         ax.grid(axis="y", alpha=0.25)
@@ -246,11 +229,11 @@ def render_prevalence_figure(table: pd.DataFrame, output_path: Path, dpi: int) -
     legend_handles = [
         mpatches.Patch(color=CRISIS_COLOR, label="Crisis (value=1)"),
         mpatches.Patch(color=NON_CRISIS_COLOR, label="Non-crisis (value=0)"),
-        mpatches.Patch(color=UNVALIDATED_COLOR, alpha=0.28, label="Data not validated"),
     ]
     fig.suptitle("Test-period class prevalence by FEWSNET region (2021-2024)", fontsize=16)
-    fig.legend(handles=legend_handles, loc="lower center", ncol=3, frameon=False)
-    fig.tight_layout(rect=(0, 0.06, 1, 0.95))
+    fig.legend(handles=legend_handles, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 0.048))
+    fig.text(0.5, 0.018, MIDDLE_EAST_CRISIS_NOTE, ha="center", va="bottom", fontsize=9)
+    fig.tight_layout(rect=(0, 0.08, 1, 0.95))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
