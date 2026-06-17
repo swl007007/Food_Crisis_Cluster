@@ -1,12 +1,25 @@
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
+
+from openpyxl import Workbook
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "paper_horizon_labels.py"
 spec = importlib.util.spec_from_file_location("paper_horizon_labels", SCRIPT_PATH)
 labels = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(labels)
+
+
+RELABELER_PATH = Path(__file__).resolve().parents[2] / "scripts" / "relabel_final_artifact_horizons.py"
+
+
+def load_relabeler_module():
+    spec = importlib.util.spec_from_file_location("relabel_final_artifact_horizons", RELABELER_PATH)
+    relabeler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(relabeler)
+    return relabeler
 
 
 class PaperHorizonLabelTests(unittest.TestCase):
@@ -50,6 +63,65 @@ class PaperHorizonLabelTests(unittest.TestCase):
         updated = labels.replace_paper_horizon_terms(text)
 
         self.assertEqual(updated, text)
+
+    def test_is_allowed_remaining_lag_line_distinguishes_technical_lag_terms(self):
+        self.assertTrue(labels.is_allowed_remaining_lag_line("Lag Exclude"))
+        self.assertTrue(labels.is_allowed_remaining_lag_line("Lagged outcomes are covariates."))
+        self.assertTrue(labels.is_allowed_remaining_lag_line("mean_food_price_lag4m"))
+        self.assertFalse(labels.is_allowed_remaining_lag_line("Forecasting horizon: 4-month lag"))
+
+    def test_forbidden_paper_lag_terms_reports_only_display_terms(self):
+        old_four = "4-month " + "lag"
+        old_eight = "8-month-" + "lag"
+        old_axis = "Forecasting horizon" + " / " + "lag"
+        text = (
+            f"{old_four}; {old_eight}; {old_axis}; "
+            "Lag Exclude; lagged outcomes; mean_food_price_lag4m."
+        )
+
+        self.assertEqual(
+            labels.forbidden_paper_lag_terms(text),
+            [old_four, old_eight, old_axis],
+        )
+
+    def test_relabeler_csv_dry_run_preserves_file_and_numeric_signature(self):
+        relabeler = load_relabeler_module()
+        old_axis = "Forecasting horizon" + " / " + "lag"
+        old_four = "4-month " + "lag"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            csv_path = Path(tmp) / "table.csv"
+            original = f"{old_axis},score\n{old_four},1.25\nLag Exclude,2\n"
+            csv_path.write_text(original, encoding="utf-8")
+
+            result = relabeler.relabel_file(csv_path, dry_run=True)
+
+            self.assertTrue(result.updated)
+            self.assertEqual(csv_path.read_text(encoding="utf-8"), original)
+            self.assertEqual(result.remaining_forbidden_terms, [])
+
+    def test_relabeler_requires_lag_exclude_only_for_ablation_workbook(self):
+        relabeler = load_relabeler_module()
+        old_four = "4-month " + "lag"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            main_path = Path(tmp) / "main_month_ind_cont3.xlsx"
+            wb = Workbook()
+            wb.active["A1"] = old_four
+            wb.save(main_path)
+
+            main_result = relabeler.relabel_file(main_path, dry_run=True)
+
+            self.assertTrue(main_result.updated)
+            self.assertEqual(main_result.remaining_forbidden_terms, [])
+
+            ablation_path = Path(tmp) / "ablation_feature_exclude.xlsx"
+            wb = Workbook()
+            wb.active["A1"] = old_four
+            wb.save(ablation_path)
+
+            with self.assertRaisesRegex(ValueError, "Lag Exclude"):
+                relabeler.relabel_file(ablation_path, dry_run=True)
 
 
 if __name__ == "__main__":
