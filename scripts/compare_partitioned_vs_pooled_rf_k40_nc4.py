@@ -791,6 +791,53 @@ def create_visualizations(predictions_df: pd.DataFrame,
 # Main Execution
 # ============================================================================
 
+def build_run_manifest(
+    *,
+    args: argparse.Namespace,
+    active_lag: int,
+    test_months: List[pd.Period],
+    metrics_month_count: int,
+    predictions_count: int,
+    n_polygons: int,
+    n_partitions: int,
+    model_label: str,
+) -> Dict[str, Any]:
+    """Build the provider run manifest with explicit partition and runtime provenance."""
+    manifest: Dict[str, Any] = {
+        "timestamp": datetime.now().isoformat(),
+        "data_path": args.data,
+        "start_month": args.start_month,
+        "end_month": args.end_month,
+        "train_window_months": args.train_window,
+        "forecasting_scope": args.forecasting_scope,
+        "active_lag_months": active_lag,
+        "n_test_months": len(test_months),
+        "n_test_months_evaluated": int(metrics_month_count),
+        "n_predictions": int(predictions_count),
+        "n_polygons": int(n_polygons),
+        "n_partitions": int(n_partitions),
+        "rf_params": RF_PARAMS if args.lower_model == "rf" else DT_PARAMS,
+        "model_type": model_label,
+        "random_state": RANDOM_STATE,
+        "visual_enabled": args.visual,
+        "pipeline_version": "GeoRF_utilities_v1.0",
+        "partition_learning_years": os.environ.get("NO_LEAK_PARTITION_LEARNING_YEARS", "2018-2020"),
+        "evaluation_years": os.environ.get("NO_LEAK_EVALUATION_YEARS", "2021-2024"),
+        "temporal_leakage_guard": "partitions learned before evaluation window",
+        "main_model_scope": "GeoRF/GeoDT only; experimental XGBoost variant not included",
+        "validation_threshold_enabled": bool(args.enable_validation_threshold),
+        "threshold_selection_metric": "class_1_f1" if args.enable_validation_threshold else None,
+        "threshold_validation_months": args.threshold_validation_months if args.enable_validation_threshold else None,
+        "threshold_candidate_bounds": [args.threshold_lower_bound, args.threshold_upper_bound]
+        if args.enable_validation_threshold
+        else None,
+        "threshold_default": DEFAULT_PARTITIONED_THRESHOLD if args.enable_validation_threshold else None,
+    }
+    manifest.update(partition_map_provenance(args))
+    manifest.update(runtime_provenance())
+    return manifest
+
+
 def main():
     parser = argparse.ArgumentParser(description='Partitioned vs Pooled k40_nc4 Comparison')
     parser.add_argument('--data', default=DEFAULT_DATA_PATH, help='Path to panel dataset CSV')
@@ -1211,35 +1258,16 @@ def main():
         polygon_metrics_df = pd.DataFrame()
 
     # 4. Run manifest
-    manifest = {
-        'timestamp': datetime.now().isoformat(),
-        'data_path': args.data,
-        'partition_map_path': args.partition_map,
-        'start_month': args.start_month,
-        'end_month': args.end_month,
-        'train_window_months': args.train_window,
-        'forecasting_scope': args.forecasting_scope,
-        'active_lag_months': active_lag,
-        'n_test_months': len(test_months),
-        'n_test_months_evaluated': int(metrics_df['test_month'].nunique()) if not metrics_df.empty else 0,
-        'n_predictions': len(predictions_df) if not predictions_df.empty else 0,
-        'n_polygons': int(df['FEWSNET_admin_code'].nunique()),
-        'n_partitions': int(partition_df['cluster_id'].nunique()),
-        'rf_params': RF_PARAMS if args.lower_model == 'rf' else DT_PARAMS,
-        'model_type': model_label,
-        'random_state': RANDOM_STATE,
-        'visual_enabled': args.visual,
-        'pipeline_version': 'GeoRF_utilities_v1.0',
-        'partition_learning_years': os.environ.get('NO_LEAK_PARTITION_LEARNING_YEARS', '2018-2020'),
-        'evaluation_years': os.environ.get('NO_LEAK_EVALUATION_YEARS', '2021-2024'),
-        'temporal_leakage_guard': 'partitions learned before evaluation window',
-        'main_model_scope': 'GeoRF/GeoDT only; experimental XGBoost variant not included',
-        'validation_threshold_enabled': bool(args.enable_validation_threshold),
-        'threshold_selection_metric': 'class_1_f1' if args.enable_validation_threshold else None,
-        'threshold_validation_months': args.threshold_validation_months if args.enable_validation_threshold else None,
-        'threshold_candidate_bounds': [args.threshold_lower_bound, args.threshold_upper_bound] if args.enable_validation_threshold else None,
-        'threshold_default': DEFAULT_PARTITIONED_THRESHOLD if args.enable_validation_threshold else None,
-    }
+    manifest = build_run_manifest(
+        args=args,
+        active_lag=active_lag,
+        test_months=test_months,
+        metrics_month_count=metrics_df["test_month"].nunique() if not metrics_df.empty else 0,
+        predictions_count=len(predictions_df) if not predictions_df.empty else 0,
+        n_polygons=df["FEWSNET_admin_code"].nunique(),
+        n_partitions=partition_df["cluster_id"].nunique(),
+        model_label=model_label,
+    )
 
     manifest_path = out_dir / 'run_manifest.json'
     with open(manifest_path, 'w') as f:
