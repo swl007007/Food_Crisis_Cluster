@@ -69,6 +69,8 @@
       "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe"
     }
   },
+  "metric_aggregation": "target_month_macro_mean_for_precision_recall_f1",
+  "count_aggregation": "summed_across_target_months_for_support_tp_fp_fn_tn",
   "n_monthly_metric_rows": 108,
   "n_threshold_rows": 36
 }
