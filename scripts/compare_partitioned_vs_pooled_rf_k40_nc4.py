@@ -29,6 +29,7 @@ os.environ['PYTHONHASHSEED'] = '5'
 import sys
 import json
 import argparse
+import hashlib
 import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
@@ -157,6 +158,61 @@ def _apply_partition_smote(
     except Exception as exc:  # pragma: no cover - defensive logging
         print(f"    SMOTE failed for partition {partition_id}: {exc}. Proceeding without oversampling.")
         return X, y
+
+
+def file_sha256(path: str | Path) -> str:
+    """Return the SHA-256 digest for a file, or an empty string if it is missing."""
+    file_path = Path(path)
+    if not file_path.is_file():
+        return ""
+    digest = hashlib.sha256()
+    with file_path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def runtime_provenance() -> Dict[str, Any]:
+    """Return runtime provenance needed to audit SMOTE and Python consistency."""
+    if SMOTE is None:
+        smote_available = False
+        imblearn_version = None
+    else:
+        smote_available = True
+        try:
+            import imblearn
+
+            imblearn_version = getattr(imblearn, "__version__", None)
+        except Exception:
+            imblearn_version = "unknown"
+
+    return {
+        "python_executable": sys.executable,
+        "python_version": sys.version.split()[0],
+        "smote_available": smote_available,
+        "imblearn_version": imblearn_version,
+    }
+
+
+def partition_map_provenance(args: argparse.Namespace) -> Dict[str, Any]:
+    """Return partition-map provenance for general and month-specific modes."""
+    map_paths = {
+        "general": str(args.partition_map),
+        "m2": str(args.partition_map_m2) if args.month_ind else None,
+        "m6": str(args.partition_map_m6) if args.month_ind else None,
+        "m10": str(args.partition_map_m10) if args.month_ind else None,
+    }
+    return {
+        "month_ind_enabled": bool(args.month_ind),
+        "partition_map_path": str(args.partition_map),
+        "partition_map_m2_path": map_paths["m2"],
+        "partition_map_m6_path": map_paths["m6"],
+        "partition_map_m10_path": map_paths["m10"],
+        "partition_map_hashes": {
+            key: file_sha256(value) if value else ""
+            for key, value in map_paths.items()
+        },
+    }
 
 
 # ============================================================================
