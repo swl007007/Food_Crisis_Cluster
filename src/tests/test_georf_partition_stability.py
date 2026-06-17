@@ -1,6 +1,7 @@
 import importlib.util
 import inspect
 import math
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -16,9 +17,43 @@ spec.loader.exec_module(stability)
 class GeoRFPartitionStabilityTests(unittest.TestCase):
     def test_partition_stability_plot_uses_horizon_axis_label(self):
         source = inspect.getsource(stability.render_figure)
+        old_axis_label = "Forecasting horizon" + " / " + "lag"
 
         self.assertIn('"Forecasting horizon"', source)
-        self.assertNotIn("Forecasting horizon / lag", source)
+        self.assertNotIn(old_axis_label, source)
+
+    def test_write_note_uses_horizon_only_paper_wording(self):
+        summary = pd.DataFrame(
+            {
+                "comparison_group": ["across_years"],
+                "n_pairs_total": [1],
+                "n_pairs_with_metric": [1],
+            }
+        )
+        cluster_summary = pd.DataFrame(
+            {
+                "plan": ["GeoRF_2018_02_fs1"],
+                "year": [2018],
+                "month": [2],
+                "forecasting_horizon_months": [4],
+                "source_scope": ["fs1"],
+                "n_polygons": [10],
+                "n_clusters": [2],
+                "median_cluster_size": [5.0],
+                "largest_cluster_share": [0.5],
+            }
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            note_path = stability.write_note(Path(tmp), summary, cluster_summary)
+            text = note_path.read_text(encoding="utf-8")
+        old_lower = "forecasting horizon" + " / " + "lag"
+        old_title = "Forecasting Horizon" + " / " + "Lag"
+
+        self.assertIn("forecasting horizon", text)
+        self.assertIn("## Cluster-Size Summary by Forecasting Horizon", text)
+        self.assertNotIn(old_lower, text)
+        self.assertNotIn(old_title, text)
 
     def test_pairwise_metrics_align_common_valid_admin_units(self):
         left = pd.DataFrame(

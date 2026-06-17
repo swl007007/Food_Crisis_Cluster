@@ -5,8 +5,16 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SCRIPTS_DIR = os.path.join(BASE, "scripts")
+if SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, SCRIPTS_DIR)
+from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 
 FS0_ONLY = "--fs0-only" in sys.argv
+
+
+def fs_label(fs):
+    return f"{FS_TO_LAG[fs]}-month horizon" if fs == 0 else label_for_scope(f"fs{fs}")
 
 def _candidates(suffix, fs):
     """Return list of candidate paths in priority order: new _fsN dir, then legacy dir without suffix."""
@@ -26,7 +34,7 @@ if FS0_ONLY:
     OUTPUT_XLSX = "Table_Format_fs0.xlsx"
 else:
     SCOPES = (1, 2, 3)
-    FS_TO_LAG = {1: 4, 2: 8, 3: 12}
+    FS_TO_LAG = {int(scope.removeprefix("fs")): months for scope, months in HORIZON_MONTHS_BY_SCOPE.items()}
     RESULT_CANDIDATES = {
         ("GeoRF", 1): _candidates("GF", 1),
         ("GeoRF", 2): _candidates("GF", 2),
@@ -123,7 +131,7 @@ for fs, path in FEWSNET_MAP.items():
 
 if not FS0_ONLY and ("FEWSNET (baseline)", 3) not in data and ("FEWSNET (baseline)", 2) in data:
     data[("FEWSNET (baseline)", 3)] = data[("FEWSNET (baseline)", 2)].copy()
-    print(f"  FEWSNET fs3: extended from fs2 (8-month predictions used as 12-month proxy)")
+    print(f"  FEWSNET fs3: extended from fs2 (8-month horizon predictions used as 12-month horizon proxy)")
 
 if FS0_ONLY:
     MODELS = ["GeoRF", "GeoDT"]
@@ -152,7 +160,7 @@ ws["F1"].font = hfont
 ws["F1"].alignment = center
 ws["F1"].fill = hfill
 
-headers = ["", "lag(months)", "Precision", "Recall", "F1",
+headers = ["", "Forecasting horizon", "Precision", "Recall", "F1",
            "precision", "recall", "F1", "F1 Improvement Percentage"]
 for c, h in enumerate(headers, 1):
     cell = ws.cell(row=2, column=c, value=h)
@@ -170,7 +178,7 @@ for model in MODELS:
 
         if first:
             ws.cell(row=row, column=1, value=model).font = mfont
-        ws.cell(row=row, column=2, value=lag).alignment = center
+        ws.cell(row=row, column=2, value=fs_label(fs)).alignment = center
 
         if m:
             for ci, key in enumerate(["split_precision", "split_recall", "split_f1"], 3):
@@ -203,14 +211,14 @@ wb.save(out_path)
 print(f"\nSaved: {out_path}")
 
 print("\n" + "=" * 130)
-fmt = f"{'Model':<22} {'Lag':>3} | {'P(split)':>10} {'R(split)':>10} {'F1(split)':>12} | {'P(pool)':>10} {'R(pool)':>10} {'F1(pool)':>12} | {'Impr%':>8}"
+fmt = f"{'Model':<22} {'Forecasting horizon':>20} | {'P(split)':>10} {'R(split)':>10} {'F1(split)':>12} | {'P(pool)':>10} {'R(pool)':>10} {'F1(pool)':>12} | {'Impr%':>8}"
 print(fmt)
 print("-" * 130)
 for model in MODELS:
     for fs in SCOPES:
         m = data.get((model, fs))
         label = model if fs == SCOPES[0] else ""
-        lag = FS_TO_LAG[fs]
+        horizon = fs_label(fs)
         if m:
             sp = f"{m['split_precision']:.4f}" if m['split_precision'] is not None else "    -"
             sr = f"{m['split_recall']:.4f}" if m['split_recall'] is not None else "    -"
@@ -223,7 +231,7 @@ for model in MODELS:
                 imp = f"{(m['split_f1'] - pf_val) / pf_val * 100:+.2f}%"
             else:
                 imp = "   -"
-            print(f"{label:<22} {lag:>3} | {sp:>10} {sr:>10} {sf:>12} | {pp:>10} {pr:>10} {pf:>12} | {imp:>8}")
+            print(f"{label:<22} {horizon:>20} | {sp:>10} {sr:>10} {sf:>12} | {pp:>10} {pr:>10} {pf:>12} | {imp:>8}")
         else:
-            print(f"{label:<22} {lag:>3} | {'   -':>10} {'   -':>10} {'       -':>12} | {'   -':>10} {'   -':>10} {'       -':>12} | {'  -':>8}")
+            print(f"{label:<22} {horizon:>20} | {'   -':>10} {'   -':>10} {'       -':>12} | {'   -':>10} {'   -':>10} {'       -':>12} | {'  -':>8}")
     print("-" * 130)

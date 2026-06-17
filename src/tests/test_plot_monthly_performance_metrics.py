@@ -85,7 +85,7 @@ class MonthlyPerformanceMetricsTests(unittest.TestCase):
         self.assertIsNone(manifest["validation_summary"]["fewsnet_fs3_label"])
         self.assertEqual(
             manifest["fewsnet_fs3_assumption"],
-            "FEWSNET has no native 12-month baseline and is not plotted for the 12-month lag.",
+            "FEWSNET has no native 12-month baseline and is not plotted for the 12-month horizon.",
         )
 
 

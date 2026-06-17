@@ -83,6 +83,14 @@ class NoLeakWorkflowContractTests(unittest.TestCase):
         self.assertNotIn("GeoXGB", legacy_table)
         self.assertNotIn("GeoXGBExperiment", legacy_table)
 
+    def test_main_aggregate_table_uses_horizon_display_labels(self):
+        aggregate = read_text("other_outputs/aggregate_results.py")
+
+        self.assertIn("Forecasting horizon", aggregate)
+        self.assertIn("label_for_scope", aggregate)
+        self.assertNotIn("lag" + "(months)", aggregate)
+        self.assertNotIn("8-month predictions used as " + "12-month proxy", aggregate)
+
     def test_user_docs_do_not_advertise_old_stage1_or_geoxgb_main_workflow(self):
         docs = "\n".join(
             read_text(path)

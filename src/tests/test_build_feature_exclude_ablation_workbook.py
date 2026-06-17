@@ -72,7 +72,7 @@ class FeatureExcludeAblationWorkbookTests(unittest.TestCase):
 
         self.assertEqual(len(rows), 24)
         self.assertEqual(rows[0]["Feature Group"], "Weather Exclude")
-        self.assertEqual(rows[0]["lag(months)"], 4)
+        self.assertEqual(rows[0]["Forecasting horizon"], "4-month horizon")
         self.assertEqual(rows[0]["F1"], 0.7)
         self.assertEqual(rows[0]["Pooled F1"], 0.6)
         self.assertAlmostEqual(
@@ -90,7 +90,7 @@ class FeatureExcludeAblationWorkbookTests(unittest.TestCase):
                 rows.append(
                     {
                         "Feature Group": group.replace("_", " ").title(),
-                        "lag(months)": lag,
+                        "Forecasting horizon": f"{lag}-month horizon",
                         "Precision": 0.7,
                         "Recall": 0.5,
                         "F1": 0.6,
@@ -114,7 +114,7 @@ class FeatureExcludeAblationWorkbookTests(unittest.TestCase):
         self.assertEqual(ws["C1"].value, "Split Model")
         self.assertEqual(ws["F1"].value, "Pooled Model(Non-split)")
         self.assertEqual(ws["A3"].value, "Weather Exclude")
-        self.assertEqual(ws["B3"].value, 4)
+        self.assertEqual(ws["B3"].value, "4-month horizon")
 
 
 if __name__ == "__main__":

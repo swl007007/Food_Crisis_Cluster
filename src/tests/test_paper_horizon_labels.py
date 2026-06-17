@@ -19,9 +19,14 @@ class PaperHorizonLabelTests(unittest.TestCase):
         self.assertEqual(labels.label_for_scope("fs0"), "fs0")
 
     def test_replace_paper_horizon_terms_updates_only_display_phrases(self):
+        old_axis_label = "Forecasting horizon" + " / " + "lag"
+        old_header = "Forecasting horizon" + " (month " + "lag)"
+        old_four = "4-month " + "lag"
+        old_eight = "8-month " + "lag"
+        old_twelve = "12-month " + "lag"
         text = (
-            "Forecasting horizon / lag: 4-month lag, 8-month lag, 12-month lag. "
-            "Forecasting horizon (month lag). Lag Exclude and lagged outcomes remain."
+            f"{old_axis_label}: {old_four}, {old_eight}, {old_twelve}. "
+            f"{old_header}. Lag Exclude and lagged outcomes remain."
         )
 
         updated = labels.replace_paper_horizon_terms(text)
@@ -30,11 +35,11 @@ class PaperHorizonLabelTests(unittest.TestCase):
         self.assertIn("Forecasting horizon.", updated)
         self.assertIn("Lag Exclude", updated)
         self.assertIn("lagged outcomes", updated)
-        self.assertNotIn("4-month lag", updated)
-        self.assertNotIn("8-month lag", updated)
-        self.assertNotIn("12-month lag", updated)
-        self.assertNotIn("horizon / lag", updated.lower())
-        self.assertNotIn("month lag)", updated.lower())
+        self.assertNotIn(old_four, updated)
+        self.assertNotIn(old_eight, updated)
+        self.assertNotIn(old_twelve, updated)
+        self.assertNotIn("horizon" + " / " + "lag", updated.lower())
+        self.assertNotIn("month " + "lag)", updated.lower())
 
 
 if __name__ == "__main__":

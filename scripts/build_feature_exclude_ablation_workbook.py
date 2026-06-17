@@ -12,9 +12,9 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 try:
-    from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+    from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -175,7 +175,7 @@ def build_ablation_rows(
             rows.append(
                 {
                     "Feature Group": display,
-                    "lag(months)": lag,
+                    "Forecasting horizon": label_for_scope(f"fs{scope}"),
                     "Precision": summary["Precision"],
                     "Recall": summary["Recall"],
                     "F1": f1,
@@ -212,7 +212,7 @@ def build_reference_rows(main_workbook: Path) -> list[dict[str, Any]]:
         rows.append(
             {
                 "Feature Group": "Main" if current_label == "GeoRF" else current_label,
-                "lag(months)": int(lag),
+                "Forecasting horizon": label_for_scope(f"fs{int(lag / 4)}"),
                 "Precision": clean_float(row[2]),
                 "Recall": clean_float(row[3]),
                 "F1": split_f1,
@@ -275,7 +275,7 @@ def write_workbook(rows: list[dict[str, Any]], out_path: Path) -> None:
 
         values = [
             group_value,
-            row_data["lag(months)"],
+            row_data["Forecasting horizon"],
             row_data["Precision"],
             row_data["Recall"],
             row_data["F1"],
