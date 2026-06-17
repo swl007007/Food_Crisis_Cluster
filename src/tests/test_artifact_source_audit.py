@@ -11,6 +11,7 @@ from scripts.audit_final_artifact_sources import (
     classify_source_text,
     write_audit_outputs,
 )
+from scripts.verify_current_results_reproducibility import audit_rows_are_clean
 
 
 def test_classify_source_text_detects_clean_panel():
@@ -82,3 +83,41 @@ def test_paper_facing_script_defaults_do_not_reference_phase_change():
     for script in scripts:
         row = audit_script_default(script.as_posix(), script)
         assert row["status"] == "clean", row
+
+
+def test_audit_rows_are_clean_rejects_phase_change_and_needs_regeneration():
+    rows = [
+        {"artifact_group": "06_cluster_profiles", "artifact_type": "final_artifact_group", "status": "clean"},
+        {
+            "artifact_group": "12_thresholded_georf_results",
+            "artifact_type": "final_artifact_group",
+            "status": "invalid_phase_change",
+        },
+        {
+            "artifact_group": "10_false_negative_error_modes",
+            "artifact_type": "final_artifact_group",
+            "status": "needs_regeneration",
+        },
+    ]
+
+    ok, failures = audit_rows_are_clean(rows)
+
+    assert not ok
+    assert any("12_thresholded_georf_results" in failure for failure in failures)
+    assert any("10_false_negative_error_modes" in failure for failure in failures)
+
+
+def test_audit_rows_are_clean_accepts_static_and_clean_rows():
+    rows = [
+        {"artifact_group": "01_main_results", "artifact_type": "final_artifact_group", "status": "clean"},
+        {
+            "artifact_group": "05_partition_diagnostics",
+            "artifact_type": "final_artifact_group",
+            "status": "static_or_shape_only",
+        },
+    ]
+
+    ok, failures = audit_rows_are_clean(rows)
+
+    assert ok
+    assert failures == []

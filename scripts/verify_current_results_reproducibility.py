@@ -15,6 +15,8 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
+from scripts.audit_final_artifact_sources import build_audit_rows, write_audit_outputs
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -133,6 +135,18 @@ def csv_summary(path: Path) -> tuple[list[str], int, set[str], set[str]]:
             if row.get("test_month"):
                 months.add(row["test_month"])
     return header, row_count, models, months
+
+
+def audit_rows_are_clean(rows: list[dict[str, Any]]) -> tuple[bool, list[str]]:
+    """Return whether audit rows contain no paper-facing unclean statuses."""
+    failures: list[str] = []
+    for row in rows:
+        status = row.get("status")
+        artifact_group = row.get("artifact_group", "<unknown>")
+        artifact_type = row.get("artifact_type", "<unknown>")
+        if status in {"invalid_phase_change", "needs_regeneration"}:
+            failures.append(f"{artifact_group} ({artifact_type}) is {status}: {row.get('reason', '')}")
+    return not failures, failures
 
 
 def verify_main_stage3(verifier: Verifier) -> None:
@@ -291,6 +305,32 @@ def verify_final_artifacts(verifier: Verifier) -> None:
             verifier.check((REPO_ROOT / source).is_file(), f"monthly performance source exists: {source}")
 
 
+def verify_artifact_source_audit(verifier: Verifier) -> None:
+    """Regenerate source audit reports and fail if paper-facing provenance is unclean."""
+    rows = build_audit_rows()
+    audit_csv, audit_md = write_audit_outputs(rows, REPO_ROOT / "final_artifacts_in_paper_updated")
+    verifier.check(audit_csv.is_file(), "artifact source audit CSV exists")
+    verifier.check(audit_md.is_file(), "artifact source audit Markdown exists")
+
+    ok, failures = audit_rows_are_clean(rows)
+    verifier.check(ok, "paper-facing artifact source audit has no phase-change or unresolved regeneration rows")
+    for failure in failures:
+        verifier.fail(f"artifact source audit failure: {failure}")
+
+    thresholded = [
+        row
+        for row in rows
+        if row.get("artifact_type") == "provider_manifest"
+        and "result_partition_k40_compare_GF_thresholded" in row.get("artifact_group", "")
+    ]
+    verifier.check(len(thresholded) == 3, "all three thresholded GeoRF provider manifests audited")
+    for row in thresholded:
+        verifier.check(
+            str(row.get("source_path", "")).endswith("FEWSNET_forecast_unadjusted_bm.csv"),
+            f"{row.get('artifact_group')} uses clean FEWSNET source",
+        )
+
+
 def verify_cleanup_archive(verifier: Verifier) -> None:
     archive = REPO_ROOT / "archived" / "no_leak_partition_learning_2018_2020_20260616"
     verifier.check((archive / "README.md").is_file(), "no-leak root CSV archive README exists")
@@ -309,6 +349,7 @@ def main() -> int:
     verify_experiment_dirs(verifier)
     verify_ablation_outputs(verifier)
     verify_final_artifacts(verifier)
+    verify_artifact_source_audit(verifier)
     verify_cleanup_archive(verifier)
 
     print("Current results reproducibility verification")
