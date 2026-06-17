@@ -33,12 +33,30 @@ class RelabelResult(NamedTuple):
     remaining_forbidden_terms: list[str]
 
 
+class TextFileFormat:
+    def __init__(self, encoding: str, newline: str) -> None:
+        self.encoding = encoding
+        self.newline = newline
+
+
 def _read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
 
 
+def _detect_text_file_format(path: Path) -> TextFileFormat:
+    raw = path.read_bytes()
+    crlf_count = raw.count(b"\r\n")
+    lf_count = raw.count(b"\n") - crlf_count
+    newline = "\r\n" if crlf_count > lf_count else "\n"
+    encoding = "utf-8-sig" if raw.startswith(b"\xef\xbb\xbf") else "utf-8"
+    return TextFileFormat(encoding=encoding, newline=newline)
+
+
 def _write_text(path: Path, text: str) -> None:
-    path.write_text(text, encoding="utf-8")
+    file_format = _detect_text_file_format(path)
+    with path.open("w", encoding=file_format.encoding, newline=file_format.newline) as handle:
+        handle.write(text)
+
 
 
 def _csv_rows(text: str) -> list[list[str]]:

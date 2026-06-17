@@ -54,6 +54,18 @@ class PaperHorizonLabelTests(unittest.TestCase):
         self.assertNotIn("horizon" + " / " + "lag", updated.lower())
         self.assertNotIn("month " + "lag)", updated.lower())
 
+    def test_replace_paper_horizon_terms_updates_plural_horizon_list(self):
+        old_phrase = "4-month, 8-month, and 12-month " + "lags"
+        text = f"Rows are reported across the {old_phrase}."
+
+        updated = labels.replace_paper_horizon_terms(text)
+
+        self.assertEqual(
+            updated,
+            "Rows are reported across the 4-month, 8-month, and 12-month horizons.",
+        )
+        self.assertEqual(labels.forbidden_paper_lag_terms(updated), [])
+
     def test_replace_paper_horizon_terms_preserves_lagged_mechanics(self):
         text = (
             "4-month lagged outcomes, 8-month lagged non-crisis states, "
@@ -99,6 +111,23 @@ class PaperHorizonLabelTests(unittest.TestCase):
             self.assertTrue(result.updated)
             self.assertEqual(csv_path.read_text(encoding="utf-8"), original)
             self.assertEqual(result.remaining_forbidden_terms, [])
+
+    def test_relabeler_preserves_crlf_newlines_when_writing_text_file(self):
+        relabeler = load_relabeler_module()
+        old_axis = "Forecasting horizon" + " / " + "lag"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            csv_path = Path(tmp) / "table.csv"
+            original = f"{old_axis},score\r\n4-month horizon,1.25\r\n"
+            csv_path.write_bytes(original.encode("utf-8"))
+
+            result = relabeler.relabel_file(csv_path, dry_run=False)
+
+            self.assertTrue(result.updated)
+            written = csv_path.read_bytes()
+            self.assertIn(b"\r\n", written)
+            self.assertNotIn(b"\n4-month", written.replace(b"\r\n", b""))
+            self.assertIn(b"Forecasting horizon,score\r\n", written)
 
     def test_relabeler_requires_lag_exclude_only_for_ablation_workbook(self):
         relabeler = load_relabeler_module()

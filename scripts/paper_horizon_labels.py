@@ -18,6 +18,7 @@ HORIZON_LABELS = {
 }
 
 OLD_TO_NEW_DISPLAY_REPLACEMENTS = {
+    "4-month, 8-month, and 12-month lags": "4-month, 8-month, and 12-month horizons",
     "4-month-lag": "4-month-horizon",
     "8-month-lag": "8-month-horizon",
     "12-month-lag": "12-month-horizon",
