@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -32,6 +33,18 @@ def load_thresholded_results(source_dir: Path, scopes: list[str]) -> tuple[pd.Da
         metrics_frames.append(metrics)
         threshold_frames.append(thresholds)
     return pd.concat(metrics_frames, ignore_index=True), pd.concat(threshold_frames, ignore_index=True)
+
+
+def load_provider_sources(source_dir: Path, scopes: list[str]) -> dict[str, str]:
+    """Return source data paths recorded by thresholded provider manifests."""
+    sources = {}
+    for scope in scopes:
+        result_dir = source_dir / f"result_partition_k40_compare_GF_thresholded_{scope}"
+        manifest_path = result_dir / "run_manifest.json"
+        with manifest_path.open(encoding="utf-8") as handle:
+            manifest = json.load(handle)
+        sources[scope] = str(manifest.get("data_path", ""))
+    return sources
 
 
 def _aggregate_model_metrics(group: pd.DataFrame) -> pd.Series:
@@ -154,6 +167,25 @@ def main(argv=None) -> None:
     compact.to_csv(args.output_dir / "georf_thresholded_compact_table.csv", index=False)
     write_markdown_table(format_for_markdown(compact), args.output_dir / "georf_thresholded_compact_table.md")
     write_note(args.output_dir)
+    provider_sources = load_provider_sources(args.source_dir, args.scopes)
+    (args.output_dir / "artifact_source_manifest.json").write_text(
+        json.dumps(
+            {
+                "artifact_group": "12_thresholded_georf_results",
+                "source_dir": str(args.source_dir),
+                "scopes": list(args.scopes),
+                "source_data_paths": provider_sources,
+                "provider_manifests": {
+                    scope: str(args.source_dir / f"result_partition_k40_compare_GF_thresholded_{scope}" / "run_manifest.json")
+                    for scope in args.scopes
+                },
+                "n_monthly_metric_rows": int(len(metrics)),
+                "n_threshold_rows": int(len(thresholds)),
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     print(f"Wrote GeoRF thresholded artifacts to {args.output_dir}")
     print(f"Rows: monthly_metrics={len(metrics)}, thresholds={len(thresholds)}, compact={len(compact)}")

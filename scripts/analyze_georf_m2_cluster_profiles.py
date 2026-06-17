@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import json
 import os
 import re
 from pathlib import Path
@@ -773,6 +774,21 @@ def main(argv=None) -> None:
     cohesion.to_csv(output_dir / "georf_m2_cluster_profile_cohesion.csv", index=False)
     plot_similarity_figure(similarities, cohesion, output_dir / "georf_m2_cluster_profile_similarity.png", args.dpi)
     write_note(output_dir, profile_table)
+    (output_dir / "artifact_source_manifest.json").write_text(
+        json.dumps(
+            {
+                "artifact_group": "06_cluster_profiles",
+                "panel_path": str(args.panel),
+                "mapping_path": str(args.mapping),
+                "predictions_path": str(args.predictions),
+                "shapefile_path": str(args.shapefile),
+                "n_profile_clusters": int(profile_table["cluster_id"].nunique()),
+                "n_profile_rows": int(len(profile_table)),
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     print(f"Wrote GeoRF m2 cluster profile artifacts to {output_dir}")
     print(f"Clusters: {profile_table['cluster_id'].nunique()}")

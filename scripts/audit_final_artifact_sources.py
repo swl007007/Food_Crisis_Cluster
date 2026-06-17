@@ -112,7 +112,7 @@ def _source_from_manifest(data: dict[str, Any]) -> str:
         value = data.get(key)
         if value:
             values.append(str(value))
-    for key in ("provider_manifests", "sources"):
+    for key in ("provider_manifests", "source_data_paths", "sources"):
         value = data.get(key)
         if isinstance(value, dict):
             values.extend(str(item) for item in value.values())

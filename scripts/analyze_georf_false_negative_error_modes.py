@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import pickle
 import re
@@ -576,6 +577,23 @@ def main(argv=None) -> None:
     error_modes.to_csv(args.output_dir / "georf_partitioned_false_negative_error_modes.csv", index=False)
     write_markdown_table(compact, args.output_dir / "georf_partitioned_false_negative_hotspot_compact_table.md")
     write_note(args.output_dir, error_modes)
+    (args.output_dir / "artifact_source_manifest.json").write_text(
+        json.dumps(
+            {
+                "artifact_group": "10_false_negative_error_modes",
+                "data_path": str(args.data),
+                "source_dir": str(args.source_dir),
+                "seasonal_crisis_path": str(args.seasonal_crisis),
+                "adjacency_cache_path": str(args.adjacency_cache),
+                "scopes": list(args.scopes),
+                "n_predictions": int(len(predictions)),
+                "n_joined_rows": int(len(joined)),
+                "n_selected_false_negatives": int(len(false_negative)),
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
     print(f"Wrote GeoRF false-negative error-mode artifacts to {args.output_dir}")
     print(f"Rows: predictions={len(predictions)}, joined={len(joined)}, selected_false_negatives={len(false_negative)}")

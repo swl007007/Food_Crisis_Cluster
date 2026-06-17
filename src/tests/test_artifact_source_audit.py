@@ -6,6 +6,7 @@ import pandas as pd
 from scripts.audit_final_artifact_sources import (
     CLEAN_PANEL_BASENAME,
     PHASE_CHANGE_BASENAME,
+    audit_artifact_manifest,
     audit_provider_manifest,
     audit_script_default,
     classify_source_text,
@@ -70,6 +71,29 @@ def test_write_audit_outputs_writes_csv_and_markdown(tmp_path: Path):
     df = pd.read_csv(csv_path)
     assert df.loc[0, "status"] == "clean"
     assert "result_partition_k40_compare_GF_fs1" in md_path.read_text(encoding="utf-8")
+
+
+def test_artifact_manifest_accepts_source_data_paths(tmp_path: Path):
+    manifest = tmp_path / "artifact_source_manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "source_data_paths": {
+                    "fs1": rf"C:\data\{CLEAN_PANEL_BASENAME}",
+                    "fs2": rf"C:\data\{CLEAN_PANEL_BASENAME}",
+                },
+                "provider_manifests": {
+                    "fs1": "result_partition_k40_compare_GF_thresholded_fs1/run_manifest.json"
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    row = audit_artifact_manifest("12_thresholded_georf_results", manifest)
+
+    assert row["status"] == "clean"
+    assert CLEAN_PANEL_BASENAME in row["source_path"]
 
 
 def test_paper_facing_script_defaults_do_not_reference_phase_change():

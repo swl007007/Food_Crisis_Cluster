@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-16T20:01:03.985333",
-  "data_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm_phase_change.csv",
+  "timestamp": "2026-06-16T21:03:53.651057",
+  "data_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
   "partition_map_path": "result_partition_k40_compare_GF_fs2/refined/cluster_mapping_k40_nc17_general_refined_contig3.csv",
   "start_month": "2021-01",
   "end_month": "2024-12",

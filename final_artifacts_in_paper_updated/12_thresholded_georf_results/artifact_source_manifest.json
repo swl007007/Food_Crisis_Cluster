@@ -1,0 +1,21 @@
+{
+  "artifact_group": "12_thresholded_georf_results",
+  "source_dir": ".",
+  "scopes": [
+    "fs1",
+    "fs2",
+    "fs3"
+  ],
+  "source_data_paths": {
+    "fs1": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+    "fs2": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+    "fs3": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv"
+  },
+  "provider_manifests": {
+    "fs1": "result_partition_k40_compare_GF_thresholded_fs1\\run_manifest.json",
+    "fs2": "result_partition_k40_compare_GF_thresholded_fs2\\run_manifest.json",
+    "fs3": "result_partition_k40_compare_GF_thresholded_fs3\\run_manifest.json"
+  },
+  "n_monthly_metric_rows": 108,
+  "n_threshold_rows": 36
+}
