@@ -41,6 +41,16 @@ class PaperHorizonLabelTests(unittest.TestCase):
         self.assertNotIn("horizon" + " / " + "lag", updated.lower())
         self.assertNotIn("month " + "lag)", updated.lower())
 
+    def test_replace_paper_horizon_terms_preserves_lagged_mechanics(self):
+        text = (
+            "4-month lagged outcomes, 8-month lagged non-crisis states, "
+            "and internal lag mechanics should remain unchanged."
+        )
+
+        updated = labels.replace_paper_horizon_terms(text)
+
+        self.assertEqual(updated, text)
+
 
 if __name__ == "__main__":
     unittest.main()

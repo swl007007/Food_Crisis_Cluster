@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import re
+
 
 HORIZON_MONTHS_BY_SCOPE = {
     "fs1": 4,
@@ -39,5 +41,6 @@ def replace_paper_horizon_terms(text: str) -> str:
     """Replace paper-facing forecast interval labels without touching true lag terms."""
     updated = text
     for old, new in OLD_TO_NEW_DISPLAY_REPLACEMENTS.items():
-        updated = updated.replace(old, new)
+        pattern = re.compile(rf"(?<![A-Za-z0-9_-]){re.escape(old)}(?![A-Za-z0-9_-])")
+        updated = pattern.sub(new, updated)
     return updated

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import math
+import re
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,7 @@ FEATURE_GROUPS = {
 }
 
 SCOPE_TO_LAG = {int(scope.removeprefix("fs")): months for scope, months in HORIZON_MONTHS_BY_SCOPE.items()}
+LAG_TO_SCOPE = {months: scope for scope, months in SCOPE_TO_LAG.items()}
 
 HEADERS = [
     "",
@@ -62,6 +64,20 @@ def clean_float(value: Any) -> float | None:
     if math.isnan(result) or math.isinf(result):
         return None
     return round(result, 12)
+
+
+def parse_forecasting_horizon_months(value: Any) -> int | None:
+    """Return horizon months from legacy numeric cells or paper display labels."""
+    numeric = clean_float(value)
+    if numeric is not None:
+        months = int(numeric)
+        return months if months in LAG_TO_SCOPE else None
+
+    label = "" if value is None else str(value).strip().lower()
+    match = re.search(r"\b(4|8|12)\s*-\s*month\s+(?:horizon|lag)\b", label)
+    if match:
+        return int(match.group(1))
+    return None
 
 
 def safe_diff(left: Any, right: Any) -> float | None:
@@ -134,10 +150,9 @@ def load_main_by_lag(path: Path) -> dict[int, dict[str, float | None]]:
     current_label: str | None = None
     for row in ws.iter_rows(min_row=3, values_only=True):
         current_label = _row_label(row[0], current_label)
-        lag = clean_float(row[1])
-        if lag is None:
+        lag_int = parse_forecasting_horizon_months(row[1])
+        if lag_int is None:
             continue
-        lag_int = int(lag)
         if lag_int not in refs:
             continue
 
@@ -201,8 +216,8 @@ def build_reference_rows(main_workbook: Path) -> list[dict[str, Any]]:
         current_label = _row_label(row[0], current_label)
         if current_label not in {"GeoRF", "FEWSNET (baseline)"}:
             continue
-        lag = clean_float(row[1])
-        if lag is None or int(lag) not in SCOPE_TO_LAG.values():
+        lag = parse_forecasting_horizon_months(row[1])
+        if lag is None:
             continue
 
         split_f1 = clean_float(row[4])
@@ -212,7 +227,7 @@ def build_reference_rows(main_workbook: Path) -> list[dict[str, Any]]:
         rows.append(
             {
                 "Feature Group": "Main" if current_label == "GeoRF" else current_label,
-                "Forecasting horizon": label_for_scope(f"fs{int(lag / 4)}"),
+                "Forecasting horizon": label_for_scope(f"fs{LAG_TO_SCOPE[lag]}"),
                 "Precision": clean_float(row[2]),
                 "Recall": clean_float(row[3]),
                 "F1": split_f1,

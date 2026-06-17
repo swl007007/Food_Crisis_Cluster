@@ -3,11 +3,14 @@ import tempfile
 import unittest
 
 import pandas as pd
+from openpyxl import Workbook
 from openpyxl import load_workbook
 
 from scripts.build_feature_exclude_ablation_workbook import (
     FEATURE_GROUPS,
     build_ablation_rows,
+    build_reference_rows,
+    load_main_by_lag,
     write_workbook,
 )
 
@@ -49,6 +52,39 @@ def _write_metrics(path: Path, partitioned_f1: float, pooled_f1: float) -> None:
 
 
 class FeatureExcludeAblationWorkbookTests(unittest.TestCase):
+    def test_main_workbook_readers_accept_horizon_display_labels(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "main_month_ind_cont3.xlsx"
+            wb = Workbook()
+            ws = wb.active
+            rows = [
+                ("GeoRF", "4-month horizon", 0.7, 0.5, 0.60, 0.6, 0.4, 0.50),
+                (None, "8-month horizon", 0.8, 0.6, 0.70, 0.7, 0.5, 0.60),
+                (None, "12-month horizon", 0.9, 0.7, 0.80, 0.8, 0.6, 0.70),
+                ("FEWSNET (baseline)", "4-month horizon", 0.4, 0.3, 0.35, None, None, None),
+                (None, "8-month horizon", 0.5, 0.4, 0.45, None, None, None),
+                (None, "12-month horizon", 0.6, 0.5, 0.55, None, None, None),
+            ]
+            for row in rows:
+                ws.append(row)
+            ws.insert_rows(1, amount=2)
+            wb.save(path)
+
+            refs = load_main_by_lag(path)
+            reference_rows = build_reference_rows(path)
+
+        self.assertEqual(refs[4]["partitioned_f1"], 0.60)
+        self.assertEqual(refs[8]["partitioned_f1"], 0.70)
+        self.assertEqual(refs[12]["partitioned_f1"], 0.80)
+        self.assertEqual(refs[4]["fewsnet_f1"], 0.35)
+        self.assertEqual(refs[8]["fewsnet_f1"], 0.45)
+        self.assertEqual(refs[12]["fewsnet_f1"], 0.55)
+        self.assertEqual([row["Forecasting horizon"] for row in reference_rows[:3]], [
+            "4-month horizon",
+            "8-month horizon",
+            "12-month horizon",
+        ])
+
     def test_build_ablation_rows_uses_new_run_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             run_root = Path(tmp) / "runs"
