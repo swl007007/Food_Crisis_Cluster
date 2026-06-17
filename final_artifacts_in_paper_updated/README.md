@@ -144,13 +144,13 @@ workflow. Files are grouped by paper use case so the root stays navigable.
 ## 07 Probability Uncertainty
 
 - `07_probability_uncertainty/georf_probability_reliability.png`: GeoRF pooled
-  vs partitioned probability reliability curves by forecasting horizon / lag.
+  vs partitioned probability reliability curves by forecasting horizon.
 - `07_probability_uncertainty/georf_probability_bootstrap_ci.csv`: GeoRF
   pooled vs partitioned paired country-clustered bootstrap confidence intervals
-  for precision, recall, F1, and Brier score by forecasting horizon / lag.
+  for precision, recall, F1, and Brier score by forecasting horizon.
 - `07_probability_uncertainty/georf_probability_bootstrap_compact_table.csv`:
   compact appendix-ready paired-bootstrap delta table with one row per
-  forecasting horizon / lag.
+  forecasting horizon.
 - `07_probability_uncertainty/georf_probability_bootstrap_compact_table.md`:
   Markdown rendering of the compact appendix-ready paired-bootstrap delta
   table.
@@ -162,7 +162,7 @@ workflow. Files are grouped by paper use case so the root stays navigable.
   partitioned models.
 - `07_probability_uncertainty/georf_probability_uncertainty_summary.csv`:
   descriptive probability uncertainty summaries by model and forecasting
-  horizon / lag.
+  horizon.
 - `07_probability_uncertainty/georf_probability_uncertainty_note.md`: Chinese
   reviewer-facing note and English appendix text for probability export,
   threshold framing, calibration diagnostics, Brier score, and uncertainty
@@ -171,9 +171,9 @@ workflow. Files are grouped by paper use case so the root stays navigable.
 ## 08 GeoDT Diagnostics
 
 - `08_geodt_diagnostics/geodt_branch_1_vs_001_locations_2024-10_fs1_global.png`:
-  GeoDT 4-month-lag branch location diagnostic.
+  GeoDT 4-month-horizon branch location diagnostic.
 - `08_geodt_diagnostics/geodt_branch_tree_compare_2024-10_fs1_001_vs_1.png`:
-  GeoDT 4-month-lag branch tree diagnostic.
+  GeoDT 4-month-horizon branch tree diagnostic.
 - `08_geodt_diagnostics/geodt_branch_tree_compare_2024-10_fs1_001_vs_1_2.png`:
   alternate GeoDT branch tree diagnostic render.
 
@@ -181,7 +181,7 @@ workflow. Files are grouped by paper use case so the root stays navigable.
 
 - `09_humanitarian_metrics/georf_humanitarian_population_compact_table.csv`:
   compact appendix-ready GeoRF population-weighted humanitarian metrics by
-  forecasting horizon / lag.
+  forecasting horizon.
 - `09_humanitarian_metrics/georf_humanitarian_population_compact_table.md`:
   Markdown rendering of the compact humanitarian population metrics table.
 - `09_humanitarian_metrics/georf_humanitarian_population_summary.csv`:
@@ -214,7 +214,7 @@ workflow. Files are grouped by paper use case so the root stays navigable.
 
 - `11_threshold_free_metrics/georf_threshold_free_metrics.csv`: long-format
   GeoRF pooled and partitioned PR-AUC and fixed operating-point metrics by
-  forecasting horizon / lag.
+  forecasting horizon.
 - `11_threshold_free_metrics/georf_threshold_free_metrics_compact_table.csv`:
   compact appendix-ready comparison table with partitioned-minus-pooled deltas.
 - `11_threshold_free_metrics/georf_threshold_free_metrics_compact_table.md`:

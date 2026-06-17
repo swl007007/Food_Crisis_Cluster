@@ -11,7 +11,7 @@
 `FEWSNET_admin_code` 取共同且有效的 polygon；`s-1`、空值和缺失标签
 被视为 out-of-scope，不进入 ARI/NMI 或 cluster-size 统计。
 
-Pairwise comparison 分为三类主轴：同一月份和同一 forecasting horizon / lag
+Pairwise comparison 分为三类主轴：同一月份和同一 forecasting horizon
 但不同年份为 across years；同一年和同一月份但不同 horizon 为 across horizons；
 同一年和同一 horizon 但不同月份为 across months。其他组合保留为 mixed，
 用于透明报告但不作为主要稳定性解释。
@@ -41,7 +41,7 @@ cluster label permutation 不敏感，因此适合比较不同年度、月份和
 | GeoRF_2019_10_fs3 | 2019 | 10 | 12 | fs3 | 0 | 0 |
 | GeoRF_2020_06_fs1 | 2020 | 6 | 4 | fs1 | 0 | 0 |
 
-## Cluster-Size Summary by Forecasting Horizon / Lag
+## Cluster-Size Summary by Forecasting Horizon
 
 | forecasting_horizon_months | n_plans | median_n_clusters | median_n_polygons | median_cluster_size | median_largest_cluster_share |
 | --- | --- | --- | --- | --- | --- |

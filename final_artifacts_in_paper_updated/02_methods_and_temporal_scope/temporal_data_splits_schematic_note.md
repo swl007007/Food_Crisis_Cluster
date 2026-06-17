@@ -13,7 +13,7 @@
 - Stage 2 consensus clustering 只使用 Stage 1 产出的 linked partition plans 和对应 performance-derived weights，不使用 2021-2024 final test outcomes。
 - 当前 Stage 2 产物中，GeoRF general consensus 使用 24 个 linked plans，m2/m6/m10 各使用 8 个 linked plans；GeoDT general consensus 使用 27 个 linked plans，m2/m6/m10 各使用 9 个 linked plans。
 - Stage 3 configured candidate loop 覆盖 2021-01 到 2024-12，run manifest 记录 `n_test_months=48`。当前有 evaluated result rows 的 target months 只有 2021-2024 年的 February、June、October，run manifest 记录 `n_test_months_evaluated=12` per forecasting horizon。对 target month `T` 和 horizon `h`，当前代码使用 `[T - h - 35 months, T - h)` 作为 rolling training mask，使用 `[T, T + 1 month)` 作为 final test mask。
-- 当前 `temporal_data_splits_table.csv` 只列出 actual evaluated rows：2021-2024 年 February、June、October x 4-month、8-month、12-month lag，共 36 行。这些 rows 对应 m2/m6/m10 month-specific maps；general maps 只用于说明非 2/6/10 月如果在未来被 evaluation 覆盖时的配置规则。
+- 当前 `temporal_data_splits_table.csv` 只列出 actual evaluated rows：2021-2024 年 February、June、October x 4-month、8-month、12-month horizon，共 36 行。这些 rows 对应 m2/m6/m10 month-specific maps；general maps 只用于说明非 2/6/10 月如果在未来被 evaluation 覆盖时的配置规则。
 
 ### 不写入 appendix 的额外承诺
 
@@ -62,11 +62,11 @@ TEST mask   = [T, T + 1 month)
 
 | Forecasting horizon | Horizon `h` | Stage 3 training period for target month `T` | Split-acceptance validation data | Final test data |
 |---|---:|---|---|---|
-| 4-month lag | 4 months | `[T - 39 months, T - 4 months)` | Stage 1 uses an internal validation subset from the corresponding Stage 1 rolling training window. Current group-aware split settings are `val_ratio=0.20`, `min_val_per_group=1`, `skip_singleton_groups=True`, `random_state=42`. | `[T, T + 1 month)` |
-| 8-month lag | 8 months | `[T - 43 months, T - 8 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
-| 12-month lag | 12 months | `[T - 47 months, T - 12 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
+| 4-month horizon | 4 months | `[T - 39 months, T - 4 months)` | Stage 1 uses an internal validation subset from the corresponding Stage 1 rolling training window. Current group-aware split settings are `val_ratio=0.20`, `min_val_per_group=1`, `skip_singleton_groups=True`, `random_state=42`. | `[T, T + 1 month)` |
+| 8-month horizon | 8 months | `[T - 43 months, T - 8 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
+| 12-month horizon | 12 months | `[T - 47 months, T - 12 months)` | Same validation rule as above, applied inside each Stage 1 partition-learning run. | `[T, T + 1 month)` |
 
-For example, the implemented rule maps evaluated `T=2021-02` and the 4-month lag to a Stage 3 training mask of `[2017-11-01, 2020-10-01)` and a final test mask of `[2021-02-01, 2021-03-01)`.
+For example, the implemented rule maps evaluated `T=2021-02` and the 4-month horizon to a Stage 3 training mask of `[2017-11-01, 2020-10-01)` and a final test mask of `[2021-02-01, 2021-03-01)`.
 
 ### Table A3. Stage 3 Partition Map Selection by Target Calendar Month
 

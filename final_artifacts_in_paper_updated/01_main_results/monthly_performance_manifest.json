@@ -40,17 +40,17 @@
     "rows": [
       {
         "internal_scope": "fs1",
-        "display_label": "4-month lag",
+        "display_label": "4-month horizon",
         "horizon_months": 4
       },
       {
         "internal_scope": "fs2",
-        "display_label": "8-month lag",
+        "display_label": "8-month horizon",
         "horizon_months": 8
       },
       {
         "internal_scope": "fs3",
-        "display_label": "12-month lag",
+        "display_label": "12-month horizon",
         "horizon_months": 12
       }
     ],
@@ -69,7 +69,7 @@
       "3"
     ]
   },
-  "fewsnet_fs3_assumption": "FEWSNET has no native 12-month baseline and is not plotted for the 12-month lag.",
+  "fewsnet_fs3_assumption": "FEWSNET has no native 12-month baseline and is not plotted for the 12-month horizon.",
   "generated_artifacts": [
     "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/final_artifacts_in_paper_updated/georf_monthly_performance.png",
     "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/final_artifacts_in_paper_updated/monthly_performance_manifest.json"
@@ -425,7 +425,7 @@
             "recall": 3,
             "f1": 3
           },
-          "display_label": "4-month lag"
+          "display_label": "4-month horizon"
         },
         "fs2": {
           "months": [
@@ -448,7 +448,7 @@
             "recall": 3,
             "f1": 3
           },
-          "display_label": "8-month lag"
+          "display_label": "8-month horizon"
         },
         "fs3": {
           "months": [
@@ -471,7 +471,7 @@
             "recall": 2,
             "f1": 2
           },
-          "display_label": "12-month lag"
+          "display_label": "12-month horizon"
         }
       }
     },
