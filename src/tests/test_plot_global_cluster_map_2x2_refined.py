@@ -54,6 +54,20 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
 
             self.assertEqual(module.choose_mapping(refined_dir, "general"), latest)
 
+    def test_discover_model_csvs_supports_experiment_workspace_source(self):
+        module = load_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            mapping_dir = root / "GeoRFExperiment" / "knn_sparsification_results"
+            mapping_dir.mkdir(parents=True)
+            expected = {}
+            for panel in module.PANEL_ORDER:
+                path = mapping_dir / f"cluster_mapping_k40_nc13_{panel}.csv"
+                path.write_text("FEWSNET_admin_code,cluster_id\n1,1\n", encoding="utf-8")
+                expected[panel] = path
+
+            self.assertEqual(module.discover_model_csvs(root, "GeoRF"), expected)
+
     def test_partition_styles_support_ten_east_africa_clusters(self):
         module = load_script_module()
         panel_data = {}

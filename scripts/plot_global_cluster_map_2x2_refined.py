@@ -40,7 +40,9 @@ PANEL_TITLES = {
     "m6": "Month-specific: m6",
     "m10": "Month-specific: m10",
 }
-TAG_PATTERN = re.compile(r"cluster_mapping_k40_nc(?P<nc>\d+)_(?P<tag>general|m2|m6|m10)_refined")
+TAG_PATTERN = re.compile(
+    r"cluster_mapping_k40_nc(?P<nc>\d+)_(?P<tag>general|m2|m6|m10)(?:_refined.*)?\.csv$"
+)
 
 REGION_ORDER = (
     "West Africa",
@@ -124,7 +126,11 @@ def parse_args() -> argparse.Namespace:
         "--source-dir",
         type=Path,
         default=DEFAULT_SOURCE_DIR,
-        help="Source folder containing result_partition_k40_compare_{GF,DT}_fs1/refined directories.",
+        help=(
+            "Source folder. Supports repo roots with GeoRFExperiment/GeoDTExperiment, "
+            "individual experiment directories, or folders containing "
+            "result_partition_k40_compare_{GF,DT}_fs1/refined directories."
+        ),
     )
     parser.add_argument(
         "--shapefile",
@@ -181,7 +187,7 @@ def load_shapefile(shapefile_path: Path) -> gpd.GeoDataFrame:
 
 def choose_mapping(refined_dir: Path, tag: str) -> Path:
     candidates = []
-    for csv_path in sorted(refined_dir.glob(f"cluster_mapping_k40_nc*_{tag}_*.csv")):
+    for csv_path in sorted(refined_dir.glob(f"cluster_mapping_k40_nc*_{tag}*.csv")):
         match = TAG_PATTERN.search(csv_path.name)
         if not match or match.group("tag") != tag:
             continue
@@ -192,6 +198,14 @@ def choose_mapping(refined_dir: Path, tag: str) -> Path:
 
 
 def discover_model_csvs(source_dir: Path, model: str) -> Dict[str, Path]:
+    experiment_dir = source_dir / f"{model}Experiment" / "knn_sparsification_results"
+    if experiment_dir.exists():
+        return {panel: choose_mapping(experiment_dir, panel) for panel in PANEL_ORDER}
+
+    direct_experiment_dir = source_dir / "knn_sparsification_results"
+    if source_dir.name == f"{model}Experiment" and direct_experiment_dir.exists():
+        return {panel: choose_mapping(direct_experiment_dir, panel) for panel in PANEL_ORDER}
+
     dir_token = MODEL_SPECS[model]["dir_token"]
     refined_dir = source_dir / f"result_partition_k40_compare_{dir_token}_fs1" / "refined"
     return {panel: choose_mapping(refined_dir, panel) for panel in PANEL_ORDER}
