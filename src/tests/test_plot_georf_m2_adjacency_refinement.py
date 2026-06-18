@@ -83,6 +83,13 @@ class GeoRFM2AdjacencyRefinementTests(unittest.TestCase):
         self.assertEqual(sorted(styles), list(range(15)))
         self.assertGreater(len({style.facecolor for style in styles.values()}), 1)
         self.assertGreater(len({style.hatch for style in styles.values()}), 1)
+        self.assertEqual(len({(style.facecolor, style.hatch) for style in styles.values()}), 15)
+
+    def test_cluster_styles_are_deterministic_for_unsorted_duplicate_ids(self):
+        sorted_styles = refinement.cluster_style_map([1, 2, 3, 4])
+        mixed_styles = refinement.cluster_style_map([4, 2, 2, 1, 3])
+
+        self.assertEqual(sorted_styles, mixed_styles)
 
     def test_compact_cluster_label_uses_c_prefix(self):
         self.assertEqual(refinement.compact_cluster_label(12), "c12")
