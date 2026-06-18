@@ -644,13 +644,22 @@ def shap_values_for_partitioned_models(
     }
 
 
-def prepare_scope_context(data_path: Path | str, forecasting_scope: int) -> dict[str, Any]:
+def prepare_scope_context(
+    data_path: Path | str,
+    forecasting_scope: int,
+    *,
+    load_data_fn: Any | None = None,
+    prepare_features_fn: Any | None = None,
+) -> dict[str, Any]:
     """Load data and prepare features for one forecasting scope."""
-    from src.feature.feature import prepare_features
-    from src.preprocess.preprocess import load_and_preprocess_data
+    if load_data_fn is None:
+        from src.preprocess.preprocess import load_and_preprocess_data as load_data_fn
+
+    if prepare_features_fn is None:
+        from src.feature.feature import prepare_features as prepare_features_fn
 
     df = sort_panel_for_feature_alignment(
-        load_and_preprocess_data(str(resolve_path(data_path)))
+        load_data_fn(str(resolve_path(data_path)))
     )
 
     if "latitude" in df.columns and "longitude" in df.columns:
@@ -661,7 +670,16 @@ def prepare_scope_context(data_path: Path | str, forecasting_scope: int) -> dict
         raise ValueError("Dataset must have latitude/longitude or lat/lon columns")
 
     temp_group = np.zeros(len(df), dtype=int)
-    X, y, _l1_index, _l2_index, years, terms, dates, feature_columns = prepare_features(
+    (
+        X,
+        y,
+        _l1_index,
+        _l2_index,
+        years,
+        terms,
+        dates,
+        feature_columns,
+    ) = prepare_features_fn(
         df,
         temp_group,
         X_loc,

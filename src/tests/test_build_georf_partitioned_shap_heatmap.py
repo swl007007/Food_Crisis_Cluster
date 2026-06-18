@@ -431,6 +431,77 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertEqual(sorted_df["latitude"].tolist(), [10.0, 11.0, 21.0, 20.0])
         self.assertEqual(sorted_df.index.tolist(), [0, 1, 2, 3])
 
+    def test_prepare_scope_context_sorts_shared_runtime_inputs(self):
+        unsorted = pd.DataFrame(
+            {
+                "FEWSNET_admin_code": [2, 1, 1, 2],
+                "date": ["2021-02-01", "2021-02-01", "2021-01-01", "2021-01-01"],
+                "latitude": [20.0, 11.0, 10.0, 21.0],
+                "longitude": [120.0, 111.0, 110.0, 121.0],
+                "fews_ipc_crisis": [0, 1, 0, 1],
+            }
+        )
+        captured = {}
+
+        def fake_load_and_preprocess_data(_path):
+            return unsorted.copy()
+
+        def fake_prepare_features(df, X_group, X_loc, forecasting_scope):
+            captured["df"] = df.copy()
+            captured["X_group"] = X_group.copy()
+            captured["X_loc"] = X_loc.copy()
+            captured["forecasting_scope"] = forecasting_scope
+            return (
+                np.arange(len(df) * 2, dtype=float).reshape(len(df), 2),
+                df["fews_ipc_crisis"].to_numpy(),
+                [],
+                [],
+                df["date"].dt.year.to_numpy(),
+                np.ones(len(df), dtype=int),
+                df["date"],
+                ["feature_a", "feature_b"],
+            )
+
+        context = shap_heatmap.prepare_scope_context(
+            "dummy.csv",
+            2,
+            load_data_fn=fake_load_and_preprocess_data,
+            prepare_features_fn=fake_prepare_features,
+        )
+
+        expected_admin_codes = [1, 1, 2, 2]
+        expected_dates = ["2021-01-01", "2021-02-01", "2021-01-01", "2021-02-01"]
+        expected_x_loc = np.array(
+            [
+                [10.0, 110.0],
+                [11.0, 111.0],
+                [21.0, 121.0],
+                [20.0, 120.0],
+            ]
+        )
+
+        self.assertEqual(
+            context["df"]["FEWSNET_admin_code"].tolist(),
+            expected_admin_codes,
+        )
+        self.assertEqual(
+            context["df"]["date"].dt.strftime("%Y-%m-%d").tolist(),
+            expected_dates,
+        )
+        np.testing.assert_allclose(context["X_loc"], expected_x_loc)
+        self.assertEqual(context["admin_codes"].tolist(), expected_admin_codes)
+        self.assertEqual(
+            captured["df"]["FEWSNET_admin_code"].tolist(),
+            expected_admin_codes,
+        )
+        self.assertEqual(
+            captured["df"]["date"].dt.strftime("%Y-%m-%d").tolist(),
+            expected_dates,
+        )
+        np.testing.assert_allclose(captured["X_loc"], expected_x_loc)
+        np.testing.assert_array_equal(captured["X_group"], np.zeros(4, dtype=int))
+        self.assertEqual(captured["forecasting_scope"], 2)
+
     def test_run_analysis_manifest_records_feature_resolution_by_scope(self):
         captured = {}
         original_functions = {
