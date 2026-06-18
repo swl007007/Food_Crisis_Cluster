@@ -25,6 +25,7 @@ def load_script_module():
 
     spec = importlib.util.spec_from_file_location("plot_global_cluster_map_2x2_refined", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -74,7 +75,7 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
 
             self.assertEqual(module.discover_model_csvs(root, "GeoRF"), expected)
 
-    def test_partition_palette_supports_ten_east_africa_clusters(self):
+    def test_partition_styles_support_ten_east_africa_clusters(self):
         module = load_script_module()
         panel_data = {}
         for panel in module.PANEL_ORDER:
@@ -98,13 +99,78 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
             for row in df.itertuples(index=False)
         }
 
-        _cmap, key_to_idx, summary, _key_to_color = module.build_partition_palette(
-            panel_data,
-            cluster_regions,
-        )
+        key_to_style, summary = module.build_partition_styles(panel_data, cluster_regions)
 
-        self.assertEqual(len([key for key in key_to_idx if key[0] == "m10"]), 10)
+        self.assertEqual(len([key for key in key_to_style if key[0] == "m10"]), 10)
         self.assertEqual(summary["m10"][9], "East Africa")
+
+    def test_partition_styles_support_many_east_africa_partitions_with_hatches(self):
+        module = load_script_module()
+        panel_data = {}
+        for panel in module.PANEL_ORDER:
+            if panel == "m10":
+                panel_data[panel] = pd.DataFrame(
+                    {
+                        "cluster_id": list(range(12)),
+                        "region_group": ["East Africa"] * 12,
+                    }
+                )
+            else:
+                panel_data[panel] = pd.DataFrame(
+                    {
+                        "cluster_id": [0],
+                        "region_group": ["West Africa"],
+                    }
+                )
+        cluster_regions = {
+            (panel, int(row.cluster_id)): str(row.region_group)
+            for panel, df in panel_data.items()
+            for row in df.itertuples(index=False)
+        }
+
+        key_to_style, summary = module.build_partition_styles(panel_data, cluster_regions)
+
+        m10_styles = [key_to_style[("m10", cluster_id)] for cluster_id in range(12)]
+        self.assertEqual(len(m10_styles), 12)
+        self.assertEqual(summary["m10"][11], "East Africa")
+        self.assertGreater(len({style.hatch for style in m10_styles}), 1)
+        self.assertEqual({style.facecolor for style in m10_styles}, {"#ffffff"})
+        self.assertEqual(len({(style.facecolor, style.hatch) for style in m10_styles}), 12)
+
+    def test_partition_styles_use_cluster_id_hatches_across_panels(self):
+        module = load_script_module()
+        panel_data = {
+            "general": pd.DataFrame({"cluster_id": [3, 4], "region_group": ["West Africa", "West Africa"]}),
+            "m2": pd.DataFrame({"cluster_id": [3], "region_group": ["East Africa"]}),
+            "m6": pd.DataFrame({"cluster_id": [0], "region_group": ["West Africa"]}),
+            "m10": pd.DataFrame({"cluster_id": [0], "region_group": ["West Africa"]}),
+        }
+        cluster_regions = {
+            (panel, int(row.cluster_id)): str(row.region_group)
+            for panel, df in panel_data.items()
+            for row in df.itertuples(index=False)
+        }
+
+        key_to_style, _summary = module.build_partition_styles(panel_data, cluster_regions)
+
+        self.assertEqual(key_to_style[("general", 3)].hatch, key_to_style[("m2", 3)].hatch)
+        self.assertEqual(key_to_style[("general", 3)].facecolor, "#ffffff")
+        self.assertEqual(key_to_style[("m2", 3)].facecolor, "#ffffff")
+        self.assertEqual(key_to_style[("general", 3)].hatch, module.hatch_for_cluster_id(3))
+
+    def test_cluster_id_hatches_are_unique_for_current_cluster_range(self):
+        module = load_script_module()
+        hatches = [module.hatch_for_cluster_id(cluster_id) for cluster_id in range(20)]
+
+        self.assertEqual(len(set(hatches)), 20)
+
+    def test_compact_legend_labels_are_cluster_ids_only(self):
+        module = load_script_module()
+        labels = module.compact_cluster_labels([0, 2, 13])
+
+        self.assertEqual(labels, ["c0", "c2", "c13"])
+        self.assertNotIn("m2", " ".join(labels))
+        self.assertNotIn("WA", " ".join(labels))
 
 
 if __name__ == "__main__":

@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Plot GeoRF m2 pre/post adjacency-refinement partitions and reassigned polygons."""
 
-from __future__ import annotations
-
 import argparse
 import os
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
@@ -34,6 +33,8 @@ DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated"
 DEFAULT_FIGURE_NAME = "georf_m2_adjacency_refinement_1x3.png"
 DEFAULT_SUMMARY_NAME = "georf_m2_adjacency_refinement_summary.csv"
 DEFAULT_NOTE_NAME = "georf_m2_adjacency_refinement_note.md"
+LATAM_REGION = "Latin America"
+PLOT_SIMPLIFY_TOLERANCE_M = 5_000
 
 CLUSTER_PALETTE = [
     "#4E79A7",
@@ -50,6 +51,84 @@ CLUSTER_PALETTE = [
     "#2CA02C",
     "#D62728",
 ]
+HATCH_PATTERNS = (
+    "",
+    "///",
+    "\\\\\\",
+    "xxx",
+    "...",
+    "++",
+    "--",
+    "||",
+    "oo",
+    "**",
+    "//////",
+    "\\\\\\\\\\\\",
+    "xxxx",
+    "....",
+    "++++",
+    "----",
+    "||||",
+    "OOOO",
+    "****",
+    "////",
+)
+REGION_ORDER = (
+    "West Africa",
+    "East Africa",
+    "Central Africa",
+    "Southern Africa",
+    "Middle East & Afghanistan",
+    "Latin America",
+)
+REGION_COLORS = {
+    "West Africa": "#2b8cbe",
+    "East Africa": "#31a354",
+    "Central Africa": "#f16913",
+    "Southern Africa": "#807dba",
+    "Middle East & Afghanistan": "#bf812d",
+    "Latin America": "#ef3b2c",
+}
+REGION_ABBREVIATIONS = {
+    "West Africa": "WA",
+    "East Africa": "EA",
+    "Central Africa": "CA",
+    "Southern Africa": "SA",
+    "Middle East & Afghanistan": "MEA",
+    "Latin America": "LA",
+}
+ISO_TO_REGION = {
+    "BF": "West Africa",
+    "ML": "West Africa",
+    "NE": "West Africa",
+    "NG": "West Africa",
+    "BI": "East Africa",
+    "ET": "East Africa",
+    "KE": "East Africa",
+    "SD": "East Africa",
+    "SO": "East Africa",
+    "SS": "East Africa",
+    "UG": "East Africa",
+    "CD": "Central Africa",
+    "CM": "Central Africa",
+    "TD": "Central Africa",
+    "MG": "Southern Africa",
+    "MW": "Southern Africa",
+    "MZ": "Southern Africa",
+    "ZW": "Southern Africa",
+    "AF": "Middle East & Afghanistan",
+    "YE": "Middle East & Afghanistan",
+    "GT": "Latin America",
+    "HT": "Latin America",
+}
+
+
+@dataclass(frozen=True)
+class ClusterStyle:
+    """Matplotlib style assigned to one GeoRF m2 cluster."""
+
+    facecolor: str
+    hatch: str
 
 
 def resolve_path(path: Path) -> Path:
@@ -149,7 +228,14 @@ def load_shapefile(shapefile_path: Path):
         raise ValueError(f"Admin-code column not found in shapefile. Tried: {candidates}")
     if found != "FEWSNET_admin_code":
         gdf = gdf.rename(columns={found: "FEWSNET_admin_code"})
+    if "ISO" not in gdf.columns:
+        raise ValueError(f"ISO column not found in shapefile. Available columns: {list(gdf.columns)}")
     gdf["FEWSNET_admin_code"] = normalize_admin_code(gdf["FEWSNET_admin_code"])
+    gdf["ISO"] = gdf["ISO"].astype(str).str.strip().str.upper()
+    gdf["region_group"] = gdf["ISO"].map(ISO_TO_REGION)
+    missing_regions = sorted(gdf.loc[gdf["region_group"].isna(), "ISO"].dropna().unique().tolist())
+    if missing_regions:
+        raise ValueError(f"No region group assigned for ISO values: {missing_regions}")
     invalid_count = int((~gdf.geometry.is_valid).sum())
     if invalid_count:
         gdf["geometry"] = gdf.geometry.buffer(0)
@@ -165,11 +251,133 @@ def merge_geometries(base_gdf, table: pd.DataFrame, cluster_column: str):
     return merged
 
 
-def cluster_color_map(cluster_ids: Iterable[int]) -> dict[int, str]:
+def compact_cluster_label(cluster_id: int) -> str:
+    return f"c{int(cluster_id)}"
+
+
+def cluster_style_map(cluster_ids: Iterable[int]) -> dict[int, ClusterStyle]:
     clusters = sorted({int(cluster_id) for cluster_id in cluster_ids})
-    if len(clusters) > len(CLUSTER_PALETTE):
-        raise ValueError(f"Palette supports {len(CLUSTER_PALETTE)} clusters, got {len(clusters)}")
-    return {cluster_id: CLUSTER_PALETTE[idx] for idx, cluster_id in enumerate(clusters)}
+    capacity = len(CLUSTER_PALETTE) * len(HATCH_PATTERNS)
+    if len(clusters) > capacity:
+        raise ValueError(f"Style set supports {capacity} clusters, got {len(clusters)}")
+    return {
+        cluster_id: ClusterStyle(
+            facecolor="#ffffff",
+            hatch=HATCH_PATTERNS[idx % len(HATCH_PATTERNS)],
+        )
+        for idx, cluster_id in enumerate(clusters)
+    }
+
+
+def split_main_and_latam_layers(gdf):
+    latam = gdf[gdf["region_group"].eq(LATAM_REGION)].copy()
+    main = gdf[~gdf["region_group"].eq(LATAM_REGION)].copy()
+    return main, latam
+
+
+def set_padded_bounds(ax, gdf, pad_fraction: float = 0.035) -> None:
+    minx, miny, maxx, maxy = gdf.total_bounds
+    pad_x = (maxx - minx) * pad_fraction
+    pad_y = (maxy - miny) * pad_fraction
+    ax.set_xlim(minx - pad_x, maxx + pad_x)
+    ax.set_ylim(miny - pad_y, maxy + pad_y)
+
+
+def load_offline_basemap():
+    import geopandas as gpd
+    from cartopy.io import shapereader
+
+    path = shapereader.natural_earth(
+        resolution="110m",
+        category="cultural",
+        name="admin_0_countries",
+    )
+    return gpd.read_file(path).to_crs(epsg=3857)
+
+
+def add_basemap(ax, enabled: bool, basemap_gdf, extent_gdf) -> None:
+    if not enabled:
+        return
+    ax.set_facecolor("#dbe3e6")
+    minx, miny, maxx, maxy = extent_gdf.total_bounds
+    subset = basemap_gdf.cx[minx:maxx, miny:maxy]
+    if subset.empty:
+        return
+    subset.plot(
+        ax=ax,
+        color="#f8f6f0",
+        edgecolor="#d0c7c2",
+        linewidth=0.25,
+        alpha=0.95,
+        zorder=1,
+    )
+
+
+def plot_cluster_partitions(ax, gdf, cluster_column: str, style_lookup: dict[int, ClusterStyle]) -> None:
+    region_layer = gdf.dissolve(by="region_group", as_index=False)
+    for region in REGION_ORDER:
+        subset = region_layer[region_layer["region_group"].eq(region)]
+        if subset.empty:
+            continue
+        subset.plot(
+            ax=ax,
+            color=REGION_COLORS[region],
+            edgecolor="#4d4d4d",
+            linewidth=0.06,
+            alpha=0.92,
+            zorder=3,
+        )
+    cluster_layer = gdf.dissolve(by=cluster_column, as_index=False)
+    for cluster_id, style in style_lookup.items():
+        cluster_subset = cluster_layer[cluster_layer[cluster_column].eq(cluster_id)]
+        if cluster_subset.empty:
+            continue
+        cluster_subset.plot(
+            ax=ax,
+            color="none",
+            edgecolor="#4d4d4d",
+            linewidth=0.08,
+            hatch=style.hatch,
+            zorder=4,
+        )
+
+
+def add_latam_inset(
+    parent_ax,
+    latam_gdf,
+    cluster_column: str | None,
+    style_lookup: dict[int, ClusterStyle],
+    add_basemap_flag: bool,
+    basemap_gdf,
+    reassigned_only: bool = False,
+    highlight_gdf=None,
+) -> None:
+    if latam_gdf.empty:
+        return
+    inset = parent_ax.inset_axes([0.01, 0.01, 0.30, 0.30])
+    add_basemap(inset, add_basemap_flag, basemap_gdf, latam_gdf)
+    latam_gdf.plot(ax=inset, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.06, alpha=0.55, zorder=2)
+    if reassigned_only and highlight_gdf is not None and not highlight_gdf.empty:
+        highlight_gdf.plot(
+            ax=inset,
+            color="#d73027",
+            edgecolor="#111111",
+            linewidth=0.20,
+            hatch="xxx",
+            zorder=3,
+        )
+    elif cluster_column is not None:
+        plot_cluster_partitions(inset, latam_gdf, cluster_column, style_lookup)
+    latam_gdf.boundary.plot(ax=inset, color="#4d4d4d", linewidth=0.08, alpha=0.55, zorder=4)
+    set_padded_bounds(inset, latam_gdf, pad_fraction=0.08)
+    inset.set_title("Latin America (FEWSNET)", fontsize=7, pad=1.5)
+    inset.set_xticks([])
+    inset.set_yticks([])
+    for spine in inset.spines.values():
+        spine.set_edgecolor("0.35")
+        spine.set_linewidth(0.9)
+    inset.patch.set_facecolor("white")
+    inset.patch.set_alpha(0.92)
 
 
 def plot_refinement_figure(
@@ -178,6 +386,7 @@ def plot_refinement_figure(
     output_path: Path,
     summary: dict,
     dpi: int,
+    add_basemap_flag: bool,
 ) -> None:
     import matplotlib
 
@@ -189,40 +398,69 @@ def plot_refinement_figure(
         [reassignment_table["cluster_id_before"], reassignment_table["cluster_id_after"]],
         ignore_index=True,
     )
-    color_lookup = cluster_color_map(all_clusters)
-    before = merge_geometries(base_gdf, reassignment_table, "cluster_id_before")
-    after = merge_geometries(base_gdf, reassignment_table, "cluster_id_after")
+    style_lookup = cluster_style_map(all_clusters)
+    plot_base = base_gdf.to_crs(epsg=3857).copy()
+    plot_base["geometry"] = plot_base.geometry.simplify(
+        PLOT_SIMPLIFY_TOLERANCE_M,
+        preserve_topology=True,
+    )
+    before = merge_geometries(plot_base, reassignment_table, "cluster_id_before")
+    after = merge_geometries(plot_base, reassignment_table, "cluster_id_after")
     reassigned = merge_geometries(
-        base_gdf,
+        plot_base,
         reassignment_table[reassignment_table["reassigned"]],
         "cluster_id_after",
     )
-    mapped_base = base_gdf.merge(
+    mapped_base = plot_base.merge(
         reassignment_table[["FEWSNET_admin_code"]],
         on="FEWSNET_admin_code",
         how="inner",
     )
+    mapped_main, mapped_latam = split_main_and_latam_layers(mapped_base)
+    before_main, before_latam = split_main_and_latam_layers(before)
+    after_main, after_latam = split_main_and_latam_layers(after)
+    reassigned_main, reassigned_latam = split_main_and_latam_layers(reassigned)
+    basemap_gdf = load_offline_basemap() if add_basemap_flag else None
 
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6.5))
     panels = [
-        (axes[0], before, "cluster_id_before", "Before adjacency refinement"),
-        (axes[1], after, "cluster_id_after", "After adjacency refinement"),
+        (axes[0], before_main, before_latam, "cluster_id_before", "Before adjacency refinement"),
+        (axes[1], after_main, after_latam, "cluster_id_after", "After adjacency refinement"),
     ]
-    for ax, gdf, cluster_column, title in panels:
-        mapped_base.plot(ax=ax, color="#f2f2f2", edgecolor="#d9d9d9", linewidth=0.05)
-        for cluster_id, color in color_lookup.items():
-            subset = gdf[gdf[cluster_column].eq(cluster_id)]
-            if not subset.empty:
-                subset.plot(ax=ax, color=color, edgecolor="white", linewidth=0.08)
-        base_gdf.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.4)
+    for ax, gdf, latam_gdf, cluster_column, title in panels:
+        add_basemap(ax, add_basemap_flag, basemap_gdf, mapped_main)
+        mapped_main.plot(ax=ax, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.05, alpha=0.45, zorder=2)
+        plot_cluster_partitions(ax, gdf, cluster_column, style_lookup)
+        mapped_main.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.4, zorder=4)
+        set_padded_bounds(ax, mapped_main)
+        add_latam_inset(ax, latam_gdf, cluster_column, style_lookup, add_basemap_flag, basemap_gdf)
         ax.set_title(title, fontsize=12, fontweight="bold")
         ax.set_axis_off()
 
     ax = axes[2]
-    mapped_base.plot(ax=ax, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.05)
-    if not reassigned.empty:
-        reassigned.plot(ax=ax, color="#d73027", edgecolor="#111111", linewidth=0.18)
-    base_gdf.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.35)
+    add_basemap(ax, add_basemap_flag, basemap_gdf, mapped_main)
+    mapped_main.plot(ax=ax, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.05, alpha=0.45, zorder=2)
+    if not reassigned_main.empty:
+        reassigned_main.plot(
+            ax=ax,
+            color="#d73027",
+            edgecolor="#111111",
+            linewidth=0.22,
+            hatch="xxx",
+            zorder=3,
+    )
+    mapped_main.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.35, zorder=4)
+    set_padded_bounds(ax, mapped_main)
+    add_latam_inset(
+        ax,
+        mapped_latam,
+        None,
+        style_lookup,
+        add_basemap_flag,
+        basemap_gdf,
+        reassigned_only=True,
+        highlight_gdf=reassigned_latam,
+    )
     ax.set_title("Reassigned polygons", fontsize=12, fontweight="bold")
     ax.text(
         0.5,
@@ -237,17 +475,44 @@ def plot_refinement_figure(
     ax.set_axis_off()
 
     handles = [
-        mpatches.Patch(facecolor=color_lookup[cluster_id], edgecolor="black", linewidth=0.2, label=f"Cluster {cluster_id}")
-        for cluster_id in sorted(color_lookup)
+        mpatches.Patch(
+            facecolor="#ffffff",
+            hatch=style_lookup[cluster_id].hatch,
+            edgecolor="black",
+            linewidth=0.35,
+            label=compact_cluster_label(cluster_id),
+        )
+        for cluster_id in sorted(style_lookup)
     ]
-    handles.append(mpatches.Patch(facecolor="#d73027", edgecolor="black", linewidth=0.2, label="Reassigned"))
+    handles.append(
+        mpatches.Patch(
+            facecolor="#d73027",
+            hatch="xxx",
+            edgecolor="black",
+            linewidth=0.35,
+            label="Reassigned",
+        )
+    )
+    handles.extend(
+        mpatches.Patch(
+            facecolor=REGION_COLORS[region],
+            edgecolor="black",
+            linewidth=0.35,
+            label=REGION_ABBREVIATIONS[region],
+        )
+        for region in REGION_ORDER
+    )
     fig.legend(
         handles=handles,
         loc="lower center",
         ncol=7,
         frameon=True,
-        fontsize=8,
-        bbox_to_anchor=(0.5, -0.015),
+        fontsize=9,
+        handlelength=1.8,
+        handleheight=1.0,
+        columnspacing=1.0,
+        handletextpad=0.45,
+        bbox_to_anchor=(0.5, -0.010),
     )
     fig.suptitle(
         "GeoRF m2 Adjacency Refinement (Pre-Stage 3 Local RF)",
@@ -310,6 +575,11 @@ def parse_args(argv: Iterable[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--shapefile", type=Path, default=DEFAULT_SHAPEFILE)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--dpi", type=int, default=300)
+    parser.add_argument(
+        "--no-basemap",
+        action="store_true",
+        help="Disable contextily basemap tiles.",
+    )
     return parser.parse_args(argv)
 
 
@@ -334,7 +604,14 @@ def main(argv: Iterable[str] | None = None) -> None:
 
     base_gdf = load_shapefile(args.shapefile)
     figure_path = output_dir / DEFAULT_FIGURE_NAME
-    plot_refinement_figure(base_gdf, reassignment_table, figure_path, summary, args.dpi)
+    plot_refinement_figure(
+        base_gdf,
+        reassignment_table,
+        figure_path,
+        summary,
+        args.dpi,
+        add_basemap_flag=not args.no_basemap,
+    )
 
     print(f"Wrote summary: {summary_path}")
     print(f"Wrote figure: {figure_path}")
