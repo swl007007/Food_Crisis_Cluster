@@ -245,11 +245,27 @@ def build_partition_styles(
                     f"Not enough color/hatch styles for {panel} {region}: "
                     f"{len(clusters)} clusters, {capacity} available combinations"
                 )
+            used_styles: set[tuple[str, str]] = set()
             for idx, cluster_id in enumerate(clusters):
-                color = subpalette[idx % len(subpalette)]
-                hatch = HATCH_PATTERNS[idx // len(subpalette)]
+                hatch = hatch_for_cluster_id(cluster_id)
+                color = None
+                for offset in range(len(subpalette)):
+                    candidate = subpalette[(idx + offset) % len(subpalette)]
+                    if (candidate, hatch) not in used_styles:
+                        color = candidate
+                        break
+                if color is None:
+                    raise ValueError(
+                        f"Not enough color/hatch styles for {panel} {region}: "
+                        f"cluster {cluster_id} reuses hatch {hatch!r} after all {len(subpalette)} colors"
+                    )
+                used_styles.add((color, hatch))
                 key_to_style[(panel, cluster_id)] = PartitionStyle(facecolor=color, hatch=hatch)
     return key_to_style, summary
+
+
+def hatch_for_cluster_id(cluster_id: int) -> str:
+    return HATCH_PATTERNS[int(cluster_id) % len(HATCH_PATTERNS)]
 
 
 def compact_cluster_labels(cluster_ids: Iterable[int]) -> list[str]:
@@ -283,7 +299,7 @@ def plot_model_grid(
             subset.plot(
                 ax=ax,
                 color=style.facecolor,
-                edgecolor="#f7f7f7",
+                edgecolor="#4d4d4d",
                 linewidth=0.10,
                 hatch=style.hatch,
                 alpha=0.92 if add_basemap else 1.0,
@@ -303,18 +319,11 @@ def plot_model_grid(
     legend_clusters = sorted(
         {int(cluster_id) for panel in PANEL_ORDER for cluster_id in panel_data[panel]["cluster_id"].unique().tolist()}
     )
-    representative_styles: Dict[int, PartitionStyle] = {}
-    for cluster_id in legend_clusters:
-        for panel in PANEL_ORDER:
-            key = (panel, cluster_id)
-            if key in key_to_style:
-                representative_styles[cluster_id] = key_to_style[key]
-                break
 
     legend_handles = [
         mpatches.Patch(
-            facecolor=representative_styles[cluster_id].facecolor,
-            hatch=representative_styles[cluster_id].hatch,
+            facecolor="#ffffff",
+            hatch=hatch_for_cluster_id(cluster_id),
             edgecolor="black",
             linewidth=0.35,
             label=f"c{cluster_id}",

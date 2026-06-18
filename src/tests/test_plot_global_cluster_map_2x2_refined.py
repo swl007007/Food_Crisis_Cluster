@@ -114,6 +114,27 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertEqual(summary["m10"][11], "East Africa")
         self.assertGreater(len({style.hatch for style in m10_styles}), 1)
         self.assertGreater(len({style.facecolor for style in m10_styles}), 1)
+        self.assertEqual(len({(style.facecolor, style.hatch) for style in m10_styles}), 12)
+
+    def test_partition_styles_use_cluster_id_hatches_across_panels(self):
+        module = load_script_module()
+        panel_data = {
+            "general": pd.DataFrame({"cluster_id": [3, 4], "region_group": ["West Africa", "West Africa"]}),
+            "m2": pd.DataFrame({"cluster_id": [3], "region_group": ["East Africa"]}),
+            "m6": pd.DataFrame({"cluster_id": [0], "region_group": ["West Africa"]}),
+            "m10": pd.DataFrame({"cluster_id": [0], "region_group": ["West Africa"]}),
+        }
+        cluster_regions = {
+            (panel, int(row.cluster_id)): str(row.region_group)
+            for panel, df in panel_data.items()
+            for row in df.itertuples(index=False)
+        }
+
+        key_to_style, _summary = module.build_partition_styles(panel_data, cluster_regions)
+
+        self.assertEqual(key_to_style[("general", 3)].hatch, key_to_style[("m2", 3)].hatch)
+        self.assertNotEqual(key_to_style[("general", 3)].facecolor, key_to_style[("m2", 3)].facecolor)
+        self.assertEqual(key_to_style[("general", 3)].hatch, module.hatch_for_cluster_id(3))
 
     def test_compact_legend_labels_are_cluster_ids_only(self):
         module = load_script_module()
