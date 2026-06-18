@@ -1,55 +1,15 @@
 #!/usr/bin/env python3
 """Build GeoRF partitioned SHAP feature-group heatmap artifacts."""
 
-import argparse
-import json
-import os
 import re
-import sys
-import warnings
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
 
-os.environ.setdefault("PYTHONHASHSEED", "5")
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-from config import LAGS_MONTHS
-try:
-    from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import (
-        DEFAULT_DATA_PATH,
-        DEFAULT_TRAIN_WINDOW,
-        MIN_PARTITION_SAMPLES,
-        RF_PARAMS,
-        create_partition_group_array,
-        load_partition_mapping,
-        train_partitioned_model,
-    )
-    from src.customize.customize import train_test_split_rolling_window
-    from src.feature.feature import prepare_features
-    from src.preprocess.preprocess import load_and_preprocess_data
-    from src.utils.lag_schedules import forecasting_scope_to_lag
-except ModuleNotFoundError:
-    DEFAULT_DATA_PATH = None
-    DEFAULT_TRAIN_WINDOW = None
-    MIN_PARTITION_SAMPLES = None
-    RF_PARAMS = None
-    create_partition_group_array = None
-    load_partition_mapping = None
-    train_partitioned_model = None
-    train_test_split_rolling_window = None
-    prepare_features = None
-    load_and_preprocess_data = None
-    forecasting_scope_to_lag = None
-
-warnings.filterwarnings("ignore")
 
 RANDOM_STATE = 5
 TARGET_MONTHS = (2, 6, 10)
@@ -259,18 +219,7 @@ def collapse_shap_values(raw_values: Any, n_samples: int, n_features: int) -> np
     else:
         values = np.asarray(raw_values)
         if values.ndim == 3:
-            if (
-                values.shape[0] == n_samples
-                and values.shape[1] == n_features
-                and values.shape[1] == values.shape[2]
-            ):
-                by_last_axis = values.mean(axis=2)
-                by_first_axis = values.mean(axis=0)
-                if np.abs(by_last_axis).sum() >= np.abs(by_first_axis).sum():
-                    values = by_last_axis
-                else:
-                    values = by_first_axis
-            elif values.shape[0] == n_samples and values.shape[1] == n_features:
+            if values.shape[0] == n_samples and values.shape[1] == n_features:
                 values = values.mean(axis=2)
             elif values.shape[1] == n_samples and values.shape[2] == n_features:
                 values = values.mean(axis=0)
@@ -399,9 +348,9 @@ def summarize_group_shares(
         mean_evaluated_samples=("evaluated_samples", "mean"),
     )
     grouped["sd_share"] = grouped["sd_share"].fillna(0.0)
-    short = grouped[grouped["n_months"] < expected_month_count]
-    if not short.empty:
-        details = short[["scope", "group", "n_months"]].to_dict("records")
+    wrong_count = grouped[grouped["n_months"] != expected_month_count]
+    if not wrong_count.empty:
+        details = wrong_count[["scope", "group", "n_months"]].to_dict("records")
         raise ValueError(
             f"Expected {expected_month_count} months for every scope/group, "
             f"got {details}"

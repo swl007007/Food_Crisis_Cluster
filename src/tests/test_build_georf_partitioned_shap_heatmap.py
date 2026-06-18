@@ -73,7 +73,19 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
 
         raw_classes_samples_features = np.stack([class0, class1], axis=0)
         observed_csf = shap_heatmap.collapse_shap_values(raw_classes_samples_features, n_samples=2, n_features=2)
-        np.testing.assert_allclose(observed_csf, np.array([[3.0, -4.0], [5.0, -6.0]]))
+        np.testing.assert_allclose(observed_csf, np.array([[-0.5, -0.5], [-0.5, -0.5]]))
+
+    def test_collapse_shap_values_uses_deterministic_three_dimensional_shape_priority(self):
+        class0 = np.array([[1.0, -2.0], [3.0, -4.0], [5.0, -6.0]])
+        class1 = np.array([[7.0, -8.0], [9.0, -10.0], [11.0, -12.0]])
+
+        raw_samples_features_classes = np.stack([class0, class1], axis=2)
+        observed_sfc = shap_heatmap.collapse_shap_values(raw_samples_features_classes, n_samples=3, n_features=2)
+        np.testing.assert_allclose(observed_sfc, np.array([[4.0, -5.0], [6.0, -7.0], [8.0, -9.0]]))
+
+        raw_classes_samples_features = np.stack([class0, class1], axis=0)
+        observed_csf = shap_heatmap.collapse_shap_values(raw_classes_samples_features, n_samples=3, n_features=2)
+        np.testing.assert_allclose(observed_csf, np.array([[4.0, -5.0], [6.0, -7.0], [8.0, -9.0]]))
 
     def test_group_mean_abs_and_share_normalization(self):
         shap_values = np.array(
@@ -127,6 +139,18 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertAlmostEqual(weather["sd_share"], math.sqrt(0.005))
         self.assertEqual(int(weather["n_months"]), 2)
         self.assertAlmostEqual(agri["mean_share"], 0.40)
+
+    def test_summarize_group_shares_rejects_extra_months(self):
+        monthly = pd.DataFrame(
+            [
+                {"scope": "fs1", "horizon_months": 4, "target_month": "2021-02", "group": "weather", "display_group": "Weather", "group_share": 0.10},
+                {"scope": "fs1", "horizon_months": 4, "target_month": "2021-06", "group": "weather", "display_group": "Weather", "group_share": 0.20},
+                {"scope": "fs1", "horizon_months": 4, "target_month": "2021-10", "group": "weather", "display_group": "Weather", "group_share": 0.30},
+            ]
+        )
+
+        with self.assertRaisesRegex(ValueError, "Expected 2 months"):
+            shap_heatmap.summarize_group_shares(monthly, expected_month_count=2)
 
     def test_build_heatmap_matrix_preserves_rows_and_columns(self):
         rows = []
