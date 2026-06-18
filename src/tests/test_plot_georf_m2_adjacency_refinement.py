@@ -81,8 +81,8 @@ class GeoRFM2AdjacencyRefinementTests(unittest.TestCase):
         styles = refinement.cluster_style_map(range(13))
 
         self.assertEqual(sorted(styles), list(range(13)))
-        self.assertGreater(len({style.facecolor for style in styles.values()}), 1)
-        self.assertGreater(len({style.hatch for style in styles.values()}), 1)
+        self.assertEqual({style.facecolor for style in styles.values()}, {"#ffffff"})
+        self.assertEqual(len({style.hatch for style in styles.values()}), 13)
         self.assertEqual(len({(style.facecolor, style.hatch) for style in styles.values()}), 13)
 
     def test_cluster_styles_are_deterministic_for_unsorted_duplicate_ids(self):

@@ -49,7 +49,76 @@ CLUSTER_PALETTE = [
     "#2CA02C",
     "#D62728",
 ]
-HATCH_PATTERNS = ("", "///", "\\\\\\", "xxx", "...", "++", "--", "||", "oo", "**")
+HATCH_PATTERNS = (
+    "",
+    "///",
+    "\\\\\\",
+    "xxx",
+    "...",
+    "++",
+    "--",
+    "||",
+    "oo",
+    "**",
+    "//////",
+    "\\\\\\\\\\\\",
+    "xxxx",
+    "....",
+    "++++",
+    "----",
+    "||||",
+    "OOOO",
+    "****",
+    "////",
+)
+REGION_ORDER = (
+    "West Africa",
+    "East Africa",
+    "Central Africa",
+    "Southern Africa",
+    "Middle East & Afghanistan",
+    "Latin America",
+)
+REGION_COLORS = {
+    "West Africa": "#2b8cbe",
+    "East Africa": "#31a354",
+    "Central Africa": "#f16913",
+    "Southern Africa": "#807dba",
+    "Middle East & Afghanistan": "#bf812d",
+    "Latin America": "#ef3b2c",
+}
+REGION_ABBREVIATIONS = {
+    "West Africa": "WA",
+    "East Africa": "EA",
+    "Central Africa": "CA",
+    "Southern Africa": "SA",
+    "Middle East & Afghanistan": "MEA",
+    "Latin America": "LA",
+}
+ISO_TO_REGION = {
+    "BF": "West Africa",
+    "ML": "West Africa",
+    "NE": "West Africa",
+    "NG": "West Africa",
+    "BI": "East Africa",
+    "ET": "East Africa",
+    "KE": "East Africa",
+    "SD": "East Africa",
+    "SO": "East Africa",
+    "SS": "East Africa",
+    "UG": "East Africa",
+    "CD": "Central Africa",
+    "CM": "Central Africa",
+    "TD": "Central Africa",
+    "MG": "Southern Africa",
+    "MW": "Southern Africa",
+    "MZ": "Southern Africa",
+    "ZW": "Southern Africa",
+    "AF": "Middle East & Afghanistan",
+    "YE": "Middle East & Afghanistan",
+    "GT": "Latin America",
+    "HT": "Latin America",
+}
 
 
 @dataclass(frozen=True)
@@ -157,7 +226,14 @@ def load_shapefile(shapefile_path: Path):
         raise ValueError(f"Admin-code column not found in shapefile. Tried: {candidates}")
     if found != "FEWSNET_admin_code":
         gdf = gdf.rename(columns={found: "FEWSNET_admin_code"})
+    if "ISO" not in gdf.columns:
+        raise ValueError(f"ISO column not found in shapefile. Available columns: {list(gdf.columns)}")
     gdf["FEWSNET_admin_code"] = normalize_admin_code(gdf["FEWSNET_admin_code"])
+    gdf["ISO"] = gdf["ISO"].astype(str).str.strip().str.upper()
+    gdf["region_group"] = gdf["ISO"].map(ISO_TO_REGION)
+    missing_regions = sorted(gdf.loc[gdf["region_group"].isna(), "ISO"].dropna().unique().tolist())
+    if missing_regions:
+        raise ValueError(f"No region group assigned for ISO values: {missing_regions}")
     invalid_count = int((~gdf.geometry.is_valid).sum())
     if invalid_count:
         gdf["geometry"] = gdf.geometry.buffer(0)
@@ -184,7 +260,7 @@ def cluster_style_map(cluster_ids: Iterable[int]) -> dict[int, ClusterStyle]:
         raise ValueError(f"Style set supports {capacity} clusters, got {len(clusters)}")
     return {
         cluster_id: ClusterStyle(
-            facecolor=CLUSTER_PALETTE[idx % len(CLUSTER_PALETTE)],
+            facecolor="#ffffff",
             hatch=HATCH_PATTERNS[idx % len(HATCH_PATTERNS)],
         )
         for idx, cluster_id in enumerate(clusters)
@@ -230,12 +306,15 @@ def plot_refinement_figure(
     for ax, gdf, cluster_column, title in panels:
         mapped_base.plot(ax=ax, color="#f2f2f2", edgecolor="#d9d9d9", linewidth=0.05)
         for cluster_id, style in style_lookup.items():
-            subset = gdf[gdf[cluster_column].eq(cluster_id)]
-            if not subset.empty:
+            cluster_subset = gdf[gdf[cluster_column].eq(cluster_id)]
+            for region in REGION_ORDER:
+                subset = cluster_subset[cluster_subset["region_group"].eq(region)]
+                if subset.empty:
+                    continue
                 subset.plot(
                     ax=ax,
-                    color=style.facecolor,
-                    edgecolor="white",
+                    color=REGION_COLORS[region],
+                    edgecolor="#4d4d4d",
                     linewidth=0.08,
                     hatch=style.hatch,
                 )
@@ -269,7 +348,7 @@ def plot_refinement_figure(
 
     handles = [
         mpatches.Patch(
-            facecolor=style_lookup[cluster_id].facecolor,
+            facecolor="#ffffff",
             hatch=style_lookup[cluster_id].hatch,
             edgecolor="black",
             linewidth=0.35,
@@ -285,6 +364,15 @@ def plot_refinement_figure(
             linewidth=0.35,
             label="Reassigned",
         )
+    )
+    handles.extend(
+        mpatches.Patch(
+            facecolor=REGION_COLORS[region],
+            edgecolor="black",
+            linewidth=0.35,
+            label=REGION_ABBREVIATIONS[region],
+        )
+        for region in REGION_ORDER
     )
     fig.legend(
         handles=handles,

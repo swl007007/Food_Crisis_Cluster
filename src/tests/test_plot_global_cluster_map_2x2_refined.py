@@ -38,6 +38,13 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertIn("4-month horizon", source)
         self.assertNotIn("4-month" + "-lag", source)
 
+    def test_default_source_dir_is_repo_root_not_ablation_archive(self):
+        module = load_script_module()
+
+        self.assertEqual(module.DEFAULT_SOURCE_DIR, module.REPO_ROOT)
+        self.assertNotIn("main_ablation_results", str(module.DEFAULT_SOURCE_DIR))
+        self.assertNotIn("archived", str(module.DEFAULT_SOURCE_DIR))
+
     def test_choose_mapping_prefers_latest_file_over_stale_higher_nc(self):
         module = load_script_module()
         with tempfile.TemporaryDirectory() as tmp:
@@ -127,7 +134,7 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertEqual(len(m10_styles), 12)
         self.assertEqual(summary["m10"][11], "East Africa")
         self.assertGreater(len({style.hatch for style in m10_styles}), 1)
-        self.assertGreater(len({style.facecolor for style in m10_styles}), 1)
+        self.assertEqual({style.facecolor for style in m10_styles}, {"#ffffff"})
         self.assertEqual(len({(style.facecolor, style.hatch) for style in m10_styles}), 12)
 
     def test_partition_styles_use_cluster_id_hatches_across_panels(self):
@@ -147,8 +154,15 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         key_to_style, _summary = module.build_partition_styles(panel_data, cluster_regions)
 
         self.assertEqual(key_to_style[("general", 3)].hatch, key_to_style[("m2", 3)].hatch)
-        self.assertNotEqual(key_to_style[("general", 3)].facecolor, key_to_style[("m2", 3)].facecolor)
+        self.assertEqual(key_to_style[("general", 3)].facecolor, "#ffffff")
+        self.assertEqual(key_to_style[("m2", 3)].facecolor, "#ffffff")
         self.assertEqual(key_to_style[("general", 3)].hatch, module.hatch_for_cluster_id(3))
+
+    def test_cluster_id_hatches_are_unique_for_current_cluster_range(self):
+        module = load_script_module()
+        hatches = [module.hatch_for_cluster_id(cluster_id) for cluster_id in range(20)]
+
+        self.assertEqual(len(set(hatches)), 20)
 
     def test_compact_legend_labels_are_cluster_ids_only(self):
         module = load_script_module()

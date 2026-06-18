@@ -22,7 +22,7 @@ except ModuleNotFoundError:
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SOURCE_DIR = REPO_ROOT / "main_ablation_results" / "march2026_main_backup_month_ind_cont3"
+DEFAULT_SOURCE_DIR = REPO_ROOT
 DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
@@ -68,6 +68,8 @@ REGION_ABBREVIATIONS = {
     "Middle East & Afghanistan": "MEA",
     "Latin America": "LA",
 }
+LATAM_COUNTRIES = ("Guatemala", "Haiti")
+AFRICA_MIN_X_M = -2_226_000.0
 REGION_SUBPALETTES = {
     "West Africa": ["#2b8cbe", "#4eb3d3", "#7bccc4", "#a8ddb5", "#43a2ca", "#74a9cf", "#3690c0"],
     "East Africa": ["#31a354", "#74c476", "#a1d99b", "#41ab5d", "#78c679", "#addd8e", "#2ca25f", "#66c2a4", "#99d8c9", "#006d2c"],
@@ -76,7 +78,28 @@ REGION_SUBPALETTES = {
     "Middle East & Afghanistan": ["#d8b365", "#c7a76c", "#bf812d", "#dfc27d", "#a6611a"],
     "Latin America": ["#ef3b2c", "#fb6a4a", "#fc9272", "#de2d26", "#fcae91"],
 }
-HATCH_PATTERNS = ("", "///", "\\\\\\", "xxx", "...", "++", "--", "||", "oo", "**")
+HATCH_PATTERNS = (
+    "",
+    "///",
+    "\\\\\\",
+    "xxx",
+    "...",
+    "++",
+    "--",
+    "||",
+    "oo",
+    "**",
+    "//////",
+    "\\\\\\\\\\\\",
+    "xxxx",
+    "....",
+    "++++",
+    "----",
+    "||||",
+    "OOOO",
+    "****",
+    "////",
+)
 
 
 @dataclass(frozen=True)
@@ -127,8 +150,9 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_SOURCE_DIR,
         help=(
-            "Source folder. Supports repo roots with GeoRFExperiment/GeoDTExperiment, "
-            "individual experiment directories, or folders containing "
+            "Source folder. Defaults to the repo root and prefers "
+            "GeoRFExperiment/GeoDTExperiment knn_sparsification_results. "
+            "Also supports "
             "result_partition_k40_compare_{GF,DT}_fs1/refined directories."
         ),
     )
@@ -252,29 +276,11 @@ def build_partition_styles(
             region_to_clusters[cluster_regions[(panel, int(cluster_id))]].append(int(cluster_id))
         for region in REGION_ORDER:
             clusters = region_to_clusters[region]
-            subpalette = REGION_SUBPALETTES[region]
-            capacity = len(subpalette) * len(HATCH_PATTERNS)
-            if len(clusters) > capacity:
-                raise ValueError(
-                    f"Not enough color/hatch styles for {panel} {region}: "
-                    f"{len(clusters)} clusters, {capacity} available combinations"
+            for cluster_id in clusters:
+                key_to_style[(panel, cluster_id)] = PartitionStyle(
+                    facecolor="#ffffff",
+                    hatch=hatch_for_cluster_id(cluster_id),
                 )
-            used_styles: set[tuple[str, str]] = set()
-            for idx, cluster_id in enumerate(clusters):
-                hatch = hatch_for_cluster_id(cluster_id)
-                color = None
-                for offset in range(len(subpalette)):
-                    candidate = subpalette[(idx + offset) % len(subpalette)]
-                    if (candidate, hatch) not in used_styles:
-                        color = candidate
-                        break
-                if color is None:
-                    raise ValueError(
-                        f"Not enough color/hatch styles for {panel} {region}: "
-                        f"cluster {cluster_id} reuses hatch {hatch!r} after all {len(subpalette)} colors"
-                    )
-                used_styles.add((color, hatch))
-                key_to_style[(panel, cluster_id)] = PartitionStyle(facecolor=color, hatch=hatch)
     return key_to_style, summary
 
 
@@ -284,6 +290,58 @@ def hatch_for_cluster_id(cluster_id: int) -> str:
 
 def compact_cluster_labels(cluster_ids: Iterable[int]) -> list[str]:
     return [f"c{int(cluster_id)}" for cluster_id in sorted(cluster_ids)]
+
+
+def plot_partition_layer(
+    ax,
+    gdf: gpd.GeoDataFrame,
+    panel: str,
+    key_to_style: Dict[Tuple[str, int], PartitionStyle],
+    boundary_gdf: gpd.GeoDataFrame | None = None,
+) -> None:
+    for cluster_id in sorted(gdf["cluster_id"].unique().tolist()):
+        style = key_to_style[(panel, int(cluster_id))]
+        cluster_subset = gdf[gdf["cluster_id"].eq(cluster_id)]
+        for region in REGION_ORDER:
+            subset = cluster_subset[cluster_subset["region_group"].eq(region)]
+            if subset.empty:
+                continue
+            subset.plot(
+                ax=ax,
+                color=REGION_COLORS[region],
+                edgecolor="#4d4d4d",
+                linewidth=0.10,
+                hatch=style.hatch,
+                alpha=0.92,
+                zorder=2,
+            )
+    if boundary_gdf is not None and not boundary_gdf.empty:
+        boundary_gdf.boundary.plot(ax=ax, color="#222222", linewidth=0.08, alpha=0.45, zorder=3)
+
+
+def add_latam_inset(
+    parent_ax,
+    latam_gdf: gpd.GeoDataFrame,
+    panel: str,
+    key_to_style: Dict[Tuple[str, int], PartitionStyle],
+) -> None:
+    if latam_gdf.empty:
+        return
+    inset = parent_ax.inset_axes([0.01, 0.01, 0.30, 0.28])
+    plot_partition_layer(inset, latam_gdf, panel, key_to_style, latam_gdf)
+    minx, miny, maxx, maxy = latam_gdf.total_bounds
+    pad_x = (maxx - minx) * 0.05
+    pad_y = (maxy - miny) * 0.12
+    inset.set_xlim(minx - pad_x, maxx + pad_x)
+    inset.set_ylim(miny - pad_y, maxy + pad_y)
+    inset.set_xticks([])
+    inset.set_yticks([])
+    for spine in inset.spines.values():
+        spine.set_edgecolor("0.35")
+        spine.set_linewidth(0.9)
+    inset.set_title("Latin America (FEWSNET)", fontsize=7, pad=1.5)
+    inset.patch.set_facecolor("white")
+    inset.patch.set_alpha(0.92)
 
 
 def plot_model_grid(
@@ -300,26 +358,16 @@ def plot_model_grid(
 
     plot_data = {panel: gdf.to_crs(epsg=3857) for panel, gdf in panel_data.items()}
     boundary_layer = base_gdf[["geometry"]].to_crs(epsg=3857)
-    total_bounds = boundary_layer.total_bounds
+    main_boundary = boundary_layer[boundary_layer.geometry.centroid.x >= AFRICA_MIN_X_M]
+    total_bounds = main_boundary.total_bounds
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 11))
     axes_flat = axes.ravel()
 
     for ax, panel in zip(axes_flat, PANEL_ORDER):
         gdf = plot_data[panel]
-        for cluster_id in sorted(gdf["cluster_id"].unique().tolist()):
-            style = key_to_style[(panel, int(cluster_id))]
-            subset = gdf[gdf["cluster_id"].eq(cluster_id)]
-            subset.plot(
-                ax=ax,
-                color=style.facecolor,
-                edgecolor="#4d4d4d",
-                linewidth=0.10,
-                hatch=style.hatch,
-                alpha=0.92 if add_basemap else 1.0,
-                zorder=2,
-            )
-        boundary_layer.boundary.plot(ax=ax, color="#222222", linewidth=0.08, alpha=0.45, zorder=3)
+        main_gdf = gdf[gdf.geometry.centroid.x >= AFRICA_MIN_X_M]
+        plot_partition_layer(ax, main_gdf, panel, key_to_style, main_boundary)
         ax.set_xlim(total_bounds[0], total_bounds[2])
         ax.set_ylim(total_bounds[1], total_bounds[3])
         if add_basemap:
@@ -329,6 +377,9 @@ def plot_model_grid(
                 print(f"WARNING: basemap failed for {model} {panel}: {exc}")
         ax.set_title(PANEL_TITLES[panel], fontsize=12, fontweight="bold", pad=6)
         ax.set_axis_off()
+        if "ADMIN0" in panel_data[panel].columns:
+            latam_gdf = panel_data[panel][panel_data[panel]["ADMIN0"].isin(LATAM_COUNTRIES)].copy()
+            add_latam_inset(ax, latam_gdf, panel, key_to_style)
 
     legend_clusters = sorted(
         {int(cluster_id) for panel in PANEL_ORDER for cluster_id in panel_data[panel]["cluster_id"].unique().tolist()}
@@ -344,9 +395,18 @@ def plot_model_grid(
         )
         for cluster_id in legend_clusters
     ]
+    region_handles = [
+        mpatches.Patch(
+            facecolor=REGION_COLORS[region],
+            edgecolor="black",
+            linewidth=0.35,
+            label=REGION_ABBREVIATIONS[region],
+        )
+        for region in REGION_ORDER
+    ]
     fig.legend(
-        handles=legend_handles,
-        title="Partition ID (panel-specific)",
+        handles=legend_handles + region_handles,
+        title="Partition ID (texture) and region (color)",
         loc="lower center",
         bbox_to_anchor=(0.5, 0.040),
         ncol=min(10, max(1, len(legend_handles))),
@@ -361,7 +421,7 @@ def plot_model_grid(
     fig.text(
         0.5,
         0.012,
-        "Cluster IDs are interpreted within each panel; hue families indicate dominant geographic region.",
+        "Cluster IDs are interpreted within each panel; color indicates geographic region.",
         ha="center",
         va="bottom",
         fontsize=8,
