@@ -1,6 +1,8 @@
 import importlib.util
 import math
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 
@@ -338,6 +340,74 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
                 sorted(loaded_manifest["output_paths"]),
                 ["manifest_json", "monthly_csv", "note_md", "summary_csv"],
             )
+
+    def test_sampled_indices_are_deterministic_and_sorted(self):
+        observed = shap_heatmap.sampled_indices(
+            n_rows=10,
+            max_samples=4,
+            random_state=7,
+        )
+
+        self.assertEqual(observed.tolist(), [5, 6, 8, 9])
+        self.assertEqual(
+            shap_heatmap.sampled_indices(3, max_samples=4, random_state=7).tolist(),
+            [0, 1, 2],
+        )
+        self.assertEqual(
+            shap_heatmap.sampled_indices(3, max_samples=0, random_state=7).tolist(),
+            [0, 1, 2],
+        )
+
+    def test_shap_values_for_partitioned_models_dispatches_local_models_and_counts_fallbacks(self):
+        class FakeExplainer:
+            def __init__(self, model):
+                self.model = model
+
+            def shap_values(self, X_partition):
+                base = float(self.model)
+                return np.full((X_partition.shape[0], X_partition.shape[1]), base)
+
+        fake_shap = types.SimpleNamespace(TreeExplainer=FakeExplainer)
+        original_shap = sys.modules.get("shap")
+        sys.modules["shap"] = fake_shap
+        try:
+            X_test = np.arange(15, dtype=float).reshape(5, 3)
+            X_group_test = np.array([2, -1, 1, 99, 2])
+
+            shap_values, diagnostics = shap_heatmap.shap_values_for_partitioned_models(
+                models={1: 10, 2: 20},
+                X_test=X_test,
+                X_group_test=X_group_test,
+                feature_names=["a", "b", "c"],
+                max_samples_per_month=0,
+                random_state=5,
+            )
+        finally:
+            if original_shap is None:
+                sys.modules.pop("shap", None)
+            else:
+                sys.modules["shap"] = original_shap
+
+        np.testing.assert_allclose(
+            shap_values,
+            np.array(
+                [
+                    [10.0, 10.0, 10.0],
+                    [20.0, 20.0, 20.0],
+                    [20.0, 20.0, 20.0],
+                ]
+            ),
+        )
+        self.assertEqual(
+            diagnostics,
+            {
+                "selected_samples": 5,
+                "evaluated_samples": 3,
+                "fallback_samples": 2,
+                "missing_model_samples": 1,
+                "unmapped_samples": 1,
+            },
+        )
 
 
 if __name__ == "__main__":

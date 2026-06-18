@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Build GeoRF partitioned SHAP feature-group heatmap artifacts."""
 
+import argparse
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -549,3 +551,303 @@ def write_heatmap(summary: pd.DataFrame, output_dir: Path, dpi: int = 300) -> di
     finally:
         plt.close(fig)
     return {"png": png_path, "pdf": pdf_path}
+
+
+def sampled_indices(n_rows: int, max_samples: int, random_state: int) -> np.ndarray:
+    """Return deterministic row indices for optional SHAP sampling."""
+    if max_samples <= 0 or n_rows <= max_samples:
+        return np.arange(n_rows)
+    rng = np.random.default_rng(random_state)
+    return np.sort(rng.choice(n_rows, size=max_samples, replace=False))
+
+
+def shap_values_for_partitioned_models(
+    *,
+    models: dict[int, Any],
+    X_test: np.ndarray,
+    X_group_test: np.ndarray,
+    feature_names: list[str],
+    max_samples_per_month: int,
+    random_state: int,
+) -> tuple[np.ndarray, dict[str, int]]:
+    """Compute SHAP values using each sample's local partition RF model."""
+    import shap
+
+    n_features = len(feature_names)
+    shap_blocks: list[np.ndarray] = []
+    evaluated_samples = 0
+    fallback_samples = 0
+    missing_model_samples = 0
+    unmapped_samples = 0
+
+    selected = sampled_indices(len(X_test), max_samples_per_month, random_state)
+    X_selected = X_test[selected]
+    group_selected = X_group_test[selected]
+
+    for partition_id in sorted(np.unique(group_selected)):
+        partition_mask = group_selected == partition_id
+        sample_count = int(partition_mask.sum())
+        if int(partition_id) < 0:
+            fallback_samples += sample_count
+            unmapped_samples += sample_count
+            continue
+
+        model = models.get(int(partition_id))
+        if model is None:
+            fallback_samples += sample_count
+            missing_model_samples += sample_count
+            continue
+
+        X_partition = X_selected[partition_mask]
+        explainer = shap.TreeExplainer(model)
+        raw_values = explainer.shap_values(X_partition)
+        shap_matrix = collapse_shap_values(
+            raw_values,
+            n_samples=X_partition.shape[0],
+            n_features=n_features,
+        )
+        shap_blocks.append(shap_matrix)
+        evaluated_samples += int(X_partition.shape[0])
+
+    if not shap_blocks:
+        raise ValueError(
+            "No local partition SHAP values were computed; all samples used fallback"
+        )
+
+    return np.vstack(shap_blocks), {
+        "selected_samples": int(len(selected)),
+        "evaluated_samples": int(evaluated_samples),
+        "fallback_samples": int(fallback_samples),
+        "missing_model_samples": int(missing_model_samples),
+        "unmapped_samples": int(unmapped_samples),
+    }
+
+
+def prepare_scope_context(data_path: Path | str, forecasting_scope: int) -> dict[str, Any]:
+    """Load data and prepare features for one forecasting scope."""
+    from src.feature.feature import prepare_features
+    from src.preprocess.preprocess import load_and_preprocess_data
+
+    df = load_and_preprocess_data(str(resolve_path(data_path)))
+
+    if "latitude" in df.columns and "longitude" in df.columns:
+        X_loc = df[["latitude", "longitude"]].values
+    elif "lat" in df.columns and "lon" in df.columns:
+        X_loc = df[["lat", "lon"]].values
+    else:
+        raise ValueError("Dataset must have latitude/longitude or lat/lon columns")
+
+    temp_group = np.zeros(len(df), dtype=int)
+    X, y, _l1_index, _l2_index, years, terms, dates, feature_columns = prepare_features(
+        df,
+        temp_group,
+        X_loc,
+        forecasting_scope=forecasting_scope,
+    )
+    if "FEWSNET_admin_code" not in df.columns:
+        raise ValueError("Dataset must include FEWSNET_admin_code")
+
+    return {
+        "df": df,
+        "X": X,
+        "y": y.astype(int),
+        "X_loc": X_loc,
+        "years": years,
+        "terms": terms,
+        "dates": dates,
+        "feature_columns": [str(column) for column in feature_columns],
+        "admin_codes": df["FEWSNET_admin_code"].values,
+    }
+
+
+def run_scope_month(
+    *,
+    context: dict[str, Any],
+    scope: str,
+    test_month: pd.Period,
+    partition_map: Path,
+    train_window_months: int,
+    max_samples_per_month: int,
+    random_state: int,
+    resolved: FeatureGroupResolution,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Train partitioned RF models and return SHAP group rows for one scope-month."""
+    from config import LAGS_MONTHS
+    from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import (
+        MIN_PARTITION_SAMPLES,
+        create_partition_group_array,
+        load_partition_mapping,
+        train_partitioned_model,
+    )
+    from src.customize.customize import train_test_split_rolling_window
+    from src.utils.lag_schedules import forecasting_scope_to_lag
+
+    forecasting_scope = SCOPE_TO_INT[scope]
+    active_lag = forecasting_scope_to_lag(forecasting_scope, LAGS_MONTHS)
+
+    partition_df = load_partition_mapping(str(resolve_path(partition_map)))
+    X_group, _df_with_partition = create_partition_group_array(
+        context["df"],
+        partition_df,
+    )
+
+    split = train_test_split_rolling_window(
+        context["X"],
+        context["y"],
+        context["X_loc"],
+        X_group,
+        context["years"],
+        context["dates"],
+        test_month=test_month,
+        active_lag=active_lag,
+        train_window_months=train_window_months,
+        admin_codes=context["admin_codes"],
+    )
+    if len(split) == 10:
+        (
+            X_train,
+            y_train,
+            _xloc_train,
+            X_group_train,
+            X_test,
+            _y_test,
+            _xloc_test,
+            X_group_test,
+            _train_admin,
+            _test_admin,
+        ) = split
+    else:
+        (
+            X_train,
+            y_train,
+            _xloc_train,
+            X_group_train,
+            X_test,
+            _y_test,
+            _xloc_test,
+            X_group_test,
+        ) = split
+
+    if len(X_test) == 0:
+        raise ValueError(f"No test samples for {scope} {test_month}")
+
+    models = train_partitioned_model(
+        X_train,
+        y_train.astype(int),
+        X_group_train,
+        lower_model="rf",
+        min_samples=MIN_PARTITION_SAMPLES,
+    )
+    shap_matrix, diagnostics = shap_values_for_partitioned_models(
+        models=models,
+        X_test=X_test,
+        X_group_test=X_group_test,
+        feature_names=context["feature_columns"],
+        max_samples_per_month=max_samples_per_month,
+        random_state=random_state,
+    )
+    rows = build_monthly_group_rows(
+        scope=scope,
+        horizon_months=SCOPE_TO_HORIZON_MONTHS[scope],
+        target_month=str(test_month),
+        shap_values=shap_matrix,
+        feature_names=context["feature_columns"],
+        resolved=resolved,
+        fallback_samples=diagnostics["fallback_samples"],
+        evaluated_samples=diagnostics["evaluated_samples"],
+    )
+    return rows, {
+        **diagnostics,
+        "scope": scope,
+        "target_month": str(test_month),
+        "partition_map": str(partition_map),
+        "train_samples": int(len(y_train)),
+        "test_samples": int(len(X_test)),
+        "active_lag_months": int(active_lag),
+    }
+
+
+def run_analysis(args: argparse.Namespace) -> dict[str, Path]:
+    """Run all scope-month SHAP jobs and write artifacts."""
+    output_dir = Path(args.output_dir)
+    stage3_root = Path(args.stage3_root)
+    months = evaluation_months(args.start_month, args.end_month)
+    if len(months) != 12:
+        raise ValueError(
+            f"Expected 12 target months, got {len(months)} from "
+            f"{args.start_month} to {args.end_month}"
+        )
+
+    partition_maps_by_scope = {
+        scope: default_partition_maps_for_scope(stage3_root, scope)
+        for scope in SCOPE_TO_HORIZON_MONTHS
+    }
+    validate_partition_maps(partition_maps_by_scope)
+
+    all_rows: list[dict[str, Any]] = []
+    diagnostics: list[dict[str, Any]] = []
+    feature_group_resolution: FeatureGroupResolution | None = None
+
+    for scope in SCOPE_TO_HORIZON_MONTHS:
+        print(f"\nPreparing scope {scope} ({HORIZON_LABELS[scope]})")
+        context = prepare_scope_context(args.data, SCOPE_TO_INT[scope])
+        resolved = resolve_feature_group_matches(context["feature_columns"])
+        validate_feature_group_resolution(resolved)
+        if feature_group_resolution is None:
+            feature_group_resolution = resolved
+
+        for test_month in months:
+            partition_map = select_partition_map(
+                test_month,
+                partition_maps_by_scope[scope],
+            )
+            print(f"Running {scope} {test_month} with {partition_map}")
+            rows, diag = run_scope_month(
+                context=context,
+                scope=scope,
+                test_month=test_month,
+                partition_map=partition_map,
+                train_window_months=args.train_window,
+                max_samples_per_month=args.max_shap_samples,
+                random_state=args.random_state,
+                resolved=resolved,
+            )
+            all_rows.extend(rows)
+            diagnostics.append(diag)
+
+    monthly = pd.DataFrame(all_rows)
+    summary = summarize_group_shares(monthly, expected_month_count=12)
+    plot_outputs = write_heatmap(summary, output_dir=output_dir, dpi=args.dpi)
+
+    assert feature_group_resolution is not None
+    from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import RF_PARAMS
+
+    manifest = {
+        "timestamp": datetime.now().isoformat(),
+        "source_csv": str(args.data),
+        "scope_to_horizon_months": SCOPE_TO_HORIZON_MONTHS,
+        "evaluated_months": [str(month) for month in months],
+        "partition_maps": {
+            scope: {label: str(path) for label, path in maps.items()}
+            for scope, maps in partition_maps_by_scope.items()
+        },
+        "rf_params": RF_PARAMS,
+        "train_window_months": int(args.train_window),
+        "max_shap_samples_per_month": int(args.max_shap_samples),
+        "feature_group_matches": feature_group_resolution.matched_features,
+        "feature_group_missing_base_columns": (
+            feature_group_resolution.missing_base_columns
+        ),
+        "unmatched_features": feature_group_resolution.unmatched_features,
+        "fallback_sample_counts": diagnostics,
+    }
+    table_outputs = write_tabular_outputs(
+        monthly=monthly,
+        summary=summary,
+        manifest={
+            **manifest,
+            "plot_outputs": {key: str(value) for key, value in plot_outputs.items()},
+        },
+        output_dir=output_dir,
+    )
+    return {**plot_outputs, **table_outputs}
