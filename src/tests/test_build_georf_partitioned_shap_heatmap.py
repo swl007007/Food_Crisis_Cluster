@@ -1,9 +1,11 @@
 import importlib.util
+import io
 import math
 import sys
 import tempfile
 import types
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 import numpy as np
@@ -408,6 +410,126 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
                 "unmapped_samples": 1,
             },
         )
+
+    def test_sort_panel_for_feature_alignment_orders_by_admin_code_and_date(self):
+        unsorted = pd.DataFrame(
+            {
+                "FEWSNET_admin_code": [2, 1, 1, 2],
+                "date": ["2021-02-01", "2021-02-01", "2021-01-01", "2021-01-01"],
+                "latitude": [20.0, 11.0, 10.0, 21.0],
+                "longitude": [120.0, 111.0, 110.0, 121.0],
+            }
+        )
+
+        sorted_df = shap_heatmap.sort_panel_for_feature_alignment(unsorted)
+
+        self.assertEqual(sorted_df["FEWSNET_admin_code"].tolist(), [1, 1, 2, 2])
+        self.assertEqual(
+            sorted_df["date"].dt.strftime("%Y-%m-%d").tolist(),
+            ["2021-01-01", "2021-02-01", "2021-01-01", "2021-02-01"],
+        )
+        self.assertEqual(sorted_df["latitude"].tolist(), [10.0, 11.0, 21.0, 20.0])
+        self.assertEqual(sorted_df.index.tolist(), [0, 1, 2, 3])
+
+    def test_run_analysis_manifest_records_feature_resolution_by_scope(self):
+        captured = {}
+        original_functions = {
+            "evaluation_months": shap_heatmap.evaluation_months,
+            "validate_partition_maps": shap_heatmap.validate_partition_maps,
+            "prepare_scope_context": shap_heatmap.prepare_scope_context,
+            "run_scope_month": shap_heatmap.run_scope_month,
+            "summarize_group_shares": shap_heatmap.summarize_group_shares,
+            "write_heatmap": shap_heatmap.write_heatmap,
+            "write_tabular_outputs": shap_heatmap.write_tabular_outputs,
+        }
+        stage3_module = "scripts.compare_partitioned_vs_pooled_rf_k40_nc4"
+        original_stage3 = sys.modules.get(stage3_module)
+
+        def fake_prepare_scope_context(_data_path, forecasting_scope):
+            return {
+                "feature_columns": [
+                    "Rainf_zscore",
+                    "crop",
+                    "event_count_battles",
+                    f"GDP_lag{forecasting_scope}m",
+                    "WFP_Price_std",
+                    "slope",
+                    f"fews_ipc_crisis_lag_{forecasting_scope}",
+                    f"unmatched_scope_{forecasting_scope}",
+                ]
+            }
+
+        def fake_run_scope_month(**kwargs):
+            return (
+                [
+                    {
+                        "scope": kwargs["scope"],
+                        "horizon_months": (
+                            shap_heatmap.SCOPE_TO_HORIZON_MONTHS[kwargs["scope"]]
+                        ),
+                        "forecasting_horizon": (
+                            shap_heatmap.HORIZON_LABELS[kwargs["scope"]]
+                        ),
+                        "target_month": str(kwargs["test_month"]),
+                        "group": "weather",
+                        "display_group": "Weather",
+                        "group_share": 1.0,
+                    }
+                ],
+                {"scope": kwargs["scope"], "target_month": str(kwargs["test_month"])},
+            )
+
+        def fake_write_tabular_outputs(*, monthly, summary, manifest, output_dir):
+            captured["manifest"] = manifest
+            return {"manifest_json": Path(output_dir) / "manifest.json"}
+
+        try:
+            shap_heatmap.evaluation_months = lambda _start, _end: [
+                pd.Period(f"2021-{month:02d}", freq="M")
+                for month in range(1, 13)
+            ]
+            shap_heatmap.validate_partition_maps = lambda _maps: None
+            shap_heatmap.prepare_scope_context = fake_prepare_scope_context
+            shap_heatmap.run_scope_month = fake_run_scope_month
+            shap_heatmap.summarize_group_shares = (
+                lambda monthly, expected_month_count: monthly
+            )
+            shap_heatmap.write_heatmap = lambda summary, output_dir, dpi: {
+                "png": Path(output_dir) / "plot.png"
+            }
+            shap_heatmap.write_tabular_outputs = fake_write_tabular_outputs
+            sys.modules[stage3_module] = types.SimpleNamespace(
+                RF_PARAMS={"n_estimators": 1}
+            )
+
+            with tempfile.TemporaryDirectory() as tmp:
+                args = types.SimpleNamespace(
+                    output_dir=tmp,
+                    stage3_root=tmp,
+                    start_month="2021-01",
+                    end_month="2021-12",
+                    data="source.csv",
+                    train_window=36,
+                    max_shap_samples=25,
+                    random_state=5,
+                    dpi=72,
+                )
+                with redirect_stdout(io.StringIO()):
+                    shap_heatmap.run_analysis(args)
+        finally:
+            for name, value in original_functions.items():
+                setattr(shap_heatmap, name, value)
+            if original_stage3 is None:
+                sys.modules.pop(stage3_module, None)
+            else:
+                sys.modules[stage3_module] = original_stage3
+
+        by_scope = captured["manifest"]["feature_group_resolution_by_scope"]
+        self.assertEqual(set(by_scope), {"fs1", "fs2", "fs3"})
+        self.assertIn("GDP_lag1m", by_scope["fs1"]["feature_group_matches"]["econ"])
+        self.assertIn("GDP_lag2m", by_scope["fs2"]["feature_group_matches"]["econ"])
+        self.assertIn("GDP_lag3m", by_scope["fs3"]["feature_group_matches"]["econ"])
+        self.assertEqual(by_scope["fs1"]["unmatched_features"], ["unmatched_scope_1"])
 
 
 if __name__ == "__main__":

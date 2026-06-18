@@ -414,6 +414,27 @@ def resolve_path(path: Path | str) -> Path:
     return candidate
 
 
+def sort_panel_for_feature_alignment(df: pd.DataFrame) -> pd.DataFrame:
+    """Sort panel rows to match prepare_features row order."""
+    required = {"FEWSNET_admin_code", "date"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Dataset missing columns required for sorting: {sorted(missing)}"
+        )
+
+    sorted_df = df.copy()
+    if not pd.api.types.is_datetime64_any_dtype(sorted_df["date"]):
+        sorted_df["date"] = pd.to_datetime(sorted_df["date"])
+    return (
+        sorted_df.sort_values(
+            by=["FEWSNET_admin_code", "date"],
+            kind="mergesort",
+        )
+        .reset_index(drop=True)
+    )
+
+
 def evaluation_months(start_month: str, end_month: str) -> list[pd.Period]:
     start = pd.Period(start_month, freq="M")
     end = pd.Period(end_month, freq="M")
@@ -628,7 +649,9 @@ def prepare_scope_context(data_path: Path | str, forecasting_scope: int) -> dict
     from src.feature.feature import prepare_features
     from src.preprocess.preprocess import load_and_preprocess_data
 
-    df = load_and_preprocess_data(str(resolve_path(data_path)))
+    df = sort_panel_for_feature_alignment(
+        load_and_preprocess_data(str(resolve_path(data_path)))
+    )
 
     if "latitude" in df.columns and "longitude" in df.columns:
         X_loc = df[["latitude", "longitude"]].values
@@ -787,12 +810,18 @@ def run_analysis(args: argparse.Namespace) -> dict[str, Path]:
     all_rows: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
     feature_group_resolution: FeatureGroupResolution | None = None
+    feature_group_resolution_by_scope: dict[str, dict[str, Any]] = {}
 
     for scope in SCOPE_TO_HORIZON_MONTHS:
         print(f"\nPreparing scope {scope} ({HORIZON_LABELS[scope]})")
         context = prepare_scope_context(args.data, SCOPE_TO_INT[scope])
         resolved = resolve_feature_group_matches(context["feature_columns"])
         validate_feature_group_resolution(resolved)
+        feature_group_resolution_by_scope[scope] = {
+            "feature_group_matches": resolved.matched_features,
+            "feature_group_missing_base_columns": resolved.missing_base_columns,
+            "unmatched_features": resolved.unmatched_features,
+        }
         if feature_group_resolution is None:
             feature_group_resolution = resolved
 
@@ -839,6 +868,7 @@ def run_analysis(args: argparse.Namespace) -> dict[str, Path]:
             feature_group_resolution.missing_base_columns
         ),
         "unmatched_features": feature_group_resolution.unmatched_features,
+        "feature_group_resolution_by_scope": feature_group_resolution_by_scope,
         "fallback_sample_counts": diagnostics,
     }
     table_outputs = write_tabular_outputs(
