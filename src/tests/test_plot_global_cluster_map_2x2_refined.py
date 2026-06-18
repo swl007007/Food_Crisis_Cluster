@@ -37,6 +37,13 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertIn("4-month horizon", source)
         self.assertNotIn("4-month" + "-lag", source)
 
+    def test_default_source_dir_is_repo_root_not_ablation_archive(self):
+        module = load_script_module()
+
+        self.assertEqual(module.DEFAULT_SOURCE_DIR, module.REPO_ROOT)
+        self.assertNotIn("main_ablation_results", str(module.DEFAULT_SOURCE_DIR))
+        self.assertNotIn("archived", str(module.DEFAULT_SOURCE_DIR))
+
     def test_choose_mapping_prefers_latest_file_over_stale_higher_nc(self):
         module = load_script_module()
         with tempfile.TemporaryDirectory() as tmp:
@@ -52,6 +59,20 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
             os.utime(latest, (200.0, 200.0))
 
             self.assertEqual(module.choose_mapping(refined_dir, "general"), latest)
+
+    def test_discover_model_csvs_supports_experiment_workspace_source(self):
+        module = load_script_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            mapping_dir = root / "GeoRFExperiment" / "knn_sparsification_results"
+            mapping_dir.mkdir(parents=True)
+            expected = {}
+            for panel in module.PANEL_ORDER:
+                path = mapping_dir / f"cluster_mapping_k40_nc13_{panel}.csv"
+                path.write_text("FEWSNET_admin_code,cluster_id\n1,1\n", encoding="utf-8")
+                expected[panel] = path
+
+            self.assertEqual(module.discover_model_csvs(root, "GeoRF"), expected)
 
     def test_partition_palette_supports_ten_east_africa_clusters(self):
         module = load_script_module()
