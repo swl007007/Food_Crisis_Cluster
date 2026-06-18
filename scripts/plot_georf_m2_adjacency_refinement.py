@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Plot GeoRF m2 pre/post adjacency-refinement partitions and reassigned polygons."""
 
-from __future__ import annotations
-
 import argparse
 import os
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
@@ -50,6 +49,15 @@ CLUSTER_PALETTE = [
     "#2CA02C",
     "#D62728",
 ]
+HATCH_PATTERNS = ("", "///", "\\\\\\", "xxx", "...", "++", "--", "||", "oo", "**")
+
+
+@dataclass(frozen=True)
+class ClusterStyle:
+    """Matplotlib style assigned to one GeoRF m2 cluster."""
+
+    facecolor: str
+    hatch: str
 
 
 def resolve_path(path: Path) -> Path:
@@ -165,11 +173,22 @@ def merge_geometries(base_gdf, table: pd.DataFrame, cluster_column: str):
     return merged
 
 
-def cluster_color_map(cluster_ids: Iterable[int]) -> dict[int, str]:
+def compact_cluster_label(cluster_id: int) -> str:
+    return f"c{int(cluster_id)}"
+
+
+def cluster_style_map(cluster_ids: Iterable[int]) -> dict[int, ClusterStyle]:
     clusters = sorted({int(cluster_id) for cluster_id in cluster_ids})
-    if len(clusters) > len(CLUSTER_PALETTE):
-        raise ValueError(f"Palette supports {len(CLUSTER_PALETTE)} clusters, got {len(clusters)}")
-    return {cluster_id: CLUSTER_PALETTE[idx] for idx, cluster_id in enumerate(clusters)}
+    capacity = len(CLUSTER_PALETTE) * len(HATCH_PATTERNS)
+    if len(clusters) > capacity:
+        raise ValueError(f"Style set supports {capacity} clusters, got {len(clusters)}")
+    return {
+        cluster_id: ClusterStyle(
+            facecolor=CLUSTER_PALETTE[idx % len(CLUSTER_PALETTE)],
+            hatch=HATCH_PATTERNS[idx // len(CLUSTER_PALETTE)],
+        )
+        for idx, cluster_id in enumerate(clusters)
+    }
 
 
 def plot_refinement_figure(
@@ -189,7 +208,7 @@ def plot_refinement_figure(
         [reassignment_table["cluster_id_before"], reassignment_table["cluster_id_after"]],
         ignore_index=True,
     )
-    color_lookup = cluster_color_map(all_clusters)
+    style_lookup = cluster_style_map(all_clusters)
     before = merge_geometries(base_gdf, reassignment_table, "cluster_id_before")
     after = merge_geometries(base_gdf, reassignment_table, "cluster_id_after")
     reassigned = merge_geometries(
@@ -210,10 +229,16 @@ def plot_refinement_figure(
     ]
     for ax, gdf, cluster_column, title in panels:
         mapped_base.plot(ax=ax, color="#f2f2f2", edgecolor="#d9d9d9", linewidth=0.05)
-        for cluster_id, color in color_lookup.items():
+        for cluster_id, style in style_lookup.items():
             subset = gdf[gdf[cluster_column].eq(cluster_id)]
             if not subset.empty:
-                subset.plot(ax=ax, color=color, edgecolor="white", linewidth=0.08)
+                subset.plot(
+                    ax=ax,
+                    color=style.facecolor,
+                    edgecolor="white",
+                    linewidth=0.08,
+                    hatch=style.hatch,
+                )
         base_gdf.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.4)
         ax.set_title(title, fontsize=12, fontweight="bold")
         ax.set_axis_off()
@@ -221,7 +246,13 @@ def plot_refinement_figure(
     ax = axes[2]
     mapped_base.plot(ax=ax, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.05)
     if not reassigned.empty:
-        reassigned.plot(ax=ax, color="#d73027", edgecolor="#111111", linewidth=0.18)
+        reassigned.plot(
+            ax=ax,
+            color="#d73027",
+            edgecolor="#111111",
+            linewidth=0.22,
+            hatch="xxx",
+        )
     base_gdf.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.35)
     ax.set_title("Reassigned polygons", fontsize=12, fontweight="bold")
     ax.text(
@@ -237,17 +268,35 @@ def plot_refinement_figure(
     ax.set_axis_off()
 
     handles = [
-        mpatches.Patch(facecolor=color_lookup[cluster_id], edgecolor="black", linewidth=0.2, label=f"Cluster {cluster_id}")
-        for cluster_id in sorted(color_lookup)
+        mpatches.Patch(
+            facecolor=style_lookup[cluster_id].facecolor,
+            hatch=style_lookup[cluster_id].hatch,
+            edgecolor="black",
+            linewidth=0.35,
+            label=compact_cluster_label(cluster_id),
+        )
+        for cluster_id in sorted(style_lookup)
     ]
-    handles.append(mpatches.Patch(facecolor="#d73027", edgecolor="black", linewidth=0.2, label="Reassigned"))
+    handles.append(
+        mpatches.Patch(
+            facecolor="#d73027",
+            hatch="xxx",
+            edgecolor="black",
+            linewidth=0.35,
+            label="Reassigned",
+        )
+    )
     fig.legend(
         handles=handles,
         loc="lower center",
         ncol=7,
         frameon=True,
-        fontsize=8,
-        bbox_to_anchor=(0.5, -0.015),
+        fontsize=9,
+        handlelength=1.8,
+        handleheight=1.0,
+        columnspacing=1.0,
+        handletextpad=0.45,
+        bbox_to_anchor=(0.5, -0.010),
     )
     fig.suptitle(
         "GeoRF m2 Adjacency Refinement (Pre-Stage 3 Local RF)",
