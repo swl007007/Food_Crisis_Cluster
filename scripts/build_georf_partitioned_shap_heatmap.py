@@ -423,9 +423,9 @@ def default_partition_maps_for_scope(stage3_root: Path, scope: str) -> dict[str,
     refined = stage3_root / f"result_partition_k40_compare_GF_{scope}" / "refined"
     return {
         "general": refined / "cluster_mapping_k40_nc17_general_refined_contig3.csv",
-        "m2": refined / "cluster_mapping_k40_nc17_m02_refined_contig3.csv",
-        "m6": refined / "cluster_mapping_k40_nc17_m06_refined_contig3.csv",
-        "m10": refined / "cluster_mapping_k40_nc17_m10_refined_contig3.csv",
+        "m2": refined / "cluster_mapping_k40_nc13_m2_refined_contig3.csv",
+        "m6": refined / "cluster_mapping_k40_nc11_m6_refined_contig3.csv",
+        "m10": refined / "cluster_mapping_k40_nc16_m10_refined_contig3.csv",
     }
 
 

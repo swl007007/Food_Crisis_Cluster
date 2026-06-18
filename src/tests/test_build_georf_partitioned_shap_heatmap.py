@@ -195,6 +195,26 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertEqual(shap_heatmap.select_partition_map(pd.Period("2021-10", freq="M"), maps), Path("oct.csv"))
         self.assertEqual(shap_heatmap.select_partition_map(pd.Period("2021-03", freq="M"), maps), Path("general.csv"))
 
+    def test_default_partition_maps_for_scope_uses_current_refined_stage3_filenames(self):
+        maps = shap_heatmap.default_partition_maps_for_scope(Path("stage3"), "fs1")
+
+        self.assertEqual(
+            maps["general"].name,
+            "cluster_mapping_k40_nc17_general_refined_contig3.csv",
+        )
+        self.assertEqual(
+            maps["m2"].name,
+            "cluster_mapping_k40_nc13_m2_refined_contig3.csv",
+        )
+        self.assertEqual(
+            maps["m6"].name,
+            "cluster_mapping_k40_nc11_m6_refined_contig3.csv",
+        )
+        self.assertEqual(
+            maps["m10"].name,
+            "cluster_mapping_k40_nc16_m10_refined_contig3.csv",
+        )
+
     def test_write_summary_outputs_creates_csv_manifest_and_note(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)
