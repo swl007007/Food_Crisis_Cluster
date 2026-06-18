@@ -502,6 +502,95 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         np.testing.assert_array_equal(captured["X_group"], np.zeros(4, dtype=int))
         self.assertEqual(captured["forecasting_scope"], 2)
 
+    def test_run_scope_month_passes_string_month_to_splitter(self):
+        captured = {}
+        context = {
+            "df": pd.DataFrame({"FEWSNET_admin_code": [1, 2, 3]}),
+            "X": np.arange(6, dtype=float).reshape(3, 2),
+            "y": np.array([0, 1, 0]),
+            "X_loc": np.zeros((3, 2), dtype=float),
+            "years": np.array([2021, 2021, 2021]),
+            "dates": pd.to_datetime(["2021-01-01", "2021-02-01", "2021-03-01"]),
+            "feature_columns": ["Rainf_zscore", "GDP"],
+            "admin_codes": np.array([1, 2, 3]),
+        }
+        resolved = shap_heatmap.resolve_feature_group_matches(
+            context["feature_columns"]
+        )
+
+        def fake_load_partition_mapping(_path):
+            return pd.DataFrame(
+                {"FEWSNET_admin_code": [1, 2, 3], "cluster_id": [1, 1, 1]}
+            )
+
+        def fake_create_partition_group_array(df, partition_df):
+            return np.array([1, 1, 1]), df.assign(cluster_id=[1, 1, 1])
+
+        def fake_forecasting_scope_to_lag(scope, lags):
+            captured["forecasting_scope"] = scope
+            captured["lags"] = tuple(lags)
+            return 4
+
+        def fake_split_fn(*args, **kwargs):
+            captured["split_test_month"] = kwargs["test_month"]
+            X_train = np.array([[0.0, 1.0], [2.0, 3.0]])
+            y_train = np.array([0, 1])
+            X_group_train = np.array([1, 1])
+            X_test = np.array([[4.0, 5.0]])
+            y_test = np.array([1])
+            X_group_test = np.array([1])
+            return (
+                X_train,
+                y_train,
+                np.zeros((2, 2)),
+                X_group_train,
+                X_test,
+                y_test,
+                np.zeros((1, 2)),
+                X_group_test,
+                np.array([1, 2]),
+                np.array([3]),
+            )
+
+        def fake_train_partitioned_model(X_train, y_train, X_group_train, **kwargs):
+            return {1: object()}
+
+        def fake_shap_values(**kwargs):
+            return (
+                np.array([[1.0, 2.0]]),
+                {
+                    "selected_samples": 1,
+                    "evaluated_samples": 1,
+                    "fallback_samples": 0,
+                    "missing_model_samples": 0,
+                    "unmapped_samples": 0,
+                },
+            )
+
+        rows, diag = shap_heatmap.run_scope_month(
+            context=context,
+            scope="fs1",
+            test_month=pd.Period("2021-02", freq="M"),
+            partition_map=Path("partition.csv"),
+            train_window_months=36,
+            max_samples_per_month=25,
+            random_state=5,
+            resolved=resolved,
+            lags_months=(4, 8, 12),
+            min_partition_samples=50,
+            load_partition_mapping_fn=fake_load_partition_mapping,
+            create_partition_group_array_fn=fake_create_partition_group_array,
+            split_fn=fake_split_fn,
+            train_partitioned_model_fn=fake_train_partitioned_model,
+            shap_values_fn=fake_shap_values,
+            forecasting_scope_to_lag_fn=fake_forecasting_scope_to_lag,
+        )
+
+        self.assertEqual(captured["split_test_month"], "2021-02")
+        self.assertIsInstance(captured["split_test_month"], str)
+        self.assertEqual(rows[0]["target_month"], "2021-02")
+        self.assertEqual(diag["target_month"], "2021-02")
+
     def test_run_analysis_manifest_records_feature_resolution_by_scope(self):
         captured = {}
         original_functions = {

@@ -711,35 +711,69 @@ def run_scope_month(
     max_samples_per_month: int,
     random_state: int,
     resolved: FeatureGroupResolution,
+    lags_months: Any | None = None,
+    min_partition_samples: int | None = None,
+    load_partition_mapping_fn: Any | None = None,
+    create_partition_group_array_fn: Any | None = None,
+    split_fn: Any | None = None,
+    train_partitioned_model_fn: Any | None = None,
+    shap_values_fn: Any | None = None,
+    forecasting_scope_to_lag_fn: Any | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Train partitioned RF models and return SHAP group rows for one scope-month."""
-    from config import LAGS_MONTHS
-    from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import (
-        MIN_PARTITION_SAMPLES,
-        create_partition_group_array,
-        load_partition_mapping,
-        train_partitioned_model,
-    )
-    from src.customize.customize import train_test_split_rolling_window
-    from src.utils.lag_schedules import forecasting_scope_to_lag
+    if lags_months is None:
+        from config import LAGS_MONTHS as lags_months
+
+    if (
+        min_partition_samples is None
+        or load_partition_mapping_fn is None
+        or create_partition_group_array_fn is None
+        or train_partitioned_model_fn is None
+    ):
+        from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import (
+            MIN_PARTITION_SAMPLES,
+            create_partition_group_array,
+            load_partition_mapping,
+            train_partitioned_model,
+        )
+
+        if min_partition_samples is None:
+            min_partition_samples = MIN_PARTITION_SAMPLES
+        if load_partition_mapping_fn is None:
+            load_partition_mapping_fn = load_partition_mapping
+        if create_partition_group_array_fn is None:
+            create_partition_group_array_fn = create_partition_group_array
+        if train_partitioned_model_fn is None:
+            train_partitioned_model_fn = train_partitioned_model
+
+    if split_fn is None:
+        from src.customize.customize import train_test_split_rolling_window as split_fn
+
+    if forecasting_scope_to_lag_fn is None:
+        from src.utils.lag_schedules import (
+            forecasting_scope_to_lag as forecasting_scope_to_lag_fn,
+        )
+
+    if shap_values_fn is None:
+        shap_values_fn = shap_values_for_partitioned_models
 
     forecasting_scope = SCOPE_TO_INT[scope]
-    active_lag = forecasting_scope_to_lag(forecasting_scope, LAGS_MONTHS)
+    active_lag = forecasting_scope_to_lag_fn(forecasting_scope, lags_months)
 
-    partition_df = load_partition_mapping(str(resolve_path(partition_map)))
-    X_group, _df_with_partition = create_partition_group_array(
+    partition_df = load_partition_mapping_fn(str(resolve_path(partition_map)))
+    X_group, _df_with_partition = create_partition_group_array_fn(
         context["df"],
         partition_df,
     )
 
-    split = train_test_split_rolling_window(
+    split = split_fn(
         context["X"],
         context["y"],
         context["X_loc"],
         X_group,
         context["years"],
         context["dates"],
-        test_month=test_month,
+        test_month=str(test_month),
         active_lag=active_lag,
         train_window_months=train_window_months,
         admin_codes=context["admin_codes"],
@@ -772,14 +806,14 @@ def run_scope_month(
     if len(X_test) == 0:
         raise ValueError(f"No test samples for {scope} {test_month}")
 
-    models = train_partitioned_model(
+    models = train_partitioned_model_fn(
         X_train,
         y_train.astype(int),
         X_group_train,
         lower_model="rf",
-        min_samples=MIN_PARTITION_SAMPLES,
+        min_samples=min_partition_samples,
     )
-    shap_matrix, diagnostics = shap_values_for_partitioned_models(
+    shap_matrix, diagnostics = shap_values_fn(
         models=models,
         X_test=X_test,
         X_group_test=X_group_test,
