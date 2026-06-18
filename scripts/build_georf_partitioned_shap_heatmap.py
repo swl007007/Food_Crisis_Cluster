@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build GeoRF partitioned SHAP feature-group heatmap artifacts."""
 
+import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -396,6 +397,20 @@ def build_heatmap_matrices(summary: pd.DataFrame) -> tuple[pd.DataFrame, pd.Data
     return values, annotations
 
 
+def resolve_path(path: Path | str) -> Path:
+    """Resolve Windows-style and local paths from WSL-friendly scripts."""
+    candidate = Path(path)
+    if candidate.exists():
+        return candidate
+    raw = str(path)
+    if re.match(r"^[A-Za-z]:\\", raw):
+        drive = raw[0].lower()
+        converted = Path("/mnt") / drive / raw[3:].replace("\\", "/")
+        if converted.exists():
+            return converted
+    return candidate
+
+
 def evaluation_months(start_month: str, end_month: str) -> list[pd.Period]:
     start = pd.Period(start_month, freq="M")
     end = pd.Period(end_month, freq="M")
@@ -403,6 +418,106 @@ def evaluation_months(start_month: str, end_month: str) -> list[pd.Period]:
     return [month for month in months if month.month in TARGET_MONTHS]
 
 
+def default_partition_maps_for_scope(stage3_root: Path, scope: str) -> dict[str, Path]:
+    """Return refined general and month-specific partition-map paths for one scope."""
+    refined = stage3_root / f"result_partition_k40_compare_GF_{scope}" / "refined"
+    return {
+        "general": refined / "cluster_mapping_k40_nc17_general_refined_contig3.csv",
+        "m2": refined / "cluster_mapping_k40_nc17_m02_refined_contig3.csv",
+        "m6": refined / "cluster_mapping_k40_nc17_m06_refined_contig3.csv",
+        "m10": refined / "cluster_mapping_k40_nc17_m10_refined_contig3.csv",
+    }
+
+
 def select_partition_map(target_month: pd.Period, maps: dict[str, Path]) -> Path:
     month_key = f"m{pd.Period(target_month, freq='M').month}"
     return maps.get(month_key, maps["general"])
+
+
+def validate_partition_maps(partition_maps_by_scope: dict[str, dict[str, Path]]) -> None:
+    """Fail if any selected partition-map file is missing."""
+    missing = []
+    for scope, maps in partition_maps_by_scope.items():
+        for label, path in maps.items():
+            if not resolve_path(path).is_file():
+                missing.append(f"{scope}:{label}:{path}")
+    if missing:
+        raise FileNotFoundError(f"Missing required partition maps: {missing}")
+
+
+def write_tabular_outputs(
+    *,
+    monthly: pd.DataFrame,
+    summary: pd.DataFrame,
+    manifest: dict[str, Any],
+    output_dir: Path,
+) -> dict[str, Path]:
+    """Write CSV, manifest, and explanatory note outputs."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    monthly_path = output_dir / "georf_partitioned_shap_monthly.csv"
+    summary_path = output_dir / "georf_partitioned_shap_group_summary.csv"
+    manifest_path = output_dir / "georf_partitioned_shap_manifest.json"
+    note_path = output_dir / "georf_partitioned_shap_note.md"
+
+    monthly.to_csv(monthly_path, index=False)
+    summary.to_csv(summary_path, index=False)
+    manifest = {
+        **manifest,
+        "output_paths": {
+            "monthly_csv": str(monthly_path),
+            "summary_csv": str(summary_path),
+            "manifest_json": str(manifest_path),
+            "note_md": str(note_path),
+        },
+    }
+    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    note_path.write_text(
+        "\n".join(
+            [
+                "# GeoRF Partitioned SHAP Group Heatmap",
+                "",
+                "Values are relative SHAP attribution shares for the partitioned GeoRF model.",
+                "They are not causal effects and are not retraining ablation deltas.",
+                "Each heatmap cell reports the mean group share of mean absolute SHAP values across the 12 February, June, and October target months in 2021-2024, plus one standard deviation.",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    return {
+        "monthly_csv": monthly_path,
+        "summary_csv": summary_path,
+        "manifest_json": manifest_path,
+        "note_md": note_path,
+    }
+
+
+def write_heatmap(summary: pd.DataFrame, output_dir: Path, dpi: int = 300) -> dict[str, Path]:
+    """Write paper-facing heatmap PNG and PDF."""
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    values, annotations = build_heatmap_matrices(summary)
+
+    plt.figure(figsize=(7.2, 5.0), dpi=dpi)
+    ax = sns.heatmap(
+        values * 100.0,
+        annot=annotations,
+        fmt="",
+        cmap="YlGnBu",
+        linewidths=0.7,
+        linecolor="white",
+        cbar_kws={"label": "Group share of mean |SHAP| (%)"},
+    )
+    ax.set_xlabel("Forecasting horizon")
+    ax.set_ylabel("Feature group")
+    ax.set_title("GeoRF Partitioned SHAP Attribution Share")
+    plt.tight_layout()
+
+    png_path = output_dir / "georf_partitioned_shap_group_heatmap.png"
+    pdf_path = output_dir / "georf_partitioned_shap_group_heatmap.pdf"
+    plt.savefig(png_path, dpi=dpi)
+    plt.savefig(pdf_path)
+    plt.close()
+    return {"png": png_path, "pdf": pdf_path}

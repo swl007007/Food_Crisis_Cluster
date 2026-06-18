@@ -195,6 +195,67 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertEqual(shap_heatmap.select_partition_map(pd.Period("2021-10", freq="M"), maps), Path("oct.csv"))
         self.assertEqual(shap_heatmap.select_partition_map(pd.Period("2021-03", freq="M"), maps), Path("general.csv"))
 
+    def test_write_summary_outputs_creates_csv_manifest_and_note(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            monthly = pd.DataFrame(
+                [
+                    {
+                        "scope": "fs1",
+                        "horizon_months": 4,
+                        "forecasting_horizon": "4-month horizon",
+                        "target_month": "2021-02",
+                        "group": "weather",
+                        "display_group": "Weather",
+                        "raw_mean_abs_shap": 2.0,
+                        "group_share": 1.0,
+                        "matched_feature_count": 2,
+                        "normalization_denominator": 2.0,
+                        "fallback_samples": 0,
+                        "evaluated_samples": 4,
+                    }
+                ]
+            )
+            summary = pd.DataFrame(
+                [
+                    {
+                        "scope": "fs1",
+                        "horizon_months": 4,
+                        "forecasting_horizon": "4-month horizon",
+                        "group": "weather",
+                        "display_group": "Weather",
+                        "mean_share": 1.0,
+                        "sd_share": 0.0,
+                        "n_months": 1,
+                    }
+                ]
+            )
+            manifest = {
+                "source_csv": "source.csv",
+                "scope_to_horizon_months": {"fs1": 4},
+                "evaluated_months": ["2021-02"],
+                "partition_maps": {"fs1": {"m2": "map.csv"}},
+                "rf_params": {"n_estimators": 100},
+                "feature_group_matches": {"weather": ["Rainf_zscore"]},
+                "feature_group_missing_base_columns": {"weather": []},
+                "fallback_sample_counts": [{"scope": "fs1", "target_month": "2021-02", "fallback_samples": 0}],
+            }
+
+            outputs = shap_heatmap.write_tabular_outputs(
+                monthly=monthly,
+                summary=summary,
+                manifest=manifest,
+                output_dir=output_dir,
+            )
+
+            self.assertTrue(outputs["monthly_csv"].exists())
+            self.assertTrue(outputs["summary_csv"].exists())
+            self.assertTrue(outputs["manifest_json"].exists())
+            self.assertTrue(outputs["note_md"].exists())
+            self.assertIn("relative SHAP attribution shares", outputs["note_md"].read_text(encoding="utf-8"))
+            loaded_manifest = pd.read_json(outputs["manifest_json"], typ="series")
+            self.assertEqual(loaded_manifest["source_csv"], "source.csv")
+
 
 if __name__ == "__main__":
     unittest.main()
