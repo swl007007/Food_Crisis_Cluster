@@ -6,7 +6,7 @@ import sys
 import tempfile
 import types
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 import numpy as np
@@ -729,6 +729,33 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertTrue(
             all(job["partition_map"].endswith(".csv") for job in payload["jobs"])
         )
+
+    def test_parse_args_accepts_argv_and_keeps_cli_defaults(self):
+        args = shap_heatmap.parse_args(["--dry-run"])
+
+        self.assertTrue(args.dry_run)
+        self.assertEqual(args.data, shap_heatmap.DEFAULT_DATA_PATH)
+        self.assertEqual(args.stage3_root, shap_heatmap.DEFAULT_STAGE3_ROOT)
+        self.assertEqual(args.output_dir, shap_heatmap.DEFAULT_OUTPUT_DIR)
+        self.assertEqual(args.train_window, shap_heatmap.DEFAULT_TRAIN_WINDOW)
+        self.assertEqual(args.max_shap_samples, 512)
+        self.assertEqual(args.random_state, shap_heatmap.RANDOM_STATE)
+        self.assertEqual(args.dpi, 300)
+
+    def test_main_returns_one_with_concise_error_on_validation_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stdout = io.StringIO()
+            stderr = io.StringIO()
+
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                result = shap_heatmap.main(["--dry-run", "--stage3-root", tmp])
+
+        self.assertEqual(result, 1)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertTrue(
+            stderr.getvalue().startswith("error: Missing required partition maps:")
+        )
+        self.assertNotIn("Traceback", stderr.getvalue())
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@
 import argparse
 import json
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -940,7 +941,7 @@ def run_analysis(args: argparse.Namespace) -> dict[str, Path]:
     return {**plot_outputs, **table_outputs}
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--data",
@@ -988,7 +989,7 @@ def parse_args() -> argparse.Namespace:
             "without computing SHAP"
         ),
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def dry_run(args: argparse.Namespace) -> None:
@@ -1017,12 +1018,16 @@ def dry_run(args: argparse.Namespace) -> None:
     print(json.dumps({"n_jobs": len(jobs), "jobs": jobs}, indent=2))
 
 
-def main() -> int:
-    args = parse_args()
-    if args.dry_run:
-        dry_run(args)
-        return 0
-    outputs = run_analysis(args)
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    try:
+        if args.dry_run:
+            dry_run(args)
+            return 0
+        outputs = run_analysis(args)
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
     print("Wrote GeoRF partitioned SHAP heatmap artifacts:")
     for label, path in outputs.items():
         print(f"  {label}: {path}")
