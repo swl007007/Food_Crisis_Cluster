@@ -94,6 +94,24 @@ class GeoRFM2AdjacencyRefinementTests(unittest.TestCase):
     def test_compact_cluster_label_uses_c_prefix(self):
         self.assertEqual(refinement.compact_cluster_label(12), "c12")
 
+    def test_default_args_enable_basemap(self):
+        args = refinement.parse_args([])
+
+        self.assertFalse(args.no_basemap)
+
+    def test_split_main_and_latam_layers_keeps_latin_america_in_inset(self):
+        frame = pd.DataFrame(
+            {
+                "FEWSNET_admin_code": ["1", "2", "3"],
+                "region_group": ["West Africa", "Latin America", "Middle East & Afghanistan"],
+            }
+        )
+
+        main, latam = refinement.split_main_and_latam_layers(frame)
+
+        self.assertEqual(main["FEWSNET_admin_code"].tolist(), ["1", "3"])
+        self.assertEqual(latam["FEWSNET_admin_code"].tolist(), ["2"])
+
 
 if __name__ == "__main__":
     unittest.main()
