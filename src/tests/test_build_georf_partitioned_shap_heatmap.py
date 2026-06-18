@@ -87,19 +87,37 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertEqual(resolved.unmatched_features, ["unmatched_feature"])
         self.assertGreater(len(resolved.missing_base_columns["weather"]), 0)
 
-    def test_collapse_shap_values_handles_binary_list_and_three_dimensional_layouts(self):
-        class0 = np.array([[1.0, -2.0], [3.0, -4.0]])
+    def test_collapse_shap_values_selects_positive_class_for_binary_list(self):
         class1 = np.array([[5.0, -6.0], [7.0, -8.0]])
+        class0 = -class1
+
         observed_list = shap_heatmap.collapse_shap_values([class0, class1], n_samples=2, n_features=2)
-        np.testing.assert_allclose(observed_list, np.array([[3.0, -4.0], [5.0, -6.0]]))
+        np.testing.assert_allclose(observed_list, class1)
+
+    def test_collapse_shap_values_selects_positive_class_for_samples_features_classes(self):
+        class1 = np.array([[5.0, -6.0], [7.0, -8.0], [9.0, -10.0]])
+        class0 = -class1
 
         raw_samples_features_classes = np.stack([class0, class1], axis=2)
-        observed_sfc = shap_heatmap.collapse_shap_values(raw_samples_features_classes, n_samples=2, n_features=2)
-        np.testing.assert_allclose(observed_sfc, np.array([[3.0, -4.0], [5.0, -6.0]]))
+        observed_sfc = shap_heatmap.collapse_shap_values(raw_samples_features_classes, n_samples=3, n_features=2)
+        np.testing.assert_allclose(observed_sfc, class1)
+
+    def test_collapse_shap_values_selects_positive_class_for_classes_samples_features(self):
+        class1 = np.array([[5.0, -6.0], [7.0, -8.0]])
+        class0 = -class1
 
         raw_classes_samples_features = np.stack([class0, class1], axis=0)
         observed_csf = shap_heatmap.collapse_shap_values(raw_classes_samples_features, n_samples=2, n_features=2)
-        np.testing.assert_allclose(observed_csf, np.array([[-0.5, -0.5], [-0.5, -0.5]]))
+        np.testing.assert_allclose(observed_csf, class1)
+
+    def test_collapse_shap_values_selects_positive_class_for_flattened_binary_layout(self):
+        class1 = np.array([[5.0, -6.0], [7.0, -8.0]])
+        class0 = -class1
+        flattened = np.concatenate([class0, class1], axis=1)
+
+        observed = shap_heatmap.collapse_shap_values(flattened, n_samples=2, n_features=2)
+
+        np.testing.assert_allclose(observed, class1)
 
     def test_collapse_shap_values_uses_deterministic_three_dimensional_shape_priority(self):
         class0 = np.array([[1.0, -2.0], [3.0, -4.0], [5.0, -6.0]])
@@ -107,11 +125,11 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
 
         raw_samples_features_classes = np.stack([class0, class1], axis=2)
         observed_sfc = shap_heatmap.collapse_shap_values(raw_samples_features_classes, n_samples=3, n_features=2)
-        np.testing.assert_allclose(observed_sfc, np.array([[4.0, -5.0], [6.0, -7.0], [8.0, -9.0]]))
+        np.testing.assert_allclose(observed_sfc, class1)
 
         raw_classes_samples_features = np.stack([class0, class1], axis=0)
         observed_csf = shap_heatmap.collapse_shap_values(raw_classes_samples_features, n_samples=3, n_features=2)
-        np.testing.assert_allclose(observed_csf, np.array([[4.0, -5.0], [6.0, -7.0], [8.0, -9.0]]))
+        np.testing.assert_allclose(observed_csf, class1)
 
     def test_group_mean_abs_and_share_normalization(self):
         shap_values = np.array(
@@ -357,12 +375,27 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
             self.assertTrue(outputs["summary_csv"].exists())
             self.assertTrue(outputs["manifest_json"].exists())
             self.assertTrue(outputs["note_md"].exists())
-            self.assertIn("relative SHAP attribution shares", outputs["note_md"].read_text(encoding="utf-8"))
+            self.assertNotIn(b"\r\n", outputs["monthly_csv"].read_bytes())
+            self.assertNotIn(b"\r\n", outputs["summary_csv"].read_bytes())
+            self.assertNotIn(b"\r\n", outputs["manifest_json"].read_bytes())
+            self.assertNotIn(b"\r\n", outputs["note_md"].read_bytes())
+            note = outputs["note_md"].read_text(encoding="utf-8")
+            self.assertIn("relative SHAP attribution shares", note)
+            self.assertIn("evaluated local-partition samples only", note)
+            self.assertIn("fallback, unmapped, or missing-model samples", note)
             loaded_manifest = pd.read_json(outputs["manifest_json"], typ="series")
             self.assertEqual(loaded_manifest["source_csv"], "source.csv")
             self.assertEqual(
                 sorted(loaded_manifest["output_paths"]),
                 ["manifest_json", "monthly_csv", "note_md", "summary_csv"],
+            )
+            self.assertEqual(
+                sorted(loaded_manifest["output_paths_relative"]),
+                ["manifest_json", "monthly_csv", "note_md", "summary_csv"],
+            )
+            self.assertEqual(
+                loaded_manifest["partition_maps_relative"],
+                {"fs1": {"m2": "map.csv"}},
             )
 
     def test_sampled_indices_are_deterministic_and_sorted(self):

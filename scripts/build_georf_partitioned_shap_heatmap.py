@@ -218,23 +218,30 @@ def validate_feature_group_resolution(resolved: FeatureGroupResolution) -> None:
 
 
 def collapse_shap_values(raw_values: Any, n_samples: int, n_features: int) -> np.ndarray:
+    positive_class_index = 1
     if isinstance(raw_values, list):
-        matrices = []
-        for raw_matrix in raw_values:
-            matrix = np.asarray(raw_matrix)
-            if matrix.ndim != 2:
-                matrix = matrix.reshape(matrix.shape[0], -1)
-            matrices.append(matrix)
-        if not matrices:
+        if not raw_values:
             raise ValueError("No SHAP matrices returned")
-        values = np.mean(np.stack(matrices, axis=0), axis=0)
+        class_index = positive_class_index if len(raw_values) > 1 else 0
+        values = np.asarray(raw_values[class_index])
+        if values.ndim != 2:
+            values = values.reshape(values.shape[0], -1)
     else:
         values = np.asarray(raw_values)
         if values.ndim == 3:
-            if values.shape[0] == n_samples and values.shape[1] == n_features:
-                values = values.mean(axis=2)
+            if (
+                values.shape[0] in (1, 2)
+                and values.shape[1] == n_samples
+                and values.shape[2] == n_features
+            ):
+                class_index = positive_class_index if values.shape[0] > 1 else 0
+                values = values[class_index, :, :]
+            elif values.shape[0] == n_samples and values.shape[1] == n_features:
+                class_index = positive_class_index if values.shape[2] > 1 else 0
+                values = values[:, :, class_index]
             elif values.shape[1] == n_samples and values.shape[2] == n_features:
-                values = values.mean(axis=0)
+                class_index = positive_class_index if values.shape[0] > 1 else 0
+                values = values[class_index, :, :]
             else:
                 values = values.reshape(values.shape[0], -1)
         elif (
@@ -249,7 +256,10 @@ def collapse_shap_values(raw_values: Any, n_samples: int, n_features: int) -> np
             and values.shape[1] % n_features == 0
         ):
             class_count = values.shape[1] // n_features
-            values = values.reshape(n_samples, class_count, n_features).mean(axis=1)
+            class_index = positive_class_index if class_count > 1 else 0
+            values = values.reshape(n_samples, class_count, n_features)[
+                :, class_index, :
+            ]
         else:
             values = values.reshape(n_samples, -1)
     if values.shape != (n_samples, n_features):
@@ -477,6 +487,21 @@ def validate_partition_maps(partition_maps_by_scope: dict[str, dict[str, Path]])
         raise FileNotFoundError(f"Missing required partition maps: {missing}")
 
 
+def repo_relative(path: Path | str) -> str:
+    """Return a stable repo-relative path when the path is inside this checkout."""
+    path = Path(path)
+    try:
+        return path.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def write_lf_text(path: Path, text: str) -> None:
+    """Write text with LF line endings even when executed by Windows Python."""
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
 def write_tabular_outputs(
     *,
     monthly: pd.DataFrame,
@@ -491,8 +516,8 @@ def write_tabular_outputs(
     manifest_path = output_dir / "georf_partitioned_shap_manifest.json"
     note_path = output_dir / "georf_partitioned_shap_note.md"
 
-    monthly.to_csv(monthly_path, index=False)
-    summary.to_csv(summary_path, index=False)
+    monthly.to_csv(monthly_path, index=False, lineterminator="\n")
+    summary.to_csv(summary_path, index=False, lineterminator="\n")
     manifest = {
         **manifest,
         "output_paths": {
@@ -501,9 +526,26 @@ def write_tabular_outputs(
             "manifest_json": str(manifest_path),
             "note_md": str(note_path),
         },
+        "output_paths_relative": {
+            "monthly_csv": repo_relative(monthly_path),
+            "summary_csv": repo_relative(summary_path),
+            "manifest_json": repo_relative(manifest_path),
+            "note_md": repo_relative(note_path),
+        },
     }
-    manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    note_path.write_text(
+    if "partition_maps" in manifest:
+        manifest["partition_maps_relative"] = {
+            scope: {label: repo_relative(path) for label, path in maps.items()}
+            for scope, maps in manifest["partition_maps"].items()
+        }
+    if "plot_outputs" in manifest:
+        manifest["plot_outputs_relative"] = {
+            label: repo_relative(path)
+            for label, path in manifest["plot_outputs"].items()
+        }
+    write_lf_text(manifest_path, json.dumps(manifest, indent=2) + "\n")
+    write_lf_text(
+        note_path,
         "\n".join(
             [
                 "# GeoRF Partitioned SHAP Group Heatmap",
@@ -511,10 +553,10 @@ def write_tabular_outputs(
                 "Values are relative SHAP attribution shares for the partitioned GeoRF model.",
                 "They are not causal effects and are not retraining ablation deltas.",
                 "Each heatmap cell reports the mean group share of mean absolute SHAP values across the 12 February, June, and October target months in 2021-2024, plus one standard deviation.",
+                "SHAP shares are computed over evaluated local-partition samples only; fallback, unmapped, or missing-model samples are excluded from SHAP attribution and counted in the manifest.",
                 "",
             ]
         ),
-        encoding="utf-8",
     )
     return {
         "monthly_csv": monthly_path,
