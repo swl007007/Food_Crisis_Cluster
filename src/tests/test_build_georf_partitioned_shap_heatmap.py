@@ -1,5 +1,6 @@
 import importlib.util
 import io
+import json
 import math
 import sys
 import tempfile
@@ -690,6 +691,44 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertIn("GDP_lag2m", by_scope["fs2"]["feature_group_matches"]["econ"])
         self.assertIn("GDP_lag3m", by_scope["fs3"]["feature_group_matches"]["econ"])
         self.assertEqual(by_scope["fs1"]["unmatched_features"], ["unmatched_scope_1"])
+
+    def test_dry_run_validates_partition_maps_and_prints_scope_month_jobs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stage3_root = Path(tmp)
+            for scope in shap_heatmap.SCOPE_TO_HORIZON_MONTHS:
+                for path in shap_heatmap.default_partition_maps_for_scope(
+                    stage3_root,
+                    scope,
+                ).values():
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(
+                        "FEWSNET_admin_code,cluster_id\n1,1\n",
+                        encoding="utf-8",
+                    )
+
+            args = types.SimpleNamespace(
+                stage3_root=stage3_root,
+                start_month="2021-01",
+                end_month="2021-12",
+            )
+
+            with redirect_stdout(io.StringIO()) as stdout:
+                shap_heatmap.dry_run(args)
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(payload["n_jobs"], 9)
+        self.assertEqual(
+            {job["scope"] for job in payload["jobs"]},
+            {"fs1", "fs2", "fs3"},
+        )
+        self.assertEqual(
+            sorted({job["target_month"][-3:] for job in payload["jobs"]}),
+            ["-02", "-06", "-10"],
+        )
+        self.assertTrue(
+            all(job["partition_map"].endswith(".csv") for job in payload["jobs"])
+        )
 
 
 if __name__ == "__main__":

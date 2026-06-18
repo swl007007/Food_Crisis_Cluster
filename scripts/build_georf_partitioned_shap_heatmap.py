@@ -23,6 +23,11 @@ HORIZON_LABELS = {
     "fs2": "8-month horizon",
     "fs3": "12-month horizon",
 }
+DEFAULT_DATA_PATH = (
+    r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis"
+    r"\1.Source Data\FEWSNET_forecast_unadjusted_bm.csv"
+)
+DEFAULT_TRAIN_WINDOW = 36
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "01_main_results"
 DEFAULT_STAGE3_ROOT = REPO_ROOT
 WSL_MOUNT_ROOT = Path("/mnt")
@@ -933,3 +938,96 @@ def run_analysis(args: argparse.Namespace) -> dict[str, Path]:
         output_dir=output_dir,
     )
     return {**plot_outputs, **table_outputs}
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--data",
+        default=DEFAULT_DATA_PATH,
+        help="Path to FEWSNET panel CSV",
+    )
+    parser.add_argument(
+        "--stage3-root",
+        type=Path,
+        default=DEFAULT_STAGE3_ROOT,
+        help="Repository root containing result_partition_k40_compare_GF_fs* folders",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_OUTPUT_DIR,
+        help="Output directory for paper artifacts",
+    )
+    parser.add_argument("--start-month", default="2021-01", help="Evaluation start month")
+    parser.add_argument("--end-month", default="2024-12", help="Evaluation end month")
+    parser.add_argument(
+        "--train-window",
+        type=int,
+        default=DEFAULT_TRAIN_WINDOW,
+        help="Rolling training window in months",
+    )
+    parser.add_argument(
+        "--max-shap-samples",
+        type=int,
+        default=512,
+        help="Maximum test samples per scope-month for SHAP; 0 means no cap",
+    )
+    parser.add_argument(
+        "--random-state",
+        type=int,
+        default=RANDOM_STATE,
+        help="Deterministic sampling seed",
+    )
+    parser.add_argument("--dpi", type=int, default=300, help="PNG output DPI")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help=(
+            "Print planned scope-month jobs and validate partition-map paths "
+            "without computing SHAP"
+        ),
+    )
+    return parser.parse_args()
+
+
+def dry_run(args: argparse.Namespace) -> None:
+    months = evaluation_months(args.start_month, args.end_month)
+    partition_maps_by_scope = {
+        scope: default_partition_maps_for_scope(Path(args.stage3_root), scope)
+        for scope in SCOPE_TO_HORIZON_MONTHS
+    }
+    validate_partition_maps(partition_maps_by_scope)
+    jobs = []
+    for scope in SCOPE_TO_HORIZON_MONTHS:
+        for test_month in months:
+            jobs.append(
+                {
+                    "scope": scope,
+                    "forecasting_horizon": HORIZON_LABELS[scope],
+                    "target_month": str(test_month),
+                    "partition_map": str(
+                        select_partition_map(
+                            test_month,
+                            partition_maps_by_scope[scope],
+                        )
+                    ),
+                }
+            )
+    print(json.dumps({"n_jobs": len(jobs), "jobs": jobs}, indent=2))
+
+
+def main() -> int:
+    args = parse_args()
+    if args.dry_run:
+        dry_run(args)
+        return 0
+    outputs = run_analysis(args)
+    print("Wrote GeoRF partitioned SHAP heatmap artifacts:")
+    for label, path in outputs.items():
+        print(f"  {label}: {path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
