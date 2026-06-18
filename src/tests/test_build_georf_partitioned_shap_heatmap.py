@@ -175,6 +175,31 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertEqual(list(values.columns), ["4-month horizon", "8-month horizon", "12-month horizon"])
         self.assertEqual(annotations.loc["Weather", "4-month horizon"], "10.0%\n+/- 2.0")
 
+    def test_write_heatmap_creates_non_empty_png_and_pdf(self):
+        rows = []
+        for group, meta in shap_heatmap.FEATURE_GROUPS.items():
+            for scope in shap_heatmap.SCOPE_TO_HORIZON_MONTHS:
+                rows.append(
+                    {
+                        "group": group,
+                        "display_group": meta["display"],
+                        "scope": scope,
+                        "forecasting_horizon": shap_heatmap.HORIZON_LABELS[scope],
+                        "mean_share": 0.10,
+                        "sd_share": 0.02,
+                        "n_months": 12,
+                    }
+                )
+        summary = pd.DataFrame(rows)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            outputs = shap_heatmap.write_heatmap(summary, Path(tmp), dpi=72)
+
+            self.assertTrue(outputs["png"].exists())
+            self.assertTrue(outputs["pdf"].exists())
+            self.assertGreater(outputs["png"].stat().st_size, 0)
+            self.assertGreater(outputs["pdf"].stat().st_size, 0)
+
     def test_evaluation_months_are_february_june_october_for_each_year(self):
         observed = shap_heatmap.evaluation_months("2021-01", "2024-12")
         self.assertEqual(len(observed), 12)
@@ -195,6 +220,26 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
         self.assertEqual(shap_heatmap.select_partition_map(pd.Period("2021-10", freq="M"), maps), Path("oct.csv"))
         self.assertEqual(shap_heatmap.select_partition_map(pd.Period("2021-03", freq="M"), maps), Path("general.csv"))
 
+    def test_resolve_path_converts_windows_backslash_and_slash_paths(self):
+        original_mount_root = shap_heatmap.WSL_MOUNT_ROOT
+        with tempfile.TemporaryDirectory() as tmp:
+            mount_root = Path(tmp)
+            expected = mount_root / "c" / "Users" / "swl00" / "example.csv"
+            expected.parent.mkdir(parents=True)
+            expected.write_text("ok", encoding="utf-8")
+            shap_heatmap.WSL_MOUNT_ROOT = mount_root
+            try:
+                self.assertEqual(
+                    shap_heatmap.resolve_path(r"C:\Users\swl00\example.csv"),
+                    expected,
+                )
+                self.assertEqual(
+                    shap_heatmap.resolve_path("C:/Users/swl00/example.csv"),
+                    expected,
+                )
+            finally:
+                shap_heatmap.WSL_MOUNT_ROOT = original_mount_root
+
     def test_default_partition_maps_for_scope_uses_current_refined_stage3_filenames(self):
         maps = shap_heatmap.default_partition_maps_for_scope(Path("stage3"), "fs1")
 
@@ -214,6 +259,20 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
             maps["m10"].name,
             "cluster_mapping_k40_nc16_m10_refined_contig3.csv",
         )
+
+    def test_validate_partition_maps_raises_on_missing_files_and_passes_existing_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            existing = root / "existing.csv"
+            existing.write_text("admin_code,cluster\n1,1\n", encoding="utf-8")
+            missing = root / "missing.csv"
+
+            with self.assertRaisesRegex(FileNotFoundError, "fs1:m2"):
+                shap_heatmap.validate_partition_maps(
+                    {"fs1": {"general": existing, "m2": missing}}
+                )
+
+            shap_heatmap.validate_partition_maps({"fs1": {"general": existing}})
 
     def test_write_summary_outputs_creates_csv_manifest_and_note(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -275,6 +334,10 @@ class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
             self.assertIn("relative SHAP attribution shares", outputs["note_md"].read_text(encoding="utf-8"))
             loaded_manifest = pd.read_json(outputs["manifest_json"], typ="series")
             self.assertEqual(loaded_manifest["source_csv"], "source.csv")
+            self.assertEqual(
+                sorted(loaded_manifest["output_paths"]),
+                ["manifest_json", "monthly_csv", "note_md", "summary_csv"],
+            )
 
 
 if __name__ == "__main__":

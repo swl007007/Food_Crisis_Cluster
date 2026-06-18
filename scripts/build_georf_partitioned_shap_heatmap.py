@@ -23,6 +23,7 @@ HORIZON_LABELS = {
 }
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "01_main_results"
 DEFAULT_STAGE3_ROOT = REPO_ROOT
+WSL_MOUNT_ROOT = Path("/mnt")
 
 FEATURE_GROUPS: dict[str, dict[str, Any]] = {
     "weather": {
@@ -403,9 +404,9 @@ def resolve_path(path: Path | str) -> Path:
     if candidate.exists():
         return candidate
     raw = str(path)
-    if re.match(r"^[A-Za-z]:\\", raw):
+    if re.match(r"^[A-Za-z]:[\\/]", raw):
         drive = raw[0].lower()
-        converted = Path("/mnt") / drive / raw[3:].replace("\\", "/")
+        converted = WSL_MOUNT_ROOT / drive / raw[3:].replace("\\", "/")
         if converted.exists():
             return converted
     return candidate
@@ -495,29 +496,56 @@ def write_tabular_outputs(
 def write_heatmap(summary: pd.DataFrame, output_dir: Path, dpi: int = 300) -> dict[str, Path]:
     """Write paper-facing heatmap PNG and PDF."""
     import matplotlib.pyplot as plt
-    import seaborn as sns
+
+    try:
+        import seaborn as sns
+    except ModuleNotFoundError:
+        sns = None
 
     output_dir.mkdir(parents=True, exist_ok=True)
     values, annotations = build_heatmap_matrices(summary)
 
-    plt.figure(figsize=(7.2, 5.0), dpi=dpi)
-    ax = sns.heatmap(
-        values * 100.0,
-        annot=annotations,
-        fmt="",
-        cmap="YlGnBu",
-        linewidths=0.7,
-        linecolor="white",
-        cbar_kws={"label": "Group share of mean |SHAP| (%)"},
-    )
-    ax.set_xlabel("Forecasting horizon")
-    ax.set_ylabel("Feature group")
-    ax.set_title("GeoRF Partitioned SHAP Attribution Share")
-    plt.tight_layout()
-
     png_path = output_dir / "georf_partitioned_shap_group_heatmap.png"
     pdf_path = output_dir / "georf_partitioned_shap_group_heatmap.pdf"
-    plt.savefig(png_path, dpi=dpi)
-    plt.savefig(pdf_path)
-    plt.close()
+    fig, ax = plt.subplots(figsize=(7.2, 5.0), dpi=dpi)
+    try:
+        if sns is not None:
+            sns.heatmap(
+                values * 100.0,
+                annot=annotations,
+                fmt="",
+                cmap="YlGnBu",
+                linewidths=0.7,
+                linecolor="white",
+                cbar_kws={"label": "Group share of mean |SHAP| (%)"},
+                ax=ax,
+            )
+        else:
+            image = ax.imshow(values.to_numpy() * 100.0, cmap="YlGnBu")
+            ax.set_xticks(range(len(values.columns)))
+            ax.set_xticklabels(values.columns, rotation=0)
+            ax.set_yticks(range(len(values.index)))
+            ax.set_yticklabels(values.index)
+            for row_index, row_label in enumerate(values.index):
+                for column_index, column_label in enumerate(values.columns):
+                    ax.text(
+                        column_index,
+                        row_index,
+                        annotations.loc[row_label, column_label],
+                        ha="center",
+                        va="center",
+                    )
+            fig.colorbar(
+                image,
+                ax=ax,
+                label="Group share of mean |SHAP| (%)",
+            )
+        ax.set_xlabel("Forecasting horizon")
+        ax.set_ylabel("Feature group")
+        ax.set_title("GeoRF Partitioned SHAP Attribution Share")
+        fig.tight_layout()
+        fig.savefig(png_path, dpi=dpi)
+        fig.savefig(pdf_path)
+    finally:
+        plt.close(fig)
     return {"png": png_path, "pdf": pdf_path}
