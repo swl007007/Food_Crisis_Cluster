@@ -185,7 +185,7 @@ def cluster_style_map(cluster_ids: Iterable[int]) -> dict[int, ClusterStyle]:
     return {
         cluster_id: ClusterStyle(
             facecolor=CLUSTER_PALETTE[idx % len(CLUSTER_PALETTE)],
-            hatch=HATCH_PATTERNS[idx // len(CLUSTER_PALETTE)],
+            hatch=HATCH_PATTERNS[idx % len(HATCH_PATTERNS)],
         )
         for idx, cluster_id in enumerate(clusters)
     }
