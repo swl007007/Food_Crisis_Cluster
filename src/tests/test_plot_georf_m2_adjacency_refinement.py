@@ -77,6 +77,16 @@ class GeoRFM2AdjacencyRefinementTests(unittest.TestCase):
         self.assertEqual(parsed["total_reassigned"], 45)
         self.assertEqual(parsed["per_iteration_reassigned"], [29, 10, 6])
 
+    def test_cluster_styles_assign_color_and_hatch(self):
+        styles = refinement.cluster_style_map(range(15))
+
+        self.assertEqual(sorted(styles), list(range(15)))
+        self.assertGreater(len({style.facecolor for style in styles.values()}), 1)
+        self.assertGreater(len({style.hatch for style in styles.values()}), 1)
+
+    def test_compact_cluster_label_uses_c_prefix(self):
+        self.assertEqual(refinement.compact_cluster_label(12), "c12")
+
 
 if __name__ == "__main__":
     unittest.main()
