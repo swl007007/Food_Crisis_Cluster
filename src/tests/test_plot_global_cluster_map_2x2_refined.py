@@ -85,6 +85,46 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertEqual(len([key for key in key_to_idx if key[0] == "m10"]), 10)
         self.assertEqual(summary["m10"][9], "East Africa")
 
+    def test_partition_styles_support_many_east_africa_partitions_with_hatches(self):
+        module = load_script_module()
+        panel_data = {}
+        for panel in module.PANEL_ORDER:
+            if panel == "m10":
+                panel_data[panel] = pd.DataFrame(
+                    {
+                        "cluster_id": list(range(12)),
+                        "region_group": ["East Africa"] * 12,
+                    }
+                )
+            else:
+                panel_data[panel] = pd.DataFrame(
+                    {
+                        "cluster_id": [0],
+                        "region_group": ["West Africa"],
+                    }
+                )
+        cluster_regions = {
+            (panel, int(row.cluster_id)): str(row.region_group)
+            for panel, df in panel_data.items()
+            for row in df.itertuples(index=False)
+        }
+
+        key_to_style, summary = module.build_partition_styles(panel_data, cluster_regions)
+
+        m10_styles = [key_to_style[("m10", cluster_id)] for cluster_id in range(12)]
+        self.assertEqual(len(m10_styles), 12)
+        self.assertEqual(summary["m10"][11], "East Africa")
+        self.assertGreater(len({style.hatch for style in m10_styles}), 1)
+        self.assertGreater(len({style.facecolor for style in m10_styles}), 1)
+
+    def test_compact_legend_labels_are_cluster_ids_only(self):
+        module = load_script_module()
+        labels = module.compact_cluster_labels([0, 2, 13])
+
+        self.assertEqual(labels, ["c0", "c2", "c13"])
+        self.assertNotIn("m2", " ".join(labels))
+        self.assertNotIn("WA", " ".join(labels))
+
 
 if __name__ == "__main__":
     unittest.main()
