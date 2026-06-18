@@ -283,24 +283,67 @@ def set_padded_bounds(ax, gdf, pad_fraction: float = 0.035) -> None:
     ax.set_ylim(miny - pad_y, maxy + pad_y)
 
 
-def load_offline_basemap():
-    import geopandas as gpd
-    from cartopy.io import shapereader
+def clean_geometry_for_dissolve(gdf):
+    cleaned = gdf.copy()
+    try:
+        cleaned["geometry"] = cleaned.geometry.make_valid()
+    except AttributeError:
+        cleaned["geometry"] = cleaned.geometry.buffer(0)
+    cleaned = cleaned[cleaned.geometry.notna() & ~cleaned.geometry.is_empty].copy()
+    return cleaned
 
-    path = shapereader.natural_earth(
-        resolution="110m",
-        category="cultural",
-        name="admin_0_countries",
+
+def dissolve_plot_layer(gdf, by: list[str]):
+    cleaned = clean_geometry_for_dissolve(gdf)
+    if cleaned.empty:
+        return cleaned
+    try:
+        return cleaned.dissolve(by=by, as_index=False, method="coverage")
+    except TypeError:
+        return cleaned.dissolve(by=by, as_index=False)
+    except Exception:
+        cleaned["geometry"] = cleaned.geometry.buffer(0)
+        return cleaned.dissolve(by=by, as_index=False)
+
+
+def build_admin0_context(base_gdf):
+    admin0_column = "ADMIN0" if "ADMIN0" in base_gdf.columns else "ISO"
+    admin0 = base_gdf[[admin0_column, "geometry"]].dissolve(by=admin0_column, as_index=False)
+    admin0["geometry"] = admin0.geometry.simplify(
+        PLOT_SIMPLIFY_TOLERANCE_M,
+        preserve_topology=True,
     )
-    return gpd.read_file(path).to_crs(epsg=3857)
+    return admin0
 
 
-def add_basemap(ax, enabled: bool, basemap_gdf, extent_gdf) -> None:
-    if not enabled:
+def load_admin0_basemap(fallback_gdf, target_crs):
+    import geopandas as gpd
+
+    try:
+        from cartopy.io import shapereader
+
+        path = shapereader.natural_earth(
+            resolution="110m",
+            category="cultural",
+            name="admin_0_countries",
+        )
+        admin0 = gpd.read_file(path).to_crs(target_crs)
+        admin0["geometry"] = admin0.geometry.simplify(
+            PLOT_SIMPLIFY_TOLERANCE_M,
+            preserve_topology=True,
+        )
+        return admin0
+    except Exception as exc:
+        print(f"WARNING: Natural Earth admin0 basemap unavailable; using FEWSNET countries only: {exc}")
+        return build_admin0_context(fallback_gdf).to_crs(target_crs)
+
+
+def plot_admin0_context(ax, enabled: bool, admin0_gdf, extent_gdf) -> None:
+    if not enabled or admin0_gdf is None or admin0_gdf.empty or extent_gdf.empty:
         return
     ax.set_facecolor("#dbe3e6")
     minx, miny, maxx, maxy = extent_gdf.total_bounds
-    subset = basemap_gdf.cx[minx:maxx, miny:maxy]
+    subset = admin0_gdf.cx[minx:maxx, miny:maxy]
     if subset.empty:
         return
     subset.plot(
@@ -313,30 +356,40 @@ def add_basemap(ax, enabled: bool, basemap_gdf, extent_gdf) -> None:
     )
 
 
+def plot_admin0_outline(ax, enabled: bool, admin0_gdf, extent_gdf) -> None:
+    if not enabled or admin0_gdf is None or admin0_gdf.empty or extent_gdf.empty:
+        return
+    minx, miny, maxx, maxy = extent_gdf.total_bounds
+    subset = admin0_gdf.cx[minx:maxx, miny:maxy]
+    if subset.empty:
+        return
+    subset.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.35, alpha=0.75, zorder=5)
+
+
 def plot_cluster_partitions(ax, gdf, cluster_column: str, style_lookup: dict[int, ClusterStyle]) -> None:
-    region_layer = gdf.dissolve(by="region_group", as_index=False)
     for region in REGION_ORDER:
-        subset = region_layer[region_layer["region_group"].eq(region)]
+        subset = gdf[gdf["region_group"].eq(region)]
         if subset.empty:
             continue
+        subset = dissolve_plot_layer(subset, ["region_group"])
         subset.plot(
             ax=ax,
             color=REGION_COLORS[region],
-            edgecolor="#4d4d4d",
-            linewidth=0.06,
+            edgecolor="none",
+            linewidth=0.0,
             alpha=0.92,
             zorder=3,
         )
-    cluster_layer = gdf.dissolve(by=cluster_column, as_index=False)
     for cluster_id, style in style_lookup.items():
-        cluster_subset = cluster_layer[cluster_layer[cluster_column].eq(cluster_id)]
+        cluster_subset = gdf[gdf[cluster_column].eq(cluster_id)]
         if cluster_subset.empty:
             continue
+        cluster_subset = dissolve_plot_layer(cluster_subset, [cluster_column])
         cluster_subset.plot(
             ax=ax,
             color="none",
             edgecolor="#4d4d4d",
-            linewidth=0.08,
+            linewidth=0.0,
             hatch=style.hatch,
             zorder=4,
         )
@@ -348,15 +401,14 @@ def add_latam_inset(
     cluster_column: str | None,
     style_lookup: dict[int, ClusterStyle],
     add_basemap_flag: bool,
-    basemap_gdf,
+    admin0_gdf,
     reassigned_only: bool = False,
     highlight_gdf=None,
 ) -> None:
     if latam_gdf.empty:
         return
     inset = parent_ax.inset_axes([0.01, 0.01, 0.30, 0.30])
-    add_basemap(inset, add_basemap_flag, basemap_gdf, latam_gdf)
-    latam_gdf.plot(ax=inset, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.06, alpha=0.55, zorder=2)
+    plot_admin0_context(inset, add_basemap_flag, admin0_gdf, latam_gdf)
     if reassigned_only and highlight_gdf is not None and not highlight_gdf.empty:
         highlight_gdf.plot(
             ax=inset,
@@ -368,7 +420,7 @@ def add_latam_inset(
         )
     elif cluster_column is not None:
         plot_cluster_partitions(inset, latam_gdf, cluster_column, style_lookup)
-    latam_gdf.boundary.plot(ax=inset, color="#4d4d4d", linewidth=0.08, alpha=0.55, zorder=4)
+    plot_admin0_outline(inset, add_basemap_flag, admin0_gdf, latam_gdf)
     set_padded_bounds(inset, latam_gdf, pad_fraction=0.08)
     inset.set_title("Latin America (FEWSNET)", fontsize=7, pad=1.5)
     inset.set_xticks([])
@@ -420,7 +472,7 @@ def plot_refinement_figure(
     before_main, before_latam = split_main_and_latam_layers(before)
     after_main, after_latam = split_main_and_latam_layers(after)
     reassigned_main, reassigned_latam = split_main_and_latam_layers(reassigned)
-    basemap_gdf = load_offline_basemap() if add_basemap_flag else None
+    admin0_context = load_admin0_basemap(plot_base, plot_base.crs) if add_basemap_flag else None
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 6.5))
     panels = [
@@ -428,18 +480,16 @@ def plot_refinement_figure(
         (axes[1], after_main, after_latam, "cluster_id_after", "After adjacency refinement"),
     ]
     for ax, gdf, latam_gdf, cluster_column, title in panels:
-        add_basemap(ax, add_basemap_flag, basemap_gdf, mapped_main)
-        mapped_main.plot(ax=ax, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.05, alpha=0.45, zorder=2)
+        plot_admin0_context(ax, add_basemap_flag, admin0_context, mapped_main)
         plot_cluster_partitions(ax, gdf, cluster_column, style_lookup)
-        mapped_main.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.4, zorder=4)
+        plot_admin0_outline(ax, add_basemap_flag, admin0_context, mapped_main)
         set_padded_bounds(ax, mapped_main)
-        add_latam_inset(ax, latam_gdf, cluster_column, style_lookup, add_basemap_flag, basemap_gdf)
+        add_latam_inset(ax, latam_gdf, cluster_column, style_lookup, add_basemap_flag, admin0_context)
         ax.set_title(title, fontsize=12, fontweight="bold")
         ax.set_axis_off()
 
     ax = axes[2]
-    add_basemap(ax, add_basemap_flag, basemap_gdf, mapped_main)
-    mapped_main.plot(ax=ax, color="#eeeeee", edgecolor="#d9d9d9", linewidth=0.05, alpha=0.45, zorder=2)
+    plot_admin0_context(ax, add_basemap_flag, admin0_context, mapped_main)
     if not reassigned_main.empty:
         reassigned_main.plot(
             ax=ax,
@@ -449,7 +499,7 @@ def plot_refinement_figure(
             hatch="xxx",
             zorder=3,
     )
-    mapped_main.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.05, alpha=0.35, zorder=4)
+    plot_admin0_outline(ax, add_basemap_flag, admin0_context, mapped_main)
     set_padded_bounds(ax, mapped_main)
     add_latam_inset(
         ax,
@@ -457,7 +507,7 @@ def plot_refinement_figure(
         None,
         style_lookup,
         add_basemap_flag,
-        basemap_gdf,
+        admin0_context,
         reassigned_only=True,
         highlight_gdf=reassigned_latam,
     )

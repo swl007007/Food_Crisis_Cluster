@@ -172,6 +172,33 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertNotIn("m2", " ".join(labels))
         self.assertNotIn("WA", " ".join(labels))
 
+    def test_plot_model_grid_uses_admin0_context_not_tile_basemap_or_polygon_boundaries(self):
+        module = load_script_module()
+        source = inspect.getsource(module.plot_model_grid)
+
+        self.assertIn("load_admin0_basemap", source)
+        self.assertIn("plot_admin0_context", source)
+        self.assertIn("plot_admin0_outline", source)
+        self.assertNotIn("cx.add_basemap", source)
+        self.assertNotIn("boundary_layer", source)
+        self.assertNotIn("main_boundary", source)
+
+    def test_partition_layer_does_not_draw_fewsnet_polygon_boundary_overlay(self):
+        module = load_script_module()
+        source = inspect.getsource(module.plot_partition_layer)
+
+        self.assertNotIn("boundary_gdf", source)
+        self.assertNotIn(".boundary.plot", source)
+        self.assertIn("dissolve_plot_layer", source)
+
+    def test_admin0_basemap_simplification_is_crs_aware_for_latam_inset(self):
+        module = load_script_module()
+        source = inspect.getsource(module.load_admin0_basemap)
+
+        self.assertIn("is_geographic", source)
+        self.assertIn("PLOT_SIMPLIFY_TOLERANCE_DEG", source)
+        self.assertIn("PLOT_SIMPLIFY_TOLERANCE_M", source)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
 import importlib.util
+import inspect
 import tempfile
 import unittest
 from pathlib import Path
@@ -111,6 +112,25 @@ class GeoRFM2AdjacencyRefinementTests(unittest.TestCase):
 
         self.assertEqual(main["FEWSNET_admin_code"].tolist(), ["1", "3"])
         self.assertEqual(latam["FEWSNET_admin_code"].tolist(), ["2"])
+
+    def test_refinement_figure_uses_admin0_context_not_fewsnet_polygon_boundary_overlay(self):
+        source = inspect.getsource(refinement.plot_refinement_figure)
+
+        self.assertIn("load_admin0_basemap", source)
+        self.assertIn("plot_admin0_context", source)
+        self.assertIn("plot_admin0_outline", source)
+        self.assertNotIn("mapped_main.boundary.plot", source)
+
+    def test_latam_inset_does_not_draw_fewsnet_polygon_boundary_overlay(self):
+        source = inspect.getsource(refinement.add_latam_inset)
+
+        self.assertIn("plot_admin0_outline", source)
+        self.assertNotIn("latam_gdf.boundary.plot", source)
+
+    def test_cluster_partitions_are_dissolved_before_hatch_rendering(self):
+        source = inspect.getsource(refinement.plot_cluster_partitions)
+
+        self.assertIn("dissolve_plot_layer", source)
 
 
 if __name__ == "__main__":

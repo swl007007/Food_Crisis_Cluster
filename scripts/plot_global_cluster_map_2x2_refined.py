@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, Tuple
 
-import contextily as cx
 import geopandas as gpd
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
@@ -70,6 +69,8 @@ REGION_ABBREVIATIONS = {
 }
 LATAM_COUNTRIES = ("Guatemala", "Haiti")
 AFRICA_MIN_X_M = -2_226_000.0
+PLOT_SIMPLIFY_TOLERANCE_M = 5_000
+PLOT_SIMPLIFY_TOLERANCE_DEG = 0.02
 REGION_SUBPALETTES = {
     "West Africa": ["#2b8cbe", "#4eb3d3", "#7bccc4", "#a8ddb5", "#43a2ca", "#74a9cf", "#3690c0"],
     "East Africa": ["#31a354", "#74c476", "#a1d99b", "#41ab5d", "#78c679", "#addd8e", "#2ca25f", "#66c2a4", "#99d8c9", "#006d2c"],
@@ -134,12 +135,6 @@ ISO_TO_REGION = {
     "GT": "Latin America",
     "HT": "Latin America",
 }
-
-try:
-    BASEMAP_SOURCE = cx.providers.CartoDB.PositronNoLabels
-except AttributeError:
-    BASEMAP_SOURCE = cx.providers.OpenStreetMap.Mapnik
-
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -292,12 +287,113 @@ def compact_cluster_labels(cluster_ids: Iterable[int]) -> list[str]:
     return [f"c{int(cluster_id)}" for cluster_id in sorted(cluster_ids)]
 
 
+def clean_geometry_for_dissolve(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    cleaned = gdf.copy()
+    try:
+        cleaned["geometry"] = cleaned.geometry.make_valid()
+    except AttributeError:
+        cleaned["geometry"] = cleaned.geometry.buffer(0)
+    cleaned = cleaned[cleaned.geometry.notna() & ~cleaned.geometry.is_empty].copy()
+    return cleaned
+
+
+def dissolve_plot_layer(gdf: gpd.GeoDataFrame, by: list[str]) -> gpd.GeoDataFrame:
+    cleaned = clean_geometry_for_dissolve(gdf)
+    if cleaned.empty:
+        return cleaned
+    try:
+        return cleaned.dissolve(by=by, as_index=False, method="coverage")
+    except TypeError:
+        return cleaned.dissolve(by=by, as_index=False)
+    except Exception:
+        cleaned["geometry"] = cleaned.geometry.buffer(0)
+        return cleaned.dissolve(by=by, as_index=False)
+
+
+def build_admin0_context(base_gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    admin0_column = "ADMIN0" if "ADMIN0" in base_gdf.columns else "ISO"
+    admin0 = base_gdf[[admin0_column, "geometry"]].dissolve(by=admin0_column, as_index=False)
+    admin0 = admin0.to_crs(epsg=3857)
+    admin0["geometry"] = admin0.geometry.simplify(
+        PLOT_SIMPLIFY_TOLERANCE_M,
+        preserve_topology=True,
+    )
+    return admin0
+
+
+def load_admin0_basemap(
+    fallback_gdf: gpd.GeoDataFrame,
+    target_crs,
+) -> gpd.GeoDataFrame:
+    target_crs_obj = gpd.GeoSeries([], crs=target_crs).crs
+    simplify_tolerance = (
+        PLOT_SIMPLIFY_TOLERANCE_DEG
+        if target_crs_obj is not None and target_crs_obj.is_geographic
+        else PLOT_SIMPLIFY_TOLERANCE_M
+    )
+    try:
+        from cartopy.io import shapereader
+
+        path = shapereader.natural_earth(
+            resolution="110m",
+            category="cultural",
+            name="admin_0_countries",
+        )
+        admin0 = gpd.read_file(path)
+        admin0 = admin0.to_crs(target_crs)
+        admin0["geometry"] = admin0.geometry.simplify(
+            simplify_tolerance,
+            preserve_topology=True,
+        )
+        return admin0
+    except Exception as exc:
+        print(f"WARNING: Natural Earth admin0 basemap unavailable; using FEWSNET countries only: {exc}")
+        return build_admin0_context(fallback_gdf).to_crs(target_crs)
+
+
+def plot_admin0_context(
+    ax,
+    enabled: bool,
+    admin0_gdf: gpd.GeoDataFrame,
+    extent_gdf: gpd.GeoDataFrame,
+) -> None:
+    if not enabled or admin0_gdf.empty or extent_gdf.empty:
+        return
+    ax.set_facecolor("#dbe3e6")
+    minx, miny, maxx, maxy = extent_gdf.total_bounds
+    subset = admin0_gdf.cx[minx:maxx, miny:maxy]
+    if subset.empty:
+        return
+    subset.plot(
+        ax=ax,
+        color="#f8f6f0",
+        edgecolor="#c8bfba",
+        linewidth=0.30,
+        alpha=0.95,
+        zorder=1,
+    )
+
+
+def plot_admin0_outline(
+    ax,
+    enabled: bool,
+    admin0_gdf: gpd.GeoDataFrame,
+    extent_gdf: gpd.GeoDataFrame,
+) -> None:
+    if not enabled or admin0_gdf.empty or extent_gdf.empty:
+        return
+    minx, miny, maxx, maxy = extent_gdf.total_bounds
+    subset = admin0_gdf.cx[minx:maxx, miny:maxy]
+    if subset.empty:
+        return
+    subset.boundary.plot(ax=ax, color="#4d4d4d", linewidth=0.35, alpha=0.75, zorder=5)
+
+
 def plot_partition_layer(
     ax,
     gdf: gpd.GeoDataFrame,
     panel: str,
     key_to_style: Dict[Tuple[str, int], PartitionStyle],
-    boundary_gdf: gpd.GeoDataFrame | None = None,
 ) -> None:
     for cluster_id in sorted(gdf["cluster_id"].unique().tolist()):
         style = key_to_style[(panel, int(cluster_id))]
@@ -306,17 +402,16 @@ def plot_partition_layer(
             subset = cluster_subset[cluster_subset["region_group"].eq(region)]
             if subset.empty:
                 continue
+            subset = dissolve_plot_layer(subset, ["region_group", "cluster_id"])
             subset.plot(
                 ax=ax,
                 color=REGION_COLORS[region],
                 edgecolor="#4d4d4d",
-                linewidth=0.10,
+                linewidth=0.0,
                 hatch=style.hatch,
                 alpha=0.92,
                 zorder=2,
             )
-    if boundary_gdf is not None and not boundary_gdf.empty:
-        boundary_gdf.boundary.plot(ax=ax, color="#222222", linewidth=0.08, alpha=0.45, zorder=3)
 
 
 def add_latam_inset(
@@ -328,7 +423,10 @@ def add_latam_inset(
     if latam_gdf.empty:
         return
     inset = parent_ax.inset_axes([0.01, 0.01, 0.30, 0.28])
-    plot_partition_layer(inset, latam_gdf, panel, key_to_style, latam_gdf)
+    admin0_context = load_admin0_basemap(latam_gdf, latam_gdf.crs)
+    plot_admin0_context(inset, True, admin0_context, latam_gdf)
+    plot_partition_layer(inset, latam_gdf, panel, key_to_style)
+    plot_admin0_outline(inset, True, admin0_context, latam_gdf)
     minx, miny, maxx, maxy = latam_gdf.total_bounds
     pad_x = (maxx - minx) * 0.05
     pad_y = (maxy - miny) * 0.12
@@ -357,9 +455,10 @@ def plot_model_grid(
     key_to_style, summary = build_partition_styles(panel_data, cluster_regions)
 
     plot_data = {panel: gdf.to_crs(epsg=3857) for panel, gdf in panel_data.items()}
-    boundary_layer = base_gdf[["geometry"]].to_crs(epsg=3857)
-    main_boundary = boundary_layer[boundary_layer.geometry.centroid.x >= AFRICA_MIN_X_M]
-    total_bounds = main_boundary.total_bounds
+    extent_layer = base_gdf[["geometry"]].to_crs(epsg=3857)
+    main_extent = extent_layer[extent_layer.geometry.centroid.x >= AFRICA_MIN_X_M]
+    admin0_context = load_admin0_basemap(base_gdf, main_extent.crs)
+    total_bounds = main_extent.total_bounds
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 11))
     axes_flat = axes.ravel()
@@ -367,14 +466,11 @@ def plot_model_grid(
     for ax, panel in zip(axes_flat, PANEL_ORDER):
         gdf = plot_data[panel]
         main_gdf = gdf[gdf.geometry.centroid.x >= AFRICA_MIN_X_M]
-        plot_partition_layer(ax, main_gdf, panel, key_to_style, main_boundary)
+        plot_admin0_context(ax, add_basemap, admin0_context, main_extent)
+        plot_partition_layer(ax, main_gdf, panel, key_to_style)
+        plot_admin0_outline(ax, add_basemap, admin0_context, main_extent)
         ax.set_xlim(total_bounds[0], total_bounds[2])
         ax.set_ylim(total_bounds[1], total_bounds[3])
-        if add_basemap:
-            try:
-                cx.add_basemap(ax, source=BASEMAP_SOURCE, zoom="auto", attribution=False, zorder=1)
-            except Exception as exc:
-                print(f"WARNING: basemap failed for {model} {panel}: {exc}")
         ax.set_title(PANEL_TITLES[panel], fontsize=12, fontweight="bold", pad=6)
         ax.set_axis_off()
         if "ADMIN0" in panel_data[panel].columns:
