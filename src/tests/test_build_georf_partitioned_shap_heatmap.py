@@ -20,6 +20,27 @@ spec.loader.exec_module(shap_heatmap)
 
 
 class GeoRFPartitionedShapHeatmapTests(unittest.TestCase):
+    def test_script_bootstrap_adds_repo_root_to_python_path(self):
+        original_path = list(sys.path)
+        repo_root = str(shap_heatmap.REPO_ROOT)
+        script_dir = str(SCRIPT_PATH.parent)
+        sys.path = [
+            entry
+            for entry in sys.path
+            if entry not in {"", repo_root, script_dir}
+        ]
+        sys.path.insert(0, script_dir)
+        try:
+            spec = importlib.util.spec_from_file_location(
+                "build_georf_partitioned_shap_heatmap_bootstrap",
+                SCRIPT_PATH,
+            )
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            self.assertIn(repo_root, sys.path)
+        finally:
+            sys.path = original_path
+
     def test_feature_groups_exclude_secondary_and_preserve_display_order(self):
         self.assertEqual(
             list(shap_heatmap.FEATURE_GROUPS.keys()),
