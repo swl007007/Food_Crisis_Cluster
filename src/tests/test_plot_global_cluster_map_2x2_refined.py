@@ -25,6 +25,7 @@ def load_script_module():
 
     spec = importlib.util.spec_from_file_location("plot_global_cluster_map_2x2_refined", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -53,7 +54,7 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
 
             self.assertEqual(module.choose_mapping(refined_dir, "general"), latest)
 
-    def test_partition_palette_supports_ten_east_africa_clusters(self):
+    def test_partition_styles_support_ten_east_africa_clusters(self):
         module = load_script_module()
         panel_data = {}
         for panel in module.PANEL_ORDER:
@@ -77,12 +78,9 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
             for row in df.itertuples(index=False)
         }
 
-        _cmap, key_to_idx, summary, _key_to_color = module.build_partition_palette(
-            panel_data,
-            cluster_regions,
-        )
+        key_to_style, summary = module.build_partition_styles(panel_data, cluster_regions)
 
-        self.assertEqual(len([key for key in key_to_idx if key[0] == "m10"]), 10)
+        self.assertEqual(len([key for key in key_to_style if key[0] == "m10"]), 10)
         self.assertEqual(summary["m10"][9], "East Africa")
 
     def test_partition_styles_support_many_east_africa_partitions_with_hatches(self):
