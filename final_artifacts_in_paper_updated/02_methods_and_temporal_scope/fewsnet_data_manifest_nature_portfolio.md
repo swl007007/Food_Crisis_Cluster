@@ -21,12 +21,12 @@ All 88 FEWSNET panel columns are assigned exactly once to the source-family grou
 | Variable group | Representative columns | Source/provider evidence | License / access note | Manifest treatment |
 |---|---|---|---|---|
 | FEWS NET geography, outcomes, and projections | `unit_name`, `ADMIN0`-`ADMIN3`, `FEWSNET_admin_code`, `fews_ipc`, `fews_proj_near`, `fews_proj_med`, `fews_ipc_crisis` | FEWSNET source files and admin-boundary folder under `Analysis/1.Source Data/Outcome/FEWSNET_IPC/` | Provider identified; license pending verification | Treated as core third-party FEWS NET-derived data; do not claim public redistribution rights. |
-| ACLED conflict exposure | `distance_to_nearest_acled`, `event_count_*`, `sum_fatalities_*` | Source-data `AGENTS.md` maps `ACLED/` to conflict indicators. | Provider identified; license pending verification | Report as derived conflict features, not raw event redistribution. |
-| Agroecological, terrain, hydrology, and market access | `AEZ_*`, `crop`, `range`, `distance_to_river`, `elevation`, `ruggedness`, `slope`, `market_access`, `market_distance` | Source-data folders and `variable_construction_notes_description.xlsx`. | Provider identified; license pending verification except locally documented DOI/license entries | Keep provider and local evidence separate from license claims. |
+| ACLED conflict exposure | `distance_to_nearest_acled`, `event_count_*`, `sum_fatalities_*` | Source-data maps `ACLED/` to conflict indicators. | Provider identified; license pending verification | Report as derived conflict features, not raw event redistribution. |
+| Agroecological, terrain, hydrology, and market access | `AEZ_*`, `crop`, `range`, `distance_to_river`, `elevation`, `ruggedness`, `slope`, `market_access`, `market_distance` | Source-data folders | Provider identified; license pending verification except locally documented DOI/license entries | Keep provider and local evidence separate from license claims. |
 | Remote-sensing climate and productivity | `Rainf_f_tavg_mean`, `Tair_f_tavg_mean`, `Rainf_zscore`, `Tair_zscore`, `EVI`, `gpp_mean`, `nightlight`, `nightlight_sd` | Source-data folders and predictor descriptives | Provider identified; license pending verification | Explain z-scores as derived fields from upstream climate series. |
 | Soil, macro, prices, and population | `sg_*`, `CPI`, `GDP`, `CC`, `gini`, `FAO_price`, `WFP_Price`, `WFP_Price_std`, `Food_CPI`, `Food_food_inflation`, `pop` | `ISRIC/`, `FAO/`, `WFP/`, `WBG/`, `Populationdensity/` source folders. | Provider identified; license pending verification | Mark public redistribution as dependent on upstream terms. |
 
-`variable_construction_notes_description.xlsx` provides partial local construction support only: exact-name overlap is 15 of 88 panel columns. Source-data `AGENTS.md` supports source-family and folder provenance, not license rights.
+
 
 ## Derived Reproducibility Assets
 
@@ -67,7 +67,7 @@ Use these manifest status labels consistently:
 | Provider identified; license pending verification | The likely source/provider can be identified from local source folders, predictor names, or local metadata, but the applicable license/access terms have not been verified in this manifest. | Requires source-license verification before public redistribution or public data release. |
 | Derived from restricted/third-party sources | The artifact contains or is derived from data families that may be restricted or governed by upstream provider terms. | Do not claim public redistribution rights until all upstream terms have been reviewed. |
 
-FEWS NET source data, ACLED, WFP, FAO, World Bank-derived indicators, remote-sensing products, soil products, population, nightlight, and market-access inputs should be reviewed against their upstream terms before any public data package is released. Source-data `AGENTS.md` is used here only to support source-family/folder provenance; it is not license evidence.
+FEWS NET source data, ACLED, WFP, FAO, World Bank-derived indicators, remote-sensing products, soil products, population, nightlight, and market-access inputs should be reviewed against their upstream terms before any public data package is released. 
 
 ## Reproduction Commands
 
@@ -97,9 +97,6 @@ The listed commands assume the source CSV remains available at the recorded Wind
 
 ## Known Caveats
 
-- Parsed CSV records are reported as `1,029,240 x 88`; physical text lines are `1,029,601`. The line-count difference is preserved as a file-integrity caveat because CSV quoting or embedded newline formatting can make physical text lines differ from parsed records.
 - Windows/WSL paths both appear because the workflow is run from WSL while the primary source file lives under the mounted Windows profile path.
-- GeoXGB outputs are legacy/experimental and are excluded from this minimum dataset unless a future paper section explicitly promotes them.
-- fs0 lag-1 outputs are excluded from this manifest because the current paper-facing no-leak workflow uses fs1/fs2/fs3 unless a future manuscript section adds fs0.
 - static/manual diagrams, including online-generated workflow or feature-engineering figures, are excluded unless listed above as a data-derived paper artifact.
 - This is a minimum dataset manifest for reproducibility review, not a full source-data archive. Raw upstream-provider files and unrestricted public release packaging require a separate source-license verification pass.
