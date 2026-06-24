@@ -21,16 +21,12 @@ All 88 FEWSNET panel columns are assigned exactly once to the source-family grou
 | Variable group | Representative columns | Source/provider evidence | License / access note | Manifest treatment |
 |---|---|---|---|---|
 | FEWS NET geography, outcomes, and projections | `unit_name`, `ADMIN0`-`ADMIN3`, `FEWSNET_admin_code`, `fews_ipc`, `fews_proj_near`, `fews_proj_med`, `fews_ipc_crisis` | FEWSNET source files and admin-boundary folder under `Analysis/1.Source Data/Outcome/FEWSNET_IPC/` | Provider identified; license pending verification | Treated as core third-party FEWS NET-derived data; do not claim public redistribution rights. |
-| ACLED conflict exposure | `distance_to_nearest_acled`, `event_count_*`, `sum_fatalities_*` | Source-data `AGENTS.md` maps `ACLED/` to conflict indicators; IPCCH codebook overlaps conflict categories | Provider identified; license pending verification | Report as derived conflict features, not raw event redistribution. |
-| Agroecological, terrain, hydrology, and market access | `AEZ_*`, `crop`, `range`, `distance_to_river`, `elevation`, `ruggedness`, `slope`, `market_access`, `market_distance` | Source-data folders and `variable_construction_notes_description.xlsx`; IPCCH codebook overlap | Provider identified; license pending verification except locally documented DOI/license entries | Keep provider and local evidence separate from license claims. |
+| ACLED conflict exposure | `distance_to_nearest_acled`, `event_count_*`, `sum_fatalities_*` | Source-data `AGENTS.md` maps `ACLED/` to conflict indicators. | Provider identified; license pending verification | Report as derived conflict features, not raw event redistribution. |
+| Agroecological, terrain, hydrology, and market access | `AEZ_*`, `crop`, `range`, `distance_to_river`, `elevation`, `ruggedness`, `slope`, `market_access`, `market_distance` | Source-data folders and `variable_construction_notes_description.xlsx`. | Provider identified; license pending verification except locally documented DOI/license entries | Keep provider and local evidence separate from license claims. |
 | Remote-sensing climate and productivity | `Rainf_f_tavg_mean`, `Tair_f_tavg_mean`, `Rainf_zscore`, `Tair_zscore`, `EVI`, `gpp_mean`, `nightlight`, `nightlight_sd` | Source-data folders and predictor descriptives | Provider identified; license pending verification | Explain z-scores as derived fields from upstream climate series. |
-| Soil, macro, prices, and population | `sg_*`, `CPI`, `GDP`, `CC`, `gini`, `FAO_price`, `WFP_Price`, `WFP_Price_std`, `Food_CPI`, `Food_food_inflation`, `pop` | `ISRIC/`, `FAO/`, `WFP/`, `WBG/`, `Populationdensity/` source folders and IPCCH codebook overlap | Provider identified; license pending verification | Mark public redistribution as dependent on upstream terms. |
+| Soil, macro, prices, and population | `sg_*`, `CPI`, `GDP`, `CC`, `gini`, `FAO_price`, `WFP_Price`, `WFP_Price_std`, `Food_CPI`, `Food_food_inflation`, `pop` | `ISRIC/`, `FAO/`, `WFP/`, `WBG/`, `Populationdensity/` source folders. | Provider identified; license pending verification | Mark public redistribution as dependent on upstream terms. |
 
-The IPCCH codebook is used only as a same-variable cross-reference; IPCCH-only variables are not imported into this FEWSNET manifest.
-
-`assembled_IPCCH/metadata/variable_codebook_reorganized.csv` overlaps exactly with 63 of the 88 FEWSNET panel columns and is used only to cross-reference same-name variables. `variable_construction_notes_description.xlsx` provides partial support only: exact-name overlap is 15 of 88 panel columns. Source-data `AGENTS.md` supports source-family and folder provenance, not license rights.
-
-The FEWSNET panel columns not found by exact same-name matching in the IPCCH codebook are: `unit_name`, `ADMIN0`, `ADMIN1`, `ADMIN2`, `ADMIN3`, `FEWSNET_admin_code`, `ISO`, `date`, `AEZ_15000`, `nightlight`, `nightlight_sd`, `EVI`, `gpp_mean`, `fews_ipc`, `fews_ha`, `fews_proj_near`, `fews_proj_near_ha`, `fews_proj_med`, `fews_proj_med_ha`, `pop`, `fews_ipc_adjusted`, `fews_proj_med_adjusted`, `Tair_zscore`, `Rainf_zscore`, `fews_ipc_crisis`.
+`variable_construction_notes_description.xlsx` provides partial local construction support only: exact-name overlap is 15 of 88 panel columns. Source-data `AGENTS.md` supports source-family and folder provenance, not license rights.
 
 ## Derived Reproducibility Assets
 
@@ -71,7 +67,7 @@ Use these manifest status labels consistently:
 | Provider identified; license pending verification | The likely source/provider can be identified from local source folders, predictor names, or local metadata, but the applicable license/access terms have not been verified in this manifest. | Requires source-license verification before public redistribution or public data release. |
 | Derived from restricted/third-party sources | The artifact contains or is derived from data families that may be restricted or governed by upstream provider terms. | Do not claim public redistribution rights until all upstream terms have been reviewed. |
 
-FEWS NET / IPC-style source data, ACLED, WFP, FAO, World Bank-derived indicators, remote-sensing products, soil products, population, nightlight, and market-access inputs should be reviewed against their upstream terms before any public data package is released. Source-data `AGENTS.md` is used here only to support source-family/folder provenance; it is not license evidence.
+FEWS NET source data, ACLED, WFP, FAO, World Bank-derived indicators, remote-sensing products, soil products, population, nightlight, and market-access inputs should be reviewed against their upstream terms before any public data package is released. Source-data `AGENTS.md` is used here only to support source-family/folder provenance; it is not license evidence.
 
 ## Reproduction Commands
 

@@ -24,8 +24,7 @@ In scope:
 - Local variable and provenance references:
   - `FEWSNET_forecast_unadjusted_bm_predictor_descriptives.md`
   - `variable_construction_notes_description.xlsx`
-  - `assembled_IPCCH/metadata/variable_codebook_reorganized.csv`, used only for same-name variables shared with this FEWSNET panel.
-- Source-data families represented in the assembled panel, including FEWS NET / IPC-like outcome and projection fields, FEWS NET admin boundaries, ACLED conflict features, AEZ and land/terrain features, remote-sensing weather and productivity features, SoilGrids / ISRIC soil features, WFP and FAO food-price fields, World Bank macro and food-price fields, population, nightlight, market-access, and derived z-score or adjusted fields.
+- Source-data families represented in the assembled panel, including FEWS NET outcome and projection fields, FEWS NET admin boundaries, ACLED conflict features, AEZ and land/terrain features, remote-sensing weather and productivity features, SoilGrids / ISRIC soil features, WFP and FAO food-price fields, World Bank macro and food-price fields, population, nightlight, market-access, and derived z-score or adjusted fields.
 - Derived reproducibility assets used by the current paper workflow:
   - Stage 2 cluster mapping manifests under `GeoRFExperiment/knn_sparsification_results/` and `GeoDTExperiment/knn_sparsification_results/`.
   - Stage 3 result folders `result_partition_k40_compare_{GF,DT}_fs{1,2,3}` and their `run_manifest.json` files.
@@ -86,7 +85,7 @@ Do not invent license statements. Use a three-level status:
 - `Provider identified; license pending verification`: the provider can be identified from local metadata or variable naming, but no local license file was found.
 - `Derived from restricted/third-party sources`: the asset includes upstream data that may be restricted or subject to provider terms, so it should not be redistributed publicly until upstream licenses are reviewed.
 
-The manifest should clearly mark ACLED, FEWS NET / IPC-style source data, WFP, FAO, and World Bank-derived indicators as requiring source-license verification before public redistribution unless the implementation finds explicit local license text.
+The manifest should clearly mark ACLED, FEWS NET source data, WFP, FAO, and World Bank-derived indicators as requiring source-license verification before public redistribution unless the implementation finds explicit local license text.
 
 ## Document Structure
 
@@ -94,7 +93,7 @@ The Markdown manifest should contain:
 
 1. **Purpose and Standard**: explain that this is a Nature Portfolio-style reproducibility manifest for the minimum dataset, not a full cache inventory.
 2. **Primary Assembled Dataset**: document the FEWSNET CSV metadata, checksum, source families, and consuming scripts.
-3. **Variable Provenance Summary**: summarize 88 columns by variable group and source family; state that the IPCCH codebook is only a same-variable cross-reference.
+3. **Variable Provenance Summary**: summarize 88 columns by variable group and source family using only FEWSNET project-local provenance evidence.
 4. **Derived Reproducibility Assets**: list Stage 2 partition manifests, Stage 3 result groups, feature-exclude datasets, final artifact source manifests, and FEWSNET baseline outputs.
 5. **License and Redistribution Notes**: separate confirmed local evidence from pending license verification.
 6. **Reproduction Commands**: point to the three-stage no-leak workflow and `scripts/verify_current_results_reproducibility.py`.
@@ -113,7 +112,7 @@ Implementation should derive values from existing local artifacts where possible
 - Existing `run_manifest.json`, `cluster_mapping_manifest.json`, and `artifact_source_manifest.json` files
 - `main_ablation_exclude_updated_stage3_fixed_partitions/input_datasets/feature_exclude_dataset_manifest.json`
 - Source-data `AGENTS.md`
-- FEWSNET predictor descriptives and IPCCH cross-reference codebook
+- FEWSNET predictor descriptives and local variable-construction notes
 
 ## Acceptance Criteria
 

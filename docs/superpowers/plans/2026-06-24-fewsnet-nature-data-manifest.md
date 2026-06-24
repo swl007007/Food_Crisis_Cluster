@@ -4,7 +4,7 @@
 
 **Goal:** Create a reviewer-facing Markdown data manifest for `FEWSNET_forecast_unadjusted_bm.csv` and the current paper reproducibility artifacts.
 
-**Architecture:** Add one Markdown document under the paper methods artifact folder. Gather metadata from existing CSVs, JSON manifests, source-data codebooks, and workflow docs; do not add new production code or rerun model training.
+**Architecture:** Add one Markdown document under the paper methods artifact folder. Gather metadata from existing CSVs, JSON manifests, source-data metadata, and workflow docs; do not add new production code or rerun model training.
 
 **Tech Stack:** Markdown, bash coreutils (`sha256sum`, `stat`, `wc`), Python 3 standard library (`csv`, `json`, `hashlib`, `pathlib`), existing Food_Crisis_Cluster manifests.
 
@@ -16,7 +16,7 @@
   - Owns the paper-facing Nature Portfolio-style data manifest.
 - Read only: `docs/superpowers/specs/2026-06-24-fewsnet-nature-data-manifest-design.md`
   - Approved design and acceptance criteria.
-- Read only: `CURRENT_RESULTS_REPRODUCTION.md`, `PIPELINE_WORKFLOW.md`, root batch files, existing `run_manifest.json`, `cluster_mapping_manifest.json`, `artifact_source_manifest.json`, and source-data codebooks.
+- Read only: `CURRENT_RESULTS_REPRODUCTION.md`, `PIPELINE_WORKFLOW.md`, root batch files, existing `run_manifest.json`, `cluster_mapping_manifest.json`, `artifact_source_manifest.json`, and source-data metadata.
 - Do not modify: model scripts, source CSVs, existing result folders, existing final paper artifacts, and the untracked manuscript PDF.
 
 ### Task 1: Reconfirm Primary Dataset Metadata
@@ -203,10 +203,9 @@ Expected: one line for each feature-exclude dataset. `lag_exclude` reports `88` 
 **Files:**
 - Read: `/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/FEWSNET_forecast_unadjusted_bm_predictor_descriptives.md`
 - Read: `/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/variable_construction_notes_description.xlsx`
-- Read: `/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/metadata/variable_codebook_reorganized.csv`
 - Read: `/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/AGENTS.md`
 
-- [ ] **Step 1: Print same-variable overlap with IPCCH codebook**
+- [ ] **Step 1: Confirm FEWSNET panel columns for project-local grouping**
 
 Run:
 
@@ -214,28 +213,17 @@ Run:
 python3 - <<'PY'
 from pathlib import Path
 import csv
-from collections import Counter
 
 target = Path("/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/FEWSNET_forecast_unadjusted_bm.csv")
-codebook = Path("/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/metadata/variable_codebook_reorganized.csv")
 
 target_columns = next(csv.reader(target.open(newline="", encoding="utf-8", errors="replace")))
-with codebook.open(newline="", encoding="utf-8-sig", errors="replace") as handle:
-    rows = {row["variable"]: row for row in csv.DictReader(handle) if row.get("variable")}
-
-overlap = [col for col in target_columns if col in rows]
-counts = Counter(rows[col]["category"] for col in overlap)
 print(f"target_columns={len(target_columns)}")
-print(f"codebook_variables={len(rows)}")
-print(f"overlap={len(overlap)}")
-for category, count in counts.most_common():
-    print(f"{category}: {count}")
-missing = [col for col in target_columns if col not in rows]
-print("not_in_ipcch_codebook=" + ",".join(missing))
+for col in target_columns:
+    print(col)
 PY
 ```
 
-Expected output includes `target_columns=88` and `overlap=63`. Use the category counts to support the manifest's variable provenance summary, and list the non-overlap FEWSNET-specific fields in the caveats or notes.
+Expected output includes `target_columns=88`. Use the header together with FEWSNET predictor descriptives, source-data `AGENTS.md`, and local variable-construction notes to support the manifest's variable provenance summary.
 
 - [ ] **Step 2: Confirm source-data family descriptions**
 
@@ -304,13 +292,11 @@ Create a table with these rows:
 | Variable group | Representative columns | Source/provider evidence | License / access note | Manifest treatment |
 |---|---|---|---|---|
 | FEWS NET geography, outcomes, and projections | `unit_name`, `ADMIN0`-`ADMIN3`, `FEWSNET_admin_code`, `fews_ipc`, `fews_proj_near`, `fews_proj_med`, `fews_ipc_crisis` | FEWSNET source files and admin-boundary folder under `Analysis/1.Source Data/Outcome/FEWSNET_IPC/` | Provider identified; license pending verification | Treated as core third-party FEWS NET-derived data; do not claim public redistribution rights. |
-| ACLED conflict exposure | `distance_to_nearest_acled`, `event_count_*`, `sum_fatalities_*` | Source-data `AGENTS.md` maps `ACLED/` to conflict indicators; IPCCH codebook overlaps conflict categories | Provider identified; license pending verification | Report as derived conflict features, not raw event redistribution. |
-| Agroecological, terrain, hydrology, and market access | `AEZ_*`, `crop`, `range`, `distance_to_river`, `elevation`, `ruggedness`, `slope`, `market_access`, `market_distance` | Source-data folders and `variable_construction_notes_description.xlsx`; IPCCH codebook overlap | Provider identified; license pending verification except locally documented DOI/license entries | Keep provider and local evidence separate from license claims. |
+| ACLED conflict exposure | `distance_to_nearest_acled`, `event_count_*`, `sum_fatalities_*` | Source-data `AGENTS.md` maps `ACLED/` to conflict indicators. | Provider identified; license pending verification | Report as derived conflict features, not raw event redistribution. |
+| Agroecological, terrain, hydrology, and market access | `AEZ_*`, `crop`, `range`, `distance_to_river`, `elevation`, `ruggedness`, `slope`, `market_access`, `market_distance` | Source-data folders and `variable_construction_notes_description.xlsx`. | Provider identified; license pending verification except locally documented DOI/license entries | Keep provider and local evidence separate from license claims. |
 | Remote-sensing climate and productivity | `Rainf_f_tavg_mean`, `Tair_f_tavg_mean`, `Rainf_zscore`, `Tair_zscore`, `EVI`, `gpp_mean`, `nightlight`, `nightlight_sd` | Source-data folders and predictor descriptives | Provider identified; license pending verification | Explain z-scores as derived fields from upstream climate series. |
-| Soil, macro, prices, and population | `sg_*`, `CPI`, `GDP`, `CC`, `gini`, `FAO_price`, `WFP_Price`, `WFP_Price_std`, `Food_CPI`, `Food_food_inflation`, `pop` | `ISRIC/`, `FAO/`, `WFP/`, `WBG/`, `Populationdensity/` source folders and IPCCH codebook overlap | Provider identified; license pending verification | Mark public redistribution as dependent on upstream terms. |
+| Soil, macro, prices, and population | `sg_*`, `CPI`, `GDP`, `CC`, `gini`, `FAO_price`, `WFP_Price`, `WFP_Price_std`, `Food_CPI`, `Food_food_inflation`, `pop` | `ISRIC/`, `FAO/`, `WFP/`, `WBG/`, `Populationdensity/` source folders. | Provider identified; license pending verification | Mark public redistribution as dependent on upstream terms. |
 ```
-
-Add a sentence immediately below the table: `The IPCCH codebook is used only as a same-variable cross-reference; IPCCH-only variables are not imported into this FEWSNET manifest.`
 
 - [ ] **Step 4: Add derived reproducibility asset rows**
 
