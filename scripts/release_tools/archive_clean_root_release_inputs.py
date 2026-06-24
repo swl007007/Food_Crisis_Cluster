@@ -321,7 +321,57 @@ def small_file_hash(path: Path, size_bytes: int) -> str:
     return ""
 
 
-def move_item(item: ArchiveItem, *, execute: bool) -> dict[str, str]:
+def path_label(path: Path) -> str:
+    try:
+        return path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def existing_archive_docs(archive_root: Path) -> list[Path]:
+    return [
+        path
+        for path in (archive_root / "MANIFEST.csv", archive_root / "README.md")
+        if path.exists()
+    ]
+
+
+def preflight_archive_items(items: list[ArchiveItem], *, force: bool = False) -> None:
+    if force:
+        return
+
+    collisions = []
+    for item in items:
+        source = REPO_ROOT / item.old_path
+        if source.exists() and item.archive_path.exists():
+            collisions.append(item.archive_path)
+
+    archive_roots = {item.archive_root for item in items}
+    for archive_root in sorted(archive_roots):
+        collisions.extend(existing_archive_docs(archive_root))
+
+    if collisions:
+        collision_list = "\n".join(f"- {path_label(path)}" for path in collisions)
+        raise FileExistsError(
+            "Archive destination or documentation already exists:\n"
+            f"{collision_list}\n"
+            "Use --force to overwrite existing archive files."
+        )
+
+
+def remove_existing_destination(destination: Path) -> None:
+    if destination.is_dir() and not destination.is_symlink():
+        shutil.rmtree(destination)
+    else:
+        destination.unlink()
+
+
+def move_item(
+    item: ArchiveItem,
+    *,
+    execute: bool,
+    force: bool = False,
+) -> dict[str, str]:
     source = REPO_ROOT / item.old_path
     destination = item.archive_path
     status = tracked_status(item.old_path)
@@ -334,10 +384,13 @@ def move_item(item: ArchiveItem, *, execute: bool) -> dict[str, str]:
         file_count = 0
         checksum = ""
 
-    if execute and destination.exists():
-        raise FileExistsError(f"Archive destination already exists: {destination}")
-
     if execute and source.exists():
+        if destination.exists():
+            if not force:
+                raise FileExistsError(
+                    f"Archive destination already exists: {destination}"
+                )
+            remove_existing_destination(destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(source), str(destination))
 
@@ -359,7 +412,18 @@ def write_archive_docs(
     rows: list[dict[str, str]],
     title: str,
     description: str,
+    *,
+    force: bool = False,
 ) -> None:
+    existing_docs = existing_archive_docs(archive_root)
+    if existing_docs and not force:
+        collision_list = "\n".join(f"- {path_label(path)}" for path in existing_docs)
+        raise FileExistsError(
+            "Archive documentation already exists:\n"
+            f"{collision_list}\n"
+            "Use --force to overwrite existing archive documentation."
+        )
+
     archive_root.mkdir(parents=True, exist_ok=True)
     with (archive_root / "MANIFEST.csv").open(
         "w",
@@ -401,9 +465,11 @@ def archive_group(
     description: str,
     *,
     execute: bool,
+    force: bool = False,
 ) -> None:
-    rows = [move_item(item, execute=execute) for item in items]
-    write_archive_docs(items[0].archive_root, rows, title, description)
+    preflight_archive_items(items, force=force)
+    rows = [move_item(item, execute=execute, force=force) for item in items]
+    write_archive_docs(items[0].archive_root, rows, title, description, force=force)
 
 
 def parse_args() -> argparse.Namespace:
@@ -412,6 +478,11 @@ def parse_args() -> argparse.Namespace:
         "--execute",
         action="store_true",
         help="Move files. Without this flag, only manifests are written.",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite existing archive destinations and README/MANIFEST files.",
     )
     return parser.parse_args()
 
@@ -426,6 +497,7 @@ def main() -> int:
             "baseline inputs used by local verifier/package workflows."
         ),
         execute=args.execute,
+        force=args.force,
     )
     archive_group(
         LEGACY_WORKSPACE_ITEMS,
@@ -435,12 +507,14 @@ def main() -> int:
             "release validation path."
         ),
         execute=args.execute,
+        force=args.force,
     )
     archive_group(
         LOCAL_RESIDUE_ITEMS,
         "Local Workspace Residue 20260624",
         "Archived local residue that is not a verifier or package dependency.",
         execute=args.execute,
+        force=args.force,
     )
     mode = "executed" if args.execute else "dry-run manifests written"
     print(f"Clean-root archive {mode}")

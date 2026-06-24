@@ -6,6 +6,8 @@ import csv
 import hashlib
 from pathlib import Path
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARCHIVE_ROOT = REPO_ROOT / "archived" / "release_20260624_nonpaper_pipelines"
@@ -209,3 +211,131 @@ def test_clean_root_legacy_items_include_workspace_and_script_candidates() -> No
     assert "scripts/config_visual.py" in old_paths
     for item in LEGACY_WORKSPACE_ITEMS:
         assert item.dependency_scan_reason.strip(), item
+
+
+def test_archive_move_item_dry_run_keeps_source_and_reports_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    source = tmp_path / "source.txt"
+    source.write_text("source payload", encoding="utf-8")
+    item = archive.ArchiveItem(
+        "source.txt",
+        tmp_path / "archive",
+        "test_category",
+        "test_dependency",
+        "test reason",
+    )
+    monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
+
+    row = archive.move_item(item, execute=False)
+
+    assert source.is_file()
+    assert not item.archive_path.exists()
+    assert row["old_path"] == "source.txt"
+    assert row["archive_path"] == "archive/source.txt"
+    assert row["size_bytes"] == str(source.stat().st_size)
+    assert row["file_count"] == "1"
+    assert row["sha256"] == file_sha256(source)
+
+
+def test_archive_group_preflights_destination_collisions_before_moving(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    first_source = tmp_path / "first.txt"
+    second_source = tmp_path / "second.txt"
+    archive_root = tmp_path / "archive"
+    first_source.write_text("first", encoding="utf-8")
+    second_source.write_text("second", encoding="utf-8")
+    archive_root.mkdir()
+    (archive_root / "second.txt").write_text("existing destination", encoding="utf-8")
+
+    items = [
+        archive.ArchiveItem(
+            "first.txt",
+            archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        ),
+        archive.ArchiveItem(
+            "second.txt",
+            archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        ),
+    ]
+    monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(FileExistsError, match="second.txt"):
+        archive.archive_group(
+            items,
+            "Temp Archive",
+            "Temporary archive test.",
+            execute=True,
+        )
+
+    assert first_source.is_file()
+    assert second_source.is_file()
+    assert not (archive_root / "first.txt").exists()
+    assert (archive_root / "second.txt").read_text(encoding="utf-8") == (
+        "existing destination"
+    )
+    assert not (archive_root / "MANIFEST.csv").exists()
+
+
+def test_write_archive_docs_refuses_existing_docs_without_force(tmp_path: Path) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    archive_root = tmp_path / "archive"
+    archive_root.mkdir()
+    (archive_root / "MANIFEST.csv").write_text("existing manifest", encoding="utf-8")
+    (archive_root / "README.md").write_text("existing readme", encoding="utf-8")
+
+    with pytest.raises(FileExistsError, match="MANIFEST.csv"):
+        archive.write_archive_docs(
+            archive_root,
+            [],
+            "Temp Archive",
+            "Temporary archive test.",
+            force=False,
+        )
+
+    assert (archive_root / "MANIFEST.csv").read_text(encoding="utf-8") == (
+        "existing manifest"
+    )
+    assert (archive_root / "README.md").read_text(encoding="utf-8") == (
+        "existing readme"
+    )
+
+
+def test_write_archive_docs_force_allows_overwriting_existing_docs(
+    tmp_path: Path,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    archive_root = tmp_path / "archive"
+    archive_root.mkdir()
+    (archive_root / "MANIFEST.csv").write_text("existing manifest", encoding="utf-8")
+    (archive_root / "README.md").write_text("existing readme", encoding="utf-8")
+
+    archive.write_archive_docs(
+        archive_root,
+        [],
+        "Temp Archive",
+        "Temporary archive test.",
+        force=True,
+    )
+
+    assert "old_path,archive_path,category" in (
+        archive_root / "MANIFEST.csv"
+    ).read_text(encoding="utf-8")
+    assert "# Temp Archive" in (archive_root / "README.md").read_text(
+        encoding="utf-8"
+    )
