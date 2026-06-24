@@ -14,7 +14,7 @@ Validate the lightweight package:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/validate_paper_reproducibility_package.py
 ```
 
-Verify the live result bundle:
+Verify the current archived result bundle:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_current_results_reproducibility.py
@@ -32,18 +32,31 @@ run_partition_k40_comparison_unified.bat georf --visual --month-ind
 
 - `paper_reproducibility_package/`
 - `final_artifacts_in_paper_updated/`
-- `GeoRFExperiment/`
-- `GeoDTExperiment/` for appendix provenance
-- `result_partition_k40_compare_GF_fs1/`
-- `result_partition_k40_compare_GF_fs2/`
-- `result_partition_k40_compare_GF_fs3/`
-- `result_partition_k40_compare_DT_fs1/` for appendix provenance
-- `result_partition_k40_compare_DT_fs2/` for appendix provenance
-- `result_partition_k40_compare_DT_fs3/` for appendix provenance
-- `main_ablation_exclude_updated_stage3_fixed_partitions/`
-- `result_partition_k40_compare_GF_thresholded_fs1/`
-- `result_partition_k40_compare_GF_thresholded_fs2/`
-- `result_partition_k40_compare_GF_thresholded_fs3/`
+- `archived/release_20260624_reproducibility_inputs/GeoRFExperiment/`
+- `archived/release_20260624_reproducibility_inputs/GeoDTExperiment/` for appendix provenance
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs1/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs2/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs3/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs1/` for appendix provenance
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs2/` for appendix provenance
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs3/` for appendix provenance
+- `archived/release_20260624_reproducibility_inputs/main_ablation_exclude_updated_stage3_fixed_partitions/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs1/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs2/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs3/`
+
+## Clean-Root Follow-Up Release
+
+- Planned tag: `v1.0.1-paper-reproducibility-clean-root-20260624`
+- Keeps `v1.0-paper-reproducibility-20260624` unchanged.
+- Keeps `final_artifacts_in_paper_updated/` and `paper_reproducibility_package/`
+  in the repository root.
+- Moves heavy local verifier/package inputs to
+  `archived/release_20260624_reproducibility_inputs/`.
+- Moves legacy helper workspaces to
+  `archived/release_20260624_legacy_workspace/`.
+- Moves non-release local residue to
+  `archived/local_workspace_residue_20260624/`.
 
 ## Archived Non-Paper Entry Points
 

@@ -14,19 +14,19 @@ forward/scenario prediction have been archived as non-paper workflows.
 ```text
 Stage 1: GeoRF partition candidate learning
   run_batches_2018_2020_partition_learning_visual_monthly.bat georf
-  -> GeoRFExperiment/GeoRFResults/
+  -> archived/release_20260624_reproducibility_inputs/GeoRFExperiment/GeoRFResults/
   -> result_GeoRF_YYYY_fsN_YYYY-MM_visual/
 
 Stage 2: GeoRF consensus clustering
   spatial_weighted_consensus_clustering.bat georf
-  -> GeoRFExperiment/knn_sparsification_results/
+  -> archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/
   -> cluster_mapping_manifest.json
 
 Stage 3: GeoRF fixed-partition evaluation
   run_partition_k40_comparison_unified.bat georf --visual --month-ind
-  -> result_partition_k40_compare_GF_fs{1,2,3}/
-  -> other_outputs/Table_Format.xlsx
-  -> other_outputs/Model_Comparison_Table.xlsx
+  -> archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs{1,2,3}/
+  -> final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
+  -> paper_reproducibility_package/stage3_results/
 ```
 
 ### Pipeline Flow Summary
@@ -47,12 +47,14 @@ Key handoff outputs:
 - Stage 2 to Stage 3: `cluster_mapping_k40_nc*_general.csv`,
   `cluster_mapping_k40_nc*_m2.csv`, `cluster_mapping_k40_nc*_m6.csv`,
   `cluster_mapping_k40_nc*_m10.csv`, and `cluster_mapping_manifest.json`.
-- Stage 3 final deliverables: `result_partition_k40_compare_GF_fsN/`,
-  `other_outputs/Table_Format.xlsx`, and
-  `other_outputs/Model_Comparison_Table.xlsx`.
+- Stage 3 final deliverables: archived
+  `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fsN/`
+  result folders, `final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx`,
+  and the package copies under `paper_reproducibility_package/stage3_results/`.
 
-GeoDT result directories and figures remain in the repository as appendix and
-interpretability provenance. They are not the release quickstart path.
+GeoDT result directories and figures remain in the reproducibility-input archive
+as appendix and interpretability provenance. They are not the release quickstart
+path.
 
 ## Detailed Stage Breakdown
 
@@ -97,7 +99,7 @@ result_GeoRF_YYYY_fsX_YYYY-MM_visual/
 │   └── partition files
 └── log_print.txt
 
-GeoRFExperiment/GeoRFResults/
+archived/release_20260624_reproducibility_inputs/GeoRFExperiment/GeoRFResults/
 ├── results_df_gp_fsX_YYYY_YYYY.csv
 └── y_pred_test_gp_fsX_YYYY_YYYY.csv
 ```
@@ -132,7 +134,7 @@ its `correspondence_tables_loaded.pkl` output is not consumed downstream.
 **Workspace**:
 
 ```text
-GeoRFExperiment/
+archived/release_20260624_reproducibility_inputs/GeoRFExperiment/
 ├── GeoRFResults/
 │   ├── results_df_*_fsX_YYYY_YYYY.csv
 │   └── y_pred_test_*_fsX_YYYY_YYYY.csv
@@ -181,9 +183,10 @@ REFINE_ITERS=3
 ```
 
 **Partition discovery**: Stage 3 reads
-`GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json` to
-locate general and month-specific partition files. If the manifest is missing,
-it falls back to `cluster_mapping_k40_nc*_general.csv` pattern matching.
+`archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json`
+to locate general and month-specific partition files. If the manifest is
+missing, it falls back to `cluster_mapping_k40_nc*_general.csv` pattern
+matching.
 
 **Comparisons**:
 
@@ -195,9 +198,9 @@ it falls back to `cluster_mapping_k40_nc*_general.csv` pattern matching.
 **Outputs**:
 
 ```text
-result_partition_k40_compare_GF_fs1/
-result_partition_k40_compare_GF_fs2/
-result_partition_k40_compare_GF_fs3/
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs1/
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs2/
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs3/
 ```
 
 Each output folder must include:
@@ -208,11 +211,12 @@ Each output folder must include:
 - `run_manifest.json`
 - refined partition maps under `refined/`
 
-Aggregated paper-facing tables are written to:
+Paper-facing aggregate tables are stored in the final artifact folder and
+package copy:
 
 ```text
-other_outputs/Table_Format.xlsx
-other_outputs/Model_Comparison_Table.xlsx
+final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
+paper_reproducibility_package/stage3_results/
 ```
 
 ## Paper Verification
@@ -223,15 +227,16 @@ For fast package validation:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/validate_paper_reproducibility_package.py
 ```
 
-For read-only validation of the live repository result bundle:
+For read-only validation of the current repository result bundle:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_current_results_reproducibility.py
 ```
 
-The verifier checks Stage 3 result contracts, Stage 1/2 handoff artifacts,
-final paper artifacts in `final_artifacts_in_paper_updated/`, fixed-partition
-ablation outputs, and the no-leak root CSV archive.
+The verifier checks archived Stage 3 result contracts, archived Stage 1/2
+handoff artifacts, final paper artifacts in
+`final_artifacts_in_paper_updated/`, archived fixed-partition ablation outputs,
+and the no-leak root CSV archive.
 
 ## Non-Paper Workflow Archive
 
@@ -248,10 +253,12 @@ release quickstart workflows.
 ## Troubleshooting
 
 - If Stage 2 cannot find Stage 1 outputs, confirm the Stage 1 GeoRF run
-  produced yearly combined CSVs under `GeoRFExperiment/GeoRFResults/` and
-  monthly visual archives named `result_GeoRF_YYYY_fsN_YYYY-MM_visual/`.
+  produced yearly combined CSVs under
+  `archived/release_20260624_reproducibility_inputs/GeoRFExperiment/GeoRFResults/`
+  for the current release archive, or under `GeoRFExperiment/GeoRFResults/`
+  immediately after a fresh full rerun.
 - If Stage 3 cannot find partitions, inspect
-  `GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json`.
+  `archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json`.
 - If a Windows batch file fails near an `echo` statement inside an
   `if (...) else (...)` block, check that literal parentheses in the echoed
   text are escaped as `^(` and `^)`.

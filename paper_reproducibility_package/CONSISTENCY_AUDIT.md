@@ -25,4 +25,6 @@
 
 GeoXGB, fs0 lag-1 launch guidance, and 2026-2027 forward/scenario prediction
 are not part of this package. Their entry points are preserved as historical
-provenance under `archived/release_20260624_nonpaper_pipelines/`.
+provenance under `archived/release_20260624_nonpaper_pipelines/`; local result
+workspaces used to rebuild this package are under
+`archived/release_20260624_reproducibility_inputs/`.

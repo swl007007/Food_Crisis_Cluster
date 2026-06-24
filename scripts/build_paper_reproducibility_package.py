@@ -391,8 +391,8 @@ Run from the repository root:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_current_results_reproducibility.py
 ```
 
-This checks the live Stage 2/Stage 3/final-artifact bundle outside this copied
-package.
+This checks the current archived Stage 2/Stage 3/final-artifact verifier bundle
+outside this copied package.
 """
 
 

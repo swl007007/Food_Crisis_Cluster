@@ -1,7 +1,9 @@
 # Current Results Reproduction Manifest
 
-This manifest organizes the current no-temporal-leak result bundle without
-moving live output folders that are still referenced by scripts.
+This manifest organizes the current no-temporal-leak result bundle after the
+clean-root archive move. Heavy local verifier/package inputs live under
+`archived/release_20260624_reproducibility_inputs/`; paper-facing artifacts and
+the quick audit package remain in the repository root.
 
 ## Canonical Result Layout
 
@@ -13,14 +15,14 @@ The older `final_artifacts_in_paper/` directory is not present in the current
 workspace. Treat `final_artifacts_in_paper_updated/` as the active paper
 artifact folder.
 
-Live Stage 3 main results:
+Archived local Stage 3 main results:
 
-- `result_partition_k40_compare_GF_fs1/`
-- `result_partition_k40_compare_GF_fs2/`
-- `result_partition_k40_compare_GF_fs3/`
-- `result_partition_k40_compare_DT_fs1/`
-- `result_partition_k40_compare_DT_fs2/`
-- `result_partition_k40_compare_DT_fs3/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs1/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs2/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs3/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs1/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs2/`
+- `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs3/`
 
 Each folder must contain:
 
@@ -30,25 +32,26 @@ Each folder must contain:
 - `run_manifest.json`
 - refined partition maps under `refined/`
 
-Live Stage 1 and Stage 2 intermediate workspaces:
+Archived local Stage 1 and Stage 2 intermediate workspaces:
 
-- `GeoRFExperiment/`
-- `GeoDTExperiment/`
+- `archived/release_20260624_reproducibility_inputs/GeoRFExperiment/`
+- `archived/release_20260624_reproducibility_inputs/GeoDTExperiment/`
 
 Important subfolders:
 
 - `{GeoRF,GeoDT}Experiment/{GeoRFResults,GeoDTResults}/` keeps 2018-2020 Stage 1 yearly summaries and monthly visual archives.
 - `{GeoRF,GeoDT}Experiment/knn_sparsification_results/` keeps Stage 2 cluster maps and `cluster_mapping_manifest.json`.
 
-Fixed-partition feature-exclude ablation results:
+Archived local fixed-partition feature-exclude ablation results:
 
-- `main_ablation_exclude_updated_stage3_fixed_partitions/`
+- `archived/release_20260624_reproducibility_inputs/main_ablation_exclude_updated_stage3_fixed_partitions/`
 
 Important subfolders:
 
 - `input_datasets/` keeps the feature-exclude datasets and `feature_exclude_dataset_manifest.json`.
 - one folder per ablation group: `weather_exclude`, `agri_exclude`, `conflict_exclude`, `econ_exclude`, `food_prices_exclude`, `geographic_exclude`, `secondary_exclude`, `lag_exclude`.
-- each group has `result_partition_k40_compare_GF_fs1/`, `fs2/`, and `fs3/`.
+- each group has archived `result_partition_k40_compare_GF_fs1/`, `fs2/`, and
+  `fs3/` subfolders.
 
 Local cleanup archive for root-level Stage 1 CSVs:
 
@@ -56,6 +59,9 @@ Local cleanup archive for root-level Stage 1 CSVs:
 
 This archive preserves the former root-level `results_df...` and `y_pred_test...`
 CSV files while keeping the repository root clean.
+
+Legacy helper workspace outputs and scripts are archived under
+`archived/release_20260624_legacy_workspace/`.
 
 Non-paper workflow entry points are archived under
 `archived/release_20260624_nonpaper_pipelines/`. The archive is historical
@@ -84,8 +90,9 @@ run_partition_k40_comparison_unified.bat georf --visual --month-ind
 ```
 
 This evaluates 2021-2024 using fixed partitions learned from 2018-2020.
-GeoDT result directories are retained as appendix and interpretability
-provenance, not as the release quickstart workflow.
+GeoDT result directories are retained in the reproducibility-input archive as
+appendix and interpretability provenance, not as the release quickstart
+workflow.
 
 4. Regenerate fixed-partition feature-exclude ablations:
 
@@ -119,10 +126,10 @@ python scripts\verify_current_results_reproducibility.py
 
 The verifier checks:
 
-- six live Stage 3 `result_partition...` folders and their `run_manifest.json` contracts
-- `GeoRFExperiment/` and `GeoDTExperiment/` Stage 1/2 handoff artifacts
-- 24 fixed-partition feature-exclude ablation outputs
-- current final paper artifacts in `final_artifacts_in_paper_updated/`
+- six archived Stage 3 `result_partition...` folders and their `run_manifest.json` contracts
+- archived `GeoRFExperiment/` and `GeoDTExperiment/` Stage 1/2 handoff artifacts
+- 24 archived fixed-partition feature-exclude ablation outputs
+- root final paper artifacts in `final_artifacts_in_paper_updated/`
 - the local archive for root-level `results_df...` and `y_pred_test...` CSVs
 
 ## Current Reproduction Contract

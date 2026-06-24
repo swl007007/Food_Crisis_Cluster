@@ -30,7 +30,7 @@ Validate it from the repository root:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/validate_paper_reproducibility_package.py
 ```
 
-Then verify the live repository result bundle:
+Then verify the current repository result bundle:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_current_results_reproducibility.py
@@ -71,13 +71,17 @@ not 40 clusters. The selected cluster count is the `nc*` token.
 run_partition_k40_comparison_unified.bat georf --visual --month-ind
 ```
 
-GeoDT result directories and figures are retained as appendix and
-interpretability provenance, but GeoDT is not part of the release quickstart.
+GeoDT result directories and figures are retained in the reproducibility-input
+archive as appendix and interpretability provenance, but GeoDT is not part of
+the release quickstart.
 Non-paper workflows are archived under
 `archived/release_20260624_nonpaper_pipelines/`.
 
-Output: `result_partition_k40_compare_GF_fsN/` plus aggregated tables in
-`other_outputs/Table_Format.xlsx` and `other_outputs/Model_Comparison_Table.xlsx`.
+Output: archived Stage 3 result folders under
+`archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fsN/`.
+Paper-facing aggregate tables are in
+`final_artifacts_in_paper_updated/01_main_results/` and the
+`paper_reproducibility_package/` copy.
 
 ## Non-Paper Workflow Archive
 
@@ -147,12 +151,12 @@ Food_Crisis_Cluster/
 │   ├── step6_complete_clustering_pipeline.py  # Clustering step 6
 │   ├── paper_artifacts/          # Paper figure/table builders
 │   └── compare_partitioned_vs_pooled_*.py  # Stage 3 comparison scripts
+├── final_artifacts_in_paper_updated/ # Paper-facing figures/tables/PDF
 ├── paper_reproducibility_package/ # Fast paper artifact audit package
 ├── archived/
-│   └── release_20260624_nonpaper_pipelines/ # Non-paper workflow provenance
-├── GeoRFExperiment/              # GeoRF clustering workspace
-├── GeoXGBExperiment/             # Legacy output workspace, not quickstart
-├── GeoDTExperiment/              # GeoDT appendix provenance workspace
+│   ├── release_20260624_reproducibility_inputs/ # Heavy local verifier/package inputs
+│   ├── release_20260624_legacy_workspace/       # Historical helper scripts and outputs
+│   └── release_20260624_nonpaper_pipelines/     # Non-paper workflow provenance
 ├── run_batches_2018_2020_partition_learning_visual_monthly.bat # Stage 1
 ├── spatial_weighted_consensus_clustering.bat        # Stage 2: clustering
 └── run_partition_k40_comparison_unified.bat         # Stage 3: comparison
@@ -227,7 +231,11 @@ result_GeoRF_YYYY_fsN_YYYY-MM_visual/
 - Partitioned vs pooled F1 comparisons
 - Cluster-wise performance metrics
 - Spatial visualization of clusters
-- Aggregated workbooks: `other_outputs/Table_Format.xlsx` / `Model_Comparison_Table.xlsx`
+- Archived local result folders:
+  `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fsN/`
+- Paper-facing workbooks:
+  `final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx`
+  and the package copy under `paper_reproducibility_package/`
 
 ## Known Issues
 

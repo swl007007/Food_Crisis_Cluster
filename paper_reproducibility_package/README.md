@@ -22,7 +22,9 @@ summaries, final paper artifacts, and lightweight ablation provenance.
 - It does not include experimental GeoXGB, fs0 lag-1, or 2026-2027 forward
   prediction/scenario workflows.
 - Experimental and legacy entry points are archived under
-  `archived/release_20260624_nonpaper_pipelines/` in the source repository.
+  `archived/release_20260624_nonpaper_pipelines/` and historical release
+  workspaces are archived under `archived/release_20260624_legacy_workspace/` in
+  the source repository.
 
 ## Quick Validation
 
@@ -43,5 +45,5 @@ Run from the repository root:
 PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_current_results_reproducibility.py
 ```
 
-This checks the live Stage 2/Stage 3/final-artifact bundle outside this copied
-package.
+This checks the current archived Stage 2/Stage 3/final-artifact verifier bundle
+outside this copied package.
