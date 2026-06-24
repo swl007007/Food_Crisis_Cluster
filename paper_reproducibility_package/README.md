@@ -21,8 +21,8 @@ summaries, final paper artifacts, and lightweight ablation provenance.
 - It does not include the full 4.7 GB ablation output tree.
 - It does not include experimental GeoXGB, fs0 lag-1, or 2026-2027 forward
   prediction/scenario workflows.
-- It does not move or archive experimental scripts; release-version code
-  migration is a separate future task.
+- Experimental and legacy entry points are archived under
+  `archived/release_20260624_nonpaper_pipelines/` in the source repository.
 
 ## Quick Validation
 

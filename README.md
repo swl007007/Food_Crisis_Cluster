@@ -10,9 +10,9 @@ builds fixed consensus maps, and Stage 3 evaluates fixed partitions on
 The paper scope covers 22 FEWS NET monitored countries across Africa, the
 Middle East, Asia, and Latin America. It is not limited to one region. The main
 model is GeoRF; GeoDT is retained as an auxiliary appendix and interpretability
-comparison. GeoXGB, fs0 lag-1, and 2026-2027 forward/scenario prediction
-workflows are experimental extensions and are not part of the paper
-reproducibility package.
+comparison. GeoXGB, fs0 lag-1, and 2026-2027 forward/scenario prediction entry
+points are archived under `archived/release_20260624_nonpaper_pipelines/` and
+are not part of the paper reproducibility package.
 
 ## Quick Start for Paper Reproduction
 
@@ -49,18 +49,16 @@ workflow rather than audit the packaged paper artifacts.
 
 ```batch
 run_batches_2018_2020_partition_learning_visual_monthly.bat georf
-run_batches_2018_2020_partition_learning_visual_monthly.bat geodt
 ```
 
 Output: yearly combined `results_df_*_fsN_YYYY_YYYY.csv` /
 `y_pred_test_*_fsN_YYYY_YYYY.csv` plus archived
-`result_Geo{Model}_YYYY_fsN_YYYY-MM_visual/` folders used by Stage 2.
+`result_GeoRF_YYYY_fsN_YYYY-MM_visual/` folders used by Stage 2.
 
 ### Stage 2: Generate fixed consensus partitions
 
 ```batch
 spatial_weighted_consensus_clustering.bat georf
-spatial_weighted_consensus_clustering.bat geodt
 ```
 
 Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv`
@@ -71,62 +69,29 @@ not 40 clusters. The selected cluster count is the `nc*` token.
 
 ```batch
 run_partition_k40_comparison_unified.bat georf --visual --month-ind
-run_partition_k40_comparison_unified.bat geodt --visual --month-ind
 ```
 
-Output: `result_partition_k40_compare_{GF,DT}_fsN/` plus aggregated tables in
+GeoDT result directories and figures are retained as appendix and
+interpretability provenance, but GeoDT is not part of the release quickstart.
+Non-paper workflows are archived under
+`archived/release_20260624_nonpaper_pipelines/`.
+
+Output: `result_partition_k40_compare_GF_fsN/` plus aggregated tables in
 `other_outputs/Table_Format.xlsx` and `other_outputs/Model_Comparison_Table.xlsx`.
-GeoRF is the paper-facing model. GeoDT is kept for appendix comparison and
-branch-level interpretability. `run_partition_k40_comparison_unified.bat all`
-is still available for local convenience, but paper reproduction should treat
-GeoRF as the main model family.
 
-## Experimental and Extension Workflows
+## Non-Paper Workflow Archive
 
-These workflows remain in the repository for development continuity but are not
-part of the current paper reproducibility package. They should not be interpreted
-as manuscript main results. Paths and scripts are not moved in this task.
+GeoXGB, fs0 lag-1 launch guidance, 2026-2027 forward/scenario prediction,
+legacy notebooks, regional exploratory scripts, and legacy baseline/demo entry
+points are preserved in:
 
-### GeoXGB
-
-`app/main_model_XGB.py`, `GeoXGBExperiment/`, and XGBoost comparison scripts are
-legacy/experimental. They are not included in the no-leak paper workflow or the
-lightweight package.
-
-### fs0 Lag-1 Extension
-
-fs0 is a stand-alone lag-1 extension. It is orthogonal to the paper's fs1/fs2/fs3
-4-, 8-, and 12-month workflow and is not included in the paper reproducibility
-package.
-
-```batch
-run_batches_2018_2020_partition_learning_visual_monthly.bat <model> --fs0-only
-spatial_weighted_consensus_clustering.bat <model> --fs0-only
-run_partition_k40_comparison_unified.bat <model> --fs0-only
+```text
+archived/release_20260624_nonpaper_pipelines/
 ```
 
-Keep `<model>` as `georf` or `geodt`. Running fs0 requires the flag on all three
-stages and writes separate fs0 workbooks, so it must not be mixed with the paper
-fs1/fs2/fs3 outputs. In fs0-only mode, Stage 2 generates only the general
-consensus partition because fs0 alone does not yield enough candidate partitions
-for month-specific maps.
-
-### 2026-2027 Forward and Scenario Prediction
-
-The `prediction_pipeline/` launchers support GeoRF-only forward prediction for
-June 2026 and February 2027 plus a separate synthetic scenario overlay. These
-outputs are operational extensions, not manuscript backtest results.
-
-```batch
-prediction_pipeline\spatial_weighted_consensus_clustering_predict.bat georf
-prediction_pipeline\run_predict_2026_2027.bat georf
-prediction_pipeline\run_partition_predict_unified.bat georf
-prediction_pipeline\run_scenario_predict_jun2026_feb2027.bat
-```
-
-Standard forward outputs go to `deliverables\predict_2026_2027\`. Synthetic
-scenario outputs go to `deliverables\predict_scenario_jun2026_feb2027\` and
-should not be described as standard manuscript forecasts.
+Those files are historical provenance for the development repository. They are
+not part of the release quickstart and are not maintained as runnable workflows
+from their archived paths.
 
 ## Key Features
 
@@ -138,8 +103,7 @@ should not be described as standard manuscript forecasts.
 
 ### Main Model Types
 - **GeoRF**: Random Forest with spatial partitioning
-- **GeoDT**: Decision Tree with spatial partitioning
-- Both share identical partitioning logic for fair comparison
+- **GeoDT**: Decision Tree appendix and interpretability provenance
 
 ### Partition Types
 - **General Partition**: Year-round clustering (all months aggregated)
@@ -169,10 +133,9 @@ should not be described as standard manuscript forecasts.
 Food_Crisis_Cluster/
 ├── app/
 │   ├── main_model_GF.py          # GeoRF main script
-│   ├── main_model_XGB.py         # Legacy/experimental GeoXGB script
 │   └── main_model_DT.py          # GeoDT main script
 ├── src/
-│   ├── model/                    # GeoRF/GeoDT plus legacy GeoXGB adapters
+│   ├── model/                    # GeoRF/GeoDT model adapters
 │   ├── partition/                # Spatial partitioning algorithms
 │   ├── preprocess/               # Data loading & cleaning
 │   └── vis/                      # Visualization
@@ -182,14 +145,14 @@ Food_Crisis_Cluster/
 │   ├── step4_similarity_matrix.py    # Clustering step 4 (refactored)
 │   ├── step5_sparsification.py       # Clustering step 5 (refactored)
 │   ├── step6_complete_clustering_pipeline.py  # Clustering step 6
-│   ├── predict_partitioned_2026_2027.py       # Standalone GeoRF prediction
-│   ├── predict_scenario_2026_2027.py          # Synthetic scenario overlay
+│   ├── paper_artifacts/          # Paper figure/table builders
 │   └── compare_partitioned_vs_pooled_*.py  # Stage 3 comparison scripts
 ├── paper_reproducibility_package/ # Fast paper artifact audit package
-├── prediction_pipeline/          # Experimental 2026-2027 prediction launchers
+├── archived/
+│   └── release_20260624_nonpaper_pipelines/ # Non-paper workflow provenance
 ├── GeoRFExperiment/              # GeoRF clustering workspace
-├── GeoXGBExperiment/             # Legacy/experimental GeoXGB workspace
-├── GeoDTExperiment/              # GeoDT clustering workspace
+├── GeoXGBExperiment/             # Legacy output workspace, not quickstart
+├── GeoDTExperiment/              # GeoDT appendix provenance workspace
 ├── run_batches_2018_2020_partition_learning_visual_monthly.bat # Stage 1
 ├── spatial_weighted_consensus_clustering.bat        # Stage 2: clustering
 └── run_partition_k40_comparison_unified.bat         # Stage 3: comparison
@@ -243,7 +206,7 @@ paper_reproducibility_package/
 ```
 results_df_*_fsN_YYYY_YYYY.csv
 y_pred_test_*_fsN_YYYY_YYYY.csv
-result_Geo{RF,DT}_YYYY_fsN_YYYY-MM_visual/
+result_GeoRF_YYYY_fsN_YYYY-MM_visual/
 ├── correspondence_table_YYYY-MM.csv
 ├── vis/
 └── space_partitions/
@@ -265,14 +228,13 @@ result_Geo{RF,DT}_YYYY_fsN_YYYY-MM_visual/
 - Cluster-wise performance metrics
 - Spatial visualization of clusters
 - Aggregated workbooks: `other_outputs/Table_Format.xlsx` / `Model_Comparison_Table.xlsx`
-- Experimental fs0-only workbooks: `other_outputs/Table_Format_fs0.xlsx` / `Model_Comparison_Table_fs0.xlsx`
 
 ## Known Issues
 
 **Legacy Files**:
 - The end-to-end pipeline (`run_full_ablation.bat`) has been deprecated
 - Root-level `step*.ipynb` / `step*.py` files are deprecated; use the unified batch scripts instead
-- Model-specific batch files (`run_georf_batches_*`, `run_xgboost_batches_*`, etc.) have been superseded by the unified 3-stage scripts
+- Model-specific batch files (`run_georf_batches_*`, `run_xgboost_batches_*`, etc.) have been superseded by the unified GeoRF release scripts or preserved under `archived/release_20260624_nonpaper_pipelines/`
 
 **Unicode Encoding**:
 - Windows CMD-facing batch `echo` and status output must be ASCII-safe for Chinese locale (GBK encoding)

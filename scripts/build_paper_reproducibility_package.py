@@ -10,7 +10,10 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
 import shutil
+import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -78,6 +81,7 @@ def write_manifest(package_root: Path, rows: list[ManifestRow]) -> None:
         writer = csv.DictWriter(
             handle,
             fieldnames=["package_path", "source_path", "role", "size_bytes", "sha256", "notes"],
+            lineterminator="\n",
         )
         writer.writeheader()
         for row in rows:
@@ -100,13 +104,48 @@ def write_sha256sums(package_root: Path, rows: list[ManifestRow]) -> None:
     write_text(package_root / "SHA256SUMS.txt", content)
 
 
+def remove_tree_posix(path: Path) -> None:
+    """Remove a package tree on mounted filesystems where Python rmdir can fail."""
+    file_result = subprocess.run(
+        ["find", str(path), "(", "-type", "f", "-o", "-type", "l", ")", "-delete"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if file_result.returncode != 0:
+        detail = file_result.stderr.strip() or "unknown error"
+        raise PackageBuildError(f"Failed to reset package root: {detail}")
+
+    detail = "unknown error"
+    for _ in range(10):
+        dir_result = subprocess.run(
+            ["find", str(path), "-mindepth", "1", "-depth", "-type", "d", "-exec", "rmdir", "{}", ";"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if dir_result.returncode != 0:
+            detail = dir_result.stderr.strip() or detail
+
+        root_result = subprocess.run(["rmdir", str(path)], check=False, capture_output=True, text=True)
+        if root_result.returncode == 0 or not path.exists():
+            return
+        detail = root_result.stderr.strip() or detail
+        time.sleep(0.1)
+
+    raise PackageBuildError(f"Failed to reset package root: {detail}")
+
+
 def reset_package_root(package_root: Path) -> None:
     resolved = package_root.resolve()
     expected = (REPO_ROOT / "paper_reproducibility_package").resolve()
     if resolved != expected:
         raise PackageBuildError(f"Refusing to reset unexpected package root: {package_root}")
     if package_root.exists():
-        shutil.rmtree(package_root)
+        if os.name == "posix":
+            remove_tree_posix(package_root)
+        else:
+            shutil.rmtree(package_root)
     package_root.mkdir(parents=True)
 
 
@@ -324,8 +363,8 @@ summaries, final paper artifacts, and lightweight ablation provenance.
 - It does not include the full 4.7 GB ablation output tree.
 - It does not include experimental GeoXGB, fs0 lag-1, or 2026-2027 forward
   prediction/scenario workflows.
-- It does not move or archive experimental scripts; release-version code
-  migration is a separate future task.
+- Experimental and legacy entry points are archived under
+  `archived/release_20260624_nonpaper_pipelines/` in the source repository.
 
 ## Quick Validation
 
@@ -422,9 +461,9 @@ def consistency_audit() -> str:
 
 ## Excluded Experimental Workflows
 
-GeoXGB, fs0 lag-1, and 2026-2027 forward/scenario prediction are not part of
-this package. They remain in their current repo paths for future release-version
-migration.
+GeoXGB, fs0 lag-1 launch guidance, and 2026-2027 forward/scenario prediction
+are not part of this package. Their entry points are preserved as historical
+provenance under `archived/release_20260624_nonpaper_pipelines/`.
 """
 
 

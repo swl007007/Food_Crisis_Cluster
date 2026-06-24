@@ -23,6 +23,6 @@
 
 ## Excluded Experimental Workflows
 
-GeoXGB, fs0 lag-1, and 2026-2027 forward/scenario prediction are not part of
-this package. They remain in their current repo paths for future release-version
-migration.
+GeoXGB, fs0 lag-1 launch guidance, and 2026-2027 forward/scenario prediction
+are not part of this package. Their entry points are preserved as historical
+provenance under `archived/release_20260624_nonpaper_pipelines/`.
