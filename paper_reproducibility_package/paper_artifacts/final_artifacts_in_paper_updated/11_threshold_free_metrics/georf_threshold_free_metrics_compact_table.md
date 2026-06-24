@@ -1,0 +1,5 @@
+| scope | forecasting_horizon | pooled_pr_auc | partitioned_pr_auc | delta_pr_auc | pooled_recall_at_precision_0_75 | partitioned_recall_at_precision_0_75 | delta_recall_at_precision_0_75 | pooled_recall_at_precision_0_80 | partitioned_recall_at_precision_0_80 | delta_recall_at_precision_0_80 | pooled_precision_at_recall_0_50 | partitioned_precision_at_recall_0_50 | delta_precision_at_recall_0_50 | pooled_precision_at_recall_0_60 | partitioned_precision_at_recall_0_60 | delta_precision_at_recall_0_60 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fs1 | 4-month horizon | 0.742 | 0.768 | 0.026 | 0.574 | 0.615 | 0.040 | 0.483 | 0.518 | 0.035 | 0.792 | 0.805 | 0.013 | 0.735 | 0.759 | 0.024 |
+| fs2 | 8-month horizon | 0.726 | 0.750 | 0.024 | 0.520 | 0.580 | 0.060 | 0.436 | 0.487 | 0.051 | 0.761 | 0.794 | 0.032 | 0.707 | 0.740 | 0.033 |
+| fs3 | 12-month horizon | 0.681 | 0.700 | 0.019 | 0.385 | 0.400 | 0.015 | 0.267 | 0.316 | 0.049 | 0.703 | 0.705 | 0.002 | 0.654 | 0.665 | 0.011 |

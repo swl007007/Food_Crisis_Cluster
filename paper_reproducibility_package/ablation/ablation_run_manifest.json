@@ -1,0 +1,207 @@
+{
+  "timestamp": "2026-06-15T22:10:45.195308",
+  "stage": "Stage 3 fixed-partition feature-exclude ablation",
+  "base_model": "GeoRF/GF",
+  "start_month": "2021-01",
+  "end_month": "2024-12",
+  "train_window": 36,
+  "month_ind": true,
+  "contiguity_refinement": "cont3",
+  "records": [
+    {
+      "group": "weather_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\weather_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\weather_exclude\\result_partition_k40_compare_GF_fs1"
+    },
+    {
+      "group": "weather_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\weather_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\weather_exclude\\result_partition_k40_compare_GF_fs2"
+    },
+    {
+      "group": "weather_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\weather_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\weather_exclude\\result_partition_k40_compare_GF_fs3"
+    },
+    {
+      "group": "agri_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\agri_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\agri_exclude\\result_partition_k40_compare_GF_fs1"
+    },
+    {
+      "group": "agri_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\agri_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\agri_exclude\\result_partition_k40_compare_GF_fs2"
+    },
+    {
+      "group": "agri_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\agri_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\agri_exclude\\result_partition_k40_compare_GF_fs3"
+    },
+    {
+      "group": "conflict_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\conflict_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\conflict_exclude\\result_partition_k40_compare_GF_fs1"
+    },
+    {
+      "group": "conflict_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\conflict_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\conflict_exclude\\result_partition_k40_compare_GF_fs2"
+    },
+    {
+      "group": "conflict_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\conflict_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\conflict_exclude\\result_partition_k40_compare_GF_fs3"
+    },
+    {
+      "group": "econ_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\econ_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\econ_exclude\\result_partition_k40_compare_GF_fs1"
+    },
+    {
+      "group": "econ_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\econ_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\econ_exclude\\result_partition_k40_compare_GF_fs2"
+    },
+    {
+      "group": "econ_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\econ_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\econ_exclude\\result_partition_k40_compare_GF_fs3"
+    },
+    {
+      "group": "food_prices_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\food_prices_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\food_prices_exclude\\result_partition_k40_compare_GF_fs1"
+    },
+    {
+      "group": "food_prices_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\food_prices_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\food_prices_exclude\\result_partition_k40_compare_GF_fs2"
+    },
+    {
+      "group": "food_prices_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\food_prices_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\food_prices_exclude\\result_partition_k40_compare_GF_fs3"
+    },
+    {
+      "group": "geographic_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\geographic_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\geographic_exclude\\result_partition_k40_compare_GF_fs1"
+    },
+    {
+      "group": "geographic_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\geographic_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\geographic_exclude\\result_partition_k40_compare_GF_fs2"
+    },
+    {
+      "group": "geographic_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\geographic_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\geographic_exclude\\result_partition_k40_compare_GF_fs3"
+    },
+    {
+      "group": "secondary_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\secondary_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\secondary_exclude\\result_partition_k40_compare_GF_fs1",
+      "env_overrides": {
+        "NO_LEAK_PARTITION_LEARNING_YEARS": "2018-2020",
+        "NO_LEAK_EVALUATION_YEARS": "2021-2024"
+      }
+    },
+    {
+      "group": "secondary_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\secondary_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\secondary_exclude\\result_partition_k40_compare_GF_fs2",
+      "env_overrides": {
+        "NO_LEAK_PARTITION_LEARNING_YEARS": "2018-2020",
+        "NO_LEAK_EVALUATION_YEARS": "2021-2024"
+      }
+    },
+    {
+      "group": "secondary_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\secondary_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\secondary_exclude\\result_partition_k40_compare_GF_fs3",
+      "env_overrides": {
+        "NO_LEAK_PARTITION_LEARNING_YEARS": "2018-2020",
+        "NO_LEAK_EVALUATION_YEARS": "2021-2024"
+      }
+    },
+    {
+      "group": "lag_exclude",
+      "scope": 1,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\lag_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\lag_exclude\\result_partition_k40_compare_GF_fs1",
+      "env_overrides": {
+        "NO_LEAK_PARTITION_LEARNING_YEARS": "2018-2020",
+        "NO_LEAK_EVALUATION_YEARS": "2021-2024",
+        "ENABLE_LAG_FEATURES": "false"
+      }
+    },
+    {
+      "group": "lag_exclude",
+      "scope": 2,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\lag_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\lag_exclude\\result_partition_k40_compare_GF_fs2",
+      "env_overrides": {
+        "NO_LEAK_PARTITION_LEARNING_YEARS": "2018-2020",
+        "NO_LEAK_EVALUATION_YEARS": "2021-2024",
+        "ENABLE_LAG_FEATURES": "false"
+      }
+    },
+    {
+      "group": "lag_exclude",
+      "scope": 3,
+      "status": "completed",
+      "dataset": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\lag_exclude.csv",
+      "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\lag_exclude\\result_partition_k40_compare_GF_fs3",
+      "env_overrides": {
+        "NO_LEAK_PARTITION_LEARNING_YEARS": "2018-2020",
+        "NO_LEAK_EVALUATION_YEARS": "2021-2024",
+        "ENABLE_LAG_FEATURES": "false"
+      }
+    }
+  ]
+}

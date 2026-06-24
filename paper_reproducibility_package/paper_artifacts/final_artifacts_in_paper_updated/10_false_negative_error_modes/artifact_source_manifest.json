@@ -1,0 +1,15 @@
+{
+  "artifact_group": "10_false_negative_error_modes",
+  "data_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+  "source_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster",
+  "seasonal_crisis_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\final_artifacts_in_paper_updated\\04_error_analysis\\error_rate_seasonal_crisis.csv",
+  "adjacency_cache_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\src\\adjacency\\polygon_adjacency_cache.pkl",
+  "scopes": [
+    "fs1",
+    "fs2",
+    "fs3"
+  ],
+  "n_predictions": 186567,
+  "n_joined_rows": 186567,
+  "n_selected_false_negatives": 7319
+}

@@ -1,0 +1,73 @@
+region,target_month,crisis_count,non_crisis_count,total,crisis_prevalence,validation_status
+East Africa,2021-02,377,2223,2600,0.145,validated
+East Africa,2021-06,249,1311,1560,0.159615,validated
+East Africa,2021-10,623,1978,2601,0.239523,validated
+East Africa,2022-02,874,1727,2601,0.336025,validated
+East Africa,2022-06,979,1503,2482,0.39444,validated
+East Africa,2022-10,982,1652,2634,0.372817,validated
+East Africa,2023-02,665,1817,2482,0.267929,validated
+East Africa,2023-06,1209,1471,2680,0.451119,validated
+East Africa,2023-10,1017,1663,2680,0.379478,validated
+East Africa,2024-02,1001,1679,2680,0.373507,validated
+East Africa,2024-06,844,1836,2680,0.314925,validated
+East Africa,2024-10,342,1977,2319,0.147477,validated
+West Africa,2021-02,71,603,674,0.105341,validated
+West Africa,2021-06,99,575,674,0.146884,validated
+West Africa,2021-10,80,659,739,0.108254,validated
+West Africa,2022-02,125,614,739,0.169147,validated
+West Africa,2022-06,177,562,739,0.239513,validated
+West Africa,2022-10,98,641,739,0.132612,validated
+West Africa,2023-02,108,631,739,0.146143,validated
+West Africa,2023-06,182,557,739,0.246279,validated
+West Africa,2023-10,151,588,739,0.20433,validated
+West Africa,2024-02,141,598,739,0.190798,validated
+West Africa,2024-06,259,480,739,0.350474,validated
+West Africa,2024-10,143,596,739,0.193505,validated
+Southern Africa,2021-02,152,517,669,0.227205,validated
+Southern Africa,2021-06,37,632,669,0.055306,validated
+Southern Africa,2021-10,42,621,663,0.063348,validated
+Southern Africa,2022-02,122,541,663,0.184012,validated
+Southern Africa,2022-06,36,636,672,0.053571,validated
+Southern Africa,2022-10,163,505,668,0.244012,validated
+Southern Africa,2023-02,145,523,668,0.217066,validated
+Southern Africa,2023-06,34,622,656,0.051829,validated
+Southern Africa,2023-10,67,589,656,0.102134,validated
+Southern Africa,2024-02,117,539,656,0.178354,validated
+Southern Africa,2024-06,148,508,656,0.22561,validated
+Southern Africa,2024-10,297,359,656,0.452744,validated
+Middle East,2021-02,275,379,654,0.420489,validated
+Middle East,2021-06,275,379,654,0.420489,validated
+Middle East,2021-10,140,5,145,0.965517,data not validated
+Middle East,2022-02,140,5,145,0.965517,data not validated
+Middle East,2022-06,145,0,145,1.0,data not validated
+Middle East,2022-10,145,0,145,1.0,data not validated
+Middle East,2023-02,145,0,145,1.0,data not validated
+Middle East,2023-06,215,439,654,0.328746,validated
+Middle East,2023-10,206,303,509,0.404715,validated
+Middle East,2024-02,352,302,654,0.538226,validated
+Middle East,2024-06,344,310,654,0.525994,validated
+Middle East,2024-10,264,390,654,0.40367,validated
+Latin America,2021-02,276,251,527,0.523719,validated
+Latin America,2021-06,267,260,527,0.506641,validated
+Latin America,2021-10,159,368,527,0.301708,validated
+Latin America,2022-02,173,354,527,0.328273,validated
+Latin America,2022-06,247,280,527,0.468691,validated
+Latin America,2022-10,179,348,527,0.339658,validated
+Latin America,2023-02,157,370,527,0.297913,validated
+Latin America,2023-06,264,263,527,0.500949,validated
+Latin America,2023-10,181,346,527,0.343454,validated
+Latin America,2024-02,249,278,527,0.472486,validated
+Latin America,2024-06,279,248,527,0.529412,validated
+Latin America,2024-10,261,266,527,0.495256,validated
+Other,2021-02,58,243,301,0.192691,validated
+Other,2021-06,51,250,301,0.169435,validated
+Other,2021-10,51,248,299,0.170569,validated
+Other,2022-02,49,250,299,0.16388,validated
+Other,2022-06,41,258,299,0.137124,validated
+Other,2022-10,44,255,299,0.147157,validated
+Other,2023-02,50,249,299,0.167224,validated
+Other,2023-06,47,252,299,0.157191,validated
+Other,2023-10,60,239,299,0.200669,validated
+Other,2024-02,74,367,441,0.1678,validated
+Other,2024-06,85,356,441,0.192744,validated
+Other,2024-10,74,367,441,0.1678,validated

@@ -1,0 +1,9 @@
+{
+  "artifact_group": "06_cluster_profiles",
+  "panel_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+  "mapping_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\result_partition_k40_compare_GF_fs1\\refined\\cluster_mapping_k40_nc13_m2_refined_contig3.csv",
+  "predictions_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\result_partition_k40_compare_GF_fs1\\predictions_monthly.csv",
+  "shapefile_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWS NET Admin Boundaries\\FEWS_Admin_LZ_v3.shp",
+  "n_profile_clusters": 13,
+  "n_profile_rows": 13
+}

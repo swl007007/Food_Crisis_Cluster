@@ -1,0 +1,5 @@
+| scope | forecasting_horizon | pooled_precision | pooled_recall | pooled_f1 | partitioned_precision | partitioned_recall | partitioned_f1 | partitioned_thresholded_precision | partitioned_thresholded_recall | partitioned_thresholded_f1 | delta_thresholded_minus_partitioned_precision | delta_thresholded_minus_pooled_precision | delta_thresholded_minus_partitioned_recall | delta_thresholded_minus_pooled_recall | delta_thresholded_minus_partitioned_f1 | delta_thresholded_minus_pooled_f1 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fs1 | 4-month horizon | 0.775 | 0.530 | 0.612 | 0.740 | 0.617 | 0.667 | 0.677 | 0.722 | 0.685 | -0.063 | -0.098 | 0.105 | 0.192 | 0.018 | 0.073 |
+| fs2 | 8-month horizon | 0.770 | 0.499 | 0.585 | 0.731 | 0.589 | 0.646 | 0.658 | 0.679 | 0.659 | -0.074 | -0.112 | 0.089 | 0.180 | 0.012 | 0.074 |
+| fs3 | 12-month horizon | 0.724 | 0.458 | 0.543 | 0.685 | 0.540 | 0.597 | 0.631 | 0.660 | 0.628 | -0.054 | -0.092 | 0.120 | 0.202 | 0.031 | 0.084 |

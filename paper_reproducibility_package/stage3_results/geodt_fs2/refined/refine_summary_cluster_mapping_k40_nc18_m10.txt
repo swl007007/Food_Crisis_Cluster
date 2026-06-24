@@ -1,0 +1,18 @@
+Partition Contiguity Refinement Log
+====================================
+Input:  GeoDTExperiment\knn_sparsification_results\cluster_mapping_k40_nc18_m10.csv
+Output: .\result_partition_k40_compare_DT_fs2\refined\cluster_mapping_k40_nc18_m10_refined_contig3.csv
+Iterations: 3
+Timestamp: 2026-06-15T17:18:10.084956
+Seed: 42 (deterministic)
+
+Iteration 1/3: 46 polygons reassigned
+Iteration 2/3: 21 polygons reassigned
+Iteration 3/3: 5 polygons reassigned
+
+Summary:
+  Total reassigned: 72 polygons
+  Row count: 5365 (unchanged)
+  Unique partitions: 18
+  Connected components (before): {0: 12, 1: 42, 2: 163, 3: 59, 4: 41, 5: 80, 6: 11, 7: 30, 8: 12, 9: 36, 10: 85, 11: 7, 12: 23, 13: 22, 14: 3, 15: 20, 16: 149, 17: 24}
+  Connected components (after):  {0: 9, 1: 39, 2: 155, 3: 58, 4: 41, 5: 79, 6: 10, 7: 28, 8: 12, 9: 36, 10: 85, 11: 7, 12: 22, 13: 16, 14: 3, 15: 19, 16: 148, 17: 23}

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-06-16T16:57:23.527637",
+  "data_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+  "partition_map_path": "result_partition_k40_compare_GF_fs3/refined/cluster_mapping_k40_nc17_general_refined_contig3.csv",
+  "start_month": "2021-01",
+  "end_month": "2024-12",
+  "train_window_months": 36,
+  "forecasting_scope": 3,
+  "active_lag_months": 12,
+  "n_test_months": 48,
+  "n_test_months_evaluated": 12,
+  "n_predictions": 62189,
+  "n_polygons": 5716,
+  "n_partitions": 17,
+  "rf_params": {
+    "n_estimators": 100,
+    "max_depth": null,
+    "random_state": 5,
+    "n_jobs": 1
+  },
+  "model_type": "RF",
+  "random_state": 5,
+  "visual_enabled": false,
+  "pipeline_version": "GeoRF_utilities_v1.0",
+  "partition_learning_years": "2018-2020",
+  "evaluation_years": "2021-2024",
+  "temporal_leakage_guard": "partitions learned before evaluation window",
+  "main_model_scope": "GeoRF/GeoDT only; experimental XGBoost variant not included"
+}

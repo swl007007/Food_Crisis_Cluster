@@ -1,0 +1,2 @@
+mapping,iterations,n_polygons,n_final_changed_polygons,final_changed_pct,n_iteration_reassignment_moves,n_clusters_before,n_clusters_after
+GeoRF m2,3,5365,34,0.634,45,13,13

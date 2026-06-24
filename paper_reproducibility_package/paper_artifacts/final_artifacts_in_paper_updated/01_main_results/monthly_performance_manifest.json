@@ -1,0 +1,481 @@
+{
+  "workflow_mode": "baseline comparison",
+  "status": "exploratory diagnostics",
+  "entry_point": "scripts/plot_monthly_performance_metrics.py",
+  "model_selection": [
+    "georf"
+  ],
+  "source_roots": {
+    "ablation_root": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+    "fewsnet_root": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/fewsnet_baseline_results"
+  },
+  "source_paths": {
+    "model_metrics": [
+      "result_partition_k40_compare_GF_fs1/metrics_monthly.csv",
+      "result_partition_k40_compare_GF_fs2/metrics_monthly.csv",
+      "result_partition_k40_compare_GF_fs3/metrics_monthly.csv"
+    ],
+    "fewsnet_baselines": [
+      "fewsnet_baseline_results/fewsnet_baseline_results_fs1.csv",
+      "fewsnet_baseline_results/fewsnet_baseline_results_fs2.csv"
+    ]
+  },
+  "column_contract": {
+    "model_metrics": [
+      "f1",
+      "model",
+      "precision",
+      "recall",
+      "test_month"
+    ],
+    "fewsnet_baselines": [
+      "f1(1)",
+      "precision(1)",
+      "quarter",
+      "recall(1)",
+      "year"
+    ]
+  },
+  "scope_contract": {
+    "rows": [
+      {
+        "internal_scope": "fs1",
+        "display_label": "4-month horizon",
+        "horizon_months": 4
+      },
+      {
+        "internal_scope": "fs2",
+        "display_label": "8-month horizon",
+        "horizon_months": 8
+      },
+      {
+        "internal_scope": "fs3",
+        "display_label": "12-month horizon",
+        "horizon_months": 12
+      }
+    ],
+    "12_month_fewsnet_source": null
+  },
+  "series_contract": {
+    "partitioned": "solid model-color line from model == partitioned",
+    "pooled": "dashed same-family model-color line from model == pooled",
+    "fewsnet": "distinct comparison color from FEWSNET baseline files"
+  },
+  "fewsnet_time_alignment": {
+    "1": "YYYY-02",
+    "2": "YYYY-06",
+    "4": "YYYY-10",
+    "ignored_quarters": [
+      "3"
+    ]
+  },
+  "fewsnet_fs3_assumption": "FEWSNET has no native 12-month baseline and is not plotted for the 12-month horizon.",
+  "generated_artifacts": [
+    "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/final_artifacts_in_paper_updated/georf_monthly_performance.png",
+    "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/final_artifacts_in_paper_updated/monthly_performance_manifest.json"
+  ],
+  "missing_points": [
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2021-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2021-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2021-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2022-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2022-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2022-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2023-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2023-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2023-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2024-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2024-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "precision",
+      "test_month": "2024-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2021-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2021-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2021-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2022-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2022-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2022-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2023-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2023-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2023-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2024-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2024-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "recall",
+      "test_month": "2024-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2021-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2021-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2021-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2022-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2022-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2022-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2023-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2023-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2023-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2024-02",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2024-06",
+      "reason": "No native FEWSNET 12-month baseline"
+    },
+    {
+      "source_kind": "fewsnet",
+      "model_family": null,
+      "scope": "fs3",
+      "series_label": "FEWSNET baseline",
+      "metric": "f1",
+      "test_month": "2024-10",
+      "reason": "No native FEWSNET 12-month baseline"
+    }
+  ],
+  "validation_summary": {
+    "mode": "full",
+    "models": {
+      "georf": {
+        "fs1": {
+          "months": [
+            "2021-02",
+            "2021-06",
+            "2021-10",
+            "2022-02",
+            "2022-06",
+            "2022-10",
+            "2023-02",
+            "2023-06",
+            "2023-10",
+            "2024-02",
+            "2024-06",
+            "2024-10"
+          ],
+          "chronological": true,
+          "series_per_subplot": {
+            "precision": 3,
+            "recall": 3,
+            "f1": 3
+          },
+          "display_label": "4-month horizon"
+        },
+        "fs2": {
+          "months": [
+            "2021-02",
+            "2021-06",
+            "2021-10",
+            "2022-02",
+            "2022-06",
+            "2022-10",
+            "2023-02",
+            "2023-06",
+            "2023-10",
+            "2024-02",
+            "2024-06",
+            "2024-10"
+          ],
+          "chronological": true,
+          "series_per_subplot": {
+            "precision": 3,
+            "recall": 3,
+            "f1": 3
+          },
+          "display_label": "8-month horizon"
+        },
+        "fs3": {
+          "months": [
+            "2021-02",
+            "2021-06",
+            "2021-10",
+            "2022-02",
+            "2022-06",
+            "2022-10",
+            "2023-02",
+            "2023-06",
+            "2023-10",
+            "2024-02",
+            "2024-06",
+            "2024-10"
+          ],
+          "chronological": true,
+          "series_per_subplot": {
+            "precision": 2,
+            "recall": 2,
+            "f1": 2
+          },
+          "display_label": "12-month horizon"
+        }
+      }
+    },
+    "fewsnet_fs3_extended": false,
+    "fewsnet_fs3_label": null
+  }
+}

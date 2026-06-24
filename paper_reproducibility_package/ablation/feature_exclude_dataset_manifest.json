@@ -1,0 +1,161 @@
+{
+  "timestamp": "2026-06-15T21:25:09.243118",
+  "source": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+  "out_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets",
+  "source_column_count": 88,
+  "datasets": {
+    "weather_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\weather_exclude.csv",
+      "column_count": 84,
+      "dropped_columns": [
+        "Rainf_f_tavg_mean",
+        "Rainf_zscore",
+        "Tair_f_tavg_mean",
+        "Tair_zscore"
+      ]
+    },
+    "agri_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\agri_exclude.csv",
+      "column_count": 66,
+      "dropped_columns": [
+        "AEZ_10000",
+        "AEZ_12000",
+        "AEZ_15000",
+        "AEZ_17000",
+        "AEZ_19000",
+        "AEZ_25000",
+        "AEZ_31000",
+        "AEZ_32000",
+        "AEZ_33000",
+        "AEZ_34000",
+        "AEZ_36000",
+        "AEZ_38000",
+        "AEZ_4000",
+        "AEZ_40000",
+        "AEZ_43000",
+        "AEZ_7000",
+        "AEZ_9000",
+        "EVI",
+        "crop",
+        "distance_to_river",
+        "gpp_mean",
+        "range"
+      ]
+    },
+    "conflict_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\conflict_exclude.csv",
+      "column_count": 69,
+      "dropped_columns": [
+        "distance_to_nearest_acled",
+        "event_count_battles",
+        "event_count_battles_w10",
+        "event_count_battles_w5",
+        "event_count_explosions",
+        "event_count_explosions_w10",
+        "event_count_explosions_w5",
+        "event_count_violence",
+        "event_count_violence_w10",
+        "event_count_violence_w5",
+        "sum_fatalities_battles",
+        "sum_fatalities_battles_w10",
+        "sum_fatalities_battles_w5",
+        "sum_fatalities_explosions",
+        "sum_fatalities_explosions_w10",
+        "sum_fatalities_explosions_w5",
+        "sum_fatalities_violence",
+        "sum_fatalities_violence_w10",
+        "sum_fatalities_violence_w5"
+      ]
+    },
+    "econ_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\econ_exclude.csv",
+      "column_count": 77,
+      "dropped_columns": [
+        "CC",
+        "CPI",
+        "Food_CPI",
+        "Food_food_inflation",
+        "GDP",
+        "gini",
+        "market_access",
+        "market_distance",
+        "nightlight",
+        "nightlight_sd",
+        "pop"
+      ]
+    },
+    "food_prices_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\food_prices_exclude.csv",
+      "column_count": 85,
+      "dropped_columns": [
+        "FAO_price",
+        "WFP_Price",
+        "WFP_Price_std"
+      ]
+    },
+    "geographic_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\geographic_exclude.csv",
+      "column_count": 80,
+      "dropped_columns": [
+        "elevation",
+        "ruggedness",
+        "sg_cec_5-15cm",
+        "sg_cfvo_5-15cm",
+        "sg_nitrogen_5-15cm",
+        "sg_phh2o_5-15cm",
+        "sg_soc_5-15cm",
+        "slope"
+      ]
+    },
+    "secondary_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\secondary_exclude.csv",
+      "column_count": 49,
+      "dropped_columns": [
+        "distance_to_nearest_acled",
+        "event_count_battles",
+        "event_count_explosions",
+        "event_count_violence",
+        "sum_fatalities_battles",
+        "sum_fatalities_explosions",
+        "sum_fatalities_violence",
+        "event_count_battles_w5",
+        "event_count_explosions_w5",
+        "event_count_violence_w5",
+        "sum_fatalities_battles_w5",
+        "sum_fatalities_explosions_w5",
+        "sum_fatalities_violence_w5",
+        "event_count_battles_w10",
+        "event_count_explosions_w10",
+        "event_count_violence_w10",
+        "sum_fatalities_battles_w10",
+        "sum_fatalities_explosions_w10",
+        "sum_fatalities_violence_w10",
+        "nightlight",
+        "nightlight_sd",
+        "market_distance",
+        "FAO_price",
+        "market_access",
+        "CPI",
+        "GDP",
+        "CC",
+        "gini",
+        "WFP_Price",
+        "WFP_Price_std",
+        "fews_ha",
+        "fews_proj_near",
+        "fews_proj_near_ha",
+        "fews_proj_med",
+        "fews_proj_med_ha",
+        "pop",
+        "fews_proj_med_adjusted",
+        "Food_CPI",
+        "Food_food_inflation"
+      ]
+    },
+    "lag_exclude": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\main_ablation_exclude_updated_stage3_fixed_partitions\\input_datasets\\lag_exclude.csv",
+      "column_count": 88,
+      "dropped_columns": []
+    }
+  }
+}
