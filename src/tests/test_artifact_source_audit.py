@@ -100,7 +100,12 @@ def test_paper_facing_script_defaults_do_not_reference_phase_change():
     repo_root = Path(__file__).resolve().parents[2]
     scripts = [
         repo_root / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py",
-        repo_root / "scripts" / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
+        repo_root
+        / "archived"
+        / "release_20260624_nonpaper_pipelines"
+        / "geoxgb_workflow"
+        / "scripts"
+        / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
         repo_root
         / "scripts"
         / "paper_artifacts"

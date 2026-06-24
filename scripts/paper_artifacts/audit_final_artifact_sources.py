@@ -57,8 +57,13 @@ SCRIPT_DEFAULTS = [
         REPO_ROOT / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py",
     ),
     (
-        "scripts/compare_partitioned_vs_pooled_xgb_k40_nc4.py",
-        REPO_ROOT / "scripts" / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
+        "archived/release_20260624_nonpaper_pipelines/geoxgb_workflow/scripts/compare_partitioned_vs_pooled_xgb_k40_nc4.py",
+        REPO_ROOT
+        / "archived"
+        / "release_20260624_nonpaper_pipelines"
+        / "geoxgb_workflow"
+        / "scripts"
+        / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
     ),
     (
         "scripts/paper_artifacts/analyze_georf_m2_cluster_profiles.py",
