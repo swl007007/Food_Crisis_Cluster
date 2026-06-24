@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -94,6 +95,15 @@ def assert_path_is_under(path: Path, root: Path) -> None:
         path.resolve().relative_to(root.resolve())
     except ValueError as exc:
         raise AssertionError(f"{path} is not under {root}") from exc
+
+
+def is_git_ignored(relative_path: str) -> bool:
+    result = subprocess.run(
+        ["git", "check-ignore", "-q", relative_path],
+        cwd=REPO_ROOT,
+        check=False,
+    )
+    return result.returncode == 0
 
 
 def load_archive_manifest() -> dict[str, dict[str, str]]:
@@ -386,6 +396,7 @@ def test_main_preflights_later_group_collision_before_moving_first_group(
             "test_category",
             "test_dependency",
             "test reason",
+            required=False,
         )
     ]
     monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
@@ -405,3 +416,120 @@ def test_main_preflights_later_group_collision_before_moving_first_group(
     assert later_source.is_file()
     assert not (first_archive_root / "first_group.txt").exists()
     assert not (first_archive_root / "MANIFEST.csv").exists()
+
+
+def test_clean_root_archive_gitignore_keeps_only_lightweight_metadata_trackable() -> None:
+    ignored_payloads = [
+        "archived/release_20260624_reproducibility_inputs/GeoRFExperiment/some_file.shp",
+        "archived/release_20260624_legacy_workspace/other_outputs/report.md",
+        "archived/local_workspace_residue_20260624/writing/draft.docx",
+    ]
+    trackable_metadata = [
+        "archived/release_20260624_reproducibility_inputs/MANIFEST.csv",
+        "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs1/run_manifest.json",
+        "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs1/metrics_monthly.csv",
+        "archived/release_20260624_legacy_workspace/scripts/example.py",
+        "archived/release_20260624_legacy_workspace/other_outputs/audit_only_failure_summary.txt",
+        "archived/local_workspace_residue_20260624/README.md",
+    ]
+
+    for relative_path in ignored_payloads:
+        assert is_git_ignored(relative_path), relative_path
+    for relative_path in trackable_metadata:
+        assert not is_git_ignored(relative_path), relative_path
+
+
+def test_archive_plan_dry_run_then_execute_overwrites_preview_docs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    source = tmp_path / "source.txt"
+    archive_root = tmp_path / "archive"
+    source.write_text("source payload", encoding="utf-8")
+    items = [
+        archive.ArchiveItem(
+            "source.txt",
+            archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        )
+    ]
+    groups = [archive.ArchiveGroupSpec(items, "Temp Archive", "Test archive.")]
+    monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
+
+    archive.run_archive_plan(groups, execute=False)
+    assert source.is_file()
+    assert (archive_root / "MANIFEST.csv").is_file()
+
+    archive.run_archive_plan(groups, execute=True)
+
+    assert not source.exists()
+    assert (archive_root / "source.txt").read_text(encoding="utf-8") == (
+        "source payload"
+    )
+    rows = list(
+        csv.DictReader(
+            (archive_root / "MANIFEST.csv").open(newline="", encoding="utf-8")
+        )
+    )
+    assert [row["old_path"] for row in rows] == ["source.txt"]
+
+
+def test_required_archive_sources_are_preflighted_before_docs_or_moves(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    archive_root = tmp_path / "archive"
+    items = [
+        archive.ArchiveItem(
+            "missing_required.txt",
+            archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        )
+    ]
+    groups = [archive.ArchiveGroupSpec(items, "Temp Archive", "Test archive.")]
+    monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
+
+    with pytest.raises(FileNotFoundError, match="missing_required.txt"):
+        archive.run_archive_plan(groups, execute=True)
+
+    assert not archive_root.exists()
+
+
+def test_optional_archive_sources_can_be_recorded_as_missing(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    archive_root = tmp_path / "archive"
+    items = [
+        archive.ArchiveItem(
+            "missing_optional.txt",
+            archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+            required=False,
+        )
+    ]
+    groups = [archive.ArchiveGroupSpec(items, "Temp Archive", "Test archive.")]
+    monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
+
+    archive.run_archive_plan(groups, execute=True)
+
+    rows = list(
+        csv.DictReader(
+            (archive_root / "MANIFEST.csv").open(newline="", encoding="utf-8")
+        )
+    )
+    assert rows[0]["old_path"] == "missing_optional.txt"
+    assert rows[0]["size_bytes"] == "0"
+    assert rows[0]["file_count"] == "0"

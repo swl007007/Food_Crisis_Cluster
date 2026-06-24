@@ -39,6 +39,7 @@ class ArchiveItem:
     category: str
     dependency: str
     dependency_scan_reason: str
+    required: bool = True
 
     @property
     def archive_path(self) -> Path:
@@ -245,6 +246,7 @@ LOCAL_RESIDUE_ITEMS = [
         "local_residue",
         "not_release_dependency",
         "Manuscript drafting residue outside verifier/package path",
+        required=False,
     ),
     ArchiveItem(
         "dt_rules",
@@ -252,6 +254,7 @@ LOCAL_RESIDUE_ITEMS = [
         "local_residue",
         "not_release_dependency",
         "Generated rule exports not used as branch-specific paper explanations",
+        required=False,
     ),
     ArchiveItem(
         "monthly_results",
@@ -259,6 +262,7 @@ LOCAL_RESIDUE_ITEMS = [
         "local_residue",
         "not_release_dependency",
         "Empty or stale monthly output folder outside verifier/package path",
+        required=False,
     ),
     ArchiveItem(
         "demo",
@@ -266,6 +270,7 @@ LOCAL_RESIDUE_ITEMS = [
         "local_residue",
         "not_release_dependency",
         "Ignored demo residue outside release quickstart",
+        required=False,
     ),
     ArchiveItem(
         "prediction_pipeline",
@@ -276,6 +281,7 @@ LOCAL_RESIDUE_ITEMS = [
             "Forward-prediction residue already represented by archived non-paper "
             "pipeline provenance"
         ),
+        required=False,
     ),
     ArchiveItem(
         "regional_ablation_results",
@@ -283,6 +289,7 @@ LOCAL_RESIDUE_ITEMS = [
         "local_residue",
         "not_release_dependency",
         "Regional exploratory output outside paper verifier/package path",
+        required=False,
     ),
 ]
 
@@ -343,16 +350,21 @@ def existing_archive_docs(archive_root: Path) -> list[Path]:
     ]
 
 
-def archive_collision_paths(items: list[ArchiveItem]) -> list[Path]:
+def archive_collision_paths(
+    items: list[ArchiveItem],
+    *,
+    check_docs: bool = True,
+) -> list[Path]:
     collisions = []
     for item in items:
         source = REPO_ROOT / item.old_path
         if source.exists() and item.archive_path.exists():
             collisions.append(item.archive_path)
 
-    archive_roots = {item.archive_root for item in items}
-    for archive_root in sorted(archive_roots):
-        collisions.extend(existing_archive_docs(archive_root))
+    if check_docs:
+        archive_roots = {item.archive_root for item in items}
+        for archive_root in sorted(archive_roots):
+            collisions.extend(existing_archive_docs(archive_root))
     return collisions
 
 
@@ -365,11 +377,37 @@ def raise_archive_collisions(collisions: list[Path]) -> None:
     )
 
 
-def preflight_archive_items(items: list[ArchiveItem], *, force: bool = False) -> None:
+def missing_required_sources(items: list[ArchiveItem]) -> list[Path]:
+    return [
+        REPO_ROOT / item.old_path
+        for item in items
+        if item.required and not (REPO_ROOT / item.old_path).exists()
+    ]
+
+
+def raise_missing_required_sources(missing: list[Path]) -> None:
+    missing_list = "\n".join(f"- {path_label(path)}" for path in missing)
+    raise FileNotFoundError(
+        "Required archive sources are missing:\n"
+        f"{missing_list}\n"
+        "Restore the required source paths before running the clean-root archive."
+    )
+
+
+def preflight_archive_items(
+    items: list[ArchiveItem],
+    *,
+    force: bool = False,
+    check_docs: bool = True,
+) -> None:
+    missing = missing_required_sources(items)
+    if missing:
+        raise_missing_required_sources(missing)
+
     if force:
         return
 
-    collisions = archive_collision_paths(items)
+    collisions = archive_collision_paths(items, check_docs=check_docs)
     if collisions:
         raise_archive_collisions(collisions)
 
@@ -378,13 +416,22 @@ def preflight_archive_plan(
     groups: list[ArchiveGroupSpec],
     *,
     force: bool = False,
+    check_docs: bool = True,
 ) -> None:
+    missing = []
+    for group in groups:
+        missing.extend(missing_required_sources(group.items))
+    if missing:
+        raise_missing_required_sources(missing)
+
     if force:
         return
 
     collisions = []
     for group in groups:
-        collisions.extend(archive_collision_paths(group.items))
+        collisions.extend(
+            archive_collision_paths(group.items, check_docs=check_docs)
+        )
     if collisions:
         raise_archive_collisions(collisions)
 
@@ -496,12 +543,19 @@ def archive_group(
     *,
     execute: bool,
     force: bool = False,
+    force_docs: bool = False,
     preflight: bool = True,
 ) -> None:
     if preflight:
         preflight_archive_items(items, force=force)
     rows = [move_item(item, execute=execute, force=force) for item in items]
-    write_archive_docs(items[0].archive_root, rows, title, description, force=force)
+    write_archive_docs(
+        items[0].archive_root,
+        rows,
+        title,
+        description,
+        force=force or force_docs,
+    )
 
 
 def archive_plan() -> list[ArchiveGroupSpec]:
@@ -536,7 +590,7 @@ def run_archive_plan(
     execute: bool,
     force: bool = False,
 ) -> None:
-    preflight_archive_plan(groups, force=force)
+    preflight_archive_plan(groups, force=force, check_docs=not execute)
     for group in groups:
         archive_group(
             group.items,
@@ -544,6 +598,7 @@ def run_archive_plan(
             group.description,
             execute=execute,
             force=force,
+            force_docs=execute,
             preflight=False,
         )
 

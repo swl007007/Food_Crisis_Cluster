@@ -53,12 +53,17 @@ run_logs/
 archived/*
 !archived/no_leak_partition_learning_2018_2020_20260616/
 !archived/no_leak_partition_learning_2018_2020_20260616/README.md
+
 !archived/release_20260624_reproducibility_inputs/
+archived/release_20260624_reproducibility_inputs/**
 !archived/release_20260624_reproducibility_inputs/README.md
 !archived/release_20260624_reproducibility_inputs/MANIFEST.csv
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs1/
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs2/
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs3/
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs1/**
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs2/**
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs3/**
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs1/run_manifest.json
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs2/run_manifest.json
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs3/run_manifest.json
@@ -76,6 +81,7 @@ archived/*
 !archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs3/predictions_monthly.csv
 
 !archived/release_20260624_legacy_workspace/
+archived/release_20260624_legacy_workspace/**
 !archived/release_20260624_legacy_workspace/**/
 !archived/release_20260624_legacy_workspace/**/*.py
 !archived/release_20260624_legacy_workspace/**/*.txt
@@ -83,6 +89,7 @@ archived/*
 !archived/release_20260624_legacy_workspace/MANIFEST.csv
 
 !archived/local_workspace_residue_20260624/
+archived/local_workspace_residue_20260624/**
 !archived/local_workspace_residue_20260624/README.md
 !archived/local_workspace_residue_20260624/MANIFEST.csv
 
