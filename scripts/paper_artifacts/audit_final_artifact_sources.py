@@ -266,7 +266,7 @@ def write_audit_outputs(rows: list[dict[str, str]], output_dir: Path) -> tuple[P
     md_path = output_dir / "artifact_source_audit.md"
     fieldnames = ["artifact_group", "artifact_type", "path", "status", "source_path", "reason"]
     with csv_path.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
