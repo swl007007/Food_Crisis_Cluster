@@ -73,6 +73,10 @@ Out of scope:
 - Rerunning Stage 1, Stage 2, Stage 3, SHAP, ablation, or figure-generation jobs
   as part of package creation.
 - Changing model code, active config constants, source data, or model behavior.
+- Moving or archiving experimental code paths in this task. GeoXGB, fs0, and
+  2026-2027 prediction/scenario scripts should be separated in documentation
+  and excluded from the paper reproducibility package, but their file locations
+  should remain unchanged until a later release-version migration task.
 - Copying raw upstream source data or the large
   `FEWSNET_forecast_unadjusted_bm.csv` into the package.
 - Copying the full `main_ablation_exclude_updated_stage3_fixed_partitions/`
