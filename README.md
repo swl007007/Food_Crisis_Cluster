@@ -1,85 +1,132 @@
-# GeoRF/GeoDT Food Crisis Prediction with No-Leak Spatial Consensus Clustering
+# GeoRF Food Crisis Forecasting Paper Reproducibility
 
-Spatial transformation framework for food security crisis prediction using GeoRF and GeoDT with consensus-based spatial partitioning. The main results workflow learns partitions on 2018-2020 and evaluates fixed partitions on 2021-2024 to avoid temporal leakage. The XGBoost variant remains experimental and is not part of the main workflow.
+This repository contains the manuscript-facing FEWS NET food-crisis forecasting
+workflow built around GeoRF, a geo-aware Random Forest that learns spatially
+heterogeneous predictive regimes. The current paper results use a no-leak
+three-stage workflow: Stage 1 learns candidate partitions on 2018-2020, Stage 2
+builds fixed consensus maps, and Stage 3 evaluates fixed partitions on
+2021-2024 FEWS NET release months.
 
-## Overview
+The paper scope covers 22 FEWS NET monitored countries across Africa, the
+Middle East, Asia, and Latin America. It is not limited to one region. The main
+model is GeoRF; GeoDT is retained as an auxiliary appendix and interpretability
+comparison. GeoXGB, fs0 lag-1, and 2026-2027 forward/scenario prediction
+workflows are experimental extensions and are not part of the paper
+reproducibility package.
 
-This project applies the GeoRF framework to **FEWSNET food crisis prediction** in Sub-Saharan Africa, using:
-- **GeoRF**: Spatially-partitioned Random Forest
-- **GeoDT**: Spatially-partitioned Decision Tree
-- **Consensus Clustering**: Aggregate monthly partitions into stable spatial clusters
-- **Month-Specific Partitions**: Season-aware clustering for improved temporal adaptation
+## Quick Start for Paper Reproduction
 
-## Quick Start
+For fast review, start with the lightweight package:
 
-### Complete Workflow (3 Stages)
+```text
+paper_reproducibility_package/README.md
+paper_reproducibility_package/MANIFEST.csv
+paper_reproducibility_package/SHA256SUMS.txt
+```
 
-See **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)** for detailed documentation. The active main workflow accepts `georf` or `geodt`.
+Validate it from the repository root:
 
-**Stage 1**: Learn monthly partition candidates on 2018-2020 (~4-6 hours)
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 scripts/validate_paper_reproducibility_package.py
+```
+
+Then verify the live repository result bundle:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 scripts/verify_current_results_reproducibility.py
+```
+
+See **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)** for the full pipeline
+walkthrough.
+
+## Complete No-Leak Regeneration Path
+
+The full regeneration path is slower than the package audit path because Stage 1
+partition learning is expensive. Use it when you need to regenerate the complete
+workflow rather than audit the packaged paper artifacts.
+
+### Stage 1: Learn partition candidates on 2018-2020
+
 ```batch
 run_batches_2018_2020_partition_learning_visual_monthly.bat georf
 run_batches_2018_2020_partition_learning_visual_monthly.bat geodt
 ```
-Output: yearly combined `results_df_*_fsN_YYYY_YYYY.csv` / `y_pred_test_*_fsN_YYYY_YYYY.csv` plus archived `result_Geo{Model}_YYYY_fsN_YYYY-MM_visual/` folders used by Stage 2.
 
-**Stage 2**: Generate spatial partitions (automated, ~30-60 min)
+Output: yearly combined `results_df_*_fsN_YYYY_YYYY.csv` /
+`y_pred_test_*_fsN_YYYY_YYYY.csv` plus archived
+`result_Geo{Model}_YYYY_fsN_YYYY-MM_visual/` folders used by Stage 2.
+
+### Stage 2: Generate fixed consensus partitions
+
 ```batch
 spatial_weighted_consensus_clustering.bat georf
 spatial_weighted_consensus_clustering.bat geodt
 ```
-Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv` + `cluster_mapping_manifest.json`.
 
-Naming note: `k40` is the KNN graph-neighbor parameter, not 40 clusters. The selected cluster count is the `nc*` token. Partition filenames use `_m2`, `_m6`, `_m10`; manifest keys use `m02`, `m06`, `m10`.
+Output: `cluster_mapping_k40_nc*_general.csv`, `_m2.csv`, `_m6.csv`, `_m10.csv`
+and `cluster_mapping_manifest.json`. `k40` is the KNN graph-neighbor parameter,
+not 40 clusters. The selected cluster count is the `nc*` token.
 
-**Stage 3**: Evaluate partitioned models (~4-6 hours)
+### Stage 3: Evaluate 2021-2024 fixed partitions
+
 ```batch
 run_partition_k40_comparison_unified.bat georf --visual --month-ind
 run_partition_k40_comparison_unified.bat geodt --visual --month-ind
-run_partition_k40_comparison_unified.bat all --visual --month-ind
 ```
-Output: `result_partition_k40_compare_{GF,DT}_fsN/` plus aggregated tables in `other_outputs/Table_Format.xlsx` and `other_outputs/Model_Comparison_Table.xlsx`
 
-### Stand-Alone fs0 (Lag-1) Pipeline
+Output: `result_partition_k40_compare_{GF,DT}_fsN/` plus aggregated tables in
+`other_outputs/Table_Format.xlsx` and `other_outputs/Model_Comparison_Table.xlsx`.
+GeoRF is the paper-facing model. GeoDT is kept for appendix comparison and
+branch-level interpretability. `run_partition_k40_comparison_unified.bat all`
+is still available for local convenience, but paper reproduction should treat
+GeoRF as the main model family.
 
-fs0 is a separate forecasting scope with **lag = 1 month**. It is orthogonal to fs1/fs2/fs3 and is opt-in via `--fs0-only` on every stage. The default fs1+fs2+fs3 pipeline is unaffected whether or not you run fs0.
+## Experimental and Extension Workflows
 
-Run all three stages with the same `--fs0-only` flag:
+These workflows remain in the repository for development continuity but are not
+part of the current paper reproducibility package. They should not be interpreted
+as manuscript main results. Paths and scripts are not moved in this task.
+
+### GeoXGB
+
+`app/main_model_XGB.py`, `GeoXGBExperiment/`, and XGBoost comparison scripts are
+legacy/experimental. They are not included in the no-leak paper workflow or the
+lightweight package.
+
+### fs0 Lag-1 Extension
+
+fs0 is a stand-alone lag-1 extension. It is orthogonal to the paper's fs1/fs2/fs3
+4-, 8-, and 12-month workflow and is not included in the paper reproducibility
+package.
+
 ```batch
 run_batches_2018_2020_partition_learning_visual_monthly.bat <model> --fs0-only
 spatial_weighted_consensus_clustering.bat <model> --fs0-only
 run_partition_k40_comparison_unified.bat <model> --fs0-only
 ```
-`<model>` is `georf` or `geodt` for the main workflow. Keep the mode consistent across all three stages.
 
-What changes in fs0-only mode:
-- **Stage 1**: Runs 36 batches (3 years x 1 scope x 12 months) instead of 108. Produces `results_df_*_fs0_*.csv` and `result_Geo{Model}_*_fs0_*_visual/` archives only.
-- **Stage 2**: Copies only fs0 artifacts; generates the **general** consensus partition only. Month-specific partitions (m2/m6/m10) are skipped because fs0 alone does not yield enough candidate partitions.
-- **Stage 3**: Forces `SCOPES=0` and disables `--month-ind`; writes results to `result_partition_k40_compare_{GF,DT}_fs0/` and aggregates to `other_outputs/Table_Format_fs0.xlsx` (separate from the fs1/2/3 `Table_Format.xlsx`).
+Keep `<model>` as `georf` or `geodt`. Running fs0 requires the flag on all three
+stages and writes separate fs0 workbooks, so it must not be mixed with the paper
+fs1/fs2/fs3 outputs. In fs0-only mode, Stage 2 generates only the general
+consensus partition because fs0 alone does not yield enough candidate partitions
+for month-specific maps.
 
-### Standalone 2026-2027 Prediction Pipeline
+### 2026-2027 Forward and Scenario Prediction
 
-GeoRF-only forward prediction for Jun 2026 and Feb 2027 uses batch launchers under
-`prediction_pipeline/`:
+The `prediction_pipeline/` launchers support GeoRF-only forward prediction for
+June 2026 and February 2027 plus a separate synthetic scenario overlay. These
+outputs are operational extensions, not manuscript backtest results.
+
 ```batch
 prediction_pipeline\spatial_weighted_consensus_clustering_predict.bat georf
 prediction_pipeline\run_predict_2026_2027.bat georf
 prediction_pipeline\run_partition_predict_unified.bat georf
 prediction_pipeline\run_scenario_predict_jun2026_feb2027.bat
 ```
-Standard outputs go to `deliverables\predict_2026_2027\`; synthetic scenario outputs go
-to `deliverables\predict_scenario_jun2026_feb2027\` and should not be treated as standard
-forecasts.
 
-Standard prediction uses per-scope staged maps: `fs1_general.csv` for Jun 2026 and
-`fs3_general.csv` for Feb 2027. The scenario launcher also uses per-scope maps but remains a
-separate synthetic overlay, not a standard forecast. Standard prediction uses
-`PREDICTION_THRESHOLD = 0.5`; the scenario overlay reports its own assumptions
-(`--base-threshold 0.50`, `--scenario-threshold 0.40`) and those scenario thresholds are not
-standard forecast thresholds. Map-rendering workflows must name the shapefile source and
-geographic scope: the standard prediction launchers pass the global FEWSNET shapefile by
-default for production Sub-Saharan Africa coverage. Use Nigeria-specific or other
-single-country shapefiles only for explicit single-country analysis.
+Standard forward outputs go to `deliverables\predict_2026_2027\`. Synthetic
+scenario outputs go to `deliverables\predict_scenario_jun2026_feb2027\` and
+should not be described as standard manuscript forecasts.
 
 ## Key Features
 
@@ -104,7 +151,11 @@ single-country shapefiles only for explicit single-country analysis.
 ### Expected Improvements
 - **Partitioned vs Pooled**: +5-15% F1 score
 - **Month-Specific vs General**: +2-5% F1 score
-- **Crisis Prediction F1**: 0.70-0.80 (partitioned XGBoost)
+- **GeoRF paper summary**: In the current manuscript table, partitioned GeoRF
+  improves crisis-class F1 over pooled RF at 4-, 8-, and 12-month horizons.
+  Use `final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx`
+  and `paper_reproducibility_package/PAPER_ARTIFACT_MAP.md` as the source of
+  paper-facing numbers.
 
 ### Resource Requirements
 - **CPU**: 32 cores recommended
@@ -118,10 +169,10 @@ single-country shapefiles only for explicit single-country analysis.
 Food_Crisis_Cluster/
 ├── app/
 │   ├── main_model_GF.py          # GeoRF main script
-│   ├── main_model_XGB.py         # GeoXGB main script
+│   ├── main_model_XGB.py         # Legacy/experimental GeoXGB script
 │   └── main_model_DT.py          # GeoDT main script
 ├── src/
-│   ├── model/                    # GeoRF/GeoXGB/GeoDT implementations
+│   ├── model/                    # GeoRF/GeoDT plus legacy GeoXGB adapters
 │   ├── partition/                # Spatial partitioning algorithms
 │   ├── preprocess/               # Data loading & cleaning
 │   └── vis/                      # Visualization
@@ -134,9 +185,10 @@ Food_Crisis_Cluster/
 │   ├── predict_partitioned_2026_2027.py       # Standalone GeoRF prediction
 │   ├── predict_scenario_2026_2027.py          # Synthetic scenario overlay
 │   └── compare_partitioned_vs_pooled_*.py  # Stage 3 comparison scripts
-├── prediction_pipeline/          # Standalone 2026-2027 prediction launchers
+├── paper_reproducibility_package/ # Fast paper artifact audit package
+├── prediction_pipeline/          # Experimental 2026-2027 prediction launchers
 ├── GeoRFExperiment/              # GeoRF clustering workspace
-├── GeoXGBExperiment/             # GeoXGB clustering workspace
+├── GeoXGBExperiment/             # Legacy/experimental GeoXGB workspace
 ├── GeoDTExperiment/              # GeoDT clustering workspace
 ├── run_batches_2018_2020_partition_learning_visual_monthly.bat # Stage 1
 ├── spatial_weighted_consensus_clustering.bat        # Stage 2: clustering
@@ -146,6 +198,7 @@ Food_Crisis_Cluster/
 ## Documentation
 
 - **[PIPELINE_WORKFLOW.md](PIPELINE_WORKFLOW.md)**: Complete 3-stage workflow
+- **[paper_reproducibility_package/README.md](paper_reproducibility_package/README.md)**: Fast paper package validation
 - **[CLAUDE.md](CLAUDE.md)**: AI assistant guide with troubleshooting
 - **[CRITICAL_PIPELINE_FIXES.md](CRITICAL_PIPELINE_FIXES.md)**: Known issues & fixes
 
@@ -154,22 +207,37 @@ Food_Crisis_Cluster/
 Key parameters in `config.py`:
 
 ```python
-# Spatial
-STEP_SIZE = 0.1                    # Grid cell size (degrees)
-CONTIGUITY = True                  # Spatial refinement
-USE_ADJACENCY_MATRIX = True        # True polygon boundaries
-
-# Partitioning
-MIN_DEPTH = 1                      # Minimum partition depth
-MAX_DEPTH = 4                      # Maximum partition depth
-MIN_BRANCH_SAMPLE_SIZE = 5         # Minimum samples per partition
-
-# Consensus Clustering
-K = 40                             # KNN graph neighbors, not cluster count
-SIGMA = 5.0                        # Spatial kernel bandwidth
+ACTIVE_LAGS = (4, 8, 12)
+TRAIN_WINDOW_MONTHS = 36
+DATA_MODE = "unadjusted"
+DATA_PATH = "FEWSNET_forecast_unadjusted_bm.csv"
+CONTIGUITY = True
+USE_ADJACENCY_MATRIX = True
+K = 40
+SIGMA = 5.0
+RF_STAGE3 = {"n_estimators": 100, "max_depth": None, "random_state": 5, "n_jobs": 1}
 ```
 
+`K=40` is the graph-neighbor count used during consensus clustering, not the
+number of clusters. Stage 3 paper artifacts use contiguity-refined maps with
+three refinement iterations.
+
 ## Key Outputs
+
+### Paper Reproducibility Package
+```
+paper_reproducibility_package/
+├── README.md
+├── MANIFEST.csv
+├── SHA256SUMS.txt
+├── SOURCE_DATA.md
+├── PAPER_ARTIFACT_MAP.md
+├── CONSISTENCY_AUDIT.md
+├── stage2_cluster_maps/
+├── stage3_results/
+├── paper_artifacts/
+└── ablation/
+```
 
 ### Monthly Results (Stage 1)
 ```
@@ -197,7 +265,7 @@ result_Geo{RF,DT}_YYYY_fsN_YYYY-MM_visual/
 - Cluster-wise performance metrics
 - Spatial visualization of clusters
 - Aggregated workbooks: `other_outputs/Table_Format.xlsx` / `Model_Comparison_Table.xlsx`
-- fs0-only workbooks: `other_outputs/Table_Format_fs0.xlsx` / `Model_Comparison_Table_fs0.xlsx`
+- Experimental fs0-only workbooks: `other_outputs/Table_Format_fs0.xlsx` / `Model_Comparison_Table_fs0.xlsx`
 
 ## Known Issues
 
