@@ -121,6 +121,89 @@ def test_resolve_repo_reference_falls_back_to_archived_input(tmp_path: Path) -> 
     assert paths.resolve_repo_reference("result_partition_k40_compare_GF_fs1/run_manifest.json") == archived_file
 
 
+def test_resolve_repo_reference_archives_absolute_experiment_path(tmp_path: Path) -> None:
+    archived_file = (
+        tmp_path
+        / "archived"
+        / "release_20260624_reproducibility_inputs"
+        / "GeoRFExperiment"
+        / "knn_sparsification_results"
+        / "cluster_mapping_k40_nc17_general.csv"
+    )
+    archived_file.parent.mkdir(parents=True)
+    archived_file.write_text("admin_code,cluster\n", encoding="utf-8")
+    old_root_file = (
+        tmp_path
+        / "GeoRFExperiment"
+        / "knn_sparsification_results"
+        / "cluster_mapping_k40_nc17_general.csv"
+    )
+
+    paths = ReleasePaths(repo_root=tmp_path)
+
+    assert paths.resolve_repo_reference(old_root_file) == archived_file
+
+
+def test_resolve_repo_reference_archives_absolute_ablation_path(tmp_path: Path) -> None:
+    archived_file = (
+        tmp_path
+        / "archived"
+        / "release_20260624_reproducibility_inputs"
+        / "main_ablation_exclude_updated_stage3_fixed_partitions"
+        / "input_datasets"
+        / "weather_exclude.csv"
+    )
+    archived_file.parent.mkdir(parents=True)
+    archived_file.write_text("feature\n", encoding="utf-8")
+    old_root_file = (
+        tmp_path
+        / "main_ablation_exclude_updated_stage3_fixed_partitions"
+        / "input_datasets"
+        / "weather_exclude.csv"
+    )
+
+    paths = ReleasePaths(repo_root=tmp_path)
+
+    assert paths.resolve_repo_reference(old_root_file) == archived_file
+
+
+def test_resolve_repo_reference_keeps_absolute_external_source_path(tmp_path: Path) -> None:
+    external_path = (
+        tmp_path.parent
+        / "1.Source Data"
+        / "FEWSNET_forecast_unadjusted_bm.csv"
+    )
+
+    paths = ReleasePaths(repo_root=tmp_path)
+
+    assert paths.resolve_repo_reference(external_path) == external_path
+
+
+def test_resolve_repo_reference_prefers_existing_absolute_root_file(tmp_path: Path) -> None:
+    archived_file = (
+        tmp_path
+        / "archived"
+        / "release_20260624_reproducibility_inputs"
+        / "GeoRFExperiment"
+        / "knn_sparsification_results"
+        / "cluster_mapping_k40_nc17_general.csv"
+    )
+    archived_file.parent.mkdir(parents=True)
+    archived_file.write_text("archived\n", encoding="utf-8")
+    root_file = (
+        tmp_path
+        / "GeoRFExperiment"
+        / "knn_sparsification_results"
+        / "cluster_mapping_k40_nc17_general.csv"
+    )
+    root_file.parent.mkdir(parents=True)
+    root_file.write_text("root\n", encoding="utf-8")
+
+    paths = ReleasePaths(repo_root=tmp_path)
+
+    assert paths.resolve_repo_reference(root_file) == root_file
+
+
 def test_resolve_repo_reference_handles_windows_drive_paths() -> None:
     paths = ReleasePaths(repo_root=Path("/repo"))
 

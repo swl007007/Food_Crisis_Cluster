@@ -90,24 +90,57 @@ class ReleasePaths:
         raw = str(value).replace("\\", "/")
         if len(raw) >= 3 and raw[1:3] == ":/":
             if os.name == "nt":
-                return Path(raw)
-            return Path("/mnt") / raw[0].lower() / raw[3:]
+                path = Path(raw)
+            else:
+                path = Path("/mnt") / raw[0].lower() / raw[3:]
+            return self._resolve_absolute_reference(path)
 
         path = Path(raw)
         if path.is_absolute():
-            return path
+            return self._resolve_absolute_reference(path)
 
         root_candidate = self.repo_root / path
         if root_candidate.exists():
             return root_candidate
 
-        if path.parts and path.parts[0] in REPRODUCIBILITY_INPUT_NAMES:
-            archived_candidate = self.reproducibility_inputs_root / path
-            if archived_candidate.exists():
-                return archived_candidate
+        archived_candidate = self._archived_input_candidate(path)
+        if archived_candidate is not None:
             return archived_candidate
 
         return root_candidate
+
+    def _resolve_absolute_reference(self, path: Path) -> Path:
+        """Resolve an absolute path, redirecting moved repo inputs to the archive."""
+        if path.exists():
+            return path
+
+        relative_path = self._relative_to_repo_root(path)
+        if relative_path is not None:
+            archived_candidate = self._archived_input_candidate(relative_path)
+            if archived_candidate is not None:
+                return archived_candidate
+
+        return path
+
+    def _relative_to_repo_root(self, path: Path) -> Path | None:
+        """Return path relative to repo_root when the absolute path is inside it."""
+        try:
+            return path.relative_to(self.repo_root)
+        except ValueError:
+            pass
+
+        try:
+            return path.resolve(strict=False).relative_to(
+                self.repo_root.resolve(strict=False)
+            )
+        except (OSError, ValueError):
+            return None
+
+    def _archived_input_candidate(self, relative_path: Path) -> Path | None:
+        """Return archived path for reproducibility inputs formerly at repo root."""
+        if relative_path.parts and relative_path.parts[0] in REPRODUCIBILITY_INPUT_NAMES:
+            return self.reproducibility_inputs_root / relative_path
+        return None
 
     def require_file(self, path: Path, label: str) -> Path:
         if not path.is_file():
