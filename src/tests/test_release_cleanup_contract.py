@@ -82,6 +82,10 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def archive_old_paths(items) -> set[str]:
+    return {item.old_path for item in items}
+
+
 def assert_path_is_under(path: Path, root: Path) -> None:
     try:
         path.resolve().relative_to(root.resolve())
@@ -157,3 +161,51 @@ def test_release_manifest_names_archive_and_tag() -> None:
     assert "archived/release_20260624_nonpaper_pipelines/" in text
     assert "GeoRF" in text
     assert "GeoDT appendix" in text
+
+
+def test_clean_root_archive_item_lists_are_explicit() -> None:
+    from scripts.release_tools.archive_clean_root_release_inputs import (
+        LEGACY_WORKSPACE_ITEMS,
+        LOCAL_RESIDUE_ITEMS,
+        REPRODUCIBILITY_ITEMS,
+    )
+
+    assert len(REPRODUCIBILITY_ITEMS) == 13
+    assert len(LEGACY_WORKSPACE_ITEMS) == 11
+    assert len(LOCAL_RESIDUE_ITEMS) == 6
+
+
+def test_clean_root_repro_items_cover_verifier_inputs() -> None:
+    from scripts.release_tools.archive_clean_root_release_inputs import (
+        REPRODUCIBILITY_ITEMS,
+    )
+
+    old_paths = archive_old_paths(REPRODUCIBILITY_ITEMS)
+    expected = {
+        "GeoRFExperiment",
+        "GeoDTExperiment",
+        "main_ablation_exclude_updated_stage3_fixed_partitions",
+        "fewsnet_baseline_results",
+        "result_partition_k40_compare_GF_fs1",
+        "result_partition_k40_compare_GF_fs2",
+        "result_partition_k40_compare_GF_fs3",
+        "result_partition_k40_compare_DT_fs1",
+        "result_partition_k40_compare_DT_fs2",
+        "result_partition_k40_compare_DT_fs3",
+        "result_partition_k40_compare_GF_thresholded_fs1",
+        "result_partition_k40_compare_GF_thresholded_fs2",
+        "result_partition_k40_compare_GF_thresholded_fs3",
+    }
+    assert old_paths == expected
+
+
+def test_clean_root_legacy_items_include_workspace_and_script_candidates() -> None:
+    from scripts.release_tools.archive_clean_root_release_inputs import (
+        LEGACY_WORKSPACE_ITEMS,
+    )
+
+    old_paths = archive_old_paths(LEGACY_WORKSPACE_ITEMS)
+    assert "other_outputs" in old_paths
+    assert "scripts/config_visual.py" in old_paths
+    for item in LEGACY_WORKSPACE_ITEMS:
+        assert item.dependency_scan_reason.strip(), item
