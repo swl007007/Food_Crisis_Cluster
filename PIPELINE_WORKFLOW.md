@@ -26,7 +26,7 @@ Stage 3: GeoRF fixed-partition evaluation
   run_partition_k40_comparison_unified.bat georf --visual --month-ind
   -> archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs{1,2,3}/
   -> final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
-  -> paper_reproducibility_package/stage3_results/
+  -> paper_reproducibility_package/paper_artifacts/final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
 ```
 
 ### Pipeline Flow Summary
@@ -50,7 +50,8 @@ Key handoff outputs:
 - Stage 3 final deliverables: archived
   `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fsN/`
   result folders, `final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx`,
-  and the package copies under `paper_reproducibility_package/stage3_results/`.
+  and the package copy at
+  `paper_reproducibility_package/paper_artifacts/final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx`.
 
 GeoDT result directories and figures remain in the reproducibility-input archive
 as appendix and interpretability provenance. They are not the release quickstart
@@ -216,7 +217,7 @@ package copy:
 
 ```text
 final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
-paper_reproducibility_package/stage3_results/
+paper_reproducibility_package/paper_artifacts/final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
 ```
 
 ## Paper Verification
