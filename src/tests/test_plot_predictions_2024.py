@@ -5,7 +5,12 @@ import unittest
 from pathlib import Path
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "plot_predictions_2024.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_predictions_2024.py"
+)
 
 
 def load_script_module():

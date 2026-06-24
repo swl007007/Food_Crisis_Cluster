@@ -6,7 +6,7 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl import load_workbook
 
-from scripts.build_feature_exclude_ablation_workbook import (
+from scripts.paper_artifacts.build_feature_exclude_ablation_workbook import (
     FEATURE_GROUPS,
     build_ablation_rows,
     build_reference_rows,

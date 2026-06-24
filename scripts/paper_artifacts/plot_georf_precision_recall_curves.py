@@ -24,7 +24,7 @@ if str(SCRIPT_DIR) not in sys.path:
 import analyze_georf_threshold_free_metrics as threshold_metrics
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "11_threshold_free_metrics"
 DEFAULT_CURVE_POINTS = DEFAULT_OUTPUT_DIR / "georf_precision_recall_curve_points.csv"
 DEFAULT_PNG = DEFAULT_OUTPUT_DIR / "georf_precision_recall_curves.png"

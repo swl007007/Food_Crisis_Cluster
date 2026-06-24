@@ -7,7 +7,12 @@ import pandas as pd
 from sklearn.metrics import average_precision_score
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "analyze_georf_threshold_free_metrics.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "analyze_georf_threshold_free_metrics.py"
+)
 spec = importlib.util.spec_from_file_location("analyze_georf_threshold_free_metrics", SCRIPT_PATH)
 threshold_metrics = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(threshold_metrics)

@@ -6,13 +6,23 @@ from pathlib import Path
 from openpyxl import Workbook
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "paper_horizon_labels.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "paper_horizon_labels.py"
+)
 spec = importlib.util.spec_from_file_location("paper_horizon_labels", SCRIPT_PATH)
 labels = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(labels)
 
 
-RELABELER_PATH = Path(__file__).resolve().parents[2] / "scripts" / "relabel_final_artifact_horizons.py"
+RELABELER_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "relabel_final_artifact_horizons.py"
+)
 
 
 def load_relabeler_module():

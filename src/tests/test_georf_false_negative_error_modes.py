@@ -7,7 +7,12 @@ import numpy as np
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "analyze_georf_false_negative_error_modes.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "analyze_georf_false_negative_error_modes.py"
+)
 spec = importlib.util.spec_from_file_location("analyze_georf_false_negative_error_modes", SCRIPT_PATH)
 false_modes = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(false_modes)

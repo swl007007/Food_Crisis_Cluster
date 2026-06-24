@@ -14,10 +14,10 @@ import pandas as pd
 try:
     from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SOURCE_DIR = REPO_ROOT / "main_ablation_results" / "march2026_main_backup_month_ind_cont3"
 DEFAULT_FEWSNET = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
@@ -55,7 +55,7 @@ def scope_label(scope: str) -> str:
 
 
 def load_seasonal_helpers():
-    script = REPO_ROOT / "scripts" / "plot_seasonal_performance.py"
+    script = REPO_ROOT / "scripts" / "paper_artifacts" / "plot_seasonal_performance.py"
     spec = importlib.util.spec_from_file_location("plot_seasonal_performance", script)
     module = importlib.util.module_from_spec(spec)
     if spec.loader is None:

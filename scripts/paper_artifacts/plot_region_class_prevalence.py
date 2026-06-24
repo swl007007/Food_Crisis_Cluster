@@ -11,7 +11,7 @@ from pathlib import Path
 import pandas as pd
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PREDICTIONS = REPO_ROOT / "result_partition_k40_compare_GF_fs1" / "predictions_monthly.csv"
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"

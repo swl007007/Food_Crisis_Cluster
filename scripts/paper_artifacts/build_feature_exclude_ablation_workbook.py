@@ -15,10 +15,10 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 try:
     from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUN_ROOT = REPO_ROOT / "main_ablation_exclude_updated_stage3_fixed_partitions"
 DEFAULT_MAIN_WORKBOOK = REPO_ROOT / "final_artifacts_in_paper_updated" / "main_month_ind_cont3.xlsx"
 DEFAULT_OUTPUT = REPO_ROOT / "final_artifacts_in_paper_updated" / "ablation_feature_exclude.xlsx"

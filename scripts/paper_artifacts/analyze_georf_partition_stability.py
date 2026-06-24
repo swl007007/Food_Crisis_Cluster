@@ -14,10 +14,10 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 try:
     from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INDEX = REPO_ROOT / "GeoRFExperiment" / "linked_tables" / "main_index.csv"
 DEFAULT_PARTITION_DIR = REPO_ROOT / "GeoRFExperiment" / "linked_tables" / "partitions"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated"

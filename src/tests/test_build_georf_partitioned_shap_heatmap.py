@@ -13,7 +13,12 @@ import numpy as np
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "build_georf_partitioned_shap_heatmap.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "build_georf_partitioned_shap_heatmap.py"
+)
 spec = importlib.util.spec_from_file_location("build_georf_partitioned_shap_heatmap", SCRIPT_PATH)
 shap_heatmap = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(shap_heatmap)

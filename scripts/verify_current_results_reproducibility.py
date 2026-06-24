@@ -20,7 +20,10 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.audit_final_artifact_sources import build_audit_rows, write_audit_outputs
+from scripts.paper_artifacts.audit_final_artifact_sources import (
+    build_audit_rows,
+    write_audit_outputs,
+)
 
 SCOPES = {1: 4, 2: 8, 3: 12}
 

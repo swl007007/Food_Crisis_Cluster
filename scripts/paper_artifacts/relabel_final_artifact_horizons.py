@@ -19,7 +19,13 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from paper_horizon_labels import forbidden_paper_lag_terms, replace_paper_horizon_terms
+try:
+    from paper_horizon_labels import forbidden_paper_lag_terms, replace_paper_horizon_terms
+except ModuleNotFoundError:
+    from scripts.paper_artifacts.paper_horizon_labels import (
+        forbidden_paper_lag_terms,
+        replace_paper_horizon_terms,
+    )
 
 
 DEFAULT_ROOT = Path("final_artifacts_in_paper_updated")

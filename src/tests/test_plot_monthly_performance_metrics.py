@@ -6,7 +6,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "plot_monthly_performance_metrics.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_monthly_performance_metrics.py"
+)
 spec = importlib.util.spec_from_file_location("plot_monthly_performance_metrics", SCRIPT_PATH)
 plot_monthly = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(plot_monthly)

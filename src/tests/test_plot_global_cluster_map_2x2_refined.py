@@ -10,7 +10,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "plot_global_cluster_map_2x2_refined.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_global_cluster_map_2x2_refined.py"
+)
 
 
 def load_script_module():
@@ -44,6 +49,11 @@ class GlobalClusterMapSelectionTests(unittest.TestCase):
         self.assertEqual(module.DEFAULT_SOURCE_DIR, module.REPO_ROOT)
         self.assertNotIn("main_ablation_results", str(module.DEFAULT_SOURCE_DIR))
         self.assertNotIn("archived", str(module.DEFAULT_SOURCE_DIR))
+
+    def test_default_output_dir_preserves_pre_move_scripts_root(self):
+        module = load_script_module()
+
+        self.assertEqual(module.DEFAULT_OUTPUT_DIR, module.REPO_ROOT / "scripts")
 
     def test_choose_mapping_prefers_latest_file_over_stale_higher_nc(self):
         module = load_script_module()

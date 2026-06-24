@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 FINAL_ARTIFACT_ROOT = REPO_ROOT / "final_artifacts_in_paper_updated"
 CLEAN_PANEL_BASENAME = "FEWSNET_forecast_unadjusted_bm.csv"
 PHASE_CHANGE_BASENAME = "FEWSNET_forecast_unadjusted_bm_phase_change.csv"
@@ -61,12 +61,12 @@ SCRIPT_DEFAULTS = [
         REPO_ROOT / "scripts" / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
     ),
     (
-        "scripts/analyze_georf_m2_cluster_profiles.py",
-        REPO_ROOT / "scripts" / "analyze_georf_m2_cluster_profiles.py",
+        "scripts/paper_artifacts/analyze_georf_m2_cluster_profiles.py",
+        REPO_ROOT / "scripts" / "paper_artifacts" / "analyze_georf_m2_cluster_profiles.py",
     ),
     (
-        "scripts/analyze_georf_false_negative_error_modes.py",
-        REPO_ROOT / "scripts" / "analyze_georf_false_negative_error_modes.py",
+        "scripts/paper_artifacts/analyze_georf_false_negative_error_modes.py",
+        REPO_ROOT / "scripts" / "paper_artifacts" / "analyze_georf_false_negative_error_modes.py",
     ),
 ]
 

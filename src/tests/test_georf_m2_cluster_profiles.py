@@ -6,7 +6,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "analyze_georf_m2_cluster_profiles.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "analyze_georf_m2_cluster_profiles.py"
+)
 spec = importlib.util.spec_from_file_location("analyze_georf_m2_cluster_profiles", SCRIPT_PATH)
 cluster_profiles = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cluster_profiles)

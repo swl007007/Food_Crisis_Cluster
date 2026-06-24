@@ -9,7 +9,12 @@ import numpy as np
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "create_region_performance_partitioned_pooled_fewsnet.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "create_region_performance_partitioned_pooled_fewsnet.py"
+)
 
 
 def load_script_module():

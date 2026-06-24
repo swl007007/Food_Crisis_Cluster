@@ -6,7 +6,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "plot_georf_precision_recall_curves.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_georf_precision_recall_curves.py"
+)
 spec = importlib.util.spec_from_file_location("plot_georf_precision_recall_curves", SCRIPT_PATH)
 pr_curves = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pr_curves)

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from scripts.audit_final_artifact_sources import (
+from scripts.paper_artifacts.audit_final_artifact_sources import (
     CLEAN_PANEL_BASENAME,
     PHASE_CHANGE_BASENAME,
     audit_artifact_manifest,
@@ -101,8 +101,14 @@ def test_paper_facing_script_defaults_do_not_reference_phase_change():
     scripts = [
         repo_root / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py",
         repo_root / "scripts" / "compare_partitioned_vs_pooled_xgb_k40_nc4.py",
-        repo_root / "scripts" / "analyze_georf_m2_cluster_profiles.py",
-        repo_root / "scripts" / "analyze_georf_false_negative_error_modes.py",
+        repo_root
+        / "scripts"
+        / "paper_artifacts"
+        / "analyze_georf_m2_cluster_profiles.py",
+        repo_root
+        / "scripts"
+        / "paper_artifacts"
+        / "analyze_georf_false_negative_error_modes.py",
     ]
     for script in scripts:
         row = audit_script_default(script.as_posix(), script)

@@ -8,7 +8,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "analyze_georf_partition_stability.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "analyze_georf_partition_stability.py"
+)
 spec = importlib.util.spec_from_file_location("analyze_georf_partition_stability", SCRIPT_PATH)
 stability = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(stability)

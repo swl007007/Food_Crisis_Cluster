@@ -15,16 +15,16 @@ import pandas as pd
 try:
     from paper_horizon_labels import label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import label_for_scope
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CORRESPONDENCE = REPO_ROOT / "result_GeoDT_0" / "correspondence_table_2024-10.csv"
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
     r"\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
 )
-DEFAULT_OUTPUT = Path(__file__).resolve().parent / "geodt_branch_1_vs_001_locations_2024-10_fs1_global.png"
+DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "geodt_branch_1_vs_001_locations_2024-10_fs1_global.png"
 
 DEFAULT_BRANCHES = ("1", "001")
 BRANCH_COLORS = {"1": "#d73027", "001": "#2166ac"}

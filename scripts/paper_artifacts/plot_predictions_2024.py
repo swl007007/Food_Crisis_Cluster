@@ -30,7 +30,7 @@ except ImportError:
     print("Proceeding without basemap.")
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 PREDICTIONS_FILE = REPO_ROOT / 'result_partition_k40_compare_GF_fs2' / 'predictions_monthly.csv'
 SHAPEFILE = Path(
     r'C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis'

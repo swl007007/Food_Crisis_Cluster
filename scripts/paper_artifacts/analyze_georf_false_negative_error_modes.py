@@ -17,10 +17,10 @@ import pandas as pd
 try:
     from paper_horizon_labels import HORIZON_LABELS
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_LABELS
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_LABELS
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DATA = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data"
     r"\FEWSNET_forecast_unadjusted_bm.csv"

@@ -6,7 +6,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "build_georf_thresholded_artifacts.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "build_georf_thresholded_artifacts.py"
+)
 spec = importlib.util.spec_from_file_location("build_georf_thresholded_artifacts", SCRIPT_PATH)
 builder = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builder)

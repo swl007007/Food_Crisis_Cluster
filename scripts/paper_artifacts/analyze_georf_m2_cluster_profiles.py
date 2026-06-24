@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MAPPING = (
     REPO_ROOT
     / "result_partition_k40_compare_GF_fs1"
@@ -222,7 +222,7 @@ def build_cluster_feature_profile(panel_with_clusters: pd.DataFrame, columns: li
 
 def load_region_map() -> dict[str, str]:
     """Load REGION_MAP from the region prevalence script using an absolute file path."""
-    module_path = REPO_ROOT / "scripts" / "plot_region_class_prevalence.py"
+    module_path = REPO_ROOT / "scripts" / "paper_artifacts" / "plot_region_class_prevalence.py"
     spec = importlib.util.spec_from_file_location("plot_region_class_prevalence_for_profiles", module_path)
     if spec is None or spec.loader is None:
         raise ImportError(f"Unable to import region map from {module_path}")

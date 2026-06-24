@@ -7,7 +7,7 @@ Loads predictions_monthly.csv files for the 4-, 8-, and 12-month horizons, gener
   - Table 1: model performance by season
   - Table 2: model performance by region (builtin FEWSNET mapping)
 
-Reference: scripts/plot_error_rate_grids.py
+Reference: scripts/paper_artifacts/plot_error_rate_grids.py
 """
 
 import argparse
@@ -26,7 +26,7 @@ from matplotlib.colors import BoundaryNorm
 try:
     from paper_horizon_labels import label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import label_for_scope
 
 try:
     import contextily as ctx

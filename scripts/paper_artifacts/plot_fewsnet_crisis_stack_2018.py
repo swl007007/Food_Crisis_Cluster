@@ -10,11 +10,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_INPUT = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data"
     r"\FEWSNET_forecast_unadjusted_bm.csv"
 )
-DEFAULT_OUTPUT = Path(__file__).resolve().parent / "fewsnet_crisis_stack_2018.png"
+DEFAULT_OUTPUT = REPO_ROOT / "scripts" / "fewsnet_crisis_stack_2018.png"
 
 
 def parse_args() -> argparse.Namespace:

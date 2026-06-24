@@ -16,10 +16,10 @@ from matplotlib.lines import Line2D
 try:
     from paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_MONTHS_BY_SCOPE, label_for_scope
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_ABLATION_ROOT = Path("main_ablation_results/march2026_main_backup_month_ind_cont3")
 DEFAULT_FEWSNET_ROOT = Path("fewsnet_baseline_results_backup")
 DEFAULT_OUTPUT_DIR = DEFAULT_ABLATION_ROOT / "monthly_performance_plots"
@@ -380,7 +380,7 @@ def make_manifest(
     return {
         "workflow_mode": "baseline comparison",
         "status": "exploratory diagnostics",
-        "entry_point": "scripts/plot_monthly_performance_metrics.py",
+        "entry_point": "scripts/paper_artifacts/plot_monthly_performance_metrics.py",
         "model_selection": models,
         "source_roots": {"ablation_root": str(ablation_root), "fewsnet_root": str(fewsnet_root)},
         "source_paths": {"model_metrics": model_sources, "fewsnet_baselines": fewsnet_sources},

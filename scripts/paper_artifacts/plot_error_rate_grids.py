@@ -22,7 +22,7 @@ import numpy as np
 try:
     from paper_horizon_labels import label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import label_for_scope
 
 try:
     import contextily as ctx

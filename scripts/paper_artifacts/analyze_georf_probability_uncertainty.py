@@ -16,10 +16,10 @@ import pandas as pd
 try:
     from paper_horizon_labels import HORIZON_LABELS
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_LABELS
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_LABELS
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated"
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
@@ -260,7 +260,7 @@ def probability_entropy(probabilities: pd.Series) -> pd.Series:
 
 def load_region_map() -> dict[str, str]:
     """Load shared paper region map."""
-    module_path = REPO_ROOT / "scripts" / "plot_region_class_prevalence.py"
+    module_path = REPO_ROOT / "scripts" / "paper_artifacts" / "plot_region_class_prevalence.py"
     spec = importlib.util.spec_from_file_location("plot_region_class_prevalence_for_probability", module_path)
     if spec is None or spec.loader is None:
         raise ImportError(f"Unable to import region map from {module_path}")

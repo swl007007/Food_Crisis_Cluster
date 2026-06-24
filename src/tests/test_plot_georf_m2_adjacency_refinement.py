@@ -7,7 +7,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "plot_georf_m2_adjacency_refinement.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_georf_m2_adjacency_refinement.py"
+)
 spec = importlib.util.spec_from_file_location("plot_georf_m2_adjacency_refinement", SCRIPT_PATH)
 refinement = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(refinement)

@@ -5,7 +5,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SCRIPT_PATH = Path(__file__).resolve().parents[2] / "scripts" / "plot_region_class_prevalence.py"
+SCRIPT_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_region_class_prevalence.py"
+)
 spec = importlib.util.spec_from_file_location("plot_region_class_prevalence", SCRIPT_PATH)
 region_prevalence = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(region_prevalence)

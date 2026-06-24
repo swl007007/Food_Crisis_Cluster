@@ -12,10 +12,10 @@ import pandas as pd
 try:
     from paper_horizon_labels import HORIZON_LABELS
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import HORIZON_LABELS
+    from scripts.paper_artifacts.paper_horizon_labels import HORIZON_LABELS
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "final_artifacts_in_paper_updated" / "12_thresholded_georf_results"
 HORIZONS = HORIZON_LABELS
 

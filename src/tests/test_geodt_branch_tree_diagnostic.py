@@ -18,7 +18,12 @@ except ModuleNotFoundError as exc:
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DIAGNOSTIC_SCRIPT = REPO_ROOT / "scripts" / "plot_geodt_branch_tree_comparison.py"
+DIAGNOSTIC_SCRIPT = (
+    REPO_ROOT
+    / "scripts"
+    / "paper_artifacts"
+    / "plot_geodt_branch_tree_comparison.py"
+)
 
 
 def _fit_tree(offset: float = 0.0) -> DecisionTreeClassifier:

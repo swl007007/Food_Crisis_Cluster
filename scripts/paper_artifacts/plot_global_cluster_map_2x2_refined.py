@@ -17,12 +17,12 @@ import pandas as pd
 try:
     from paper_horizon_labels import label_for_scope
 except ModuleNotFoundError:
-    from scripts.paper_horizon_labels import label_for_scope
+    from scripts.paper_artifacts.paper_horizon_labels import label_for_scope
 
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SOURCE_DIR = REPO_ROOT
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "scripts"
 DEFAULT_SHAPEFILE = Path(
     r"C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\Outcome"
     r"\FEWSNET_IPC\FEWS NET Admin Boundaries\FEWS_Admin_LZ_v3.shp"
