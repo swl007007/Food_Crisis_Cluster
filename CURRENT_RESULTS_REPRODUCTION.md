@@ -70,6 +70,9 @@ provenance and is not required for `verify_current_results_reproducibility.py`.
 ## Reproduction Recipe
 
 Run from a Windows CMD shell in the repository root unless noted otherwise.
+These regeneration commands use the scripts' default root workspaces during a
+fresh rerun. The clean-root release archives the frozen verifier/package inputs
+under `archived/release_20260624_reproducibility_inputs/` after generation.
 
 1. Regenerate Stage 1 partition candidates for the no-leak training window:
 
@@ -101,6 +104,11 @@ python scripts\create_feature_exclude_datasets_from_unadjusted.py
 python scripts\run_feature_exclude_stage3_fixed_partitions.py
 python -m scripts.paper_artifacts.build_feature_exclude_ablation_workbook
 ```
+
+The ablation scripts write their fresh-run workspace under the default root
+`main_ablation_exclude_updated_stage3_fixed_partitions/`. The current
+clean-root verifier/package inputs use the archived copy under
+`archived/release_20260624_reproducibility_inputs/main_ablation_exclude_updated_stage3_fixed_partitions/`.
 
 5. Regenerate final paper-facing figures and tables from the current main
 outputs as needed. The current final folder already records one manifest for

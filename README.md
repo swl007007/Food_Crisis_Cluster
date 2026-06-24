@@ -45,6 +45,11 @@ The full regeneration path is slower than the package audit path because Stage 1
 partition learning is expensive. Use it when you need to regenerate the complete
 workflow rather than audit the packaged paper artifacts.
 
+Fresh regeneration commands use the scripts' default root workspaces such as
+`GeoRFExperiment/` and `result_partition_k40_compare_GF_fsN/`. The clean-root
+release archives the frozen verifier/package inputs under
+`archived/release_20260624_reproducibility_inputs/` after generation.
+
 ### Stage 1: Learn partition candidates on 2018-2020
 
 ```batch
@@ -77,7 +82,8 @@ the release quickstart.
 Non-paper workflows are archived under
 `archived/release_20260624_nonpaper_pipelines/`.
 
-Output: archived Stage 3 result folders under
+Fresh rerun output: `result_partition_k40_compare_GF_fsN/`. Current
+release-verifier input: archived Stage 3 result folders under
 `archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fsN/`.
 Paper-facing aggregate tables are in
 `final_artifacts_in_paper_updated/01_main_results/` and the

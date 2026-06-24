@@ -9,22 +9,29 @@ partitions on 2021-2024. GeoDT outputs are retained as appendix and
 interpretability provenance. GeoXGB, fs0 launch guidance, and 2026-2027
 forward/scenario prediction have been archived as non-paper workflows.
 
+The commands below still use their default root workspaces during a fresh
+rerun. The clean-root release archives the frozen verifier/package inputs under
+`archived/release_20260624_reproducibility_inputs/` after generation.
+
 ## Pipeline Architecture
 
 ```text
 Stage 1: GeoRF partition candidate learning
   run_batches_2018_2020_partition_learning_visual_monthly.bat georf
-  -> archived/release_20260624_reproducibility_inputs/GeoRFExperiment/GeoRFResults/
+  fresh rerun -> GeoRFExperiment/GeoRFResults/
+  current archive -> archived/release_20260624_reproducibility_inputs/GeoRFExperiment/GeoRFResults/
   -> result_GeoRF_YYYY_fsN_YYYY-MM_visual/
 
 Stage 2: GeoRF consensus clustering
   spatial_weighted_consensus_clustering.bat georf
-  -> archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/
+  fresh rerun -> GeoRFExperiment/knn_sparsification_results/
+  current archive -> archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/
   -> cluster_mapping_manifest.json
 
 Stage 3: GeoRF fixed-partition evaluation
   run_partition_k40_comparison_unified.bat georf --visual --month-ind
-  -> archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs{1,2,3}/
+  fresh rerun -> result_partition_k40_compare_GF_fs{1,2,3}/
+  current archive -> archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs{1,2,3}/
   -> final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
   -> paper_reproducibility_package/paper_artifacts/final_artifacts_in_paper_updated/01_main_results/main_month_ind_cont3.xlsx
 ```
@@ -184,10 +191,12 @@ REFINE_ITERS=3
 ```
 
 **Partition discovery**: Stage 3 reads
-`archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json`
-to locate general and month-specific partition files. If the manifest is
-missing, it falls back to `cluster_mapping_k40_nc*_general.csv` pattern
-matching.
+`GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json`
+during a fresh rerun. The current verifier/package bundle uses the archived copy
+at
+`archived/release_20260624_reproducibility_inputs/GeoRFExperiment/knn_sparsification_results/cluster_mapping_manifest.json`.
+If the manifest is missing, Stage 3 falls back to
+`cluster_mapping_k40_nc*_general.csv` pattern matching.
 
 **Comparisons**:
 
@@ -199,9 +208,10 @@ matching.
 **Outputs**:
 
 ```text
-archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs1/
-archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs2/
-archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs3/
+result_partition_k40_compare_GF_fs1/                                      # fresh rerun
+result_partition_k40_compare_GF_fs2/
+result_partition_k40_compare_GF_fs3/
+archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fsN/ # current archive
 ```
 
 Each output folder must include:
