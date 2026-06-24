@@ -17,9 +17,12 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from scripts.release_paths import ReleasePaths
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_ROOT = REPO_ROOT / "paper_reproducibility_package"
+PATHS = ReleasePaths(repo_root=REPO_ROOT)
+PACKAGE_ROOT = PATHS.package_root
 
 
 class PackageBuildError(RuntimeError):
@@ -180,52 +183,52 @@ def add_generated_doc(
 def stage2_specs() -> list[tuple[Path, str, str]]:
     return [
         (
-            REPO_ROOT / "GeoRFExperiment" / "knn_sparsification_results" / "cluster_mapping_manifest.json",
+            PATHS.experiment_root("GF") / "knn_sparsification_results" / "cluster_mapping_manifest.json",
             "stage2_cluster_maps/georf/cluster_mapping_manifest.json",
             "GeoRF Stage 2 manifest",
         ),
         (
-            REPO_ROOT / "GeoRFExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc17_general.csv",
+            PATHS.experiment_root("GF") / "knn_sparsification_results" / "cluster_mapping_k40_nc17_general.csv",
             "stage2_cluster_maps/georf/cluster_mapping_k40_nc17_general.csv",
             "GeoRF general consensus map",
         ),
         (
-            REPO_ROOT / "GeoRFExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc13_m2.csv",
+            PATHS.experiment_root("GF") / "knn_sparsification_results" / "cluster_mapping_k40_nc13_m2.csv",
             "stage2_cluster_maps/georf/cluster_mapping_k40_nc13_m2.csv",
             "GeoRF February consensus map",
         ),
         (
-            REPO_ROOT / "GeoRFExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc11_m6.csv",
+            PATHS.experiment_root("GF") / "knn_sparsification_results" / "cluster_mapping_k40_nc11_m6.csv",
             "stage2_cluster_maps/georf/cluster_mapping_k40_nc11_m6.csv",
             "GeoRF June consensus map",
         ),
         (
-            REPO_ROOT / "GeoRFExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc16_m10.csv",
+            PATHS.experiment_root("GF") / "knn_sparsification_results" / "cluster_mapping_k40_nc16_m10.csv",
             "stage2_cluster_maps/georf/cluster_mapping_k40_nc16_m10.csv",
             "GeoRF October consensus map",
         ),
         (
-            REPO_ROOT / "GeoDTExperiment" / "knn_sparsification_results" / "cluster_mapping_manifest.json",
+            PATHS.experiment_root("DT") / "knn_sparsification_results" / "cluster_mapping_manifest.json",
             "stage2_cluster_maps/geodt/cluster_mapping_manifest.json",
             "GeoDT Stage 2 manifest",
         ),
         (
-            REPO_ROOT / "GeoDTExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc15_general.csv",
+            PATHS.experiment_root("DT") / "knn_sparsification_results" / "cluster_mapping_k40_nc15_general.csv",
             "stage2_cluster_maps/geodt/cluster_mapping_k40_nc15_general.csv",
             "GeoDT general consensus map",
         ),
         (
-            REPO_ROOT / "GeoDTExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc16_m2.csv",
+            PATHS.experiment_root("DT") / "knn_sparsification_results" / "cluster_mapping_k40_nc16_m2.csv",
             "stage2_cluster_maps/geodt/cluster_mapping_k40_nc16_m2.csv",
             "GeoDT February consensus map",
         ),
         (
-            REPO_ROOT / "GeoDTExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc15_m6.csv",
+            PATHS.experiment_root("DT") / "knn_sparsification_results" / "cluster_mapping_k40_nc15_m6.csv",
             "stage2_cluster_maps/geodt/cluster_mapping_k40_nc15_m6.csv",
             "GeoDT June consensus map",
         ),
         (
-            REPO_ROOT / "GeoDTExperiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc18_m10.csv",
+            PATHS.experiment_root("DT") / "knn_sparsification_results" / "cluster_mapping_k40_nc18_m10.csv",
             "stage2_cluster_maps/geodt/cluster_mapping_k40_nc18_m10.csv",
             "GeoDT October consensus map",
         ),
@@ -234,12 +237,12 @@ def stage2_specs() -> list[tuple[Path, str, str]]:
 
 def stage3_result_dirs() -> list[tuple[str, Path]]:
     return [
-        ("georf_fs1", REPO_ROOT / "result_partition_k40_compare_GF_fs1"),
-        ("georf_fs2", REPO_ROOT / "result_partition_k40_compare_GF_fs2"),
-        ("georf_fs3", REPO_ROOT / "result_partition_k40_compare_GF_fs3"),
-        ("geodt_fs1", REPO_ROOT / "result_partition_k40_compare_DT_fs1"),
-        ("geodt_fs2", REPO_ROOT / "result_partition_k40_compare_DT_fs2"),
-        ("geodt_fs3", REPO_ROOT / "result_partition_k40_compare_DT_fs3"),
+        ("georf_fs1", PATHS.stage3_root("GF", 1)),
+        ("georf_fs2", PATHS.stage3_root("GF", 2)),
+        ("georf_fs3", PATHS.stage3_root("GF", 3)),
+        ("geodt_fs1", PATHS.stage3_root("DT", 1)),
+        ("geodt_fs2", PATHS.stage3_root("DT", 2)),
+        ("geodt_fs3", PATHS.stage3_root("DT", 3)),
     ]
 
 
@@ -252,7 +255,7 @@ def canonical_refined_files(source_dir: Path, manifest: dict) -> list[Path]:
     partition_path = manifest.get("partition_map_path")
     if partition_path:
         normalized = Path(str(partition_path).replace("\\", "/"))
-        source = normalized if normalized.is_absolute() else REPO_ROOT / normalized
+        source = normalized if normalized.is_absolute() else PATHS.resolve_repo_reference(normalized)
         if source.is_file():
             selected[source.name] = source
 
@@ -301,7 +304,7 @@ def add_stage3_files(rows: list[ManifestRow], package_root: Path) -> None:
 
 
 def add_final_artifacts(rows: list[ManifestRow], package_root: Path) -> None:
-    source_root = REPO_ROOT / "final_artifacts_in_paper_updated"
+    source_root = PATHS.final_artifacts_root
     if not source_root.is_dir():
         raise PackageBuildError(f"Missing final artifact directory: {source_root}")
     for source in sorted(source_root.rglob("*")):
@@ -322,15 +325,12 @@ def add_final_artifacts(rows: list[ManifestRow], package_root: Path) -> None:
 def add_ablation_provenance(rows: list[ManifestRow], package_root: Path) -> None:
     sources = [
         (
-            REPO_ROOT / "main_ablation_exclude_updated_stage3_fixed_partitions" / "ablation_run_manifest.json",
+            PATHS.ablation_root / "ablation_run_manifest.json",
             "ablation/ablation_run_manifest.json",
             "fixed-partition ablation run manifest",
         ),
         (
-            REPO_ROOT
-            / "main_ablation_exclude_updated_stage3_fixed_partitions"
-            / "input_datasets"
-            / "feature_exclude_dataset_manifest.json",
+            PATHS.ablation_root / "input_datasets" / "feature_exclude_dataset_manifest.json",
             "ablation/feature_exclude_dataset_manifest.json",
             "feature-exclude input dataset manifest",
         ),
@@ -364,7 +364,9 @@ summaries, final paper artifacts, and lightweight ablation provenance.
 - It does not include experimental GeoXGB, fs0 lag-1, or 2026-2027 forward
   prediction/scenario workflows.
 - Experimental and legacy entry points are archived under
-  `archived/release_20260624_nonpaper_pipelines/` in the source repository.
+  `archived/release_20260624_nonpaper_pipelines/` and historical release
+  workspaces are archived under `archived/release_20260624_legacy_workspace/` in
+  the source repository.
 
 ## Quick Validation
 
@@ -463,7 +465,9 @@ def consistency_audit() -> str:
 
 GeoXGB, fs0 lag-1 launch guidance, and 2026-2027 forward/scenario prediction
 are not part of this package. Their entry points are preserved as historical
-provenance under `archived/release_20260624_nonpaper_pipelines/`.
+provenance under `archived/release_20260624_nonpaper_pipelines/`; local result
+workspaces used to rebuild this package are under
+`archived/release_20260624_reproducibility_inputs/`.
 """
 
 

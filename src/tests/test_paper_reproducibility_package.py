@@ -13,6 +13,8 @@ from scripts.build_paper_reproducibility_package import (
     PackageBuildError,
     ensure_package_relative,
     sha256_file,
+    stage2_specs,
+    stage3_result_dirs,
     write_manifest,
     write_sha256sums,
 )
@@ -20,6 +22,23 @@ from scripts.validate_paper_reproducibility_package import validate_package
 
 
 class PaperReproducibilityPackageTests(unittest.TestCase):
+    def test_package_builder_sources_archived_release_inputs(self) -> None:
+        stage2_sources = [source.as_posix() for source, _, _ in stage2_specs()]
+        stage3_sources = [source.as_posix() for _, source in stage3_result_dirs()]
+
+        self.assertTrue(
+            any(
+                "archived/release_20260624_reproducibility_inputs/GeoRFExperiment" in source
+                for source in stage2_sources
+            )
+        )
+        self.assertTrue(
+            any(
+                "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs1" in source
+                for source in stage3_sources
+            )
+        )
+
     def test_sha256_file_matches_hashlib(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "sample.txt"
