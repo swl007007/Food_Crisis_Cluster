@@ -13,6 +13,13 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARCHIVE_ROOT = REPO_ROOT / "archived" / "release_20260624_nonpaper_pipelines"
+CLEAN_ROOT_REPRO_ARCHIVE = (
+    REPO_ROOT / "archived" / "release_20260624_reproducibility_inputs"
+)
+CLEAN_ROOT_LEGACY_ARCHIVE = (
+    REPO_ROOT / "archived" / "release_20260624_legacy_workspace"
+)
+CLEAN_ROOT_RESIDUE_ARCHIVE = REPO_ROOT / "archived" / "local_workspace_residue_20260624"
 PAPER_ARTIFACT_ROOT = REPO_ROOT / "scripts" / "paper_artifacts"
 
 PAPER_ARTIFACT_SCRIPTS = [
@@ -77,6 +84,33 @@ ARCHIVED_OLD_PATHS = {
     "regional_ablation_results/actual_predicted_dashboard/actual_predicted_dashboard_Nigeria.html": "legacy_misc",
 }
 
+CLEAN_ROOT_REPRO_INPUTS = {
+    "GeoRFExperiment",
+    "GeoDTExperiment",
+    "main_ablation_exclude_updated_stage3_fixed_partitions",
+    "fewsnet_baseline_results",
+    "result_partition_k40_compare_GF_fs1",
+    "result_partition_k40_compare_GF_fs2",
+    "result_partition_k40_compare_GF_fs3",
+    "result_partition_k40_compare_DT_fs1",
+    "result_partition_k40_compare_DT_fs2",
+    "result_partition_k40_compare_DT_fs3",
+    "result_partition_k40_compare_GF_thresholded_fs1",
+    "result_partition_k40_compare_GF_thresholded_fs2",
+    "result_partition_k40_compare_GF_thresholded_fs3",
+}
+
+CLEAN_ROOT_FORBIDDEN_DIRS = [
+    *sorted(CLEAN_ROOT_REPRO_INPUTS),
+    "other_outputs",
+    "writing",
+    "dt_rules",
+    "monthly_results",
+    "demo",
+    "prediction_pipeline",
+    "regional_ablation_results",
+]
+
 
 def file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -112,6 +146,12 @@ def load_archive_manifest() -> dict[str, dict[str, str]]:
     with manifest.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
     return {row["old_path"]: row for row in rows}
+
+
+def load_manifest(path: Path) -> list[dict[str, str]]:
+    assert path.is_file(), f"Missing manifest: {path}"
+    with path.open(newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
 
 
 def release_quickstart_text() -> str:
@@ -533,3 +573,55 @@ def test_optional_archive_sources_can_be_recorded_as_missing(
     assert rows[0]["old_path"] == "missing_optional.txt"
     assert rows[0]["size_bytes"] == "0"
     assert rows[0]["file_count"] == "0"
+
+
+def test_clean_root_archives_have_readmes_and_manifests() -> None:
+    for archive in [
+        CLEAN_ROOT_REPRO_ARCHIVE,
+        CLEAN_ROOT_LEGACY_ARCHIVE,
+        CLEAN_ROOT_RESIDUE_ARCHIVE,
+    ]:
+        assert (archive / "README.md").is_file(), archive
+        assert (archive / "MANIFEST.csv").is_file(), archive
+
+
+def test_clean_root_keeps_release_facing_roots_only() -> None:
+    assert (REPO_ROOT / "final_artifacts_in_paper_updated").is_dir()
+    assert (REPO_ROOT / "paper_reproducibility_package").is_dir()
+    for relative in CLEAN_ROOT_FORBIDDEN_DIRS:
+        assert not (REPO_ROOT / relative).exists(), relative
+
+
+def test_clean_root_archive_manifest_row_counts() -> None:
+    assert len(load_manifest(CLEAN_ROOT_REPRO_ARCHIVE / "MANIFEST.csv")) == 13
+    assert len(load_manifest(CLEAN_ROOT_LEGACY_ARCHIVE / "MANIFEST.csv")) == 11
+    assert len(load_manifest(CLEAN_ROOT_RESIDUE_ARCHIVE / "MANIFEST.csv")) == 6
+
+
+def test_clean_root_repro_manifest_contains_expected_inputs() -> None:
+    rows = load_manifest(CLEAN_ROOT_REPRO_ARCHIVE / "MANIFEST.csv")
+    old_paths = {row["old_path"] for row in rows}
+
+    assert CLEAN_ROOT_REPRO_INPUTS.issubset(old_paths)
+    for row in rows:
+        assert row["archive_path"].startswith(
+            "archived/release_20260624_reproducibility_inputs/"
+        )
+        assert (REPO_ROOT / row["archive_path"]).exists(), row
+        assert row["category"], row
+        assert row["dependency"], row
+        assert row["tracked_status_before_move"], row
+
+
+def test_clean_root_legacy_manifest_records_dependency_scan_reason() -> None:
+    rows = load_manifest(CLEAN_ROOT_LEGACY_ARCHIVE / "MANIFEST.csv")
+    old_paths = {row["old_path"] for row in rows}
+
+    assert "other_outputs" in old_paths
+    assert "scripts/config_visual.py" in old_paths
+    for row in rows:
+        assert row["archive_path"].startswith(
+            "archived/release_20260624_legacy_workspace/"
+        )
+        assert (REPO_ROOT / row["archive_path"]).exists(), row
+        assert row["dependency_scan_reason"].strip(), row

@@ -1,0 +1,7 @@
+old_path,archive_path,category,dependency,dependency_scan_reason,tracked_status_before_move,size_bytes,file_count,sha256
+writing,archived/local_workspace_residue_20260624/writing,local_residue,not_release_dependency,Manuscript drafting residue outside verifier/package path,untracked_or_ignored,7799721,8,
+dt_rules,archived/local_workspace_residue_20260624/dt_rules,local_residue,not_release_dependency,Generated rule exports not used as branch-specific paper explanations,untracked_or_ignored,29008433,28,
+monthly_results,archived/local_workspace_residue_20260624/monthly_results,local_residue,not_release_dependency,Empty or stale monthly output folder outside verifier/package path,untracked_or_ignored,0,0,
+demo,archived/local_workspace_residue_20260624/demo,local_residue,not_release_dependency,Ignored demo residue outside release quickstart,untracked_or_ignored,365910,2,
+prediction_pipeline,archived/local_workspace_residue_20260624/prediction_pipeline,local_residue,not_release_dependency,Forward-prediction residue already represented by archived non-paper pipeline provenance,untracked_or_ignored,0,0,
+regional_ablation_results,archived/local_workspace_residue_20260624/regional_ablation_results,local_residue,not_release_dependency,Regional exploratory output outside paper verifier/package path,untracked_or_ignored,1021223513,911,
