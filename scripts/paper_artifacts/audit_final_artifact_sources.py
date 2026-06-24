@@ -9,9 +9,12 @@ import json
 from pathlib import Path
 from typing import Any
 
+from scripts.release_paths import ReleasePaths
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-FINAL_ARTIFACT_ROOT = REPO_ROOT / "final_artifacts_in_paper_updated"
+PATHS = ReleasePaths(repo_root=REPO_ROOT)
+FINAL_ARTIFACT_ROOT = PATHS.final_artifacts_root
 CLEAN_PANEL_BASENAME = "FEWSNET_forecast_unadjusted_bm.csv"
 PHASE_CHANGE_BASENAME = "FEWSNET_forecast_unadjusted_bm_phase_change.csv"
 
@@ -31,23 +34,23 @@ PAPER_ARTIFACT_GROUPS = {
 }
 
 PROVIDER_MANIFESTS = [
-    ("result_partition_k40_compare_GF_fs1", REPO_ROOT / "result_partition_k40_compare_GF_fs1" / "run_manifest.json"),
-    ("result_partition_k40_compare_GF_fs2", REPO_ROOT / "result_partition_k40_compare_GF_fs2" / "run_manifest.json"),
-    ("result_partition_k40_compare_GF_fs3", REPO_ROOT / "result_partition_k40_compare_GF_fs3" / "run_manifest.json"),
-    ("result_partition_k40_compare_DT_fs1", REPO_ROOT / "result_partition_k40_compare_DT_fs1" / "run_manifest.json"),
-    ("result_partition_k40_compare_DT_fs2", REPO_ROOT / "result_partition_k40_compare_DT_fs2" / "run_manifest.json"),
-    ("result_partition_k40_compare_DT_fs3", REPO_ROOT / "result_partition_k40_compare_DT_fs3" / "run_manifest.json"),
+    ("result_partition_k40_compare_GF_fs1", PATHS.stage3_root("GF", 1) / "run_manifest.json"),
+    ("result_partition_k40_compare_GF_fs2", PATHS.stage3_root("GF", 2) / "run_manifest.json"),
+    ("result_partition_k40_compare_GF_fs3", PATHS.stage3_root("GF", 3) / "run_manifest.json"),
+    ("result_partition_k40_compare_DT_fs1", PATHS.stage3_root("DT", 1) / "run_manifest.json"),
+    ("result_partition_k40_compare_DT_fs2", PATHS.stage3_root("DT", 2) / "run_manifest.json"),
+    ("result_partition_k40_compare_DT_fs3", PATHS.stage3_root("DT", 3) / "run_manifest.json"),
     (
         "result_partition_k40_compare_GF_thresholded_fs1",
-        REPO_ROOT / "result_partition_k40_compare_GF_thresholded_fs1" / "run_manifest.json",
+        PATHS.thresholded_georf_root(1) / "run_manifest.json",
     ),
     (
         "result_partition_k40_compare_GF_thresholded_fs2",
-        REPO_ROOT / "result_partition_k40_compare_GF_thresholded_fs2" / "run_manifest.json",
+        PATHS.thresholded_georf_root(2) / "run_manifest.json",
     ),
     (
         "result_partition_k40_compare_GF_thresholded_fs3",
-        REPO_ROOT / "result_partition_k40_compare_GF_thresholded_fs3" / "run_manifest.json",
+        PATHS.thresholded_georf_root(3) / "run_manifest.json",
     ),
 ]
 

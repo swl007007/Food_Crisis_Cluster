@@ -6,6 +6,7 @@ import pandas as pd
 from scripts.paper_artifacts.audit_final_artifact_sources import (
     CLEAN_PANEL_BASENAME,
     PHASE_CHANGE_BASENAME,
+    PROVIDER_MANIFESTS,
     audit_artifact_manifest,
     audit_provider_manifest,
     audit_script_default,
@@ -50,6 +51,20 @@ def test_provider_manifest_records_invalid_phase_change(tmp_path: Path):
 
     assert row["status"] == "invalid_phase_change"
     assert row["source_path"].endswith(PHASE_CHANGE_BASENAME)
+
+
+def test_provider_manifests_resolve_from_reproducibility_archive():
+    provider_paths = {label: path for label, path in PROVIDER_MANIFESTS}
+
+    assert provider_paths["result_partition_k40_compare_GF_fs1"].as_posix().endswith(
+        "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_fs1/run_manifest.json"
+    )
+    assert provider_paths["result_partition_k40_compare_DT_fs3"].as_posix().endswith(
+        "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_DT_fs3/run_manifest.json"
+    )
+    assert provider_paths["result_partition_k40_compare_GF_thresholded_fs2"].as_posix().endswith(
+        "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs2/run_manifest.json"
+    )
 
 
 def test_write_audit_outputs_writes_csv_and_markdown(tmp_path: Path):

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import csv
 import json
-import os
 import sys
 import zipfile
 from pathlib import Path
@@ -24,14 +23,16 @@ from scripts.paper_artifacts.audit_final_artifact_sources import (
     build_audit_rows,
     write_audit_outputs,
 )
+from scripts.release_paths import ReleasePaths
 
+PATHS = ReleasePaths(repo_root=REPO_ROOT)
 SCOPES = {1: 4, 2: 8, 3: 12}
 
 MAIN_RESULTS = {
     "GF": {
         "display": "GeoRF",
         "model_type": "RF",
-        "experiment": REPO_ROOT / "GeoRFExperiment",
+        "experiment": PATHS.experiment_root("GF"),
         "results_subdir": "GeoRFResults",
         "visual_prefix": "result_GeoRF",
         "expected_general_clusters": 17,
@@ -39,7 +40,7 @@ MAIN_RESULTS = {
     "DT": {
         "display": "GeoDT",
         "model_type": "DT",
-        "experiment": REPO_ROOT / "GeoDTExperiment",
+        "experiment": PATHS.experiment_root("DT"),
         "results_subdir": "GeoDTResults",
         "visual_prefix": "result_GeoDT",
         "expected_general_clusters": 15,
@@ -107,17 +108,8 @@ class Verifier:
 
 
 def repo_path_from_manifest(value: str | Path) -> Path:
-    """Resolve Windows or repo-relative manifest paths on the current OS."""
-    raw = str(value).replace("\\", "/")
-    if len(raw) >= 3 and raw[1:3] == ":/":
-        if os.name == "nt":
-            return Path(raw)
-        drive = raw[0].lower()
-        return Path("/mnt") / drive / raw[3:]
-    path = Path(raw)
-    if path.is_absolute():
-        return path
-    return REPO_ROOT / path
+    """Resolve Windows, repo-relative, or archived manifest paths."""
+    return PATHS.resolve_repo_reference(value)
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -157,7 +149,7 @@ def audit_rows_are_clean(rows: list[dict[str, Any]]) -> tuple[bool, list[str]]:
 def verify_main_stage3(verifier: Verifier) -> None:
     for token, config in MAIN_RESULTS.items():
         for scope, lag in SCOPES.items():
-            out_dir = REPO_ROOT / f"result_partition_k40_compare_{token}_fs{scope}"
+            out_dir = PATHS.stage3_root(token, scope)
             verifier.check(out_dir.is_dir(), f"{out_dir.name} exists")
             for filename in (
                 "metrics_monthly.csv",
@@ -247,7 +239,7 @@ def verify_experiment_dirs(verifier: Verifier) -> None:
 
 
 def verify_ablation_outputs(verifier: Verifier) -> None:
-    root = REPO_ROOT / "main_ablation_exclude_updated_stage3_fixed_partitions"
+    root = PATHS.ablation_root
     verifier.check(root.is_dir(), "fixed-partition feature-exclude ablation root exists")
 
     dataset_manifest_path = root / "input_datasets" / "feature_exclude_dataset_manifest.json"
@@ -293,7 +285,7 @@ def verify_ablation_outputs(verifier: Verifier) -> None:
 
 def verify_final_artifacts(verifier: Verifier) -> None:
     old_final = REPO_ROOT / "final_artifacts_in_paper"
-    current_final = REPO_ROOT / "final_artifacts_in_paper_updated"
+    current_final = PATHS.final_artifacts_root
     if old_final.exists():
         verifier.warn("legacy final_artifacts_in_paper/ exists; current manifest uses final_artifacts_in_paper_updated/")
     verifier.check(current_final.is_dir(), "current final_artifacts_in_paper_updated directory exists")
@@ -307,13 +299,16 @@ def verify_final_artifacts(verifier: Verifier) -> None:
     if monthly_manifest.exists():
         manifest = load_json(monthly_manifest)
         for source in manifest.get("source_paths", {}).get("model_metrics", []):
-            verifier.check((REPO_ROOT / source).is_file(), f"monthly performance source exists: {source}")
+            verifier.check(
+                PATHS.resolve_repo_reference(source).is_file(),
+                f"monthly performance source exists: {source}",
+            )
 
 
 def verify_artifact_source_audit(verifier: Verifier) -> None:
     """Regenerate source audit reports and fail if paper-facing provenance is unclean."""
     rows = build_audit_rows()
-    audit_csv, audit_md = write_audit_outputs(rows, REPO_ROOT / "final_artifacts_in_paper_updated")
+    audit_csv, audit_md = write_audit_outputs(rows, PATHS.final_artifacts_root)
     verifier.check(audit_csv.is_file(), "artifact source audit CSV exists")
     verifier.check(audit_md.is_file(), "artifact source audit Markdown exists")
 
