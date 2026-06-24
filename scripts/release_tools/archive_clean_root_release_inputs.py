@@ -45,6 +45,13 @@ class ArchiveItem:
         return self.archive_root / self.old_path
 
 
+@dataclass(frozen=True)
+class ArchiveGroupSpec:
+    items: list[ArchiveItem]
+    title: str
+    description: str
+
+
 REPRODUCIBILITY_ITEMS = [
     ArchiveItem(
         "GeoRFExperiment",
@@ -336,10 +343,7 @@ def existing_archive_docs(archive_root: Path) -> list[Path]:
     ]
 
 
-def preflight_archive_items(items: list[ArchiveItem], *, force: bool = False) -> None:
-    if force:
-        return
-
+def archive_collision_paths(items: list[ArchiveItem]) -> list[Path]:
     collisions = []
     for item in items:
         source = REPO_ROOT / item.old_path
@@ -349,14 +353,40 @@ def preflight_archive_items(items: list[ArchiveItem], *, force: bool = False) ->
     archive_roots = {item.archive_root for item in items}
     for archive_root in sorted(archive_roots):
         collisions.extend(existing_archive_docs(archive_root))
+    return collisions
 
+
+def raise_archive_collisions(collisions: list[Path]) -> None:
+    collision_list = "\n".join(f"- {path_label(path)}" for path in collisions)
+    raise FileExistsError(
+        "Archive destination or documentation already exists:\n"
+        f"{collision_list}\n"
+        "Use --force to overwrite existing archive files."
+    )
+
+
+def preflight_archive_items(items: list[ArchiveItem], *, force: bool = False) -> None:
+    if force:
+        return
+
+    collisions = archive_collision_paths(items)
     if collisions:
-        collision_list = "\n".join(f"- {path_label(path)}" for path in collisions)
-        raise FileExistsError(
-            "Archive destination or documentation already exists:\n"
-            f"{collision_list}\n"
-            "Use --force to overwrite existing archive files."
-        )
+        raise_archive_collisions(collisions)
+
+
+def preflight_archive_plan(
+    groups: list[ArchiveGroupSpec],
+    *,
+    force: bool = False,
+) -> None:
+    if force:
+        return
+
+    collisions = []
+    for group in groups:
+        collisions.extend(archive_collision_paths(group.items))
+    if collisions:
+        raise_archive_collisions(collisions)
 
 
 def remove_existing_destination(destination: Path) -> None:
@@ -466,10 +496,56 @@ def archive_group(
     *,
     execute: bool,
     force: bool = False,
+    preflight: bool = True,
 ) -> None:
-    preflight_archive_items(items, force=force)
+    if preflight:
+        preflight_archive_items(items, force=force)
     rows = [move_item(item, execute=execute, force=force) for item in items]
     write_archive_docs(items[0].archive_root, rows, title, description, force=force)
+
+
+def archive_plan() -> list[ArchiveGroupSpec]:
+    return [
+        ArchiveGroupSpec(
+            REPRODUCIBILITY_ITEMS,
+            "Release 20260624 Reproducibility Inputs",
+            (
+                "Archived Stage 1/2, Stage 3, ablation, thresholded, and FEWS NET "
+                "baseline inputs used by local verifier/package workflows."
+            ),
+        ),
+        ArchiveGroupSpec(
+            LEGACY_WORKSPACE_ITEMS,
+            "Release 20260624 Legacy Workspace",
+            (
+                "Archived helper scripts and script-owned outputs outside the quick "
+                "release validation path."
+            ),
+        ),
+        ArchiveGroupSpec(
+            LOCAL_RESIDUE_ITEMS,
+            "Local Workspace Residue 20260624",
+            "Archived local residue that is not a verifier or package dependency.",
+        ),
+    ]
+
+
+def run_archive_plan(
+    groups: list[ArchiveGroupSpec],
+    *,
+    execute: bool,
+    force: bool = False,
+) -> None:
+    preflight_archive_plan(groups, force=force)
+    for group in groups:
+        archive_group(
+            group.items,
+            group.title,
+            group.description,
+            execute=execute,
+            force=force,
+            preflight=False,
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -489,30 +565,8 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    archive_group(
-        REPRODUCIBILITY_ITEMS,
-        "Release 20260624 Reproducibility Inputs",
-        (
-            "Archived Stage 1/2, Stage 3, ablation, thresholded, and FEWS NET "
-            "baseline inputs used by local verifier/package workflows."
-        ),
-        execute=args.execute,
-        force=args.force,
-    )
-    archive_group(
-        LEGACY_WORKSPACE_ITEMS,
-        "Release 20260624 Legacy Workspace",
-        (
-            "Archived helper scripts and script-owned outputs outside the quick "
-            "release validation path."
-        ),
-        execute=args.execute,
-        force=args.force,
-    )
-    archive_group(
-        LOCAL_RESIDUE_ITEMS,
-        "Local Workspace Residue 20260624",
-        "Archived local residue that is not a verifier or package dependency.",
+    run_archive_plan(
+        archive_plan(),
         execute=args.execute,
         force=args.force,
     )

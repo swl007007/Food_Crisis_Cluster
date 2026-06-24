@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import hashlib
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -339,3 +340,68 @@ def test_write_archive_docs_force_allows_overwriting_existing_docs(
     assert "# Temp Archive" in (archive_root / "README.md").read_text(
         encoding="utf-8"
     )
+
+
+def test_main_preflights_later_group_collision_before_moving_first_group(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.release_tools import archive_clean_root_release_inputs as archive
+
+    first_source = tmp_path / "first_group.txt"
+    later_source = tmp_path / "later_group.txt"
+    first_archive_root = tmp_path / "archive_first"
+    later_archive_root = tmp_path / "archive_later"
+    residue_archive_root = tmp_path / "archive_residue"
+    first_source.write_text("first group payload", encoding="utf-8")
+    later_source.write_text("later group payload", encoding="utf-8")
+    later_archive_root.mkdir()
+    (later_archive_root / "later_group.txt").write_text(
+        "existing later archive payload",
+        encoding="utf-8",
+    )
+
+    first_items = [
+        archive.ArchiveItem(
+            "first_group.txt",
+            first_archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        )
+    ]
+    later_items = [
+        archive.ArchiveItem(
+            "later_group.txt",
+            later_archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        )
+    ]
+    residue_items = [
+        archive.ArchiveItem(
+            "missing_residue.txt",
+            residue_archive_root,
+            "test_category",
+            "test_dependency",
+            "test reason",
+        )
+    ]
+    monkeypatch.setattr(archive, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(archive, "REPRODUCIBILITY_ITEMS", first_items)
+    monkeypatch.setattr(archive, "LEGACY_WORKSPACE_ITEMS", later_items)
+    monkeypatch.setattr(archive, "LOCAL_RESIDUE_ITEMS", residue_items)
+    monkeypatch.setattr(
+        archive,
+        "parse_args",
+        lambda: SimpleNamespace(execute=True, force=False),
+    )
+
+    with pytest.raises(FileExistsError, match="later_group.txt"):
+        archive.main()
+
+    assert first_source.is_file()
+    assert later_source.is_file()
+    assert not (first_archive_root / "first_group.txt").exists()
+    assert not (first_archive_root / "MANIFEST.csv").exists()
