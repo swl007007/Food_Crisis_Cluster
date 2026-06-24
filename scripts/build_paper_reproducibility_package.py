@@ -13,14 +13,18 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from scripts.release_paths import ReleasePaths
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.release_paths import ReleasePaths
+
 PATHS = ReleasePaths(repo_root=REPO_ROOT)
 PACKAGE_ROOT = PATHS.package_root
 
@@ -255,7 +259,7 @@ def canonical_refined_files(source_dir: Path, manifest: dict) -> list[Path]:
     partition_path = manifest.get("partition_map_path")
     if partition_path:
         normalized = Path(str(partition_path).replace("\\", "/"))
-        source = normalized if normalized.is_absolute() else PATHS.resolve_repo_reference(normalized)
+        source = PATHS.resolve_repo_reference(normalized)
         if source.is_file():
             selected[source.name] = source
 
