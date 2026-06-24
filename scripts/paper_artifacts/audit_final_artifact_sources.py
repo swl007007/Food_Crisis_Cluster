@@ -6,13 +6,17 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
-from scripts.release_paths import ReleasePaths
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.release_paths import ReleasePaths
+
 PATHS = ReleasePaths(repo_root=REPO_ROOT)
 FINAL_ARTIFACT_ROOT = PATHS.final_artifacts_root
 CLEAN_PANEL_BASENAME = "FEWSNET_forecast_unadjusted_bm.csv"

@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -142,6 +143,60 @@ def test_resolve_repo_reference_archives_absolute_experiment_path(tmp_path: Path
     paths = ReleasePaths(repo_root=tmp_path)
 
     assert paths.resolve_repo_reference(old_root_file) == archived_file
+
+
+def test_resolve_repo_reference_archives_windows_old_repo_experiment_path(
+    tmp_path: Path,
+) -> None:
+    cleanup_root: Path | None = None
+    if os.name == "nt":
+        repo_root = tmp_path / "Food_Crisis_Cluster"
+    else:
+        drive_root = Path("/mnt/c")
+        if not drive_root.is_dir():
+            pytest.skip("Windows-drive path normalization requires a WSL /mnt/c mount")
+        cleanup_root = (
+            drive_root / "tmp" / "release_paths_windows_path_tests" / tmp_path.name
+        )
+        if cleanup_root.exists():
+            shutil.rmtree(cleanup_root)
+        repo_root = cleanup_root / "Food_Crisis_Cluster"
+
+    relative_path = (
+        Path("GeoRFExperiment")
+        / "knn_sparsification_results"
+        / "cluster_mapping_k40_nc17_general.csv"
+    )
+    archived_file = (
+        repo_root
+        / "archived"
+        / "release_20260624_reproducibility_inputs"
+        / relative_path
+    )
+    archived_file.parent.mkdir(parents=True)
+    archived_file.write_text("admin_code,cluster\n", encoding="utf-8")
+    old_root_file = repo_root / relative_path
+
+    resolved_repo_root = repo_root.resolve(strict=False)
+    if os.name == "nt":
+        windows_old_root_file = str(old_root_file)
+    else:
+        parts = resolved_repo_root.parts
+        assert len(parts) > 3 and parts[1] == "mnt" and len(parts[2]) == 1
+        windows_repo_root = f"{parts[2].upper()}:\\" + "\\".join(parts[3:])
+        windows_old_root_file = (
+            windows_repo_root
+            + "\\GeoRFExperiment\\knn_sparsification_results\\cluster_mapping_k40_nc17_general.csv"
+        )
+
+    try:
+        paths = ReleasePaths(repo_root=repo_root)
+
+        assert not old_root_file.exists()
+        assert paths.resolve_repo_reference(windows_old_root_file) == archived_file
+    finally:
+        if cleanup_root is not None:
+            shutil.rmtree(cleanup_root, ignore_errors=True)
 
 
 def test_resolve_repo_reference_archives_absolute_ablation_path(tmp_path: Path) -> None:

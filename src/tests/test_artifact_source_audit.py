@@ -1,4 +1,5 @@
 import json
+import subprocess
 from pathlib import Path
 
 import pandas as pd
@@ -65,6 +66,21 @@ def test_provider_manifests_resolve_from_reproducibility_archive():
     assert provider_paths["result_partition_k40_compare_GF_thresholded_fs2"].as_posix().endswith(
         "archived/release_20260624_reproducibility_inputs/result_partition_k40_compare_GF_thresholded_fs2/run_manifest.json"
     )
+
+
+def test_audit_script_help_runs_when_executed_directly():
+    repo_root = Path(__file__).resolve().parents[2]
+
+    result = subprocess.run(
+        ["python3", "scripts/paper_artifacts/audit_final_artifact_sources.py", "--help"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "usage:" in result.stdout.lower()
+    assert "--output-dir" in result.stdout
 
 
 def test_write_audit_outputs_writes_csv_and_markdown(tmp_path: Path):
