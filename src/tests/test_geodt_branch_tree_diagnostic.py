@@ -184,6 +184,53 @@ def test_negative_fixture_set_covers_root_only_mismatch_and_out_of_bounds(
     ).strip() == "rainfall"
 
 
+@pytest.mark.parametrize(
+    ("raw_name", "expected_label"),
+    [
+        ("fews_ipc_lag_4", "IPC phase (4 mo prior)"),
+        ("fews_ipc_crisis_lag_4", "Crisis status (4 mo prior)"),
+        ("EVI_l11_lag4m", "EVI (15 mo prior)"),
+        ("event_count_explosions_w5", "Explosion events\n(nearest-5 mean)"),
+        (
+            "distance_to_nearest_acled_lag4m",
+            "Nearest ACLED-event distance\n(4 mo prior)",
+        ),
+        ("sg_phh2o_5-15cm", "Soil pH (H2O), 5-15 cm"),
+        ("month_6", "June indicator"),
+        ("AEZ_31000", "AEZ 31000 indicator"),
+    ],
+)
+def test_paper_feature_labels_are_interpretable(
+    raw_name: str, expected_label: str
+) -> None:
+    diagnostic = _load_diagnostic_module()
+
+    assert diagnostic._paper_feature_label(raw_name) == expected_label
+
+
+def test_tree_renderer_keeps_only_interpretable_split_conditions() -> None:
+    diagnostic = _load_diagnostic_module()
+    clf = _fit_tree()
+    fig, axis = diagnostic.plt.subplots(figsize=(8, 5))
+
+    artists = diagnostic._plot_condition_only_tree(
+        axis=axis,
+        checkpoint=clf,
+        feature_names=["fews_ipc_lag_4", "Rainf_zscore", "pop"],
+        max_plot_depth=2,
+    )
+    texts = [artist.get_text() for artist in artists if hasattr(artist, "get_text")]
+    diagnostic.plt.close(fig)
+
+    assert any("IPC phase" in text for text in texts)
+    assert any("\n≤ " in text for text in texts)
+    assert all(
+        forbidden not in text.lower()
+        for text in texts
+        for forbidden in ("gini", "samples", "value", "class =")
+    )
+
+
 def test_root_global_only_dt_rules_archive_is_incomplete_and_not_used_as_branch_source(
     negative_archives: dict[str, Path], tmp_path: Path
 ) -> None:
@@ -495,7 +542,7 @@ def test_figure_generation_writes_readable_png_metadata_and_neutral_labels(
     metadata_text = json.dumps(metadata)
     assert "branch-specific" in metadata_text.lower()
     assert "readability" in metadata_text.lower()
-    assert "class 0" in metadata_text.lower() or "class_0" in metadata_text.lower()
+    assert "class labels omitted" in metadata_text.lower()
     assert "crisis" not in metadata_text.lower()
     assert metadata["selected_archive"] == str(complete_geodt_archive)
     assert metadata["workflow_mode"] == "figure-generation"
@@ -510,8 +557,11 @@ def test_figure_generation_writes_readable_png_metadata_and_neutral_labels(
     assert metadata["readability_result"]["passes"] is True
     assert metadata["figure_layout"]["width_inches"] >= 24
     assert metadata["figure_layout"]["height_inches"] >= 8
-    assert metadata["figure_layout"]["tree_fontsize"] <= 6
+    assert metadata["figure_layout"]["tree_fontsize"] >= 12
     assert metadata["figure_layout"]["uses_constrained_layout"] is True
+    assert "condition-only" in metadata["readability_result"]["label_handling"]
+    assert metadata["node_label_policy"]
+    assert metadata["feature_display_name_policy"]
     assert "tie_break_result" in metadata
     assert "rejected_higher_scoring_pairs" in metadata
     assert set(metadata["selected_branch_ids"]) == set(

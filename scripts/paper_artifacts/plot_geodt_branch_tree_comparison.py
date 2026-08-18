@@ -5,6 +5,7 @@ import json
 import pickle
 import re
 import sys
+import textwrap
 from collections import Counter
 from pathlib import Path
 from typing import Any
@@ -18,16 +19,95 @@ import pandas as pd
 from sklearn.tree import plot_tree
 
 
+matplotlib.rcParams.update(
+    {
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans", "sans-serif"],
+        "svg.fonttype": "none",
+        "pdf.fonttype": 42,
+    }
+)
+
+
 JSONDict = dict[str, Any]
 FIGURE_LAYOUT = {
-    "width_inches": 24,
-    "height_inches": 9,
-    "tree_fontsize": 6,
-    "title_fontsize": 10,
-    "suptitle_fontsize": 10,
+    "width_inches": 28,
+    "individual_width_inches": 14,
+    "height_inches": 11,
+    "tree_fontsize": 12,
+    "title_fontsize": 18,
+    "suptitle_fontsize": 14,
+    "condition_wrap_width_chars": 18,
     "dpi": 300,
     "uses_constrained_layout": True,
 }
+
+PAPER_FEATURE_LABELS = {
+    "EVI": "EVI",
+    "EVI_lag4m": "EVI (4 mo prior)",
+    "Rainf_zscore": "Rainfall anomaly (z-score)",
+    "event_count_explosions_w5": "Explosion events\n(nearest-5 mean)",
+    "event_count_explosions_w10": "Explosion events\n(nearest-10 mean)",
+    "event_count_violence_w5": "Violent events\n(nearest-5 mean)",
+    "pop": "Population",
+    "lat": "Latitude",
+    "market_distance_lag4m": "Market distance\n(4 mo prior)",
+    "distance_to_nearest_acled": "Distance to nearest ACLED event",
+    "distance_to_nearest_acled_lag4m": "Nearest ACLED-event distance\n(4 mo prior)",
+    "sg_phh2o_5-15cm": "Soil pH (H2O), 5-15 cm",
+}
+
+MONTH_NAMES = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+}
+
+
+def _paper_feature_label(raw_name: str) -> str:
+    """Return a paper-friendly feature label without changing model values."""
+    if raw_name in PAPER_FEATURE_LABELS:
+        return PAPER_FEATURE_LABELS[raw_name]
+
+    ipc_match = re.fullmatch(r"fews_ipc_lag_(\d+)(?:_lag(\d+)m)?", raw_name)
+    if ipc_match:
+        lag_months = int(ipc_match.group(1)) + int(ipc_match.group(2) or 0)
+        return f"IPC phase ({lag_months} mo prior)"
+
+    crisis_match = re.fullmatch(
+        r"fews_ipc_crisis_lag_(\d+)(?:_lag(\d+)m)?", raw_name
+    )
+    if crisis_match:
+        lag_months = int(crisis_match.group(1)) + int(
+            crisis_match.group(2) or 0
+        )
+        return f"Crisis status ({lag_months} mo prior)"
+
+    evi_match = re.fullmatch(r"EVI_l(\d+)(?:_lag(\d+)m)?", raw_name)
+    if evi_match:
+        lag_months = int(evi_match.group(1)) + int(evi_match.group(2) or 0)
+        return f"EVI ({lag_months} mo prior)"
+
+    month_match = re.fullmatch(r"month_(\d+)", raw_name)
+    if month_match:
+        month_number = int(month_match.group(1))
+        if month_number in MONTH_NAMES:
+            return f"{MONTH_NAMES[month_number]} indicator"
+
+    aez_match = re.fullmatch(r"AEZ_(.+)", raw_name)
+    if aez_match:
+        return f"AEZ {aez_match.group(1)} indicator"
+
+    return re.sub(r"\s+", " ", raw_name.replace("_", " ")).strip()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -822,8 +902,10 @@ def _readability_records(
                 "plotted_max_depth": max_plot_depth,
                 "matched_depth": True,
                 "matched_style": True,
-                "label_handling": "wrapped by sklearn plot_tree",
-                "minimum_font_size_pt": 8,
+                "label_handling": (
+                    "paper-friendly feature names with condition-only node text"
+                ),
+                "minimum_font_size_pt": FIGURE_LAYOUT["tree_fontsize"],
             }
     return records
 
@@ -902,15 +984,11 @@ def _render_pair(
         constrained_layout=FIGURE_LAYOUT["uses_constrained_layout"],
     )
     for axis, branch_id in zip(axes, pair):
-        plot_tree(
-            checkpoints[branch_id],
+        _plot_condition_only_tree(
+            axis=axis,
+            checkpoint=checkpoints[branch_id],
             feature_names=feature_names,
-            class_names=["class 0", "class 1"],
-            max_depth=max_plot_depth,
-            filled=True,
-            rounded=True,
-            fontsize=FIGURE_LAYOUT["tree_fontsize"],
-            ax=axis,
+            max_plot_depth=max_plot_depth,
         )
         axis.set_title(
             f"Branch {branch_id}",
@@ -919,6 +997,67 @@ def _render_pair(
     fig.savefig(png_path, dpi=FIGURE_LAYOUT["dpi"])
     plt.close(fig)
     return png_path
+
+
+def _plot_condition_only_tree(
+    *,
+    axis: Any,
+    checkpoint: Any,
+    feature_names: list[str],
+    max_plot_depth: int,
+) -> list[Any]:
+    """Render a tree with only interpretable split conditions in node boxes."""
+    artists = plot_tree(
+        checkpoint,
+        feature_names=[_paper_feature_label(name) for name in feature_names],
+        class_names=None,
+        max_depth=max_plot_depth,
+        filled=True,
+        rounded=True,
+        impurity=False,
+        precision=2,
+        fontsize=FIGURE_LAYOUT["tree_fontsize"],
+        ax=axis,
+    )
+    diagnostic_pattern = re.compile(
+        r"^(?:gini|entropy|log_loss|samples|value|class)\s*="
+    )
+    preserved_labels = {"true", "false", "(...)"}
+    for artist in artists:
+        if not hasattr(artist, "get_text") or not hasattr(artist, "set_text"):
+            continue
+        original_text = artist.get_text()
+        kept_lines: list[str] = []
+        for line in original_text.splitlines():
+            normalized = line.strip().lower()
+            if diagnostic_pattern.match(normalized):
+                break
+            kept_lines.append(line)
+
+        cleaned_text = "\n".join(kept_lines).strip()
+        if cleaned_text:
+            if " <= " in cleaned_text:
+                feature_label, threshold = cleaned_text.rsplit(" <= ", maxsplit=1)
+                wrapped_feature_lines: list[str] = []
+                for feature_line in feature_label.splitlines():
+                    wrapped_feature_lines.extend(
+                        textwrap.wrap(
+                            feature_line,
+                            width=FIGURE_LAYOUT["condition_wrap_width_chars"],
+                            break_long_words=False,
+                            break_on_hyphens=False,
+                        )
+                        or [feature_line]
+                    )
+                cleaned_text = "\n".join(
+                    [*wrapped_feature_lines, f"≤ {threshold}"]
+                )
+            artist.set_text(cleaned_text)
+        elif original_text.strip().lower() in preserved_labels:
+            artist.set_text(original_text.strip())
+        else:
+            artist.set_text("Leaf")
+    return artists
 
 
 def write_individual_tree_figure(
@@ -943,19 +1082,18 @@ def write_individual_tree_figure(
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig, axis = plt.subplots(
-        figsize=(FIGURE_LAYOUT["width_inches"] / 2, FIGURE_LAYOUT["height_inches"]),
+        figsize=(
+            FIGURE_LAYOUT["individual_width_inches"],
+            FIGURE_LAYOUT["height_inches"],
+        ),
         dpi=FIGURE_LAYOUT["dpi"],
         constrained_layout=FIGURE_LAYOUT["uses_constrained_layout"],
     )
-    plot_tree(
-        checkpoint,
+    _plot_condition_only_tree(
+        axis=axis,
+        checkpoint=checkpoint,
         feature_names=feature_names,
-        class_names=["class 0", "class 1"],
-        max_depth=max_plot_depth,
-        filled=True,
-        rounded=True,
-        fontsize=FIGURE_LAYOUT["tree_fontsize"],
-        ax=axis,
+        max_plot_depth=max_plot_depth,
     )
     axis.set_title(f"Branch {branch_id}", fontsize=FIGURE_LAYOUT["title_fontsize"])
     fig.savefig(output_path, dpi=FIGURE_LAYOUT["dpi"], bbox_inches="tight")
@@ -1083,7 +1221,17 @@ def _write_figure_metadata(
         "figure_layout": FIGURE_LAYOUT,
         "tie_break_result": selection["tie_break_result"],
         "rejected_higher_scoring_pairs": selection["rejected_higher_scoring_pairs"],
-        "class_label_policy": "neutral class 0/class 1 labels; no semantic class-name mapping was used",
+        "node_label_policy": (
+            "internal nodes show interpretable split conditions only; impurity, "
+            "samples, values, and predicted class are omitted"
+        ),
+        "feature_display_name_policy": (
+            "paper-friendly display labels derived from raw feature names; "
+            "thresholds remain on stored model scale"
+        ),
+        "class_label_policy": (
+            "class labels omitted from node text; sklearn fill shading retained"
+        ),
         "class_output_availability": "available from DecisionTree values; semantic class mapping unavailable",
         "selected_signatures": {
             branch_id: {
