@@ -892,7 +892,6 @@ def _render_pair(
     feature_names: list[str],
     max_plot_depth: int,
 ) -> Path:
-    month, fs = _archive_identity(selected)
     png_path = output_paths["png"]
     png_path.parent.mkdir(parents=True, exist_ok=True)
     fig, axes = plt.subplots(
@@ -914,16 +913,54 @@ def _render_pair(
             ax=axis,
         )
         axis.set_title(
-            f"Branch {branch_id}: local DT rules",
+            f"Branch {branch_id}",
             fontsize=FIGURE_LAYOUT["title_fontsize"],
         )
-    fig.suptitle(
-        f"GeoDT branch-specific local DecisionTree comparison for {month} {fs}; root/global dt_rules are not used",
-        fontsize=FIGURE_LAYOUT["suptitle_fontsize"],
-    )
     fig.savefig(png_path, dpi=FIGURE_LAYOUT["dpi"])
     plt.close(fig)
     return png_path
+
+
+def write_individual_tree_figure(
+    checkpoint_path: Path,
+    feature_names_path: Path,
+    branch_id: str,
+    output_path: Path,
+    max_plot_depth: int = 3,
+) -> Path:
+    """Render one archived branch-specific DecisionTree for a paper figure."""
+    checkpoint = _load_checkpoint(str(checkpoint_path))
+    feature_names, _ = _read_feature_names_from_source(feature_names_path)
+    checkpoint_feature_count = int(
+        getattr(checkpoint, "n_features_in_", 0)
+        or getattr(checkpoint.tree_, "n_features", 0)
+    )
+    if len(feature_names) != checkpoint_feature_count:
+        raise ValueError(
+            f"Feature count mismatch for {checkpoint_path.name}: "
+            f"{len(feature_names)} names vs {checkpoint_feature_count} checkpoint features"
+        )
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig, axis = plt.subplots(
+        figsize=(FIGURE_LAYOUT["width_inches"] / 2, FIGURE_LAYOUT["height_inches"]),
+        dpi=FIGURE_LAYOUT["dpi"],
+        constrained_layout=FIGURE_LAYOUT["uses_constrained_layout"],
+    )
+    plot_tree(
+        checkpoint,
+        feature_names=feature_names,
+        class_names=["class 0", "class 1"],
+        max_depth=max_plot_depth,
+        filled=True,
+        rounded=True,
+        fontsize=FIGURE_LAYOUT["tree_fontsize"],
+        ax=axis,
+    )
+    axis.set_title(f"Branch {branch_id}", fontsize=FIGURE_LAYOUT["title_fontsize"])
+    fig.savefig(output_path, dpi=FIGURE_LAYOUT["dpi"], bbox_inches="tight")
+    plt.close(fig)
+    return output_path
 
 
 def _write_figure_metadata(

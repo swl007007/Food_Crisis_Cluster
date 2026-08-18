@@ -119,17 +119,10 @@ def plot_branch_locations(
     dpi: int,
 ) -> None:
     context = merged.copy()
-    fig, axes = plt.subplots(1, 3, figsize=(16, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
 
-    plot_branch_panel(
-        axes[0],
-        context,
-        selected,
-        branches,
-        f"GeoDT selected branches\nBranch {branches[0]} vs Branch {branches[1]}",
-    )
-    plot_branch_panel(axes[1], context, selected, (branches[0],), f"Branch {branches[0]} only")
-    plot_branch_panel(axes[2], context, selected, (branches[1],), f"Branch {branches[1]} only")
+    plot_branch_panel(axes[0], context, selected, (branches[0],), f"Branch {branches[0]} only")
+    plot_branch_panel(axes[1], context, selected, (branches[1],), f"Branch {branches[1]} only")
 
     counts = selected["partition_id"].value_counts().to_dict()
     legend_handles = [
@@ -148,12 +141,7 @@ def plot_branch_locations(
         )
     )
     fig.legend(handles=legend_handles, loc="lower center", ncol=3, frameon=True, fontsize=10)
-    fig.suptitle(
-        f"Global spatial locations of GeoDT branch-specific local DecisionTree comparison pair (2024-10, {label_for_scope('fs1')})",
-        fontsize=14,
-        fontweight="bold",
-    )
-    plt.tight_layout(rect=(0.02, 0.10, 0.98, 0.92))
+    plt.tight_layout(rect=(0.02, 0.16, 0.98, 0.99))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

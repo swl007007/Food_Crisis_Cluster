@@ -522,12 +522,7 @@ def plot_model_grid(
         va="bottom",
         fontsize=8,
     )
-    fig.suptitle(
-        f"{model} {label_for_scope('fs1')} Global Refined Partition Mapping (k=40)",
-        fontsize=16,
-        fontweight="bold",
-    )
-    plt.tight_layout(rect=(0.02, 0.16, 0.98, 0.94))
+    plt.tight_layout(rect=(0.02, 0.16, 0.98, 0.99))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

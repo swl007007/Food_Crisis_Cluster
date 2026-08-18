@@ -330,9 +330,8 @@ def render_model_figure(
         legend_handles.append(
             Line2D([0], [0], color=FEWSNET_COLOR, linestyle="-.", marker="^", linewidth=2, label=FEWSNET_REUSED_LABEL)
         )
-    fig.suptitle(f"{config['label']} monthly crisis-class performance", fontsize=16)
     fig.legend(handles=legend_handles, loc="lower center", ncol=4, frameon=False)
-    fig.tight_layout(rect=(0, 0.06, 1, 0.95))
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
     if output_path is not None:
         fig.savefig(output_path, dpi=200, bbox_inches="tight")
     plt.close(fig)

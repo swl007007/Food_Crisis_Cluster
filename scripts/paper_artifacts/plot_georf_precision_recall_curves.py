@@ -159,7 +159,6 @@ def plot_precision_recall_curves(
     axes[0].set_ylabel("Precision")
     for ax in axes:
         ax.set_xlabel("Recall")
-    fig.suptitle("GeoRF Precision-Recall Curves: Pooled vs. Partitioned", fontsize=14)
     fig.text(
         0.5,
         0.01,
@@ -167,7 +166,7 @@ def plot_precision_recall_curves(
         ha="center",
         fontsize=9,
     )
-    fig.tight_layout(rect=(0, 0.04, 1, 0.94))
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
     output_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_png, dpi=dpi, bbox_inches="tight")
     fig.savefig(output_pdf, bbox_inches="tight")

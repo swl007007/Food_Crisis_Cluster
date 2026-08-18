@@ -650,7 +650,6 @@ def plot_similarity_figure(similarities: pd.DataFrame, cohesion: pd.DataFrame, o
         axes[row_idx, 1].set_xlabel("Cohesion")
         axes[row_idx, 1].set_ylabel("Cluster")
 
-    fig.suptitle("GeoRF m2 Cluster Profiles: Similarity and Cohesion", fontsize=15, fontweight="bold")
     fig.text(
         0.5,
         0.012,
@@ -658,7 +657,7 @@ def plot_similarity_figure(similarities: pd.DataFrame, cohesion: pd.DataFrame, o
         ha="center",
         fontsize=9,
     )
-    fig.tight_layout(rect=(0, 0.025, 1, 0.97))
+    fig.tight_layout(rect=(0, 0.025, 1, 1))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

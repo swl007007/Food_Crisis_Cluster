@@ -279,8 +279,7 @@ def render_figure(
     axes[2].set_ylabel("Polygons per cluster")
     axes[2].grid(axis="y", alpha=0.25)
 
-    fig.suptitle("GeoRF Stage 1 Partition Stability", fontsize=14, fontweight="bold")
-    fig.tight_layout(rect=[0, 0, 1, 0.94])
+    fig.tight_layout(rect=[0, 0, 1, 1])
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
 

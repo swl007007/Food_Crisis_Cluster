@@ -227,13 +227,12 @@ def render_prevalence_figure(table: pd.DataFrame, output_path: Path, dpi: int) -
         ax.axis("off")
 
     legend_handles = [
-        mpatches.Patch(color=CRISIS_COLOR, label="Crisis (value=1)"),
-        mpatches.Patch(color=NON_CRISIS_COLOR, label="Non-crisis (value=0)"),
+        mpatches.Patch(color=CRISIS_COLOR, label="Crisis"),
+        mpatches.Patch(color=NON_CRISIS_COLOR, label="Non-crisis"),
     ]
-    fig.suptitle("Test-period class prevalence by FEWSNET region (2021-2024)", fontsize=16)
     fig.legend(handles=legend_handles, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 0.048))
     fig.text(0.5, 0.018, MIDDLE_EAST_CRISIS_NOTE, ha="center", va="bottom", fontsize=9)
-    fig.tight_layout(rect=(0, 0.08, 1, 0.95))
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

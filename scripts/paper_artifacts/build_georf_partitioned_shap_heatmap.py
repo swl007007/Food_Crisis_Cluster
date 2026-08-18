@@ -413,7 +413,7 @@ def build_heatmap_matrices(summary: pd.DataFrame) -> tuple[pd.DataFrame, pd.Data
         for column in column_order:
             annotations.loc[row, column] = (
                 f"{values.loc[row, column] * 100:.1f}%\n"
-                f"+/- {sd_values.loc[row, column] * 100:.1f}"
+                f"+/- {sd_values.loc[row, column] * 100:.1f}%"
             )
     return values, annotations
 
@@ -615,7 +615,6 @@ def write_heatmap(summary: pd.DataFrame, output_dir: Path, dpi: int = 300) -> di
             )
         ax.set_xlabel("Forecasting horizon")
         ax.set_ylabel("Feature group")
-        ax.set_title("GeoRF Partitioned SHAP Attribution Share")
         fig.tight_layout()
         fig.savefig(png_path, dpi=dpi)
         fig.savefig(pdf_path)

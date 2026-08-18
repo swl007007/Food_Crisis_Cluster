@@ -564,12 +564,7 @@ def plot_refinement_figure(
         handletextpad=0.45,
         bbox_to_anchor=(0.5, -0.010),
     )
-    fig.suptitle(
-        "GeoRF m2 Adjacency Refinement (Pre-Stage 3 Local RF)",
-        fontsize=15,
-        fontweight="bold",
-    )
-    fig.tight_layout(rect=(0.01, 0.08, 0.99, 0.94))
+    fig.tight_layout(rect=(0.01, 0.08, 0.99, 0.99))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)

@@ -70,11 +70,10 @@ def plot_stack(counts: pd.DataFrame, output_path: Path, dpi: int) -> None:
         x,
         counts["crisis"],
         counts["non_crisis"],
-        labels=["Crisis (value=1)", "Non-crisis (value=0)"],
+        labels=["Crisis", "Non-crisis"],
         colors=["#d73027", "#1a9850"],
         alpha=0.95,
     )
-    ax.set_title("Stacked FEWSNET crisis/non-crisis counts by quarter (2018 onward)")
     ax.set_xlabel("Quarter")
     ax.set_ylabel("Count")
     ax.legend(loc="upper left")
