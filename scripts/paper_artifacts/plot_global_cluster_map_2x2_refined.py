@@ -35,9 +35,9 @@ MODEL_SPECS = {
 PANEL_ORDER = ("general", "m2", "m6", "m10")
 PANEL_TITLES = {
     "general": "General",
-    "m2": "Month-specific: m2",
-    "m6": "Month-specific: m6",
-    "m10": "Month-specific: m10",
+    "m2": "Month-specific: February",
+    "m6": "Month-specific: June",
+    "m10": "Month-specific: October",
 }
 TAG_PATTERN = re.compile(
     r"cluster_mapping_k40_nc(?P<nc>\d+)_(?P<tag>general|m2|m6|m10)(?:_refined.*)?\.csv$"
