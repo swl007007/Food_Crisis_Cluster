@@ -74,7 +74,7 @@ def plot_stack(counts: pd.DataFrame, output_path: Path, dpi: int) -> None:
         colors=["#d73027", "#1a9850"],
         alpha=0.95,
     )
-    ax.set_xlabel("Quarter")
+    ax.set_xlabel("Assessment Period")
     ax.set_ylabel("Count")
     ax.legend(loc="upper left")
     ax.margins(x=0)

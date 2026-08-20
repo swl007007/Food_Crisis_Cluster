@@ -48,7 +48,7 @@ TARGET_MONTHS = [
 ]
 
 ROWS = [
-    ('Actual', TRUE_COLUMN),
+    ('Observed', TRUE_COLUMN),
     ('Predicted', PRED_COLUMN),
 ]
 
