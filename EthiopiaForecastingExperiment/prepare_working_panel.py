@@ -32,6 +32,12 @@ PRICE_MA4 = "WB_RTFP_price_index_MA4"
 GPP = "gpp_mean"
 GPP_MA_WINDOWS = (1, 3, 6, 12)
 GPP_MA_COLUMNS = tuple(f"{GPP}_MA{window}" for window in GPP_MA_WINDOWS)
+TEMPERATURE_ZSCORE = "Tair_zscore"
+TEMPERATURE_MA_WINDOWS = (3, 6, 12)
+TEMPERATURE_MA_COLUMNS = tuple(
+    f"{TEMPERATURE_ZSCORE}_MA{window}" for window in TEMPERATURE_MA_WINDOWS
+)
+DERIVED_MA_COLUMNS = (*GPP_MA_COLUMNS, *TEMPERATURE_MA_COLUMNS)
 WB_APPENDED_COLUMNS = (
     MARKET_GEO_ID,
     MARKET_NAME,
@@ -40,16 +46,23 @@ WB_APPENDED_COLUMNS = (
     PRICE_LAG1,
     PRICE_MA4,
 )
-APPENDED_COLUMNS = (*WB_APPENDED_COLUMNS, *GPP_MA_COLUMNS)
+APPENDED_COLUMNS = (*WB_APPENDED_COLUMNS, *DERIVED_MA_COLUMNS)
 EARTH_RADIUS_KM = 6371.0088
 
 
 def load_baseline_panel(path: Path) -> pd.DataFrame:
     """Load and validate the frozen Ethiopia baseline subset."""
     panel = pd.read_csv(path, low_memory=False)
-    missing = {"ISO3", KEY, DATE, "lat", "lon", GPP, *DROP_COLUMNS}.difference(
-        panel.columns
-    )
+    missing = {
+        "ISO3",
+        KEY,
+        DATE,
+        "lat",
+        "lon",
+        GPP,
+        TEMPERATURE_ZSCORE,
+        *DROP_COLUMNS,
+    }.difference(panel.columns)
     if missing:
         raise ValueError(f"Baseline panel is missing columns: {sorted(missing)}")
     if set(panel["ISO3"].dropna().unique()) != {"ETH"}:
@@ -160,6 +173,15 @@ def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
                 window, min_periods=window
             ).mean()
         )
+    grouped_temperature = working[TEMPERATURE_ZSCORE].replace(
+        [np.inf, -np.inf], np.nan
+    ).groupby(working[KEY], sort=False)
+    for window, column in zip(TEMPERATURE_MA_WINDOWS, TEMPERATURE_MA_COLUMNS):
+        working[column] = grouped_temperature.transform(
+            lambda values, window=window: values.rolling(
+                window, min_periods=window
+            ).mean()
+        )
 
     working = working.merge(mapping, on=KEY, how="left", validate="many_to_one")
     working = working.merge(
@@ -181,6 +203,8 @@ def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
         working[GPP_MA_COLUMNS[0]], working[GPP], equal_nan=True
     ):
         raise ValueError("GPP MA1 does not equal contemporaneous gpp_mean")
+    if np.isinf(working[list(TEMPERATURE_MA_COLUMNS)].to_numpy()).any():
+        raise ValueError("Temperature moving averages contain infinite values")
 
     pd.testing.assert_frame_equal(
         working[base_columns], raw[base_columns], check_dtype=False
@@ -203,11 +227,11 @@ def write_and_verify(frame: pd.DataFrame, output_path: Path, overwrite: bool) ->
         if written[list(WB_APPENDED_COLUMNS)].isna().any().any():
             raise ValueError("Written working panel lost WB RTFP values")
         if not np.allclose(
-            written[list(GPP_MA_COLUMNS)],
-            frame[list(GPP_MA_COLUMNS)],
+            written[list(DERIVED_MA_COLUMNS)],
+            frame[list(DERIVED_MA_COLUMNS)],
             equal_nan=True,
         ):
-            raise ValueError("Written working panel changed GPP moving averages")
+            raise ValueError("Written working panel changed derived moving averages")
         os.replace(temp_path, output_path)
     except BaseException:
         temp_path.unlink(missing_ok=True)
