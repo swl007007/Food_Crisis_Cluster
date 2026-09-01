@@ -23,10 +23,16 @@ PARTITION_METRICS_INTEGRATION.md
 *.npz
 *.json
 !specs/**/*.json
+!EthiopiaForecastingExperiment/manifests/*.json
 *.pkl
 
 test_*
 !src/tests/test_*.py
+!EthiopiaForecastingExperiment/tests/test_*.py
+
+# Ethiopia ERA5-Drought SPI source and generated artifacts
+/EthiopiaForecastingExperiment/data/raw/era5_drought_spi/
+/EthiopiaForecastingExperiment/data/interim/era5_drought_spi/
 
 # ignore real-run diagnostic output artifacts
 other_outputs/geodt_branch_tree_diagnostic_real_run/
