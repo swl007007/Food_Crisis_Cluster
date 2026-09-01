@@ -1,0 +1,37 @@
+{
+  "analysis_type": "pre_georf_assembled_panel_profile_and_lightweight_risk_probe",
+  "command": "python3 EthiopiaForecastingExperiment/outputs/baseline_audit/fewsnet_eth_pre_georf_20260831/run_audit.py",
+  "eth_filter": "ISO3 == 'ETH'",
+  "forecast_origin_availability": "not established; probe is not forecast-time-safe",
+  "numpy_version": "2.4.2",
+  "pandas_version": "3.0.0",
+  "pipeline_run": false,
+  "probe_exclusions": [
+    "ADMIN0",
+    "ADMIN1",
+    "ADMIN2",
+    "ADMIN3",
+    "ISO",
+    "ISO3",
+    "date",
+    "fews_ha",
+    "fews_ipc",
+    "fews_ipc_adjusted",
+    "fews_ipc_crisis",
+    "fews_proj_med",
+    "fews_proj_med_adjusted",
+    "fews_proj_med_ha",
+    "fews_proj_near",
+    "fews_proj_near_ha",
+    "unit_name"
+  ],
+  "python_version": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "scikit_learn_version": "1.8.0",
+  "source_sha256": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+  "temporal_probe_split": {
+    "test": "2021-2024 labeled rows",
+    "train": "2010-2018 labeled rows",
+    "validation": "2019-2020 labeled rows"
+  },
+  "threshold_selection": "validation F1 only; grid 0.05 to 0.95 by 0.01"
+}

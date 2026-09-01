@@ -1,0 +1,11 @@
+file,role,interpretation_boundary
+overfitting_probe_metrics.csv,diagnostic_model_metrics,"Lightweight RF train/validation/test and random-row sensitivity metrics; not a GeoRF reproduction"
+overfitting_generalization_gaps.csv,diagnostic_generalization_gaps,"Train-to-validation/test gaps for the lightweight RF probes"
+released_georf_eth_summary.csv,released_georf_pooled_micro_summary,"ETH-only pooled-micro metrics from frozen 2021-2024 temporal-holdout predictions; no target-month macro"
+released_georf_eth_monthly.csv,released_georf_monthly_metrics,"ETH-only metrics by released test month and horizon"
+released_georf_partition_support.csv,released_georf_partition_support,"ETH test support and errors by released partition"
+released_georf_stability_summary.csv,released_georf_month_stability,"Month-level comparison stability summary after excluding unsupported single-class interpretation"
+split_overlap_audit.csv,split_overlap_diagnostic,"Admin and row overlap audit for temporal and random-row diagnostic splits"
+target_distribution.csv,target_support,"Overall labeled target counts and prevalence"
+target_by_calendar_month.csv,target_calendar_support,"Target availability and class support by calendar month"
+target_by_year.csv,target_year_support,"Target availability and class support by year"

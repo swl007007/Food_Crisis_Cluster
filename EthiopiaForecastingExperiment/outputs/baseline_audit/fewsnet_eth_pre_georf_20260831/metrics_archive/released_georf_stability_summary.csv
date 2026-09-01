@@ -1,0 +1,4 @@
+scope,forecasting_horizon,stable_months_n_ge_30,partitioned_beats_pooled_months,thresholded_beats_partitioned_months,excluded_low_support_months
+1,4,11,8,7,1
+2,8,11,9,8,1
+3,12,11,6,5,1

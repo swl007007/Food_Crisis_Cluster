@@ -1,0 +1,9 @@
+column,feature_family,non_null_n,raw_null_n,unique_non_null,mode,mode_n,mode_rate_non_null
+unit_name,identifier_geography,187200,0,1040,"Abaala, Kilbati /Zone2, Afar, Ethiopia",180,0.0009615384615384616
+ADMIN0,identifier_geography,187200,0,1,Ethiopia,187200,1.0
+ADMIN1,identifier_geography,187200,0,12,Oromia,60120,0.3211538461538462
+ADMIN2,identifier_geography,187200,0,92,Sidama,6660,0.035576923076923075
+ADMIN3,identifier_geography,187200,0,1040,Abaala,180,0.0009615384615384616
+ISO,identifier_geography,187200,0,1,ET,187200,1.0
+date,time,187200,0,180,2010-01,1040,0.005555555555555556
+ISO3,identifier_geography,187200,0,1,ETH,187200,1.0

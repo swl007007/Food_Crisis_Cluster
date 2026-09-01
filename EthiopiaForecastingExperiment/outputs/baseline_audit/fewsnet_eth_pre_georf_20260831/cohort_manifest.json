@@ -1,0 +1,22 @@
+{
+  "balanced_admin_month_grid": true,
+  "canonical_key": "FEWSNET_admin_code",
+  "date_max": "2024-12",
+  "date_min": "2010-01",
+  "duplicate_admin_month_keys": 0,
+  "eth_admin_codes": 1040,
+  "eth_months": 180,
+  "eth_shape": [
+    187200,
+    88
+  ],
+  "iso3_filter": "ETH",
+  "pipeline_run": false,
+  "source_path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/FEWSNET_forecast_unadjusted_bm.csv",
+  "source_sha256": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+  "source_shape": [
+    1029240,
+    88
+  ],
+  "target": "fews_ipc_crisis"
+}
