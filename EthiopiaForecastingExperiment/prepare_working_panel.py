@@ -1,4 +1,4 @@
-"""Rebuild the Ethiopia working panel with approved WB RTFP features."""
+"""Rebuild the Ethiopia working panel with approved pre-alignment features."""
 
 from __future__ import annotations
 
@@ -29,13 +29,25 @@ MARKET_DISTANCE = "WB_RTFP_market_distance_km"
 PRICE_INDEX = "WB_RTFP_price_index"
 PRICE_LAG1 = "WB_RTFP_price_index_lag1"
 PRICE_MA4 = "WB_RTFP_price_index_MA4"
+GPP = "gpp_mean"
+GPP_MA_WINDOWS = (1, 3, 6, 12)
+GPP_MA_COLUMNS = tuple(f"{GPP}_MA{window}" for window in GPP_MA_WINDOWS)
+WB_APPENDED_COLUMNS = (
+    MARKET_GEO_ID,
+    MARKET_NAME,
+    MARKET_DISTANCE,
+    PRICE_INDEX,
+    PRICE_LAG1,
+    PRICE_MA4,
+)
+APPENDED_COLUMNS = (*WB_APPENDED_COLUMNS, *GPP_MA_COLUMNS)
 EARTH_RADIUS_KM = 6371.0088
 
 
 def load_baseline_panel(path: Path) -> pd.DataFrame:
     """Load and validate the frozen Ethiopia baseline subset."""
     panel = pd.read_csv(path, low_memory=False)
-    missing = {"ISO3", KEY, DATE, "lat", "lon", *DROP_COLUMNS}.difference(
+    missing = {"ISO3", KEY, DATE, "lat", "lon", GPP, *DROP_COLUMNS}.difference(
         panel.columns
     )
     if missing:
@@ -131,7 +143,7 @@ def nearest_market_mapping(
 
 
 def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
-    """Drop retired columns and append nearest-market WB RTFP features."""
+    """Drop retired columns and append approved pre-alignment features."""
     raw = load_baseline_panel(baseline_path)
     markets = load_wb_markets(wb_path)
     mapping = nearest_market_mapping(raw, markets)
@@ -140,7 +152,16 @@ def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
     ]
 
     base_columns = [column for column in raw.columns if column not in DROP_COLUMNS]
-    working = raw[base_columns].merge(mapping, on=KEY, how="left", validate="many_to_one")
+    working = raw[base_columns].copy()
+    grouped_gpp = working.groupby(KEY, sort=False)[GPP]
+    for window, column in zip(GPP_MA_WINDOWS, GPP_MA_COLUMNS):
+        working[column] = grouped_gpp.transform(
+            lambda values, window=window: values.rolling(
+                window, min_periods=window
+            ).mean()
+        )
+
+    working = working.merge(mapping, on=KEY, how="left", validate="many_to_one")
     working = working.merge(
         market_features,
         left_on=[MARKET_GEO_ID, DATE],
@@ -153,17 +174,13 @@ def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
         raise ValueError("WB RTFP merge changed the panel row count")
     if working.duplicated([KEY, DATE]).any():
         raise ValueError("WB RTFP merge created duplicate admin-month keys")
-    appended = [
-        MARKET_GEO_ID,
-        MARKET_NAME,
-        MARKET_DISTANCE,
-        PRICE_INDEX,
-        PRICE_LAG1,
-        PRICE_MA4,
-    ]
-    if working[appended].isna().any().any():
-        missing = working[appended].isna().sum()
+    if working[list(WB_APPENDED_COLUMNS)].isna().any().any():
+        missing = working[list(WB_APPENDED_COLUMNS)].isna().sum()
         raise ValueError(f"WB RTFP merge left missing values: {missing[missing > 0].to_dict()}")
+    if not np.allclose(
+        working[GPP_MA_COLUMNS[0]], working[GPP], equal_nan=True
+    ):
+        raise ValueError("GPP MA1 does not equal contemporaneous gpp_mean")
 
     pd.testing.assert_frame_equal(
         working[base_columns], raw[base_columns], check_dtype=False
@@ -178,21 +195,19 @@ def write_and_verify(frame: pd.DataFrame, output_path: Path, overwrite: bool) ->
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temp_path = output_path.with_suffix(output_path.suffix + ".tmp")
     temp_path.unlink(missing_ok=True)
-    appended = [
-        MARKET_GEO_ID,
-        MARKET_NAME,
-        MARKET_DISTANCE,
-        PRICE_INDEX,
-        PRICE_LAG1,
-        PRICE_MA4,
-    ]
     try:
         frame.to_csv(temp_path, index=False, date_format="%Y-%m-%d")
-        written = pd.read_csv(temp_path, usecols=[KEY, DATE, *appended])
+        written = pd.read_csv(temp_path, usecols=[KEY, DATE, *APPENDED_COLUMNS])
         if len(written) != len(frame) or written.duplicated([KEY, DATE]).any():
             raise ValueError("Written working panel failed key validation")
-        if written[appended].isna().any().any():
+        if written[list(WB_APPENDED_COLUMNS)].isna().any().any():
             raise ValueError("Written working panel lost WB RTFP values")
+        if not np.allclose(
+            written[list(GPP_MA_COLUMNS)],
+            frame[list(GPP_MA_COLUMNS)],
+            equal_nan=True,
+        ):
+            raise ValueError("Written working panel changed GPP moving averages")
         os.replace(temp_path, output_path)
     except BaseException:
         temp_path.unlink(missing_ok=True)
