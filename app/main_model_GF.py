@@ -58,6 +58,7 @@ if not IS_DRY_RUN:
     from src.customize.customize import train_test_split_rolling_window
     from src.preprocess.preprocess import load_and_preprocess_data, setup_spatial_groups
     from src.feature.feature import prepare_features, validate_polygon_contiguity, create_correspondence_table
+    from src.feature.strict_lag import select_strict_lag_features
     from src.utils.save_results import save_results
     from src.utils.admin_code import resolve_admin_code_array
     from tqdm import tqdm
@@ -1235,6 +1236,12 @@ def main():
                         help=scope_help)
     parser.add_argument('--desired_terms', type=str, default=None,
                         help='Comma-separated list of months to evaluate (e.g., "2024-01,2024-02"). Overrides DESIRED_TERMS environment variable.')
+    parser.add_argument('--data', default=DATA_PATH,
+                        help='Optional panel CSV path (default: configured production dataset)')
+    parser.add_argument('--strict-lag-only', action='store_true',
+                        help='Keep static features and only the active lagged time-varying features')
+    parser.add_argument('--random-seed', type=int, default=GLOBAL_RANDOM_SEED,
+                        help=f'Process-level NumPy/Python random seed (default: {GLOBAL_RANDOM_SEED})')
     parser.add_argument('--force-final-accuracy', action='store_true',
                         help='Force generation of final accuracy maps even when VIS_DEBUG_MODE=False')
     parser.add_argument('--dry-run', action='store_true',
@@ -1245,8 +1252,8 @@ def main():
     call_graph_steps.append('resolve_configuration')
 
     if hasattr(np, 'random') and hasattr(np.random, 'seed'):
-        np.random.seed(GLOBAL_RANDOM_SEED)
-    random.seed(GLOBAL_RANDOM_SEED)
+        np.random.seed(args.random_seed)
+    random.seed(args.random_seed)
 
     # Override DESIRED_TERMS if provided via command line
     if args.desired_terms:
@@ -1261,6 +1268,7 @@ def main():
     desire_terms = None      # None=all quarters, 1=Q1 only, 2=Q2 only, 3=Q3 only, 4=Q4 only
     forecasting_scope = args.forecasting_scope    # From command line argument
     active_lag = forecasting_scope_to_lag(forecasting_scope, ACTIVE_LAGS)
+    data_path = args.data
     
     # Partition Metrics Tracking Configuration
     track_partition_metrics = False  # Enable partition metrics tracking and visualization
@@ -1277,6 +1285,9 @@ def main():
     print(f"  - Max depth: {max_depth}")
     print(f"  - Desired terms: {desire_terms} ({'All quarters (Q1-Q4)' if desire_terms is None else f'Q{desire_terms} only'})")
     print(f"  - Forecasting scope: {forecasting_scope} ({active_lag}-month lag)")
+    print(f"  - Data path: {data_path}")
+    print(f"  - Strict lag-only features: {args.strict_lag_only}")
+    print(f"  - Random seed: {args.random_seed}")
     print(f"  - Active lag schedule: {ACTIVE_LAGS} (logged to {log_path})")
     print(f"  - Rolling window: 5-year training windows before each test quarter")
     print(f"  - Track partition metrics: {track_partition_metrics}")
@@ -1293,6 +1304,9 @@ def main():
         'assignment': assignment,
         'nowcasting': nowcasting,
         'forecasting_scope': forecasting_scope,
+        'data_path': data_path,
+        'strict_lag_only': args.strict_lag_only,
+        'random_seed': args.random_seed,
         'track_partition_metrics': track_partition_metrics,
         'enable_metrics_maps': enable_metrics_maps,
         'start_year': start_year,
@@ -1317,7 +1331,7 @@ def main():
     try:
         # Step 1: Load and preprocess data
         call_graph_steps.append('load_data')
-        df = load_and_preprocess_data(DATA_PATH)
+        df = load_and_preprocess_data(data_path)
 
         # Step 2: Setup spatial groups
         call_graph_steps.append('setup_spatial_groups')
@@ -1326,6 +1340,15 @@ def main():
         # Step 3: Prepare features with forecasting scope
         call_graph_steps.append('prepare_features')
         X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(df, X_group, X_loc, forecasting_scope=forecasting_scope)
+        if args.strict_lag_only:
+            X, l1_index, l2_index, feature_columns = select_strict_lag_features(
+                X,
+                feature_columns,
+                l1_index,
+                l2_index,
+                active_lag,
+            )
+            print(f"Strict lag-only feature selection retained {X.shape[1]} columns")
 
         # Drop rows with NaN in features (restore dd02796 baseline behavior)
         # This is critical for reproducibility - removes rows with missing lag features

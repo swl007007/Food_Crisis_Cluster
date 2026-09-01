@@ -102,6 +102,26 @@ class GeoRFValidationThresholdTests(unittest.TestCase):
         self.assertTrue(math.isnan(result["validation_f1"]))
         self.assertEqual(result["fallback_reason"], "no_validation_positive_cases")
 
+    def test_select_symmetric_thresholds_tunes_each_model_independently(self):
+        self.assertTrue(
+            hasattr(stage3, "select_symmetric_max_f1_thresholds"),
+            "symmetric threshold selection is not implemented",
+        )
+        result = stage3.select_symmetric_max_f1_thresholds(
+            pooled_y_true=np.array([1, 1, 0, 0]),
+            pooled_y_prob=np.array([0.90, 0.40, 0.80, 0.10]),
+            partitioned_y_true=np.array([1, 0, 1, 0]),
+            partitioned_y_prob=np.array([0.90, 0.80, 0.70, 0.60]),
+            candidate_thresholds=np.array([0.7, 0.6, 0.4]),
+        )
+
+        self.assertAlmostEqual(result["pooled"]["selected_threshold"], 0.4)
+        self.assertAlmostEqual(result["partitioned"]["selected_threshold"], 0.7)
+        self.assertNotEqual(
+            result["pooled"]["selected_threshold"],
+            result["partitioned"]["selected_threshold"],
+        )
+
     def test_split_training_validation_by_dates_uses_latest_calendar_months(self):
         X = np.arange(12).reshape(12, 1)
         y = np.arange(12)

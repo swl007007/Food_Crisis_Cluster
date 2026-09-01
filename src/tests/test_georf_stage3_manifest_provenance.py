@@ -78,7 +78,9 @@ def test_build_run_manifest_merges_runtime_and_partition_provenance(tmp_path: Pa
         lower_model="rf",
         visual=False,
         month_ind=True,
-        enable_validation_threshold=True,
+        enable_validation_threshold=False,
+        enable_symmetric_validation_threshold=True,
+        strict_lag_only=True,
         threshold_validation_months=6,
         threshold_lower_bound=0.05,
         threshold_upper_bound=0.95,
@@ -100,3 +102,5 @@ def test_build_run_manifest_merges_runtime_and_partition_provenance(tmp_path: Pa
     assert len(manifest["partition_map_hashes"]["m10"]) == 64
     assert manifest["smote_available"] in {True, False}
     assert manifest["validation_threshold_enabled"] is True
+    assert manifest["validation_threshold_mode"] == "symmetric"
+    assert manifest["strict_lag_only"] is True

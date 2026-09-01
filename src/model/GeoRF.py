@@ -18,7 +18,6 @@ from src.model.model_RF import RFmodel, save_single, predict_test_group_wise#mod
 from sklearn.ensemble import RandomForestClassifier
 # from customize import generate_groups_nonimg_input#can customize group definition
 from src.customize.customize import *
-from demo.data import *
 from src.initialization.initialization import init_X_info, init_X_info_raw_loc, init_X_branch_id, train_val_split
 from src.helper.helper import create_dir, open_dir, get_X_branch_id_by_group, get_filter_thrd
 from src.utils.split import group_aware_train_val_split

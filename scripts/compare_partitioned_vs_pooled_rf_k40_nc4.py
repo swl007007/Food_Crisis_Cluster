@@ -55,6 +55,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import GeoRF pipeline utilities
 from src.preprocess.preprocess import load_and_preprocess_data
 from src.feature.feature import prepare_features
+from src.feature.strict_lag import select_strict_lag_features
 from src.customize.customize import train_test_split_rolling_window
 from src.utils.lag_schedules import forecasting_scope_to_lag
 from src.metrics.metrics import get_prf, get_class_wise_accuracy
@@ -557,6 +558,35 @@ def select_max_f1_threshold(
     }
 
 
+def select_symmetric_max_f1_thresholds(
+    *,
+    pooled_y_true: np.ndarray,
+    pooled_y_prob: np.ndarray,
+    partitioned_y_true: np.ndarray,
+    partitioned_y_prob: np.ndarray,
+    candidate_thresholds: Optional[np.ndarray] = None,
+    bounds: Tuple[float, float] = (DEFAULT_THRESHOLD_LOWER_BOUND, DEFAULT_THRESHOLD_UPPER_BOUND),
+    default_threshold: float = DEFAULT_PARTITIONED_THRESHOLD,
+) -> Dict[str, Dict[str, Any]]:
+    """Select independent validation thresholds for pooled and partitioned models."""
+    return {
+        "pooled": select_max_f1_threshold(
+            pooled_y_true,
+            pooled_y_prob,
+            candidate_thresholds=candidate_thresholds,
+            bounds=bounds,
+            default_threshold=default_threshold,
+        ),
+        "partitioned": select_max_f1_threshold(
+            partitioned_y_true,
+            partitioned_y_prob,
+            candidate_thresholds=candidate_thresholds,
+            bounds=bounds,
+            default_threshold=default_threshold,
+        ),
+    }
+
+
 def split_training_validation_by_dates(
     X_train: np.ndarray,
     y_train: np.ndarray,
@@ -803,6 +833,9 @@ def build_run_manifest(
     model_label: str,
 ) -> Dict[str, Any]:
     """Build the provider run manifest with explicit partition and runtime provenance."""
+    symmetric_threshold = bool(getattr(args, "enable_symmetric_validation_threshold", False))
+    partitioned_threshold = bool(args.enable_validation_threshold)
+    threshold_enabled = symmetric_threshold or partitioned_threshold
     manifest: Dict[str, Any] = {
         "timestamp": datetime.now().isoformat(),
         "data_path": args.data,
@@ -825,13 +858,15 @@ def build_run_manifest(
         "evaluation_years": os.environ.get("NO_LEAK_EVALUATION_YEARS", "2021-2024"),
         "temporal_leakage_guard": "partitions learned before evaluation window",
         "main_model_scope": "GeoRF/GeoDT only; experimental XGBoost variant not included",
-        "validation_threshold_enabled": bool(args.enable_validation_threshold),
-        "threshold_selection_metric": "class_1_f1" if args.enable_validation_threshold else None,
-        "threshold_validation_months": args.threshold_validation_months if args.enable_validation_threshold else None,
+        "strict_lag_only": bool(getattr(args, "strict_lag_only", False)),
+        "validation_threshold_enabled": threshold_enabled,
+        "validation_threshold_mode": "symmetric" if symmetric_threshold else "partitioned_only" if partitioned_threshold else None,
+        "threshold_selection_metric": "class_1_f1" if threshold_enabled else None,
+        "threshold_validation_months": args.threshold_validation_months if threshold_enabled else None,
         "threshold_candidate_bounds": [args.threshold_lower_bound, args.threshold_upper_bound]
-        if args.enable_validation_threshold
+        if threshold_enabled
         else None,
-        "threshold_default": DEFAULT_PARTITIONED_THRESHOLD if args.enable_validation_threshold else None,
+        "threshold_default": DEFAULT_PARTITIONED_THRESHOLD if threshold_enabled else None,
     }
     manifest.update(partition_map_provenance(args))
     manifest.update(runtime_provenance())
@@ -859,6 +894,10 @@ def main():
                         help='Lower-layer base model: rf (default) or dt')
     parser.add_argument('--enable-validation-threshold', action='store_true',
                         help='Add partitioned_thresholded results using validation-selected max-F1 thresholds')
+    parser.add_argument('--enable-symmetric-validation-threshold', action='store_true',
+                        help='Add independently validation-thresholded pooled and partitioned results')
+    parser.add_argument('--strict-lag-only', action='store_true',
+                        help='Keep static features and only the active lagged time-varying features')
     parser.add_argument('--threshold-validation-months', type=int, default=DEFAULT_THRESHOLD_VALIDATION_MONTHS,
                         help='Number of latest training-window months held out for threshold validation')
     parser.add_argument('--threshold-lower-bound', type=float, default=DEFAULT_THRESHOLD_LOWER_BOUND,
@@ -867,6 +906,7 @@ def main():
                         help='Upper bound for candidate probability thresholds')
 
     args = parser.parse_args()
+    threshold_enabled = args.enable_validation_threshold or args.enable_symmetric_validation_threshold
 
     # Create output directory
     out_dir = Path(args.out_dir)
@@ -892,8 +932,16 @@ def main():
     print(f"Train window: {args.train_window} months")
     print(f"Forecasting scope: {args.forecasting_scope} ({active_lag}-month lag)")
     print(f"Lower model: {model_label}")
-    print(f"Validation thresholding: {'ENABLED' if args.enable_validation_threshold else 'DISABLED'}")
-    if args.enable_validation_threshold:
+    threshold_mode = (
+        'SYMMETRIC'
+        if args.enable_symmetric_validation_threshold
+        else 'PARTITIONED ONLY'
+        if args.enable_validation_threshold
+        else 'DISABLED'
+    )
+    print(f"Validation thresholding: {threshold_mode}")
+    print(f"Strict lag-only features: {args.strict_lag_only}")
+    if threshold_enabled:
         print(f"  - Validation months: {args.threshold_validation_months}")
         print(f"  - Candidate bounds: [{args.threshold_lower_bound}, {args.threshold_upper_bound}]")
     print(f"Visualization: {'ENABLED (4 maps)' if args.visual else 'DISABLED'}")
@@ -940,6 +988,14 @@ def main():
     X, y, l1_index, l2_index, years, terms, dates, feature_columns = prepare_features(
         df, temp_X_group, X_loc, forecasting_scope=args.forecasting_scope
     )
+    if args.strict_lag_only:
+        X, l1_index, l2_index, feature_columns = select_strict_lag_features(
+            X,
+            feature_columns,
+            l1_index,
+            l2_index,
+            active_lag,
+        )
 
     print(f"[OK] Features prepared: {X.shape}")
     print(f"  - Total features: {X.shape[1]}")
@@ -1037,7 +1093,7 @@ def main():
 
             baseline_train_dates = None
             partition_train_dates = None
-            if args.enable_validation_threshold:
+            if threshold_enabled:
                 row_indices = np.arange(len(y))
                 baseline_index_split = train_test_split_rolling_window(
                     X, y, X_loc, baseline_groups, years, dates,
@@ -1072,11 +1128,12 @@ def main():
             "test_month": str(test_month),
             "forecasting_scope": args.forecasting_scope,
             "active_lag_months": active_lag,
-            "threshold_enabled": bool(args.enable_validation_threshold),
+            "threshold_enabled": bool(threshold_enabled),
+            "threshold_mode": "symmetric" if args.enable_symmetric_validation_threshold else "partitioned_only",
             "selected_threshold": DEFAULT_PARTITIONED_THRESHOLD,
             "fallback_reason": "thresholding_disabled",
         }
-        if args.enable_validation_threshold:
+        if threshold_enabled:
             try:
                 baseline_tv = split_training_validation_by_dates(
                     Xtrain_pooled,
@@ -1109,14 +1166,30 @@ def main():
                     partition_tv["X_val"],
                     partition_tv["group_val"],
                 )
-                threshold_record.update(
-                    select_max_f1_threshold(
-                        partition_tv["y_val"].astype(int),
-                        y_prob_val_partitioned,
+                if args.enable_symmetric_validation_threshold:
+                    selected = select_symmetric_max_f1_thresholds(
+                        pooled_y_true=baseline_tv["y_val"].astype(int),
+                        pooled_y_prob=predict_pooled_probability(
+                            threshold_pooled_model,
+                            baseline_tv["X_val"],
+                        ),
+                        partitioned_y_true=partition_tv["y_val"].astype(int),
+                        partitioned_y_prob=y_prob_val_partitioned,
                         bounds=(args.threshold_lower_bound, args.threshold_upper_bound),
                         default_threshold=DEFAULT_PARTITIONED_THRESHOLD,
                     )
-                )
+                    for model_name, model_record in selected.items():
+                        for key, value in model_record.items():
+                            threshold_record[f"{model_name}_{key}"] = value
+                else:
+                    threshold_record.update(
+                        select_max_f1_threshold(
+                            partition_tv["y_val"].astype(int),
+                            y_prob_val_partitioned,
+                            bounds=(args.threshold_lower_bound, args.threshold_upper_bound),
+                            default_threshold=DEFAULT_PARTITIONED_THRESHOLD,
+                        )
+                    )
                 threshold_record.update(
                     {
                         "fit_start": str(pd.Timestamp(partition_tv["fit_start"]).date()),
@@ -1132,6 +1205,15 @@ def main():
                         "fallback_reason": f"validation_threshold_error: {exc}",
                     }
                 )
+                if args.enable_symmetric_validation_threshold:
+                    threshold_record.update(
+                        {
+                            "pooled_selected_threshold": DEFAULT_PARTITIONED_THRESHOLD,
+                            "partitioned_selected_threshold": DEFAULT_PARTITIONED_THRESHOLD,
+                            "pooled_fallback_reason": f"validation_threshold_error: {exc}",
+                            "partitioned_fallback_reason": f"validation_threshold_error: {exc}",
+                        }
+                    )
 
         # Train pooled model (full window)
         pooled_model = train_pooled_model(Xtrain_pooled, ytrain_pooled, args.lower_model)
@@ -1151,24 +1233,43 @@ def main():
         metrics_pooled = compute_binary_metrics(ytest, y_pred_pooled)
         metrics_partitioned = compute_binary_metrics(ytest, y_pred_partitioned)
         y_pred_partitioned_thresholded = None
+        y_pred_pooled_thresholded = None
         metrics_partitioned_thresholded = None
-        if args.enable_validation_threshold:
-            y_pred_partitioned_thresholded = apply_probability_threshold(
-                y_prob_partitioned,
+        metrics_pooled_thresholded = None
+        if threshold_enabled:
+            partitioned_threshold = threshold_record.get(
+                "partitioned_selected_threshold",
                 threshold_record["selected_threshold"],
             )
-            metrics_partitioned_thresholded = compute_binary_metrics(ytest, y_pred_partitioned_thresholded)
-            threshold_record.update(
-                {
-                    "test_precision": metrics_partitioned_thresholded["precision"],
-                    "test_recall": metrics_partitioned_thresholded["recall"],
-                    "test_f1": metrics_partitioned_thresholded["f1"],
-                    "test_tp": metrics_partitioned_thresholded["tp"],
-                    "test_fp": metrics_partitioned_thresholded["fp"],
-                    "test_fn": metrics_partitioned_thresholded["fn"],
-                    "test_tn": metrics_partitioned_thresholded["tn"],
-                }
+            y_pred_partitioned_thresholded = apply_probability_threshold(
+                y_prob_partitioned,
+                partitioned_threshold,
             )
+            metrics_partitioned_thresholded = compute_binary_metrics(ytest, y_pred_partitioned_thresholded)
+            if args.enable_symmetric_validation_threshold:
+                y_pred_pooled_thresholded = apply_probability_threshold(
+                    y_prob_pooled,
+                    threshold_record["pooled_selected_threshold"],
+                )
+                metrics_pooled_thresholded = compute_binary_metrics(ytest, y_pred_pooled_thresholded)
+                for model_name, model_metrics in (
+                    ("pooled", metrics_pooled_thresholded),
+                    ("partitioned", metrics_partitioned_thresholded),
+                ):
+                    for key in ("precision", "recall", "f1", "tp", "fp", "fn", "tn"):
+                        threshold_record[f"{model_name}_test_{key}"] = model_metrics[key]
+            else:
+                threshold_record.update(
+                    {
+                        "test_precision": metrics_partitioned_thresholded["precision"],
+                        "test_recall": metrics_partitioned_thresholded["recall"],
+                        "test_f1": metrics_partitioned_thresholded["f1"],
+                        "test_tp": metrics_partitioned_thresholded["tp"],
+                        "test_fp": metrics_partitioned_thresholded["fp"],
+                        "test_fn": metrics_partitioned_thresholded["fn"],
+                        "test_tn": metrics_partitioned_thresholded["tn"],
+                    }
+                )
             threshold_provenance.append(threshold_record)
 
         monthly_metrics.append({
@@ -1182,7 +1283,13 @@ def main():
             'model': 'partitioned',
             **metrics_partitioned
         })
-        if args.enable_validation_threshold and metrics_partitioned_thresholded is not None:
+        if args.enable_symmetric_validation_threshold and metrics_pooled_thresholded is not None:
+            monthly_metrics.append({
+                'test_month': str(test_month),
+                'model': 'pooled_thresholded',
+                **metrics_pooled_thresholded,
+            })
+        if threshold_enabled and metrics_partitioned_thresholded is not None:
             monthly_metrics.append({
                 'test_month': str(test_month),
                 'model': 'partitioned_thresholded',
@@ -1201,19 +1308,31 @@ def main():
                 'y_prob_pooled': y_prob_pooled,
                 'y_prob_partitioned': y_prob_partitioned
             })
-            if args.enable_validation_threshold and y_pred_partitioned_thresholded is not None:
+            if args.enable_symmetric_validation_threshold and y_pred_pooled_thresholded is not None:
+                pred_df["selected_threshold_pooled"] = float(threshold_record["pooled_selected_threshold"])
+                pred_df["selected_threshold_partitioned"] = float(threshold_record["partitioned_selected_threshold"])
+                pred_df["y_pred_pooled_thresholded"] = y_pred_pooled_thresholded
+                pred_df["y_pred_partitioned_thresholded"] = y_pred_partitioned_thresholded
+            elif args.enable_validation_threshold and y_pred_partitioned_thresholded is not None:
                 pred_df["selected_threshold"] = float(threshold_record["selected_threshold"])
                 pred_df["y_pred_partitioned_thresholded"] = y_pred_partitioned_thresholded
             all_predictions.append(pred_df)
 
         print(f"  Pooled:      Precision={metrics_pooled['precision']:.4f}, Recall={metrics_pooled['recall']:.4f}, F1={metrics_pooled['f1']:.4f}")
         print(f"  Partitioned: Precision={metrics_partitioned['precision']:.4f}, Recall={metrics_partitioned['recall']:.4f}, F1={metrics_partitioned['f1']:.4f}")
-        if args.enable_validation_threshold and metrics_partitioned_thresholded is not None:
+        if args.enable_symmetric_validation_threshold and metrics_pooled_thresholded is not None:
             print(
-                f"  Thresholded: Precision={metrics_partitioned_thresholded['precision']:.4f}, "
+                f"  Pooled thresholded: Precision={metrics_pooled_thresholded['precision']:.4f}, "
+                f"Recall={metrics_pooled_thresholded['recall']:.4f}, "
+                f"F1={metrics_pooled_thresholded['f1']:.4f}, "
+                f"Threshold={threshold_record['pooled_selected_threshold']:.2f}"
+            )
+        if threshold_enabled and metrics_partitioned_thresholded is not None:
+            print(
+                f"  Partitioned thresholded: Precision={metrics_partitioned_thresholded['precision']:.4f}, "
                 f"Recall={metrics_partitioned_thresholded['recall']:.4f}, "
                 f"F1={metrics_partitioned_thresholded['f1']:.4f}, "
-                f"Threshold={threshold_record['selected_threshold']:.2f}"
+                f"Threshold={partitioned_threshold:.2f}"
             )
 
     print("\n" + "=" * 80)
@@ -1234,7 +1353,8 @@ def main():
     # 2. Threshold provenance
     if threshold_provenance:
         threshold_df = pd.DataFrame(threshold_provenance)
-        threshold_path = out_dir / 'threshold_provenance.csv'
+        threshold_name = 'thresholds_by_fold.csv' if args.enable_symmetric_validation_threshold else 'threshold_provenance.csv'
+        threshold_path = out_dir / threshold_name
         threshold_df.to_csv(threshold_path, index=False)
         print(f"  Saved: {threshold_path}")
     else:
