@@ -439,7 +439,9 @@ def build_campaign_manifest(
     return manifest
 
 
-def validate_campaign_manifest(manifest: Mapping[str, Any]) -> None:
+def validate_campaign_manifest(
+    manifest: Mapping[str, Any], *, verify_runner_hash: bool = True
+) -> None:
     """Fail closed when any prepared campaign identity field drifts."""
     if manifest.get("schema_version") != "ethiopia-era5-drought-spi-campaign-v1":
         raise EthiopiaSpiContractError("Campaign schema version differs")
@@ -516,7 +518,9 @@ def validate_campaign_manifest(manifest: Mapping[str, Any]) -> None:
         raise EthiopiaSpiContractError("Request calendar is incomplete")
     runner = manifest.get("runner", {})
     runner_path = Path(str(runner.get("path", "")))
-    if not runner_path.is_file() or file_sha256(runner_path) != runner.get("sha256"):
+    if verify_runner_hash and (
+        not runner_path.is_file() or file_sha256(runner_path) != runner.get("sha256")
+    ):
         raise EthiopiaSpiContractError("Campaign runner hash differs")
     supplied = manifest.get("manifest_sha256")
     if supplied != canonical_json_sha256(campaign_identity_payload(manifest)):
@@ -879,6 +883,7 @@ def validate_netcdf_member(
         )
         if f"{observed.year:04d}-{observed.month:02d}" != expected_source_month:
             raise EthiopiaSpiContractError("NetCDF source month differs")
+        variable_shape = tuple(variable.shape)
         values = np.asarray(variable[0, :, :], dtype=float)
         finite = values[np.isfinite(values)]
         if kind == "p0" and finite.size and (finite.min() < 0 or finite.max() > 1):
@@ -900,7 +905,7 @@ def validate_netcdf_member(
         "kind": kind,
         "scale": scale,
         "variable": variable_name,
-        "shape": list(variable.shape),
+        "shape": list(variable_shape),
     }
 
 
@@ -971,7 +976,9 @@ def admit_and_aggregate_campaign(
 ) -> dict[str, Any]:
     """Admit immutable ZIP members and build compact public and separate QA data."""
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    validate_campaign_manifest(manifest)
+    validate_campaign_manifest(manifest, verify_runner_hash=False)
+    download_approval_manifest_sha256 = manifest["manifest_sha256"]
+    download_manifest_file_sha256 = file_sha256(manifest_path)
     campaign_root = Path(manifest["campaign_root"])
     member_root = campaign_root / "members"
     if completed_manifest_path.exists():
@@ -1154,6 +1161,14 @@ def admit_and_aggregate_campaign(
     completed = dict(manifest)
     completed["completion_status"] = "complete"
     completed["cloud_operation_performed"] = True
+    completed["download_approval_manifest_sha256"] = (
+        download_approval_manifest_sha256
+    )
+    completed["download_manifest_file_sha256"] = download_manifest_file_sha256
+    completed["aggregation_runner"] = {
+        "path": str(Path(__file__).resolve()),
+        "sha256": file_sha256(Path(__file__).resolve()),
+    }
     completed["returned_artifacts"] = returned_artifacts
     completed["output_artifacts"] = {
         "public_csv": str(public_path),

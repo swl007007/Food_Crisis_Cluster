@@ -1,7 +1,9 @@
 # Ethiopia ERA5-Drought SPI polygon contract
 
-Status: Phase A approved; offline preparation only. CDS download remains blocked
-until the user approves the exact prepared manifest hash.
+Status: Phase A was frozen in commit `b605809` and the exact prepared manifest
+hash was approved. The 64-request CDS download and offline polygon aggregation
+are complete. The SPI source and QA artifacts remain isolated from the working
+panel and horizon-aligned model tables.
 
 ## Scope
 
@@ -48,14 +50,40 @@ until the user approves the exact prepared manifest hash.
 - Failed `.part` files and other evidence are retained. A resume requires a new
   unresolved-request manifest and separate approval.
 - `download` requires the exact embedded manifest SHA-256 supplied explicitly on
-  the command line. Phase A may run only `prepare`, `validate`, and offline tests.
+  the command line. The completed campaign does not authorize another download.
 
-## Prepared Phase A identity
+## Post-download lifecycle
+
+- ZIP admission requires the expected scientific member identities and the exact
+  numeric request bounds. Provider-only numeric formatting differences in the
+  filename suffix, such as `15` versus `15.0`, are accepted; the exact returned
+  names, sizes, and hashes are retained in the completed manifest.
+- NetCDF metadata needed after validation, including variable shape, is copied
+  before the `Dataset` context closes.
+- Offline aggregation revalidates the frozen campaign identity, requests, ZIPs,
+  members, geometry, and output contracts, but does not require the current file
+  to retain the historical download-runner hash. The download entry point keeps
+  the strict approved-runner check.
+- The completed manifest preserves the original download runner and approval
+  identity separately from the aggregation runner; neither overwrites the other.
+
+## Campaign identity and completion
 
 - Manifest: `manifests/ethiopia_spi_campaign_2010_2024_v1.json`
 - Embedded approval SHA-256:
   `80d48c48f017620445a89bcd73af1fef9d94c49378f43d8f80dab799b74f4537`
 - Manifest file SHA-256:
   `11b7a26bbebcceaa847a174c0d906f95f2f610dbffb66769d06fff96ee38f42d`
+- Download runner SHA-256:
+  `657edba53e6b68d11f28a1dbc1a3b4afc1b2ec032ef92edc777836c7d2b1e267`
+- Aggregation runner SHA-256:
+  `b66c99638e7bd93ea4cad696b627af84031748667fe0c3d558c28c513f722098`
 - Request area `[north, west, south, east]`: `[15.0, 32.75, 3.25, 48.0]`.
-- This identity records offline preparation only; it does not authorize download.
+- Completed manifest:
+  `data/interim/era5_drought_spi/ethiopia_spi_campaign_2010_2024_v1.completed.json`
+- Compact source output: 187,200 rows, SHA-256
+  `d18e311aba521c680975a39ea8193c3b8f29d47f4ed5bb18fd0a6a0d6e40b547`.
+- Separate QA output: 748,800 rows, SHA-256
+  `95421695cf10383fd000761cee1fe5173b0b0a1ab1a46159368ba726000a7070`.
+- Working-panel merge, `data_lineage.jsonl` update, and fs0/fs1/fs2/fs3 horizon
+  alignment remain separate future steps.
