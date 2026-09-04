@@ -37,7 +37,25 @@ TEMPERATURE_MA_WINDOWS = (3, 6, 12)
 TEMPERATURE_MA_COLUMNS = tuple(
     f"{TEMPERATURE_ZSCORE}_MA{window}" for window in TEMPERATURE_MA_WINDOWS
 )
-DERIVED_MA_COLUMNS = (*GPP_MA_COLUMNS, *TEMPERATURE_MA_COLUMNS)
+CONFLICT_EVENT_COLUMNS = (
+    "event_count_battles",
+    "event_count_explosions",
+    "event_count_violence",
+)
+CONFLICT_FATALITY_COLUMNS = (
+    "sum_fatalities_battles",
+    "sum_fatalities_explosions",
+    "sum_fatalities_violence",
+)
+CONFLICT_INTENSITY_COLUMNS = (
+    "conflict_event_intensity_MA12",
+    "conflict_fatality_intensity_MA12",
+)
+DERIVED_MA_COLUMNS = (
+    *GPP_MA_COLUMNS,
+    *TEMPERATURE_MA_COLUMNS,
+    *CONFLICT_INTENSITY_COLUMNS,
+)
 WB_APPENDED_COLUMNS = (
     MARKET_GEO_ID,
     MARKET_NAME,
@@ -62,6 +80,8 @@ def load_baseline_panel(path: Path) -> pd.DataFrame:
         GPP,
         TEMPERATURE_ZSCORE,
         *DROP_COLUMNS,
+        *CONFLICT_EVENT_COLUMNS,
+        *CONFLICT_FATALITY_COLUMNS,
     }.difference(panel.columns)
     if missing:
         raise ValueError(f"Baseline panel is missing columns: {sorted(missing)}")
@@ -155,6 +175,20 @@ def nearest_market_mapping(
     return mapping
 
 
+def rolling_conflict_intensity(
+    panel: pd.DataFrame, source_columns: tuple[str, ...]
+) -> pd.Series:
+    """Return strict, current-month-inclusive MA12 conflict intensity."""
+    values = panel[list(source_columns)]
+    if values.isna().any().any():
+        missing = values.isna().sum()
+        raise ValueError(f"Conflict source values are missing: {missing[missing > 0].to_dict()}")
+    monthly_total = values.sum(axis=1)
+    return monthly_total.groupby(panel[KEY], sort=False).transform(
+        lambda group: group.rolling(12, min_periods=12).mean()
+    )
+
+
 def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
     """Drop retired columns and append approved pre-alignment features."""
     raw = load_baseline_panel(baseline_path)
@@ -182,6 +216,10 @@ def build_working_panel(baseline_path: Path, wb_path: Path) -> pd.DataFrame:
                 window, min_periods=window
             ).mean()
         )
+    for source_columns, column in zip(
+        (CONFLICT_EVENT_COLUMNS, CONFLICT_FATALITY_COLUMNS), CONFLICT_INTENSITY_COLUMNS
+    ):
+        working[column] = rolling_conflict_intensity(working, source_columns)
 
     working = working.merge(mapping, on=KEY, how="left", validate="many_to_one")
     working = working.merge(

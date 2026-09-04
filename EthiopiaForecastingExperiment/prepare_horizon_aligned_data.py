@@ -14,7 +14,23 @@ import pandas as pd
 EXPERIMENT_DIR = Path(__file__).resolve().parent
 DEFAULT_INPUT = EXPERIMENT_DIR / "data" / "working" / "ethiopia_panel.csv"
 DEFAULT_OUTPUT_DIR = EXPERIMENT_DIR / "data" / "aligned"
+DEFAULT_SEASON_LOOKUP = (
+    EXPERIMENT_DIR
+    / "data"
+    / "interim"
+    / "growing_season"
+    / "ethiopia_previous_growing_season_monthly.csv"
+)
 HORIZONS = {"fs0": 1, "fs1": 4, "fs2": 8, "fs3": 12}
+SEASON_FEATURES = (
+    "previous_season_avg_SPI_1",
+    "previous_season_avg_SPI_3",
+    "previous_season_avg_SPI_6",
+    "previous_season_avg_SPI_12",
+    "previous_season_avg_gpp_mean",
+    "previous_season_avg_Tair_f_tavg_mean",
+    "previous_season_sum_EVI",
+)
 
 # Current reference set. Later approved variables can be added explicitly with
 # --add-static-column or --add-dynamic-column.
@@ -72,6 +88,8 @@ REFERENCE_DYNAMIC_FEATURES = (
     "sum_fatalities_battles_w10",
     "sum_fatalities_explosions_w10",
     "sum_fatalities_violence_w10",
+    "conflict_event_intensity_MA12",
+    "conflict_fatality_intensity_MA12",
     "nightlight",
     "nightlight_sd",
     "EVI",
@@ -300,12 +318,38 @@ def build_aligned_panels(
             + ", ".join(str(path) for path in existing)
         )
 
+    seasonal_lookup = pd.read_csv(
+        DEFAULT_SEASON_LOOKUP,
+        usecols=[KEY, "year", "month", *SEASON_FEATURES],
+        low_memory=False,
+    )
+    seasonal_lookup["forecast_origin_month"] = pd.to_datetime(
+        {
+            "year": seasonal_lookup.pop("year"),
+            "month": seasonal_lookup.pop("month"),
+            "day": 1,
+        },
+        errors="raise",
+    )
+    if seasonal_lookup.duplicated([KEY, "forecast_origin_month"]).any():
+        raise ValueError("Growing-season lookup has duplicate admin-month keys")
+
     panel = load_and_validate_panel(input_path, static_columns, dynamic_columns)
     results: dict[str, tuple[Path, int]] = {}
     for scope, horizon in HORIZONS.items():
         aligned = align_horizon(
             panel, scope, horizon, static_columns, dynamic_columns
         )
+        aligned = aligned.merge(
+            seasonal_lookup,
+            on=[KEY, "forecast_origin_month"],
+            how="left",
+            validate="many_to_one",
+            indicator="_season_lookup_merge",
+        )
+        if not aligned["_season_lookup_merge"].eq("both").all():
+            raise ValueError(f"Growing-season lookup is incomplete for {scope}")
+        aligned = aligned.drop(columns="_season_lookup_merge")
         write_and_verify(aligned, paths[scope])
         results[scope] = (paths[scope], len(aligned))
     return results
@@ -336,7 +380,8 @@ def main() -> None:
     )
     print(
         f"Aligned {len(unique_columns(static_columns))} static and "
-        f"{len(unique_columns(dynamic_columns))} dynamic reference features."
+        f"{len(unique_columns(dynamic_columns))} working-panel dynamic plus "
+        f"{len(SEASON_FEATURES)} seasonal features."
     )
     for scope, horizon in HORIZONS.items():
         path, rows = outputs[scope]
