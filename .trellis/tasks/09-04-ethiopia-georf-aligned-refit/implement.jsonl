@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Defines isolated Ethiopia Stage 1-3 cohort, horizon, output, and validation contracts."}
+{"file": "EthiopiaForecastingExperiment/docs/growing-season-feature-contract.md", "reason": "Defines previous-season feature names and strict forecast-origin no-leak join."}

@@ -17,6 +17,15 @@ from typing import Iterable, Sequence
 import numpy as np
 import pandas as pd
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from EthiopiaForecastingExperiment.aligned_refit import (
+    MODEL_PREDICTORS,
+    build_run_local_inputs,
+)
+
 
 SCOPES = {0: 1, 1: 4, 2: 8, 3: 12}
 TARGET_MONTHS = tuple(
@@ -224,6 +233,40 @@ def evaluate_scope_month(
     test_month = str(pd.Period(pd.to_datetime(frame["month_start"].iloc[0]), freq="M"))
     final_rows: list[dict[str, object]] = []
     fixed_rows: list[dict[str, object]] = []
+    cohort_total = len(set(normalize_admin_codes(cohort_codes)))
+    target_available = int(frame["y_true"].notna().sum())
+    target_coverage = {
+        "available": target_available,
+        "total": cohort_total,
+        "fraction": target_available / cohort_total,
+    }
+    if target_coverage["fraction"] < coverage_threshold:
+        status = "suppressed_low_target_coverage"
+        for model in ("pooled", "partitioned", "fewsnet"):
+            final_rows.append(
+                _metric_row(
+                    scope=scope,
+                    lag_months=lag_months,
+                    test_month=test_month,
+                    model=model,
+                    metrics=None,
+                    coverage=target_coverage,
+                    status=status,
+                )
+            )
+        for model in ("pooled", "partitioned"):
+            fixed_rows.append(
+                _metric_row(
+                    scope=scope,
+                    lag_months=lag_months,
+                    test_month=test_month,
+                    model=model,
+                    metrics=None,
+                    coverage=target_coverage,
+                    status=status,
+                )
+            )
+        return final_rows, fixed_rows
 
     if scope in (1, 2):
         if fewsnet_eth is None:
@@ -249,7 +292,7 @@ def evaluate_scope_month(
             raise ValueError("Model and FEWS NET target labels disagree on common keys")
         model_status = "common_support"
     else:
-        coverage = {"available": 0, "total": len(set(normalize_admin_codes(cohort_codes))), "fraction": 0.0}
+        coverage = {"available": 0, "total": cohort_total, "fraction": 0.0}
         supported = frame.loc[frame["y_true"].notna()].copy()
         model_status = "model_support"
 
@@ -337,7 +380,7 @@ def build_stage1_command(
     return [
         str(python_executable),
         "-B",
-        str(repo_root / "app" / "main_model_GF.py"),
+        str(repo_root / "EthiopiaForecastingExperiment" / "stage1_aligned_georf.py"),
         "--start_year",
         str(year),
         "--end_year",
@@ -348,7 +391,6 @@ def build_stage1_command(
         f"{year}-{month:02d}",
         "--data",
         str(panel_path),
-        "--strict-lag-only",
         "--random-seed",
         "5",
     ]
@@ -464,7 +506,7 @@ def build_stage3_command(
     return [
         str(python_executable),
         "-B",
-        str(repo_root / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py"),
+        str(repo_root / "EthiopiaForecastingExperiment" / "run_stage3_aligned.py"),
         "--data",
         str(panel_path),
         "--partition-map",
@@ -479,10 +521,11 @@ def build_stage3_command(
         "36",
         "--forecasting-scope",
         str(scope),
-        "--strict-lag-only",
         "--enable-symmetric-validation-threshold",
         "--threshold-validation-months",
         "6",
+        "--random-seed",
+        "5",
     ]
 
 
@@ -504,6 +547,7 @@ def plot_monthly_metrics(metrics: pd.DataFrame, output_path: Path) -> int:
             axis = axes[row_index, column_index]
             for model, style in styles.items():
                 series = scope_rows.loc[scope_rows["model"].eq(model)].sort_values("test_month")
+                series = series.loc[~series["status"].eq("suppressed_low_target_coverage")]
                 if model == "fewsnet":
                     series = series.loc[series["status"].eq("available")]
                 if series.empty:
@@ -526,10 +570,20 @@ def plot_monthly_metrics(metrics: pd.DataFrame, output_path: Path) -> int:
                     fontsize=9,
                     color="dimgray",
                 )
-    handles, labels = axes[0, 0].get_legend_handles_labels()
-    figure.legend(handles, labels, loc="upper center", ncol=3, frameon=False)
-    figure.suptitle("Ethiopia local partition experiment: monthly class-1 performance", y=0.995)
-    figure.tight_layout(rect=(0, 0, 1, 0.975))
+    legend_items = {}
+    for axis in axes.flat:
+        handles, labels = axis.get_legend_handles_labels()
+        legend_items.update(zip(labels, handles))
+    figure.suptitle("Ethiopia GeoRF monthly class-1 performance (aligned features)", y=0.995)
+    figure.legend(
+        legend_items.values(),
+        legend_items.keys(),
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.978),
+        ncol=3,
+        frameon=False,
+    )
+    figure.tight_layout(rect=(0, 0, 1, 0.95))
     output_path.parent.mkdir(parents=True, exist_ok=True)
     figure.savefig(output_path, dpi=200, bbox_inches="tight", facecolor="white")
     plt.close(figure)
@@ -539,6 +593,11 @@ def plot_monthly_metrics(metrics: pd.DataFrame, output_path: Path) -> int:
 def write_json(path: Path, payload: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, default=str) + "\n", encoding="utf-8")
+
+
+def cleanup_work_dir(path: Path) -> None:
+    """Best-effort cleanup for short-lived Windows/Dropbox checkpoint locks."""
+    shutil.rmtree(path, ignore_errors=True)
 
 
 def run_logged(
@@ -602,9 +661,14 @@ def run_experiment(args: argparse.Namespace) -> Path:
     """Execute the approved Ethiopia-only Stage 1-3 experiment."""
     repo_root = Path(__file__).resolve().parents[1]
     python_executable = Path(sys.executable)
-    panel_path = args.panel.resolve()
+    working_panel_path = args.working_panel.resolve()
+    season_lookup_path = args.season_lookup.resolve()
+    aligned_paths = {
+        scope: (args.aligned_dir / f"ethiopia_panel_fs{scope}.csv").resolve()
+        for scope in SCOPES
+    }
     fewsnet_path = args.fewsnet.resolve()
-    for source in (panel_path, fewsnet_path):
+    for source in (working_panel_path, season_lookup_path, fewsnet_path, *aligned_paths.values()):
         if not source.is_file():
             raise FileNotFoundError(source)
 
@@ -615,15 +679,20 @@ def run_experiment(args: argparse.Namespace) -> Path:
     stage2_dir = run_dir / "stage2"
     stage2_results = stage2_dir / "GeoRFResults"
     stage3_dir = run_dir / "stage3"
-    for path in (input_dir, manifest_dir, stage1_dir, stage2_results, stage3_dir):
+    for path in (manifest_dir, stage1_dir, stage2_results, stage3_dir):
         path.mkdir(parents=True, exist_ok=True)
 
     source_hashes_before = {
-        "panel": sha256_file(panel_path),
+        "working_panel": sha256_file(working_panel_path),
+        "season_lookup": sha256_file(season_lookup_path),
         "fewsnet": sha256_file(fewsnet_path),
+        **{
+            f"aligned_fs{scope}": sha256_file(path)
+            for scope, path in aligned_paths.items()
+        },
     }
-    print("Loading and filtering authoritative Ethiopia cohort...", flush=True)
-    panel = pd.read_csv(panel_path, low_memory=False)
+    print("Loading and validating the frozen Ethiopia cohort...", flush=True)
+    panel = pd.read_csv(working_panel_path, low_memory=False)
     eth_panel = filter_ethiopia_panel(
         panel,
         expected_rows=EXPECTED_ETH_ROWS,
@@ -631,9 +700,32 @@ def run_experiment(args: argparse.Namespace) -> Path:
         expected_months=EXPECTED_ETH_MONTHS,
     )
     del panel
-    eth_panel_path = input_dir / "ethiopia_panel.csv"
-    eth_panel.to_csv(eth_panel_path, index=False)
     cohort_codes = normalize_admin_codes(eth_panel["FEWSNET_admin_code"]).drop_duplicates().sort_values()
+
+    snapshot_paths, input_audit = build_run_local_inputs(
+        aligned_paths,
+        working_panel_path,
+        season_lookup_path,
+        input_dir,
+        expected_admins=EXPECTED_ETH_ADMINS,
+    )
+    snapshot_hashes = {
+        f"fs{scope}": sha256_file(path) for scope, path in snapshot_paths.items()
+    }
+    input_manifest = {
+        "canonical_aligned_paths": {
+            f"fs{scope}": str(path) for scope, path in aligned_paths.items()
+        },
+        "canonical_aligned_hashes": {
+            f"fs{scope}": source_hashes_before[f"aligned_fs{scope}"] for scope in SCOPES
+        },
+        "snapshot_paths": {
+            f"fs{scope}": str(path) for scope, path in snapshot_paths.items()
+        },
+        "snapshot_hashes": snapshot_hashes,
+        **input_audit,
+    }
+    write_json(manifest_dir / "inputs.json", input_manifest)
 
     fewsnet = pd.read_csv(fewsnet_path, low_memory=False)
     fewsnet_eth = _filter_fewsnet_ethiopia(fewsnet)
@@ -647,8 +739,10 @@ def run_experiment(args: argparse.Namespace) -> Path:
         raise ValueError("Authoritative panel and FEWS NET Ethiopia admin-code sets differ")
 
     cohort_manifest = {
-        "panel_source_path": str(panel_path),
-        "panel_source_sha256": source_hashes_before["panel"],
+        "panel_source_path": str(working_panel_path),
+        "panel_source_sha256": source_hashes_before["working_panel"],
+        "season_lookup_path": str(season_lookup_path),
+        "season_lookup_sha256": source_hashes_before["season_lookup"],
         "fewsnet_source_path": str(fewsnet_path),
         "fewsnet_source_sha256": source_hashes_before["fewsnet"],
         "filter": "ISO3 == 'ETH'",
@@ -664,8 +758,8 @@ def run_experiment(args: argparse.Namespace) -> Path:
         "fewsnet_row_count": len(fewsnet_eth),
         "fewsnet_admin_count": fewsnet_eth["FEWSNET_admin_code"].nunique(),
         "admin_code_sets_equal": True,
-        "filtered_panel_path": str(eth_panel_path),
-        "filtered_panel_sha256": sha256_file(eth_panel_path),
+        "scope_snapshot_paths": input_manifest["snapshot_paths"],
+        "scope_snapshot_hashes": snapshot_hashes,
     }
     write_json(manifest_dir / "cohort.json", cohort_manifest)
 
@@ -691,7 +785,7 @@ def run_experiment(args: argparse.Namespace) -> Path:
                 command = build_stage1_command(
                     python_executable=python_executable,
                     repo_root=repo_root,
-                    panel_path=eth_panel_path,
+                    panel_path=snapshot_paths[scope],
                     scope=scope,
                     year=year,
                     month=month,
@@ -724,7 +818,7 @@ def run_experiment(args: argparse.Namespace) -> Path:
                         "correspondence_sha256": sha256_file(correspondence_path),
                     }
                 )
-                shutil.rmtree(cell_dir)
+                cleanup_work_dir(cell_dir)
                 print(
                     f"Stage 1 complete: fs{scope} {year}-{month:02d} "
                     f"({len(plan_rows)}/{expected_stage1_plans})",
@@ -777,7 +871,7 @@ def run_experiment(args: argparse.Namespace) -> Path:
             command = build_stage3_command(
                 python_executable=python_executable,
                 repo_root=repo_root,
-                panel_path=eth_panel_path,
+                panel_path=snapshot_paths[scope],
                 partition_map=mapping_paths[mapping_key],
                 out_dir=fold_dir,
                 scope=scope,
@@ -794,7 +888,7 @@ def run_experiment(args: argparse.Namespace) -> Path:
             thresholds.insert(1, "lag_months", lag_months)
             scope_thresholds.append(thresholds)
             shutil.copy2(fold_dir / "run_manifest.json", scope_dir / f"run_manifest_{target_month}.json")
-            shutil.rmtree(fold_dir)
+            cleanup_work_dir(fold_dir)
             fold_count += 1
             print(f"Stage 3 complete: fs{scope} {target_month} ({fold_count}/48)", flush=True)
         predictions_scope = pd.concat(scope_predictions, ignore_index=True)
@@ -834,15 +928,20 @@ def run_experiment(args: argparse.Namespace) -> Path:
     panel_count = plot_monthly_metrics(metrics, figure_path)
 
     source_hashes_after = {
-        "panel": sha256_file(panel_path),
+        "working_panel": sha256_file(working_panel_path),
+        "season_lookup": sha256_file(season_lookup_path),
         "fewsnet": sha256_file(fewsnet_path),
+        **{
+            f"aligned_fs{scope}": sha256_file(path)
+            for scope, path in aligned_paths.items()
+        },
     }
     if source_hashes_after != source_hashes_before:
         raise RuntimeError("Source file hash changed during experiment")
     code_paths = [
-        repo_root / "app" / "main_model_GF.py",
-        repo_root / "src" / "feature" / "strict_lag.py",
-        repo_root / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py",
+        repo_root / "EthiopiaForecastingExperiment" / "aligned_refit.py",
+        repo_root / "EthiopiaForecastingExperiment" / "stage1_aligned_georf.py",
+        repo_root / "EthiopiaForecastingExperiment" / "run_stage3_aligned.py",
         repo_root / "scripts" / "step1_merge_results.py",
         repo_root / "scripts" / "step3_create_linked_tables.py",
         repo_root / "scripts" / "step4_similarity_matrix.py",
@@ -855,6 +954,7 @@ def run_experiment(args: argparse.Namespace) -> Path:
         "created_at": datetime.now().isoformat(),
         "run_dir": str(run_dir),
         "cohort_manifest": str(manifest_dir / "cohort.json"),
+        "input_manifest": str(manifest_dir / "inputs.json"),
         "source_hashes_before": source_hashes_before,
         "source_hashes_after": source_hashes_after,
         "code_hashes": {str(path): sha256_file(path) for path in code_paths},
@@ -867,7 +967,10 @@ def run_experiment(args: argparse.Namespace) -> Path:
         "partition_map_hashes": {key: sha256_file(path) for key, path in mapping_paths.items()},
         "georf_smote_seed": 5,
         "spectral_seed": 42,
-        "strict_lag_only": True,
+        "aligned_input_policy": "exact_forecast_origin_no_second_lag",
+        "predictor_count": len(MODEL_PREDICTORS),
+        "predictors": list(MODEL_PREDICTORS),
+        "snapshot_hashes": snapshot_hashes,
         "threshold_policy": {
             "mode": "symmetric_validation_only",
             "validation_months": 6,
@@ -897,7 +1000,22 @@ def parse_args() -> argparse.Namespace:
     repo_root = Path(__file__).resolve().parents[1]
     source_root = repo_root.parents[2] / "1.Source Data"
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--panel", type=Path, default=source_root / "FEWSNET_forecast_unadjusted_bm.csv")
+    experiment_root = Path(__file__).resolve().parent
+    parser.add_argument("--aligned-dir", type=Path, default=experiment_root / "data" / "aligned")
+    parser.add_argument(
+        "--working-panel",
+        type=Path,
+        default=experiment_root / "data" / "working" / "ethiopia_panel.csv",
+    )
+    parser.add_argument(
+        "--season-lookup",
+        type=Path,
+        default=experiment_root
+        / "data"
+        / "interim"
+        / "growing_season"
+        / "ethiopia_previous_growing_season_monthly.csv",
+    )
     parser.add_argument(
         "--fewsnet",
         type=Path,

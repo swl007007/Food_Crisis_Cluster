@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Frozen ETH no-leak experiment, expert calendar, coverage, artifact, and hash contracts"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse predecessor helpers without changing immutable experiment code"}

@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Verify no-leak timing, common support, output isolation, metrics, and hashes"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Verify the successor adds no unnecessary duplicated infrastructure"}

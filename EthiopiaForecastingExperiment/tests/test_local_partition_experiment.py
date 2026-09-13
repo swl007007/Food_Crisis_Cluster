@@ -1,7 +1,10 @@
 import importlib.util
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -124,8 +127,59 @@ class FewsnetCalendarTests(unittest.TestCase):
         self.assertTrue(pd.isna(final.loc["fewsnet", "f1"]))
         self.assertEqual(fixed.loc["pooled", "n"], 1)
 
+    def test_low_target_coverage_suppresses_every_model(self):
+        module = _load_module()
+        predictions = pd.DataFrame(
+            {
+                "FEWSNET_admin_code": [1],
+                "month_start": ["2021-06-01"],
+                "y_true": [0],
+                "y_pred_pooled": [0],
+                "y_pred_partitioned": [0],
+                "y_pred_pooled_thresholded": [0],
+                "y_pred_partitioned_thresholded": [0],
+            }
+        )
+
+        final_rows, fixed_rows = module.evaluate_scope_month(
+            predictions,
+            scope=0,
+            lag_months=1,
+            fewsnet_eth=pd.DataFrame(),
+            cohort_codes=range(1, 1041),
+            coverage_threshold=0.9,
+        )
+
+        for row in [*final_rows, *fixed_rows]:
+            self.assertEqual(row["status"], "suppressed_low_target_coverage")
+            self.assertTrue(pd.isna(row["f1"]))
+            self.assertTrue(pd.isna(row["n"]))
+
 
 class OrchestrationTests(unittest.TestCase):
+    def test_work_cleanup_tolerates_transient_windows_locks(self):
+        module = _load_module()
+        path = Path("locked-work-dir")
+        with patch.object(module.shutil, "rmtree") as remove:
+            module.cleanup_work_dir(path)
+        remove.assert_called_once_with(path, ignore_errors=True)
+
+    def test_cli_entrypoints_import_from_repo_root(self):
+        repo_root = SCRIPT.parents[1]
+        for relative in (
+            "EthiopiaForecastingExperiment/run_local_partition_experiment.py",
+            "EthiopiaForecastingExperiment/stage1_aligned_georf.py",
+            "EthiopiaForecastingExperiment/run_stage3_aligned.py",
+        ):
+            result = subprocess.run(
+                [sys.executable, relative, "--help"],
+                cwd=repo_root,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, msg=f"{relative}: {result.stderr}")
+
     def test_stage1_plan_has_36_labeled_month_cells(self):
         module = _load_module()
 
@@ -139,7 +193,7 @@ class OrchestrationTests(unittest.TestCase):
         self.assertEqual(module.STAGE1_MONTHS, (2, 6, 10))
         self.assertEqual(len(cells), 36)
 
-    def test_stage1_command_is_one_scope_one_month_with_strict_lag(self):
+    def test_stage1_command_uses_eth_aligned_entrypoint_without_second_lag(self):
         module = _load_module()
         self.assertTrue(hasattr(module, "build_stage1_command"), "Stage 1 command builder is not implemented")
         command = module.build_stage1_command(
@@ -152,11 +206,14 @@ class OrchestrationTests(unittest.TestCase):
         )
 
         self.assertEqual(command[0], "python.exe")
-        self.assertIn("repo/app/main_model_GF.py", command[2].replace("\\", "/"))
+        self.assertIn(
+            "repo/EthiopiaForecastingExperiment/stage1_aligned_georf.py",
+            command[2].replace("\\", "/"),
+        )
         self.assertEqual(command[command.index("--forecasting_scope") + 1], "0")
         self.assertEqual(command[command.index("--desired_terms") + 1], "2018-02")
         self.assertEqual(command[command.index("--random-seed") + 1], "5")
-        self.assertIn("--strict-lag-only", command)
+        self.assertNotIn("--strict-lag-only", command)
 
     def test_stage2_commands_build_general_and_three_month_specific_mappings(self):
         module = _load_module()
@@ -231,7 +288,7 @@ class OrchestrationTests(unittest.TestCase):
             self.assertTrue(copied.is_file())
             self.assertFalse((stage2_results / "result_GeoRF_3").exists())
 
-    def test_stage3_command_runs_one_fold_with_symmetric_thresholds(self):
+    def test_stage3_command_uses_eth_aligned_entrypoint_with_symmetric_thresholds(self):
         module = _load_module()
         self.assertTrue(hasattr(module, "build_stage3_command"), "Stage 3 command builder is not implemented")
         command = module.build_stage3_command(
@@ -247,8 +304,13 @@ class OrchestrationTests(unittest.TestCase):
         self.assertEqual(command[command.index("--start-month") + 1], "2024-02")
         self.assertEqual(command[command.index("--end-month") + 1], "2024-02")
         self.assertEqual(command[command.index("--forecasting-scope") + 1], "3")
-        self.assertIn("--strict-lag-only", command)
+        self.assertIn(
+            "repo/EthiopiaForecastingExperiment/run_stage3_aligned.py",
+            command[2].replace("\\", "/"),
+        )
+        self.assertNotIn("--strict-lag-only", command)
         self.assertIn("--enable-symmetric-validation-threshold", command)
+        self.assertEqual(command[command.index("--random-seed") + 1], "5")
 
     def test_plot_has_four_scope_rows_and_three_metric_columns(self):
         module = _load_module()
@@ -256,23 +318,48 @@ class OrchestrationTests(unittest.TestCase):
         rows = []
         for scope in range(4):
             for model in ("pooled", "partitioned", "fewsnet"):
-                rows.append(
-                    {
-                        "scope": f"fs{scope}",
-                        "test_month": "2021-02",
-                        "model": model,
-                        "precision": 0.5,
-                        "recall": 0.6,
-                        "f1": 0.55,
-                        "status": "unavailable_for_scope" if model == "fewsnet" and scope in (0, 3) else "available",
-                    }
-                )
+                for month, status in (
+                    (
+                        "2021-02",
+                        "unavailable_for_scope"
+                        if model == "fewsnet" and scope in (0, 3)
+                        else "available",
+                    ),
+                    ("2021-06", "suppressed_low_target_coverage"),
+                ):
+                    rows.append(
+                        {
+                            "scope": f"fs{scope}",
+                            "test_month": month,
+                            "model": model,
+                            "precision": 0.5,
+                            "recall": 0.6,
+                            "f1": 0.55,
+                            "status": status,
+                        }
+                    )
+        import matplotlib.pyplot as plt
+
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "figure.png"
-            panel_count = module.plot_monthly_metrics(pd.DataFrame(rows), output)
+            with patch.object(plt, "close"):
+                panel_count = module.plot_monthly_metrics(pd.DataFrame(rows), output)
+                figure = plt.gcf()
             self.assertEqual(panel_count, 12)
             self.assertTrue(output.is_file())
             self.assertGreater(output.stat().st_size, 0)
+            plotted_months = {
+                str(month)
+                for axis in figure.axes
+                for line in axis.lines
+                for month in line.get_xdata()
+            }
+            self.assertEqual(plotted_months, {"2021-02"})
+            self.assertEqual(
+                [text.get_text() for text in figure.legends[0].get_texts()],
+                ["Pooled", "Partitioned", "FEWS NET"],
+            )
+            plt.close(figure)
 
 
 if __name__ == "__main__":
