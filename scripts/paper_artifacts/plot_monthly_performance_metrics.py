@@ -43,7 +43,7 @@ SCOPE_TO_HORIZON = HORIZON_MONTHS_BY_SCOPE
 METRICS = (("precision", "Precision"), ("recall", "Recall"), ("f1", "F1"))
 MODEL_SERIES = ("partitioned", "pooled")
 FEWSNET_COLOR = "#2ca02c"
-FEWSNET_REUSED_LABEL = "FEWSNET baseline (8-month horizon reused for 12-month horizon)"
+FEWSNET_REUSED_LABEL = "FEWS NET export forecasts (8-month horizon reused for 12-month horizon)"
 QUARTER_TO_MONTH = {"1": "02", "2": "06", "4": "10"}
 
 MODEL_COLUMNS = {"test_month", "model", "precision", "recall", "f1"}
@@ -230,7 +230,7 @@ def build_plot_payload(
                 fewsnet_label = (
                     FEWSNET_REUSED_LABEL
                     if scope == "fs3" and extend_fewsnet
-                    else "FEWSNET baseline"
+                    else "FEWS NET export forecasts"
                 )
                 values = []
                 for month in months:
@@ -279,7 +279,7 @@ def render_model_figure(
                 linestyle="-",
                 marker="o",
                 linewidth=2,
-                label="partitioned",
+                label="GeoRF",
             )
             ax.plot(
                 x,
@@ -289,7 +289,7 @@ def render_model_figure(
                 marker="s",
                 linewidth=2,
                 alpha=0.75,
-                label="pooled",
+                label="Pooled RF",
             )
             if scope != "fs3" or extend_fewsnet:
                 ax.plot(
@@ -299,7 +299,7 @@ def render_model_figure(
                     linestyle="-.",
                     marker="^",
                     linewidth=2,
-                    label=FEWSNET_REUSED_LABEL if scope == "fs3" else "FEWSNET baseline",
+                    label=FEWSNET_REUSED_LABEL if scope == "fs3" else "FEWS NET export forecasts",
                 )
             ax.set_ylim(0, 1)
             ax.grid(True, alpha=0.25)
@@ -308,23 +308,23 @@ def render_model_figure(
             if col == 0:
                 ax.set_ylabel(f"{scope_label(scope)}\nMetric value")
             if row == len(SCOPES) - 1:
-                ax.set_xlabel("Test month")
+                ax.set_xlabel("Evaluation month")
             ax.set_xticks(x)
             ax.set_xticklabels(months, rotation=45, ha="right")
             if scope == "fs3" and extend_fewsnet:
                 ax.text(
                     0.01,
                     0.04,
-                    "FEWSNET 8-month baseline reused for 12-month horizon",
+                    "FEWS NET 8-month export forecasts reused for 12-month horizon",
                     transform=ax.transAxes,
                     fontsize=8,
                     color=FEWSNET_COLOR,
                     va="bottom",
                 )
     legend_handles = [
-        Line2D([0], [0], color=config["color"], linestyle="-", marker="o", linewidth=2, label="partitioned"),
-        Line2D([0], [0], color=config["color"], linestyle="--", marker="s", linewidth=2, alpha=0.75, label="pooled"),
-        Line2D([0], [0], color=FEWSNET_COLOR, linestyle="-.", marker="^", linewidth=2, label="FEWSNET baseline"),
+        Line2D([0], [0], color=config["color"], linestyle="-", marker="o", linewidth=2, label="GeoRF"),
+        Line2D([0], [0], color=config["color"], linestyle="--", marker="s", linewidth=2, alpha=0.75, label="Pooled RF"),
+        Line2D([0], [0], color=FEWSNET_COLOR, linestyle="-.", marker="^", linewidth=2, label="FEWS NET export forecasts"),
     ]
     if extend_fewsnet:
         legend_handles.append(
