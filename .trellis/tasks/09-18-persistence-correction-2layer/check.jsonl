@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Baseline for judging whether contract-test-only coverage (PRD R28) is acceptable here."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Layer 1 (persistence), calibration, and layer 2 (override) must agree on row support, keys, and month semantics; this is where silent misalignment would hide."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Verify halts actually halt: coverage != 1.0, any 1->0 flip, and a calibration group leaking a validation label month."}
+{"file": "docs/notes/2026-09-18_benchmark_and_direction_review.md", "reason": "Reference numbers the check must reproduce independently rather than trust: persistence F1 per scope, and the fs1 persist-group calibration gap 0.623 vs 0.816."}
+{"file": ".trellis/tasks/09-18-step3-expert-selective-correction/RESULTS.md", "reason": "Precedent for what a credible verification section contains -- independent recomputation from saved artifacts, byte-for-byte regression, protected-hash invariance."}
