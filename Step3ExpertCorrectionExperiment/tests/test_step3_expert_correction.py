@@ -978,3 +978,339 @@ def test_pooled_metric_guard_rejects_a_drifted_pooled_column():
     )
     with pytest.raises(AssertionError):
         runner.monthly_metrics(tampered, baseline, 1)
+
+
+# ---------------------------------------------------------------------------
+# Variant B: 0->1 only (``--direction-mode up-only``)
+#
+# Variant B disables the ``1->0`` direction a priori on **asymmetric-cost**
+# grounds: a ``1->0`` flip silences an already-issued crisis warning, and a
+# missed food-security crisis costs materially more than a false alarm.  That
+# argument is independent of any test result.  Variant B was nonetheless
+# specified after Variant A's test results were known, so its test metric is a
+# post-hoc, test-informed figure and not an out-of-sample estimate; these tests
+# check the mechanism, not the merit of the variant.
+# ---------------------------------------------------------------------------
+
+def _both_directions_enabled_case():
+    """Validation arrays where *both* directions clear every approved gate.
+
+    30 expert-0 rows across two months are genuinely wrong (fixable by ``0->1``)
+    and 30 expert-1 rows across two months are genuinely wrong (fixable by
+    ``1->0``); a low-scoring filler block supplies a lower candidate threshold.
+    """
+    up_truth, up_expert, _, _, up_months = _gate_case(30, 2, 30, expert_value=0)
+    down_truth, down_expert, _, _, down_months = _gate_case(30, 2, 30, expert_value=1)
+    truth = np.concatenate([up_truth, down_truth, np.zeros(5, dtype=int)])
+    expert_values = np.concatenate([up_expert, down_expert, np.zeros(5, dtype=int)])
+    months = np.concatenate([up_months, down_months, np.full(5, "2020-01")])
+    scores = np.concatenate([np.full(60, 0.9), np.full(5, 0.1)])
+    eligible = np.ones(65, dtype=bool)
+    return truth, expert_values, scores, eligible, months
+
+
+def test_variant_b_forces_the_down_direction_off_where_variant_a_enables_it():
+    """Same validation data: Variant A enables ``1->0``, Variant B never can."""
+    truth, expert_values, scores, eligible, months = _both_directions_enabled_case()
+    kwargs = dict(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=eligible, months=months,
+    )
+
+    variant_a = selection.select_rule(**kwargs)
+    assert variant_a.corrected is True
+    assert variant_a.enable_0_to_1 is True
+    assert variant_a.enable_1_to_0 is True  # Variant A really does enable it here
+    assert variant_a.direction_mode == selection.DIRECTION_MODE_BOTH
+
+    variant_b = selection.select_rule(
+        **kwargs, direction_mode=selection.DIRECTION_MODE_UP_ONLY
+    )
+    assert variant_b.corrected is True
+    assert variant_b.enable_0_to_1 is True
+    assert variant_b.enable_1_to_0 is False
+    assert variant_b.direction_mode == selection.DIRECTION_MODE_UP_ONLY
+
+
+def test_variant_b_disables_the_down_gate_before_candidate_scoring():
+    """Every candidate row reports ``1->0`` disabled, and its F1 reflects that."""
+    truth, expert_values, scores, eligible, months = _both_directions_enabled_case()
+    variant_a = selection.select_rule(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=eligible, months=months,
+    )
+    variant_b = selection.select_rule(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=eligible, months=months,
+        direction_mode=selection.DIRECTION_MODE_UP_ONLY,
+    )
+
+    assert [row["dir_1_to_0_enabled"] for row in variant_b.candidates] == [False] * len(
+        variant_b.candidates
+    )
+    # The proposed-flip counts are unchanged - only the enable flag is forced -
+    # so the restriction is visibly a direction veto, not a gate change.
+    a_rows = {row["threshold"]: row for row in variant_a.candidates}
+    b_rows = {row["threshold"]: row for row in variant_b.candidates}
+    assert sorted(a_rows) == sorted(b_rows)
+    for threshold, b_row in b_rows.items():
+        assert b_row["dir_1_to_0_proposed"] == a_rows[threshold]["dir_1_to_0_proposed"]
+        assert b_row["dir_0_to_1_enabled"] == a_rows[threshold]["dir_0_to_1_enabled"]
+    # Candidate F1 already excludes the forbidden direction: on this fixture the
+    # extra 1->0 fixes make Variant A's selected F1 strictly larger.
+    assert variant_b.selected_validation_f1 < variant_a.selected_validation_f1
+
+
+def test_variant_b_gate_records_mark_the_direction_as_force_disabled():
+    """The gate object records *why* the direction is off under Variant B."""
+    proposed = np.ones(24, dtype=bool)
+    gate = selection.evaluate_direction(
+        direction="1_to_0", expert_value=1,
+        expert=np.ones(24, dtype=int), truth=np.zeros(24, dtype=int),
+        months=np.array([f"2020-{1 + i % 2:02d}" for i in range(24)]),
+        proposed=proposed,
+    )
+    assert gate.enabled is True and gate.forced_disabled is False
+    forced = gate.forced_off()
+    assert forced.enabled is False and forced.forced_disabled is True
+    # Gate evidence (counts, months, precision) is preserved, not rewritten.
+    assert (forced.proposed, forced.distinct_months, forced.fixes) == (
+        gate.proposed, gate.distinct_months, gate.fixes
+    )
+
+
+def test_variant_b_never_flips_an_expert_crisis_call_off():
+    """High-scoring ``e == 1`` rows stay at 1 under the selected Variant B rule."""
+    truth, expert_values, scores, eligible, months = _both_directions_enabled_case()
+    rule = selection.select_rule(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=eligible, months=months,
+        direction_mode=selection.DIRECTION_MODE_UP_ONLY,
+    )
+    predictions = selection.apply_rule(
+        expert_values, scores, eligible, rule.threshold,
+        rule.enable_0_to_1, rule.enable_1_to_0,
+    )
+    down_flipped = (expert_values == 1) & (predictions == 0)
+    assert not down_flipped.any()
+    # The expert-1 rows would have been proposed flips under Variant A.
+    proposed = selection.proposed_flip_mask(scores, eligible, rule.threshold)
+    assert (proposed & (expert_values == 1)).sum() == 30
+    selection.assert_direction_contract(
+        expert_values, predictions, selection.DIRECTION_MODE_UP_ONLY, context="test"
+    )
+
+
+def test_a_down_flip_reaching_variant_b_output_is_a_loud_contract_error():
+    """A hypothetical implementation bug must fail, not pass silently."""
+    expert_values = np.array([1, 1, 0])
+    tampered = np.array([0, 1, 1])  # first row illegally flipped 1->0
+    with pytest.raises(selection.DirectionContractError, match="flipped 1->0"):
+        selection.assert_direction_contract(
+            expert_values, tampered, selection.DIRECTION_MODE_UP_ONLY, context="tampered"
+        )
+    # The same array is legal under Variant A, so the guard is mode-specific.
+    selection.assert_direction_contract(
+        expert_values, tampered, selection.DIRECTION_MODE_BOTH, context="variant A"
+    )
+
+
+def test_selected_rule_enabling_the_down_direction_cannot_be_returned_under_variant_b():
+    """A defeated force-off must still be caught before the rule is returned.
+
+    Simulates the highest-risk regression - someone dropping the pre-scoring
+    ``forced_off()`` call - and requires the independent post-selection re-check
+    to halt the run instead of silently returning a Variant A rule.
+    """
+    truth, expert_values, scores, eligible, months = _both_directions_enabled_case()
+    original_forced_off = selection.DirectionGate.forced_off
+    selection.DirectionGate.forced_off = lambda self: self
+    try:
+        with pytest.raises(selection.DirectionContractError, match="forbids 1->0"):
+            selection.select_rule(
+                truth=truth, expert=expert_values, wrong_scores=scores,
+                eligible=eligible, months=months,
+                direction_mode=selection.DIRECTION_MODE_UP_ONLY,
+            )
+    finally:
+        selection.DirectionGate.forced_off = original_forced_off
+    # Unaffected afterwards: the real force-off still works.
+    restored = selection.select_rule(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=eligible, months=months,
+        direction_mode=selection.DIRECTION_MODE_UP_ONLY,
+    )
+    assert restored.enable_1_to_0 is False
+
+
+def _with_low_score_filler(case):
+    """Append five low-scoring expert-0 rows so a candidate below 0.9 exists."""
+    truth, expert_values, scores, eligible, months = case
+    return (
+        np.concatenate([truth, np.zeros(5, dtype=int)]),
+        np.concatenate([expert_values, np.zeros(5, dtype=int)]),
+        np.concatenate([scores, np.full(5, 0.1)]),
+        np.concatenate([eligible, np.ones(5, dtype=bool)]),
+        np.concatenate([months, np.full(5, "2020-01")]),
+    )
+
+
+@pytest.mark.parametrize("count,expected", [(20, True), (19, False)])
+def test_variant_b_leaves_the_up_flip_count_gate_boundary_unchanged(count, expected):
+    """The 20-flip gate is identical under Variant B."""
+    truth, expert_values, scores, eligible, months = _with_low_score_filler(
+        _gate_case(count, 2, count)
+    )
+    for mode in selection.DIRECTION_MODES:
+        rule = selection.select_rule(
+            truth=truth, expert=expert_values, wrong_scores=scores,
+            eligible=eligible, months=months, direction_mode=mode,
+        )
+        assert rule.enable_0_to_1 is expected, mode
+
+
+@pytest.mark.parametrize("months_count,expected", [(2, True), (1, False)])
+def test_variant_b_leaves_the_up_distinct_month_gate_boundary_unchanged(
+    months_count, expected
+):
+    """The >=2 distinct validation months gate is identical under Variant B."""
+    truth, expert_values, scores, eligible, months = _with_low_score_filler(
+        _gate_case(24, months_count, 24)
+    )
+    for mode in selection.DIRECTION_MODES:
+        rule = selection.select_rule(
+            truth=truth, expert=expert_values, wrong_scores=scores,
+            eligible=eligible, months=months, direction_mode=mode,
+        )
+        assert rule.enable_0_to_1 is expected, mode
+
+
+@pytest.mark.parametrize("fixes,expected", [(75, True), (74, False)])
+def test_variant_b_leaves_the_up_precision_gate_boundary_unchanged(fixes, expected):
+    """The >=0.75 correction-precision gate is identical under Variant B."""
+    truth, expert_values, scores, eligible, months = _with_low_score_filler(
+        _gate_case(100, 2, fixes)
+    )
+    for mode in selection.DIRECTION_MODES:
+        rule = selection.select_rule(
+            truth=truth, expert=expert_values, wrong_scores=scores,
+            eligible=eligible, months=months, direction_mode=mode,
+        )
+        assert rule.enable_0_to_1 is expected, mode
+
+
+def test_variant_b_keeps_the_strict_f1_objective_and_expert_only_tie_break():
+    """Ties still keep expert-only, and no-correction is still explicit."""
+    truth = np.array([1] * 20 + [0] * 20)
+    expert_values = np.array([1] * 20 + [0] * 20)  # already perfect -> F1 = 1.0
+    scores = np.full(40, 0.9)
+    months = np.array([f"2020-{1 + index % 2:02d}" for index in range(40)])
+    rule = selection.select_rule(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=np.ones(40, dtype=bool), months=months,
+        direction_mode=selection.DIRECTION_MODE_UP_ONLY,
+    )
+    assert rule.corrected is False
+    assert rule.status == "no_correction"
+    assert rule.enable_1_to_0 is False
+    assert rule.reason == selection.NO_CORRECTION_REASONS["no_strict_improvement"]
+
+
+def test_variant_a_is_the_default_and_is_unaffected_by_the_new_flag():
+    """Omitting the mode reproduces Variant A exactly."""
+    truth, expert_values, scores, eligible, months = _both_directions_enabled_case()
+    kwargs = dict(
+        truth=truth, expert=expert_values, wrong_scores=scores,
+        eligible=eligible, months=months,
+    )
+    implicit = selection.select_rule(**kwargs)
+    explicit = selection.select_rule(**kwargs, direction_mode=selection.DIRECTION_MODE_BOTH)
+    assert implicit.as_record() == explicit.as_record()
+    assert implicit.candidates == explicit.candidates
+    assert runner.build_parser().parse_args(["--run-id", "x"]).direction_mode == (
+        selection.DIRECTION_MODE_BOTH
+    )
+    # Variant A's committed artifact schema is unchanged: no direction column.
+    assert "direction_mode" not in implicit.as_record()
+
+
+def test_unknown_direction_modes_are_rejected():
+    """Only the two approved modes exist."""
+    with pytest.raises(ValueError, match="direction_mode must be one of"):
+        selection.resolve_direction_mode("down-only")
+    with pytest.raises(ValueError, match="direction_mode must be one of"):
+        selection.select_rule(
+            truth=np.array([1]), expert=np.array([0]), wrong_scores=np.array([0.5]),
+            eligible=np.array([True]), months=np.array(["2020-01"]),
+            direction_mode="anything",
+        )
+    with pytest.raises(SystemExit):
+        runner.build_parser().parse_args(["--run-id", "x", "--direction-mode", "down-only"])
+
+
+def test_variant_method_ids_are_distinct_and_mapped_from_the_mode():
+    """Variant B is a separate method id; Variant A's id is untouched."""
+    assert runner.CORRECTION_METHOD == "partitioned_selective_correction"
+    assert runner.CORRECTION_METHOD_UP_ONLY == "partitioned_selective_correction_up_only"
+    assert runner.correction_method_id("both") == runner.CORRECTION_METHOD
+    assert runner.correction_method_id("up-only") == runner.CORRECTION_METHOD_UP_ONLY
+    with pytest.raises(ValueError):
+        runner.correction_method_id("up_only")
+
+
+def test_variant_b_method_id_appears_in_metrics_and_prediction_columns():
+    """Monthly metrics label the up-only method and read its own column."""
+    from step3correction import baselines
+
+    baseline = baselines.load_reused_baseline(1)
+    month = pd.Timestamp("2021-02-01")
+    archived = baseline.predictions.loc[baseline.predictions["month_start"].eq(month)]
+    method = runner.CORRECTION_METHOD_UP_ONLY
+    audit = pd.DataFrame(
+        {
+            "month_start": archived["month_start"].to_numpy(),
+            "y_true": archived["y_true"].to_numpy(),
+            f"y_pred_{method}": archived["y_pred_partitioned"].to_numpy(),
+            "y_pred_pooled": archived["y_pred_pooled"].to_numpy(),
+        }
+    )
+    frame = runner.monthly_metrics(audit, baseline, 1, method=method)
+    assert set(frame["model"]) == {method, runner.POOLED_METHOD}
+    assert frame.loc[frame["model"].eq(method), "correction_enabled"].all()
+    assert not frame.loc[frame["model"].eq(runner.POOLED_METHOD), "correction_enabled"].any()
+    # Variant A's method id must not appear anywhere in a Variant B run.
+    assert runner.CORRECTION_METHOD not in set(frame["model"])
+
+
+def test_variant_manifest_records_asymmetric_cost_and_the_post_hoc_caveat():
+    """The manifest must not present Variant B as an out-of-sample result."""
+    block = runner._variant_manifest(
+        selection.DIRECTION_MODE_UP_ONLY, runner.CORRECTION_METHOD_UP_ONLY
+    )
+    assert block["variant"] == "B"
+    assert block["directions_permitted"] == ["0->1"]
+    assert "missed crisis" in block["asymmetric_cost_justification"]
+    assert block["post_hoc_corroboration"]["computed_with_test_labels"] is True
+    status = block["epistemic_status"]
+    assert "NOT an out-of-sample estimate" in status
+    assert "only genuinely out-of-sample" in status
+    assert block["variant_a_reference_run"] == "full_fs1_fs2_20260918"
+
+    variant_a = runner._variant_manifest(
+        selection.DIRECTION_MODE_BOTH, runner.CORRECTION_METHOD
+    )
+    assert variant_a["variant"] == "A"
+    assert variant_a["directions_permitted"] == ["0->1", "1->0"]
+    assert "post_hoc_corroboration" not in variant_a
+
+
+def test_variant_b_run_is_rejected_before_writing_when_the_mode_is_invalid():
+    """Mode validation happens before any directory or fitting work."""
+    with tempfile.TemporaryDirectory() as scratch:
+        target = Path(scratch) / "bad_mode_run"
+        with pytest.raises(ValueError, match="direction_mode must be one of"):
+            runner.run(
+                scopes=[1], target_months=["2021-02"], out_dir=target,
+                allow_outside_repo=True, direction_mode="both-ish",
+            )
+        assert not target.exists()

@@ -10,11 +10,36 @@ expert-only reference; ties keep expert-only.
 
 These gates are fixed by the approved design and must never be relaxed to
 manufacture a visible improvement.  Test labels never enter this module.
+
+Two direction modes are supported, selected per run and never mixed:
+
+``both`` (Variant A, the default)
+    Both flip directions may be enabled, each on its own gates.  This is the
+    original approved mechanism and its committed run is the reference result.
+
+``up-only`` (Variant B)
+    ``enable_1_to_0`` is forced ``False`` *before* candidate scoring, so only
+    ``0->1`` flips can ever be proposed, scored or applied.
+
+    Justification - asymmetric cost.  A ``1->0`` flip switches an
+    already-issued crisis warning off.  In food-security early warning a missed
+    crisis carries materially higher cost than a false alarm, so a mechanism
+    that can silence the expert's own crisis calls is the more dangerous half of
+    the rule.  This argument is independent of any test result.
+
+    Epistemic status.  Variant B was specified after Variant A's test results
+    were known, so its test metric is a post-hoc, test-informed figure and is
+    NOT an out-of-sample estimate.  Variant A remains the only genuinely
+    out-of-sample result for this mechanism.  The oracle decomposition that
+    corroborates the restriction (fs1 ``0->1`` +0.0078 vs ``1->0`` +0.0034; fs2
+    +0.0171 vs +0.0020) was computed with test labels and is recorded only as
+    post-hoc corroboration - never as the reason for the restriction and never
+    as evidence that Variant B generalises.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Dict, List, Optional, Sequence
 
 import numpy as np
@@ -25,12 +50,66 @@ MIN_DISTINCT_MONTHS = 2
 MIN_CORRECTION_PRECISION = 0.75
 THRESHOLD_ROUNDING_DECIMALS = 2
 
+# Direction modes.  ``both`` is Variant A (unchanged default); ``up-only`` is
+# Variant B, which forces ``enable_1_to_0 = False`` before candidate scoring on
+# asymmetric-cost grounds (see the module docstring).  No other mode exists and
+# no mode relaxes any gate above.
+DIRECTION_MODE_BOTH = "both"
+DIRECTION_MODE_UP_ONLY = "up-only"
+DIRECTION_MODES = (DIRECTION_MODE_BOTH, DIRECTION_MODE_UP_ONLY)
+
 NO_CORRECTION_REASONS = {
     "no_validation_rows": "validation support is empty",
     "no_eligible_scores": "no finite wrong scores on eligible validation rows",
     "no_candidates": "no candidate thresholds after rounding",
     "no_strict_improvement": "no candidate strictly exceeded expert-only validation F1",
 }
+
+
+class DirectionContractError(RuntimeError):
+    """Raised when a forbidden flip direction is proposed or applied."""
+
+
+def resolve_direction_mode(direction_mode: str) -> str:
+    """Validate and return a direction mode, rejecting anything unknown."""
+    mode = str(direction_mode)
+    if mode not in DIRECTION_MODES:
+        raise ValueError(f"direction_mode must be one of {DIRECTION_MODES}, got {mode!r}")
+    return mode
+
+
+def allows_1_to_0(direction_mode: str) -> bool:
+    """Return whether the mode permits the ``1->0`` direction at all."""
+    return resolve_direction_mode(direction_mode) == DIRECTION_MODE_BOTH
+
+
+def assert_direction_contract(
+    expert: Sequence[int],
+    predictions: Sequence[int],
+    direction_mode: str,
+    *,
+    context: str,
+) -> None:
+    """Halt loudly if a flip violates the run's direction mode.
+
+    Under Variant B a ``1->0`` flip reaching any output is a contract error, not
+    a tolerable anomaly, so this is an unconditional hard failure.
+    """
+    if allows_1_to_0(direction_mode):
+        return
+    expert_int = np.asarray(expert, dtype=int)
+    pred_int = np.asarray(predictions, dtype=int)
+    if expert_int.shape != pred_int.shape:
+        raise DirectionContractError(
+            f"{context}: expert/prediction shape mismatch "
+            f"{expert_int.shape} vs {pred_int.shape}"
+        )
+    violations = int(((expert_int == 1) & (pred_int == 0)).sum())
+    if violations:
+        raise DirectionContractError(
+            f"{context}: {violations} rows flipped 1->0 under direction mode "
+            f"{DIRECTION_MODE_UP_ONLY!r}, which forbids that direction"
+        )
 
 
 def crisis_f1(y_true: Sequence[int], y_pred: Sequence[int]) -> float:
@@ -76,6 +155,15 @@ class DirectionGate:
     fixes: int
     precision: float
     enabled: bool
+    # True when the run's direction mode forbids this direction outright, so the
+    # approved gates were never allowed to enable it.  Recorded on the gate
+    # rather than in ``as_record`` so Variant A's artifact schema is unchanged;
+    # the run-level ``direction_mode`` column carries the same information.
+    forced_disabled: bool = False
+
+    def forced_off(self) -> "DirectionGate":
+        """Return this gate with the direction forcibly disabled by the mode."""
+        return replace(self, enabled=False, forced_disabled=True)
 
     def as_record(self, prefix: str) -> Dict[str, object]:
         """Flatten for CSV export with a per-direction column prefix."""
@@ -100,6 +188,10 @@ class SelectedRule:
     selected_validation_f1: float
     status: str
     reason: str = ""
+    # Kept off ``as_record`` deliberately: Variant A's committed ``fold_tuning``
+    # schema stays byte-identical, and the runner adds an explicit
+    # ``direction_mode`` provenance column for any non-default mode.
+    direction_mode: str = DIRECTION_MODE_BOTH
     candidates: List[Dict[str, object]] = field(default_factory=list)
 
     def as_record(self) -> Dict[str, object]:
@@ -171,12 +263,22 @@ def select_rule(
     wrong_scores: Sequence[float],
     eligible: Sequence[bool],
     months: Sequence,
+    direction_mode: str = DIRECTION_MODE_BOTH,
 ) -> SelectedRule:
     """Select the fold's shared threshold and direction flags from validation rows.
 
     Abstaining rows stay in the F1 support (they simply retain the expert label)
     but can never be proposed flips.
+
+    ``direction_mode`` is ``both`` (Variant A) or ``up-only`` (Variant B).  Under
+    ``up-only`` the ``1->0`` gate is forced off *before* candidate scoring, so
+    every candidate's validation F1 already reflects the restriction.  Nothing
+    else changes: the 20-flip / 2-month / 0.75-precision gates, the strict
+    ``q > threshold`` comparison, the single shared threshold, the strict-F1
+    objective and the expert-only tie-break are all untouched.
     """
+    mode = resolve_direction_mode(direction_mode)
+    down_allowed = allows_1_to_0(mode)
     truth_arr = np.asarray(truth, dtype=int)
     expert_arr = np.asarray(expert, dtype=int)
     score_arr = np.asarray(wrong_scores, dtype=float)
@@ -196,6 +298,7 @@ def select_rule(
         expert_only_validation_f1=expert_f1,
         selected_validation_f1=expert_f1,
         status="no_correction",
+        direction_mode=mode,
     )
     if len(truth_arr) == 0:
         base.reason = NO_CORRECTION_REASONS["no_validation_rows"]
@@ -230,6 +333,11 @@ def select_rule(
             months=month_arr,
             proposed=proposed,
         )
+        if not down_allowed:
+            # Variant B: the direction is disabled a priori on asymmetric-cost
+            # grounds, before this candidate's validation F1 is computed, so the
+            # gates can never turn it back on.
+            gate_down = gate_down.forced_off()
         predictions = apply_rule(
             expert_arr, score_arr, eligible_arr, threshold, gate_up.enabled, gate_down.enabled
         )
@@ -257,10 +365,15 @@ def select_rule(
                 selected_validation_f1=candidate_f1,
                 status="corrected",
                 reason="strict validation crisis-F1 improvement over expert-only",
+                direction_mode=mode,
             )
 
     if not best.corrected:
         best = base
         best.reason = NO_CORRECTION_REASONS["no_strict_improvement"]
+    if not down_allowed and best.enable_1_to_0:
+        raise DirectionContractError(
+            f"direction mode {mode!r} forbids 1->0 but the selected rule enabled it"
+        )
     best.candidates = records
     return best

@@ -19,10 +19,15 @@ calendar-aligned FEWS NET expert estimate e  +  original main features X
 
 Method identifiers written by the runner:
 
-| Scope | Reported methods | Correction |
-|---|---|---|
-| fs1, fs2 | `partitioned_selective_correction`, `pooled` | enabled |
-| fs3 | `partitioned`, `pooled` | **not applicable, explicitly uncorrected** |
+| Scope | Variant | Reported methods | Correction |
+|---|---|---|---|
+| fs1, fs2 | A (`--direction-mode both`, default) | `partitioned_selective_correction`, `pooled` | enabled, both flip directions eligible |
+| fs1, fs2 | B (`--direction-mode up-only`) | `partitioned_selective_correction_up_only`, `pooled` | enabled, `0->1` only |
+| fs3 | - | `partitioned`, `pooled` | **not applicable, explicitly uncorrected** |
+
+The two variants are separate methods run into separate run directories.  See
+[Variant B](#variant-b-0-1-only-correction---direction-mode-up-only) for its
+justification and its **post-hoc, test-informed** epistemic status.
 
 `pooled` (fs1/fs2) and both fs3 methods are **reused frozen archive
 predictions**, not newly trained.  Expert-only appears only in selection and
@@ -173,6 +178,112 @@ and `bounded_fs2_2021_06` were produced under the **superseded** record-shift an
 six-month-`V` contracts.  They are retained as diagnostic evidence (the rollback
 policy forbids automatic deletion) and must not be read as current results.
 
+## Variant B: `0->1`-only correction (`--direction-mode up-only`)
+
+Variant B is the same mechanism with one change: **`enable_1_to_0` is forced
+`False` before candidate scoring**, so a `1->0` flip can never be proposed,
+scored or applied.  Every other element is untouched - the calendar-aligned
+expert, `V = [O-12, O)`, the horizon-isolated fit and refit, the per-partition
+wrong-label RFs, the 50-row/single-class abstention, strict `q > threshold`, one
+shared threshold per fold, the **20 flips / >=2 distinct validation months /
+>=0.75 correction precision** gates, and the strictly-greater-validation-F1
+objective with ties kept by expert-only.  Nothing was relaxed, retuned or added.
+
+Variant A is unchanged: its method id, code path and committed run
+`outputs/full_fs1_fs2_20260918/` were not re-run, modified or overwritten.  A
+Variant A regression run (`outputs/variantA_regression_fs1_2021_02/`) reproduces
+the earlier `outputs/bounded_cal_fs1_2021_02/` artifacts **byte-for-byte** for
+all ten CSV/JSON data files; `run_manifest.json` differs only in its timestamp
+and an additive `variant` provenance block.  For that reason the
+`direction_mode` / `enable_1_to_0_forced_disabled` provenance columns are written
+**only** in a restricted mode - Variant A artifacts keep their committed schema,
+and the variant is still identifiable there from the `y_pred_<method>` column
+name, the metrics `model` value and `fold_tuning.method`.
+
+### Why the direction is restricted: asymmetric cost
+
+A `1->0` flip switches an **already-issued crisis warning off**.  In
+food-security early warning a missed crisis carries materially higher cost than a
+false alarm, so the half of the rule that can silence the expert's own crisis
+calls is the more dangerous half.  This argument is independent of any test
+result and is the stated justification in the code, the run manifest and here.
+
+### Epistemic status: post-hoc and test-informed, NOT out-of-sample
+
+**Variant B's direction restriction was chosen after Variant A's test results
+were known.  Its test metric is therefore a post-hoc, test-informed figure and is
+not an out-of-sample estimate.  Variant A remains the only genuinely
+out-of-sample result for this mechanism.**  A Variant B number - positive or
+negative - does not validate the approach, and any comparison against `pooled`
+must carry this caveat.
+
+The oracle decomposition that corroborates the restriction (per-fold oracle F1
+headroom over expert-only: fs1 `0->1` +0.0078 vs `1->0` +0.0034; fs2 +0.0171 vs
++0.0020) was **computed with test labels**.  It is recorded as post-hoc
+corroboration only, never as the reason for the restriction.
+
+### Result of the full 24-fold Variant B run
+
+Run `outputs/full_fs1_fs2_up_only_20260918/`, 2026-09-18, exit 0, identical
+support to Variant A (124,378 audit rows; keys, truth, expert and pooled all
+per-row equal).  All figures below are recomputed independently from the saved
+audit and validation rows by `analyze_variant_b.py`
+(`logs/variant_b_analysis.json`).
+
+| scope | expert-only | Variant B (`0->1` only) | Variant A (both) | pooled |
+|---|---|---|---|---|
+| fs1 | 0.8070 (P 0.8398 / R 0.7768) | **0.8080** (+0.0009) | 0.8053 (-0.0017) | 0.6411 |
+| fs2 | 0.7630 (P 0.8077 / R 0.7230) | **0.7630** (+0.0000) | 0.7576 (-0.0054) | 0.6159 |
+
+Selection: 4 of 24 folds `corrected` (all fs1), 20 `no_correction`.  In Variant A
+no fold had both directions enabled at once, so Variant B is exactly Variant A
+minus its seven `1->0`-only folds, with identical thresholds in the four
+surviving folds.  fs2 enabled `0->1` in no fold, so **Variant B at fs2 is
+expert-only with zero flips** - not an improvement over the expert, an exact
+reproduction of it.
+
+Flips (test): fs1 58 (40 fixed / 18 damaged, precision 0.690); fs2 0.  Zero
+`1->0` flips in 124,378 rows and `enable_1_to_0 = False` in 24/24 folds, as the
+contract requires.  Validation-to-test flip precision over the four corrected
+folds: 212 flips at 0.778 on validation vs 58 flips at 0.690 on test.
+
+Only three folds flipped any test row, and the aggregate fs1 gain rests on one of
+them:
+
+| fold | flips | fixed | damaged | test flip precision | expert F1 | Variant B F1 | delta |
+|---|---|---|---|---|---|---|---|
+| fs1 2022-10 | 44 | 37 | 7 | 0.841 | 0.7859 | 0.7974 | **+0.0115** |
+| fs1 2023-02 | 1 | 0 | 1 | 0.000 | 0.9051 | 0.9047 | -0.0003 |
+| fs1 2024-02 | 13 | 3 | 10 | 0.231 | 0.8080 | 0.8067 | -0.0013 |
+
+So the +0.0009 fs1 figure is one fold's +0.0115 diluted over twelve months, with
+the other two flipping folds slightly negative.  It is also far below the
+`0->1` oracle bound of +0.0078, and it is a post-hoc, test-informed figure.
+**Removing the harmful direction removes most of Variant A's damage; it does not
+demonstrate that the correction layer adds anything.**
+
+### Command
+
+```bash
+PYTHONPATH="$PWD/Step3ExpertCorrectionExperiment" \
+  .venv-geodt-diagnostic/bin/python \
+  Step3ExpertCorrectionExperiment/run_correction_experiment.py \
+  --run-id full_fs1_fs2_up_only_20260918 --scopes 1 2 --direction-mode up-only \
+  > Step3ExpertCorrectionExperiment/logs/full_fs1_fs2_up_only_20260918.log 2>&1
+```
+
+Independent recomputation of that run:
+
+```bash
+PYTHONPATH="$PWD/Step3ExpertCorrectionExperiment" \
+  .venv-geodt-diagnostic/bin/python \
+  Step3ExpertCorrectionExperiment/analyze_variant_b.py \
+  --report Step3ExpertCorrectionExperiment/logs/variant_b_analysis.json
+```
+
+`--direction-mode` defaults to `both`, so every previously documented Variant A
+command keeps its exact behaviour.
+
 ## Environment
 
 `src/preprocess/preprocess.py` requires `polars`, which is absent from the bare
@@ -212,8 +323,11 @@ PYTHONPATH="$PWD/Step3ExpertCorrectionExperiment" \
 
 ### Full authorized experiment (fs1 + fs2, all 12 evaluation months)
 
-This is the exact command for the full 24-fold run.  It is the orchestrator's
-gate and was **not** executed by the implementation round.
+This is the exact command for the full 24-fold Variant A run.  It was executed
+as `outputs/full_fs1_fs2_20260918/` (the reference result; see
+`.trellis/tasks/09-18-step3-expert-selective-correction/RESULTS.md`) and must not
+be re-run into that run id - run directories are immutable.  The Variant B
+command is in [its own section](#command).
 
 ```bash
 PYTHONPATH="$PWD/Step3ExpertCorrectionExperiment" \
@@ -223,16 +337,16 @@ PYTHONPATH="$PWD/Step3ExpertCorrectionExperiment" \
   > Step3ExpertCorrectionExperiment/logs/full_fs1_fs2_<YYYYMMDD>.log 2>&1
 ```
 
-Defaults: `--scopes 1 2` and all twelve Feb/Jun/Oct target months of 2021-2024,
-so both flags may be omitted.  No acknowledgement flag is needed or accepted as
-meaningful any more.  Run IDs are immutable: an existing run directory raises
-`FileExistsError`.
+Defaults: `--scopes 1 2`, all twelve Feb/Jun/Oct target months of 2021-2024 and
+`--direction-mode both`, so all three flags may be omitted for Variant A.  No
+acknowledgement flag is needed or accepted as meaningful any more.  Run IDs are
+immutable: an existing run directory raises `FileExistsError`.
 
 ### Tests
 
 ```bash
 .venv-geodt-diagnostic/bin/python -m pytest Step3ExpertCorrectionExperiment/tests -q
-python3 -m pytest Step3ExpertCorrectionExperiment/tests -q   # same 55 tests, no polars needed
+python3 -m pytest Step3ExpertCorrectionExperiment/tests -q   # same 78 tests, no polars needed
 ```
 
 ## Layout
@@ -241,16 +355,17 @@ python3 -m pytest Step3ExpertCorrectionExperiment/tests -q   # same 55 tests, no
 Step3ExpertCorrectionExperiment/
   run_correction_experiment.py   # CLI entrypoint
   verify_contracts.py            # pre-flight contract evidence
+  analyze_variant_b.py           # independent recomputation of a Variant B run
   step3correction/
     protected.py    # protected-artifact paths and SHA-256 before/after guard
     expert.py       # calendar-aligned expert + firewalled legacy series + alignment gate
     windows.py      # outer / V=[O-12,O) / fit / gap temporal masks
     features.py     # main prepare_features with imputation deferred to the window
     correction.py   # per-partition expert-error RFs and abstention
-    selection.py    # threshold candidates, directional gates, F1 selection
+    selection.py    # threshold candidates, directional gates, direction modes, F1 selection
     baselines.py    # reused frozen pooled / fs3 predictions and their checks
-    runner.py       # fold orchestration, artifacts, manifest
-  tests/            # 55 focused tests
+    runner.py       # fold orchestration, variant method ids, artifacts, manifest
+  tests/            # 78 focused tests
   outputs/<run-id>/ # immutable run artifacts (git-ignored)
   logs/             # run logs and pre-flight evidence (git-ignored)
 ```
@@ -270,6 +385,14 @@ Step3ExpertCorrectionExperiment/
 | `run_manifest.json` | sources + hashes, environment, RF parameters, `expert_alignment: calendar`, `expert_horizon_verified`, observed lag distribution, coverage, the firewalled legacy-series declaration and its archived reproduction, the deferred paper-baseline issue, window endpoints and rationale, partition provenance, reuse declaration |
 | `protected_hashes.json` | before/after SHA-256 of all 31 protected inputs with an `unchanged` flag |
 
+In a Variant B run every CSV above also carries `direction_mode = up-only` and
+`enable_1_to_0_forced_disabled = True`, the correction column is
+`y_pred_partitioned_selective_correction_up_only`, and `run_manifest.json`
+contains a `variant` block with the asymmetric-cost justification, the
+test-label-derived oracle recorded as post-hoc corroboration only, and the
+explicit statement that the variant's test metric is not an out-of-sample
+estimate.
+
 ## Contract gates that halt a run
 
 | Condition | Result |
@@ -288,6 +411,8 @@ Step3ExpertCorrectionExperiment/
 | Non-finite correction model input | `CorrectionInputError` |
 | Output path outside `Step3ExpertCorrectionExperiment/outputs/` | `ValueError` before any directory is created |
 | Existing run directory | `FileExistsError` |
+| A `1->0` flip proposed, enabled or applied under `--direction-mode up-only` | `DirectionContractError` (per fold, at selection, and again run-wide) |
+| An unknown `--direction-mode` | `ValueError` before any directory is created |
 | Any protected artifact hash drift | `RuntimeError` |
 
 Partition abstention (unmapped, absent model, fewer than 50 usable rows, single

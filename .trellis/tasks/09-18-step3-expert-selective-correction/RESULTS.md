@@ -111,3 +111,90 @@ No tracked file modified; no commits.
   says nothing about `0->1`-only correction, per-partition thresholds, cost-sensitive objectives,
   or a recency-weighted validation window - the oracle decomposition above suggests
   `0->1`-only is the one variant with a plausible case.
+
+---
+
+# Variant B: `0->1`-only correction (run `full_fs1_fs2_up_only_20260918`)
+
+Run directory: `Step3ExpertCorrectionExperiment/outputs/full_fs1_fs2_up_only_20260918/` (24 folds, exit 0).
+Method ID `partitioned_selective_correction_up_only`. `1->0` forced off before candidate scoring;
+all other gates identical to Variant A. Variant A's run is untouched and reproduces byte-for-byte.
+
+## EPISTEMIC STATUS - read before citing any number below
+
+Variant B's direction restriction was specified **after** Variant A's test results were known.
+Its test metric is therefore **post-hoc and test-informed, not an out-of-sample estimate.**
+Variant A remains the only genuinely out-of-sample result for this mechanism.
+
+The restriction's stated justification is **asymmetric cost**, which is independent of any test
+result: a `1->0` flip silences an already-issued crisis warning, and a missed food-security crisis
+carries materially higher cost than a false alarm. The oracle decomposition that first pointed at
+`0->1` was computed **with test labels** and is post-hoc corroboration only.
+
+## Result: also null
+
+| scope | expert-only | Variant B | Variant A | pooled |
+|---|---|---|---|---|
+| fs1 | 0.8070 | 0.8080 (**+0.0009**) | 0.8053 (-0.0017) | 0.6411 |
+| fs2 | 0.7630 | 0.7630 (**+0.0000**) | 0.7576 (-0.0054) | 0.6159 |
+
+- **fs2 applied zero flips.** Variant B at fs2 is a bit-for-bit reproduction of expert-only, not an
+  improvement on it. No fold enabled `0->1`.
+- fs1: 58 flips, 40 fixed / 18 damaged, test precision 0.690. Zero `1->0` flips;
+  `enable_1_to_0 = False` in 24/24 folds. 4/24 folds `corrected`, all fs1.
+- Because no Variant A fold ever enabled both directions, Variant B is exactly Variant A minus its
+  seven `1->0`-only folds, with thresholds unchanged in the four survivors.
+
+## The fs1 gain is one month and is inside the noise
+
+| fold | flips | fixed | damaged | test precision | delta vs expert |
+|---|---|---|---|---|---|
+| fs1 2022-10 | 44 | 37 | 7 | 0.841 | **+0.0115** |
+| fs1 2023-02 | 1 | 0 | 1 | 0.000 | -0.0003 |
+| fs1 2024-02 | 13 | 3 | 10 | 0.231 | -0.0013 |
+
+Robustness (computed on the saved predictions, 2000 resamples over the 12 fs1 folds):
+
+| check | delta |
+|---|---|
+| all 12 months | +0.0009 |
+| leave out fs1 2022-10 | **-0.0002** |
+| leave out fs1 2024-02 | +0.0012 |
+| leave out fs1 2023-02 | +0.0011 |
+| fold bootstrap | mean +0.0009, sd 0.0010, **95% CI [-0.0004, +0.0033]**, P(delta>0)=0.645 |
+
+Dropping the single 2022-10 fold turns the aggregate negative, and the fold-level bootstrap CI
+spans zero. The two other flipping folds are both negative (3 fixes in 14 flips combined). The
+realised gain is ~12% of the `0->1` oracle bound (+0.0078).
+
+## Conclusion across both variants
+
+Per-partition RF selective correction of the calendar-aligned FEWS NET expert shows **no
+demonstrable benefit** on this data. Variant A is net harmful (fs1 -0.0017, fs2 -0.0054).
+Variant B removes the harm but adds nothing measurable: exactly zero at fs2, and at fs1 a
+one-fold artefact indistinguishable from zero. Disabling the damaging direction is not the same as
+finding a working mechanism.
+
+The binding constraint is the data cadence, not the learner: three observed tri-annual validation
+label months give the `distinct months >= 2` gate almost no power to detect temporal instability,
+selected validation precisions sit on the 0.75 gate boundary, and validation gain correlates
+*negatively* with realised test gain (Pearson -0.133 across Variant A's corrected folds).
+
+## Verification
+
+78 tests pass on both `python3` (pandas 3.0.0) and `.venv-geodt-diagnostic` (pandas 2.3.3), up from
+59 (+19 Variant B tests: forced-off in every fold, force-off defeat caught by an independent
+re-check, no `1->0` reachable even when 30 `e==1` rows would be proposed, `0->1` gate boundaries
+unchanged under both modes, Variant A default unaffected, method-id and column naming, manifest
+epistemic assertions, invalid-mode rejection before any write).
+
+Variant A regression: `variantA_regression_fs1_2021_02` reproduces `bounded_cal_fs1_2021_02`
+byte-for-byte across all 10 data artifacts; the `direction_mode` columns are emitted only in
+restricted mode so Variant A's schema stays byte-identical. Support identical across variants
+(124,378 rows; keys, `y_true`, `expert`, `y_pred_pooled` per-row equal). 31/31 protected hashes
+unchanged. Legacy series still reproduces 39/39 archived quarters per scope at 1e-12. Determinism
+and run-directory immutability hold. fs3 outputs byte-identical across variants.
+
+GitNexus `impact`/`detect_changes` were unavailable inside the sub-agent session; a repo-wide
+caller search confirmed no production file references the touched symbols, and the orchestrator ran
+`detect-changes --repo Food_Crisis_Cluster` at commit time with "No changes detected".

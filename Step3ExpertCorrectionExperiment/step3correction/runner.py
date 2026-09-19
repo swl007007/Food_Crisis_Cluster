@@ -2,10 +2,20 @@
 
 Method identifiers written by this runner:
 
-* ``partitioned_selective_correction`` - the new fs1/fs2 method: the
-  **calendar-aligned** FEWS NET expert estimate published at ``O = T - H``, plus
-  one validation-gated per-partition correction layer selected on
-  ``V = [O - 12 months, O)``.
+* ``partitioned_selective_correction`` - **Variant A** (``--direction-mode both``,
+  the default): the **calendar-aligned** FEWS NET expert estimate published at
+  ``O = T - H``, plus one validation-gated per-partition correction layer
+  selected on ``V = [O - 12 months, O)``, with both flip directions eligible.
+* ``partitioned_selective_correction_up_only`` - **Variant B**
+  (``--direction-mode up-only``): identical in every respect except that the
+  ``1->0`` direction is forced off before candidate scoring, on **asymmetric-cost**
+  grounds (a ``1->0`` flip silences an already-issued crisis warning, and a missed
+  food-security crisis costs materially more than a false alarm).  Variant B was
+  specified after Variant A's test results were known, so its test metric is a
+  **post-hoc, test-informed** figure and **not an out-of-sample estimate**;
+  Variant A remains the only genuinely out-of-sample result for this mechanism.
+  The two variants are separate methods: Variant A is never re-run, modified or
+  overwritten by a Variant B run.
 * ``pooled`` - the unchanged, **reused** frozen Stage 3 pooled baseline.
 * ``partitioned`` - retained only for fs3, where correction is disabled.
 
@@ -57,6 +67,11 @@ from .protected import (
 )
 
 CORRECTION_METHOD = "partitioned_selective_correction"
+CORRECTION_METHOD_UP_ONLY = "partitioned_selective_correction_up_only"
+DIRECTION_MODE_METHOD = {
+    selection.DIRECTION_MODE_BOTH: CORRECTION_METHOD,
+    selection.DIRECTION_MODE_UP_ONLY: CORRECTION_METHOD_UP_ONLY,
+}
 POOLED_METHOD = "pooled"
 UNCORRECTED_METHOD = "partitioned"
 CORRECTION_SCOPES = (1, 2)
@@ -70,6 +85,11 @@ DEFAULT_TARGET_MONTHS = tuple(
 
 class RunContractError(RuntimeError):
     """Raised when a run-level contract is violated and the run must halt."""
+
+
+def correction_method_id(direction_mode: str) -> str:
+    """Return the explicit method identifier for a direction mode."""
+    return DIRECTION_MODE_METHOD[selection.resolve_direction_mode(direction_mode)]
 
 
 @dataclass
@@ -188,8 +208,16 @@ def run_fold(
     expert_lookup: pd.DataFrame,
     baseline: ReusedBaseline,
     map_path: Path,
+    direction_mode: str = selection.DIRECTION_MODE_BOTH,
 ) -> FoldResult:
-    """Execute one (scope, target month) correction fold end to end."""
+    """Execute one (scope, target month) correction fold end to end.
+
+    ``direction_mode`` selects Variant A (``both``) or Variant B (``up-only``).
+    Only the permitted flip directions change; every window, gate, learner and
+    abstention rule is shared.
+    """
+    mode = selection.resolve_direction_mode(direction_mode)
+    method = correction_method_id(mode)
     horizon = SCOPE_HORIZON_MONTHS[scope]
     fold_id = f"fs{scope}_{target_month}"
     fold_windows = windows.resolve_fold_windows(target_month, horizon)
@@ -272,6 +300,7 @@ def run_fold(
             selected_validation_f1=float("nan"),
             status="no_correction",
             reason="insufficient fit or validation support after temporal isolation",
+            direction_mode=mode,
         )
         validation_rows = pd.DataFrame()
         fit_ensemble_trained = 0
@@ -301,6 +330,7 @@ def run_fold(
             wrong_scores=val_scores,
             eligible=val_eligible,
             months=val_months.to_numpy(),
+            direction_mode=mode,
         )
         candidates = pd.DataFrame(rule.candidates)
         if not candidates.empty:
@@ -352,6 +382,11 @@ def run_fold(
         rule.enable_0_to_1,
         rule.enable_1_to_0,
     )
+    # Variant B: a 1->0 flip reaching the output is a contract error, checked
+    # here on the actual test predictions rather than trusted from the flags.
+    selection.assert_direction_contract(
+        test_expert_values, final_predictions, mode, context=f"{fold_id} test predictions"
+    )
     applied_flip = final_predictions != test_expert_values
 
     audit_rows = pd.DataFrame(
@@ -375,7 +410,7 @@ def run_fold(
             "enable_0_to_1": rule.enable_0_to_1,
             "enable_1_to_0": rule.enable_1_to_0,
             "applied_flip": applied_flip,
-            f"y_pred_{CORRECTION_METHOD}": final_predictions,
+            f"y_pred_{method}": final_predictions,
         }
     )
     archived_pooled = archived.set_index(KEYS)["y_pred_pooled"]
@@ -392,7 +427,7 @@ def run_fold(
         "fold_id": fold_id,
         "scope": scope,
         "target_month": str(target_month),
-        "method": CORRECTION_METHOD,
+        "method": method,
         "partition_map": str(map_path),
         "partition_map_sha256": sha256(map_path),
         "stage2_parent_map": str(stage2_map_path(MONTH_MAP_KEY.get(target_month.month, "general"))),
@@ -451,12 +486,21 @@ def run_fold(
     )
 
 
-def monthly_metrics(audit: pd.DataFrame, baseline: ReusedBaseline, scope: int) -> pd.DataFrame:
-    """Score the two reported methods on identical admin-month support."""
+def monthly_metrics(
+    audit: pd.DataFrame,
+    baseline: ReusedBaseline,
+    scope: int,
+    method: str = CORRECTION_METHOD,
+) -> pd.DataFrame:
+    """Score the two reported methods on identical admin-month support.
+
+    ``method`` is the variant's explicit correction method identifier; ``pooled``
+    is always the reused frozen baseline and is re-verified against the archive.
+    """
     rows: List[Dict[str, object]] = []
     for month, group in audit.groupby("month_start"):
         for model, column in (
-            (CORRECTION_METHOD, f"y_pred_{CORRECTION_METHOD}"),
+            (method, f"y_pred_{method}"),
             (POOLED_METHOD, "y_pred_pooled"),
         ):
             counts, scores = counts_and_scores(group["y_true"], group[column])
@@ -473,7 +517,7 @@ def monthly_metrics(audit: pd.DataFrame, baseline: ReusedBaseline, scope: int) -
                     "fp": counts[1],
                     "fn": counts[2],
                     "tn": counts[3],
-                    "correction_enabled": model == CORRECTION_METHOD,
+                    "correction_enabled": model == method,
                 }
             )
     frame = pd.DataFrame(rows)
@@ -509,6 +553,70 @@ def uncorrected_scope_frames(scope: int) -> Dict[str, pd.DataFrame]:
     return {"predictions": predictions, "metrics": metrics, "checks": baseline.checks}
 
 
+VARIANT_A_REFERENCE_RUN = "full_fs1_fs2_20260918"
+ASYMMETRIC_COST_JUSTIFICATION = (
+    "Asymmetric cost, which is independent of any test result: a 1->0 flip "
+    "switches an already-issued crisis warning off, and in food-security early "
+    "warning a missed crisis carries materially higher cost than a false alarm."
+)
+VARIANT_B_POST_HOC_CORROBORATION = {
+    "statistic": "per-fold oracle F1 headroom over expert-only, by direction",
+    "fs1": {"0_to_1_only": 0.0078, "1_to_0_only": 0.0034},
+    "fs2": {"0_to_1_only": 0.0171, "1_to_0_only": 0.0020},
+    "computed_with_test_labels": True,
+    "role": (
+        "post-hoc corroboration only. This decomposition was computed with test "
+        "labels and is NOT the reason for the restriction (see "
+        "asymmetric_cost_justification) and is NOT evidence that Variant B "
+        "generalises."
+    ),
+}
+
+
+def _variant_manifest(mode: str, method: str) -> Dict[str, object]:
+    """Describe the run's variant, including its epistemic status."""
+    if mode == selection.DIRECTION_MODE_BOTH:
+        return {
+            "variant": "A",
+            "direction_mode": mode,
+            "method_id": method,
+            "directions_permitted": ["0->1", "1->0"],
+            "epistemic_status": (
+                "Variant A is the original approved mechanism and the only "
+                "genuinely out-of-sample result for it: its direction set was "
+                "fixed before any test metric was computed."
+            ),
+        }
+    return {
+        "variant": "B",
+        "direction_mode": mode,
+        "method_id": method,
+        "directions_permitted": ["0->1"],
+        "enable_1_to_0": "forced False before candidate scoring; never proposed or applied",
+        "asymmetric_cost_justification": ASYMMETRIC_COST_JUSTIFICATION,
+        "post_hoc_corroboration": VARIANT_B_POST_HOC_CORROBORATION,
+        "epistemic_status": (
+            "Variant B's direction restriction was chosen AFTER Variant A's test "
+            "results were known. Its test metric is therefore a post-hoc, "
+            "test-informed figure and is NOT an out-of-sample estimate. Variant A "
+            f"(reference run {VARIANT_A_REFERENCE_RUN}) remains the only genuinely "
+            "out-of-sample result for this mechanism. A Variant B number does not "
+            "validate the approach, and any comparison against pooled must carry "
+            "this caveat."
+        ),
+        "variant_a_reference_run": VARIANT_A_REFERENCE_RUN,
+        "variant_a_untouched": (
+            "Variant A's method id, code path and committed run directory are "
+            "unchanged; this run writes a separate directory and method id."
+        ),
+        "gates_unchanged": (
+            "20 proposed flips / >=2 distinct validation months / >=0.75 "
+            "correction precision / strictly greater validation crisis F1 with "
+            "ties to expert-only / strict q > threshold / one shared threshold"
+        ),
+    }
+
+
 def run(
     *,
     scopes: Sequence[int],
@@ -518,8 +626,16 @@ def run(
     fewsnet_path: Path | str = FEWSNET_SOURCE,
     include_uncorrected_fs3: bool = True,
     allow_outside_repo: bool = False,
+    direction_mode: str = selection.DIRECTION_MODE_BOTH,
 ) -> Path:
-    """Run the isolated fs1/fs2 correction experiment and write all artifacts."""
+    """Run the isolated fs1/fs2 correction experiment and write all artifacts.
+
+    ``direction_mode`` picks the variant: ``both`` (Variant A, default) or
+    ``up-only`` (Variant B).  A Variant B run writes a distinct method id into a
+    distinct run directory and never touches Variant A's artifacts.
+    """
+    mode = selection.resolve_direction_mode(direction_mode)
+    method = correction_method_id(mode)
     for scope in scopes:
         if scope not in CORRECTION_SCOPES:
             raise ValueError(f"Correction scopes are {CORRECTION_SCOPES}, got fs{scope}")
@@ -579,6 +695,7 @@ def run(
                 expert_lookup=expert_lookup,
                 baseline=baseline,
                 map_path=month_map_path(scope, period),
+                direction_mode=mode,
             )
             scope_audit.append(result.audit_rows)
             all_audit.append(result.audit_rows)
@@ -590,24 +707,57 @@ def run(
                 all_partitions.append(result.partition_reports)
             fold_records.append(result.fold_record)
         scope_frame = pd.concat(scope_audit, ignore_index=True)
-        all_metrics.append(monthly_metrics(scope_frame, baseline, scope))
+        all_metrics.append(monthly_metrics(scope_frame, baseline, scope, method=method))
+
+    def _tag(frame: pd.DataFrame) -> pd.DataFrame:
+        """Stamp the direction mode on artifacts of a non-default variant.
+
+        Variant A keeps its committed artifact schema byte-for-byte, so the
+        provenance column is added only for a restricted mode.  Variant A is
+        still identifiable everywhere through the method id in the
+        ``y_pred_<method>`` column name, the metrics ``model`` value and the
+        ``fold_tuning.method`` value.
+        """
+        if mode == selection.DIRECTION_MODE_BOTH or frame.empty:
+            return frame
+        tagged = frame.copy()
+        tagged["direction_mode"] = mode
+        tagged["enable_1_to_0_forced_disabled"] = True
+        return tagged
 
     audit = pd.concat(all_audit, ignore_index=True)
-    audit.to_csv(run_dir / "predictions_monthly_correction.csv", index=False)
-    pd.concat(all_metrics, ignore_index=True).to_csv(
+    # Run-level re-check: independent of the per-fold assertion, prove from the
+    # concatenated artifacts that a restricted mode neither enabled nor applied a
+    # forbidden direction in any fold.
+    if mode != selection.DIRECTION_MODE_BOTH:
+        enabled_down = [
+            record["fold_id"] for record in fold_records if record.get("enable_1_to_0")
+        ]
+        if enabled_down:
+            raise selection.DirectionContractError(
+                f"direction mode {mode!r} forbids 1->0 but folds enabled it: {enabled_down}"
+            )
+        selection.assert_direction_contract(
+            audit["expert"].to_numpy(),
+            audit[f"y_pred_{method}"].to_numpy(),
+            mode,
+            context="run-level test audit",
+        )
+    _tag(audit).to_csv(run_dir / "predictions_monthly_correction.csv", index=False)
+    _tag(pd.concat(all_metrics, ignore_index=True)).to_csv(
         run_dir / "metrics_monthly_correction.csv", index=False
     )
-    pd.DataFrame(fold_records).to_csv(run_dir / "fold_tuning.csv", index=False)
+    _tag(pd.DataFrame(fold_records)).to_csv(run_dir / "fold_tuning.csv", index=False)
     if all_candidates:
-        pd.concat(all_candidates, ignore_index=True).to_csv(
+        _tag(pd.concat(all_candidates, ignore_index=True)).to_csv(
             run_dir / "fold_threshold_candidates.csv", index=False
         )
     if all_validation:
-        pd.concat(all_validation, ignore_index=True).to_csv(
+        _tag(pd.concat(all_validation, ignore_index=True)).to_csv(
             run_dir / "validation_rows.csv", index=False
         )
     if all_partitions:
-        pd.concat(all_partitions, ignore_index=True).to_csv(
+        _tag(pd.concat(all_partitions, ignore_index=True)).to_csv(
             run_dir / "partition_trainability.csv", index=False
         )
 
@@ -631,11 +781,12 @@ def run(
         "run_timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "experiment": "Step 3 partitioned expert selective correction (isolated)",
         "methods": {
-            "fs1_fs2_reported": [CORRECTION_METHOD, POOLED_METHOD],
+            "fs1_fs2_reported": [method, POOLED_METHOD],
             "fs3_reported": [UNCORRECTED_METHOD, POOLED_METHOD],
             "fs3_correction": "not applicable (explicitly uncorrected)",
             "expert_only": "internal selection/audit reference only; not a results series",
         },
+        "variant": _variant_manifest(mode, method),
         "scopes_run": list(scopes),
         "target_months": [str(p) for p in periods],
         "sources": {
@@ -760,6 +911,20 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--direction-mode", default=selection.DIRECTION_MODE_BOTH,
+        choices=list(selection.DIRECTION_MODES),
+        help=(
+            "Permitted flip directions. 'both' (default) is Variant A, method "
+            f"{CORRECTION_METHOD}. 'up-only' is Variant B, method "
+            f"{CORRECTION_METHOD_UP_ONLY}: it forces enable_1_to_0=False before "
+            "candidate scoring on asymmetric-cost grounds (a 1->0 flip silences "
+            "an already-issued crisis warning, and a missed crisis costs more "
+            "than a false alarm). Variant B was specified after Variant A's test "
+            "results were known, so its test metric is post-hoc and "
+            "test-informed, NOT an out-of-sample estimate."
+        ),
+    )
+    parser.add_argument(
         "--no-fs3", action="store_true", help="Skip copying the reused uncorrected fs3 outputs",
     )
     return parser
@@ -781,7 +946,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         panel_path=args.panel,
         fewsnet_path=args.fewsnet,
         include_uncorrected_fs3=not args.no_fs3,
+        direction_mode=args.direction_mode,
     )
+    if args.direction_mode != selection.DIRECTION_MODE_BOTH:
+        print(
+            "NOTICE: Variant B (--direction-mode up-only, method "
+            f"{CORRECTION_METHOD_UP_ONLY}). The 1->0 direction is forced off on "
+            "asymmetric-cost grounds. This variant was specified after Variant A's "
+            "test results were known, so its test metric is post-hoc and "
+            "test-informed, NOT an out-of-sample estimate; Variant A "
+            f"({VARIANT_A_REFERENCE_RUN}) remains the only genuinely out-of-sample "
+            "result for this mechanism."
+        )
     print(f"Correction run written to: {run_dir}")
     return 0
 
