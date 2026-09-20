@@ -1,0 +1,11 @@
+Loading similarity matrices from: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\similarity_matrices\similarity_matrices.npz
+Final matrix shape: (60, 60)
+Building KNN graph with k=40
+  KNN processed rows: 60/60
+Connected components: 1
+Recommended clusters from eigengap: 3
+Saved: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\knn_graph_k40_general.npz
+Saved: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\connected_components_k40_general.npz
+Saved: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\knn_analysis_report_k40_general.json
+Saved plots: knn_graph_analysis_k40_general.png, eigengap_analysis_k40_general.png
+Step 5 sparsification completed (suffix=general)

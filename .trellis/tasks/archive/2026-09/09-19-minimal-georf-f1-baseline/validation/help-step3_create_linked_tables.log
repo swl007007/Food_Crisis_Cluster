@@ -1,0 +1,9 @@
+usage: step3_create_linked_tables.py [-h] --experiment-dir EXPERIMENT_DIR
+
+Create linked tables from merged correspondence tables.
+
+options:
+  -h, --help            show this help message and exit
+  --experiment-dir EXPERIMENT_DIR
+                        Experiment directory (GeoRFExperiment,
+                        GeoXGBExperiment, GeoDTExperiment).

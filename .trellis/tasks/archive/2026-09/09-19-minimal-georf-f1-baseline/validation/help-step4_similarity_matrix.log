@@ -1,0 +1,16 @@
+usage: step4_similarity_matrix.py [-h] --experiment-dir EXPERIMENT_DIR
+                                  [--month {2,6,10}] [--full-universe]
+
+Compute similarity matrices from linked tables.
+
+options:
+  -h, --help            show this help message and exit
+  --experiment-dir EXPERIMENT_DIR
+                        Experiment directory path
+  --month {2,6,10}      Optional month filter (2, 6, 10); omit for general
+                        matrix
+  --full-universe       Build the similarity matrix over all FEWSNET admin
+                        codes found in the partition files (legacy behavior).
+                        Default is to restrict to the in-scope admin codes
+                        derived from the partition files (partition_id !=
+                        's-1').

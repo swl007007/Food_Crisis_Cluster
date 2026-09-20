@@ -28,3 +28,35 @@ Bootstrapped Trellis and Cursor workflow, committed the Ethiopia pre-GeoRF audit
 ### Status
 
 [OK] **Completed**
+
+
+## Session 2: Close minimal GeoRF F1 baseline release
+<!-- trellis-session: v=2 fp=71f341a1cca054f3 -->
+
+**Date**: 2026-09-19
+**Task**: Close minimal GeoRF F1 baseline release
+**Branch**: `main`
+
+### Summary
+
+User requested closure. Local v0.1.0 archive verified; original sources unchanged. Package is still uncommitted; no push or scientific rerun.
+
+### Main Changes
+
+- Archived 09-19-minimal-georf-f1-baseline as completed; retained Stage1 pseudo class rows by explicit user decision.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] 11 focused tests, 8 CLI checks and synthetic Stage2 chain passed in isolated extraction; release SHA256 verified at closure.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- IPCCH binary crisis pipeline brainstorm and draft specification with pooled RF, binary XGBoost and persistence baselines.

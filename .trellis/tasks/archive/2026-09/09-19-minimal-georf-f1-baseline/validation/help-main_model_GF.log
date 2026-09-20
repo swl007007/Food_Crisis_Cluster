@@ -1,0 +1,38 @@
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+=== Starting GeoRF Food Crisis Prediction Pipeline ===
+[PROD MODE: visuals DISABLED]
+usage: main_model_GF.py [-h] [--start_year START_YEAR] [--end_year END_YEAR]
+                        [--forecasting_scope {0,1,2,3}]
+                        [--desired_terms DESIRED_TERMS] [--data DATA]
+                        [--strict-lag-only] [--random-seed RANDOM_SEED]
+                        [--force-final-accuracy] [--dry-run]
+
+GeoRF Food Crisis Prediction Pipeline
+
+options:
+  -h, --help            show this help message and exit
+  --start_year START_YEAR
+                        Start year for evaluation (default: 2024)
+  --end_year END_YEAR   End year for evaluation (default: 2024)
+  --forecasting_scope {0,1,2,3}
+                        Forecasting scope. 0=fs0 (lag=1, stand-alone);
+                        1..3=fs1..fs3 for lag schedule [4, 8, 12] (default: 1)
+  --desired_terms DESIRED_TERMS
+                        Comma-separated list of months to evaluate (e.g.,
+                        "2024-01,2024-02"). Overrides DESIRED_TERMS
+                        environment variable.
+  --data DATA           Optional panel CSV path (default: configured
+                        production dataset)
+  --strict-lag-only     Keep static features and only the active lagged time-
+                        varying features
+  --random-seed RANDOM_SEED
+                        Process-level NumPy/Python random seed (default: 42)
+  --force-final-accuracy
+                        Force generation of final accuracy maps even when
+                        VIS_DEBUG_MODE=False
+  --dry-run             Generate parity artifacts without executing the full
+                        pipeline
+*** TRANSFORMATION.PY MODULE LOADED - DEBUG LOGGING ACTIVE ***

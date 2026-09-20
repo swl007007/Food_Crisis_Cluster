@@ -1,0 +1,10 @@
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/prd.md", "reason": "Converged v1.0 requirements; implementation forbidden until final-summary approval"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/source-audit.md", "reason": "Verified selected raw source target/domain/geometry evidence"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/brainstorm.md", "reason": "Minimal adaptation surface and explicit pending scientific choices"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/approved_label_policy_audit.json", "reason": "Approved Q1 normalized label rule and exact read-only counts; supersedes earlier candidate QC"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/stage1-support.md", "reason": "Historical Stage1 support evidence; current approved eligibility and periods are authoritative in PRD R4"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/secondary-predictors.md", "reason": "Approved Q6 features/preprocessing and unresolved upstream provenance; see PRD for current decisions"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/evaluation.md", "reason": "Approved Q9 evaluation and uncertainty contracts, with verified helper reuse boundaries"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/research/convergence-check.md", "reason": "Approved Q8g repair and verified direct integration/support/export boundaries"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/design.md", "reason": "Concrete minimal IPCCH boundaries, contracts, local baseline compatibility and stop conditions"}
+{"file": ".trellis/tasks/09-19-ipcch-binary-georf-pipeline/implement.md", "reason": "Ordered execution/check gates; final-summary approval required before implementation"}

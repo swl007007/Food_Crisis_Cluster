@@ -1,0 +1,14 @@
+usage: run_stage1.py [-h] --data DATA --polygons POLYGONS --experiment-dir
+                     EXPERIMENT_DIR --year YEAR --month
+                     {1,2,3,4,5,6,7,8,9,10,11,12} --scope {0,1,2,3}
+
+Run one month/scope and collect the legacy Stage 2 input layout.
+
+options:
+  -h, --help            show this help message and exit
+  --data DATA
+  --polygons POLYGONS
+  --experiment-dir EXPERIMENT_DIR
+  --year YEAR
+  --month {1,2,3,4,5,6,7,8,9,10,11,12}
+  --scope {0,1,2,3}

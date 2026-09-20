@@ -1,0 +1,20 @@
+usage: step6_complete_clustering_pipeline.py [-h] --experiment-dir
+                                             EXPERIMENT_DIR
+                                             [--n-clusters N_CLUSTERS]
+                                             [--report REPORT]
+                                             [--suffix SUFFIX]
+                                             [--similarity-dir SIMILARITY_DIR]
+
+Complete clustering pipeline with sparse KNN graph.
+
+options:
+  -h, --help            show this help message and exit
+  --experiment-dir EXPERIMENT_DIR
+                        Path to experiment directory (e.g., GeoRFExperiment)
+  --n-clusters N_CLUSTERS
+                        Number of clusters
+  --report REPORT       Path to knn_analysis_report_k40.json for auto cluster
+                        count
+  --suffix SUFFIX       Suffix for output naming (general, m02, m06, m10)
+  --similarity-dir SIMILARITY_DIR
+                        Directory containing similarity_matrices*.npz

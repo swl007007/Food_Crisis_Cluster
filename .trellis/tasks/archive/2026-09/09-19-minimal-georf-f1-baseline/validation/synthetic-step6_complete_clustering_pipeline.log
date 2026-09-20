@@ -1,0 +1,25 @@
+Using n_clusters=3
+Using similarity file: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\similarity_matrices\similarity_matrices.npz
+Main component: 60 nodes
+Outliers: 0 nodes
+Saved labels: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\final_cluster_labels_k40_nc3_general.npz
+Saved mapping: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\cluster_mapping_k40_nc3_general.csv
+Updated report: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\knn_analysis_report_k40_general.json
+Saved plot: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\final_clustering_results_general.png
+Updated manifest: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\knn_sparsification_results\cluster_mapping_manifest.json (key=general)
+Step 6 complete clustering completed
+C:\Users\swl00\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\joblib\externals\loky\backend\context.py:136: UserWarning: Could not find the number of physical cores for the following reason:
+[WinError 2] 系统找不到指定的文件。
+Returning the number of logical cores instead. You can silence this warning by setting LOKY_MAX_CPU_COUNT to the number of cores you want to use.
+  warnings.warn(
+  File "C:\Users\swl00\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\joblib\externals\loky\backend\context.py", line 257, in _count_physical_cores
+    cpu_info = subprocess.run(
+               ^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.12_3.12.2800.0_x64__qbz5n2kfra8p0\Lib\subprocess.py", line 1538, in _execute_child
+    hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

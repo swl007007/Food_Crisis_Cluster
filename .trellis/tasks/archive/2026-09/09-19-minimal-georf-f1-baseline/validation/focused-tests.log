@@ -1,0 +1,21 @@
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+*** TRANSFORMATION.PY MODULE LOADED - DEBUG LOGGING ACTIVE ***
+test_aggregate_selection_and_exact_threshold (__main__.BaselineChecks.test_aggregate_selection_and_exact_threshold) ... ok
+test_f1_includes_false_positives (__main__.BaselineChecks.test_f1_includes_false_positives) ... ok
+test_feature_order_contract (__main__.BaselineChecks.test_feature_order_contract) ... ok
+test_monthly_handoff_is_readable_by_stage2 (__main__.BaselineChecks.test_monthly_handoff_is_readable_by_stage2) ... ok
+test_no_smote_retains_only_inherited_stage1_pseudo_rows (__main__.BaselineChecks.test_no_smote_retains_only_inherited_stage1_pseudo_rows) ... ok
+test_nonroot_candidate_also_requires_improvement (__main__.BaselineChecks.test_nonroot_candidate_also_requires_improvement) ... ok
+test_partition_gate_and_saved_checkpoint_predictions (__main__.BaselineChecks.test_partition_gate_and_saved_checkpoint_predictions) ... ok
+test_regional_q_and_zero_evidence (__main__.BaselineChecks.test_regional_q_and_zero_evidence) ... ok
+test_root_and_leading_zero_branch_labels_survive_export (__main__.BaselineChecks.test_root_and_leading_zero_branch_labels_survive_export) ... ok
+test_stage1_nan_filter_keeps_correspondence_rows_aligned (__main__.BaselineChecks.test_stage1_nan_filter_keeps_correspondence_rows_aligned) ... ok
+test_validation_membership_and_stage2_f1_weights (__main__.BaselineChecks.test_validation_membership_and_stage2_f1_weights) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.564s
+
+OK

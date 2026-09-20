@@ -1,0 +1,67 @@
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+usage: compare_partitioned_vs_pooled_rf_k40_nc4.py [-h] [--data DATA]
+                                                   [--partition-map PARTITION_MAP]
+                                                   [--polygons POLYGONS]
+                                                   [--out-dir OUT_DIR]
+                                                   [--start-month START_MONTH]
+                                                   [--end-month END_MONTH]
+                                                   [--train-window TRAIN_WINDOW]
+                                                   [--forecasting-scope {0,1,2,3}]
+                                                   [--visual] [--month-ind]
+                                                   [--partition-map-m2 PARTITION_MAP_M2]
+                                                   [--partition-map-m6 PARTITION_MAP_M6]
+                                                   [--partition-map-m10 PARTITION_MAP_M10]
+                                                   [--lower-model {rf,dt}]
+                                                   [--enable-validation-threshold]
+                                                   [--enable-symmetric-validation-threshold]
+                                                   [--strict-lag-only]
+                                                   [--threshold-validation-months THRESHOLD_VALIDATION_MONTHS]
+                                                   [--threshold-lower-bound THRESHOLD_LOWER_BOUND]
+                                                   [--threshold-upper-bound THRESHOLD_UPPER_BOUND]
+
+Partitioned vs Pooled k40_nc4 Comparison
+
+options:
+  -h, --help            show this help message and exit
+  --data DATA           Path to panel dataset CSV
+  --partition-map PARTITION_MAP
+                        Path to cluster_mapping CSV
+  --polygons POLYGONS   Path to admin boundaries shapefile
+  --out-dir OUT_DIR     Output directory
+  --start-month START_MONTH
+                        Start month (YYYY-MM)
+  --end-month END_MONTH
+                        End month (YYYY-MM)
+  --train-window TRAIN_WINDOW
+                        Training window (months)
+  --forecasting-scope {0,1,2,3}
+                        Forecasting scope: 0=1mo (fs0, stand-alone), 1=4mo,
+                        2=8mo, 3=12mo lag
+  --visual              Enable visualization (creates exactly 4 maps)
+  --month-ind           Enable month-specific partitions
+  --partition-map-m2 PARTITION_MAP_M2
+                        Partition map for February
+  --partition-map-m6 PARTITION_MAP_M6
+                        Partition map for June
+  --partition-map-m10 PARTITION_MAP_M10
+                        Partition map for October
+  --lower-model {rf,dt}
+                        Lower-layer base model: rf (default) or dt
+  --enable-validation-threshold
+                        Add partitioned_thresholded results using validation-
+                        selected max-F1 thresholds
+  --enable-symmetric-validation-threshold
+                        Add independently validation-thresholded pooled and
+                        partitioned results
+  --strict-lag-only     Keep static features and only the active lagged time-
+                        varying features
+  --threshold-validation-months THRESHOLD_VALIDATION_MONTHS
+                        Number of latest training-window months held out for
+                        threshold validation
+  --threshold-lower-bound THRESHOLD_LOWER_BOUND
+                        Lower bound for candidate probability thresholds
+  --threshold-upper-bound THRESHOLD_UPPER_BOUND
+                        Upper bound for candidate probability thresholds

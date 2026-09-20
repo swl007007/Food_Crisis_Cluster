@@ -1,0 +1,13 @@
+usage: step5_sparsification.py [-h] --experiment-dir EXPERIMENT_DIR
+                               [--similarity-dir SIMILARITY_DIR]
+                               [--suffix SUFFIX]
+
+Sparsify similarity matrix with KNN graph.
+
+options:
+  -h, --help            show this help message and exit
+  --experiment-dir EXPERIMENT_DIR
+                        Experiment directory path
+  --similarity-dir SIMILARITY_DIR
+                        Directory containing similarity_matrices*.npz
+  --suffix SUFFIX       Run suffix for output naming (general, m2, m6, m10)

@@ -1,0 +1,531 @@
+# @Author: xie
+# @Date:   2022-05-11
+# @Email:  xie@umd.edu
+# @Last modified by:   xie
+# @Last modified time: 2025-04-21
+# @License: MIT License
+
+'''Update notes:
+1. Removing helper functions from tensorflow to build a pure RF-based version.
+'''
+
+import numpy as np
+# import tensorflow as tf
+import pandas as pd
+
+import sklearn
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+import pickle
+from pathlib import Path
+import hashlib
+import os
+
+from config import *
+from src.helper.helper import get_X_branch_id_by_group
+from src.metrics.metrics import *
+
+# NUM_LAYERS = 8 #num_layers is the number of non-input layers
+
+'''Model can be easily customized to different deep network architectures.
+The following key functions need to be included, which are used in STAR training:
+1. train()
+2. model_complie()
+3. predict(): this is the regular prediction function from X->y (using a single branch), which returns predicted labels
+4. save(): save a branch
+5. load(): load a branch
+
+Optional (not called during STAR training, used either in model init() or final test):
+6. predict_test(): this is for STAR's prediction, which make predictions based on which branch a sample belongs to, and returns performance metric values (can change)
+'''
+
+'''This is an example implementation for random forest.'''
+
+class RFmodel():
+
+  def __init__(self, path, n_trees_unit,
+               max_new_forests = [1,1,1,1,1,1], num_class = NUM_CLASS, max_depth=None,
+               increase_thrd = 0.05, random_state=5,
+               n_jobs = N_JOBS,
+               max_model_depth = MAX_DEPTH,
+               mode=MODE, name = 'RF', type = 'static',
+               sample_weights_by_class = None,
+               use_smote=False,  # Disabled to match dd02796 baseline
+               smote_k_neighbors=5):#, path = CKPT_FOLDER_PATH
+
+    '''
+    path: folder path for intermediate models
+    n_trees_unit: number of trees in a unit random forest
+    max_new_forests: a list containing the max number of new forests to add after each split, e.g., [1,2,4,8, ...]#unused
+    num_class: total number of classes for the application (local training data may contain only a subset of classes)
+    increase_thrd: when adding new forests at each new branch, we at unit-size forests one by one, until one of the following is met:
+                    1. The relative performance improvement is less than increase_thrd
+                    2. The number of forests added >= the corresponding value specified in max_new_forests
+    '''
+
+    #inputs
+    self.n_trees_unit = n_trees_unit#number of trees for each model piece, see self.model
+    self.max_new_forests = max_new_forests
+    self.num_class = num_class
+    self.max_depth = max_depth
+    self.random_state = random_state
+    self.n_jobs = n_jobs
+    self.mode = mode
+    self.path = path
+
+    #define a list of models here
+    self.max_model_depth = max_model_depth
+    self.model = None#[None] * (2**self.max_model_depth)#[]#len(list)
+
+    self.name = 'RF'
+    self.type = type
+    self.sample_weights_by_class = sample_weights_by_class
+    if use_smote:
+      raise ValueError("SMOTE is disabled in this baseline package.")
+    self.use_smote = False
+    self.smote_k_neighbors = smote_k_neighbors
+    self._smote_unavailable_warned = False
+    self._smote_skip_logged = set()
+    self._smote_failure_logged = set()
+    self._checkpoint_cache = {}
+    self._checkpoint_path_overrides = {}
+
+
+  def train(self, X, y, branch_id = None, mode = MODE, sample_weights = None, sample_weights_by_class = None):#, num_layers = NUM_LAYERS_DNN
+    #branch_id is not always necessary, depending on the choice of ML model and design
+    #here it is required, but for better compatibility with the earlier deep learning verison, leave it as "optional"
+    #use the following condition to require the inclusion of branch_id here
+    #the input sample_weights is not used at the moment (otherwise need to update subset functions in the general training code)
+
+    if branch_id is None:
+      print('Error: branch_id is required for the RF version.')
+    depth = len(branch_id)
+    # model_to_add = []
+    X_balanced, y_balanced = self._apply_smote_if_needed(X, y, branch_id)
+    self.model = self.get_new_forest(X_balanced, y_balanced, sample_weights_by_class)#self.
+
+    # if mode == 'classification':
+    # else:
+
+  def _apply_smote_if_needed(self, X, y, branch_id):
+    """Preserve original rows; resampling is disabled for both comparison arms."""
+    return X, y
+
+  def predict(self, X, prob = False):
+    """Return predicted labels or probabilities."""
+
+    y_pred_prob = self.model.predict_proba(X)
+
+    if prob:
+      return y_pred_prob
+
+    return self.model.predict(X)
+
+  def _normalize_branch_id(self, branch_id):
+    """Normalize branch identifiers for Windows-safe checkpoint filenames."""
+    bid = '' if branch_id is None else str(branch_id)
+    cleaned = ''.join(ch for ch in bid if 32 <= ord(ch) <= 126).strip()
+    normalized = ''.join(ch for ch in cleaned if ch in {'0', '1'})
+
+    if cleaned == '':
+      return ''
+
+    if normalized == '':
+      digest = hashlib.sha1(cleaned.encode('utf-8', errors='backslashreplace')).hexdigest()[:12]
+      normalized = f'id_{digest}'
+
+    if normalized != cleaned:
+      print(f'Warning: sanitized branch_id from {cleaned!r} to {normalized!r}')
+    return normalized
+
+  def _normalize_checkpoint_dir(self):
+    raw_path = '' if self.path is None else str(self.path)
+    safe_path = ''.join(ch for ch in raw_path if ord(ch) >= 32).strip()
+    if safe_path == '':
+      safe_path = '.'
+    return os.path.normpath(safe_path)
+
+  def _checkpoint_path(self, branch_id):
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    return Path(self._normalize_checkpoint_dir()) / f'rf_{safe_branch_id}'
+
+  def _checkpoint_candidates(self, branch_id):
+    base_path = self._checkpoint_path(branch_id)
+    candidates = [
+      base_path,
+      Path(os.path.abspath(base_path)),
+      Path(str(base_path) + '.pkl'),
+      Path(os.path.abspath(str(base_path) + '.pkl')),
+    ]
+    deduped = []
+    for candidate in candidates:
+      if candidate not in deduped:
+        deduped.append(candidate)
+    return deduped
+
+  def _serialize_model(self):
+    return pickle.dumps(self.model, protocol=pickle.HIGHEST_PROTOCOL)
+
+  def _deserialize_model(self, payload):
+    self.model = pickle.loads(payload)
+
+  def load(self, branch_id, fresh = True):
+    '''
+    fresh: clear current model and load the new one
+    '''
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    candidates = []
+
+    override_path = self._checkpoint_path_overrides.get(safe_branch_id)
+    if override_path:
+      candidates.append(override_path)
+    candidates.extend(self._checkpoint_candidates(branch_id))
+
+    attempted = []
+    for checkpoint_path in candidates:
+      if checkpoint_path == '<memory>':
+        payload = self._checkpoint_cache.get(safe_branch_id)
+        if payload is not None:
+          self._deserialize_model(payload)
+          return
+        continue
+      checkpoint_path = Path(checkpoint_path)
+      attempted.append(str(checkpoint_path))
+      if not checkpoint_path.exists() or checkpoint_path.is_dir():
+        continue
+      try:
+        with checkpoint_path.open('rb') as file:
+          self.model = pickle.load(file)
+        return
+      except OSError:
+        continue
+
+    payload = self._checkpoint_cache.get(safe_branch_id)
+    if payload is not None:
+      self._deserialize_model(payload)
+      return
+
+    raise FileNotFoundError(
+      f'Checkpoint not found for branch_id={branch_id!r}; attempted_paths={attempted!r}'
+    )
+
+  def save(self, branch_id):
+    #only saves the current new forest (newly added one)
+    safe_branch_id = self._normalize_branch_id(branch_id)
+    payload = self._serialize_model()
+    failures = []
+
+    for checkpoint_path in self._checkpoint_candidates(branch_id):
+      try:
+        checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+        if checkpoint_path.is_dir():
+          raise IsADirectoryError(f'Checkpoint target is a directory: {str(checkpoint_path)!r}')
+        with checkpoint_path.open('wb') as file:
+          file.write(payload)
+        self._checkpoint_path_overrides[safe_branch_id] = checkpoint_path
+        return
+      except Exception as exc:
+        failures.append((str(checkpoint_path), exc))
+
+    self._checkpoint_cache[safe_branch_id] = payload
+    self._checkpoint_path_overrides[safe_branch_id] = '<memory>'
+    print(f'Warning: checkpoint file write failed for branch {branch_id!r}; using in-memory fallback.')
+    for failed_path, exc in failures[:2]:
+      print(f'  checkpoint_write_error path={failed_path!r} error={exc!r}')
+
+  def get_score(self, y_true, y_pred_prob):
+    y_pred = np.argmax(y_pred_prob, axis=1)
+    return accuracy_score(y_true, y_pred)
+
+  def get_new_forest(self, X, y, sample_weights_by_class):
+    import gc
+    import psutil
+    
+    #recover all classes
+    X_pseudo, y_pseudo = self.get_pseudo_full_class_data(X.shape[1])
+    X = np.vstack([X, X_pseudo])
+    y = np.hstack([y, y_pseudo])
+
+    # class_weight = self.get_class_weights(y)
+
+    # class_weight = self.get_class_weights_by_input_weights(sample_weights_by_class)
+    class_weight = None
+
+    # Force garbage collection before creating RF to free memory
+    gc.collect()
+    
+    # ADAPTIVE MEMORY PRESSURE DETECTION
+    # Check available memory and adjust n_jobs dynamically to prevent bitmap allocation failures
+    try:
+        memory = psutil.virtual_memory()
+        available_gb = memory.available / (1024**3)
+        used_percent = memory.percent
+        
+        # Calculate estimated memory needs for RF training
+        data_size_gb = (X.shape[0] * X.shape[1] * 8) / (1024**3)  # Rough estimate
+        estimated_rf_memory = data_size_gb * self.n_jobs * 2  # Rough estimate of RF memory with parallelism
+        
+        # Adaptive n_jobs based on memory pressure
+        if available_gb < estimated_rf_memory or used_percent > 85:
+            # High memory pressure - use minimal parallelism
+            adaptive_n_jobs = 1
+            print(f"HIGH memory pressure detected (Available: {available_gb:.1f}GB, Used: {used_percent:.1f}%)")
+            print(f"Using n_jobs=1 to prevent bitmap allocation failure")
+        elif available_gb < estimated_rf_memory * 1.5 or used_percent > 75:
+            # Medium memory pressure - use reduced parallelism
+            adaptive_n_jobs = min(4, self.n_jobs)
+            print(f"MEDIUM memory pressure detected (Available: {available_gb:.1f}GB, Used: {used_percent:.1f}%)")
+            print(f"Using n_jobs={adaptive_n_jobs} to reduce memory pressure")
+        else:
+            # Low memory pressure - use full parallelism
+            adaptive_n_jobs = self.n_jobs
+            print(f"Low memory pressure (Available: {available_gb:.1f}GB, Used: {used_percent:.1f}%)")
+            print(f"Using full n_jobs={adaptive_n_jobs}")
+    except:
+        # Fallback to original n_jobs if psutil fails
+        adaptive_n_jobs = self.n_jobs
+        print("Memory pressure detection failed, using original n_jobs")
+
+    new_forest = RandomForestClassifier(n_estimators = self.n_trees_unit, max_depth=self.max_depth,
+                                        random_state=self.random_state,
+                                        n_jobs = adaptive_n_jobs,  # Use adaptive parallelism
+                                        class_weight = class_weight)
+
+    # new_forest.classes_ = np.array(range(0,NUM_CLASS))
+    # new_forest.n_classes_ = self.num_class
+
+    #get sample weights (use after full classes are recovered)
+    if sample_weights_by_class is not None:
+      sample_weights = self.get_sample_weights(y, sample_weights_by_class)
+    else:
+      sample_weights = None#default by sklearn
+    # sample_weights = None
+
+    try:
+        new_forest.fit(X,y, sample_weights)
+        print(f"Random Forest training successful with n_jobs={adaptive_n_jobs}")
+    except Exception as e:
+        if "bitmap" in str(e).lower() or "allocate" in str(e).lower() or "memory" in str(e).lower():
+            print(f"MEMORY ERROR with n_jobs={adaptive_n_jobs}: {e}")
+            print("Falling back to single-threaded execution...")
+            
+            # Delete failed model and cleanup
+            del new_forest
+            gc.collect()
+            
+            # Retry with single-threaded execution as last resort
+            new_forest = RandomForestClassifier(n_estimators = self.n_trees_unit, max_depth=self.max_depth,
+                                                random_state=self.random_state,
+                                                n_jobs = 1,
+                                                class_weight = class_weight)
+            new_forest.fit(X,y, sample_weights)
+            print("SUCCESS: Single-threaded Random Forest training completed")
+        else:
+            raise e
+    
+    return new_forest
+
+  def get_class_weights(self, y):
+    min_rf_class_sample = 5#classes with smaller than this number of samples will not receive weights
+    max_class_weight = 100
+    unique, counts = np.unique(y, return_counts=True)
+    ratios = counts / (np.sum(counts) / unique[counts>min_rf_class_sample].shape[0])
+    weights = np.zeros(unique.shape[0])
+    weights[counts>min_rf_class_sample] = 1/ratios[counts>min_rf_class_sample] #filter out classes with smaller than 5 samples
+    weights[weights>max_class_weight] = max_class_weight #avoid numerical instability
+    class_weights = dict(zip(unique, weights))
+    return class_weights
+
+  def get_class_weights_by_input_weights(self, class_weights):
+    if class_weights is not None:
+      unique = np.array(range(NUM_CLASS))
+      class_weights = dict(zip(unique, class_weights))
+      return class_weights
+    else:
+      return None
+
+  #prefixed sample weights, which might not be ideal for learning in partitions
+  def get_sample_weights(self, y, sample_weights_by_class):
+    sample_weights = sample_weights_by_class[y.astype(int)]
+    return sample_weights
+
+  def get_pseudo_full_class_data(self, n_features):
+    '''
+    Sometimes a branch misses some of the classes in the original model, which will create problems when comparing and integrating results
+    '''
+    X_pseudo = np.zeros((self.num_class, n_features))
+    y_pseudo = np.array(range(0, self.num_class))
+    return X_pseudo, y_pseudo
+
+  def predict_test(self, X, y, X_group, s_branch, prf = True, X_branch_id = None, append_acc = False):
+    #prob here is aggregated probability (does not sum to 1 without normalizing)
+    '''
+    group_branch contains the branch_id for each group
+    '''
+    true = 0
+    total = 0
+    true_class = np.zeros(self.num_class)
+    total_class = np.zeros(self.num_class)
+    total_pred =  np.zeros(self.num_class)
+
+    if X_branch_id is None:
+      X_branch_id = get_X_branch_id_by_group(X_group, s_branch)
+
+    for branch_id in np.unique(X_branch_id):
+      id_list = np.where(X_branch_id == branch_id)
+      X_part = X[id_list]
+      y_part = y[id_list]
+
+      self.load(branch_id)
+      y_pred = self.predict(X_part)
+
+      if self.mode == 'classification':
+        #overall
+        true_part, total_part = get_overall_accuracy(y_part, y_pred)
+        true += true_part
+        total += total_part
+
+        #class-wise, if needed
+        true_class_part, total_class_part, total_pred_part = get_class_wise_accuracy(y_part, y_pred, prf = True)
+        true_class += true_class_part
+        total_class += total_class_part
+        total_pred += total_pred_part
+
+    if prf:
+      if append_acc:
+        prf_result = list(get_prf(true_class, total_class, total_pred))
+        prf_result.append(np.sum(true) / np.sum(total))
+        return tuple(prf_result)
+      else:
+        return get_prf(true_class, total_class, total_pred)#acc, acc_class
+    else:
+      return true / total
+
+  def predict_georf(self, X, X_group, s_branch, X_branch_id = None):
+    #prob here is aggregated probability (does not sum to 1 without normalizing)
+    '''
+    group_branch contains the branch_id for each group
+    '''
+
+    y_pred_full = np.zeros(X.shape[0])
+
+    if X_branch_id is None:
+      X_branch_id = get_X_branch_id_by_group(X_group, s_branch)
+
+    for branch_id in np.unique(X_branch_id):
+      id_list = np.where(X_branch_id == branch_id)
+      X_part = X[id_list]
+
+      self.load(branch_id)
+      y_pred = self.predict(X_part)
+
+      y_pred_full[id_list] = y_pred
+
+    return y_pred_full
+
+  def predict_proba_georf(self, X, X_group, s_branch, X_branch_id = None):
+    """Branch-dispatched class-1 probability for the predict-only flow.
+
+    Returns a 1-D array of class-1 probabilities. Mirrors predict_georf's
+    branch dispatch. If a branch was trained on a single class only,
+    sklearn's predict_proba returns shape (n, 1); fill the absent class
+    column with 0.0 so output is always 2-class. Logs one warning per
+    such branch.
+    """
+    proba_full = np.zeros(X.shape[0], dtype=float)
+
+    if X_branch_id is None:
+      X_branch_id = get_X_branch_id_by_group(X_group, s_branch)
+
+    for branch_id in np.unique(X_branch_id):
+      id_list = np.where(X_branch_id == branch_id)
+      X_part = X[id_list]
+
+      self.load(branch_id)
+      proba = self.model.predict_proba(X_part)
+      classes = getattr(self.model, 'classes_', np.array([0, 1]))
+
+      if proba.shape[1] == 1:
+        only_class = int(classes[0])
+        print(
+          f'[predict_proba_georf] branch "{branch_id}" trained on a single '
+          f'class ({only_class}); filling absent class probability with 0.0.'
+        )
+        prob_class1 = np.full(X_part.shape[0], 1.0 if only_class == 1 else 0.0)
+      else:
+        # Locate the column for class 1
+        class1_idx = np.where(classes == 1)[0]
+        if class1_idx.size == 0:
+          # Defensive: no class 1 in classes_; treat as zero
+          prob_class1 = np.zeros(X_part.shape[0])
+        else:
+          prob_class1 = proba[:, class1_idx[0]]
+
+      proba_full[id_list] = prob_class1
+
+    return proba_full
+
+
+
+def save_single(model, path, name = 'single'):
+    """Save a single RandomForest model to disk."""
+    filename = 'rf_' + name
+    with open(path + '/' + filename, 'wb') as file:
+        pickle.dump(model, file)
+    # pickle.dump(model, open(path + '/' + filename, 'wb'))
+
+
+def predict_test_group_wise(model, X, y, X_group, s_branch, prf = True, base = False, base_branch_id = '', X_branch_id = None):
+  #prob here is aggregated probability (does not sum to 1 without normalizing)
+  groups = np.unique(X_group)
+
+  if prf:
+    result = np.zeros((groups.shape[0], 4, model.num_class))
+  else:
+    result = np.zeros(groups.shape[0])
+
+  total_number = np.zeros((groups.shape[0], model.num_class))
+  groups[:] = 0
+
+  if X_branch_id is None:
+    X_branch_id = get_X_branch_id_by_group(X_group, s_branch)
+
+  cnt = 0
+  for branch_id in np.unique(X_branch_id):
+    id_list = np.where(X_branch_id == branch_id)
+    X_part = X[id_list]
+    y_part = y[id_list]
+    X_group_part = X_group[id_list]
+
+    if base:
+      if cnt == 0:
+        model.load(base_branch_id)
+    else:#partitioned
+      model.load(branch_id)
+
+    y_pred = model.predict(X_part)
+
+    for group in np.unique(X_group_part):
+      id_list_group = np.where(X_group_part == group)
+      y_part_group = y_part[id_list_group]
+      y_pred_group = y_pred[id_list_group]
+      if model.mode == 'classification':
+        #overall
+        true_part, total_part = get_overall_accuracy(y_part_group, y_pred_group)
+        #class-wise, if needed
+        true_class_part, total_class_part, total_pred_part = get_class_wise_accuracy(y_part_group, y_pred_group, prf = True)
+
+        if prf:
+          result[cnt, :] = np.asarray(get_prf(true_class_part, total_class_part, total_pred_part))
+          # pre, rec, f1, _ = get_prf(true_class_part, total_class_part, total_pred_part)
+          # result[cnt, :] = np.asarray([pre[1], rec[1], f1[1]])#only for class 1
+        else:
+          result[cnt] = true_part / total_part
+
+      groups[cnt] = group
+      # total_number[cnt, :] = total_pred_part#updated to true counts for visualization
+      total_number[cnt, :] = total_class_part
+      cnt += 1
+
+
+  return result, groups, total_number

@@ -1,0 +1,8 @@
+Using all plans: 2 plans
+Scope: in-scope only — 60 admin codes (min=0, max=59)
+  Loaded partition labels: 2/2
+Computing co-grouping similarity matrix: 60 x 60
+  Processed 2/2 plans
+Saved matrix file: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\similarity_matrices\similarity_matrices.npz
+Saved summary file: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\similarity_matrices\summary_statistics.json
+Step 4 similarity matrix completed

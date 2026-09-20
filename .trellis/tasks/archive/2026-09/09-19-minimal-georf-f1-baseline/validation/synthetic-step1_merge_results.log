@@ -1,0 +1,15 @@
+Experiment directory: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic
+Results directory: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\GeoRFResults
+Found 2 results files
+Loaded results_df_gp_fs1_2018_2018_m02.csv: 1 rows
+Loaded results_df_gp_fs1_2018_2018_m06.csv: 1 rows
+Combined results rows: 2
+Loaded 2 correspondence tables
+Merge status counts:
+status
+success    2
+Name: count, dtype: int64
+Successfully merged: 2 / 2
+Saved pickle: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\merged_correspondence_tables.pkl
+Saved merged CSVs: C:\Users\swl00\AppData\Local\Temp\georf-release-check-s1j8t12r\GeoRFBaseline\work\synthetic\merged_correspondence_tables
+Step 1 merge completed

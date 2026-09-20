@@ -1,0 +1,12 @@
+usage: step1_merge_results.py [-h] --experiment-dir EXPERIMENT_DIR
+                              --model-type {geodt,georf,geoxgb}
+
+Merge correspondence tables with model F1 metrics.
+
+options:
+  -h, --help            show this help message and exit
+  --experiment-dir EXPERIMENT_DIR
+                        Experiment directory (GeoRFExperiment,
+                        GeoXGBExperiment, GeoDTExperiment).
+  --model-type {geodt,georf,geoxgb}
+                        Model type for path and naming rules.
