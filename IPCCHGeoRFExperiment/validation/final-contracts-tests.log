@@ -1,0 +1,69 @@
+INFO:ipcch_baseline_adjacency_utils:Loading shapefile from: C:\Users\swl00\AppData\Local\Temp\tmplj26h9a8\geography\ipcch_admin_geometry_repaired.shp
+INFO:ipcch_baseline_adjacency_utils:Loaded 4 polygons from shapefile
+INFO:ipcch_baseline_adjacency_utils:Creating adjacency matrix for 4 polygons
+C:\Users\swl00\AppData\Local\Temp\ipcch-review-fwopav82\GeoRFBaseline\src\adjacency\adjacency_utils.py:74: UserWarning: Geometry is in a geographic CRS. Results from 'centroid' are likely incorrect. Use 'GeoSeries.to_crs()' to re-project geometries to a projected CRS before this operation.
+
+  centroids = gdf.geometry.centroid
+INFO:ipcch_baseline_adjacency_utils:Computing polygon adjacencies using spatial boundaries...
+INFO:ipcch_baseline_adjacency_utils:Adjacency stats: min=0, max=2, mean=1.0
+WARNING:ipcch_baseline_adjacency_utils:Found 1 isolated polygons: [3]
+INFO:pyogrio._io:Created 4 records
+INFO:pyogrio._io:Created 2 records
+INFO:pyogrio._io:Created 4 records
+INFO:pyogrio._io:Created 4 records
+INFO:pyogrio._io:Created 4 records
+INFO:ipcch_baseline_adjacency_utils:Loading shapefile from: C:\Users\swl00\AppData\Local\Temp\tmpk66tscfz\geography\ipcch_admin_geometry_repaired.shp
+INFO:ipcch_baseline_adjacency_utils:Loaded 4 polygons from shapefile
+INFO:ipcch_baseline_adjacency_utils:Creating adjacency matrix for 4 polygons
+C:\Users\swl00\AppData\Local\Temp\ipcch-review-fwopav82\GeoRFBaseline\src\adjacency\adjacency_utils.py:74: UserWarning: Geometry is in a geographic CRS. Results from 'centroid' are likely incorrect. Use 'GeoSeries.to_crs()' to re-project geometries to a projected CRS before this operation.
+
+  centroids = gdf.geometry.centroid
+INFO:ipcch_baseline_adjacency_utils:Computing polygon adjacencies using spatial boundaries...
+INFO:ipcch_baseline_adjacency_utils:Adjacency stats: min=0, max=2, mean=1.0
+WARNING:ipcch_baseline_adjacency_utils:Found 1 isolated polygons: [3]
+INFO:pyogrio._io:Created 4 records
+INFO:pyogrio._io:Created 4 records
+INFO:ipcch_baseline_adjacency_utils:Loading shapefile from: C:\Users\swl00\AppData\Local\Temp\tmpn1vxg_n4\geography\ipcch_admin_geometry_repaired.shp
+INFO:ipcch_baseline_adjacency_utils:Loaded 4 polygons from shapefile
+INFO:ipcch_baseline_adjacency_utils:Creating adjacency matrix for 4 polygons
+C:\Users\swl00\AppData\Local\Temp\ipcch-review-fwopav82\GeoRFBaseline\src\adjacency\adjacency_utils.py:74: UserWarning: Geometry is in a geographic CRS. Results from 'centroid' are likely incorrect. Use 'GeoSeries.to_crs()' to re-project geometries to a projected CRS before this operation.
+
+  centroids = gdf.geometry.centroid
+INFO:ipcch_baseline_adjacency_utils:Computing polygon adjacencies using spatial boundaries...
+INFO:ipcch_baseline_adjacency_utils:Adjacency stats: min=0, max=2, mean=1.0
+WARNING:ipcch_baseline_adjacency_utils:Found 1 isolated polygons: [3]
+ok   test_calendar_encoding_matches_the_target_month
+ok   test_duplicate_or_non_binary_inputs_are_refused
+ok   test_evi_lag_reads_exactly_o_minus_k_and_a_gap_hits_only_that_lag
+ok   test_four_horizon_views_differ_only_by_horizon_and_origin_dependent_values
+ok   test_geography_adjacency_cache_is_bound_to_content_not_path
+ok   test_geography_area_ids_normalize_to_canonical_integers
+ok   test_geography_collection_of_one_polygon_plus_zero_area_line_is_extracted
+ok   test_geography_collection_with_a_non_zero_area_part_stops
+ok   test_geography_collection_with_two_areal_parts_stops
+ok   test_geography_duplicate_area_id_in_the_shapefile_is_refused
+ok   test_geography_invalid_geometry_is_repaired
+ok   test_geography_missing_iso3_areas_are_preserved
+ok   test_geography_missing_or_duplicate_mappings_are_refused
+ok   test_geography_point_contact_is_excluded_from_adjacency
+ok   test_geography_reference_coordinates_are_not_polygon_centroids
+ok   test_geography_valid_geometry_passes_through_unchanged
+ok   test_geography_valid_non_polygon_input_is_refused
+ok   test_history_at_the_origin_is_inclusive
+ok   test_history_never_crosses_areas
+ok   test_infinities_become_nan_with_an_audit
+ok   test_label_after_the_origin_is_not_used_as_history
+ok   test_missing_origin_row_yields_nan_without_dropping_the_outcome
+ok   test_month_ordinal_round_trips
+ok   test_no_label_history_and_no_prior_crisis_are_distinguished
+ok   test_no_value_after_the_origin_is_ever_read
+ok   test_r1_label_is_exact_beyond_the_default_decimal_context
+ok   test_r1_preserves_the_five_normalized_components
+ok   test_recency_counts_from_the_latest_positive_and_a_negative_does_not_reset
+ok   test_recency_search_is_not_truncated_at_36_months
+ok   test_row_count_is_outcomes_times_horizons
+ok   test_schema_is_93_columns_in_a_stable_order
+ok   test_window_sum_is_nan_on_any_missing_month_and_exact_when_complete
+ok   test_window_sums_never_cross_areas
+
+33/33 passed, 0 skipped

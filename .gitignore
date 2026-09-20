@@ -23,11 +23,15 @@ PARTITION_METRICS_INTEGRATION.md
 *.npz
 *.json
 !specs/**/*.json
+!GeoRFBaseline/MANIFEST.json
+!GeoRFBaseline/SOURCE_PROVENANCE.json
+!GeoRFBaseline/TESTED_ENVIRONMENT.json
 !EthiopiaForecastingExperiment/manifests/*.json
 *.pkl
 
 test_*
 !src/tests/test_*.py
+!GeoRFBaseline/tests/test_baseline.py
 !EthiopiaForecastingExperiment/tests/test_*.py
 !PersistenceCorrectionExperiment/tests/test_*.py
 

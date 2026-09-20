@@ -1,0 +1,213 @@
+{
+  "source": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\raw\\IPCCH_2026_completed.csv",
+  "source_sha256_previously_verified": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+  "status": "approved_label_policy_read_only_audit",
+  "approval_date": "2026-09-19",
+  "rule": {
+    "required_observed": [
+      "phase1_percent",
+      "phase2_percent",
+      "phase3_percent",
+      "phase4_percent"
+    ],
+    "phase5_missing": "fill_zero_only_when_other_four_present",
+    "observed_component_bounds": [
+      0,
+      1
+    ],
+    "raw_total_inclusive_bounds": [
+      "0.90",
+      "1.10"
+    ],
+    "estimated_population": "observed and >0; retained from proposal",
+    "normalization": "each filled phase_i / sum(filled five phases)",
+    "target": "int(normalized P3+ >0.20); exact .20 is negative",
+    "exact_test": "5 * sum(raw P3:P5 after P5 fill) > sum(raw P1:P5 after P5 fill)",
+    "invalid": "leave target missing; no clipping or normalization outside valid total range"
+  },
+  "method": "Read selected CSV columns as strings in pandas chunks; Decimal precision100; no source writes or training. Comparison by cross multiplication avoids normalization division rounding.",
+  "counts": {
+    "source_rows": 1219868,
+    "source_areas": 6227,
+    "source_countries": 53,
+    "valid_rows": 42695,
+    "positive": 15206,
+    "negative": 27489,
+    "valid_areas": 6224,
+    "valid_countries": 53,
+    "areas_without_any_valid_label": [
+      "1315",
+      "1354",
+      "3358"
+    ],
+    "phase1_to4_missing_rows_excluded": 1176232,
+    "all5_complete_original": 43551,
+    "all5_complete_retained": 42611,
+    "all5_complete_rejected": 940,
+    "only_phase5_missing_original": 85,
+    "only_phase5_missing_recovered": 84,
+    "only_phase5_missing_rejected": 1,
+    "only_phase5_missing_recovered_positive": 71,
+    "normalized_exact_0_20": 2601,
+    "raw_exact_0_20_among_valid": 2698,
+    "valid_raw_total_exact_0_90": 8,
+    "valid_raw_total_exact_1_10": 55,
+    "normalization_0_to_1": 81,
+    "normalization_1_to_0": 1,
+    "raw_positive_among_valid": 15126
+  },
+  "candidate_qc_overlapping_counts": {
+    "candidate_rows": 43636,
+    "rejected": 941,
+    "sum_outside_inclusive_bounds": 940,
+    "estimated_population_invalid": 363,
+    "observed_component_outside_0_1": 1
+  },
+  "exclusive_rejections": {
+    "sum_only": 577,
+    "component_and_sum": 1,
+    "population_and_sum": 362,
+    "population_only": 1
+  },
+  "year_counts": [
+    {
+      "year": 2014,
+      "valid": 460,
+      "positive": 21,
+      "areas": 261,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2015,
+      "valid": 518,
+      "positive": 19,
+      "areas": 264,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2016,
+      "valid": 529,
+      "positive": 22,
+      "areas": 270,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2017,
+      "valid": 1726,
+      "positive": 411,
+      "areas": 1062,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2018,
+      "valid": 2163,
+      "positive": 776,
+      "areas": 1557,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2019,
+      "valid": 2685,
+      "positive": 865,
+      "areas": 2031,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2020,
+      "valid": 4111,
+      "positive": 1461,
+      "areas": 2449,
+      "areas_with_no_valid_label_through_2020": null
+    },
+    {
+      "year": 2021,
+      "valid": 3246,
+      "positive": 896,
+      "areas": 2130,
+      "areas_with_no_valid_label_through_2020": 437
+    },
+    {
+      "year": 2022,
+      "valid": 4153,
+      "positive": 1528,
+      "areas": 2863,
+      "areas_with_no_valid_label_through_2020": 1207
+    },
+    {
+      "year": 2023,
+      "valid": 4925,
+      "positive": 1865,
+      "areas": 3238,
+      "areas_with_no_valid_label_through_2020": 1609
+    },
+    {
+      "year": 2024,
+      "valid": 4295,
+      "positive": 1555,
+      "areas": 2960,
+      "areas_with_no_valid_label_through_2020": 1517
+    },
+    {
+      "year": 2025,
+      "valid": 9792,
+      "positive": 3864,
+      "areas": 5740,
+      "areas_with_no_valid_label_through_2020": 2680
+    },
+    {
+      "year": 2026,
+      "valid": 4092,
+      "positive": 1923,
+      "areas": 3710,
+      "areas_with_no_valid_label_through_2020": 1970
+    }
+  ],
+  "windows": [
+    {
+      "period": "2018-2020",
+      "valid": 8959,
+      "positive": 3102,
+      "areas": 3177,
+      "areas_with_no_valid_label_through_2020": 0,
+      "rows_in_those_areas": 0
+    },
+    {
+      "period": "2021-2024",
+      "valid": 16619,
+      "positive": 5844,
+      "areas": 4487,
+      "areas_with_no_valid_label_through_2020": 2597,
+      "rows_in_those_areas": 6541
+    },
+    {
+      "period": "2021-2025",
+      "valid": 26411,
+      "positive": 9708,
+      "areas": 6051,
+      "areas_with_no_valid_label_through_2020": 2801,
+      "rows_in_those_areas": 11090
+    },
+    {
+      "period": "2026",
+      "valid": 4092,
+      "positive": 1923,
+      "areas": 3710,
+      "areas_with_no_valid_label_through_2020": 1970,
+      "rows_in_those_areas": 2074
+    },
+    {
+      "period": "2021-2026",
+      "valid": 30503,
+      "positive": 11631,
+      "areas": 6061,
+      "areas_with_no_valid_label_through_2020": 2804,
+      "rows_in_those_areas": 13164
+    }
+  ],
+  "notes": [
+    "Window area counts are observed valid-label coverage, not guaranteed Stage1 train/validation support.",
+    "Before/after normalization flips are measured on the same valid cohort.",
+    "Previous candidate_label_policy_audit.json is superseded evidence, not current policy.",
+    "2010-2013 have zero valid labels; no model performance has been computed."
+  ]
+}

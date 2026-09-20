@@ -1,8 +1,9 @@
 # IPCCH GeoRF execution plan v1.0
 
-Status: planning against prd.md/design.md v1.0. Checkboxes are future work, not
-completion claims. The latest user approval covers Q8g; implementation starts only
-after approval of the final planning summary. No task.py start in this planning turn.
+Status: completed and archived. This is the original execution plan; its unchecked
+boxes preserve the planning snapshot rather than represent current completion.
+Verified A1–A8 coverage, deviations and test evidence are recorded in STATUS.md,
+DECISIONS_LOG.md and IPCCHGeoRFExperiment/validation/review.md.
 
 ## 0 — Activation and scope guard (A1)
 

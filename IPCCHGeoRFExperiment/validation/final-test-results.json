@@ -1,0 +1,62 @@
+[
+  {
+    "name": "contracts",
+    "command": [
+      "/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe",
+      "-B",
+      "IPCCHGeoRFExperiment/test_contracts.py"
+    ],
+    "cwd": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82",
+    "exit_code": 0,
+    "seconds": 1.08,
+    "log": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/final-contracts-tests.log"
+  },
+  {
+    "name": "stage1",
+    "command": [
+      "/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe",
+      "-B",
+      "IPCCHGeoRFExperiment/test_stage1_contracts.py"
+    ],
+    "cwd": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82",
+    "exit_code": 0,
+    "seconds": 0.53,
+    "log": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/final-stage1-tests.log"
+  },
+  {
+    "name": "stage3",
+    "command": [
+      "/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe",
+      "-B",
+      "IPCCHGeoRFExperiment/test_stage3_contracts.py"
+    ],
+    "cwd": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82",
+    "exit_code": 0,
+    "seconds": 3.97,
+    "log": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/final-stage3-tests.log"
+  },
+  {
+    "name": "report",
+    "command": [
+      "/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe",
+      "-B",
+      "IPCCHGeoRFExperiment/test_report_contracts.py"
+    ],
+    "cwd": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82",
+    "exit_code": 0,
+    "seconds": 1.77,
+    "log": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/final-report-tests.log"
+  },
+  {
+    "name": "baseline",
+    "command": [
+      "/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe",
+      "-B",
+      "tests/test_baseline.py"
+    ],
+    "cwd": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/IPCCHGeoRFExperiment/runs/review-baseline/baseline/GeoRFBaseline",
+    "exit_code": 0,
+    "seconds": 2.21,
+    "log": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/final-baseline-tests.log"
+  }
+]

@@ -1,0 +1,538 @@
+{
+  "reviewed_base_sha": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+  "reviewed_implementation_sha": "3addf9a97d31ee2a869d22df26ececa995acab19",
+  "reviewed_completion_sha": "0b9e61abade508d7dbe43380f956347d926bbdc0",
+  "authoritative_run": "IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d",
+  "production_files_sha256": {
+    "prepare_data.py": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+    "baseline_runtime.py": "ab79783b30b7810582275e510a7ac0f82ecf4b5a54ee61570a81cdb28014c74d",
+    "run_pipeline.py": "b9ea0827e926c5cd6160fade2f399ad60a794d785ef830ed4de26f9694259622",
+    "report_results.py": "b111c2e6418950ed5a8383cb3d803bc6e88fa22ac487752bdd42b9daf5ef0bda"
+  },
+  "tests_sha256": {
+    "test_contracts.py": "17394b317b993e82d1260552894c1e613f284e366566e6590041c4b3290ff3ca",
+    "test_report_contracts.py": "1d0aa96316d93b41d8efdd9edd3badfa7de58d193b3119440ec3721d3c03b3cf",
+    "test_stage1_contracts.py": "7cc0f7138163feb3004c58aab7be9bb8f31d7e7f220f6a663abac23c3935e3e1",
+    "test_stage3_contracts.py": "aff9e19471156ee19090acf3ab5438252d6b4bfd901fa1527ebcabdbb149ae5d"
+  },
+  "source_csv_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+  "baseline_zip_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+  "run_status": "stage3_complete",
+  "run_files": {
+    "baseline/GeoRFBaseline/.gitignore": {
+      "bytes": 126,
+      "sha256": "ff3d1713917a9d6b33de2bd25b21c88377c65e56e5bd499d4a45a7d71aa49984"
+    },
+    "baseline/GeoRFBaseline/MANIFEST.json": {
+      "bytes": 4732,
+      "sha256": "e97975768225244754980c02a79f96d0c5d7c67a8948bb8ed3eaf4800993e32b"
+    },
+    "baseline/GeoRFBaseline/README.md": {
+      "bytes": 7291,
+      "sha256": "365fc6c20c797956c3b1ea696fb7dbd4084bfd1ec0fa9a5098f43f1b3d239286"
+    },
+    "baseline/GeoRFBaseline/SOURCE_PROVENANCE.json": {
+      "bytes": 3913,
+      "sha256": "56839de188d30051cc1ee3bad02d0136945b2557631b6fb4944bd5992680672c"
+    },
+    "baseline/GeoRFBaseline/TESTED_ENVIRONMENT.json": {
+      "bytes": 628,
+      "sha256": "56e91b827186d19499a01ffe95475e1ecfd48f177037f2bdf29634a59e512a23"
+    },
+    "baseline/GeoRFBaseline/VALIDATION.md": {
+      "bytes": 2544,
+      "sha256": "f1245fd0ec3d0d8bf7c5f04b38cf7d4c7a64e5b1e0e39cb2162eeb3ba2ebd31c"
+    },
+    "baseline/GeoRFBaseline/app/main_model_GF.py": {
+      "bytes": 76833,
+      "sha256": "0bba3cf4e70ed1594395b40e8d28e549364f63fbb611cefba86f4b636d23e38d"
+    },
+    "baseline/GeoRFBaseline/config.py": {
+      "bytes": 18810,
+      "sha256": "3da43e0b7e1692e8d9acd697a2f9c8ff2d0f7792fc6a401ceeca5fb7eb603e0c"
+    },
+    "baseline/GeoRFBaseline/config_visual.py": {
+      "bytes": 16200,
+      "sha256": "1cf8cda589e653d6201968fd52425e770db1375b0cb21522cb81594c4d50d053"
+    },
+    "baseline/GeoRFBaseline/requirements.txt": {
+      "bytes": 306,
+      "sha256": "929bd50874ed0cdca38c99fbb24859d6f0432cb06f41cf134981c6d8baa1edb7"
+    },
+    "baseline/GeoRFBaseline/scripts/compare_partitioned_vs_pooled_rf_k40_nc4.py": {
+      "bytes": 61354,
+      "sha256": "d33b23163014e8881b0fb3a73eeab0342ea5b11b7a2e5e3c9cfb35249216f8d7"
+    },
+    "baseline/GeoRFBaseline/scripts/refine_partitions_contiguity.py": {
+      "bytes": 10722,
+      "sha256": "cd499fde9cb477109b9b79269469e7337b101f9504665cb411aa6ec9bac51eed"
+    },
+    "baseline/GeoRFBaseline/scripts/run_stage1.py": {
+      "bytes": 3213,
+      "sha256": "cb73eb84509ddab104288b152611bb96bef95a90d0ecb14da25bff3568cee4da"
+    },
+    "baseline/GeoRFBaseline/scripts/step1_merge_results.py": {
+      "bytes": 8948,
+      "sha256": "fcfd7b4746fb14ffffe0411e93325893b0e4426644b28237e72898612adf2c26"
+    },
+    "baseline/GeoRFBaseline/scripts/step3_create_linked_tables.py": {
+      "bytes": 13423,
+      "sha256": "c921a763420b82e92bd866602cad0277524cce01ccd16e475deed617881fb7a6"
+    },
+    "baseline/GeoRFBaseline/scripts/step4_similarity_matrix.py": {
+      "bytes": 12334,
+      "sha256": "7c34f7e3d4ece61251aca731543221387eabb95a945839dcb7432f7857bb037d"
+    },
+    "baseline/GeoRFBaseline/scripts/step5_sparsification.py": {
+      "bytes": 9478,
+      "sha256": "3f12f96dfefd5cef217372247e5f84f620da85b2a3ba16f4ed5beb8d933f4fe9"
+    },
+    "baseline/GeoRFBaseline/scripts/step6_complete_clustering_pipeline.py": {
+      "bytes": 10329,
+      "sha256": "17fe329c7fef3b344bad3976c11462d3f2597eb681c19ad30e04f246ae1462e8"
+    },
+    "baseline/GeoRFBaseline/src/adjacency/adjacency_utils.py": {
+      "bytes": 13582,
+      "sha256": "21a6f75266ddbc220d69adf689cc37c66b9ab03ca21d0548c1423a388a38d8f2"
+    },
+    "baseline/GeoRFBaseline/src/customize/customize.py": {
+      "bytes": 43584,
+      "sha256": "916882909e052df97813b1dd019f45d4011e60b40a5fc1b93cc3054a3a32bde3"
+    },
+    "baseline/GeoRFBaseline/src/diagnostics/pre_partition_diagnostic.py": {
+      "bytes": 41612,
+      "sha256": "0c6e703d635fa2b80333a89dbf86bebd3421ffdf319fd8db7fcfdb2a91fd8daa"
+    },
+    "baseline/GeoRFBaseline/src/feature/feature.py": {
+      "bytes": 17797,
+      "sha256": "0b3f07354058578814e3ed59db0c594167256256ae1b92de504dcdaf6a9013ad"
+    },
+    "baseline/GeoRFBaseline/src/feature/strict_lag.py": {
+      "bytes": 1250,
+      "sha256": "8dfd4bb47fa1c1e270cea3f91a547a9e78e67b82b9783cc2ef0ec0a4a7fe8e6a"
+    },
+    "baseline/GeoRFBaseline/src/helper/helper.py": {
+      "bytes": 13369,
+      "sha256": "dcfc2143092305806e9b59b53ebe0543dbcdb59b9323a9b0e30dbd1123caba1e"
+    },
+    "baseline/GeoRFBaseline/src/initialization/initialization.py": {
+      "bytes": 7800,
+      "sha256": "1f6c52ab20693dd314ee4831b0abec55e67cb2ea9decc22c85dc982d1213a569"
+    },
+    "baseline/GeoRFBaseline/src/merge/terminal.py": {
+      "bytes": 3826,
+      "sha256": "e683bee7551ab9d559bb543d4861b8713046a4df96021f5f1792e499a066d743"
+    },
+    "baseline/GeoRFBaseline/src/metrics/metrics.py": {
+      "bytes": 14640,
+      "sha256": "0b5a549ee1678d40ca9cec6cbd73a70b487728898dcf33d30ece46829c1286b4"
+    },
+    "baseline/GeoRFBaseline/src/model/GeoRF.py": {
+      "bytes": 69029,
+      "sha256": "c36b89945c66cf45fffdf461e8ab78ab470386cd9f18b62e973b74225842f936"
+    },
+    "baseline/GeoRFBaseline/src/model/adapters.py": {
+      "bytes": 3201,
+      "sha256": "63e934bd1e580cfc37e1201b328757a02050bcf9a6958b705eebcda0558afbb5"
+    },
+    "baseline/GeoRFBaseline/src/model/model_RF.py": {
+      "bytes": 20217,
+      "sha256": "f238b4da089b769ad4e520127915d0ecebdab410e2b907d0d6acad252f311a9d"
+    },
+    "baseline/GeoRFBaseline/src/model/train_branch.py": {
+      "bytes": 3538,
+      "sha256": "e2485eef1dee87480e576b8825e9d3ee2c2d0b7fcf727ef5f7b5fe88ff03a907"
+    },
+    "baseline/GeoRFBaseline/src/partition/partition_opt.py": {
+      "bytes": 40493,
+      "sha256": "dfac6783410bb22c071ecd7f244780262141ce48ee5dcc1a9daf138de9ffa851"
+    },
+    "baseline/GeoRFBaseline/src/partition/transformation.py": {
+      "bytes": 55887,
+      "sha256": "fb2a8fba99ac0753045c405bc5dc2b60d09fa4521a2c0f324f05253e9759e425"
+    },
+    "baseline/GeoRFBaseline/src/preprocess/preprocess.py": {
+      "bytes": 29425,
+      "sha256": "cc10ca63722e1e551ec599aa9973513c501679f9359941cf44883cd07ee120e7"
+    },
+    "baseline/GeoRFBaseline/src/tests/class_wise_metrics.py": {
+      "bytes": 2835,
+      "sha256": "885cba9b0609c58186398cc71eef6eefa015bebb384131efb8df649d05ace623"
+    },
+    "baseline/GeoRFBaseline/src/tests/sig_test.py": {
+      "bytes": 6051,
+      "sha256": "ab329fbcf78d38d917c8ff01d19bf151f15d2b59bc5c686abeeb0438a617d2fb"
+    },
+    "baseline/GeoRFBaseline/src/tests/static_table.py": {
+      "bytes": 4213,
+      "sha256": "74efe7e584f517e58d61c12a08fc4252dfaf543841a271bd164d91c1e12c15ec"
+    },
+    "baseline/GeoRFBaseline/src/utils/admin_code.py": {
+      "bytes": 2155,
+      "sha256": "27eb70468311efb87b5935e44b0ff39b2820172006f0d92cd76266e33f6293c4"
+    },
+    "baseline/GeoRFBaseline/src/utils/force_clean.py": {
+      "bytes": 2854,
+      "sha256": "bae178e116f759b2fa0d1ce4e2f4b9e308bcb470b33c0297dd0315aef44a51ab"
+    },
+    "baseline/GeoRFBaseline/src/utils/lag_schedules.py": {
+      "bytes": 4917,
+      "sha256": "1f127d576cb5e27a9e857776dc48a174798294f294f79393394fc83fb64249e2"
+    },
+    "baseline/GeoRFBaseline/src/utils/save_results.py": {
+      "bytes": 3409,
+      "sha256": "c3ac6b6a44d2fbc23bcff89b897bb837433f782c1c98a474052a0fdbca32807b"
+    },
+    "baseline/GeoRFBaseline/src/utils/split.py": {
+      "bytes": 3278,
+      "sha256": "f7f57499d3f229d81c1de0ed84ded58ae6abaf191d9a8e024048dc134055ed58"
+    },
+    "baseline/GeoRFBaseline/src/vis/partition_map.py": {
+      "bytes": 4909,
+      "sha256": "cd65bef1bac54edec8ee3770d8df90017927a7a59a181aa3415e707324c50d02"
+    },
+    "baseline/GeoRFBaseline/src/vis/visualization.py": {
+      "bytes": 52169,
+      "sha256": "614bb543ced8497ab84ba63cd2758dbd37a676ccbe662ec2c7526dd24e094c08"
+    },
+    "baseline/GeoRFBaseline/src/vis/visualization_fix.py": {
+      "bytes": 22935,
+      "sha256": "e1ec264d3d348991f5c102f4c72549e2cb58cb8da92861a6f915f62762ed28f5"
+    },
+    "baseline/GeoRFBaseline/tests/test_baseline.py": {
+      "bytes": 15518,
+      "sha256": "c1d7a471127f1bf7b079bae5c245875da62d13dd83800081f46d90ac1fd783f9"
+    },
+    "data/feature_audit.json": {
+      "bytes": 4804,
+      "sha256": "f7358f0967582c2df044827ef4c9ea4bbb2f11f8ba339e22ebe451d64c57f4d5"
+    },
+    "data/feature_metadata.csv.gz": {
+      "bytes": 621976,
+      "sha256": "fdd2dfe7c5e96c52cee69c5d7e62607989a66ec1539f32b0e02341631768f661"
+    },
+    "data/feature_schema.json": {
+      "bytes": 5207,
+      "sha256": "9d6c5462475abcfa6ed49aa1cfa34e85cc357341e6526ed293f080bca01f3769"
+    },
+    "data/feature_values.npy": {
+      "bytes": 127060448,
+      "sha256": "a6f2be993c5249b1ce22f2805b3a28bda43828ae219f3f27e4372ff33be46c42"
+    },
+    "data/target_gate.json": {
+      "bytes": 456,
+      "sha256": "ffec7afb8ffbc3a6b405807ecbe94443a4a274220fde8790ac4aa029ad8e3d1b"
+    },
+    "data/target_ledger_rejected.csv.gz": {
+      "bytes": 7900,
+      "sha256": "d3ffc639918cec4cf7f3c58f4ac0a2df0a9a2938b03ac58436d2ca18f34983d2"
+    },
+    "data/target_ledger_valid.csv.gz": {
+      "bytes": 2012208,
+      "sha256": "15a1f9ff1b30cfba0702711961143debbf523599bb151a4484fb508984458922"
+    },
+    "geography/adjacency_cache.pkl": {
+      "bytes": 631979,
+      "sha256": "e6b9562ac3705da1bf26541fb52a8808819710738d9465ecd63a07d0727e387c"
+    },
+    "geography/country_lookup.csv": {
+      "bytes": 292832,
+      "sha256": "bf23914c36b73a7d0916c839328defef072e0a29a3f3135727c8b1b1f3ac0b40"
+    },
+    "geography/geography_audit.json": {
+      "bytes": 17829,
+      "sha256": "c992478a5621575cd297c7af7ca7a74168e33636e5991429cfb1a93a46b9c22a"
+    },
+    "geography/geometry_repair_audit.csv": {
+      "bytes": 1656789,
+      "sha256": "6c4430eda6a488fcb77bee88235396fdce7ef0ad9a8d841e9a305c511b310d41"
+    },
+    "geography/ipcch_admin_geometry_repaired.cpg": {
+      "bytes": 5,
+      "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+    },
+    "geography/ipcch_admin_geometry_repaired.dbf": {
+      "bytes": 915531,
+      "sha256": "964b8030e5d543fd49d112489035ac5e713a068d04076bf75b0f99c3b034a71e"
+    },
+    "geography/ipcch_admin_geometry_repaired.prj": {
+      "bytes": 145,
+      "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4"
+    },
+    "geography/ipcch_admin_geometry_repaired.shp": {
+      "bytes": 67208080,
+      "sha256": "9df70f3aa719eaa2458a3ff4a92f058da1f5fe1feeb85432e0dd88e515ccfadb"
+    },
+    "geography/ipcch_admin_geometry_repaired.shx": {
+      "bytes": 49916,
+      "sha256": "424554aec24b86d74609a5fe59a01e498c78269c6e6b4b87765e657a4fe6fc83"
+    },
+    "geography/reference_coordinates.csv": {
+      "bytes": 230588,
+      "sha256": "11cbbc354508f59e0564e56c664938fc8e627e837e4638bbd8326bc0f4fea700"
+    },
+    "manifest.json": {
+      "bytes": 32081,
+      "sha256": "2dfddcdd7b342a7d9ea0dd208db9eb860dd274f78a34ac342ca42a1e00d0a269"
+    },
+    "reports/cohort_keys.csv.gz": {
+      "bytes": 274932,
+      "sha256": "23ba825925ce1603646afd9ce6ac5da3a66013ecfa0b11a03c4c6f8efe42e3cf"
+    },
+    "reports/limitations.txt": {
+      "bytes": 830,
+      "sha256": "0e8971159456f6c391e30f1735476fb7e6c83d2ecd790a09ab5b7ffd6f31077a"
+    },
+    "reports/main/bootstrap_config.json": {
+      "bytes": 3241,
+      "sha256": "1effa3201ee4aa32f779a28ed35d284f0dd521a59140987164b78de60fe035ce"
+    },
+    "reports/main/bootstrap_draws.csv.gz": {
+      "bytes": 857713,
+      "sha256": "8e74fd3367482f9cbae1b3e0fc49dcb3aaccdab0f6a59771de51991d1f9a3dd6"
+    },
+    "reports/main/bootstrap_replicates.csv.gz": {
+      "bytes": 600750,
+      "sha256": "603c7011552b017e246a3d4089aca13e6f9c90bac9a7acb7438b8c20f01f8bea"
+    },
+    "reports/main/bootstrap_summary.csv": {
+      "bytes": 6010,
+      "sha256": "6d6c2836c2d24fd6d23cb2e0868d3b7fb8f504732980de84d4903a359b452448"
+    },
+    "reports/main/breakdown_assignment_provenance.csv": {
+      "bytes": 15079,
+      "sha256": "012571e95295246f6ea61d78b4c404cc35546638bdb50932ff329e634d2eb2b9"
+    },
+    "reports/main/breakdown_country.csv": {
+      "bytes": 215831,
+      "sha256": "695d5f1cc10953fc787697ea63140a19141447817c9579f1d38872b672c332ee"
+    },
+    "reports/main/breakdown_target_month.csv": {
+      "bytes": 112094,
+      "sha256": "1f7e0a973ef7787f09bb311e14ca8b13e95090e614873d1472865eacf90f8b8e"
+    },
+    "reports/main/breakdown_target_year.csv": {
+      "bytes": 12685,
+      "sha256": "74e7929f476ff10f68212ff7e38decb464feaf7b6b477b89407f59d178e11bae"
+    },
+    "reports/main/cohort_support.csv": {
+      "bytes": 1432,
+      "sha256": "5c4fa5d57ca9b2822987f65d7ca63f4cadc30857652979f61b98eb1bd3f4d2d2"
+    },
+    "reports/main/deltas.csv": {
+      "bytes": 4776,
+      "sha256": "595f6d3530e812b091dbbe2d3f08b487eff78f2c34f28d2e666fd845162b954a"
+    },
+    "reports/main/metrics.csv": {
+      "bytes": 4354,
+      "sha256": "e719a97c49b8a2cd2d5d32132b104936b48770e15d836ee6162aa967038c8119"
+    },
+    "reports/partial_2026/bootstrap_suppressed.json": {
+      "bytes": 157,
+      "sha256": "d274b1448ec37ead41c49886974d89a060db27528b9916d650973f7507d87f9f"
+    },
+    "reports/partial_2026/breakdown_assignment_provenance.csv": {
+      "bytes": 15363,
+      "sha256": "63faedaa5978850c22a86f66b31d68e340d2154e0cb19d1853ddb1db2d0c2d19"
+    },
+    "reports/partial_2026/breakdown_country.csv": {
+      "bytes": 131010,
+      "sha256": "1c4e384c0aa789f00e2fc77911f3a0cf8101547a1ddd526aae335f6fe73d3725"
+    },
+    "reports/partial_2026/breakdown_target_month.csv": {
+      "bytes": 17950,
+      "sha256": "12b279a647147f76f69fe9909cf62a7b67396ef4164836deae3db36da11a6deb"
+    },
+    "reports/partial_2026/breakdown_target_year.csv": {
+      "bytes": 4964,
+      "sha256": "51627bcff3b843786ab9b4d50ccf56425dc136e90d8e2a34347c43aaeb5cc815"
+    },
+    "reports/partial_2026/cohort_support.csv": {
+      "bytes": 1350,
+      "sha256": "5535384e0673383cc4ff65496d304e7fc2b1c891b9d9c792ae80b77345e0fa35"
+    },
+    "reports/partial_2026/deltas.csv": {
+      "bytes": 4836,
+      "sha256": "0ab0eec4083ddb79abad9647a7410b660d7477297e33422547b165ed0f61423f"
+    },
+    "reports/partial_2026/metrics.csv": {
+      "bytes": 4460,
+      "sha256": "1cdf188efbd3325c4e0bcb7421dc602e161da1238c42effc300a19470cc83803"
+    },
+    "reports/report_manifest.json": {
+      "bytes": 3672,
+      "sha256": "58dc621899f1503f5e4c0a9fb82aa3ddedb1d0f494f15454413cb62c92660311"
+    },
+    "reports/reporting_config.json": {
+      "bytes": 2922,
+      "sha256": "4db31d7a0f5ec4982ff05358c098d6651609d04710b9f4023938b8d34f71a3db"
+    },
+    "reports/validation.json": {
+      "bytes": 1836,
+      "sha256": "15acf17a3c42686d845c3b16c02f0c31232fd23d17cd6cfea30b9b33cf081b37"
+    },
+    "run.log": {
+      "bytes": 4009,
+      "sha256": "e3dbefb807fe156582c3e4f0c3d8277e48dbd9484a947004f10071c4d8a0d7eb"
+    },
+    "stage1/area_assignments.csv": {
+      "bytes": 413712,
+      "sha256": "263012b807f0221a4b64a73bda95f599c36055195bc63d502609d3632543e4b7"
+    },
+    "stage1/assignment_summary.json": {
+      "bytes": 769,
+      "sha256": "fec172e0012a40984b9e3e2c24325faf83a9ae681089fc2b9c7fe60800c3a1bd"
+    },
+    "stage1/design_audit.json": {
+      "bytes": 644,
+      "sha256": "0190146cfa4edc5a3358decf38e27da24de58ff63575afbf5ea163f271af3c94"
+    },
+    "stage1/design_rows.csv.gz": {
+      "bytes": 260521,
+      "sha256": "24d566a7669cc1fe7bf25f0a0abe8a410adec2f00a0b137e8cf404b76db33706"
+    },
+    "stage1/eligible_donors.csv": {
+      "bytes": 139702,
+      "sha256": "7538d5f7410ea21f4a33873a1a0ce83abfea2f54708ca3e7f0d7f64334b06111"
+    },
+    "stage1/fit_configuration.json": {
+      "bytes": 6440,
+      "sha256": "0b642ff9a1ec9c2444a3790ef1f492471332d1f4f4efdbb010013c96938aff2a"
+    },
+    "stage1/georf_fit_stdout.txt": {
+      "bytes": 154947,
+      "sha256": "125b2c54b36814c3c13488b7606102bb2d0fd5a544a5ad2280ac1a171018bf26"
+    },
+    "stage1/imputer_fill_values.csv": {
+      "bytes": 5490,
+      "sha256": "c1505336bb40dec94a5fd44ff0ebe815a06be7ce6991b8a7a9b6b2fa8e8039e2"
+    },
+    "stage1/learned_map.csv": {
+      "bytes": 24937,
+      "sha256": "f2c37673d0c8567c605a57568d20e244016bd59479281f36477073a6cf28b053"
+    },
+    "stage1/map_reconciliation.json": {
+      "bytes": 1380,
+      "sha256": "53e5b762ab280ec77242799fbd00a44fc4fafd5e4f53c1b904ed2198562dbeb2"
+    },
+    "stage1/partition_codes.json": {
+      "bytes": 145,
+      "sha256": "3baf90fcda5b9e6a9d6f9913e784db7fbe9d161d5071db69db3ce893895371ac"
+    },
+    "stage1/result_GeoRF/checkpoints/rf_": {
+      "bytes": 29114164,
+      "sha256": "836ff3256e842036b654ee49c96a393e6281022b8cb05522fe19106383e35609"
+    },
+    "stage1/result_GeoRF/checkpoints/rf_0": {
+      "bytes": 11106155,
+      "sha256": "35bdbcff18a91f19da6cc39053229331c3e89934d091c687c862d155a72d06df"
+    },
+    "stage1/result_GeoRF/checkpoints/rf_1": {
+      "bytes": 16355755,
+      "sha256": "afa1b760fb0e35c82cae64e0318e1a3486fe6a1ce1897344569955acd89f75e6"
+    },
+    "stage1/result_GeoRF/feature_name_reference.csv": {
+      "bytes": 1895,
+      "sha256": "49b30e5880d50ae27478bc5070a2c9b3b239b533ff3c0cc28b9de6a3ea1cd404"
+    },
+    "stage1/result_GeoRF/space_partitions/X_branch_id.npy": {
+      "bytes": 2029456,
+      "sha256": "c438a809313ab375beee17891c53f214630d1de0c031066844bebc6ce630540d"
+    },
+    "stage1/result_GeoRF/space_partitions/branch_table.npy": {
+      "bytes": 3200,
+      "sha256": "6acdc65a96c0cde7be4d47fc059abd818681b0d19e3e68515df8d48e32707eb3"
+    },
+    "stage1/result_GeoRF/space_partitions/s_branch.pkl": {
+      "bytes": 27764,
+      "sha256": "1c376444317425d55112724e9b437a6751719a739c02043a9847d87b68c2aa8b"
+    },
+    "stage1/result_GeoRF/val_coverage_by_group.csv": {
+      "bytes": 46077,
+      "sha256": "bb116ee99991a1291ee3218331f892f9e94029a8ffdad71e4d462287218e28e7"
+    },
+    "stage1/result_GeoRF/vis/diagnostic_summary.txt": {
+      "bytes": 676,
+      "sha256": "ffa9f1a470337deac8b1f5a80ac9dd0c32a5da6540ef666ce19257b7d60456f6"
+    },
+    "stage1/result_GeoRF/vis/label_freqs.csv": {
+      "bytes": 102,
+      "sha256": "85f3fa4f55913663dea3b57b0b387853bafb166dca7cd5feb6aeffdde3e8ad03"
+    },
+    "stage1/result_GeoRF/vis/stage_trace.txt": {
+      "bytes": 255,
+      "sha256": "7e3df48754bda309a3796357f7f54bd4a4cef13e3b2e5a4634c4b8dd7979b14b"
+    },
+    "stage1/result_GeoRF/vis/train_error_by_polygon.csv": {
+      "bytes": 114853,
+      "sha256": "fa47998a15cc57c15e00b5b7a43ab9e74d5e505560f231d58d756f787d2eeb1f"
+    },
+    "stage1/singleton_diagnostics.json": {
+      "bytes": 2522,
+      "sha256": "77d08a83918a9c4fc52be5ee43106a224ff4cde435e6c4a3edd8f099f7cf039a"
+    },
+    "stage1/singleton_rows.csv.gz": {
+      "bytes": 20249,
+      "sha256": "3da19c3499afc645e2f65762ee024ca5c1d32166383dbb7c7f00aa7ad537fad3"
+    },
+    "stage1/singleton_scores.csv.gz": {
+      "bytes": 48672,
+      "sha256": "bb1c136c198c335706c6fbf715ff9c73818caa861198f1450fc27e69012aa7d3"
+    },
+    "stage1/split_gate.json": {
+      "bytes": 451,
+      "sha256": "c64afa5bd14a2fb14670be1cda0cd89366a1ea20d0ce2a5ce20889a4635f9db5"
+    },
+    "stage1/split_outcomes.csv.gz": {
+      "bytes": 67327,
+      "sha256": "459f500550d8dc9a1507af2485b1dc5415cf0a2c248fb4843cab2c8b9d8ef96b"
+    },
+    "stage3/coverage.json": {
+      "bytes": 2358,
+      "sha256": "781486a65ee1cd05d4044f9cd9d5a5cfa7ac2b195f38ba06bccf632f0211fc6d"
+    },
+    "stage3/fold_imputer_fill_values.csv.gz": {
+      "bytes": 52046,
+      "sha256": "0f9ea5331e6c55bdc81a0cd21d91a203b98a02df1ac06e5c47feee4f17b77c66"
+    },
+    "stage3/fold_stdout.txt": {
+      "bytes": 264608,
+      "sha256": "2ebcdc028ecae70db8c64f77b43daa2ab6d3b2885774db82874366c92ac0ca0c"
+    },
+    "stage3/fold_training_keys.csv.gz": {
+      "bytes": 5343803,
+      "sha256": "4527bfc6ec3e78189f6333ab87f0548624a38c83ed47e78dae1211d49e28da0a"
+    },
+    "stage3/folds.csv": {
+      "bytes": 41758,
+      "sha256": "3f79772f4c2a5e1bf603bac780d25e1b8d401fc3676ad3a7e47e94297d359064"
+    },
+    "stage3/panel_audit.json": {
+      "bytes": 472,
+      "sha256": "8573f6569fb3fc0b30148c1e5bb51c768647dffe0fafb4de61a1f4162bd21326"
+    },
+    "stage3/partitioned_vs_pooled_contrast.json": {
+      "bytes": 1834,
+      "sha256": "dbe29d2300d359952f1e0f461bd72693a119c34baa985bb73886e70802bf425f"
+    },
+    "stage3/prediction_schema.json": {
+      "bytes": 1266,
+      "sha256": "353a4d2c29ad4ad09b6a2112c1ab3c879026bb8a0fd260b972ca8425ff4b7199"
+    },
+    "stage3/predictions.csv.gz": {
+      "bytes": 1919988,
+      "sha256": "0b0dbddfad8bbfe20bae4cdf7539b8d399e4c0a5ac9e4377d00fbd983e42fd8a"
+    },
+    "stage3/stage3_settings.json": {
+      "bytes": 2039,
+      "sha256": "671ce603210acddfc0fb211945d6eb0e8f16c0ca4c8307c8055e68e73f7924cd"
+    },
+    "stage3/xgb_effective_configuration.json": {
+      "bytes": 5378,
+      "sha256": "8c1f0d2ab276179ac63c4b9a90bbe881f0c24a86a8add0a7a90d816128d8fa3c"
+    }
+  },
+  "review_scope": "all-row target/feature/split/geometry/map/fold/report audit, isolated focused tests, eight representative Stage3 model replays; no full training rerun",
+  "full_stage1_retrained": false,
+  "full_stage3_retrained": false
+}

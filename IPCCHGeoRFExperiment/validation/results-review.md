@@ -1,0 +1,18 @@
+# Results/report independent audit
+Completion: 0b9e61abade508d7dbe43380f956347d926bbdc0. Export root: /mnt/c/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82. Original run read-only: IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d.
+
+## Findings
+- README.md:94 factual arithmetic error: 75,580 present / 81,109 total = 93.1832472352%, not 91.55%. Counts themselves match saved predictions.
+- README.md:88 labels R1 target ledger as 6,227 areas. Actual data/target_ledger_valid.csv.gz has 6,224 distinct admin_code; report_manifest.json history_verification.history_areas also 6224. 6227 is the geometry universe stated at README:91, not valid-label support.
+- README.md:13 says "no learned arm beat persistence reliably". Approved and implemented paired contrasts only test partitioned_rf minus baselines, not pooled_rf or xgb minus persistence (research/evaluation.md:46-50; report_results.py:162-169,1776-1784). XGB point F1 exceeds persistence at h3 and h12. Reported intervals do not directly establish the headline claim for these arms. This is an evidence-scope issue, not a demonstrated wrong numerical conclusion.
+
+## Executed independent checks
+Windows Store Python 3.12 executable, -B, no fits or installs.
+1. Exported IPCCHGeoRFExperiment/test_report_contracts.py: 28/28 passed, exit 0. These tests were separately copied, not completion-tracked. Expected negative-path REPORT FAILED stderr is from tests and did not indicate suite failure.
+2. Exported report_results.py --run-dir original --out-dir C:/Users/swl00/AppData/Local/Temp/ipcch-review-fwopav82/reconstructed-report: exit 0; 81,109 rows; 16 cohorts; 23 artifacts. Inspected writer helpers and generate_report: writes target out_dir only, refuses nonempty output (1948-1954).
+3. check_results_independent.py in scratch: exit 0, PASS. Does not import reporter. Recomputed confusion cells and F1 for all 28 main +28 partial_2026 metric rows and 20+20 paired delta rows, matching all. For each of 8 main horizon/cohort groups independently reconstructed sorted-country seed42 RNG multiplicities, every 1000 draw, all 48,000 saved replicate statistic values, and every percentile CI. All matched.
+4. Prediction SHA256 matches report manifest: 0b0dbddfad8bbfe20bae4cdf7539b8d399e4c0a5ac9e4377d00fbd983e42fd8a. Reporter SHA256 matches pinned exported file: b111c2e6418950ed5a8383cb3d803bc6e88fa22ac487752bdd42b9daf5ef0bda. Manifest accounts for every report file except itself (23). All regenerated CSV artifacts content-equal. All nonvalidation config/text artifacts byte-equal. Validation paths differ due input path spelling; not byte-compared. Manifest intentionally has generated time/out_dir changes.
+5. README E_persist four-arm F1 table (19-22) matches rounding. Horizon stability percentages (61-62) match MAIN-period overlap: n=12,404 paired h1/h12 available-history keys, same source month 33.2070%, same prediction 84.5453%. Including partial_2026 would instead produce 29.2569%/81.0812%; README surrounding section discusses main results.
+
+## Limits
+No training replay, source label rebuild, geometry replay, or Stage1 split verification. Reporter regeneration verifies persistence against saved valid-label ledger; independent script defines E_persist using present saved persistence after that validation. This is not a proof of the ledger against original raw source. Manifest has input/reporter hashes and output file list, not per-output hashes; current reproduction establishes contents. Statistical reliability for XGB/pooled versus persistence was not newly tested because those are outside approved contrasts. No relevant memory evidence used (registry keyword search only).

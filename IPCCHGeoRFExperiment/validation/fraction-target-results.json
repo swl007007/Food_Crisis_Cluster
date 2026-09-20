@@ -1,0 +1,15 @@
+{
+  "source_rows": 1219868,
+  "valid": 42695,
+  "positive": 15206,
+  "valid_label_areas": 6224,
+  "p5_fills": 84,
+  "exact_threshold_ties": 2601,
+  "invalid_counts_independent_reason_order": {
+    "missing_phase_1_to_4": 1176232,
+    "total_bounds": 577,
+    "component_bounds": 1,
+    "population": 363
+  },
+  "all_saved_valid_keys_and_labels_equal": true
+}

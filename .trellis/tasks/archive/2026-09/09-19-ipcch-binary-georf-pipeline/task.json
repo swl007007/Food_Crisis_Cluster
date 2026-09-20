@@ -1,0 +1,33 @@
+{
+  "id": "ipcch-binary-georf-pipeline",
+  "name": "ipcch-binary-georf-pipeline",
+  "title": "IPCCH binary crisis GeoRF pipeline",
+  "description": "Plan IPCCH binary P3+>0.2 forecasting: one pooled GeoRF partition-learning procedure with broad internal validation, skip Stage2 consensus, reuse existing geometry/1-NN completion, then compare partitioned RF with pooled RF, binary XGBoost and persistence.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "swl007007",
+  "assignee": "swl007007",
+  "createdAt": "2026-09-19",
+  "completedAt": "2026-09-20",
+  "branch": "feature/ipcch-binary-georf-pipeline",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": "3addf9a97d31ee2a869d22df26ececa995acab19",
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "Archived by Opus; independent release review and packaging corrections are in IPCCHGeoRFExperiment/validation/review.md. Scientific outputs unchanged.",
+  "meta": {
+    "release_review": {
+      "base_sha": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+      "implementation_sha": "3addf9a97d31ee2a869d22df26ececa995acab19",
+      "completion_sha": "0b9e61abade508d7dbe43380f956347d926bbdc0",
+      "evidence": "IPCCHGeoRFExperiment/validation/review.md"
+    }
+  }
+}

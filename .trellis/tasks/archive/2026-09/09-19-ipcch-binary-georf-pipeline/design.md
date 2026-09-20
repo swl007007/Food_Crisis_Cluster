@@ -1,8 +1,8 @@
 # IPCCH GeoRF technical design v1.0
 
-Status: planning, against prd.md v1.0. Scientific decisions are approved; final
-implementation approval is pending. This document defines the smallest isolated
-adaptation, not a completed implementation or measured result.
+Status: implementation completed and archived against prd.md v1.0 and its explicit
+Q8g amendment. This historical design is retained for comparison; actual validation,
+results and deviations are in STATUS.md and IPCCHGeoRFExperiment/validation/review.md.
 
 ## Boundary and file responsibilities
 

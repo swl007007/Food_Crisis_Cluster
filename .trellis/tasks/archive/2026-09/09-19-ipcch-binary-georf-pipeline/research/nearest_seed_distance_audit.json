@@ -1,0 +1,491 @@
+{
+  "sources": {
+    "raw": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/raw/IPCCH_2026_completed.csv",
+    "reference_coordinates": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/spatial/unique_area_id_lat_lon.csv"
+  },
+  "method": "BallTree haversine reference-point distances, Earth radius 6371 km; no country restriction; seeds are areas with >=2 original valid labels, not learned successful partition seeds; illustrative pooled calendar-year windows only",
+  "validation": {
+    "raw_rows": 1219868,
+    "unique_ids": 6227,
+    "valid_target_rows": 42695,
+    "duplicate_area_year_month_rows": 0,
+    "country_ids_with_multiple_ISO3": 0,
+    "boundary_id_100000_exists": true,
+    "float_boundary_correction": {
+      "description": "Exact Decimal summation of original strings includes two totalS=0.9 rows excluded by binary floating-point sum 0.8999999999999999; seed/query membership unchanged because area1101 already has >=2 valid labels in both illustrative windows; other corrected row is outside windows.",
+      "rows": [
+        {
+          "csv_line": 75405,
+          "admin_code": 101168,
+          "year": 2014,
+          "month": 1
+        },
+        {
+          "csv_line": 524792,
+          "admin_code": 1101,
+          "year": 2017,
+          "month": 7
+        }
+      ],
+      "area1101_uncorrected_window_label_counts": {
+        "2022": 7,
+        "2023": 8
+      }
+    }
+  },
+  "windows": {
+    "2017-2022": {
+      "valid_original_labels": 18084,
+      "seed_proxy_count": 3264,
+      "groups": {
+        "singleton_all": {
+          "n": 1472,
+          "median": 51.66856929031803,
+          "p90": 204.93408320945235,
+          "p95": 474.4895196995422,
+          "p99": 1420.5611422678794,
+          "max": 7177.162131999908,
+          "within_km": {
+            "25": {
+              "count": 509,
+              "percent": 34.578804347826086
+            },
+            "50": {
+              "count": 710,
+              "percent": 48.233695652173914
+            },
+            "100": {
+              "count": 1079,
+              "percent": 73.30163043478261
+            },
+            "200": {
+              "count": 1314,
+              "percent": 89.2663043478261
+            }
+          },
+          "cross_country_nearest_count": 334
+        },
+        "singleton_IPC": {
+          "n": 1367,
+          "median": 52.24014792051928,
+          "p90": 222.1453880797057,
+          "p95": 762.0064218798323,
+          "p99": 3311.8809819508842,
+          "max": 7177.162131999908,
+          "within_km": {
+            "25": {
+              "count": 490,
+              "percent": 35.84491587417703
+            },
+            "50": {
+              "count": 651,
+              "percent": 47.622531089978054
+            },
+            "100": {
+              "count": 985,
+              "percent": 72.05559619604975
+            },
+            "200": {
+              "count": 1209,
+              "percent": 88.44184345281639
+            }
+          },
+          "cross_country_nearest_count": 327
+        },
+        "singleton_CH": {
+          "n": 105,
+          "median": 48.06062353058677,
+          "p90": 100.15808421009567,
+          "p95": 119.32468254530495,
+          "p99": 136.224618995436,
+          "max": 179.9531929414696,
+          "within_km": {
+            "25": {
+              "count": 19,
+              "percent": 18.095238095238095
+            },
+            "50": {
+              "count": 59,
+              "percent": 56.19047619047619
+            },
+            "100": {
+              "count": 94,
+              "percent": 89.52380952380953
+            },
+            "200": {
+              "count": 105,
+              "percent": 100.0
+            }
+          },
+          "cross_country_nearest_count": 7
+        },
+        "singleton_boundary": {
+          "n": 0,
+          "median": null,
+          "p90": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "within_km": {
+            "25": {
+              "count": 0,
+              "percent": null
+            },
+            "50": {
+              "count": 0,
+              "percent": null
+            },
+            "100": {
+              "count": 0,
+              "percent": null
+            },
+            "200": {
+              "count": 0,
+              "percent": null
+            }
+          },
+          "cross_country_nearest_count": 0
+        },
+        "zero_label_all": {
+          "n": 1491,
+          "median": 1.7968521485353113,
+          "p90": 136.56018470260526,
+          "p95": 1391.8692672528405,
+          "p99": 2166.665832112435,
+          "max": 2286.9022204825255,
+          "within_km": {
+            "25": {
+              "count": 1076,
+              "percent": 72.1663313212609
+            },
+            "50": {
+              "count": 1166,
+              "percent": 78.20254862508384
+            },
+            "100": {
+              "count": 1288,
+              "percent": 86.3849765258216
+            },
+            "200": {
+              "count": 1369,
+              "percent": 91.81757209926224
+            }
+          },
+          "cross_country_nearest_count": 150
+        },
+        "zero_label_IPC": {
+          "n": 1485,
+          "median": 1.7034139809970599,
+          "p90": 136.7004427498025,
+          "p95": 1395.022748741057,
+          "p99": 2167.367771219935,
+          "max": 2286.9022204825255,
+          "within_km": {
+            "25": {
+              "count": 1071,
+              "percent": 72.12121212121212
+            },
+            "50": {
+              "count": 1161,
+              "percent": 78.18181818181819
+            },
+            "100": {
+              "count": 1282,
+              "percent": 86.32996632996634
+            },
+            "200": {
+              "count": 1363,
+              "percent": 91.78451178451178
+            }
+          },
+          "cross_country_nearest_count": 150
+        },
+        "zero_label_CH": {
+          "n": 6,
+          "median": 13.5147039879128,
+          "p90": 39.21759129005027,
+          "p95": 47.377381098956775,
+          "p99": 53.905212946081974,
+          "max": 55.53717090786327,
+          "within_km": {
+            "25": {
+              "count": 5,
+              "percent": 83.33333333333334
+            },
+            "50": {
+              "count": 5,
+              "percent": 83.33333333333334
+            },
+            "100": {
+              "count": 6,
+              "percent": 100.0
+            },
+            "200": {
+              "count": 6,
+              "percent": 100.0
+            }
+          },
+          "cross_country_nearest_count": 0
+        },
+        "zero_label_boundary": {
+          "n": 0,
+          "median": null,
+          "p90": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "within_km": {
+            "25": {
+              "count": 0,
+              "percent": null
+            },
+            "50": {
+              "count": 0,
+              "percent": null
+            },
+            "100": {
+              "count": 0,
+              "percent": null
+            },
+            "200": {
+              "count": 0,
+              "percent": null
+            }
+          },
+          "cross_country_nearest_count": 0
+        }
+      }
+    },
+    "2017-2023": {
+      "valid_original_labels": 23009,
+      "seed_proxy_count": 3876,
+      "groups": {
+        "singleton_all": {
+          "n": 1572,
+          "median": 10.501616557311674,
+          "p90": 124.93036128513599,
+          "p95": 198.92622742175803,
+          "p99": 1939.0486745450858,
+          "max": 2286.9022204825255,
+          "within_km": {
+            "25": {
+              "count": 888,
+              "percent": 56.48854961832062
+            },
+            "50": {
+              "count": 1060,
+              "percent": 67.43002544529261
+            },
+            "100": {
+              "count": 1342,
+              "percent": 85.36895674300254
+            },
+            "200": {
+              "count": 1493,
+              "percent": 94.97455470737913
+            }
+          },
+          "cross_country_nearest_count": 182
+        },
+        "singleton_IPC": {
+          "n": 1564,
+          "median": 10.291966863949254,
+          "p90": 125.00429346216032,
+          "p95": 200.0272551265834,
+          "p99": 1939.8133329548664,
+          "max": 2286.9022204825255,
+          "within_km": {
+            "25": {
+              "count": 882,
+              "percent": 56.39386189258312
+            },
+            "50": {
+              "count": 1053,
+              "percent": 67.32736572890026
+            },
+            "100": {
+              "count": 1334,
+              "percent": 85.29411764705883
+            },
+            "200": {
+              "count": 1485,
+              "percent": 94.94884910485933
+            }
+          },
+          "cross_country_nearest_count": 181
+        },
+        "singleton_CH": {
+          "n": 8,
+          "median": 15.73443300085136,
+          "p90": 38.88418564279579,
+          "p95": 47.21067827532952,
+          "p99": 53.87187238135652,
+          "max": 55.53717090786327,
+          "within_km": {
+            "25": {
+              "count": 6,
+              "percent": 75.0
+            },
+            "50": {
+              "count": 7,
+              "percent": 87.5
+            },
+            "100": {
+              "count": 8,
+              "percent": 100.0
+            },
+            "200": {
+              "count": 8,
+              "percent": 100.0
+            }
+          },
+          "cross_country_nearest_count": 1
+        },
+        "singleton_boundary": {
+          "n": 0,
+          "median": null,
+          "p90": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "within_km": {
+            "25": {
+              "count": 0,
+              "percent": null
+            },
+            "50": {
+              "count": 0,
+              "percent": null
+            },
+            "100": {
+              "count": 0,
+              "percent": null
+            },
+            "200": {
+              "count": 0,
+              "percent": null
+            }
+          },
+          "cross_country_nearest_count": 0
+        },
+        "zero_label_all": {
+          "n": 779,
+          "median": 2.373356445671993,
+          "p90": 130.2800861710125,
+          "p95": 1911.7239615043607,
+          "p99": 2179.754385064103,
+          "max": 2277.571910656929,
+          "within_km": {
+            "25": {
+              "count": 543,
+              "percent": 69.70474967907575
+            },
+            "50": {
+              "count": 603,
+              "percent": 77.40693196405648
+            },
+            "100": {
+              "count": 672,
+              "percent": 86.26444159178433
+            },
+            "200": {
+              "count": 717,
+              "percent": 92.0410783055199
+            }
+          },
+          "cross_country_nearest_count": 72
+        },
+        "zero_label_IPC": {
+          "n": 778,
+          "median": 2.3652793156848744,
+          "p90": 130.36066484783825,
+          "p95": 1911.9779454171523,
+          "p99": 2179.8707244431575,
+          "max": 2277.571910656929,
+          "within_km": {
+            "25": {
+              "count": 542,
+              "percent": 69.66580976863753
+            },
+            "50": {
+              "count": 602,
+              "percent": 77.37789203084833
+            },
+            "100": {
+              "count": 671,
+              "percent": 86.24678663239075
+            },
+            "200": {
+              "count": 716,
+              "percent": 92.03084832904884
+            }
+          },
+          "cross_country_nearest_count": 72
+        },
+        "zero_label_CH": {
+          "n": 1,
+          "median": 10.212518165879175,
+          "p90": 10.212518165879175,
+          "p95": 10.212518165879175,
+          "p99": 10.212518165879175,
+          "max": 10.212518165879175,
+          "within_km": {
+            "25": {
+              "count": 1,
+              "percent": 100.0
+            },
+            "50": {
+              "count": 1,
+              "percent": 100.0
+            },
+            "100": {
+              "count": 1,
+              "percent": 100.0
+            },
+            "200": {
+              "count": 1,
+              "percent": 100.0
+            }
+          },
+          "cross_country_nearest_count": 0
+        },
+        "zero_label_boundary": {
+          "n": 0,
+          "median": null,
+          "p90": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "within_km": {
+            "25": {
+              "count": 0,
+              "percent": null
+            },
+            "50": {
+              "count": 0,
+              "percent": null
+            },
+            "100": {
+              "count": 0,
+              "percent": null
+            },
+            "200": {
+              "count": 0,
+              "percent": null
+            }
+          },
+          "cross_country_nearest_count": 0
+        }
+      }
+    }
+  },
+  "audit_status": "read_only_geographic_distance_planning_proxy_no_assignments",
+  "source_hash_recomputed_this_audit": false,
+  "source_sha256_previously_verified": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+  "limitations": [
+    "Pooled year windows are illustrative, not an approved split.",
+    "At least2 original labels is only a seed proxy, not actual learned-map or fitted-model availability.",
+    "Coordinates are the keyed spatial reference, not verified polygon-edge distances or geometry correctness.",
+    "No model fitting, partition assignment, cutoff selection or prediction was performed."
+  ]
+}

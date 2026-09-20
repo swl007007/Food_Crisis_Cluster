@@ -1,3 +1,6 @@
 runs/
 .tmp*
 __pycache__/
+!test_*contracts.py
+!validation/*.json
+!validation/*.csv

@@ -1,9 +1,10 @@
 # IPCCH binary crisis GeoRF pipeline — specification v1.0
 
-Status: **planning; research decisions approved; awaiting final implementation approval**.
+Status: **implemented, completed and archived**; closure/review evidence is in STATUS.md
+and IPCCHGeoRFExperiment/validation/review.md. The preregistered requirements below
+are retained, with the explicit Q8g amendment recorded during implementation.
 This is the authoritative requirement/acceptance document. Technical design is
-in `design.md`; the ordered execution plan is in `implement.md`. No model,
-transformed modeling panel or repaired geometry has been produced.
+in `design.md`; the historical execution plan is in `implement.md`.
 
 ## Goal and scope
 

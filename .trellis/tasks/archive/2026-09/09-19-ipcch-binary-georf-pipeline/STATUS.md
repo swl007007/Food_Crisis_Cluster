@@ -1,4 +1,15 @@
-# IPCCH planning handoff — 2026-09-20
+# IPCCH completed task — review handoff
+
+Current state: **completed and archived**. Implementation commit `3addf9a`, closure
+commit `0b9e61a`; the pinned post-execution review is recorded in
+`IPCCHGeoRFExperiment/validation/review.md`. The review corrected release packaging
+and result-description defects without changing production code or scientific
+outputs. `task.json` and referenced planning evidence are now included in Git.
+
+The following planning snapshot is historical and superseded by the closure and
+review records; it is not the task's current status.
+
+# Historical planning handoff — 2026-09-20
 
 Authoritative requirements: prd.md v1.0. design.md and implement.md v1.0 now exist.
 Task remains **planning**. All scientific decisions through Q9b and Q8g are
@@ -91,7 +102,7 @@ Implemented, run, verified and committed as `3addf9a`. Authoritative run
 | ID | Status |
 |---|---|
 | A1 | Source, release and shapefile hashes match and are unchanged after the run; runtime, the single local patch and output lineage recorded. |
-| A2 | R1 order, fill, bounds, sum and normalization reproduce 42,695 / 15,206 / 27,489 / 6,227 / 84 / 2,601 with reconciled exclusions; the five normalized components are preserved. |
+| A2 | R1 order, fill, bounds, sum and normalization reproduce 42,695 valid / 15,206 positive / 27,489 negative, 6,224 valid-label areas (6,227 geographic universe), 84 fills and 2,601 exact-.20 shares; the five normalized components are preserved. |
 | A3 | `origin == target - horizon` on all 170,780 feature rows and all 81,109 predictions; Stage 3 training is exactly 36 calendar months ending at the origin; every origin >= 2023-01. |
 | A4 | One pooled Stage 1, no Stage 2; released F1/q mathematics untouched; split reproduces 19,591 / 3,264 / 8,561 / 9,558 / 1,472 / 1,491; Q8g stop honored and its narrow extension recorded; donor distances <= 100 km with no chaining. |
 | A5 | `E_persist` is the history-available subset of `E_all`, verified against the R1 ledger rather than the runner's column; arms share identical keys; missing persistence and fallback counts explicit. |

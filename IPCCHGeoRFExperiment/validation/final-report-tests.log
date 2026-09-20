@@ -1,0 +1,41 @@
+REPORT FAILED: no R1 valid-label ledger under C:\Users\swl00\AppData\Local\Temp\tmpomfptjje\run; looked for ['data/target_ledger_valid.csv.gz', 'data/target_ledger_valid.csv'] and the manifest's pinned source CSV. E_persist is defined by the available history (Q4b), so it cannot be built from whatever the runner happened to write.
+REPORT FAILED: saved predictions violate the reporting input contract:
+  - 1 rows have no country_id; a missing country mapping is a failure, never a dropped row (Q9b)
+  - 1 areas map to more than one country_id; the bootstrap cluster key must be unambiguous
+ok   test_an_empty_cohort_has_no_countries_to_resample
+ok   test_bootstrap_point_agrees_with_the_metrics_table
+ok   test_branch_string_keeps_its_leading_zeros
+ok   test_ci_is_suppressed_below_two_defined_replicates
+ok   test_ci_is_suppressed_when_the_point_is_undefined
+report complete: C:\Users\swl00\AppData\Local\Temp\tmpomfptjje\cli
+  rows      : 11
+  periods   : main, partial_2026
+  cohorts   : 16
+  files     : 23
+  Intervals describe country-composition uncertainty conditional on saved predictions - not future prediction, not partition or training uncertainty.
+ok   test_cli_round_trip
+ok   test_country_multiplicity_is_retained_inside_a_draw
+ok   test_counts_are_aggregated_before_the_ratio_not_averaged
+ok   test_deltas_use_the_same_draw_for_both_arms
+ok   test_e_persist_is_the_history_available_subset_on_identical_keys
+ok   test_e_persist_membership_comes_from_the_history_not_the_runner
+ok   test_every_approved_horizon_keeps_a_cohort
+ok   test_generate_report_writes_the_expected_tree
+ok   test_history_falls_back_to_the_pinned_source_through_prepare_data
+ok   test_key_and_consistency_failures
+ok   test_main_and_partial_2026_stay_separate
+ok   test_malformed_numbers_fail_instead_of_becoming_missing_or_truncated
+ok   test_missing_country_fails
+ok   test_missing_learned_prediction_fails
+ok   test_only_the_interval_is_suppressed_below_two_countries
+ok   test_persistence_is_verified_exactly_against_the_label_ledger
+ok   test_report_is_byte_for_byte_reproducible
+ok   test_report_refuses_a_non_empty_out_dir_and_records_validation_failure
+ok   test_undefined_replicates_are_counted_not_redrawn_or_zeroed
+ok   test_worked_example_f1_matches_the_hand_computation
+      worked example: F1 = 6/8 = 0.75, draws {A,A}=252 {A,B}=494 {B,B}=254, 95% CI [0.5, 1.0]
+ok   test_worked_example_interval_matches_the_hand_computation
+ok   test_zero_denominator_is_nan_with_a_reason
+ok   test_zero_numerator_with_positive_denominator_is_zero
+
+28/28 passed

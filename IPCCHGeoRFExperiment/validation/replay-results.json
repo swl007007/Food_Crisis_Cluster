@@ -1,0 +1,98 @@
+[
+  {
+    "fold_id": "h1_2023-02",
+    "rows": 27,
+    "train_rows": 12202,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 7.31
+  },
+  {
+    "fold_id": "h1_2025-10",
+    "rows": 2160,
+    "train_rows": 17527,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 9.61
+  },
+  {
+    "fold_id": "h3_2023-04",
+    "rows": 182,
+    "train_rows": 12202,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 7.22
+  },
+  {
+    "fold_id": "h3_2025-10",
+    "rows": 2160,
+    "train_rows": 16467,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 9.09
+  },
+  {
+    "fold_id": "h6_2023-07",
+    "rows": 287,
+    "train_rows": 12202,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 7.54
+  },
+  {
+    "fold_id": "h6_2025-10",
+    "rows": 2160,
+    "train_rows": 16394,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 9.52
+  },
+  {
+    "fold_id": "h12_2024-01",
+    "rows": 1443,
+    "train_rows": 12202,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 7.29
+  },
+  {
+    "fold_id": "h12_2025-10",
+    "rows": 2160,
+    "train_rows": 13453,
+    "max_probability_difference": {
+      "partitioned_rf": 0.0,
+      "pooled_rf": 0.0,
+      "xgb": 0.0
+    },
+    "xgb_effective_configuration_checked": true,
+    "seconds": 8.14
+  }
+]

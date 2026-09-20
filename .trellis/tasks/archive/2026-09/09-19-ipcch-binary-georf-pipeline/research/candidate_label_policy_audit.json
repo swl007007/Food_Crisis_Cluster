@@ -1,0 +1,186 @@
+{
+  "source": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/raw/IPCCH_2026_completed.csv",
+  "source_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+  "status": "candidate_policy_only_not_approved",
+  "rule": "complete five proportions, each in [0,1], Decimal sum in [.99,1.01] inclusive, estimated_population >0; label Decimal P3+ >.20",
+  "counts": {
+    "all_rows": 1219868,
+    "phase345_complete": 43551,
+    "all5_complete": 43551,
+    "any_phase_outside_0_1": 1,
+    "total_outside_decimal_0_99_1_01": 1440,
+    "population_nonpositive_or_missing": 363,
+    "all5_zero": 752,
+    "p3plus_over1": 16,
+    "valid": 42110,
+    "valid_positive": 14643,
+    "valid_exact_threshold": 2690,
+    "excluded_complete": 1441
+  },
+  "year_counts": {
+    "2021": {
+      "valid": 3245,
+      "positive": 894
+    },
+    "2022": {
+      "valid": 4063,
+      "positive": 1448
+    },
+    "2024": {
+      "valid": 4244,
+      "positive": 1508
+    },
+    "2019": {
+      "valid": 2658,
+      "positive": 851
+    },
+    "2014": {
+      "valid": 458,
+      "positive": 21
+    },
+    "2017": {
+      "valid": 1617,
+      "positive": 349
+    },
+    "2020": {
+      "valid": 4104,
+      "positive": 1454
+    },
+    "2023": {
+      "valid": 4925,
+      "positive": 1866
+    },
+    "2018": {
+      "valid": 2112,
+      "positive": 737
+    },
+    "2015": {
+      "valid": 517,
+      "positive": 19
+    },
+    "2016": {
+      "valid": 529,
+      "positive": 22
+    },
+    "2025": {
+      "valid": 9788,
+      "positive": 3824
+    },
+    "2026": {
+      "valid": 3850,
+      "positive": 1650
+    }
+  },
+  "first_excluded_examples": [
+    {
+      "admin_code": "100699",
+      "year": "2019",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "235205.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100858",
+      "year": "2019",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "308191.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "101005",
+      "year": "2019",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "173207.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100265",
+      "year": "2020",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "135465.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100878",
+      "year": "2017",
+      "month": "1",
+      "total": "0.8999961669669210",
+      "p3plus": "0.0",
+      "population": "130445.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100766",
+      "year": "2020",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "537812.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100564",
+      "year": "2019",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "196747.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100172",
+      "year": "2019",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "482456.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100583",
+      "year": "2020",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "93788.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    },
+    {
+      "admin_code": "100746",
+      "year": "2020",
+      "month": "1",
+      "total": "0.0",
+      "p3plus": "0.0",
+      "population": "159754.0",
+      "invalid_component": false,
+      "invalid_total": true,
+      "invalid_population": false
+    }
+  ]
+}

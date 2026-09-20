@@ -1,0 +1,22 @@
+{
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "packages": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "polars": "1.27.1",
+    "scipy": "1.15.2",
+    "scikit-learn": "1.6.1",
+    "matplotlib": "3.10.1",
+    "geopandas": "1.0.1",
+    "shapely": "2.1.0",
+    "seaborn": "0.13.2",
+    "Pillow": "11.1.0",
+    "shap": "0.47.2",
+    "psutil": "7.0.0",
+    "tqdm": "4.67.1",
+    "pyarrow": "19.0.1",
+    "requests": "2.32.3"
+  },
+  "scope": "Tested environment; not a historical environment reconstruction"
+}

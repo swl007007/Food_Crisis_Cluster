@@ -1,0 +1,16 @@
+C:\Users\swl00\AppData\Local\Temp\ipcch-review-fwopav82\stage3_actual_check.py:21: RuntimeWarning: All-NaN slice encountered
+  values=X[train.index]; lo=np.nanmin(values,axis=0); hi=np.nanmax(values,axis=0)
+C:\Users\swl00\AppData\Local\Temp\ipcch-review-fwopav82\stage3_actual_check.py:21: RuntimeWarning: All-NaN slice encountered
+  values=X[train.index]; lo=np.nanmin(values,axis=0); hi=np.nanmax(values,axis=0)
+C:\Users\swl00\AppData\Local\Temp\ipcch-review-fwopav82\stage3_actual_check.py:21: RuntimeWarning: All-NaN slice encountered
+  values=X[train.index]; lo=np.nanmin(values,axis=0); hi=np.nanmax(values,axis=0)
+{
+  "folds": 138,
+  "fitted": 126,
+  "training_keys": 1733566,
+  "predictions": 81109,
+  "imputer_rows": 11718,
+  "fallback_rows": 5411,
+  "unresolved_areas": 596,
+  "checks": "all exact training/test keys; own origins; frozen assignments; train-only imputer extrema/fills; strict thresholds; pooled fallback probabilities; independent latest valid ledger persistence"
+}

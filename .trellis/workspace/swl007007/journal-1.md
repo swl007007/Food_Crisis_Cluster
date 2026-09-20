@@ -60,3 +60,40 @@ User requested closure. Local v0.1.0 archive verified; original sources unchange
 ### Next Steps
 
 - IPCCH binary crisis pipeline brainstorm and draft specification with pooled RF, binary XGBoost and persistence baselines.
+
+
+## Session 3: Review IPCCH baseline implementation and release evidence
+<!-- trellis-session: v=2 fp=ba3a16b7d34c8ddc -->
+
+**Date**: 2026-09-20
+**Task**: Review IPCCH baseline implementation and release evidence
+**Branch**: `feature/ipcch-binary-georf-pipeline`
+
+### Summary
+
+Reviewed fixed implementation and closure commits against source, all-row artifacts and saved results. Corrected ignored reproduction files, archived context paths and overstated/mislabeled reporting; scientific code and outputs unchanged.
+
+### Main Changes
+
+- Added IPCCH/baseline tests, source manifests, task metadata, planning audits and compact review evidence to version control.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3addf9a` | add the IPCCH binary crisis GeoRF baseline pipeline |
+| `0b9e61a` | close the IPCCH baseline task |
+
+### Testing
+
+- [OK] Windows pinned runtime: 122 IPCCH contract checks plus 11 baseline checks passed with no skips.
+- [OK] Independent source Fraction check, 170780x93 feature and full fold/map/report audits passed; all bootstrap replicates reconstructed.
+- [OK] Eight first/last main folds refitted: all three learned probabilities and hard predictions reproduced exactly.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Push reviewed feature branch, merge into main and push main as authorized.

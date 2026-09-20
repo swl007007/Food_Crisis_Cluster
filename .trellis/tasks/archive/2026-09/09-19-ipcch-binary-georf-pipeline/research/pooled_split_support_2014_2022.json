@@ -1,0 +1,88 @@
+{
+  "audit_date": "2026-09-20",
+  "audit_status": "read_only_planning_support_no_split_selection_or_model_fitting",
+  "source": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/raw/IPCCH_2026_completed.csv",
+  "method": "Python3 stdlib csv scan; original numeric strings parsed with Decimal precision 100",
+  "source_hash_recomputed_this_audit": false,
+  "source_sha256_previously_verified": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+  "raw_rows": 1219868,
+  "raw_universe_areas": 6227,
+  "target_window_inclusive": ["2014-01", "2022-12"],
+  "validity": "P1-P4 present; only missing P5 filled0; observed components in[0,1]; estimated_population>0; filled S in[0.90,1.10]",
+  "label": "int(5*(P3+P4+filledP5)>S)",
+  "overall_phase_used": false,
+  "duplicate_valid_admin_year_month_keys": 0,
+  "groups": {
+    "all": {
+      "raw_universe_areas": 6227,
+      "original_labels": 19591,
+      "positives": 5999,
+      "areas_n0": 1491,
+      "areas_n1": 1472,
+      "areas_n_ge2": 3264,
+      "eligible_original_rows": 18119,
+      "per_area_label_count_histogram": {"0":1491,"1":1472,"2":977,"3":426,"4":564,"5":93,"6":205,"7":154,"8":298,"9":110,"10":20,"11":87,"12":60,"13":14,"14":5,"15":2,"16":60,"17":74,"18":78,"19":37},
+      "capacity": {
+        "0.2": {"fit_original_rows":12985,"val_original_rows":5134,"areas_val_ge1":3264,"areas_val_ge2":1204,"areas_val_ge3":417},
+        "0.5": {"fit_original_rows":8561,"val_original_rows":9558,"areas_val_ge1":3264,"areas_val_ge2":2287,"areas_val_ge3":1297}
+      },
+      "illustrative_calendar_split_NOT_APPROVED": {"fit_original_rows":11365,"val_original_rows":6754,"areas_both":1887,"areas_fit_only":706,"areas_val_only":671}
+    },
+    "IPC_lt100000": {
+      "raw_universe_areas": 4919,
+      "original_labels": 8395,
+      "positives": 4775,
+      "areas_n0": 1485,
+      "areas_n1": 1367,
+      "areas_n_ge2": 2067,
+      "eligible_original_rows": 7028,
+      "per_area_label_count_histogram": {"0":1485,"1":1367,"2":929,"3":342,"4":524,"5":21,"6":53,"7":64,"8":29,"9":105},
+      "capacity": {
+        "0.2": {"fit_original_rows":4710,"val_original_rows":2318,"areas_val_ge1":2067,"areas_val_ge2":251,"areas_val_ge3":0},
+        "0.5": {"fit_original_rows":3248,"val_original_rows":3780,"areas_val_ge1":2067,"areas_val_ge2":1138,"areas_val_ge3":272}
+      },
+      "illustrative_calendar_split_NOT_APPROVED": {"fit_original_rows":4173,"val_original_rows":2855,"areas_both":834,"areas_fit_only":705,"areas_val_only":528}
+    },
+    "CH_gt100000": {
+      "raw_universe_areas": 1307,
+      "original_labels": 11190,
+      "positives": 1224,
+      "areas_n0": 6,
+      "areas_n1": 105,
+      "areas_n_ge2": 1196,
+      "eligible_original_rows": 11085,
+      "per_area_label_count_histogram": {"0":6,"1":105,"2":48,"3":84,"4":40,"5":72,"6":151,"7":90,"8":269,"9":5,"10":20,"11":87,"12":60,"13":14,"14":5,"15":2,"16":60,"17":74,"18":78,"19":37},
+      "capacity": {
+        "0.2": {"fit_original_rows":8271,"val_original_rows":2814,"areas_val_ge1":1196,"areas_val_ge2":952,"areas_val_ge3":417},
+        "0.5": {"fit_original_rows":5310,"val_original_rows":5775,"areas_val_ge1":1196,"areas_val_ge2":1148,"areas_val_ge3":1024}
+      },
+      "illustrative_calendar_split_NOT_APPROVED": {"fit_original_rows":7190,"val_original_rows":3895,"areas_both":1052,"areas_fit_only":1,"areas_val_only":143}
+    },
+    "boundary_eq100000": {
+      "raw_universe_areas": 1,
+      "original_labels": 6,
+      "positives": 0,
+      "areas_n0": 0,
+      "areas_n1": 0,
+      "areas_n_ge2": 1,
+      "eligible_original_rows": 6,
+      "per_area_label_count_histogram": {"6":1},
+      "capacity": {
+        "0.2": {"fit_original_rows":4,"val_original_rows":2,"areas_val_ge1":1,"areas_val_ge2":1,"areas_val_ge3":0},
+        "0.5": {"fit_original_rows":3,"val_original_rows":3,"areas_val_ge1":1,"areas_val_ge2":1,"areas_val_ge3":1}
+      },
+      "illustrative_calendar_split_NOT_APPROVED": {"fit_original_rows":2,"val_original_rows":4,"areas_both":1,"areas_fit_only":0,"areas_val_only":0}
+    }
+  },
+  "capacity_definition": "Within n>=2 areas only, n_val=min(n-1,max(1,ceil(n*ratio))); exact integer ceiling used",
+  "singleton_treatment": "Excluded from Stage1 fitting/split validation; post-map supplementary diagnostics only",
+  "calendar_definition": "Same n>=2 pool; fit2014-2020, validate2021-2022; illustrative and not approved",
+  "limitations": [
+    "Counts are original outcomes before horizon expansion or feature/history eligibility checks.",
+    "Random selection and chronological suffix with identical per-area quotas have identical support counts.",
+    "A chronological suffix orders fitting before validation within an area but does not enforce a common time cutoff across areas.",
+    "No actual split was selected, no label-class allocation was assessed, and no fitted performance or partition stability was measured.",
+    "At least2 labels establishes split capacity only, not final learned-donor eligibility."
+  ],
+  "not_performed": ["Actual split selection", "Model training", "Feature-panel construction", "Geographic assignment"]
+}

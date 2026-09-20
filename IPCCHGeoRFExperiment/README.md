@@ -1,6 +1,7 @@
 # IPCCH binary crisis GeoRF pipeline
 
-Baseline experiment for the task `.trellis/tasks/09-19-ipcch-binary-georf-pipeline`.
+Baseline experiment for the archived task
+`.trellis/tasks/archive/2026-09/09-19-ipcch-binary-georf-pipeline`.
 Specification: that task's `prd.md` (authoritative), `design.md`, `implement.md`.
 Every scope change and finding during implementation: that task's `DECISIONS_LOG.md`.
 
@@ -10,7 +11,9 @@ Authoritative run: `runs/ipcch-v1-20260920d/`. Run artifacts are git-ignored.
 
 # Verdict
 
-**Stage 1 learned no spatial partition, and no learned arm beat persistence reliably.**
+**Stage 1 accepted no spatial split. None of the specified partitioned-RF versus
+persistence contrasts has a positive 95% interval excluding zero.** The protocol
+does not include direct pooled-RF/XGB versus persistence intervals.
 
 Crisis-class F1 on `E_persist` (all four arms scored on identical keys, main period):
 
@@ -22,8 +25,9 @@ Crisis-class F1 on `E_persist` (all four arms scored on identical keys, main per
 | 12 | 0.6612 | 0.6580 | **0.6787** | 0.6759 |
 
 Of twelve paired contrasts (partitioned RF minus each baseline, 1000 country-cluster
-bootstrap draws, seed 42), **three have a 95% interval excluding zero and all three are
-losses**, plus one that is a gain and must not be read as one:
+bootstrap draws, seed 42), **four have a 95% interval excluding zero: three losses
+and one positive difference**. The positive difference does not establish a
+partitioning benefit:
 
 | contrast | delta | 95% CI |
 |---|---|---|
@@ -56,18 +60,18 @@ to be geographic. See `DECISIONS_LOG.md` D9 and D13.
 
 ## The horizon axis is weaker than it looks
 
-Performance barely decays with lead time (persistence 0.6814 at h1 to 0.6759 at h12). That
-is not crisis stability — it is that **the information set barely changes**. On the same
+Persistence F1 changes little with lead time (0.6814 at h1 to 0.6759 at h12).
+Sparse histories limit how much its information changes: on the same main-period
 (area, target month), h1 and h12 draw persistence from the **same source month 33.2%** of
-the time and produce the **same prediction 84.5%** of the time, because IPCCH labels are
-sparse and irregular (median 6 observations per area). The observation cadence is coarser
-than the horizon differences being tested.
+the time and produce the **same prediction 84.5%** of the time. IPCCH labels are
+sparse and irregular (median 6 observations per area). These concordance figures
+alone do not establish crisis stability or explain every model's horizon pattern.
 
 ---
 
 # What was built
 
-Five modules, no new framework, no new dependency. The released GeoRF baseline is extracted
+Four runtime modules, no new framework, no new dependency. The released GeoRF baseline is extracted
 fresh into each run and never modified in place.
 
 | file | role |
@@ -85,13 +89,13 @@ fresh into each run and never modified in place.
 | pinned source SHA256 | matches |
 | release ZIP SHA256, CRC, MANIFEST | matches; 45/45 payload hashes in-archive and on-disk |
 | runtime | Python 3.12.10, NumPy 2.2.6, pandas 2.2.3, sklearn 1.6.1, XGBoost 3.0.0, GeoPandas 1.0.1, Shapely 2.1.0 — all exact |
-| R1 target ledger | 42,695 valid / 15,206 positive / 27,489 negative / 6,227 areas / 84 P5-fills / 2,601 shares exactly at .20 |
+| R1 target ledger | 42,695 valid / 15,206 positive / 27,489 negative / 6,224 valid-label areas (6,227 in the geographic universe) / 84 P5-fills / 2,601 shares exactly at .20 |
 | feature matrix | 170,780 rows x 93 columns; `origin == target - horizon` on every row |
 | R4 Stage 1 split | 19,591 labels / 3,264 multi-areas / 8,561 fit / 9,558 validation / 1,472 singleton / 1,491 zero-label |
 | geometry | 6,227 features, EPSG:4326, 253 invalid (212/30/6/5); after repair 0 invalid, 0 empty, 0 non-polygonal |
 | Stage 3 schedule | 122 main folds, exactly 35/33/30/24 at h=1/3/6/12; +16 partial-2026; 126 fitted, 12 empty |
 | leakage | train window exactly 36 calendar months with `end == origin`; every origin >= 2023-01; persistence source month <= origin on all rows |
-| coverage | 81,109 rows, **zero missing** learned predictions; persistence 75,580 present / 5,529 absent (91.55%) |
+| coverage | Main + partial 2026: 81,109 rows, **zero missing** learned predictions; persistence 75,580 present / 5,529 absent (**93.18%**). Main period alone: 59,273 / 64,741 (**91.55%**). |
 
 ## The single source patch
 
@@ -116,7 +120,13 @@ Use the pinned Windows interpreter; WSL `python3` lacks GeoPandas.
 ```text
 PY='/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe'
 
-# contract checks
+# For all 30 Stage 3 checks in a fresh checkout, extract the verified ZIP into
+# a fresh runs/<id>/baseline directory first (no scientific training):
+"$PY" -m zipfile -e GeoRFBaseline/releases/georf-baseline-v0.1.0.zip \
+  IPCCHGeoRFExperiment/runs/contract-check-baseline/baseline
+
+# contract checks (the Stage 3 real-helper check needs an extracted baseline;
+# without one it explicitly skips that one check)
 "$PY" -B IPCCHGeoRFExperiment/test_contracts.py         # 33
 "$PY" -B IPCCHGeoRFExperiment/test_stage1_contracts.py  # 31
 "$PY" -B IPCCHGeoRFExperiment/test_stage3_contracts.py  # 30
@@ -124,7 +134,7 @@ PY='/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe'
 
 # full run (~19 min: Stage 1 ~100 s, Stage 3 ~1,018 s)
 "$PY" -B IPCCHGeoRFExperiment/run_pipeline.py \
-  --source-root "C:\...\1.Source Data\assembled_IPCCH" --run-id <fresh-id>
+  --source-root "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\1.Source Data\assembled_IPCCH" --run-id <fresh-id>
 
 # report, independently reconstructible into a fresh directory
 "$PY" -B IPCCHGeoRFExperiment/report_results.py --run-dir <run> --out-dir <fresh>
@@ -132,6 +142,18 @@ PY='/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe'
 
 Run IDs are refused if they already exist. A failed run keeps its artifacts and is never
 marked complete.
+
+## Independent release review
+
+See [validation/review.md](validation/review.md) for the pinned source revision,
+review findings and corrections, all-row artifact checks, 122 + 11 passing checks,
+and eight first/last-fold replays with exactly matching probabilities. Reviewed
+summary tables, test logs and artifact/code hashes are versioned in `validation/`;
+raw data, full run directories and fitted models remain local.
+
+The run manifest intentionally records `stage3_complete`; reporting has its own
+`reports/report_manifest.json`. The release review verifies both. Original run
+artifacts are preserved unchanged, including their historical status and hashes.
 
 ---
 
@@ -144,8 +166,9 @@ These constrain how the numbers may be read and are not resolved by any check ab
 - **Five covariates have literally zero missingness** across all 170,780 origin-month reads
   — `EVI_mean`, `nightlight_mean`, `nightlight_std`, `Rainf_f_tavg_mean`,
   `Tair_f_tavg_mean` — while `GPP_mean` in the same approved family misses 31.4%. This is
-  the fingerprint `research/secondary-predictors.md` flags for an upstream ungrouped
-  forward-fill, whose link to the selected CSV is unverified. Nothing was reconstructed,
+  a reason to retain the upstream-provenance caveat in `research/secondary-predictors.md`.
+  Zero missingness alone does not identify filling or leakage; a candidate ungrouped
+  forward-fill route has not been linked to the selected CSV. Nothing was reconstructed,
   substituted or dropped. The own-origin contract governs *which month is read*, not what
   upstream placed in that month.
 - **Topology repair does not establish administrative identity.** Two areas lose ~97-98% of
