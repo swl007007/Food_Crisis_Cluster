@@ -77,3 +77,42 @@ Do not interpret Q8g approval as final-summary approval.
 
 Previous minimal-georf-f1-baseline task is archived; its package and journal changes
 remain uncommitted and must be preserved. This task is the only active planning task.
+
+---
+
+# Closure — 2026-09-20
+
+Implemented, run, verified and committed as `3addf9a`. Authoritative run
+`IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d`; results and limitations in
+`IPCCHGeoRFExperiment/README.md`; every scope change in `DECISIONS_LOG.md` D1-D14.
+
+## Acceptance
+
+| ID | Status |
+|---|---|
+| A1 | Source, release and shapefile hashes match and are unchanged after the run; runtime, the single local patch and output lineage recorded. |
+| A2 | R1 order, fill, bounds, sum and normalization reproduce 42,695 / 15,206 / 27,489 / 6,227 / 84 / 2,601 with reconciled exclusions; the five normalized components are preserved. |
+| A3 | `origin == target - horizon` on all 170,780 feature rows and all 81,109 predictions; Stage 3 training is exactly 36 calendar months ending at the origin; every origin >= 2023-01. |
+| A4 | One pooled Stage 1, no Stage 2; released F1/q mathematics untouched; split reproduces 19,591 / 3,264 / 8,561 / 9,558 / 1,472 / 1,491; Q8g stop honored and its narrow extension recorded; donor distances <= 100 km with no chaining. |
+| A5 | `E_persist` is the history-available subset of `E_all`, verified against the R1 ledger rather than the runner's column; arms share identical keys; missing persistence and fallback counts explicit. |
+| A6 | Saved rows reproduce metrics, deltas and intervals; `p1 > .5` with ties to 0; XGB parameters verified from the booster; no outcome-driven retuning. |
+| A7 | All specified comparisons reported, including the negative ones; no winning-model claim. |
+| A8 | 70 raw + 15 derived + 2 calendar + 3 history + 2 recency + 1 horizon = 93; train-only RF fills; XGB native NaN. |
+
+122 contract checks pass under the pinned Windows runtime.
+
+## Known gaps, deliberately not closed
+
+- GitNexus MCP tools were unavailable in every agent session; blast radius was
+  established by explicit caller search instead, and that limitation is recorded rather
+  than papered over.
+- Three run directories from development remain under the ignored `runs/`; `…20260920a`
+  is preserved failure/dev evidence per design.md.
+- PRD R2's original prohibition text is intentionally left unedited beside its amendment,
+  so the original requirement and the approved narrowing are both visible.
+
+## Next
+
+Relaxing the 0.01 gate, parameter tuning and feature engineering are out of scope here and
+need a new task with fresh pre-registration (`DECISIONS_LOG.md` D14). The rejected split's
+margin is 0.007434, so any relaxed threshold must be declared before the run.
