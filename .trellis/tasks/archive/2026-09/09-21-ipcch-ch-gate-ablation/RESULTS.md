@@ -75,8 +75,15 @@ a factorial rather than the single double-change cell originally proposed.
 ### 3. CH is a genuinely different and harder regime — and separating it does not help
 
 Every arm loses roughly 0.13 F1 on CH-only against non-CH, persistence included
-(0.6045 vs 0.6897). The base rates measured before running confirm the asymmetry: CH
-crisis rate 0.137 against 0.621 for the rest, across 42.5% of labeled rows.
+(0.6045 vs 0.6897). The base rates confirm the asymmetry: on the authoritative valid
+ledger, CH crisis rate **0.1320** against **0.5252** for the rest — a 4.0x gap across
+43.0% of valid rows (18,359 of 42,695).
+
+**Correction.** The planning note and the first version of this section quoted 0.137
+and 0.621, taken from a raw-source approximation (`overall_phase` non-null). The
+non-CH figure was materially wrong: the authoritative rate is 0.5252, not 0.621, and
+the gap is 4.0x rather than 4.5x. The direction and order of magnitude stand; the
+number quoted did not.
 
 So the hypothesis that CH is too heterogeneous to pool is **supported as a description
 of the data** and **not supported as an explanation of the modelling failure**. Pulling
@@ -127,3 +134,52 @@ Per cell, under `IPCCHGeoRFExperiment/runs/abl-C*/`:
 
 Cohort counts reconcile exactly to the audited source totals:
 24,336 + 18,359 = 42,695 valid rows, and 4,919 + 1,308 = 6,227 areas.
+
+## R5 same-key reference (added after the completion audit flagged it missing)
+
+The PRD required recomputing the prior baseline's metrics on the non-CH key subset of
+its **existing stored predictions**, as the only way to separate "dropping CH improved
+the model" from "dropping CH swapped in an easier cohort". The first version of this
+report argued that separation from the fact that persistence rose too. That is
+suggestive, not the required reference. The audit was right to call it: the reference
+is computed here.
+
+The key sets are **identical** — 42,725 main-period non-CH keys, with zero keys unique
+to either side — so this is a strict same-key comparison.
+
+Class-1 F1 on those 42,725 keys, prior all-cohort model versus models trained on
+non-CH only:
+
+| arm | h | prior (all-cohort) | C3 (0.010) | C4 (0.005) | C3 − prior | C4 − prior |
+|---|---|---|---|---|---|---|
+| partitioned_rf | 1 | 0.6902 | 0.6897 | 0.6793 | −0.0005 | −0.0109 |
+| partitioned_rf | 3 | 0.6731 | 0.6353 | 0.6461 | −0.0379 | −0.0270 |
+| partitioned_rf | 6 | 0.6725 | 0.6766 | 0.6828 | +0.0041 | +0.0103 |
+| partitioned_rf | 12 | 0.6684 | 0.6640 | 0.6678 | −0.0044 | −0.0006 |
+| **partitioned_rf** | **mean** | **0.6761** | **0.6664** | **0.6690** | **−0.0097** | **−0.0071** |
+| pooled_rf | mean | 0.6720 | 0.6750 | 0.6750 | +0.0031 | +0.0031 |
+| xgb | mean | 0.6919 | 0.6869 | 0.6869 | −0.0050 | −0.0050 |
+
+**Removing CH from training does essentially nothing on the same keys, and for
+partitioned RF and XGB it is slightly negative.** The apparent lift in the headline
+table (0.6567 → 0.6628 for partitioned RF) was entirely the cohort being easier, not
+the model being better. The conclusion in finding 2 is unchanged; it now rests on the
+reference the design called for instead of an inference.
+
+## Outstanding audit findings not addressed
+
+The completion audit (`b0945b25`) raised five findings. Two are fixed above. The other
+three are evidence and process gaps that do not change any number reported here, and
+are left open because the task is closed:
+
+* **major** — default-gate cells (C1, C3, C5) record no consuming-module readback. The
+  override path verifies all three namespaces, but the default path was never
+  instrumented, so there is no run-bound proof those cells gated at 0.01. A2 asked for
+  every cell. Their zero-split outcomes are consistent with 0.01 but not evidence of it.
+* **major** — `REPORTED_CONFIG_KEYS` is recorded per cell but never compared against
+  C1 to fail settings drift, which R2 required. The values were inspected manually and
+  agree; the automated gate does not exist.
+* **minor** — R6's candidate split evaluation counts (how many splits were considered
+  versus cleared) are not published, so "the 0.01 gate rejected splits worth rejecting"
+  rests on the accepted-split counts and the accuracy deltas rather than on the
+  rejected candidates' own margins.
