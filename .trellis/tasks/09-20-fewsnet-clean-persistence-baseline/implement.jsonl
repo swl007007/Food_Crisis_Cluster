@@ -1,0 +1,6 @@
+{"file": ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/research/context-index.md", "reason": "Required full-read instructions for oversized final requirements and source/time contracts; prevents silent injection truncation."}
+{"file": ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/design.md", "reason": "Executable approved flow and source/time/model boundaries."}
+{"file": ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/research/reuse-and-boundaries.md", "reason": "Existing reusable helpers, protected boundaries and historical correction algorithms."}
+{"file": ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/research/target-label-contract.md", "reason": "Pinned target/observed-history evidence and D63 validation."}
+{"file": ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/research/monthly-source-validation.md", "reason": "WB ties, new source provenance and retained all-missing imputation."}
+{"file": ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/research/runtime-and-preflight.md", "reason": "Released parameter/runtime identities and static/annual source checks."}

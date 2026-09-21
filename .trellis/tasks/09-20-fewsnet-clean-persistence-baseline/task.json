@@ -1,0 +1,30 @@
+{
+  "id": "fewsnet-clean-persistence-baseline",
+  "name": "fewsnet-clean-persistence-baseline",
+  "title": "FEWS NET clean baseline and final feature-engineering trial",
+  "description": "Plan an isolated full three-stage FEWS NET persistence-correction baseline with true F1 and no SMOTE, followed by a bounded final feature-engineering trial and a predefined stop or fallback decision.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "swl007007",
+  "assignee": "swl007007",
+  "createdAt": "2026-09-20",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/prd.md",
+    ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/design.md",
+    ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/implement.md"
+  ],
+  "notes": "D1-D64 resolved; approved planning artifacts complete. User authorized audit enrollment/start and planning commit; see audit-handoff.md. Implementation and experiments await separate instructions to the bound Opus 5 executor. Do not close before A1-A64 and committed reproduction evidence.",
+  "meta": {}
+}
