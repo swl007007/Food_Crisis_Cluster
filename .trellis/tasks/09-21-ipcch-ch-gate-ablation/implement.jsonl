@@ -1,0 +1,4 @@
+{"file": "IPCCHGeoRFExperiment/run_pipeline.py", "reason": "Pipeline entry point; REPORTED_CONFIG_KEYS readback and the isolated import scope where the gate override must be applied"}
+{"file": "IPCCHGeoRFExperiment/prepare_data.py", "reason": "Target ledger construction and check_target_gate; the cohort filter must be applied after this gate passes"}
+{"file": "GeoRFBaseline/src/partition/transformation.py", "reason": "Consumes MIN_CLASS_1_IMPROVEMENT_THRESHOLD at :720 via from-config-import-star at :13; one of three namespaces to patch"}
+{"file": "GeoRFBaseline/src/tests/sig_test.py", "reason": "Consumes the same gate at :30 via its own from-config-import-star at :12; re-exported into transformation.py at :17"}
