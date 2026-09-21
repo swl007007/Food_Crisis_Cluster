@@ -1,5 +1,24 @@
 # Audit enrollment and executor handoff — 2026-09-20
 
+## Verified setup result
+
+- Active controller run: `64f1a4b6ddee4510af2653cd01de65e5`.
+- Frozen base: `44ac32e2bc1cee9879d28f1fa2f3c0f13a2f4b0c` (approved plan).
+- Controller running; run phase `active`; Trellis status `in_progress`.
+- No completion audit job yet; implementation remains unstarted.
+- Exact registered root (required for subsequent wrapper commands):
+  `/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster`.
+
+The first start failed because the executor's mixed-case path did not match the
+controller's repository key. Both paths were verified as the same directory;
+explicit `--repo` using the registered spelling succeeded with the original
+verified executor identity. No identity replacement or controller bypass occurred.
+For completion, use this exact command from the bound executor:
+
+```sh
+trellis-audit --repo '/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster' close
+```
+
 ## Authorization update
 
 After design closure the user authorized pre-implementation audit registration,
