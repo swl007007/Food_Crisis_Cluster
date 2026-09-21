@@ -1,0 +1,527 @@
+column,index,all_missing_in_fitting_rows,min,max,fill_value,fill_rule
+lat,0,False,-26.66055672814686,38.22374755974924,3822.374755974924,max*100
+lon,1,False,-92.18212153785024,73.33798817378396,7333.798817378395,max*100
+distance_to_nearest_acled,2,False,0.1741415069866578,499.9832691442765,49998.32691442765,max*100
+event_count_battles,3,False,0.0,28.0,2800.0,max*100
+event_count_explosions,4,False,0.0,11.0,1100.0,max*100
+event_count_violence,5,False,0.0,21.0,2100.0,max*100
+sum_fatalities_battles,6,False,0.0,333.0,33300.0,max*100
+sum_fatalities_explosions,7,False,0.0,92.0,9200.0,max*100
+sum_fatalities_violence,8,False,0.0,265.0,26500.0,max*100
+event_count_battles_w5,9,False,0.0,68.0,6800.0,max*100
+event_count_explosions_w5,10,False,0.0,15.0,1500.0,max*100
+event_count_violence_w5,11,False,0.0,42.0,4200.0,max*100
+sum_fatalities_battles_w5,12,False,0.0,424.0,42400.0,max*100
+sum_fatalities_explosions_w5,13,False,0.0,161.0,16100.0,max*100
+sum_fatalities_violence_w5,14,False,0.0,265.0,26500.0,max*100
+event_count_battles_w10,15,False,0.0,70.0,7000.0,max*100
+event_count_explosions_w10,16,False,0.0,55.0,5500.0,max*100
+event_count_violence_w10,17,False,0.0,43.0,4300.0,max*100
+sum_fatalities_battles_w10,18,False,0.0,451.0,45100.0,max*100
+sum_fatalities_explosions_w10,19,False,0.0,527.0,52700.0,max*100
+sum_fatalities_violence_w10,20,False,0.0,285.0,28500.0,max*100
+AEZ_10000,21,False,0.0,1.0,100.0,max*100
+AEZ_12000,22,False,0.0,1.0,100.0,max*100
+AEZ_15000,23,False,0.0,1.0,100.0,max*100
+AEZ_17000,24,False,0.0,1.0,100.0,max*100
+AEZ_19000,25,False,0.0,1.0,100.0,max*100
+AEZ_25000,26,False,0.0,1.0,100.0,max*100
+AEZ_31000,27,False,0.0,1.0,100.0,max*100
+AEZ_32000,28,False,0.0,1.0,100.0,max*100
+AEZ_33000,29,False,0.0,1.0,100.0,max*100
+AEZ_34000,30,False,0.0,1.0,100.0,max*100
+AEZ_36000,31,False,0.0,1.0,100.0,max*100
+AEZ_38000,32,False,0.0,1.0,100.0,max*100
+AEZ_4000,33,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_40000,34,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_43000,35,False,0.0,1.0,100.0,max*100
+AEZ_7000,36,False,0.0,1.0,100.0,max*100
+AEZ_9000,37,False,0.0,1.0,100.0,max*100
+crop,38,False,0.0,200.0,20000.0,max*100
+range,39,False,0.0,200.0,20000.0,max*100
+distance_to_river,40,False,0.0,6420.1,642010.0,max*100
+nightlight,41,False,0.0,34.8843917847,3488.43917847,max*100
+nightlight_sd,42,False,0.0,65.9114724477,6591.147244770001,max*100
+elevation,43,False,-1.0,4670.0,467000.0,max*100
+EVI,44,False,0.0,7091.94162826,709194.162826,max*100
+market_distance,45,False,0.2554392647453413,476.7448674555752,47674.48674555752,max*100
+Rainf_f_tavg_mean,46,False,0.0,0.000279433472315,0.0279433472315,max*100
+Tair_f_tavg_mean,47,False,256.692248951,309.757154112,30975.715411200003,max*100
+gpp_mean,48,False,0.0,65535.0,6553500.0,max*100
+sg_cec_5-15cm,49,False,25.0,697.0,69700.0,max*100
+sg_cfvo_5-15cm,50,False,3.0,682.0,68200.0,max*100
+sg_nitrogen_5-15cm,51,False,212.0,10921.0,1092100.0,max*100
+sg_phh2o_5-15cm,52,False,48.0,91.0,9100.0,max*100
+sg_soc_5-15cm,53,False,2.0,1042.0,104200.0,max*100
+market_access,54,False,0.0,4651.0,465100.0,max*100
+ruggedness,55,False,0.0001748863238894,1.0,100.0,max*100
+slope,56,False,0.0,1.0,100.0,max*100
+CPI,57,False,-0.93028726,46.85217572,4685.217572,max*100
+GDP,58,False,951.1884604,10557.23442,1055723.442,max*100
+CC,59,False,0.0,41.23222733,4123.2227330000005,max*100
+gini,60,False,0.314517146383,0.539562736705,53.956273670499996,max*100
+pop,61,False,0.0,11419270.8,1141927080.0,max*100
+Food_CPI,62,False,57.317476,108.65812,10865.812,max*100
+Food_food_inflation,63,False,-17.767866,64.285457,6428.5457,max*100
+nino34_anom,64,False,-0.62,1.18,118.0,max*100
+food_price_index_WB,65,False,0.025,2.755,275.5,max*100
+food_inflation_wb,66,False,-44.35,121.21,12121.0,max*100
+coastline_dist,67,False,-1718.0,2.0,200.0,max*100
+bbg_GCFPURGB,68,False,305.25,424.375,42437.5,max*100
+bbg_GCFPDANO,69,False,334.375,487.875,48787.5,max*100
+bbg_GCFPPOBA,70,False,268.5,293.5,29350.0,max*100
+bbg_GCFPURBS,71,False,289.5,415.625,41562.5,max*100
+bbg_GCFPAMME,72,False,400.0,702.5,70250.0,max*100
+bbg_GCFPAMBS,73,False,388.0,630.0,63000.0,max*100
+bbg_GCFPURMG,74,False,304.0,440.625,44062.5,max*100
+bbg_GCFPDAIN,75,False,485.0,485.0,48500.0,max*100
+bbg_NGUSHHUB,76,False,2.7692318181818183,5.9842157894736845,598.4215789473684,max*100
+bbg_TZTX2_Comdty,77,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_oilgas_CL1_COMB_Comdty_price,78,False,50.72473684210527,106.53863636363636,10653.863636363636,max*100
+bbg_oilgas_NG1_Comdty_price,79,False,2.753263157894737,5.146263157894737,514.6263157894737,max*100
+bbg_staple_food_corn_x1_price,80,False,358.98809523809524,740.0,74000.0,max*100
+bbg_staple_food_hard_wheat_x1_price,81,False,530.1931818181819,900.3928571428571,90039.28571428571,max*100
+bbg_staple_food_rough_rice_x1_price,82,False,9.858181818181816,15.808684210526316,1580.8684210526317,max*100
+bbg_staple_food_soft_wheat_x1_price,83,False,517.5657894736842,861.4880952380952,86148.80952380951,max*100
+bbg_staple_food_soybeans_x1_price,84,False,965.056818181818,1480.0357142857142,148003.57142857142,max*100
+bbg_soybean_oil_futures_last_price,85,False,0.316578947368421,0.5134578947368421,51.34578947368421,max*100
+target_month_sin,86,False,-1.0,1.0,100.0,max*100
+target_month_cos,87,False,-1.0,1.0,100.0,max*100
+last_observed_ipc_phase,88,False,1.0,4.0,400.0,max*100
+last_observed_crisis,89,False,0.0,1.0,100.0,max*100
+last_observed_ipc_age_months,90,False,1.0,2.0,200.0,max*100
+months_since_last_observed_crisis,91,False,1.0,68.0,6800.0,max*100
+no_observed_ipc_history,92,False,0.0,1.0,100.0,max*100
+no_prior_observed_crisis,93,False,0.0,1.0,100.0,max*100
+Rainf_f_tavg_mean_mean_3m,94,False,0.0,0.00022564484000533333,0.022564484000533333,max*100
+Rainf_f_tavg_mean_sd_3m,95,False,0.0,0.0001060294790376412,0.01060294790376412,max*100
+Rainf_f_tavg_mean_mean_6m,96,False,0.0,0.00021123351568050003,0.02112335156805,max*100
+Rainf_f_tavg_mean_sd_6m,97,False,0.0,0.00012043692152501099,0.012043692152501098,max*100
+Rainf_f_tavg_mean_mean_12m,98,False,0.0,0.00014071431271157748,0.014071431271157748,max*100
+Rainf_f_tavg_mean_sd_12m,99,False,0.0,0.00010272883570431662,0.010272883570431662,max*100
+Tair_f_tavg_mean_mean_3m,100,False,256.489445773,309.54949500666663,30954.949500666662,max*100
+Tair_f_tavg_mean_sd_3m,101,False,0.0,7.333840194814557,733.3840194814557,max*100
+Tair_f_tavg_mean_mean_6m,102,False,261.52977089150005,307.390738609,30739.073860899996,max*100
+Tair_f_tavg_mean_sd_6m,103,False,0.0,9.822850416652038,982.2850416652038,max*100
+Tair_f_tavg_mean_mean_12m,104,False,262.55262565600003,307.01252238,30701.252238,max*100
+Tair_f_tavg_mean_sd_12m,105,False,0.0,11.168765152325612,1116.8765152325611,max*100
+EVI_mean_3m,106,False,0.0,6462.5,646250.0,max*100
+EVI_sd_3m,107,False,0.0,1920.9521140063734,192095.21140063734,max*100
+EVI_mean_6m,108,False,0.0,6229.083333333333,622908.3333333333,max*100
+EVI_sd_6m,109,False,0.0,2034.1679934856845,203416.79934856846,max*100
+EVI_mean_12m,110,False,0.0,5864.199940582501,586419.9940582501,max*100
+EVI_sd_12m,111,False,0.0,1899.558939002809,189955.8939002809,max*100
+gpp_mean_mean_3m,112,False,0.0,65535.0,6553500.0,max*100
+gpp_mean_sd_3m,113,False,0.0,13985.837860731357,1398583.7860731357,max*100
+gpp_mean_mean_6m,114,False,1.1736111111119834,65535.0,6553500.0,max*100
+gpp_mean_sd_6m,115,False,0.0,14295.152000035501,1429515.2000035502,max*100
+gpp_mean_mean_12m,116,False,30.68088414969817,65535.0,6553500.0,max*100
+gpp_mean_sd_12m,117,False,0.0,13390.986344882664,1339098.6344882664,max*100
+nightlight_mean_3m,118,False,0.0,34.94437726336667,3494.437726336667,max*100
+nightlight_sd_3m,119,False,0.0,6.937012184827193,693.7012184827192,max*100
+nightlight_mean_6m,120,False,0.0,35.97523657479999,3597.523657479999,max*100
+nightlight_sd_6m,121,False,0.0,6.424921018010868,642.4921018010867,max*100
+nightlight_mean_12m,122,False,0.0,33.289651870725,3328.9651870725,max*100
+nightlight_sd_12m,123,False,0.0,11.68105403673264,1168.105403673264,max*100
+Food_CPI_mean_3m,124,False,56.74690833333333,108.540905,10854.0905,max*100
+Food_CPI_sd_3m,125,False,0.033618232368094206,12.744860544134886,1274.4860544134885,max*100
+Food_CPI_mean_6m,126,False,53.20295266666667,108.0134385,10801.343850000001,max*100
+Food_CPI_sd_6m,127,False,0.051728155448835474,14.118449384663911,1411.844938466391,max*100
+Food_CPI_mean_12m,128,False,49.751574500000004,107.2222385,10722.22385,max*100
+Food_CPI_sd_12m,129,False,0.4667088571656738,12.382315598783046,1238.2315598783046,max*100
+Food_food_inflation_mean_3m,130,False,-14.308875,46.81369433333333,4681.369433333333,max*100
+Food_food_inflation_sd_3m,131,False,0.012391475241740429,17.85191293406889,1785.191293406889,max*100
+Food_food_inflation_mean_6m,132,False,-11.400826333333333,47.40039483333334,4740.039483333334,max*100
+Food_food_inflation_sd_6m,133,False,0.0673620483640866,23.460490458471106,2346.049045847111,max*100
+Food_food_inflation_mean_12m,134,False,-6.389212583333332,49.09669658333333,4909.669658333333,max*100
+Food_food_inflation_sd_12m,135,False,0.1879692081762773,23.722677138588313,2372.2677138588315,max*100
+nino34_anom_mean_3m,136,False,-0.43333333333333335,0.9333333333333332,93.33333333333333,max*100
+nino34_anom_sd_3m,137,False,0.016996731711975938,0.24657656011875906,24.657656011875908,max*100
+nino34_anom_mean_6m,138,False,-0.3666666666666667,0.6999999999999998,69.99999999999999,max*100
+nino34_anom_sd_6m,139,False,0.07057305119913376,0.36736297521056144,36.736297521056144,max*100
+nino34_anom_mean_12m,140,False,-0.32583333333333336,0.525,52.5,max*100
+nino34_anom_sd_12m,141,False,0.12572843309645154,0.5048617797641912,50.48617797641912,max*100
+food_price_index_WB_mean_3m,142,False,0.028333333333333332,2.4466666666666668,244.66666666666669,max*100
+food_price_index_WB_sd_3m,143,False,0.0,0.5390165942611498,53.901659426114975,max*100
+food_price_index_WB_mean_6m,144,False,0.028333333333333332,2.4341666666666666,243.41666666666666,max*100
+food_price_index_WB_sd_6m,145,False,0.0,0.6284615253847199,62.84615253847199,max*100
+food_price_index_WB_mean_12m,146,False,0.029166666666666674,2.2983333333333333,229.83333333333334,max*100
+food_price_index_WB_sd_12m,147,False,6.938893903907228e-18,0.5954217692806784,59.54217692806784,max*100
+food_inflation_wb_mean_3m,148,False,-42.07333333333333,124.18,12418.0,max*100
+food_inflation_wb_sd_3m,149,False,0.014142135623731487,72.77958001161224,7277.958001161224,max*100
+food_inflation_wb_mean_6m,150,False,-36.97833333333333,158.215,15821.5,max*100
+food_inflation_wb_sd_6m,151,False,0.116963907063485,65.30464006400226,6530.464006400226,max*100
+food_inflation_wb_mean_12m,152,False,-31.40666666666667,150.16833333333332,15016.833333333332,max*100
+food_inflation_wb_sd_12m,153,False,0.3070513891119132,72.42894211263585,7242.894211263585,max*100
+bbg_GCFPURGB_mean_3m,154,False,294.85833333333335,417.98333333333335,41798.333333333336,max*100
+bbg_GCFPURGB_sd_3m,155,False,8.317309594387412,33.809720824375674,3380.972082437567,max*100
+bbg_GCFPURGB_mean_6m,156,False,305.1875,437.5208333333333,43752.08333333333,max*100
+bbg_GCFPURGB_sd_6m,157,False,12.962730363323246,45.51298750082223,4551.298750082223,max*100
+bbg_GCFPURGB_mean_12m,158,False,324.61875000000003,478.5208333333333,47852.08333333333,max*100
+bbg_GCFPURGB_sd_12m,159,False,23.31995552141627,96.55199221414767,9655.199221414767,max*100
+bbg_GCFPDANO_mean_3m,160,False,359.72499999999997,472.7916666666667,47279.16666666667,max*100
+bbg_GCFPDANO_sd_3m,161,False,4.552336260877341,49.04727736242519,4904.727736242519,max*100
+bbg_GCFPDANO_mean_6m,162,False,380.9875,458.50972222222225,45850.972222222226,max*100
+bbg_GCFPDANO_sd_6m,163,False,12.955067414004022,51.83464377362778,5183.464377362779,max*100
+bbg_GCFPDANO_mean_12m,164,False,405.8729166666667,442.2375,44223.75,max*100
+bbg_GCFPDANO_sd_12m,165,False,13.462196418930867,50.919843523028646,5091.984352302865,max*100
+bbg_GCFPPOBA_mean_3m,166,False,268.5,289.4166666666667,28941.666666666668,max*100
+bbg_GCFPPOBA_sd_3m,167,False,0.0,11.313708498984761,1131.370849898476,max*100
+bbg_GCFPPOBA_mean_6m,168,False,268.5,279.39166666666665,27939.166666666664,max*100
+bbg_GCFPPOBA_sd_6m,169,False,0.0,10.685286482926985,1068.5286482926986,max*100
+bbg_GCFPPOBA_mean_12m,170,False,270.5,273.9458333333333,27394.583333333332,max*100
+bbg_GCFPPOBA_sd_12m,171,False,6.6332495807108,9.313687470897634,931.3687470897634,max*100
+bbg_GCFPURBS_mean_3m,172,False,271.5,391.3194444444445,39131.94444444445,max*100
+bbg_GCFPURBS_sd_3m,173,False,0.0,18.90216037035626,1890.216037035626,max*100
+bbg_GCFPURBS_mean_6m,174,False,286.6666666666667,382.6180555555556,38261.80555555556,max*100
+bbg_GCFPURBS_sd_6m,175,False,5.1243224484370185,31.125313753438697,3112.5313753438695,max*100
+bbg_GCFPURBS_mean_12m,176,False,299.7395833333333,345.8506944444445,34585.06944444445,max*100
+bbg_GCFPURBS_sd_12m,177,False,6.757799955832931,39.78384688409829,3978.384688409829,max*100
+bbg_GCFPAMME_mean_3m,178,False,390.1666666666667,658.125,65812.5,max*100
+bbg_GCFPAMME_sd_3m,179,False,4.714045207910317,62.755726830306095,6275.572683030609,max*100
+bbg_GCFPAMME_mean_6m,180,False,433.4166666666667,602.7291666666666,60272.916666666664,max*100
+bbg_GCFPAMME_sd_6m,181,False,16.873713942763825,71.10989209295865,7110.989209295864,max*100
+bbg_GCFPAMME_mean_12m,182,False,457.9791666666667,526.5,52650.0,max*100
+bbg_GCFPAMME_sd_12m,183,False,33.07477849090183,98.24946270969149,9824.946270969149,max*100
+bbg_GCFPAMBS_mean_3m,184,False,391.4166666666667,592.5,59250.0,max*100
+bbg_GCFPAMBS_sd_3m,185,False,3.5138614403846695,62.76886613246695,6276.886613246695,max*100
+bbg_GCFPAMBS_mean_6m,186,False,406.875,558.8333333333334,55883.333333333336,max*100
+bbg_GCFPAMBS_sd_6m,187,False,17.802445992990215,65.73469667703823,6573.469667703823,max*100
+bbg_GCFPAMBS_mean_12m,188,False,437.09375,494.3958333333333,49439.58333333333,max*100
+bbg_GCFPAMBS_sd_12m,189,False,39.55901116791639,72.85285600765575,7285.285600765575,max*100
+bbg_GCFPURMG_mean_3m,190,False,289.4583333333333,416.0416666666667,41604.16666666667,max*100
+bbg_GCFPURMG_sd_3m,191,False,0.0,26.804915075825594,2680.4915075825593,max*100
+bbg_GCFPURMG_mean_6m,192,False,316.8125,403.1666666666667,40316.66666666667,max*100
+bbg_GCFPURMG_sd_6m,193,False,0.372677996249965,40.601194948548006,4060.1194948548005,max*100
+bbg_GCFPURMG_mean_12m,194,False,336.5208333333333,361.2916666666667,36129.16666666667,max*100
+bbg_GCFPURMG_sd_12m,195,False,25.550492969260343,46.59545347694582,4659.545347694582,max*100
+bbg_GCFPDAIN_mean_3m,196,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_sd_3m,197,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_mean_6m,198,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_sd_6m,199,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_mean_12m,200,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_sd_12m,201,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_NGUSHHUB_mean_3m,202,False,2.7290144155844156,4.974825898078529,497.4825898078529,max*100
+bbg_NGUSHHUB_sd_3m,203,False,0.004533986176324959,0.7389168915716102,73.89168915716103,max*100
+bbg_NGUSHHUB_mean_6m,204,False,2.8016066575529734,4.833597869674185,483.35978696741853,max*100
+bbg_NGUSHHUB_sd_6m,205,False,0.11738277838059667,0.8491238405504887,84.91238405504888,max*100
+bbg_NGUSHHUB_mean_12m,206,False,2.7378300411437024,4.43855235804432,443.855235804432,max*100
+bbg_NGUSHHUB_sd_12m,207,False,0.2637144203663359,0.7209631074598611,72.09631074598612,max*100
+bbg_TZTX2_Comdty_mean_3m,208,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_sd_3m,209,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_mean_6m,210,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_sd_6m,211,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_mean_12m,212,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_sd_12m,213,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_oilgas_CL1_COMB_Comdty_price_mean_3m,214,False,52.44659409888357,102.34592424242423,10234.592424242423,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_sd_3m,215,False,0.6698644395300809,7.031894083985816,703.1894083985816,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_mean_6m,216,False,53.288843225487966,101.32554112554112,10132.554112554113,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_sd_6m,217,False,2.43036200255193,17.104382196788347,1710.4382196788347,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_mean_12m,218,False,69.22283580121253,100.46013903252862,10046.013903252862,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_sd_12m,219,False,3.6766152155887006,20.510691236245865,2051.0691236245866,max*100
+bbg_oilgas_NG1_Comdty_price_mean_3m,220,False,2.739642207792208,4.656357560568087,465.6357560568087,max*100
+bbg_oilgas_NG1_Comdty_price_sd_3m,221,False,0.015743354218793172,0.3639623857931189,36.39623857931189,max*100
+bbg_oilgas_NG1_Comdty_price_mean_6m,222,False,2.774912690817954,4.599464494569758,459.94644945697576,max*100
+bbg_oilgas_NG1_Comdty_price_sd_6m,223,False,0.10394728216164299,0.5691921834612644,56.91921834612644,max*100
+bbg_oilgas_NG1_Comdty_price_mean_12m,224,False,2.812380547795708,4.340589166427267,434.05891664272673,max*100
+bbg_oilgas_NG1_Comdty_price_sd_12m,225,False,0.25477705157286407,0.5960432612259619,59.604326122596184,max*100
+bbg_staple_food_corn_x1_price_mean_3m,226,False,353.72154117177,751.1184210526316,75111.84210526316,max*100
+bbg_staple_food_corn_x1_price_sd_3m,227,False,5.609571400768542,76.65975993525574,7665.975993525573,max*100
+bbg_staple_food_corn_x1_price_mean_6m,228,False,372.3519089431418,736.6325369583379,73663.25369583379,max*100
+bbg_staple_food_corn_x1_price_sd_6m,229,False,10.687980935095576,81.52973080148537,8152.9730801485375,max*100
+bbg_staple_food_corn_x1_price_mean_12m,230,False,371.4044221844136,714.7848523441344,71478.48523441344,max*100
+bbg_staple_food_corn_x1_price_sd_12m,231,False,17.02119559726196,114.50231385082566,11450.231385082567,max*100
+bbg_staple_food_hard_wheat_x1_price_mean_3m,232,False,526.0054653679654,903.025498528931,90302.5498528931,max*100
+bbg_staple_food_hard_wheat_x1_price_sd_3m,233,False,3.4771222835071622,40.816686683872156,4081.668668387216,max*100
+bbg_staple_food_hard_wheat_x1_price_mean_6m,234,False,542.0260680109365,862.4074652210235,86240.74652210234,max*100
+bbg_staple_food_hard_wheat_x1_price_sd_6m,235,False,19.643661677655473,82.36433092671693,8236.433092671694,max*100
+bbg_staple_food_hard_wheat_x1_price_mean_12m,236,False,578.6532227720157,820.907986523869,82090.7986523869,max*100
+bbg_staple_food_hard_wheat_x1_price_sd_12m,237,False,37.81836311699956,108.96088083067839,10896.08808306784,max*100
+bbg_staple_food_rough_rice_x1_price_mean_3m,238,False,9.914473304473303,15.677227272727272,1567.7227272727273,max*100
+bbg_staple_food_rough_rice_x1_price_sd_3m,239,False,0.01803462814658942,0.726228925265045,72.6228925265045,max*100
+bbg_staple_food_rough_rice_x1_price_mean_6m,240,False,10.380938605984658,15.562776679841896,1556.2776679841895,max*100
+bbg_staple_food_rough_rice_x1_price_sd_6m,241,False,0.08914802343853635,1.0802979386299485,108.02979386299485,max*100
+bbg_staple_food_rough_rice_x1_price_mean_12m,242,False,11.476129011799921,15.51969974342972,1551.9699743429721,max*100
+bbg_staple_food_rough_rice_x1_price_sd_12m,243,False,0.17533261729979854,1.5977303719841034,159.77303719841035,max*100
+bbg_staple_food_soft_wheat_x1_price_mean_3m,244,False,504.1141955266956,871.7174276270385,87171.74276270386,max*100
+bbg_staple_food_soft_wheat_x1_price_sd_3m,245,False,3.271887362605907,38.66031136471235,3866.0311364712347,max*100
+bbg_staple_food_soft_wheat_x1_price_mean_6m,246,False,513.4489338877497,835.9031410046856,83590.31410046856,max*100
+bbg_staple_food_soft_wheat_x1_price_sd_6m,247,False,16.24658736045436,81.04774884333179,8104.774884333179,max*100
+bbg_staple_food_soft_wheat_x1_price_mean_12m,248,False,527.831629303826,787.4770717554755,78747.70717554755,max*100
+bbg_staple_food_soft_wheat_x1_price_sd_12m,249,False,30.452671143721165,115.89312096792669,11589.31209679267,max*100
+bbg_staple_food_soybeans_x1_price_mean_3m,250,False,963.0588203463203,1554.3075351422033,155430.75351422033,max*100
+bbg_staple_food_soybeans_x1_price_sd_3m,251,False,7.32060383805376,138.22720587801146,13822.720587801146,max*100
+bbg_staple_food_soybeans_x1_price_mean_6m,252,False,977.4717147983596,1567.0701754385966,156707.01754385966,max*100
+bbg_staple_food_soybeans_x1_price_sd_6m,253,False,16.522135973852084,166.21923372886266,16621.923372886267,max*100
+bbg_staple_food_soybeans_x1_price_mean_12m,254,False,1015.7241078342266,1502.3590655141643,150235.90655141644,max*100
+bbg_staple_food_soybeans_x1_price_sd_12m,255,False,73.29496272283676,207.92720709394135,20792.720709394136,max*100
+bbg_soybean_oil_futures_last_price_mean_3m,256,False,0.31933586124401914,0.514994911191021,51.4994911191021,max*100
+bbg_soybean_oil_futures_last_price_sd_3m,257,False,0.0019918354803475113,0.02669985663782104,2.669985663782104,max*100
+bbg_soybean_oil_futures_last_price_mean_6m,258,False,0.32026693134351025,0.5191961443463732,51.91961443463732,max*100
+bbg_soybean_oil_futures_last_price_sd_6m,259,False,0.0038392558893831255,0.030167363722857228,3.016736372285723,max*100
+bbg_soybean_oil_futures_last_price_mean_12m,260,False,0.32724541125541123,0.523038481624846,52.3038481624846,max*100
+bbg_soybean_oil_futures_last_price_sd_12m,261,False,0.014823124968559934,0.0420165930359388,4.20165930359388,max*100
+event_count_battles_sum_3m,262,False,0.0,84.0,8400.0,max*100
+event_count_battles_sum_6m,263,False,0.0,168.0,16800.0,max*100
+event_count_battles_sum_12m,264,False,0.0,336.0,33600.0,max*100
+event_count_explosions_sum_3m,265,False,0.0,29.0,2900.0,max*100
+event_count_explosions_sum_6m,266,False,0.0,52.0,5200.0,max*100
+event_count_explosions_sum_12m,267,False,0.0,96.0,9600.0,max*100
+event_count_violence_sum_3m,268,False,0.0,63.0,6300.0,max*100
+event_count_violence_sum_6m,269,False,0.0,126.0,12600.0,max*100
+event_count_violence_sum_12m,270,False,0.0,252.0,25200.0,max*100
+sum_fatalities_battles_sum_3m,271,False,0.0,776.0,77600.0,max*100
+sum_fatalities_battles_sum_6m,272,False,0.0,1100.0,110000.0,max*100
+sum_fatalities_battles_sum_12m,273,False,0.0,1968.0,196800.0,max*100
+sum_fatalities_explosions_sum_3m,274,False,0.0,311.0,31100.0,max*100
+sum_fatalities_explosions_sum_6m,275,False,0.0,561.0,56100.0,max*100
+sum_fatalities_explosions_sum_12m,276,False,0.0,1104.0,110400.0,max*100
+sum_fatalities_violence_sum_3m,277,False,0.0,1047.0,104700.0,max*100
+sum_fatalities_violence_sum_6m,278,False,0.0,1590.0,159000.0,max*100
+sum_fatalities_violence_sum_12m,279,False,0.0,3191.0,319100.0,max*100
+Rainf_f_tavg_mean_chg_3m,280,False,-0.0002132798599634,0.00027080436757401997,0.027080436757401998,max*100
+Rainf_f_tavg_mean_chg_12m,281,False,-0.0001556389188408,0.0001587755793607,0.01587755793607,max*100
+Rainf_f_tavg_mean_zdev_12m,282,False,-3.3166247903554,37.20407839321069,3720.4078393210693,max*100
+Tair_f_tavg_mean_chg_3m,283,False,-22.337959289000025,26.40879821699997,2640.8798216999967,max*100
+Tair_f_tavg_mean_chg_12m,284,False,-7.878204346000018,8.699453081999991,869.9453081999991,max*100
+Tair_f_tavg_mean_zdev_12m,285,False,-3.3166247903553936,4.700868463599164,470.0868463599164,max*100
+EVI_chg_3m,286,False,-3542.25,4942.73430582,494273.43058200006,max*100
+EVI_chg_12m,287,False,-2845.86516854,2469.86588236,246986.58823599998,max*100
+EVI_zdev_12m,288,False,-7.2457004847155275,22.625670569712856,2262.5670569712856,max*100
+gpp_mean_chg_3m,289,False,-29776.0,31431.77777778,3143177.777778,max*100
+gpp_mean_chg_12m,290,False,-18195.800000000003,18057.210526299998,1805721.0526299998,max*100
+gpp_mean_zdev_12m,291,False,-5.40515859769502,7.401683488590298,740.1683488590298,max*100
+nightlight_chg_3m,292,False,-14.36243752087665,14.3071407473866,1430.71407473866,max*100
+nightlight_chg_12m,293,False,-14.128584889996,31.0966311619,3109.66311619,max*100
+nightlight_zdev_12m,294,False,-10.456414975758852,224.35044782133005,22435.044782133005,max*100
+Food_CPI_chg_3m,295,False,-19.191493,34.295646000000005,3429.5646000000006,max*100
+Food_CPI_chg_12m,296,False,-14.282714999999996,41.158316,4115.8315999999995,max*100
+Food_CPI_zdev_12m,297,False,-3.328532106171614,6.867776704850662,686.7776704850662,max*100
+Food_food_inflation_chg_3m,298,False,-31.999615,49.166670999999994,4916.6671,max*100
+Food_food_inflation_chg_12m,299,False,-116.973013,62.396505999999995,6239.6506,max*100
+Food_food_inflation_zdev_12m,300,False,-4.010152455767542,4.787143445107057,478.71434451070576,max*100
+nino34_anom_chg_3m,301,False,-0.68,0.94,94.0,max*100
+nino34_anom_chg_12m,302,False,-0.85,1.3499999999999999,135.0,max*100
+nino34_anom_zdev_12m,303,False,-2.402824268169711,3.4385253148148256,343.8525314814826,max*100
+food_price_index_WB_chg_3m,304,False,-1.295,1.315,131.5,max*100
+food_price_index_WB_chg_12m,305,False,-0.8,1.2599999999999998,125.99999999999997,max*100
+food_price_index_WB_zdev_12m,306,False,-720575940379278.0,720575940379280.0,7.2057594037928e+16,max*100
+food_inflation_wb_chg_3m,307,False,-160.53,91.37,9137.0,max*100
+food_inflation_wb_chg_12m,308,False,-217.5,132.04,13204.0,max*100
+food_inflation_wb_zdev_12m,309,False,-7.800551857518853,14.309809708119692,1430.9809708119692,max*100
+bbg_GCFPURGB_chg_3m,310,False,-91.375,103.5,10350.0,max*100
+bbg_GCFPURGB_chg_12m,311,False,-333.25,42.875,4287.5,max*100
+bbg_GCFPURGB_zdev_12m,312,False,-2.0756520166389043,1.6224016493657138,162.24016493657138,max*100
+bbg_GCFPDANO_chg_3m,313,False,-62.375,127.375,12737.5,max*100
+bbg_GCFPDANO_chg_12m,314,False,-153.5,74.375,7437.5,max*100
+bbg_GCFPDANO_zdev_12m,315,False,-2.605445757836815,1.2806161960571152,128.0616196057115,max*100
+bbg_GCFPPOBA_chg_3m,316,False,-24.0,22.399999999999977,2239.9999999999977,max*100
+bbg_GCFPPOBA_chg_12m,317,False,-24.0,25.0,2500.0,max*100
+bbg_GCFPPOBA_zdev_12m,318,False,-0.4472135954999579,2.971798995318075,297.17989953180745,max*100
+bbg_GCFPURBS_chg_3m,319,False,-57.5,46.25,4625.0,max*100
+bbg_GCFPURBS_chg_12m,320,False,-71.0,12.5,1250.0,max*100
+bbg_GCFPURBS_zdev_12m,321,False,-1.2138439575909636,0.4115457602052651,41.15457602052651,max*100
+bbg_GCFPAMME_chg_3m,322,False,-169.375,148.125,14812.5,max*100
+bbg_GCFPAMME_chg_12m,323,False,-265.0,186.875,18687.5,max*100
+bbg_GCFPAMME_zdev_12m,324,False,-1.3021096387125295,2.717748760839452,271.77487608394523,max*100
+bbg_GCFPAMBS_chg_3m,325,False,-207.5,150.0,15000.0,max*100
+bbg_GCFPAMBS_chg_12m,326,False,-234.375,206.875,20687.5,max*100
+bbg_GCFPAMBS_zdev_12m,327,False,-1.9787741805682062,2.8938949699420737,289.3894969942074,max*100
+bbg_GCFPURMG_chg_3m,328,False,-90.0,82.5,8250.0,max*100
+bbg_GCFPURMG_chg_12m,329,False,-84.375,50.0,5000.0,max*100
+bbg_GCFPURMG_zdev_12m,330,False,-0.9838020760981964,1.1359551842333973,113.59551842333973,max*100
+bbg_GCFPDAIN_chg_3m,331,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_chg_12m,332,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_GCFPDAIN_zdev_12m,333,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_NGUSHHUB_chg_3m,334,False,-1.420015789473684,2.3646210526315796,236.46210526315795,max*100
+bbg_NGUSHHUB_chg_12m,335,False,-3.1364000000000005,2.6510473684210525,265.10473684210524,max*100
+bbg_NGUSHHUB_zdev_12m,336,False,-1.8505332589007222,5.773093800893269,577.309380089327,max*100
+bbg_TZTX2_Comdty_chg_3m,337,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_chg_12m,338,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_TZTX2_Comdty_zdev_12m,339,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_oilgas_CL1_COMB_Comdty_price_chg_3m,340,False,-25.08526315789473,11.974545454545456,1197.4545454545457,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_chg_12m,341,False,-49.950526315789446,12.377766798418975,1237.7766798418975,max*100
+bbg_oilgas_CL1_COMB_Comdty_price_zdev_12m,342,False,-4.028942032405975,2.945257622580762,294.52576225807616,max*100
+bbg_oilgas_NG1_Comdty_price_chg_3m,343,False,-1.4876315789473686,1.5042131578947369,150.42131578947368,max*100
+bbg_oilgas_NG1_Comdty_price_chg_12m,344,False,-2.393,1.8305263157894736,183.05263157894734,max*100
+bbg_oilgas_NG1_Comdty_price_zdev_12m,345,False,-2.4605598436531446,3.770560864712069,377.0560864712069,max*100
+bbg_staple_food_corn_x1_price_chg_3m,346,False,-168.50000000000006,42.852130325814585,4285.213032581459,max*100
+bbg_staple_food_corn_x1_price_chg_12m,347,False,-320.93725296442693,113.0,11300.0,max*100
+bbg_staple_food_corn_x1_price_zdev_12m,348,False,-3.188101172974088,0.9564153960064928,95.64153960064928,max*100
+bbg_staple_food_hard_wheat_x1_price_chg_3m,349,False,-161.2380952380953,118.59711779448628,11859.711779448628,max*100
+bbg_staple_food_hard_wheat_x1_price_chg_12m,350,False,-192.7053571428571,213.1428571428571,21314.28571428571,max*100
+bbg_staple_food_hard_wheat_x1_price_zdev_12m,351,False,-1.7203237353582188,2.0260151101108863,202.60151101108863,max*100
+bbg_staple_food_rough_rice_x1_price_chg_3m,352,False,-2.515476190476189,0.7991604010025064,79.91604010025064,max*100
+bbg_staple_food_rough_rice_x1_price_chg_12m,353,False,-5.0836842105263145,1.7524342105263155,175.24342105263156,max*100
+bbg_staple_food_rough_rice_x1_price_zdev_12m,354,False,-3.5910352388217923,1.8805017284617611,188.0501728461761,max*100
+bbg_staple_food_soft_wheat_x1_price_chg_3m,355,False,-140.3690476190476,90.72932330827064,9072.932330827063,max*100
+bbg_staple_food_soft_wheat_x1_price_chg_12m,356,False,-235.6783596837945,249.0,24900.0,max*100
+bbg_staple_food_soft_wheat_x1_price_zdev_12m,357,False,-1.8996152871753,1.2891867337213645,128.91867337213645,max*100
+bbg_staple_food_soybeans_x1_price_chg_3m,358,False,-377.6309523809523,128.14097744360902,12814.0977443609,max*100
+bbg_staple_food_soybeans_x1_price_chg_12m,359,False,-471.8122294372297,277.3809523809523,27738.09523809523,max*100
+bbg_staple_food_soybeans_x1_price_zdev_12m,360,False,-3.0963846145816167,1.3190199188652376,131.90199188652377,max*100
+bbg_soybean_oil_futures_last_price_chg_3m,361,False,-0.06712380952380959,0.027315037593985014,2.7315037593985014,max*100
+bbg_soybean_oil_futures_last_price_chg_12m,362,False,-0.11717368421052632,-0.017347105263157858,-1.7347105263157858,max*100
+bbg_soybean_oil_futures_last_price_zdev_12m,363,False,-3.694337711432192,0.10314406736243631,10.314406736243631,max*100
+event_count_battles_chg_3m,364,False,-12.0,11.0,1100.0,max*100
+event_count_battles_chg_12m,365,False,-12.0,12.0,1200.0,max*100
+event_count_battles_zdev_12m,366,False,-3.9196474795109273,26.38560213449752,2638.560213449752,max*100
+event_count_explosions_chg_3m,367,False,-14.0,7.0,700.0,max*100
+event_count_explosions_chg_12m,368,False,-12.0,9.0,900.0,max*100
+event_count_explosions_zdev_12m,369,False,-3.3166247903554,18.33575741549828,1833.5757415498279,max*100
+event_count_violence_chg_3m,370,False,-12.0,12.0,1200.0,max*100
+event_count_violence_chg_12m,371,False,-12.0,13.0,1300.0,max*100
+event_count_violence_zdev_12m,372,False,-3.9196474795109273,32.64659247149693,3264.659247149693,max*100
+sum_fatalities_battles_chg_3m,373,False,-191.0,302.0,30200.0,max*100
+sum_fatalities_battles_chg_12m,374,False,-133.0,333.0,33300.0,max*100
+sum_fatalities_battles_zdev_12m,375,False,-3.3166247903554003,224.02292902127837,22402.292902127836,max*100
+sum_fatalities_explosions_chg_3m,376,False,-175.0,83.0,8300.0,max*100
+sum_fatalities_explosions_chg_12m,377,False,-130.0,87.0,8700.0,max*100
+sum_fatalities_explosions_zdev_12m,378,False,-3.3166247903554,61.26826258349424,6126.826258349424,max*100
+sum_fatalities_violence_chg_3m,379,False,-119.0,120.0,12000.0,max*100
+sum_fatalities_violence_chg_12m,380,False,-118.0,120.0,12000.0,max*100
+sum_fatalities_violence_zdev_12m,381,False,-3.3166247903554,144.4239340527488,14442.39340527488,max*100
+rain_evi_interaction,382,False,-27.38157435345609,63.03540736416104,6303.540736416104,max*100
+rain_conflict_interaction,383,False,-328.26145151127866,595.1435999826142,59514.35999826142,max*100
+inflation_conflict_interaction,384,False,-1370.52,2487.2400000000002,248724.00000000003,max*100
+inflation_market_distance_interaction,385,False,-10128.259970087167,31746.2925204853,3174629.25204853,max*100
+lat_missing,386,False,0.0,0.0,100.0,max==0 -> 100
+lon_missing,387,False,0.0,0.0,100.0,max==0 -> 100
+distance_to_nearest_acled_missing,388,False,0.0,0.0,100.0,max==0 -> 100
+distance_to_nearest_acled_age_months,389,False,0.0,0.0,100.0,max==0 -> 100
+event_count_battles_missing,390,False,0.0,0.0,100.0,max==0 -> 100
+event_count_battles_age_months,391,False,0.0,0.0,100.0,max==0 -> 100
+event_count_explosions_missing,392,False,0.0,0.0,100.0,max==0 -> 100
+event_count_explosions_age_months,393,False,0.0,0.0,100.0,max==0 -> 100
+event_count_violence_missing,394,False,0.0,0.0,100.0,max==0 -> 100
+event_count_violence_age_months,395,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_battles_missing,396,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_battles_age_months,397,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_explosions_missing,398,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_explosions_age_months,399,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_violence_missing,400,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_violence_age_months,401,False,0.0,0.0,100.0,max==0 -> 100
+event_count_battles_w5_missing,402,False,0.0,0.0,100.0,max==0 -> 100
+event_count_battles_w5_age_months,403,False,0.0,0.0,100.0,max==0 -> 100
+event_count_explosions_w5_missing,404,False,0.0,0.0,100.0,max==0 -> 100
+event_count_explosions_w5_age_months,405,False,0.0,0.0,100.0,max==0 -> 100
+event_count_violence_w5_missing,406,False,0.0,0.0,100.0,max==0 -> 100
+event_count_violence_w5_age_months,407,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_battles_w5_missing,408,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_battles_w5_age_months,409,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_explosions_w5_missing,410,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_explosions_w5_age_months,411,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_violence_w5_missing,412,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_violence_w5_age_months,413,False,0.0,0.0,100.0,max==0 -> 100
+event_count_battles_w10_missing,414,False,0.0,0.0,100.0,max==0 -> 100
+event_count_battles_w10_age_months,415,False,0.0,0.0,100.0,max==0 -> 100
+event_count_explosions_w10_missing,416,False,0.0,0.0,100.0,max==0 -> 100
+event_count_explosions_w10_age_months,417,False,0.0,0.0,100.0,max==0 -> 100
+event_count_violence_w10_missing,418,False,0.0,0.0,100.0,max==0 -> 100
+event_count_violence_w10_age_months,419,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_battles_w10_missing,420,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_battles_w10_age_months,421,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_explosions_w10_missing,422,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_explosions_w10_age_months,423,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_violence_w10_missing,424,False,0.0,0.0,100.0,max==0 -> 100
+sum_fatalities_violence_w10_age_months,425,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_10000_missing,426,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_12000_missing,427,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_15000_missing,428,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_17000_missing,429,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_19000_missing,430,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_25000_missing,431,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_31000_missing,432,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_32000_missing,433,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_33000_missing,434,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_34000_missing,435,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_36000_missing,436,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_38000_missing,437,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_4000_missing,438,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_40000_missing,439,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_43000_missing,440,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_7000_missing,441,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_9000_missing,442,False,0.0,0.0,100.0,max==0 -> 100
+crop_missing,443,False,0.0,0.0,100.0,max==0 -> 100
+range_missing,444,False,0.0,0.0,100.0,max==0 -> 100
+distance_to_river_missing,445,False,0.0,0.0,100.0,max==0 -> 100
+nightlight_missing,446,False,0.0,0.0,100.0,max==0 -> 100
+nightlight_age_months,447,False,0.0,0.0,100.0,max==0 -> 100
+nightlight_sd_missing,448,False,0.0,0.0,100.0,max==0 -> 100
+nightlight_sd_age_months,449,False,0.0,0.0,100.0,max==0 -> 100
+elevation_missing,450,False,0.0,0.0,100.0,max==0 -> 100
+EVI_missing,451,False,0.0,0.0,100.0,max==0 -> 100
+EVI_age_months,452,False,0.0,0.0,100.0,max==0 -> 100
+market_distance_missing,453,False,0.0,1.0,100.0,max*100
+market_distance_age_months,454,False,0.0,0.0,100.0,max==0 -> 100
+Rainf_f_tavg_mean_missing,455,False,0.0,0.0,100.0,max==0 -> 100
+Rainf_f_tavg_mean_age_months,456,False,0.0,0.0,100.0,max==0 -> 100
+Tair_f_tavg_mean_missing,457,False,0.0,0.0,100.0,max==0 -> 100
+Tair_f_tavg_mean_age_months,458,False,0.0,0.0,100.0,max==0 -> 100
+gpp_mean_missing,459,False,0.0,0.0,100.0,max==0 -> 100
+gpp_mean_age_months,460,False,0.0,0.0,100.0,max==0 -> 100
+sg_cec_5-15cm_missing,461,False,0.0,0.0,100.0,max==0 -> 100
+sg_cfvo_5-15cm_missing,462,False,0.0,0.0,100.0,max==0 -> 100
+sg_nitrogen_5-15cm_missing,463,False,0.0,0.0,100.0,max==0 -> 100
+sg_phh2o_5-15cm_missing,464,False,0.0,0.0,100.0,max==0 -> 100
+sg_soc_5-15cm_missing,465,False,0.0,0.0,100.0,max==0 -> 100
+market_access_missing,466,False,0.0,0.0,100.0,max==0 -> 100
+ruggedness_missing,467,False,0.0,0.0,100.0,max==0 -> 100
+slope_missing,468,False,0.0,0.0,100.0,max==0 -> 100
+CPI_missing,469,False,0.0,1.0,100.0,max*100
+CPI_age_months,470,False,2.0,11.0,1100.0,max*100
+GDP_missing,471,False,0.0,1.0,100.0,max*100
+GDP_age_months,472,False,2.0,11.0,1100.0,max*100
+CC_missing,473,False,0.0,0.0,100.0,max==0 -> 100
+CC_age_months,474,False,2.0,11.0,1100.0,max*100
+gini_missing,475,False,0.0,1.0,100.0,max*100
+gini_age_months,476,False,2.0,30.0,3000.0,max*100
+pop_missing,477,False,0.0,0.0,100.0,max==0 -> 100
+pop_age_months,478,False,2.0,11.0,1100.0,max*100
+Food_CPI_missing,479,False,0.0,0.0,100.0,max==0 -> 100
+Food_CPI_age_months,480,False,0.0,0.0,100.0,max==0 -> 100
+Food_food_inflation_missing,481,False,0.0,0.0,100.0,max==0 -> 100
+Food_food_inflation_age_months,482,False,0.0,0.0,100.0,max==0 -> 100
+nino34_anom_missing,483,False,0.0,0.0,100.0,max==0 -> 100
+nino34_anom_age_months,484,False,0.0,0.0,100.0,max==0 -> 100
+food_price_index_WB_missing,485,False,0.0,1.0,100.0,max*100
+food_price_index_WB_age_months,486,False,0.0,0.0,100.0,max==0 -> 100
+food_inflation_wb_missing,487,False,0.0,1.0,100.0,max*100
+food_inflation_wb_age_months,488,False,0.0,0.0,100.0,max==0 -> 100
+coastline_dist_missing,489,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPURGB_missing,490,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPURGB_age_months,491,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPDANO_missing,492,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPDANO_age_months,493,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPPOBA_missing,494,False,0.0,1.0,100.0,max*100
+bbg_GCFPPOBA_age_months,495,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPURBS_missing,496,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPURBS_age_months,497,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPAMME_missing,498,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPAMME_age_months,499,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPAMBS_missing,500,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPAMBS_age_months,501,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPURMG_missing,502,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPURMG_age_months,503,False,0.0,0.0,100.0,max==0 -> 100
+bbg_GCFPDAIN_missing,504,False,0.0,1.0,100.0,max*100
+bbg_GCFPDAIN_age_months,505,False,0.0,0.0,100.0,max==0 -> 100
+bbg_NGUSHHUB_missing,506,False,0.0,0.0,100.0,max==0 -> 100
+bbg_NGUSHHUB_age_months,507,False,0.0,0.0,100.0,max==0 -> 100
+bbg_TZTX2_Comdty_missing,508,False,1.0,1.0,100.0,max*100
+bbg_TZTX2_Comdty_age_months,509,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+bbg_oilgas_CL1_COMB_Comdty_price_missing,510,False,0.0,0.0,100.0,max==0 -> 100
+bbg_oilgas_CL1_COMB_Comdty_price_age_months,511,False,0.0,0.0,100.0,max==0 -> 100
+bbg_oilgas_NG1_Comdty_price_missing,512,False,0.0,0.0,100.0,max==0 -> 100
+bbg_oilgas_NG1_Comdty_price_age_months,513,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_corn_x1_price_missing,514,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_corn_x1_price_age_months,515,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_hard_wheat_x1_price_missing,516,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_hard_wheat_x1_price_age_months,517,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_rough_rice_x1_price_missing,518,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_rough_rice_x1_price_age_months,519,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_soft_wheat_x1_price_missing,520,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_soft_wheat_x1_price_age_months,521,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_soybeans_x1_price_missing,522,False,0.0,0.0,100.0,max==0 -> 100
+bbg_staple_food_soybeans_x1_price_age_months,523,False,0.0,0.0,100.0,max==0 -> 100
+bbg_soybean_oil_futures_last_price_missing,524,False,0.0,0.0,100.0,max==0 -> 100
+bbg_soybean_oil_futures_last_price_age_months,525,False,0.0,0.0,100.0,max==0 -> 100

@@ -1,0 +1,146 @@
+{
+  "master": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+    "role": "master panel: target cohort, canonical keys, legacy source covariates",
+    "bytes": 716303754,
+    "mtime_utc": "2025-11-05T14:41:30Z",
+    "expected_bytes": 716303754,
+    "expected_sha256": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+    "sha256": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+    "sha256_matches_pinned": true
+  },
+  "ledger": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWSNET.csv",
+    "role": "observed IPC history ledger (reconciliation + eligible history)",
+    "bytes": 51422500,
+    "mtime_utc": "2025-03-14T14:14:41Z",
+    "expected_bytes": 51422500,
+    "expected_sha256": "8fdd4cca6f6ba26b84efc209c8eb36492e1257d51e24edd2c2ad4962df7b38d0",
+    "sha256": "8fdd4cca6f6ba26b84efc209c8eb36492e1257d51e24edd2c2ad4962df7b38d0",
+    "sha256_matches_pinned": true
+  },
+  "enso": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\NOAA_ENSO\\nina34.anom.csv",
+    "role": "selected ENSO source (nino34_anom)",
+    "bytes": 20033,
+    "mtime_utc": "2026-05-16T23:43:15Z",
+    "expected_bytes": null,
+    "expected_sha256": "ce67f5c52a2a4695f82ee9acdb4a5dc69eb42f34af6cf1e5801fa7ac20118ca5",
+    "sha256": "ce67f5c52a2a4695f82ee9acdb4a5dc69eb42f34af6cf1e5801fa7ac20118ca5",
+    "sha256_matches_pinned": true
+  },
+  "wb_derived": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\WB_RTP_price\\wb_food_price_index.csv",
+    "role": "selected WB derived monthly market prices (2 retained fields)",
+    "bytes": 27841811,
+    "mtime_utc": "2026-05-16T23:56:34Z",
+    "expected_bytes": null,
+    "expected_sha256": "bc5f310c008d69cf67539633a4af5ef5da2ba724897269b602aed66771ad523a",
+    "sha256": "bc5f310c008d69cf67539633a4af5ef5da2ba724897269b602aed66771ad523a",
+    "sha256_matches_pinned": true
+  },
+  "wb_raw": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\WB_RTP_price\\WLD_RTFP_mkt_2026-04-20.csv",
+    "role": "WB raw market file: geo_id lineage restoration for D64 tie rule",
+    "bytes": 1140300047,
+    "mtime_utc": "2026-04-22T17:02:34Z",
+    "expected_bytes": null,
+    "expected_sha256": "cd81efe9ec6c3c1ab7aa14d1a1dbd6092606c015608cec354beccfd960192730",
+    "sha256": "cd81efe9ec6c3c1ab7aa14d1a1dbd6092606c015608cec354beccfd960192730",
+    "sha256_matches_pinned": true
+  },
+  "coastline": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Coastline_distance_NOAA\\GMT_intermediate_coast_distance_01d.tif",
+    "role": "EPSG:4326 int16 raster for D50 containing-pixel coastline_dist",
+    "bytes": 1296144390,
+    "mtime_utc": "2009-06-24T13:54:54Z",
+    "expected_bytes": null,
+    "expected_sha256": null,
+    "sha256": "0f8877508e328bfd069d58f8c3d12b924db5cd2a782f515d98e9b5e7307e5e73",
+    "sha256_matches_pinned": null
+  },
+  "bbg_fertiliser": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Bloomberg_food_and_derivative\\bbg_fertiliser_monthly_051326.csv",
+    "role": "Bloomberg fertiliser/gas monthly export (8 fertiliser + 2 gas fields)",
+    "bytes": 13829,
+    "mtime_utc": "2026-05-13T15:08:28Z",
+    "expected_bytes": null,
+    "expected_sha256": null,
+    "sha256": "fb91c0e47fa053ffc3c4b0f91aef023ee4c5405252a4d62ab6f5a20601080730",
+    "sha256_matches_pinned": null
+  },
+  "bbg_oil_and_gas": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Bloomberg_food_and_derivative\\bbg_oil_and_gas_monthly_050826.csv",
+    "role": "Bloomberg oil/gas monthly export (2 fields)",
+    "bytes": 14180,
+    "mtime_utc": "2026-05-13T15:25:42Z",
+    "expected_bytes": null,
+    "expected_sha256": null,
+    "sha256": "71c3cc6903970b3316e816a2170207cd9af9c2589c43b469d84f7e3b535cb7d3",
+    "sha256_matches_pinned": null
+  },
+  "bbg_soybean_oil": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Bloomberg_food_and_derivative\\bbg_soybean_oil_futures_monthly_050826.csv",
+    "role": "Bloomberg soybean-oil futures monthly export (last price retained)",
+    "bytes": 13058,
+    "mtime_utc": "2026-05-13T15:34:06Z",
+    "expected_bytes": null,
+    "expected_sha256": null,
+    "sha256": "0650c960ea1d77ae6122287ae0c7d35a675688763b58c7ea18e6ddd8c1e815dc",
+    "sha256_matches_pinned": null
+  },
+  "bbg_staple_food": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Bloomberg_food_and_derivative\\bbg_staple_food_x1_monthly_050826.csv",
+    "role": "Bloomberg staple crop monthly export (5 fields)",
+    "bytes": 30870,
+    "mtime_utc": "2026-05-13T15:48:24Z",
+    "expected_bytes": null,
+    "expected_sha256": null,
+    "sha256": "9eb482dd15b77d80c1f9dc91bf9b3a7ceb55d05ca43f6069e1b9965031317bdf",
+    "sha256_matches_pinned": null
+  },
+  "fews_shapefile": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWS NET Admin Boundaries\\FEWS_Admin_LZ_v3.shp",
+    "role": "Stage 1 polygon geometry / adjacency source (identity bound here only)",
+    "bytes": 98094620,
+    "mtime_utc": "2025-04-11T17:47:44Z",
+    "expected_bytes": null,
+    "expected_sha256": null,
+    "sha256": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+    "sha256_matches_pinned": null
+  },
+  "fews_shapefile_sidecars": {
+    ".shp": {
+      "bytes": 98094620,
+      "sha256": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742"
+    },
+    ".shx": {
+      "bytes": 45844,
+      "sha256": "16061b9a97add1220d0aa54e432f55ed277f919a7bf233da06a5867ee709dfb0"
+    },
+    ".dbf": {
+      "bytes": 7942848,
+      "sha256": "2175dc97d3c6969c627ebb07c4f456e05231b7050321b4bd40e9079f86b102d3"
+    },
+    ".prj": {
+      "bytes": 306,
+      "sha256": "94ba1b071fb00c93429718b8005a15b45c5846baafe222b77dcb38847d5e2f49"
+    },
+    ".cpg": {
+      "bytes": 5,
+      "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+    },
+    ".sbn": {
+      "bytes": 54572,
+      "sha256": "b322f8e69f44b22dc7e31c701793165819f5b5ae10fbe4ace00173db3f925821"
+    },
+    ".sbx": {
+      "bytes": 1684,
+      "sha256": "a897760227ad04dbe055cd25e9b8a4391219cfa87d43938c8621b187264fba83"
+    },
+    ".shp.xml": {
+      "bytes": 37881,
+      "sha256": "cad4b5b9c545286da2c72e1602043d23ed6a851ce0de172824923cd6b223124f"
+    }
+  }
+}

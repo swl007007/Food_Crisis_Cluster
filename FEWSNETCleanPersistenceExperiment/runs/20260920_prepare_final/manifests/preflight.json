@@ -1,0 +1,335 @@
+{
+  "master_fields": 88,
+  "master_read_seconds": 5.96,
+  "master_records": 1029240,
+  "master_unique_keys": 1029240,
+  "master_duplicate_keys": 0,
+  "master_areas": 5718,
+  "master_months": 180,
+  "master_first_month": "2010-01",
+  "master_last_month": "2024-12",
+  "master_complete_monthly_grid": true,
+  "master_phase_counts": {
+    "1": 133211,
+    "2": 82907,
+    "3": 39062,
+    "4": 4186,
+    "5": 74
+  },
+  "master_phase_missing": 769800,
+  "master_crisis_zero": 216118,
+  "master_crisis_one": 43322,
+  "master_crisis_missing": 769800,
+  "master_valid_labels": 259440,
+  "static_conflicts": {},
+  "aez_areas_with_exactly_one_true": 5718,
+  "aez_areas_without_exactly_one_true": 0,
+  "annual_fields": {
+    "CPI": {
+      "area_years": 85770,
+      "wholly_missing_area_years": 15178,
+      "conflicting_area_years": 0
+    },
+    "GDP": {
+      "area_years": 85770,
+      "wholly_missing_area_years": 8854,
+      "conflicting_area_years": 0
+    },
+    "CC": {
+      "area_years": 85770,
+      "wholly_missing_area_years": 5718,
+      "conflicting_area_years": 0
+    },
+    "gini": {
+      "area_years": 85770,
+      "wholly_missing_area_years": 44280,
+      "conflicting_area_years": 0
+    },
+    "pop": {
+      "area_years": 85770,
+      "wholly_missing_area_years": 30,
+      "area_years_with_within_year_differences": 36
+    }
+  },
+  "pop_within_year_difference_groups": 36,
+  "ledger_parse_seconds": 1.59,
+  "ledger_records": 302949,
+  "ledger_valid_key_records": 302948,
+  "ledger_unique_keys": 302948,
+  "ledger_duplicate_keys": 0,
+  "ledger_malformed_records": 1,
+  "ledger_excluded_records": [
+    {
+      "physical_line": 303003,
+      "field_count": 1,
+      "raw_value": "System.IO.MemoryStream",
+      "reason": "verified terminal non-observation artifact (D63)"
+    }
+  ],
+  "ledger_areas": 5716,
+  "ledger_months": 53,
+  "ledger_first_month": "2009-07",
+  "ledger_last_month": "2024-10",
+  "ledger_phase_counts": {
+    "1": 137113,
+    "2": 85268,
+    "3": 41169,
+    "4": 4601,
+    "5": 74
+  },
+  "ledger_phase_missing": 34723,
+  "cross_same_key_agree": 259440,
+  "cross_same_key_both_missing": 32076,
+  "cross_same_key_one_missing": 0,
+  "cross_same_key_conflict": 0,
+  "cross_ledger_absent_master_missing": 737724,
+  "cross_ledger_absent_master_observed": 0,
+  "cross_overlap_keys": 291516,
+  "cross_ledger_only_keys": 11432,
+  "cross_ledger_only_keys_by_month": {
+    "2009-07": 5716,
+    "2009-10": 5716
+  },
+  "expectations": {
+    "target_label_contract": {
+      "master_records": {
+        "expected": 1029240,
+        "actual": 1029240,
+        "matches": true
+      },
+      "master_fields": {
+        "expected": 88,
+        "actual": 88,
+        "matches": true
+      },
+      "master_unique_keys": {
+        "expected": 1029240,
+        "actual": 1029240,
+        "matches": true
+      },
+      "master_duplicate_keys": {
+        "expected": 0,
+        "actual": 0,
+        "matches": true
+      },
+      "master_areas": {
+        "expected": 5718,
+        "actual": 5718,
+        "matches": true
+      },
+      "master_months": {
+        "expected": 180,
+        "actual": 180,
+        "matches": true
+      },
+      "master_first_month": {
+        "expected": "2010-01",
+        "actual": "2010-01",
+        "matches": true
+      },
+      "master_last_month": {
+        "expected": "2024-12",
+        "actual": "2024-12",
+        "matches": true
+      },
+      "master_phase_counts": {
+        "expected": {
+          "1": 133211,
+          "2": 82907,
+          "3": 39062,
+          "4": 4186,
+          "5": 74
+        },
+        "actual": {
+          "1": 133211,
+          "2": 82907,
+          "3": 39062,
+          "4": 4186,
+          "5": 74
+        },
+        "matches": true
+      },
+      "master_phase_missing": {
+        "expected": 769800,
+        "actual": 769800,
+        "matches": true
+      },
+      "master_crisis_zero": {
+        "expected": 216118,
+        "actual": 216118,
+        "matches": true
+      },
+      "master_crisis_one": {
+        "expected": 43322,
+        "actual": 43322,
+        "matches": true
+      },
+      "master_crisis_missing": {
+        "expected": 769800,
+        "actual": 769800,
+        "matches": true
+      },
+      "master_valid_labels": {
+        "expected": 259440,
+        "actual": 259440,
+        "matches": true
+      },
+      "ledger_records": {
+        "expected": 302949,
+        "actual": 302949,
+        "matches": true
+      },
+      "ledger_valid_key_records": {
+        "expected": 302948,
+        "actual": 302948,
+        "matches": true
+      },
+      "ledger_unique_keys": {
+        "expected": 302948,
+        "actual": 302948,
+        "matches": true
+      },
+      "ledger_duplicate_keys": {
+        "expected": 0,
+        "actual": 0,
+        "matches": true
+      },
+      "ledger_malformed_records": {
+        "expected": 1,
+        "actual": 1,
+        "matches": true
+      },
+      "ledger_areas": {
+        "expected": 5716,
+        "actual": 5716,
+        "matches": true
+      },
+      "ledger_months": {
+        "expected": 53,
+        "actual": 53,
+        "matches": true
+      },
+      "ledger_first_month": {
+        "expected": "2009-07",
+        "actual": "2009-07",
+        "matches": true
+      },
+      "ledger_last_month": {
+        "expected": "2024-10",
+        "actual": "2024-10",
+        "matches": true
+      },
+      "ledger_phase_counts": {
+        "expected": {
+          "1": 137113,
+          "2": 85268,
+          "3": 41169,
+          "4": 4601,
+          "5": 74
+        },
+        "actual": {
+          "1": 137113,
+          "2": 85268,
+          "3": 41169,
+          "4": 4601,
+          "5": 74
+        },
+        "matches": true
+      },
+      "ledger_phase_missing": {
+        "expected": 34723,
+        "actual": 34723,
+        "matches": true
+      },
+      "cross_same_key_agree": {
+        "expected": 259440,
+        "actual": 259440,
+        "matches": true
+      },
+      "cross_same_key_both_missing": {
+        "expected": 32076,
+        "actual": 32076,
+        "matches": true
+      },
+      "cross_same_key_one_missing": {
+        "expected": 0,
+        "actual": 0,
+        "matches": true
+      },
+      "cross_same_key_conflict": {
+        "expected": 0,
+        "actual": 0,
+        "matches": true
+      },
+      "cross_ledger_absent_master_missing": {
+        "expected": 737724,
+        "actual": 737724,
+        "matches": true
+      },
+      "cross_ledger_absent_master_observed": {
+        "expected": 0,
+        "actual": 0,
+        "matches": true
+      },
+      "cross_overlap_keys": {
+        "expected": 291516,
+        "actual": 291516,
+        "matches": true
+      },
+      "cross_ledger_only_keys": {
+        "expected": 11432,
+        "actual": 11432,
+        "matches": true
+      },
+      "ledger_terminal_artifact": {
+        "expected": {
+          "physical_line": 303003,
+          "raw_value": "System.IO.MemoryStream"
+        },
+        "actual": [
+          {
+            "physical_line": 303003,
+            "field_count": 1,
+            "raw_value": "System.IO.MemoryStream",
+            "reason": "verified terminal non-observation artifact (D63)"
+          }
+        ],
+        "matches": true
+      }
+    },
+    "runtime_and_preflight": {
+      "GDP_wholly_missing_area_years": {
+        "expected": 8854,
+        "actual": 8854,
+        "matches": true
+      },
+      "CPI_wholly_missing_area_years": {
+        "expected": 15178,
+        "actual": 15178,
+        "matches": true
+      },
+      "CC_wholly_missing_area_years": {
+        "expected": 5718,
+        "actual": 5718,
+        "matches": true
+      },
+      "gini_wholly_missing_area_years": {
+        "expected": 44280,
+        "actual": 44280,
+        "matches": true
+      },
+      "pop_within_year_difference_groups": {
+        "expected": 36,
+        "actual": 36,
+        "matches": true
+      },
+      "area_years": {
+        "expected": 85770,
+        "actual": 85770,
+        "matches": true
+      }
+    },
+    "all_expectations_match": true,
+    "failed_expectations": []
+  }
+}

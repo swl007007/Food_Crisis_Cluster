@@ -1,0 +1,132 @@
+{
+  "arms": [
+    "BASE",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "ABCDE",
+    "BCDE",
+    "ACDE",
+    "ABDE",
+    "ABCE",
+    "ABCD",
+    "reference"
+  ],
+  "n_arms": 13,
+  "map_roles": {
+    "calibration": {
+      "candidate_years": [
+        2014,
+        2015,
+        2016
+      ],
+      "information_cutoff": "2016-12",
+      "candidate_jobs_per_arm": 33,
+      "prediction_targets": [
+        "2018-02",
+        "2018-06",
+        "2018-10"
+      ],
+      "month_specific_maps": false
+    },
+    "selection": {
+      "candidate_years": [
+        2016,
+        2017,
+        2018
+      ],
+      "information_cutoff": "2018-12",
+      "candidate_jobs_per_arm": 27,
+      "prediction_targets": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ],
+      "month_specific_maps": false
+    },
+    "final": {
+      "candidate_years": [
+        2018,
+        2019,
+        2020
+      ],
+      "information_cutoff": "2020-12",
+      "candidate_jobs_per_arm": 27,
+      "prediction_targets": null,
+      "month_specific_maps": false
+    }
+  },
+  "stage1": {
+    "candidate_jobs_calibration_window": 33,
+    "candidate_jobs_selection_window": 27,
+    "candidate_jobs_final_window": 27,
+    "exact_overlap_jobs_2016": 9,
+    "unique_development_jobs_per_arm": 51,
+    "development_jobs_upper_bound": 663,
+    "new_final_jobs_per_final_arm": 18,
+    "final_jobs_upper_bound": 36,
+    "total_jobs_upper_bound": 699,
+    "training_window_calendar_months": 35,
+    "training_mask": "[O-35 calendar months, O) with origin-month labels excluded"
+  },
+  "stage2": {
+    "development_map_builds": 26,
+    "final_map_builds": 2,
+    "total_map_builds": 28
+  },
+  "stage3": {
+    "development_folds": 234,
+    "final_scope_date_pairs": 30,
+    "final_folds": 60,
+    "final_target_dates": {
+      "4": [
+        "2021-06",
+        "2021-10",
+        "2022-02",
+        "2022-06",
+        "2022-10",
+        "2023-02",
+        "2023-06",
+        "2023-10",
+        "2024-02",
+        "2024-06",
+        "2024-10"
+      ],
+      "8": [
+        "2021-10",
+        "2022-02",
+        "2022-06",
+        "2022-10",
+        "2023-02",
+        "2023-06",
+        "2023-10",
+        "2024-02",
+        "2024-06",
+        "2024-10"
+      ],
+      "12": [
+        "2022-02",
+        "2022-06",
+        "2022-10",
+        "2023-02",
+        "2023-06",
+        "2023-10",
+        "2024-02",
+        "2024-06",
+        "2024-10"
+      ]
+    },
+    "final_target_date_counts": {
+      "4": 11,
+      "8": 10,
+      "12": 9
+    },
+    "supplementary_common_window": [
+      "2022-02",
+      "2024-10"
+    ]
+  },
+  "note": "Planning arithmetic only: these are job counts before D20 support exclusions, not measured runtime, individual forest fits or guarantees of support."
+}

@@ -1,0 +1,110 @@
+column,index,all_missing_in_fitting_rows,min,max,fill_value,fill_rule
+lat,0,False,-26.66055672814686,38.22374755974924,3822.374755974924,max*100
+lon,1,False,-92.18212153785024,73.33798817378396,7333.798817378395,max*100
+distance_to_nearest_acled,2,False,0.0,499.9867523224244,49998.67523224244,max*100
+event_count_battles,3,False,0.0,28.0,2800.0,max*100
+event_count_explosions,4,False,0.0,14.0,1400.0,max*100
+event_count_violence,5,False,0.0,21.0,2100.0,max*100
+sum_fatalities_battles,6,False,0.0,252.0,25200.0,max*100
+sum_fatalities_explosions,7,False,0.0,92.0,9200.0,max*100
+sum_fatalities_violence,8,False,0.0,265.0,26500.0,max*100
+event_count_battles_w5,9,False,0.0,68.0,6800.0,max*100
+event_count_explosions_w5,10,False,0.0,27.0,2700.0,max*100
+event_count_violence_w5,11,False,0.0,42.0,4200.0,max*100
+sum_fatalities_battles_w5,12,False,0.0,262.0,26200.0,max*100
+sum_fatalities_explosions_w5,13,False,0.0,146.0,14600.0,max*100
+sum_fatalities_violence_w5,14,False,0.0,265.0,26500.0,max*100
+event_count_battles_w10,15,False,0.0,70.0,7000.0,max*100
+event_count_explosions_w10,16,False,0.0,51.0,5100.0,max*100
+event_count_violence_w10,17,False,0.0,43.0,4300.0,max*100
+sum_fatalities_battles_w10,18,False,0.0,463.0,46300.0,max*100
+sum_fatalities_explosions_w10,19,False,0.0,323.0,32300.0,max*100
+sum_fatalities_violence_w10,20,False,0.0,273.0,27300.0,max*100
+AEZ_10000,21,False,0.0,1.0,100.0,max*100
+AEZ_12000,22,False,0.0,1.0,100.0,max*100
+AEZ_15000,23,False,0.0,1.0,100.0,max*100
+AEZ_17000,24,False,0.0,1.0,100.0,max*100
+AEZ_19000,25,False,0.0,1.0,100.0,max*100
+AEZ_25000,26,False,0.0,1.0,100.0,max*100
+AEZ_31000,27,False,0.0,1.0,100.0,max*100
+AEZ_32000,28,False,0.0,1.0,100.0,max*100
+AEZ_33000,29,False,0.0,1.0,100.0,max*100
+AEZ_34000,30,False,0.0,1.0,100.0,max*100
+AEZ_36000,31,False,0.0,1.0,100.0,max*100
+AEZ_38000,32,False,0.0,1.0,100.0,max*100
+AEZ_4000,33,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_40000,34,False,0.0,0.0,100.0,max==0 -> 100
+AEZ_43000,35,False,0.0,1.0,100.0,max*100
+AEZ_7000,36,False,0.0,1.0,100.0,max*100
+AEZ_9000,37,False,0.0,1.0,100.0,max*100
+crop,38,False,0.0,200.0,20000.0,max*100
+range,39,False,0.0,200.0,20000.0,max*100
+distance_to_river,40,False,0.0,6420.1,642010.0,max*100
+nightlight,41,False,0.0,30.4599256516,3045.9925651599997,max*100
+nightlight_sd,42,False,0.0,49.1183771611,4911.83771611,max*100
+elevation,43,False,-1.0,4670.0,467000.0,max*100
+EVI,44,False,0.0,7234.0,723400.0,max*100
+market_distance,45,False,0.2554392647453413,499.6418380250671,49964.18380250671,max*100
+FAO_price,46,False,28.07,497.96,49796.0,max*100
+Rainf_f_tavg_mean,47,False,0.0,0.000352416478563,0.0352416478563,max*100
+Tair_f_tavg_mean,48,False,256.830614125,309.940703238,30994.070323800002,max*100
+gpp_mean,49,False,0.0,65535.0,6553500.0,max*100
+sg_cec_5-15cm,50,False,25.0,697.0,69700.0,max*100
+sg_cfvo_5-15cm,51,False,3.0,682.0,68200.0,max*100
+sg_nitrogen_5-15cm,52,False,212.0,10921.0,1092100.0,max*100
+sg_phh2o_5-15cm,53,False,48.0,91.0,9100.0,max*100
+sg_soc_5-15cm,54,False,2.0,1042.0,104200.0,max*100
+market_access,55,False,0.0,4651.0,465100.0,max*100
+ruggedness,56,False,0.0001748863238894,1.0,100.0,max*100
+slope,57,False,0.0,1.0,100.0,max*100
+CPI,58,False,-2.077865746,46.85217572,4685.217572,max*100
+GDP,59,False,947.6214173,10130.35015,1013035.015,max*100
+CC,60,False,0.0,41.23222733,4123.2227330000005,max*100
+gini,61,False,0.314517146383,0.5226851247305,52.26851247305,max*100
+WFP_Price,62,False,0.2503916666666666,1179.4883,117948.83,max*100
+WFP_Price_std,63,False,0.0366547890541749,392.9897964402192,39298.97964402192,max*100
+pop,64,False,0.0,10832280.4,1083228040.0,max*100
+Food_CPI,65,False,28.935993,109.009764,10900.9764,max*100
+Food_food_inflation,66,False,-15.544963,72.784075,7278.4075,max*100
+year_2010,67,False,0.0,0.0,100.0,max==0 -> 100
+year_2011,68,False,0.0,1.0,100.0,max*100
+year_2012,69,False,0.0,1.0,100.0,max*100
+year_2013,70,False,0.0,1.0,100.0,max*100
+year_2014,71,False,0.0,0.0,100.0,max==0 -> 100
+year_2015,72,False,0.0,0.0,100.0,max==0 -> 100
+year_2016,73,False,0.0,0.0,100.0,max==0 -> 100
+year_2017,74,False,0.0,0.0,100.0,max==0 -> 100
+year_2018,75,False,0.0,0.0,100.0,max==0 -> 100
+year_2019,76,False,0.0,0.0,100.0,max==0 -> 100
+year_2020,77,False,0.0,0.0,100.0,max==0 -> 100
+year_2021,78,False,0.0,0.0,100.0,max==0 -> 100
+year_2022,79,False,0.0,0.0,100.0,max==0 -> 100
+year_2023,80,False,0.0,0.0,100.0,max==0 -> 100
+year_2024,81,False,0.0,0.0,100.0,max==0 -> 100
+month_1,82,False,0.0,1.0,100.0,max*100
+month_2,83,False,0.0,0.0,100.0,max==0 -> 100
+month_4,84,False,0.0,1.0,100.0,max*100
+month_6,85,False,0.0,0.0,100.0,max==0 -> 100
+month_7,86,False,0.0,1.0,100.0,max*100
+month_10,87,False,0.0,1.0,100.0,max*100
+fews_ipc_crisis_lag_4,88,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+fews_ipc_crisis_lag_8,89,False,0.0,1.0,100.0,max*100
+fews_ipc_crisis_lag_12,90,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+fews_ipc_lag_4,91,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+fews_ipc_lag_8,92,False,1.0,5.0,500.0,max*100
+fews_ipc_lag_12,93,True,,,0.0,all-missing fitting column -> released zero fallback sentinel
+EVI_l1,94,False,0.0,6995.68426966,699568.426966,max*100
+EVI_l2,95,False,0.0,7149.0,714900.0,max*100
+EVI_l3,96,False,0.0,7234.0,723400.0,max*100
+EVI_l4,97,False,0.0,7091.94162826,709194.162826,max*100
+EVI_l5,98,False,0.0,6716.54545455,671654.545455,max*100
+EVI_l6,99,False,0.0,6765.84267516,676584.267516,max*100
+EVI_l7,100,False,0.0,6693.04761905,669304.7619050001,max*100
+EVI_l8,101,False,0.0,7149.0,714900.0,max*100
+EVI_l9,102,False,0.0,7234.0,723400.0,max*100
+EVI_l10,103,False,0.0,6693.04761905,669304.7619050001,max*100
+EVI_l11,104,False,0.0,7149.0,714900.0,max*100
+EVI_l12,105,False,0.0,6574.35294118,657435.294118,max*100
+WFP_Price_m4,106,False,0.9972333333333331,4440.274599999999,444027.4599999999,max*100
+WFP_Price_m12,107,False,3.320175757575757,12402.687600000001,1240268.76,max*100
+nightlight_m12,108,False,0.0,275.36517572409997,27536.517572409997,max*100

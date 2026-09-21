@@ -9,16 +9,22 @@ __pycache__/
 #     independently recomputed
 #   - the diagnostic-bypass control manifest and the archived native-crash record
 # The close audit reported evidence gaps G1-G3 because only the committed repository
-# reaches the auditor's independent clone: the ledgers, manifests and maps that support
-# every claim were on disk but not in the commit. The manifests are small (~15 MB
-# total) and are now included; only the ~223 MB of per-row prediction and training-key
-# CSVs stay out, and their content is reconstructable from report/confusion_by_date.
+# reaches the auditor's independent clone. The first pass kept the per-row CSVs out on
+# the grounds that they are ~450 MB; that reasoning used working-tree size, which is the
+# wrong basis for a git decision. They are highly repetitive integer tables and pack to
+# roughly 68 MB in total, so they are now included and the gaps close.
+#
+# What still stays out is only genuinely derived bulk that is reproducible from the
+# pinned sources: the prepared feature matrices (703 MB) and the prepared cache
+# (334 MB).
 runs/*
 !runs/*/
 runs/*/*
 !runs/*/report/
 !runs/*/verification/
 !runs/*/superseded/
+!runs/*/manifests/
+!runs/*/geometry/
 !runs/*/run_manifest.json
 !runs/*/stage1/
 !runs/*/stage2/
@@ -26,6 +32,16 @@ runs/*/*
 !runs/*/stage3/
 !runs/*/calibration/
 !runs/*/thresholds/
+
+# Preparation-run manifests (G1): source checksums, realized schemas, coverage,
+# preflight and runtime identity. 668 KB.
+runs/*/manifests/*
+!runs/*/manifests/*.json
+!runs/*/manifests/*.csv
+
+# Area coordinates used by the consensus graph and completion (G3).
+runs/*/geometry/*
+!runs/*/geometry/*.csv
 
 # Stage 1 candidate ledger (G2): the per-candidate record, not its checkpoints.
 runs/*/stage1/*
@@ -35,6 +51,9 @@ runs/*/stage1/*/*
 runs/*/stage1/*/*/*
 !runs/*/stage1/*/*/candidate.json
 !runs/*/stage1/*/*/correspondence_table.csv
+!runs/*/stage1/*/*/target_predictions.csv
+!runs/*/stage1/*/*/val_coverage_by_group.csv
+!runs/*/stage1/*/*/imputer_fill_values.csv
 
 # Stage 2 maps and their evidence (G2).
 runs/*/stage2/*
@@ -53,8 +72,7 @@ runs/*/stage2_inputs/*/*/*
 !runs/*/stage2_inputs/*/*/candidate_status.csv
 !runs/*/stage2_inputs/*/*/stage2_input_summary.json
 
-# Stage 3 fold records and local-support ledgers (G3). The per-row predictions.csv and
-# training_keys.csv are the bulk and stay excluded.
+# Stage 3 fold records, per-row predictions and training-key ledgers (G2/G3).
 runs/*/stage3/*
 !runs/*/stage3/*/
 runs/*/stage3/*/*
@@ -63,6 +81,8 @@ runs/*/stage3/*/*/*
 !runs/*/stage3/*/*/fold.json
 !runs/*/stage3/*/*/local_support.csv
 !runs/*/stage3/*/*/imputer_statistics.csv
+!runs/*/stage3/*/*/predictions.csv
+!runs/*/stage3/*/*/training_keys.csv
 
 # Frozen calibrators and thresholds with their input bindings and full traces (G3).
 runs/*/calibration/*

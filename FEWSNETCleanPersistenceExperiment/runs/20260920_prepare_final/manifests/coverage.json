@@ -1,0 +1,238 @@
+{
+  "enso": {
+    "source_rows": 948,
+    "value_column": "   Nino Anom 3.4 Index  using NOAA ERSST v6 from NCEI  missing value -99.99 https://psl.noaa.gov/data/timeseries/month/",
+    "sentinel_counts": {
+      "-99.99": 0,
+      "-9999.0": 32
+    },
+    "sentinel_rows_total": 32,
+    "valid_months_on_grid": 204,
+    "grid_first_valid": "2008-01",
+    "grid_last_valid": "2024-12"
+  },
+  "bloomberg": {
+    "files": {
+      "bbg_fertiliser": {
+        "rows": 197,
+        "months_on_grid": 180,
+        "fields": {
+          "bbg_GCFPURGB": {
+            "valid_months_on_grid": 180,
+            "first_valid": "2010-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPDANO": {
+            "valid_months_on_grid": 147,
+            "first_valid": "2012-10",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPPOBA": {
+            "valid_months_on_grid": 120,
+            "first_valid": "2014-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPURBS": {
+            "valid_months_on_grid": 145,
+            "first_valid": "2012-10",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPAMME": {
+            "valid_months_on_grid": 147,
+            "first_valid": "2012-10",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPAMBS": {
+            "valid_months_on_grid": 113,
+            "first_valid": "2012-10",
+            "last_valid": "2022-02",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPURMG": {
+            "valid_months_on_grid": 147,
+            "first_valid": "2012-10",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_GCFPDAIN": {
+            "valid_months_on_grid": 115,
+            "first_valid": "2015-06",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_NGUSHHUB": {
+            "valid_months_on_grid": 180,
+            "first_valid": "2010-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_TZTX2_Comdty": {
+            "valid_months_on_grid": 0,
+            "first_valid": null,
+            "last_valid": null,
+            "entirely_missing_on_grid": true
+          }
+        }
+      },
+      "bbg_oil_and_gas": {
+        "rows": 355,
+        "months_on_grid": 204,
+        "fields": {
+          "bbg_oilgas_CL1_COMB_Comdty_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_oilgas_NG1_Comdty_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          }
+        }
+      },
+      "bbg_soybean_oil": {
+        "rows": 317,
+        "months_on_grid": 204,
+        "fields": {
+          "bbg_soybean_oil_futures_last_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          }
+        }
+      },
+      "bbg_staple_food": {
+        "rows": 355,
+        "months_on_grid": 204,
+        "fields": {
+          "bbg_staple_food_corn_x1_price": {
+            "valid_months_on_grid": 202,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_staple_food_hard_wheat_x1_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_staple_food_rough_rice_x1_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_staple_food_soft_wheat_x1_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          },
+          "bbg_staple_food_soybeans_x1_price": {
+            "valid_months_on_grid": 204,
+            "first_valid": "2008-01",
+            "last_valid": "2024-12",
+            "entirely_missing_on_grid": false
+          }
+        }
+      }
+    },
+    "excluded_fields": [
+      "inflation_food_price_index",
+      "bbg_soybean_oil_futures_bid"
+    ],
+    "fields_entirely_missing": [
+      "bbg_TZTX2_Comdty"
+    ]
+  },
+  "wb": {
+    "source": {
+      "derived_rows": 755647,
+      "raw_rows": 755647,
+      "read_seconds": 5.02,
+      "unique_geo_ids": 3325,
+      "months": 232,
+      "rows_missing_coordinates": 8873,
+      "rows_missing_price": 20045,
+      "rows_missing_inflation": 59945,
+      "colocated_market_month_groups": 828,
+      "lineage_verified": true,
+      "excluded_alias": "inflation_food_price_index"
+    },
+    "join": {
+      "seconds": 16.55,
+      "areas_with_valid_coordinates": 5718,
+      "areas_without_valid_coordinates": 0,
+      "grid_months": 204,
+      "months_with_candidates": 204,
+      "months_without_candidates": 0,
+      "matched_area_months": 989880,
+      "unmatched_area_months_over_100km": 176592,
+      "exact_distance_tie_queries": 0,
+      "match_distance_km": {
+        "min": 0.15641018224068373,
+        "p25": 16.70574167622516,
+        "median": 32.206814934260414,
+        "p75": 53.49823746239378,
+        "p95": 86.63413879771905,
+        "max": 99.91745866131787
+      },
+      "matched_missing_price_area_months": 3948,
+      "matched_missing_inflation_area_months": 7332,
+      "earth_radius_km": 6371.0088,
+      "max_distance_km": 100.0,
+      "tie_rule": "ascending lexical raw geo_id"
+    }
+  },
+  "coastline": {
+    "raster": {
+      "crs": "EPSG:4326",
+      "transform": [
+        -180.0,
+        0.01,
+        0.0,
+        90.0,
+        0.0,
+        -0.01
+      ],
+      "width": 36000,
+      "height": 18000,
+      "dtype": "int16",
+      "nodata": null,
+      "bounds": [
+        -180.0,
+        -90.0,
+        180.0,
+        90.0
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area",
+        "TIFFTAG_IMAGEDESCRIPTION": "distance from coast GMT intermediate"
+      }
+    },
+    "areas": 5718,
+    "areas_with_value": 5718,
+    "areas_missing": 0,
+    "reason_counts": {
+      "valid_pixel": 5718
+    },
+    "value_summary": {
+      "min": -1762.0,
+      "max": 23.0,
+      "negative": 5695,
+      "zero": 7,
+      "positive": 16
+    },
+    "units": "native raster units (kilometre/sign interpretation unverified, D50)",
+    "transform_applied": "none (no absolute value, rescaling or interpolation)"
+  }
+}

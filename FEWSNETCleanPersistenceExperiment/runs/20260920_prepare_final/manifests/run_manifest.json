@@ -1,0 +1,56 @@
+{
+  "experiment": "FEWSNETCleanPersistenceExperiment",
+  "component": "prepare_data",
+  "run_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_prepare_final",
+  "data_root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data",
+  "completed_stages": [
+    "preflight",
+    "materialize"
+  ],
+  "last_stage": "materialize",
+  "last_stage_utc": "2026-09-21T00:44:26Z",
+  "arms": [
+    "BASE",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "ABCDE",
+    "BCDE",
+    "ACDE",
+    "ABDE",
+    "ABCE",
+    "ABCD"
+  ],
+  "horizons": [
+    4,
+    8,
+    12
+  ],
+  "hash_verification": true,
+  "reused_prepared_source_cache": true,
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "sklearn": "1.6.1"
+  },
+  "source_hashes": {
+    "master": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+    "ledger": "8fdd4cca6f6ba26b84efc209c8eb36492e1257d51e24edd2c2ad4962df7b38d0",
+    "enso": "ce67f5c52a2a4695f82ee9acdb4a5dc69eb42f34af6cf1e5801fa7ac20118ca5",
+    "wb_derived": "bc5f310c008d69cf67539633a4af5ef5da2ba724897269b602aed66771ad523a",
+    "wb_raw": "cd81efe9ec6c3c1ab7aa14d1a1dbd6092606c015608cec354beccfd960192730",
+    "coastline": "0f8877508e328bfd069d58f8c3d12b924db5cd2a782f515d98e9b5e7307e5e73",
+    "bbg_fertiliser": "fb91c0e47fa053ffc3c4b0f91aef023ee4c5405252a4d62ab6f5a20601080730",
+    "bbg_oil_and_gas": "71c3cc6903970b3316e816a2170207cd9af9c2589c43b469d84f7e3b535cb7d3",
+    "bbg_soybean_oil": "0650c960ea1d77ae6122287ae0c7d35a675688763b58c7ea18e6ddd8c1e815dc",
+    "bbg_staple_food": "9eb482dd15b77d80c1f9dc91bf9b3a7ceb55d05ca43f6069e1b9965031317bdf",
+    "fews_shapefile": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+    "fews_shapefile_sidecars": null
+  }
+}
