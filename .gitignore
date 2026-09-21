@@ -34,6 +34,7 @@ test_*
 !GeoRFBaseline/tests/test_baseline.py
 !EthiopiaForecastingExperiment/tests/test_*.py
 !PersistenceCorrectionExperiment/tests/test_*.py
+!FEWSNETCleanPersistenceExperiment/tests/test_*.py
 
 # Ethiopia ERA5-Drought SPI source and generated artifacts
 /EthiopiaForecastingExperiment/data/raw/era5_drought_spi/

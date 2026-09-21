@@ -1,0 +1,129 @@
+{
+  "question": "Does bypassing the discarded pre-partition CV diagnostic change any scientific Stage 1 output?",
+  "why_it_is_not_obvious": "pre_partition_diagnostic.py:912 resets NumPy's global RNG with np.random.seed(final_seed), and :837,853 can draw from np.random.choice on fallback paths. The two arms can therefore leave different global RNG state behind, so the discarded return value proves nothing on its own.",
+  "job_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\stage1\\reference\\GeoRF-reference_2016_02_fs1",
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "sklearn": "1.6.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "PYTHONHASHSEED": null
+    }
+  },
+  "diagnostic_module": "src.diagnostics.pre_partition_diagnostic",
+  "arms": {
+    "stubbed": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\verification\\diagnostic_bypass\\stubbed",
+    "diagnostics_on": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\verification\\diagnostic_bypass\\diagnostics_on",
+    "reference_run": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\stage1\\reference\\GeoRF-reference_2016_02_fs1"
+  },
+  "diagnostic_execution": {
+    "stubbed": {
+      "stdout_bytes": 6796510,
+      "diagnostic_started": false,
+      "diagnostic_completed": false,
+      "diagnostic_failed": false,
+      "diagnostic_module_absent": true,
+      "pre_partitioning_cv_ran": false
+    },
+    "diagnostics_on": {
+      "stdout_bytes": 6799026,
+      "diagnostic_started": true,
+      "diagnostic_completed": true,
+      "diagnostic_failed": false,
+      "diagnostic_module_absent": false,
+      "pre_partitioning_cv_ran": true
+    },
+    "reference_run": {
+      "stdout_bytes": 6796577,
+      "diagnostic_started": false,
+      "diagnostic_completed": false,
+      "diagnostic_failed": false,
+      "diagnostic_module_absent": true,
+      "pre_partitioning_cv_ran": false
+    }
+  },
+  "required_artifacts": [
+    "target_predictions.csv",
+    "branch_table.npy",
+    "s_branch.pkl",
+    "correspondence_table.csv",
+    "imputer_fill_values.csv",
+    "val_coverage_by_group.csv"
+  ],
+  "missing_artifacts": {},
+  "arms_behaved_as_labelled": true,
+  "artifact_sha256": {
+    "stubbed": {
+      "target_predictions.csv": "bcb4b59f99dffe883ae0255aef0574c69a55fd693bde53a04ff2c6699bd97449",
+      "branch_table.npy": "6acdc65a96c0cde7be4d47fc059abd818681b0d19e3e68515df8d48e32707eb3",
+      "s_branch.pkl": "6a9cd31f74e34932ac26a9f220be342051fc1b472a761a0ab987cf5a3d64fdf2",
+      "correspondence_table.csv": "431bfd0cf0079fc1afaad5761f859293324ebfe9bbec06a8ddbf1760980b16a2",
+      "imputer_fill_values.csv": "a1748bdf8998df8b31c353b5ee313f3ecd8b841d71e267efd9bce90c19aec96e",
+      "val_coverage_by_group.csv": "3c9fd1a3c2d3f9aeb7fe71f4082c2dcae5b47190e38581fdb091ac0b96a2feb5"
+    },
+    "diagnostics_on": {
+      "target_predictions.csv": "bcb4b59f99dffe883ae0255aef0574c69a55fd693bde53a04ff2c6699bd97449",
+      "branch_table.npy": "6acdc65a96c0cde7be4d47fc059abd818681b0d19e3e68515df8d48e32707eb3",
+      "s_branch.pkl": "6a9cd31f74e34932ac26a9f220be342051fc1b472a761a0ab987cf5a3d64fdf2",
+      "correspondence_table.csv": "431bfd0cf0079fc1afaad5761f859293324ebfe9bbec06a8ddbf1760980b16a2",
+      "imputer_fill_values.csv": "a1748bdf8998df8b31c353b5ee313f3ecd8b841d71e267efd9bce90c19aec96e",
+      "val_coverage_by_group.csv": "3c9fd1a3c2d3f9aeb7fe71f4082c2dcae5b47190e38581fdb091ac0b96a2feb5"
+    },
+    "reference_run": {
+      "target_predictions.csv": "bcb4b59f99dffe883ae0255aef0574c69a55fd693bde53a04ff2c6699bd97449",
+      "branch_table.npy": "6acdc65a96c0cde7be4d47fc059abd818681b0d19e3e68515df8d48e32707eb3",
+      "s_branch.pkl": "6a9cd31f74e34932ac26a9f220be342051fc1b472a761a0ab987cf5a3d64fdf2",
+      "correspondence_table.csv": "431bfd0cf0079fc1afaad5761f859293324ebfe9bbec06a8ddbf1760980b16a2",
+      "imputer_fill_values.csv": "a1748bdf8998df8b31c353b5ee313f3ecd8b841d71e267efd9bce90c19aec96e",
+      "val_coverage_by_group.csv": "3c9fd1a3c2d3f9aeb7fe71f4082c2dcae5b47190e38581fdb091ac0b96a2feb5"
+    }
+  },
+  "artifact_identical_to_stubbed": {
+    "stubbed": {
+      "target_predictions.csv": true,
+      "branch_table.npy": true,
+      "s_branch.pkl": true,
+      "correspondence_table.csv": true,
+      "imputer_fill_values.csv": true,
+      "val_coverage_by_group.csv": true
+    },
+    "diagnostics_on": {
+      "target_predictions.csv": true,
+      "branch_table.npy": true,
+      "s_branch.pkl": true,
+      "correspondence_table.csv": true,
+      "imputer_fill_values.csv": true,
+      "val_coverage_by_group.csv": true
+    },
+    "reference_run": {
+      "target_predictions.csv": true,
+      "branch_table.npy": true,
+      "s_branch.pkl": true,
+      "correspondence_table.csv": true,
+      "imputer_fill_values.csv": true,
+      "val_coverage_by_group.csv": true
+    }
+  },
+  "candidate_json_differences_vs_stubbed": {
+    "diagnostics_on": [
+      {
+        "field": ".effective_config.diagnostics_bypassed",
+        "difference": "'src.diagnostics.pre_partition_diagnostic' vs 'src.diagnostics.__bypass_control_unused__'"
+      }
+    ],
+    "reference_run": []
+  },
+  "unexpected_candidate_json_differences": {},
+  "all_scientific_artifacts_identical": true,
+  "verified": true,
+  "conclusion": "bypass is inert for this candidate and runtime",
+  "scope_limit": "Equivalence is demonstrated for the tested candidate, arm and pinned runtime. It is evidence, not a proof for every possible input."
+}

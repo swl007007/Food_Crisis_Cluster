@@ -1,0 +1,27 @@
+__pycache__/
+.tmp*
+
+# Run outputs stay out of git (a run root is ~1 GB). Git will not descend into an
+# excluded directory, so each level is re-included explicitly before the files are.
+# The three exceptions are required evidence rather than bulk intermediates:
+#   - the frozen D22 recipe selection, which fixes the winner before any final row is scored
+#   - the D41-D45 final report, whose draw_ledger D44 requires so the interval can be
+#     independently recomputed
+#   - the diagnostic-bypass control manifest and the archived native-crash record
+runs/*
+!runs/*/
+runs/*/*
+!runs/*/report/
+!runs/*/verification/
+!runs/*/superseded/
+runs/*/verification/*
+!runs/*/verification/diagnostic_bypass/
+runs/*/verification/diagnostic_bypass/*
+runs/*/superseded/*
+!runs/*/superseded/*/
+runs/*/superseded/*/*
+!runs/*/report/recipe_selection.json
+!runs/*/report/final_report.json
+!runs/*/verification/diagnostic_bypass/diagnostic_bypass_control.json
+!runs/*/superseded/*/failure.json
+!runs/*/superseded/*/retry_provenance.json

@@ -1,0 +1,55 @@
+{
+  "identity": {
+    "name": "GeoRF-E_2015_10_fs2",
+    "arm": "E",
+    "variant": "GeoRF-E",
+    "year": 2015,
+    "month": 10,
+    "forecasting_scope": 2,
+    "horizon_months": 8,
+    "target_month": "2015-10",
+    "map_roles": [
+      "calibration"
+    ]
+  },
+  "status": "failed",
+  "returncode": 3221225477,
+  "seconds": 22.2,
+  "rows": {
+    "target_month": "2015-10",
+    "origin_month": "2015-02",
+    "horizon_months": 8,
+    "training_window": "[2012-03, 2015-02) = 35 calendar months, origin month excluded",
+    "train_group_filter": "released: training rows restricted to groups present in the target month",
+    "rows_in_temporal_window": 58616,
+    "rows_after_group_filter": 58606,
+    "rows_removed_by_group_filter": 10,
+    "target_rows": 5009,
+    "train_observed_months": [
+      "2012-04",
+      "2012-07",
+      "2012-10",
+      "2013-01",
+      "2013-04",
+      "2013-07",
+      "2013-10",
+      "2014-01",
+      "2014-04",
+      "2014-07",
+      "2014-10",
+      "2015-01"
+    ],
+    "train_observed_month_count": 12,
+    "train_areas": 5009,
+    "target_areas": 5009,
+    "train_class_counts": {
+      "0": 54768,
+      "1": 3838
+    },
+    "target_class_counts": {
+      "0": 4291,
+      "1": 718
+    }
+  },
+  "reason": "worker process failed; see worker.log. An execution failure is not D19 no-split evidence and not a support exclusion (R23)."
+}
