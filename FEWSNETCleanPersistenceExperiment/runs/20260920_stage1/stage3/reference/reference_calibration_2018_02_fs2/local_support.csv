@@ -1,0 +1,11 @@
+partition_id,training_rows,classes_present,local_model_fitted,reason
+0,10873,2,True,
+1,824,2,True,
+2,1080,1,False,single_class
+3,5408,2,True,
+4,4916,2,True,
+5,2890,2,True,
+6,2760,2,True,
+7,1114,2,True,
+8,3520,2,True,
+9,1983,2,True,

@@ -8,12 +8,72 @@ __pycache__/
 #   - the D41-D45 final report, whose draw_ledger D44 requires so the interval can be
 #     independently recomputed
 #   - the diagnostic-bypass control manifest and the archived native-crash record
+# The close audit reported evidence gaps G1-G3 because only the committed repository
+# reaches the auditor's independent clone: the ledgers, manifests and maps that support
+# every claim were on disk but not in the commit. The manifests are small (~15 MB
+# total) and are now included; only the ~223 MB of per-row prediction and training-key
+# CSVs stay out, and their content is reconstructable from report/confusion_by_date.
 runs/*
 !runs/*/
 runs/*/*
 !runs/*/report/
 !runs/*/verification/
 !runs/*/superseded/
+!runs/*/run_manifest.json
+!runs/*/stage1/
+!runs/*/stage2/
+!runs/*/stage2_inputs/
+!runs/*/stage3/
+!runs/*/calibration/
+!runs/*/thresholds/
+
+# Stage 1 candidate ledger (G2): the per-candidate record, not its checkpoints.
+runs/*/stage1/*
+!runs/*/stage1/*/
+runs/*/stage1/*/*
+!runs/*/stage1/*/*/
+runs/*/stage1/*/*/*
+!runs/*/stage1/*/*/candidate.json
+!runs/*/stage1/*/*/correspondence_table.csv
+
+# Stage 2 maps and their evidence (G2).
+runs/*/stage2/*
+!runs/*/stage2/*/
+runs/*/stage2/*/*
+!runs/*/stage2/*/*/
+runs/*/stage2/*/*/*
+!runs/*/stage2/*/*/consensus_evidence.json
+!runs/*/stage2/*/*/consensus_map.csv
+!runs/*/stage2/*/*/plan_weights.csv
+runs/*/stage2_inputs/*
+!runs/*/stage2_inputs/*/
+runs/*/stage2_inputs/*/*
+!runs/*/stage2_inputs/*/*/
+runs/*/stage2_inputs/*/*/*
+!runs/*/stage2_inputs/*/*/candidate_status.csv
+!runs/*/stage2_inputs/*/*/stage2_input_summary.json
+
+# Stage 3 fold records and local-support ledgers (G3). The per-row predictions.csv and
+# training_keys.csv are the bulk and stay excluded.
+runs/*/stage3/*
+!runs/*/stage3/*/
+runs/*/stage3/*/*
+!runs/*/stage3/*/*/
+runs/*/stage3/*/*/*
+!runs/*/stage3/*/*/fold.json
+!runs/*/stage3/*/*/local_support.csv
+!runs/*/stage3/*/*/imputer_statistics.csv
+
+# Frozen calibrators and thresholds with their input bindings and full traces (G3).
+runs/*/calibration/*
+!runs/*/calibration/*/
+runs/*/calibration/*/*
+!runs/*/calibration/*/*.json
+runs/*/thresholds/*
+!runs/*/thresholds/*/
+runs/*/thresholds/*/*
+!runs/*/thresholds/*/*.json
+!runs/*/thresholds/*/*.csv
 runs/*/verification/*
 !runs/*/verification/diagnostic_bypass/
 runs/*/verification/diagnostic_bypass/*

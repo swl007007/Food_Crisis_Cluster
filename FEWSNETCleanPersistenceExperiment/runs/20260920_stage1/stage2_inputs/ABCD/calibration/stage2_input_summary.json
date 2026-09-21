@@ -1,0 +1,26 @@
+{
+  "arm": "ABCD",
+  "map_role": "calibration",
+  "information_cutoff": "2016-12",
+  "candidate_years": [
+    2014,
+    2015,
+    2016
+  ],
+  "scheduled_candidates": 33,
+  "completed_eligible_candidates": 33,
+  "validly_excluded_candidates": 0,
+  "failed_candidates": 0,
+  "not_run_candidates": 0,
+  "unaccounted_status_candidates": {},
+  "candidates_without_any_status": 0,
+  "candidate_status_counts": {
+    "completed": 33
+  },
+  "candidates_with_positive_stage2_weight": 5,
+  "month_ind": false,
+  "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+  "stage2_ready": true,
+  "stage2_blocked_reason": "",
+  "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+}

@@ -1,0 +1,142 @@
+{
+  "arm": "BCDE",
+  "frozen_utc": "2026-09-21T13:02:48Z",
+  "selection_window": "2020-02, 2020-06, 2020-10 (D17/D38)",
+  "rule": "strict p > tau, up-only 0->1; ties keep the smallest tau (D37/D38)",
+  "input_predictions_sha256": {
+    "BCDE_selection_2020_02_fs1": "d67ddb336802c55026d8657aa19508a8288e8d21ea27b62d481bc0b5b570f7c4",
+    "BCDE_selection_2020_02_fs2": "3b603295b7c155f2e337d1ef0e9fabef5f598a3097150f1256bc319266903721",
+    "BCDE_selection_2020_02_fs3": "5e2926352ca787154a59681ed143fb6ca8e689a1ff05a8cc46dd9a16ab651cf6",
+    "BCDE_selection_2020_06_fs1": "67db30d2d691fcc71b8979c1cfa68832d4e88c8ca8ef70f6544df8fd3371b66c",
+    "BCDE_selection_2020_06_fs2": "3719842d8f38f6c67deb1917a97c16a7ef92f5f1462f2521eb77b381419aff12",
+    "BCDE_selection_2020_06_fs3": "cf34a7eeba89779b7fbb351428f2c4ca897a724493f4cbd480ce0fb2d5e6e89f",
+    "BCDE_selection_2020_10_fs1": "a269cc7b5e1cf038bb8faec5c985c82fcbd3d443bd1eb0c13241c45389b68950",
+    "BCDE_selection_2020_10_fs2": "dcac3f7b92f6a07773b3ee58550ab1e5f8a9f8f5de3bcc9cbdb8874e4a3d21ff",
+    "BCDE_selection_2020_10_fs3": "95f96a28a79e33a129393b891cb1cd1511c053001f1feaf636a81e0bd788f28b"
+  },
+  "input_calibrators_sha256": {
+    "h4": "0b5ff2ceee2a7580909ad163dadce7699c0d368796d46741883fd3e94462cd19",
+    "h8": "69e91a05d008fc58fc844b874de693aef44c05a1c57b5248a200a5e4594ee04b",
+    "h12": "29741e2979c91661662087a834dfd9ce5f066cea6b186d345b012de16d487000"
+  },
+  "thresholds": {
+    "raw_h4": {
+      "arm": "BCDE",
+      "horizon_months": 4,
+      "variant": "raw",
+      "tau": 0.59,
+      "no_correction": false,
+      "selected_f1": 0.6001010271089409,
+      "baseline_persistence_f1": 0.5970046479600619,
+      "gain": 0.003096379148878947,
+      "n_candidates": 101,
+      "support_rows": 16298,
+      "target_months": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ]
+    },
+    "calibrated_h4": {
+      "arm": "BCDE",
+      "horizon_months": 4,
+      "variant": "calibrated",
+      "tau": 0.75,
+      "no_correction": false,
+      "selected_f1": 0.5990141084480707,
+      "baseline_persistence_f1": 0.5970046479600619,
+      "gain": 0.002009460488008763,
+      "n_candidates": 65,
+      "support_rows": 16298,
+      "target_months": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ]
+    },
+    "raw_h8": {
+      "arm": "BCDE",
+      "horizon_months": 8,
+      "variant": "raw",
+      "tau": 0.54,
+      "no_correction": false,
+      "selected_f1": 0.5325077399380805,
+      "baseline_persistence_f1": 0.5132505870513251,
+      "gain": 0.019257152886755446,
+      "n_candidates": 101,
+      "support_rows": 16157,
+      "target_months": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ]
+    },
+    "calibrated_h8": {
+      "arm": "BCDE",
+      "horizon_months": 8,
+      "variant": "calibrated",
+      "tau": 0.2978723404255319,
+      "no_correction": false,
+      "selected_f1": 0.5397111913357401,
+      "baseline_persistence_f1": 0.5132505870513251,
+      "gain": 0.02646060428441499,
+      "n_candidates": 58,
+      "support_rows": 16157,
+      "target_months": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ]
+    },
+    "raw_h12": {
+      "arm": "BCDE",
+      "horizon_months": 12,
+      "variant": "raw",
+      "tau": 0.48,
+      "no_correction": false,
+      "selected_f1": 0.5900672020980167,
+      "baseline_persistence_f1": 0.5857642940490082,
+      "gain": 0.004302908049008458,
+      "n_candidates": 101,
+      "support_rows": 16016,
+      "target_months": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ]
+    },
+    "calibrated_h12": {
+      "arm": "BCDE",
+      "horizon_months": 12,
+      "variant": "calibrated",
+      "tau": 0.2571428571428571,
+      "no_correction": false,
+      "selected_f1": 0.5900886117492615,
+      "baseline_persistence_f1": 0.5857642940490082,
+      "gain": 0.004324317700253322,
+      "n_candidates": 52,
+      "support_rows": 16016,
+      "target_months": [
+        "2020-02",
+        "2020-06",
+        "2020-10"
+      ]
+    }
+  },
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "sklearn": "1.6.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "PYTHONHASHSEED": null
+    }
+  }
+}

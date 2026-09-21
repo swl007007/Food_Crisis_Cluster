@@ -1,0 +1,59 @@
+{
+  "arm": "ABDE",
+  "map_role": "final",
+  "year": 2024,
+  "month": 6,
+  "forecasting_scope": 2,
+  "horizon_months": 8,
+  "fold": "ABDE_final_2024_06_fs2",
+  "rows": {
+    "target_month": "2024-06",
+    "origin_month": "2023-10",
+    "horizon_months": 8,
+    "training_window": "[2020-11, 2023-10)",
+    "train_group_filter": "removed for Stage 3 by R65/D61; Stage 1 keeps it",
+    "train_rows": 40049,
+    "train_areas": 5573,
+    "train_class_counts": {
+      "0": 28827,
+      "1": 11222
+    },
+    "target_rows": 5697
+  },
+  "features": 424,
+  "map": {
+    "outcome": "valid_unsplit_all_nonpositive_weights",
+    "n_clusters": 1,
+    "consensus_map_sha256": "f2ce9ac039b54c39e1f614228b80d32fb8e13c8f51e51ca37a1360b239d8cfa7"
+  },
+  "rf_params": {
+    "n_estimators": 100,
+    "max_depth": null,
+    "random_state": 5,
+    "n_jobs": 1
+  },
+  "local_models_fitted": 0,
+  "local_partitions_considered": 0,
+  "model_routes": {
+    "pooled_valid_unsplit_map": 5697
+  },
+  "persistence": {
+    "available": 5410,
+    "unavailable": 287
+  },
+  "imputer": {
+    "strategy": "max_plus",
+    "fitted_on": "the D61/R65 training pool only (real rows)",
+    "columns": 424,
+    "all_missing_columns": 8,
+    "statistics_sha256": "e3c66935dc7a982dca288a16840bc7aee8d8507a1c2efc1c0bc14e12b4542fb3"
+  },
+  "training_keys_sha256": "94ed8b4ef37a491a56038703e1001ebc62430113ebc94077d29fa9bf8f0693f1",
+  "pooled_stream": {
+    "retained_for_all_targets": true,
+    "note": "pooled_hard_prediction / pooled_prob_class1 cover every target row, including locally routed ones, so the pooled-versus-partitioned comparison is reconstructable from the artifacts alone",
+    "rows_where_partitioned_differs_from_pooled": 0
+  },
+  "predictions_sha256": "2ae0b372195399c223703ae9ae1021c9df9a24da74d054984181e3d600c2b0c5",
+  "seconds": 21.3
+}

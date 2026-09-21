@@ -1,0 +1,61 @@
+{
+  "arm": "reference",
+  "map_role": "calibration",
+  "year": 2018,
+  "month": 2,
+  "forecasting_scope": 3,
+  "horizon_months": 12,
+  "fold": "reference_calibration_2018_02_fs3",
+  "rows": {
+    "target_month": "2018-02",
+    "origin_month": "2017-02",
+    "horizon_months": 12,
+    "training_window": "[2014-03, 2017-02)",
+    "train_group_filter": "removed for Stage 3 by R65/D61; Stage 1 keeps it",
+    "train_rows": 50449,
+    "train_areas": 5364,
+    "train_class_counts": {
+      "0": 45507,
+      "1": 4942
+    },
+    "target_rows": 5364
+  },
+  "features": 109,
+  "map": {
+    "outcome": "spectral_partition",
+    "n_clusters": 10,
+    "consensus_map_sha256": "1a89be7041b284d8880f65c8b55f07fc814dd78bac837ba39724e78d4c1a4331"
+  },
+  "rf_params": {
+    "n_estimators": 100,
+    "max_depth": null,
+    "random_state": 5,
+    "n_jobs": 1
+  },
+  "local_models_fitted": 9,
+  "local_partitions_considered": 10,
+  "model_routes": {
+    "local_partition_rf": 3470,
+    "pooled_unassigned_area": 1786,
+    "pooled_partition_below_support_gate": 108
+  },
+  "persistence": {
+    "available": 5216,
+    "unavailable": 148
+  },
+  "imputer": {
+    "strategy": "max_plus",
+    "fitted_on": "the D61/R65 training pool only (real rows)",
+    "columns": 109,
+    "all_missing_columns": 0,
+    "statistics_sha256": "7c515ab12a01d49f6175e30a251aa63402034938bc7d7e4e38a8a295dcfb54da"
+  },
+  "training_keys_sha256": "9502132404c884f2fd38367d4304bb8ed704528acf44b6bf1e04b46c86c4d112",
+  "pooled_stream": {
+    "retained_for_all_targets": true,
+    "note": "pooled_hard_prediction / pooled_prob_class1 cover every target row, including locally routed ones, so the pooled-versus-partitioned comparison is reconstructable from the artifacts alone",
+    "rows_where_partitioned_differs_from_pooled": 50
+  },
+  "predictions_sha256": "a24f00e25c14cbf92bde0fa246ce00648006159930adc4964a85bd5a23f286b5",
+  "seconds": 18.7
+}

@@ -1,0 +1,437 @@
+{
+  "identity": {
+    "name": "GeoRF-E_2017_06_fs3",
+    "arm": "E",
+    "variant": "GeoRF-E",
+    "year": 2017,
+    "month": 6,
+    "forecasting_scope": 3,
+    "horizon_months": 12,
+    "target_month": "2017-06",
+    "map_roles": [
+      "selection"
+    ]
+  },
+  "started_utc": "2026-09-21T05:04:14Z",
+  "rows": {
+    "target_month": "2017-06",
+    "origin_month": "2016-06",
+    "horizon_months": 12,
+    "training_window": "[2013-07, 2016-06) = 35 calendar months, origin month excluded",
+    "train_group_filter": "released: training rows restricted to groups present in the target month",
+    "rows_in_temporal_window": 54508,
+    "rows_after_group_filter": 54464,
+    "rows_removed_by_group_filter": 44,
+    "target_rows": 5362,
+    "train_observed_months": [
+      "2013-07",
+      "2013-10",
+      "2014-01",
+      "2014-04",
+      "2014-07",
+      "2014-10",
+      "2015-01",
+      "2015-04",
+      "2015-07",
+      "2015-10",
+      "2016-02"
+    ],
+    "train_observed_month_count": 11,
+    "train_areas": 5159,
+    "target_areas": 5362,
+    "train_class_counts": {
+      "0": 50276,
+      "1": 4188
+    },
+    "target_class_counts": {
+      "0": 4343,
+      "1": 1019
+    }
+  },
+  "schema": {
+    "n_columns": 226,
+    "declared_width": 226,
+    "columns_sha256": "ac68dca5a0b7b4afbb06b7a6ce2fd6d03e713cc98bed2d70f27e53fd9b220b14",
+    "feature_build_seconds": 1.54,
+    "note": "Administrative, country and partition identifiers are metadata only and are absent from this schema (D51)."
+  },
+  "baseline": {
+    "root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline",
+    "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+    "manifest_version": "0.1.0-f1-nosmote",
+    "manifest_source_commit": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+    "payload_files_verified": 45,
+    "module_locations": {},
+    "patched": false,
+    "patch_note": "No source patch is applied. IPCCH's polygon-refinement patch is specific to its own correspondence-table flow and is deliberately not imported."
+  },
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "sklearn": "1.6.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "PYTHONHASHSEED": "42"
+    }
+  },
+  "process_seeds": {
+    "python_random": 42,
+    "numpy": 42
+  },
+  "support": {
+    "real_fitting_rows": 39598,
+    "real_validation_rows": 14866,
+    "labeled_target_rows": 5362,
+    "fitting_class_counts": {
+      "0": 36523,
+      "1": 3075
+    },
+    "validation_class_counts": {
+      "0": 13753,
+      "1": 1113
+    },
+    "groups_with_validation": 5005,
+    "singleton_groups_train_only": 154,
+    "split_settings": {
+      "val_ratio": 0.2,
+      "min_val_per_group": 1,
+      "random_state": 42,
+      "skip_singleton_groups": true,
+      "row_order": "master file order (area-major), as produced by prepare_data"
+    },
+    "artificial_rows_in_support": 0,
+    "artificial_row_note": "The release appends one zero-feature row per class inside RF fitting (model_RF.get_new_forest); those rows are never counted here and never reach the imputer (D4/D20).",
+    "split_seconds": 0.04
+  },
+  "imputation": {
+    "strategy": "max_plus",
+    "multiplier": 100.0,
+    "all_missing_fill": 0.0,
+    "fitting_rows": 39598,
+    "columns_all_missing_in_fitting_rows": [
+      "bbg_GCFPDAIN",
+      "bbg_TZTX2_Comdty",
+      "bbg_GCFPDAIN_age_months",
+      "bbg_TZTX2_Comdty_age_months"
+    ],
+    "fit_rows_are_real_fitting_rows_only": true
+  },
+  "effective_config": {
+    "config_module": {
+      "MODEL_CHOICE": "RF",
+      "MODE": "classification",
+      "NUM_CLASS": 2,
+      "MIN_DEPTH": 1,
+      "MAX_DEPTH": 6,
+      "N_JOBS": 4,
+      "MIN_BRANCH_SAMPLE_SIZE": 0,
+      "MIN_SCAN_CLASS_SAMPLE": 0,
+      "FLEX_OPTION": true,
+      "FLEX_RATIO": 0.1,
+      "FLEX_TYPE": "n_group",
+      "MIN_GROUP_POS_SAMPLE_SIZE_FLEX": 0,
+      "SIGLVL": 0.1,
+      "ES_THRD": 0.5,
+      "MD_THRD": 0.0005,
+      "CONTIGUITY": true,
+      "CONTIGUITY_TYPE": "polygon",
+      "REFINE_TIMES": 3,
+      "MIN_COMPONENT_SIZE": 5,
+      "USE_ADJACENCY_MATRIX": true,
+      "ADJACENCY_POLYGON_ID_COLUMN": "admin_code",
+      "GOVERNING_METRIC": "class_1_f1",
+      "CRISIS_FOCUSED_OPTIMIZATION": true,
+      "MIN_CLASS_1_IMPROVEMENT_THRESHOLD": 0.01,
+      "VAL_RATIO": 0.2,
+      "TRAIN_RATIO": 0.6,
+      "GROUP_SPLIT": {
+        "enable": true,
+        "min_val_per_group": 1,
+        "skip_singleton_groups": true,
+        "random_state": 42
+      },
+      "FEATURE_DROP": {
+        "enable": false,
+        "cols": [],
+        "patterns": []
+      },
+      "feature_drop": {
+        "enable": false,
+        "cols": [],
+        "patterns": []
+      },
+      "DISABLE_BASELINE_CV_MAP": true,
+      "PRESERVE_ISOLATED_POLYGONS": true,
+      "VIS_DEBUG_MODE": false
+    },
+    "georf_module": {
+      "FEATURE_DROP": {
+        "enable": false,
+        "cols": [],
+        "patterns": []
+      },
+      "feature_drop": {
+        "enable": false,
+        "cols": [],
+        "patterns": []
+      },
+      "MIN_DEPTH": 1,
+      "MAX_DEPTH": 6,
+      "N_JOBS": 4,
+      "NUM_CLASS": 2,
+      "CONTIGUITY": true,
+      "CONTIGUITY_TYPE": "polygon",
+      "MIN_COMPONENT_SIZE": 5,
+      "MODEL_CHOICE": "RF",
+      "VIS_DEBUG_MODE": false
+    },
+    "diagnostics_bypassed": "src.diagnostics.pre_partition_diagnostic"
+  },
+  "module_locations": {
+    "config": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\config.py",
+    "src": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src",
+    "src.helper.helper": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\helper\\helper.py",
+    "src.metrics.metrics": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\metrics\\metrics.py",
+    "src.model.model_RF": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\model\\model_RF.py",
+    "src.customize.customize": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\customize\\customize.py",
+    "src.initialization.initialization": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\initialization\\initialization.py",
+    "src.utils.split": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\utils\\split.py",
+    "src.model.train_branch": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\model\\train_branch.py",
+    "src.vis.visualization": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\vis\\visualization.py",
+    "src.partition.partition_opt": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\partition\\partition_opt.py",
+    "src.tests.static_table": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\tests\\static_table.py",
+    "src.tests.sig_test": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\tests\\sig_test.py",
+    "src.partition.transformation": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\partition\\transformation.py",
+    "src.model.GeoRF": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\model\\GeoRF.py"
+  },
+  "partitions": {
+    "terminal_partition_ids": [
+      "00000",
+      "00001",
+      "0001",
+      "001",
+      "01",
+      "1",
+      "root"
+    ],
+    "n_terminal_partitions": 7,
+    "accepted_splits": 6,
+    "branch_table_active_nodes": 11,
+    "branch_table_shape": [
+      64,
+      6
+    ],
+    "split_gate_trace": [
+      {
+        "parent": 0.74934,
+        "candidate": 0.759812,
+        "accepted": true,
+        "gain": 0.010472000000000037
+      },
+      {
+        "parent": 0.451613,
+        "candidate": 0.532213,
+        "accepted": true,
+        "gain": 0.08060000000000006
+      },
+      {
+        "parent": 0.826752,
+        "candidate": 0.832282,
+        "accepted": false,
+        "gain": 0.005529999999999924
+      },
+      {
+        "parent": 0.460177,
+        "candidate": 0.493506,
+        "accepted": true,
+        "gain": 0.033329
+      },
+      {
+        "parent": 0.656489,
+        "candidate": 0.656489,
+        "accepted": false,
+        "gain": 0.0
+      },
+      {
+        "parent": 0.37594,
+        "candidate": 0.406015,
+        "accepted": true,
+        "gain": 0.03007500000000002
+      },
+      {
+        "parent": 0.653061,
+        "candidate": 0.653061,
+        "accepted": false,
+        "gain": 0.0
+      },
+      {
+        "parent": 0.219512,
+        "candidate": 0.255814,
+        "accepted": true,
+        "gain": 0.03630199999999997
+      },
+      {
+        "parent": 0.705882,
+        "candidate": 0.705882,
+        "accepted": false,
+        "gain": 0.0
+      }
+    ],
+    "split_gate": "released class-1 F1 gate: accept only a strict gain > 0.01 on the parent's own validation rows; parent wins ties (partition_opt:867-891)",
+    "correspondence_source": "space_partitions/X_branch_id.npy as saved after group-consistency regeneration and before GeoRF.fit's grid-only refinement, which is the same array the released app reads (main_model_GF.py:630-634)",
+    "assigned_areas": 5159,
+    "root_only": false,
+    "area_counts": {
+      "1": 2841,
+      "01": 1167,
+      "001": 548,
+      "0001": 262,
+      "root": 154,
+      "00001": 112,
+      "00000": 75
+    }
+  },
+  "scores": {
+    "f1(1)": 0.2579034941763727,
+    "f1_base(1)": 0.25645295587010825,
+    "f1(0)": 0.9063222012182316,
+    "f1_base(0)": 0.9062270292974903,
+    "precision(1)": 0.8469945355191257,
+    "recall(1)": 0.1521099116781158,
+    "precision_base(1)": 0.8461538461538461,
+    "recall_base(1)": 0.15112855740922473,
+    "num_samples(0)": 4343,
+    "num_samples(1)": 1019,
+    "partitioned_counts": {
+      "precision": [
+        0.8331724271094806,
+        0.8469945355191257
+      ],
+      "recall": [
+        0.9935528436564587,
+        0.1521099116781158
+      ],
+      "f1": [
+        0.9063222012182316,
+        0.2579034941763727
+      ],
+      "total_class": [
+        4343.0,
+        1019.0
+      ],
+      "true_class": [
+        4315.0,
+        155.0
+      ],
+      "pred_total": [
+        5179.0,
+        183.0
+      ]
+    },
+    "base_counts": {
+      "precision": [
+        0.833011583011583,
+        0.8461538461538461
+      ],
+      "recall": [
+        0.9935528436564587,
+        0.15112855740922473
+      ],
+      "f1": [
+        0.9062270292974903,
+        0.25645295587010825
+      ],
+      "total_class": [
+        4343.0,
+        1019.0
+      ],
+      "true_class": [
+        4315.0,
+        154.0
+      ],
+      "pred_total": [
+        5180.0,
+        182.0
+      ]
+    },
+    "note": "Class-1 F1 on the candidate's own target month; the Stage 2 weight is max(logit(f1(1)) - logit(f1_base(1)), 0) (D56). Computed through the released get_class_wise_accuracy/get_prf on stored per-row predictions."
+  },
+  "model": {
+    "georf_instance": {
+      "min_model_depth": 1,
+      "max_model_depth": 6,
+      "n_trees_unit": 100,
+      "num_class": 2,
+      "max_depth": null,
+      "random_state": 5,
+      "n_jobs": 4,
+      "mode": "classification",
+      "drop_list_": [],
+      "model_dir": "result_GeoRF"
+    },
+    "root_estimator_params": {
+      "bootstrap": true,
+      "ccp_alpha": 0.0,
+      "class_weight": null,
+      "criterion": "gini",
+      "max_depth": null,
+      "max_features": "sqrt",
+      "max_leaf_nodes": null,
+      "max_samples": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 1,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "n_estimators": 100,
+      "n_jobs": 4,
+      "oob_score": false,
+      "random_state": 5,
+      "warm_start": false
+    },
+    "base_estimator_params": {
+      "bootstrap": true,
+      "ccp_alpha": 0.0,
+      "class_weight": null,
+      "criterion": "gini",
+      "max_depth": null,
+      "max_features": "sqrt",
+      "max_leaf_nodes": null,
+      "max_samples": null,
+      "min_impurity_decrease": 0.0,
+      "min_samples_leaf": 1,
+      "min_samples_split": 2,
+      "min_weight_fraction_leaf": 0.0,
+      "monotonic_cst": null,
+      "n_estimators": 100,
+      "n_jobs": 4,
+      "oob_score": false,
+      "random_state": 5,
+      "warm_start": false
+    },
+    "fit_call": {
+      "contiguity_type": "polygon",
+      "print_to_file": false,
+      "track_partition_metrics": false,
+      "VIS_DEBUG_MODE": false,
+      "explicit_split": "split={'X_set': ...} and X_set=... (no second split)"
+    }
+  },
+  "timings": {
+    "feature_build_seconds": 1.54,
+    "fit_seconds": 21.57,
+    "evaluate_seconds": 2.12
+  },
+  "work_directory": "removed after artifact extraction (--keep-work to retain)",
+  "status": "completed",
+  "seconds": 26.99,
+  "finished_utc": "2026-09-21T05:04:39Z",
+  "wall_seconds": 27.56
+}

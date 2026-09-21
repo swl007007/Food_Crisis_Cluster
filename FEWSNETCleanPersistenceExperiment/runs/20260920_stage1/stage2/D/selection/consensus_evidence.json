@@ -1,0 +1,434 @@
+{
+  "arm": "D",
+  "map_role": "selection",
+  "information_cutoff": "2018-12",
+  "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+  "month_ind": false,
+  "parameters": {
+    "sigma_degrees": 5.0,
+    "knn_k": 40,
+    "spectral_seed": 42,
+    "completion_max_km": 100.0,
+    "earth_radius_km": 6371.0,
+    "post_consensus_smoothing": "disabled (D60/R64)"
+  },
+  "candidate_ledger": {
+    "eligible_plans": 27,
+    "positive_weight_plans": 16,
+    "zero_weight_plans": 11,
+    "total_positive_weight": 2.3395997260205657,
+    "node_universe": 5368,
+    "nodes_supported_only_by_zero_weight_plans": 0,
+    "plans_with_f1_base_exactly_zero": 0,
+    "weight_share_of_f1_base_zero_plans": 0.0,
+    "plan_weights": [
+      {
+        "name": "GeoRF-D_2017_02_fs2",
+        "f1(1)": 0.182341650671785,
+        "f1_base(1)": 0.1018329938900203,
+        "weight": 0.6764594153498709,
+        "weight_share": 0.289135,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5015,
+        "distinct_partitions": 6
+      },
+      {
+        "name": "GeoRF-D_2016_02_fs3",
+        "f1(1)": 0.1088888888888889,
+        "f1_base(1)": 0.0615735461801596,
+        "weight": 0.6218310249168537,
+        "weight_share": 0.265785,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5009,
+        "distinct_partitions": 6
+      },
+      {
+        "name": "GeoRF-D_2016_06_fs3",
+        "f1(1)": 0.2162740899357602,
+        "f1_base(1)": 0.1836065573770491,
+        "weight": 0.20458838916945243,
+        "weight_share": 0.087446,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5008,
+        "distinct_partitions": 3
+      },
+      {
+        "name": "GeoRF-D_2017_02_fs1",
+        "f1(1)": 0.1370407149950347,
+        "f1_base(1)": 0.1156186612576064,
+        "weight": 0.1945015354062971,
+        "weight_share": 0.083135,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5015,
+        "distinct_partitions": 7
+      },
+      {
+        "name": "GeoRF-D_2018_06_fs1",
+        "f1(1)": 0.4869402985074627,
+        "f1_base(1)": 0.449955713020372,
+        "weight": 0.14859894401111903,
+        "weight_share": 0.063515,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5364,
+        "distinct_partitions": 7
+      },
+      {
+        "name": "GeoRF-D_2016_10_fs1",
+        "f1(1)": 0.46524064171123,
+        "f1_base(1)": 0.4368131868131868,
+        "weight": 0.11484370958466925,
+        "weight_share": 0.049087,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5159,
+        "distinct_partitions": 7
+      },
+      {
+        "name": "GeoRF-D_2018_10_fs1",
+        "f1(1)": 0.4528925619834711,
+        "f1_base(1)": 0.4291497975708502,
+        "weight": 0.09633052727710859,
+        "weight_share": 0.041174,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5365,
+        "distinct_partitions": 7
+      },
+      {
+        "name": "GeoRF-D_2016_02_fs2",
+        "f1(1)": 0.1979381443298969,
+        "f1_base(1)": 0.1869158878504673,
+        "weight": 0.0709446929499824,
+        "weight_share": 0.030323,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5009,
+        "distinct_partitions": 3
+      },
+      {
+        "name": "GeoRF-D_2017_06_fs3",
+        "f1(1)": 0.2440677966101694,
+        "f1_base(1)": 0.2315608919382504,
+        "weight": 0.06901280153249201,
+        "weight_share": 0.029498,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5159,
+        "distinct_partitions": 3
+      },
+      {
+        "name": "GeoRF-D_2017_10_fs2",
+        "f1(1)": 0.3953216374269006,
+        "f1_base(1)": 0.3854545454545454,
+        "weight": 0.041462641785596444,
+        "weight_share": 0.017722,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5359,
+        "distinct_partitions": 10
+      },
+      {
+        "name": "GeoRF-D_2017_06_fs1",
+        "f1(1)": 0.3411479385610347,
+        "f1_base(1)": 0.3333333333333333,
+        "weight": 0.034964381355094276,
+        "weight_share": 0.014945,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5358,
+        "distinct_partitions": 8
+      },
+      {
+        "name": "GeoRF-D_2018_10_fs3",
+        "f1(1)": 0.374203821656051,
+        "f1_base(1)": 0.3688811188811188,
+        "weight": 0.02279572713171274,
+        "weight_share": 0.009743,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5364,
+        "distinct_partitions": 11
+      },
+      {
+        "name": "GeoRF-D_2016_06_fs2",
+        "f1(1)": 0.2229299363057325,
+        "f1_base(1)": 0.2198505869797225,
+        "weight": 0.0178643077163545,
+        "weight_share": 0.007636,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5008,
+        "distinct_partitions": 3
+      },
+      {
+        "name": "GeoRF-D_2016_02_fs1",
+        "f1(1)": 0.3058589870903674,
+        "f1_base(1)": 0.3030907278165503,
+        "weight": 0.013072081567353067,
+        "weight_share": 0.005587,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5009,
+        "distinct_partitions": 6
+      },
+      {
+        "name": "GeoRF-D_2018_06_fs2",
+        "f1(1)": 0.431924882629108,
+        "f1_base(1)": 0.4297832233741754,
+        "weight": 0.008733679968754182,
+        "weight_share": 0.003733,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5363,
+        "distinct_partitions": 7
+      },
+      {
+        "name": "GeoRF-D_2017_10_fs1",
+        "f1(1)": 0.4652908067542213,
+        "f1_base(1)": 0.4643962848297213,
+        "weight": 0.0035958662978548828,
+        "weight_share": 0.001537,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5361,
+        "distinct_partitions": 8
+      },
+      {
+        "name": "GeoRF-D_2016_06_fs1",
+        "f1(1)": 0.3236763236763236,
+        "f1_base(1)": 0.3236763236763236,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5008,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2016_10_fs2",
+        "f1(1)": 0.3617571059431524,
+        "f1_base(1)": 0.3617571059431524,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5005,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2016_10_fs3",
+        "f1(1)": 0.321311475409836,
+        "f1_base(1)": 0.321311475409836,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5005,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2017_02_fs3",
+        "f1(1)": 0.0021551724137931,
+        "f1_base(1)": 0.0021551724137931,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 4861,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2017_06_fs2",
+        "f1(1)": 0.3298507462686567,
+        "f1_base(1)": 0.3298507462686567,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5159,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2017_10_fs3",
+        "f1(1)": 0.3514056224899598,
+        "f1_base(1)": 0.3605577689243027,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5159,
+        "distinct_partitions": 6
+      },
+      {
+        "name": "GeoRF-D_2018_02_fs1",
+        "f1(1)": 0.4703703703703704,
+        "f1_base(1)": 0.4703703703703704,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5363,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2018_02_fs2",
+        "f1(1)": 0.4372759856630824,
+        "f1_base(1)": 0.4549509366636931,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5361,
+        "distinct_partitions": 8
+      },
+      {
+        "name": "GeoRF-D_2018_02_fs3",
+        "f1(1)": 0.3581780538302277,
+        "f1_base(1)": 0.3630640083945436,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5359,
+        "distinct_partitions": 4
+      },
+      {
+        "name": "GeoRF-D_2018_06_fs3",
+        "f1(1)": 0.428842504743833,
+        "f1_base(1)": 0.428842504743833,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5361,
+        "distinct_partitions": 1
+      },
+      {
+        "name": "GeoRF-D_2018_10_fs2",
+        "f1(1)": 0.3737541528239202,
+        "f1_base(1)": 0.3737541528239202,
+        "weight": 0.0,
+        "weight_share": 0.0,
+        "f1_base_is_zero": false,
+        "assigned_nodes": 5365,
+        "distinct_partitions": 1
+      }
+    ]
+  },
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "sklearn": "1.6.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "PYTHONHASHSEED": null
+    }
+  },
+  "outcome": "spectral_partition",
+  "outcome_reason": "eigengap selected nc=17 and spectral clustering fitted the same core",
+  "n_clusters": 17,
+  "graph": {
+    "component_count": 6,
+    "component_sizes": [
+      4063,
+      509,
+      353,
+      174,
+      154,
+      115
+    ],
+    "largest_component_size": 4063,
+    "tied_components": 1,
+    "selected_component_id": 0,
+    "selected_component_first_code": 0,
+    "isolated_nodes": 0,
+    "core_matrix_sha256": "3382649d1c387936e97345079bdeb58591663a4e76ef5037f406197f8124f572",
+    "core_nodes": 4063,
+    "nodes_outside_core": 1305,
+    "areas_never_in_graph": 350
+  },
+  "eigengap": {
+    "component_nodes": 4063,
+    "k_eigen": 20,
+    "eigenvalues": [
+      -5.494109805775614e-17,
+      0.00010315722619499531,
+      0.0002984593704906212,
+      0.0005996088680981263,
+      0.003306483390529238,
+      0.004058316726175764,
+      0.0051369903226092875,
+      0.006876993436670391,
+      0.007581741626032099,
+      0.010022950456430856,
+      0.013020941494795879,
+      0.016606942726100072,
+      0.02047389785541327,
+      0.021313476215097084,
+      0.021911502687010597,
+      0.02352400962991541,
+      0.02425631426607184,
+      0.03426147373404037,
+      0.04002343260504453,
+      0.04070706033947199
+    ],
+    "eigengaps": [
+      0.00010315722619505025,
+      0.00019530214429562588,
+      0.00030114949760750513,
+      0.002706874522431112,
+      0.0007518333356465257,
+      0.0010786735964335237,
+      0.0017400031140611038,
+      0.0007047481893617076,
+      0.002441208830398757,
+      0.002997991038365023,
+      0.003586001231304193,
+      0.0038669551293131973,
+      0.0008395783596838145,
+      0.0005980264719135132,
+      0.001612506942904813,
+      0.0007323046361564292,
+      0.010005159467968532,
+      0.005761958871004162,
+      0.0006836277344274555
+    ],
+    "fiedler_value": 0.00010315722619499531,
+    "selected_nc": 17,
+    "selection_rule": "argmax(diff(sorted eigenvalues)) + 1, first equal maximum",
+    "eigsh": {
+      "which": "SM",
+      "maxiter": 5000,
+      "v0": "default_rng(42).standard_normal(n), pinned; released code passes no v0"
+    }
+  },
+  "core_partition_sizes": {
+    "0": 63,
+    "1": 483,
+    "2": 205,
+    "3": 205,
+    "4": 341,
+    "5": 544,
+    "6": 609,
+    "7": 176,
+    "8": 282,
+    "9": 171,
+    "10": 203,
+    "11": 83,
+    "12": 93,
+    "13": 212,
+    "14": 145,
+    "15": 100,
+    "16": 148
+  },
+  "coverage": {
+    "master_areas": 5718,
+    "by_assignment_source": {
+      "spectral_core": 4063,
+      "unassigned_nearest_donor_beyond_100km": 1568,
+      "completed_nearest_donor": 87
+    },
+    "by_graph_support": {
+      "in_fitted_core": 4063,
+      "in_graph_other_component": 1305,
+      "never_in_graph": 350
+    },
+    "assigned_areas": 4150,
+    "unassigned_pooled_areas": 1568,
+    "unassigned_from_other_component": 1302,
+    "unassigned_never_in_graph": 266,
+    "completion_distance_km": {
+      "min": 5.19381345239355,
+      "median": 2458.3186381785918,
+      "max": 9875.493238458455
+    }
+  },
+  "consensus_map_sha256": "bbf84a0136f5f6451117caf86d6f64fdc65fa8188440d6a7972e2af291787ad9",
+  "seconds": 2.5
+}

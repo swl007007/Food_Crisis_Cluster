@@ -1104,6 +1104,22 @@
       }
     }
   },
+  "cohort_reconciliation": {
+    "anchor": "prepared master with D36 exact-origin persistence",
+    "role": "final",
+    "expected_rows_by_horizon": {
+      "h4": 54330,
+      "h8": 49340,
+      "h12": 43441
+    },
+    "expected_cohort_sha256": {
+      "h4": "fd7075dd5db47f7fa60d856dc2f57ed11ea52c79e09544ac07976359735123d9",
+      "h8": "8b1c712f9b23dae0168d2e4fce7c211fc58e58469ecf940489f92d628e85173a",
+      "h12": "566987e96d4ba74cb9e4d989d628cabde4627eef06a7816f91a3045f588cadea"
+    },
+    "arms_matching_expected_cohort": true,
+    "mismatches": {}
+  },
   "winner_minus_reference": {
     "note": "Secondary evidence. Passing the persistence comparison does not by itself establish an incremental benefit over the corrected reference, and this increment may not replace the primary metric after the fact.",
     "by_cell": {
@@ -1115,6 +1131,1392 @@
       "calibrated_h12": -0.00013495580920575012
     },
     "mean": 0.000670487196963295
+  },
+  "confusion_by_date": {
+    "winner": {
+      "h4|2021-06": {
+        "persistence": {
+          "n": 4385,
+          "tp": 809,
+          "fp": 185,
+          "fn": 169,
+          "tn": 3222
+        },
+        "raw": {
+          "n": 4385,
+          "tp": 809,
+          "fp": 185,
+          "fn": 169,
+          "tn": 3222
+        },
+        "calibrated": {
+          "n": 4385,
+          "tp": 809,
+          "fp": 185,
+          "fn": 169,
+          "tn": 3222
+        }
+      },
+      "h4|2021-10": {
+        "persistence": {
+          "n": 3866,
+          "tp": 577,
+          "fp": 266,
+          "fn": 248,
+          "tn": 2775
+        },
+        "raw": {
+          "n": 3866,
+          "tp": 577,
+          "fp": 266,
+          "fn": 248,
+          "tn": 2775
+        },
+        "calibrated": {
+          "n": 3866,
+          "tp": 577,
+          "fp": 268,
+          "fn": 248,
+          "tn": 2773
+        }
+      },
+      "h4|2022-02": {
+        "persistence": {
+          "n": 4974,
+          "tp": 1026,
+          "fp": 69,
+          "fn": 457,
+          "tn": 3422
+        },
+        "raw": {
+          "n": 4974,
+          "tp": 1026,
+          "fp": 69,
+          "fn": 457,
+          "tn": 3422
+        },
+        "calibrated": {
+          "n": 4974,
+          "tp": 1026,
+          "fp": 69,
+          "fn": 457,
+          "tn": 3422
+        }
+      },
+      "h4|2022-06": {
+        "persistence": {
+          "n": 4776,
+          "tp": 1193,
+          "fp": 137,
+          "fn": 354,
+          "tn": 3092
+        },
+        "raw": {
+          "n": 4776,
+          "tp": 1193,
+          "fp": 137,
+          "fn": 354,
+          "tn": 3092
+        },
+        "calibrated": {
+          "n": 4776,
+          "tp": 1193,
+          "fp": 137,
+          "fn": 354,
+          "tn": 3092
+        }
+      },
+      "h4|2022-10": {
+        "persistence": {
+          "n": 4814,
+          "tp": 1271,
+          "fp": 354,
+          "fn": 207,
+          "tn": 2982
+        },
+        "raw": {
+          "n": 4814,
+          "tp": 1271,
+          "fp": 354,
+          "fn": 207,
+          "tn": 2982
+        },
+        "calibrated": {
+          "n": 4814,
+          "tp": 1271,
+          "fp": 354,
+          "fn": 207,
+          "tn": 2982
+        }
+      },
+      "h4|2023-02": {
+        "persistence": {
+          "n": 4814,
+          "tp": 1156,
+          "fp": 322,
+          "fn": 114,
+          "tn": 3222
+        },
+        "raw": {
+          "n": 4814,
+          "tp": 1157,
+          "fp": 324,
+          "fn": 113,
+          "tn": 3220
+        },
+        "calibrated": {
+          "n": 4814,
+          "tp": 1156,
+          "fp": 322,
+          "fn": 114,
+          "tn": 3222
+        }
+      },
+      "h4|2023-06": {
+        "persistence": {
+          "n": 4848,
+          "tp": 1120,
+          "fp": 147,
+          "fn": 647,
+          "tn": 2934
+        },
+        "raw": {
+          "n": 4848,
+          "tp": 1123,
+          "fp": 147,
+          "fn": 644,
+          "tn": 2934
+        },
+        "calibrated": {
+          "n": 4848,
+          "tp": 1120,
+          "fp": 147,
+          "fn": 647,
+          "tn": 2934
+        }
+      },
+      "h4|2023-10": {
+        "persistence": {
+          "n": 5410,
+          "tp": 1374,
+          "fp": 432,
+          "fn": 308,
+          "tn": 3296
+        },
+        "raw": {
+          "n": 5410,
+          "tp": 1374,
+          "fp": 432,
+          "fn": 308,
+          "tn": 3296
+        },
+        "calibrated": {
+          "n": 5410,
+          "tp": 1374,
+          "fp": 432,
+          "fn": 308,
+          "tn": 3296
+        }
+      },
+      "h4|2024-02": {
+        "persistence": {
+          "n": 5410,
+          "tp": 1488,
+          "fp": 194,
+          "fn": 291,
+          "tn": 3437
+        },
+        "raw": {
+          "n": 5410,
+          "tp": 1488,
+          "fp": 194,
+          "fn": 291,
+          "tn": 3437
+        },
+        "calibrated": {
+          "n": 5410,
+          "tp": 1488,
+          "fp": 194,
+          "fn": 291,
+          "tn": 3437
+        }
+      },
+      "h4|2024-06": {
+        "persistence": {
+          "n": 5697,
+          "tp": 1620,
+          "fp": 314,
+          "fn": 339,
+          "tn": 3424
+        },
+        "raw": {
+          "n": 5697,
+          "tp": 1621,
+          "fp": 321,
+          "fn": 338,
+          "tn": 3417
+        },
+        "calibrated": {
+          "n": 5697,
+          "tp": 1620,
+          "fp": 314,
+          "fn": 339,
+          "tn": 3424
+        }
+      },
+      "h4|2024-10": {
+        "persistence": {
+          "n": 5336,
+          "tp": 1101,
+          "fp": 497,
+          "fn": 280,
+          "tn": 3458
+        },
+        "raw": {
+          "n": 5336,
+          "tp": 1101,
+          "fp": 497,
+          "fn": 280,
+          "tn": 3458
+        },
+        "calibrated": {
+          "n": 5336,
+          "tp": 1101,
+          "fp": 501,
+          "fn": 280,
+          "tn": 3454
+        }
+      },
+      "h8|2021-10": {
+        "persistence": {
+          "n": 4906,
+          "tp": 762,
+          "fp": 307,
+          "fn": 326,
+          "tn": 3511
+        },
+        "raw": {
+          "n": 4906,
+          "tp": 792,
+          "fp": 641,
+          "fn": 296,
+          "tn": 3177
+        },
+        "calibrated": {
+          "n": 4906,
+          "tp": 777,
+          "fp": 488,
+          "fn": 311,
+          "tn": 3330
+        }
+      },
+      "h8|2022-02": {
+        "persistence": {
+          "n": 3866,
+          "tp": 665,
+          "fp": 178,
+          "fn": 432,
+          "tn": 2591
+        },
+        "raw": {
+          "n": 3866,
+          "tp": 753,
+          "fp": 381,
+          "fn": 344,
+          "tn": 2388
+        },
+        "calibrated": {
+          "n": 3866,
+          "tp": 778,
+          "fp": 482,
+          "fn": 319,
+          "tn": 2287
+        }
+      },
+      "h8|2022-06": {
+        "persistence": {
+          "n": 4776,
+          "tp": 985,
+          "fp": 55,
+          "fn": 562,
+          "tn": 3174
+        },
+        "raw": {
+          "n": 4776,
+          "tp": 1094,
+          "fp": 101,
+          "fn": 453,
+          "tn": 3128
+        },
+        "calibrated": {
+          "n": 4776,
+          "tp": 985,
+          "fp": 55,
+          "fn": 562,
+          "tn": 3174
+        }
+      },
+      "h8|2022-10": {
+        "persistence": {
+          "n": 4928,
+          "tp": 1247,
+          "fp": 236,
+          "fn": 282,
+          "tn": 3163
+        },
+        "raw": {
+          "n": 4928,
+          "tp": 1274,
+          "fp": 285,
+          "fn": 255,
+          "tn": 3114
+        },
+        "calibrated": {
+          "n": 4928,
+          "tp": 1267,
+          "fp": 259,
+          "fn": 262,
+          "tn": 3140
+        }
+      },
+      "h8|2023-02": {
+        "persistence": {
+          "n": 4860,
+          "tp": 1076,
+          "fp": 549,
+          "fn": 194,
+          "tn": 3041
+        },
+        "raw": {
+          "n": 4860,
+          "tp": 1111,
+          "fp": 605,
+          "fn": 159,
+          "tn": 2985
+        },
+        "calibrated": {
+          "n": 4860,
+          "tp": 1126,
+          "fp": 638,
+          "fn": 144,
+          "tn": 2952
+        }
+      },
+      "h8|2023-06": {
+        "persistence": {
+          "n": 5000,
+          "tp": 1345,
+          "fp": 263,
+          "fn": 536,
+          "tn": 2856
+        },
+        "raw": {
+          "n": 5000,
+          "tp": 1624,
+          "fp": 438,
+          "fn": 257,
+          "tn": 2681
+        },
+        "calibrated": {
+          "n": 5000,
+          "tp": 1387,
+          "fp": 288,
+          "fn": 494,
+          "tn": 2831
+        }
+      },
+      "h8|2023-10": {
+        "persistence": {
+          "n": 4703,
+          "tp": 941,
+          "fp": 181,
+          "fn": 398,
+          "tn": 3183
+        },
+        "raw": {
+          "n": 4703,
+          "tp": 1000,
+          "fp": 374,
+          "fn": 339,
+          "tn": 2990
+        },
+        "calibrated": {
+          "n": 4703,
+          "tp": 979,
+          "fp": 317,
+          "fn": 360,
+          "tn": 3047
+        }
+      },
+      "h8|2024-02": {
+        "persistence": {
+          "n": 5555,
+          "tp": 1518,
+          "fp": 433,
+          "fn": 406,
+          "tn": 3198
+        },
+        "raw": {
+          "n": 5555,
+          "tp": 1613,
+          "fp": 541,
+          "fn": 311,
+          "tn": 3090
+        },
+        "calibrated": {
+          "n": 5555,
+          "tp": 1651,
+          "fp": 641,
+          "fn": 273,
+          "tn": 2990
+        }
+      },
+      "h8|2024-06": {
+        "persistence": {
+          "n": 5410,
+          "tp": 1265,
+          "fp": 417,
+          "fn": 536,
+          "tn": 3192
+        },
+        "raw": {
+          "n": 5410,
+          "tp": 1481,
+          "fp": 606,
+          "fn": 320,
+          "tn": 3003
+        },
+        "calibrated": {
+          "n": 5410,
+          "tp": 1271,
+          "fp": 425,
+          "fn": 530,
+          "tn": 3184
+        }
+      },
+      "h8|2024-10": {
+        "persistence": {
+          "n": 5336,
+          "tp": 1046,
+          "fp": 527,
+          "fn": 335,
+          "tn": 3428
+        },
+        "raw": {
+          "n": 5336,
+          "tp": 1076,
+          "fp": 790,
+          "fn": 305,
+          "tn": 3165
+        },
+        "calibrated": {
+          "n": 5336,
+          "tp": 1062,
+          "fp": 706,
+          "fn": 319,
+          "tn": 3249
+        }
+      },
+      "h12|2022-02": {
+        "persistence": {
+          "n": 4906,
+          "tp": 831,
+          "fp": 238,
+          "fn": 642,
+          "tn": 3195
+        },
+        "raw": {
+          "n": 4906,
+          "tp": 881,
+          "fp": 376,
+          "fn": 592,
+          "tn": 3057
+        },
+        "calibrated": {
+          "n": 4906,
+          "tp": 865,
+          "fp": 317,
+          "fn": 608,
+          "tn": 3116
+        }
+      },
+      "h12|2022-06": {
+        "persistence": {
+          "n": 3676,
+          "tp": 647,
+          "fp": 102,
+          "fn": 440,
+          "tn": 2487
+        },
+        "raw": {
+          "n": 3676,
+          "tp": 674,
+          "fp": 201,
+          "fn": 413,
+          "tn": 2388
+        },
+        "calibrated": {
+          "n": 3676,
+          "tp": 647,
+          "fp": 102,
+          "fn": 440,
+          "tn": 2487
+        }
+      },
+      "h12|2022-10": {
+        "persistence": {
+          "n": 4928,
+          "tp": 964,
+          "fp": 131,
+          "fn": 565,
+          "tn": 3268
+        },
+        "raw": {
+          "n": 4928,
+          "tp": 977,
+          "fp": 167,
+          "fn": 552,
+          "tn": 3232
+        },
+        "calibrated": {
+          "n": 4928,
+          "tp": 964,
+          "fp": 131,
+          "fn": 565,
+          "tn": 3268
+        }
+      },
+      "h12|2023-02": {
+        "persistence": {
+          "n": 4776,
+          "tp": 1002,
+          "fp": 328,
+          "fn": 191,
+          "tn": 3255
+        },
+        "raw": {
+          "n": 4776,
+          "tp": 1015,
+          "fp": 345,
+          "fn": 178,
+          "tn": 3238
+        },
+        "calibrated": {
+          "n": 4776,
+          "tp": 1012,
+          "fp": 335,
+          "fn": 181,
+          "tn": 3248
+        }
+      },
+      "h12|2023-06": {
+        "persistence": {
+          "n": 4848,
+          "tp": 1448,
+          "fp": 177,
+          "fn": 319,
+          "tn": 2904
+        },
+        "raw": {
+          "n": 4848,
+          "tp": 1451,
+          "fp": 181,
+          "fn": 316,
+          "tn": 2900
+        },
+        "calibrated": {
+          "n": 4848,
+          "tp": 1448,
+          "fp": 177,
+          "fn": 319,
+          "tn": 2904
+        }
+      },
+      "h12|2023-10": {
+        "persistence": {
+          "n": 4855,
+          "tp": 1075,
+          "fp": 388,
+          "fn": 399,
+          "tn": 2993
+        },
+        "raw": {
+          "n": 4855,
+          "tp": 1137,
+          "fp": 491,
+          "fn": 337,
+          "tn": 2890
+        },
+        "calibrated": {
+          "n": 4855,
+          "tp": 1083,
+          "fp": 397,
+          "fn": 391,
+          "tn": 2984
+        }
+      },
+      "h12|2024-02": {
+        "persistence": {
+          "n": 4848,
+          "tp": 1073,
+          "fp": 194,
+          "fn": 571,
+          "tn": 3010
+        },
+        "raw": {
+          "n": 4848,
+          "tp": 1193,
+          "fp": 331,
+          "fn": 451,
+          "tn": 2873
+        },
+        "calibrated": {
+          "n": 4848,
+          "tp": 1153,
+          "fp": 296,
+          "fn": 491,
+          "tn": 2908
+        }
+      },
+      "h12|2024-06": {
+        "persistence": {
+          "n": 5555,
+          "tp": 1422,
+          "fp": 529,
+          "fn": 524,
+          "tn": 3080
+        },
+        "raw": {
+          "n": 5555,
+          "tp": 1442,
+          "fp": 621,
+          "fn": 504,
+          "tn": 2988
+        },
+        "calibrated": {
+          "n": 5555,
+          "tp": 1422,
+          "fp": 530,
+          "fn": 524,
+          "tn": 3079
+        }
+      },
+      "h12|2024-10": {
+        "persistence": {
+          "n": 5049,
+          "tp": 826,
+          "fp": 545,
+          "fn": 395,
+          "tn": 3283
+        },
+        "raw": {
+          "n": 5049,
+          "tp": 839,
+          "fp": 725,
+          "fn": 382,
+          "tn": 3103
+        },
+        "calibrated": {
+          "n": 5049,
+          "tp": 827,
+          "fp": 548,
+          "fn": 394,
+          "tn": 3280
+        }
+      }
+    },
+    "reference": {
+      "h4|2021-06": {
+        "persistence": {
+          "n": 4385,
+          "tp": 809,
+          "fp": 185,
+          "fn": 169,
+          "tn": 3222
+        },
+        "raw": {
+          "n": 4385,
+          "tp": 825,
+          "fp": 219,
+          "fn": 153,
+          "tn": 3188
+        },
+        "calibrated": {
+          "n": 4385,
+          "tp": 819,
+          "fp": 198,
+          "fn": 159,
+          "tn": 3209
+        }
+      },
+      "h4|2021-10": {
+        "persistence": {
+          "n": 3866,
+          "tp": 577,
+          "fp": 266,
+          "fn": 248,
+          "tn": 2775
+        },
+        "raw": {
+          "n": 3866,
+          "tp": 603,
+          "fp": 322,
+          "fn": 222,
+          "tn": 2719
+        },
+        "calibrated": {
+          "n": 3866,
+          "tp": 609,
+          "fp": 378,
+          "fn": 216,
+          "tn": 2663
+        }
+      },
+      "h4|2022-02": {
+        "persistence": {
+          "n": 4974,
+          "tp": 1026,
+          "fp": 69,
+          "fn": 457,
+          "tn": 3422
+        },
+        "raw": {
+          "n": 4974,
+          "tp": 1055,
+          "fp": 102,
+          "fn": 428,
+          "tn": 3389
+        },
+        "calibrated": {
+          "n": 4974,
+          "tp": 1115,
+          "fp": 248,
+          "fn": 368,
+          "tn": 3243
+        }
+      },
+      "h4|2022-06": {
+        "persistence": {
+          "n": 4776,
+          "tp": 1193,
+          "fp": 137,
+          "fn": 354,
+          "tn": 3092
+        },
+        "raw": {
+          "n": 4776,
+          "tp": 1238,
+          "fp": 154,
+          "fn": 309,
+          "tn": 3075
+        },
+        "calibrated": {
+          "n": 4776,
+          "tp": 1213,
+          "fp": 142,
+          "fn": 334,
+          "tn": 3087
+        }
+      },
+      "h4|2022-10": {
+        "persistence": {
+          "n": 4814,
+          "tp": 1271,
+          "fp": 354,
+          "fn": 207,
+          "tn": 2982
+        },
+        "raw": {
+          "n": 4814,
+          "tp": 1278,
+          "fp": 391,
+          "fn": 200,
+          "tn": 2945
+        },
+        "calibrated": {
+          "n": 4814,
+          "tp": 1289,
+          "fp": 430,
+          "fn": 189,
+          "tn": 2906
+        }
+      },
+      "h4|2023-02": {
+        "persistence": {
+          "n": 4814,
+          "tp": 1156,
+          "fp": 322,
+          "fn": 114,
+          "tn": 3222
+        },
+        "raw": {
+          "n": 4814,
+          "tp": 1185,
+          "fp": 439,
+          "fn": 85,
+          "tn": 3105
+        },
+        "calibrated": {
+          "n": 4814,
+          "tp": 1195,
+          "fp": 627,
+          "fn": 75,
+          "tn": 2917
+        }
+      },
+      "h4|2023-06": {
+        "persistence": {
+          "n": 4848,
+          "tp": 1120,
+          "fp": 147,
+          "fn": 647,
+          "tn": 2934
+        },
+        "raw": {
+          "n": 4848,
+          "tp": 1320,
+          "fp": 245,
+          "fn": 447,
+          "tn": 2836
+        },
+        "calibrated": {
+          "n": 4848,
+          "tp": 1259,
+          "fp": 215,
+          "fn": 508,
+          "tn": 2866
+        }
+      },
+      "h4|2023-10": {
+        "persistence": {
+          "n": 5410,
+          "tp": 1374,
+          "fp": 432,
+          "fn": 308,
+          "tn": 3296
+        },
+        "raw": {
+          "n": 5410,
+          "tp": 1431,
+          "fp": 617,
+          "fn": 251,
+          "tn": 3111
+        },
+        "calibrated": {
+          "n": 5410,
+          "tp": 1478,
+          "fp": 748,
+          "fn": 204,
+          "tn": 2980
+        }
+      },
+      "h4|2024-02": {
+        "persistence": {
+          "n": 5410,
+          "tp": 1488,
+          "fp": 194,
+          "fn": 291,
+          "tn": 3437
+        },
+        "raw": {
+          "n": 5410,
+          "tp": 1531,
+          "fp": 279,
+          "fn": 248,
+          "tn": 3352
+        },
+        "calibrated": {
+          "n": 5410,
+          "tp": 1586,
+          "fp": 421,
+          "fn": 193,
+          "tn": 3210
+        }
+      },
+      "h4|2024-06": {
+        "persistence": {
+          "n": 5697,
+          "tp": 1620,
+          "fp": 314,
+          "fn": 339,
+          "tn": 3424
+        },
+        "raw": {
+          "n": 5697,
+          "tp": 1684,
+          "fp": 450,
+          "fn": 275,
+          "tn": 3288
+        },
+        "calibrated": {
+          "n": 5697,
+          "tp": 1653,
+          "fp": 416,
+          "fn": 306,
+          "tn": 3322
+        }
+      },
+      "h4|2024-10": {
+        "persistence": {
+          "n": 5336,
+          "tp": 1101,
+          "fp": 497,
+          "fn": 280,
+          "tn": 3458
+        },
+        "raw": {
+          "n": 5336,
+          "tp": 1172,
+          "fp": 726,
+          "fn": 209,
+          "tn": 3229
+        },
+        "calibrated": {
+          "n": 5336,
+          "tp": 1173,
+          "fp": 766,
+          "fn": 208,
+          "tn": 3189
+        }
+      },
+      "h8|2021-10": {
+        "persistence": {
+          "n": 4906,
+          "tp": 762,
+          "fp": 307,
+          "fn": 326,
+          "tn": 3511
+        },
+        "raw": {
+          "n": 4906,
+          "tp": 789,
+          "fp": 373,
+          "fn": 299,
+          "tn": 3445
+        },
+        "calibrated": {
+          "n": 4906,
+          "tp": 787,
+          "fp": 370,
+          "fn": 301,
+          "tn": 3448
+        }
+      },
+      "h8|2022-02": {
+        "persistence": {
+          "n": 3866,
+          "tp": 665,
+          "fp": 178,
+          "fn": 432,
+          "tn": 2591
+        },
+        "raw": {
+          "n": 3866,
+          "tp": 702,
+          "fp": 207,
+          "fn": 395,
+          "tn": 2562
+        },
+        "calibrated": {
+          "n": 3866,
+          "tp": 708,
+          "fp": 211,
+          "fn": 389,
+          "tn": 2558
+        }
+      },
+      "h8|2022-06": {
+        "persistence": {
+          "n": 4776,
+          "tp": 985,
+          "fp": 55,
+          "fn": 562,
+          "tn": 3174
+        },
+        "raw": {
+          "n": 4776,
+          "tp": 1122,
+          "fp": 103,
+          "fn": 425,
+          "tn": 3126
+        },
+        "calibrated": {
+          "n": 4776,
+          "tp": 1013,
+          "fp": 59,
+          "fn": 534,
+          "tn": 3170
+        }
+      },
+      "h8|2022-10": {
+        "persistence": {
+          "n": 4928,
+          "tp": 1247,
+          "fp": 236,
+          "fn": 282,
+          "tn": 3163
+        },
+        "raw": {
+          "n": 4928,
+          "tp": 1287,
+          "fp": 372,
+          "fn": 242,
+          "tn": 3027
+        },
+        "calibrated": {
+          "n": 4928,
+          "tp": 1287,
+          "fp": 369,
+          "fn": 242,
+          "tn": 3030
+        }
+      },
+      "h8|2023-02": {
+        "persistence": {
+          "n": 4860,
+          "tp": 1076,
+          "fp": 549,
+          "fn": 194,
+          "tn": 3041
+        },
+        "raw": {
+          "n": 4860,
+          "tp": 1094,
+          "fp": 666,
+          "fn": 176,
+          "tn": 2924
+        },
+        "calibrated": {
+          "n": 4860,
+          "tp": 1098,
+          "fp": 671,
+          "fn": 172,
+          "tn": 2919
+        }
+      },
+      "h8|2023-06": {
+        "persistence": {
+          "n": 5000,
+          "tp": 1345,
+          "fp": 263,
+          "fn": 536,
+          "tn": 2856
+        },
+        "raw": {
+          "n": 5000,
+          "tp": 1571,
+          "fp": 414,
+          "fn": 310,
+          "tn": 2705
+        },
+        "calibrated": {
+          "n": 5000,
+          "tp": 1423,
+          "fp": 303,
+          "fn": 458,
+          "tn": 2816
+        }
+      },
+      "h8|2023-10": {
+        "persistence": {
+          "n": 4703,
+          "tp": 941,
+          "fp": 181,
+          "fn": 398,
+          "tn": 3183
+        },
+        "raw": {
+          "n": 4703,
+          "tp": 1000,
+          "fp": 345,
+          "fn": 339,
+          "tn": 3019
+        },
+        "calibrated": {
+          "n": 4703,
+          "tp": 996,
+          "fp": 339,
+          "fn": 343,
+          "tn": 3025
+        }
+      },
+      "h8|2024-02": {
+        "persistence": {
+          "n": 5555,
+          "tp": 1518,
+          "fp": 433,
+          "fn": 406,
+          "tn": 3198
+        },
+        "raw": {
+          "n": 5555,
+          "tp": 1653,
+          "fp": 742,
+          "fn": 271,
+          "tn": 2889
+        },
+        "calibrated": {
+          "n": 5555,
+          "tp": 1660,
+          "fp": 758,
+          "fn": 264,
+          "tn": 2873
+        }
+      },
+      "h8|2024-06": {
+        "persistence": {
+          "n": 5410,
+          "tp": 1265,
+          "fp": 417,
+          "fn": 536,
+          "tn": 3192
+        },
+        "raw": {
+          "n": 5410,
+          "tp": 1469,
+          "fp": 578,
+          "fn": 332,
+          "tn": 3031
+        },
+        "calibrated": {
+          "n": 5410,
+          "tp": 1320,
+          "fp": 456,
+          "fn": 481,
+          "tn": 3153
+        }
+      },
+      "h8|2024-10": {
+        "persistence": {
+          "n": 5336,
+          "tp": 1046,
+          "fp": 527,
+          "fn": 335,
+          "tn": 3428
+        },
+        "raw": {
+          "n": 5336,
+          "tp": 1108,
+          "fp": 769,
+          "fn": 273,
+          "tn": 3186
+        },
+        "calibrated": {
+          "n": 5336,
+          "tp": 1106,
+          "fp": 757,
+          "fn": 275,
+          "tn": 3198
+        }
+      },
+      "h12|2022-02": {
+        "persistence": {
+          "n": 4906,
+          "tp": 831,
+          "fp": 238,
+          "fn": 642,
+          "tn": 3195
+        },
+        "raw": {
+          "n": 4906,
+          "tp": 834,
+          "fp": 240,
+          "fn": 639,
+          "tn": 3193
+        },
+        "calibrated": {
+          "n": 4906,
+          "tp": 835,
+          "fp": 243,
+          "fn": 638,
+          "tn": 3190
+        }
+      },
+      "h12|2022-06": {
+        "persistence": {
+          "n": 3676,
+          "tp": 647,
+          "fp": 102,
+          "fn": 440,
+          "tn": 2487
+        },
+        "raw": {
+          "n": 3676,
+          "tp": 653,
+          "fp": 103,
+          "fn": 434,
+          "tn": 2486
+        },
+        "calibrated": {
+          "n": 3676,
+          "tp": 653,
+          "fp": 103,
+          "fn": 434,
+          "tn": 2486
+        }
+      },
+      "h12|2022-10": {
+        "persistence": {
+          "n": 4928,
+          "tp": 964,
+          "fp": 131,
+          "fn": 565,
+          "tn": 3268
+        },
+        "raw": {
+          "n": 4928,
+          "tp": 969,
+          "fp": 166,
+          "fn": 560,
+          "tn": 3233
+        },
+        "calibrated": {
+          "n": 4928,
+          "tp": 965,
+          "fp": 132,
+          "fn": 564,
+          "tn": 3267
+        }
+      },
+      "h12|2023-02": {
+        "persistence": {
+          "n": 4776,
+          "tp": 1002,
+          "fp": 328,
+          "fn": 191,
+          "tn": 3255
+        },
+        "raw": {
+          "n": 4776,
+          "tp": 1012,
+          "fp": 344,
+          "fn": 181,
+          "tn": 3239
+        },
+        "calibrated": {
+          "n": 4776,
+          "tp": 1020,
+          "fp": 403,
+          "fn": 173,
+          "tn": 3180
+        }
+      },
+      "h12|2023-06": {
+        "persistence": {
+          "n": 4848,
+          "tp": 1448,
+          "fp": 177,
+          "fn": 319,
+          "tn": 2904
+        },
+        "raw": {
+          "n": 4848,
+          "tp": 1452,
+          "fp": 184,
+          "fn": 315,
+          "tn": 2897
+        },
+        "calibrated": {
+          "n": 4848,
+          "tp": 1452,
+          "fp": 184,
+          "fn": 315,
+          "tn": 2897
+        }
+      },
+      "h12|2023-10": {
+        "persistence": {
+          "n": 4855,
+          "tp": 1075,
+          "fp": 388,
+          "fn": 399,
+          "tn": 2993
+        },
+        "raw": {
+          "n": 4855,
+          "tp": 1090,
+          "fp": 407,
+          "fn": 384,
+          "tn": 2974
+        },
+        "calibrated": {
+          "n": 4855,
+          "tp": 1082,
+          "fp": 395,
+          "fn": 392,
+          "tn": 2986
+        }
+      },
+      "h12|2024-02": {
+        "persistence": {
+          "n": 4848,
+          "tp": 1073,
+          "fp": 194,
+          "fn": 571,
+          "tn": 3010
+        },
+        "raw": {
+          "n": 4848,
+          "tp": 1089,
+          "fp": 215,
+          "fn": 555,
+          "tn": 2989
+        },
+        "calibrated": {
+          "n": 4848,
+          "tp": 1140,
+          "fp": 246,
+          "fn": 504,
+          "tn": 2958
+        }
+      },
+      "h12|2024-06": {
+        "persistence": {
+          "n": 5555,
+          "tp": 1422,
+          "fp": 529,
+          "fn": 524,
+          "tn": 3080
+        },
+        "raw": {
+          "n": 5555,
+          "tp": 1427,
+          "fp": 537,
+          "fn": 519,
+          "tn": 3072
+        },
+        "calibrated": {
+          "n": 5555,
+          "tp": 1427,
+          "fp": 537,
+          "fn": 519,
+          "tn": 3072
+        }
+      },
+      "h12|2024-10": {
+        "persistence": {
+          "n": 5049,
+          "tp": 826,
+          "fp": 545,
+          "fn": 395,
+          "tn": 3283
+        },
+        "raw": {
+          "n": 5049,
+          "tp": 830,
+          "fp": 561,
+          "fn": 391,
+          "tn": 3267
+        },
+        "calibrated": {
+          "n": 5049,
+          "tp": 827,
+          "fp": 551,
+          "fn": 394,
+          "tn": 3277
+        }
+      }
+    }
   },
   "bootstrap": {
     "protocol": "D44 shared joint date-block bootstrap",
@@ -41240,6 +42642,11 @@
     "The winner arm (ABDE) learned NO spatial split on the frozen final map: outcome valid_unsplit_all_nonpositive_weights, nc=1, 0 of 27 eligible candidates carried positive consensus weight. Its entire partitioned stream is therefore the pooled model (D19/D62), so its final numbers compare a POOLED RF correction against persistence, not a partitioned one.",
     "Development-map coverage (reference arm, calibration and selection roles): the consensus map gave a learned partition to 63.6% and 83.6% of the 5,718-area master cohort; on matched target-row denominators local models scored 64.5% and 84.1% of rows. These figures describe the reference arm's DEVELOPMENT maps and are not the final deployment of either arm, which is reported per arm above.",
     "Deliberate source changes carried from the approved design: the inherited climate z-scores (Rainf_zscore/Tair_zscore) were removed from the updated BASE and the corrected reference (D46), and assistance signals were excluded (D47). Raw rainfall and temperature fields are retained.",
+    "Retained-source construction (D33), disclosed as the condition of retaining these predictors instead of reconstructing them: the old FEWS Gini uses two-sided linear interpolation, so an earlier value can depend on a later survey endpoint; the old nightlight-SD uses ungrouped forward filling after sorting regions and dates, which can propagate a value across region boundaries, and nightlight mean/SD also undergo zero filling in the old assembly code. These are verified generator behaviours. The selected master has NOT been matched value-by-value to those executions, so neither contamination of any particular value nor its exact generation lineage is established here.",
+    "Block E's missing flags and ages refer to values visible in the supplied source tables (D33). Existing interpolated, forward-filled or zero-filled values cannot be distinguished from original measurements without metadata, so original missingness is not recovered.",
+    "Population (D48) uses a prior-year snapshot: for origin O, the area's last nonmissing record by source month within year(O)-1, held for the origin year. The records' calendar year is not verified as the demographic estimate's reference year, and prior-year alignment cannot establish historical availability of the 2018 GPW source snapshot.",
+    "Fixed-geography covariates (D49) preserve supplied snapshots throughout, including origins earlier than a layer's reference or publication year; the market-access vintage is 2015 and several dates and semantics remain unresolved. Inherited names are identifiers, not verified descriptions of the underlying terrain or river quantities.",
+    "Origin alignment was enforced for models, maps, calibration, thresholds and derived features, but it is conditional on the supplied source snapshots. Its success is NOT verification of leakage-free historical source data or of operational real-time availability (D33/D49).",
     "Consensus weighting: D56's 1e-6 clip gives a plan whose pooled baseline F1 is exactly 0 a weight an order of magnitude above well-behaved plans. Two such plans carry 93.7% of the calibration-window weight. R60 mandates the released formula.",
     "The Stage 1 split gate uses a random within-area validation split, not a temporal holdout, so its F1 runs well above the same candidate's target-month F1.",
     "Stage 1 retains the released filter restricting training rows to groups present in the target month; it affected 43 of 51 reference candidates (3,509 rows).",

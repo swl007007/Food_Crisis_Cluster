@@ -1,0 +1,3432 @@
+{
+  "experiment": "FEWSNETCleanPersistenceExperiment",
+  "component": "run_pipeline",
+  "scope": "stage1_candidates_and_schedule",
+  "created_utc": "2026-09-21T01:05:32Z",
+  "completed_stages": [
+    "setup",
+    "candidate:GeoRF-reference_2016_02_fs1",
+    "pilot:reference",
+    "candidate:GeoRF-ABCDE_2016_02_fs1",
+    "candidate:GeoRF-ABCDE_2014_01_fs2",
+    "consensus:reference",
+    "predictions:reference",
+    "calibrate:reference",
+    "thresholds:reference",
+    "development:BASE",
+    "development:A",
+    "development:B",
+    "development:C",
+    "development:D",
+    "development:E",
+    "development:ABCDE",
+    "development:BCDE",
+    "development:ACDE",
+    "development:ABDE",
+    "development:ABCE",
+    "development:ABCD",
+    "development:reference",
+    "candidate:GeoRF-E_2015_10_fs2",
+    "consensus:E,ABCDE,BCDE,ACDE,ABDE,ABCE,ABCD,reference",
+    "predictions:BASE,A,B,C,D,E,ABCDE,BCDE,ACDE,ABDE,ABCE,ABCD,reference",
+    "calibrate:BASE",
+    "thresholds:BASE",
+    "calibrate:A",
+    "thresholds:A",
+    "calibrate:B",
+    "thresholds:B",
+    "calibrate:C",
+    "thresholds:C",
+    "calibrate:D",
+    "thresholds:D",
+    "calibrate:E",
+    "thresholds:E",
+    "calibrate:ABCDE",
+    "thresholds:ABCDE",
+    "calibrate:BCDE",
+    "thresholds:BCDE",
+    "calibrate:ACDE",
+    "thresholds:ACDE",
+    "calibrate:ABDE",
+    "thresholds:ABDE",
+    "calibrate:ABCE",
+    "thresholds:ABCE",
+    "calibrate:ABCD",
+    "thresholds:ABCD",
+    "final:ABDE,reference"
+  ],
+  "limitations": [
+    "Retrospective run on already-inspected historical years; not a fresh holdout.",
+    "Source vintages, Bloomberg units/roll conventions and publication timing remain unverified (D33/D49/D31); origin cutoffs constrain fitted artifacts, not source lineage.",
+    "Stage 1 retains the released zero-feature class-recovery rows inside RF fitting; no SMOTE is not the absence of all artificial observations.",
+    "Job counts are planning arithmetic before D20 support exclusions, not runtime."
+  ],
+  "updated_utc": "2026-09-21T13:48:14Z",
+  "prepared_run": {
+    "run_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_prepare_final",
+    "cache": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_prepare_final\\cache\\prepared_sources.npz",
+    "cache_sha256": "8c0d396a1d645b2c27e26db8fcd55d1875f81b7801f62c1cfcd5c412b13765ac",
+    "source_hashes": {
+      "master": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+      "ledger": "8fdd4cca6f6ba26b84efc209c8eb36492e1257d51e24edd2c2ad4962df7b38d0",
+      "enso": "ce67f5c52a2a4695f82ee9acdb4a5dc69eb42f34af6cf1e5801fa7ac20118ca5",
+      "wb_derived": "bc5f310c008d69cf67539633a4af5ef5da2ba724897269b602aed66771ad523a",
+      "wb_raw": "cd81efe9ec6c3c1ab7aa14d1a1dbd6092606c015608cec354beccfd960192730",
+      "coastline": "0f8877508e328bfd069d58f8c3d12b924db5cd2a782f515d98e9b5e7307e5e73",
+      "bbg_fertiliser": "fb91c0e47fa053ffc3c4b0f91aef023ee4c5405252a4d62ab6f5a20601080730",
+      "bbg_oil_and_gas": "71c3cc6903970b3316e816a2170207cd9af9c2589c43b469d84f7e3b535cb7d3",
+      "bbg_soybean_oil": "0650c960ea1d77ae6122287ae0c7d35a675688763b58c7ea18e6ddd8c1e815dc",
+      "bbg_staple_food": "9eb482dd15b77d80c1f9dc91bf9b3a7ceb55d05ca43f6069e1b9965031317bdf",
+      "fews_shapefile": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+      "fews_shapefile_sidecars": null
+    },
+    "prepare_runtime": {
+      "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scipy": "1.15.2",
+      "sklearn": "1.6.1"
+    }
+  },
+  "baseline": {
+    "root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline",
+    "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+    "manifest_version": "0.1.0-f1-nosmote",
+    "manifest_source_commit": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+    "payload_files_verified": 45,
+    "module_locations": {
+      "config": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\config.py",
+      "src": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src",
+      "src.helper.helper": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\helper\\helper.py",
+      "src.metrics.metrics": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\metrics\\metrics.py",
+      "src.model.model_RF": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\model\\model_RF.py",
+      "src.customize.customize": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\customize\\customize.py",
+      "src.initialization.initialization": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\initialization\\initialization.py",
+      "src.utils.split": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\utils\\split.py",
+      "src.model.train_branch": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\model\\train_branch.py",
+      "src.vis.visualization": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\vis\\visualization.py",
+      "src.partition.partition_opt": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\partition\\partition_opt.py",
+      "src.tests.static_table": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\tests\\static_table.py",
+      "src.tests.sig_test": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\tests\\sig_test.py",
+      "src.partition.transformation": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\partition\\transformation.py",
+      "src.model.GeoRF": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\baseline\\GeoRFBaseline\\src\\model\\GeoRF.py"
+    },
+    "patched": false,
+    "patch_note": "No source patch is applied. IPCCH's polygon-refinement patch is specific to its own correspondence-table flow and is deliberately not imported."
+  },
+  "geometry": {
+    "shapefile": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWS NET Admin Boundaries\\FEWS_Admin_LZ_v3.shp",
+    "polygon_id_column": "admin_code",
+    "shapefile_polygons": 5718,
+    "master_areas": 5718,
+    "master_areas_present_in_shapefile": 5718,
+    "master_areas_absent_from_shapefile": 0,
+    "neighbor_distance_threshold": 0.8,
+    "adjacency_degree": {
+      "min": 0,
+      "max": 16,
+      "mean": 4.061559986009094,
+      "isolated_polygons": 655
+    },
+    "note": "Group IDs are admin codes; polygon_group_mapping is index -> [admin code], as in the released setup_spatial_groups.",
+    "shapefile_sha256": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+    "shapefile_sidecar_sha256": {
+      "FEWS_Admin_LZ_v3.shp": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+      "FEWS_Admin_LZ_v3.shx": "16061b9a97add1220d0aa54e432f55ed277f919a7bf233da06a5867ee709dfb0",
+      "FEWS_Admin_LZ_v3.dbf": "2175dc97d3c6969c627ebb07c4f456e05231b7050321b4bd40e9079f86b102d3",
+      "FEWS_Admin_LZ_v3.prj": "94ba1b071fb00c93429718b8005a15b45c5846baafe222b77dcb38847d5e2f49",
+      "FEWS_Admin_LZ_v3.cpg": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+      "FEWS_Admin_LZ_v3.sbn": "b322f8e69f44b22dc7e31c701793165819f5b5ae10fbe4ace00173db3f925821",
+      "FEWS_Admin_LZ_v3.sbx": "a897760227ad04dbe055cd25e9b8a4391219cfa87d43938c8621b187264fba83",
+      "FEWS_Admin_LZ_v3.shp.xml": "cad4b5b9c545286da2c72e1602043d23ed6a851ce0de172824923cd6b223124f"
+    },
+    "adjacency_cache": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\geometry\\polygon_adjacency_cache.pkl",
+    "contiguity_info": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_stage1\\geometry\\polygon_contiguity_info.pkl"
+  },
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scipy": "1.15.2",
+    "sklearn": "1.6.1",
+    "thread_environment": {
+      "OMP_NUM_THREADS": null,
+      "MKL_NUM_THREADS": null,
+      "OPENBLAS_NUM_THREADS": null,
+      "NUMEXPR_NUM_THREADS": null,
+      "PYTHONHASHSEED": null
+    }
+  },
+  "schedule": {
+    "arms": [
+      "BASE",
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "ABCDE",
+      "BCDE",
+      "ACDE",
+      "ABDE",
+      "ABCE",
+      "ABCD",
+      "reference"
+    ],
+    "n_arms": 13,
+    "map_roles": {
+      "calibration": {
+        "candidate_years": [
+          2014,
+          2015,
+          2016
+        ],
+        "information_cutoff": "2016-12",
+        "candidate_jobs_per_arm": 33,
+        "prediction_targets": [
+          "2018-02",
+          "2018-06",
+          "2018-10"
+        ],
+        "month_specific_maps": false
+      },
+      "selection": {
+        "candidate_years": [
+          2016,
+          2017,
+          2018
+        ],
+        "information_cutoff": "2018-12",
+        "candidate_jobs_per_arm": 27,
+        "prediction_targets": [
+          "2020-02",
+          "2020-06",
+          "2020-10"
+        ],
+        "month_specific_maps": false
+      },
+      "final": {
+        "candidate_years": [
+          2018,
+          2019,
+          2020
+        ],
+        "information_cutoff": "2020-12",
+        "candidate_jobs_per_arm": 27,
+        "prediction_targets": null,
+        "month_specific_maps": false
+      }
+    },
+    "stage1": {
+      "candidate_jobs_calibration_window": 33,
+      "candidate_jobs_selection_window": 27,
+      "candidate_jobs_final_window": 27,
+      "exact_overlap_jobs_2016": 9,
+      "unique_development_jobs_per_arm": 51,
+      "development_jobs_upper_bound": 663,
+      "new_final_jobs_per_final_arm": 18,
+      "final_jobs_upper_bound": 36,
+      "total_jobs_upper_bound": 699,
+      "training_window_calendar_months": 35,
+      "training_mask": "[O-35 calendar months, O) with origin-month labels excluded"
+    },
+    "stage2": {
+      "development_map_builds": 26,
+      "final_map_builds": 2,
+      "total_map_builds": 28
+    },
+    "stage3": {
+      "development_folds": 234,
+      "final_scope_date_pairs": 30,
+      "final_folds": 60,
+      "final_target_dates": {
+        "4": [
+          "2021-06",
+          "2021-10",
+          "2022-02",
+          "2022-06",
+          "2022-10",
+          "2023-02",
+          "2023-06",
+          "2023-10",
+          "2024-02",
+          "2024-06",
+          "2024-10"
+        ],
+        "8": [
+          "2021-10",
+          "2022-02",
+          "2022-06",
+          "2022-10",
+          "2023-02",
+          "2023-06",
+          "2023-10",
+          "2024-02",
+          "2024-06",
+          "2024-10"
+        ],
+        "12": [
+          "2022-02",
+          "2022-06",
+          "2022-10",
+          "2023-02",
+          "2023-06",
+          "2023-10",
+          "2024-02",
+          "2024-06",
+          "2024-10"
+        ]
+      },
+      "final_target_date_counts": {
+        "4": 11,
+        "8": 10,
+        "12": 9
+      },
+      "supplementary_common_window": [
+        "2022-02",
+        "2024-10"
+      ]
+    },
+    "note": "Planning arithmetic only: these are job counts before D20 support exclusions, not measured runtime, individual forest fits or guarantees of support."
+  },
+  "stages": {
+    "setup": {
+      "seconds": 34.6
+    },
+    "candidate:GeoRF-reference_2016_02_fs1": {
+      "jobs": 1,
+      "completed": 1,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 21.8,
+      "per_job_seconds": {
+        "min": 21.8,
+        "median": 21.8,
+        "max": 21.8,
+        "mean": 21.8
+      },
+      "projected_663_job_hours": 4.01
+    },
+    "pilot:reference": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1661.5,
+      "per_job_seconds": {
+        "min": 17.9,
+        "median": 33.1,
+        "max": 82.5,
+        "mean": 33.0
+      },
+      "projected_663_job_hours": 6.08,
+      "arm": "reference",
+      "partial": false,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "reference",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "excluded_or_failed": 0,
+          "candidates_with_positive_stage2_weight": 8,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result."
+        },
+        "selection": {
+          "arm": "reference",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "excluded_or_failed": 0,
+          "candidates_with_positive_stage2_weight": 6,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result."
+        }
+      }
+    },
+    "candidate:GeoRF-ABCDE_2016_02_fs1": {
+      "jobs": 1,
+      "completed": 1,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 25.8,
+      "per_job_seconds": {
+        "min": 25.8,
+        "median": 25.8,
+        "max": 25.8,
+        "mean": 25.8
+      },
+      "projected_663_job_hours": 4.75
+    },
+    "candidate:GeoRF-ABCDE_2014_01_fs2": {
+      "jobs": 1,
+      "completed": 1,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 24.4,
+      "per_job_seconds": {
+        "min": 24.4,
+        "median": 24.4,
+        "max": 24.4,
+        "mean": 24.4
+      },
+      "projected_663_job_hours": 4.49
+    },
+    "consensus:reference": {
+      "reference/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 10,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3536,
+            "unassigned_nearest_donor_beyond_100km": 2081,
+            "completed_nearest_donor": 101
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3536,
+            "in_graph_other_component": 1628,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 3637,
+          "unassigned_pooled_areas": 2081,
+          "unassigned_from_other_component": 1600,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 1394.05494426713,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.5
+      },
+      "reference/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 18,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4687,
+            "unassigned_nearest_donor_beyond_100km": 937,
+            "completed_nearest_donor": 94
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4687,
+            "in_graph_other_component": 681,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4781,
+          "unassigned_pooled_areas": 937,
+          "unassigned_from_other_component": 681,
+          "unassigned_never_in_graph": 256,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 6410.393994422106,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.4
+      }
+    },
+    "predictions:reference": {
+      "reference": {
+        "folds": 18,
+        "total_seconds": 371.2,
+        "target_rows": 97596,
+        "local_models_fitted": 233
+      }
+    },
+    "calibrate:reference": {
+      "arm": "reference",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 28
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 28
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 28
+      }
+    },
+    "thresholds:reference": {
+      "arm": "reference",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.59,
+          "gain": 0.005462
+        },
+        "calibrated": {
+          "tau": 0.4375,
+          "gain": 0.011839
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.49,
+          "gain": 0.037148
+        },
+        "calibrated": {
+          "tau": 0.3333333333333333,
+          "gain": 0.03932
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.75,
+          "gain": 0.002276
+        },
+        "calibrated": {
+          "tau": 0.9166666666666666,
+          "gain": 0.001866
+        }
+      },
+      "frozen_thresholds_sha256": "03ba8bf7f53fbd85c974d24b8b020ee72fca537b6e542bb0e0b7b15f053d41a9"
+    },
+    "development:BASE": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1408.1,
+      "per_job_seconds": {
+        "min": 16.6,
+        "median": 29.0,
+        "max": 39.1,
+        "mean": 27.6
+      },
+      "projected_663_job_hours": 5.08,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "BASE",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 17,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "BASE",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 14,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:A": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1113.2,
+      "per_job_seconds": {
+        "min": 15.9,
+        "median": 18.9,
+        "max": 35.2,
+        "mean": 21.8
+      },
+      "projected_663_job_hours": 4.02,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "A",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 4,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "A",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 3,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:B": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1980.6,
+      "per_job_seconds": {
+        "min": 20.4,
+        "median": 40.5,
+        "max": 53.1,
+        "mean": 38.8
+      },
+      "projected_663_job_hours": 7.15,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "B",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 17,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "B",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 16,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:C": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1773.8,
+      "per_job_seconds": {
+        "min": 18.6,
+        "median": 36.4,
+        "max": 45.1,
+        "mean": 34.8
+      },
+      "projected_663_job_hours": 6.4,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "C",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 19,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "C",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 20,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:D": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1383.6,
+      "per_job_seconds": {
+        "min": 16.9,
+        "median": 28.5,
+        "max": 51.0,
+        "mean": 27.1
+      },
+      "projected_663_job_hours": 4.99,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "D",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 19,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "D",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 16,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:E": {
+      "jobs": 51,
+      "completed": 50,
+      "excluded": 0,
+      "failed": 1,
+      "total_seconds": 1414.6,
+      "per_job_seconds": {
+        "min": 16.1,
+        "median": 27.6,
+        "max": 42.1,
+        "mean": 27.7
+      },
+      "projected_663_job_hours": 5.11,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "E",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 32,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 1,
+          "candidate_status_counts": {
+            "completed": 32,
+            "not_run": 1
+          },
+          "candidates_with_positive_stage2_weight": 21,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": false,
+          "stage2_blocked_reason": "0 failed and 1 not-run required candidates",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "E",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 16,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:ABCDE": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1613.5,
+      "per_job_seconds": {
+        "min": 21.1,
+        "median": 28.7,
+        "max": 48.3,
+        "mean": 32.6
+      },
+      "projected_663_job_hours": 6.01,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "ABCDE",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 6,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "ABCDE",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 4,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:BCDE": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 2058.2,
+      "per_job_seconds": {
+        "min": 22.2,
+        "median": 42.4,
+        "max": 53.5,
+        "mean": 40.3
+      },
+      "projected_663_job_hours": 7.43,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "BCDE",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 15,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "BCDE",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 14,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:ACDE": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1310.3,
+      "per_job_seconds": {
+        "min": 18.7,
+        "median": 22.3,
+        "max": 38.2,
+        "mean": 25.7
+      },
+      "projected_663_job_hours": 4.73,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "ACDE",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 6,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "ACDE",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 2,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:ABDE": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1494.9,
+      "per_job_seconds": {
+        "min": 20.2,
+        "median": 25.7,
+        "max": 48.9,
+        "mean": 29.3
+      },
+      "projected_663_job_hours": 5.4,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "ABDE",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 6,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "ABDE",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 5,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:ABCE": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1671.4,
+      "per_job_seconds": {
+        "min": 22.1,
+        "median": 28.6,
+        "max": 51.5,
+        "mean": 32.8
+      },
+      "projected_663_job_hours": 6.03,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "ABCE",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 6,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "ABCE",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 7,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:ABCD": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 1702.8,
+      "per_job_seconds": {
+        "min": 22.2,
+        "median": 29.9,
+        "max": 49.4,
+        "mean": 33.4
+      },
+      "projected_663_job_hours": 6.15,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "ABCD",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 5,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "ABCD",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 3,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "development:reference": {
+      "jobs": 51,
+      "completed": 51,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 0.3,
+      "per_job_seconds": {
+        "min": 17.9,
+        "median": 33.1,
+        "max": 82.5,
+        "mean": 33.0
+      },
+      "projected_663_job_hours": 6.08,
+      "stage2_inputs": {
+        "calibration": {
+          "arm": "reference",
+          "map_role": "calibration",
+          "information_cutoff": "2016-12",
+          "candidate_years": [
+            2014,
+            2015,
+            2016
+          ],
+          "scheduled_candidates": 33,
+          "completed_eligible_candidates": 33,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 33
+          },
+          "candidates_with_positive_stage2_weight": 8,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        },
+        "selection": {
+          "arm": "reference",
+          "map_role": "selection",
+          "information_cutoff": "2018-12",
+          "candidate_years": [
+            2016,
+            2017,
+            2018
+          ],
+          "scheduled_candidates": 27,
+          "completed_eligible_candidates": 27,
+          "validly_excluded_candidates": 0,
+          "failed_candidates": 0,
+          "not_run_candidates": 0,
+          "candidate_status_counts": {
+            "completed": 27
+          },
+          "candidates_with_positive_stage2_weight": 6,
+          "month_ind": false,
+          "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+          "stage2_ready": true,
+          "stage2_blocked_reason": "",
+          "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+        }
+      }
+    },
+    "candidate:GeoRF-E_2015_10_fs2": {
+      "jobs": 1,
+      "completed": 1,
+      "excluded": 0,
+      "failed": 0,
+      "total_seconds": 50.8,
+      "per_job_seconds": {
+        "min": 50.8,
+        "median": 50.8,
+        "max": 50.8,
+        "mean": 50.8
+      },
+      "projected_663_job_hours": 9.35
+    },
+    "consensus:E,ABCDE,BCDE,ACDE,ABDE,ABCE,ABCD,reference": {
+      "E/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 15,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3974,
+            "unassigned_nearest_donor_beyond_100km": 1671,
+            "completed_nearest_donor": 73
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3974,
+            "in_graph_other_component": 1190,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 4047,
+          "unassigned_pooled_areas": 1671,
+          "unassigned_from_other_component": 1190,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 2382.648349119668,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.9
+      },
+      "E/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 19,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4178,
+            "unassigned_nearest_donor_beyond_100km": 1446,
+            "completed_nearest_donor": 94
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4178,
+            "in_graph_other_component": 1190,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4272,
+          "unassigned_pooled_areas": 1446,
+          "unassigned_from_other_component": 1190,
+          "unassigned_never_in_graph": 256,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 2531.357598899497,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 3.5
+      },
+      "ABCDE/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 12,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4482,
+            "unassigned_nearest_donor_beyond_100km": 1162,
+            "completed_nearest_donor": 74
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4482,
+            "in_graph_other_component": 682,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 4556,
+          "unassigned_pooled_areas": 1162,
+          "unassigned_from_other_component": 681,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 1086.5145498038794,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.4
+      },
+      "ABCDE/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 13,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4465,
+            "unassigned_nearest_donor_beyond_100km": 1030,
+            "completed_nearest_donor": 223
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4465,
+            "in_graph_other_component": 903,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4688,
+          "unassigned_pooled_areas": 1030,
+          "unassigned_from_other_component": 774,
+          "unassigned_never_in_graph": 256,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 850.7696111601826,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.3
+      },
+      "BCDE/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 18,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3974,
+            "unassigned_nearest_donor_beyond_100km": 1671,
+            "completed_nearest_donor": 73
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3974,
+            "in_graph_other_component": 1190,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 4047,
+          "unassigned_pooled_areas": 1671,
+          "unassigned_from_other_component": 1190,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 2382.648349119668,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.4
+      },
+      "BCDE/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 12,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3893,
+            "unassigned_nearest_donor_beyond_100km": 1665,
+            "completed_nearest_donor": 160
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3893,
+            "in_graph_other_component": 1475,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4053,
+          "unassigned_pooled_areas": 1665,
+          "unassigned_from_other_component": 1391,
+          "unassigned_never_in_graph": 274,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 2263.632328023593,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.4
+      },
+      "ACDE/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 12,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3974,
+            "unassigned_nearest_donor_beyond_100km": 1671,
+            "completed_nearest_donor": 73
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3974,
+            "in_graph_other_component": 1190,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 4047,
+          "unassigned_pooled_areas": 1671,
+          "unassigned_from_other_component": 1190,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 2382.648349119668,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.2
+      },
+      "ACDE/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 18,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4329,
+            "unassigned_nearest_donor_beyond_100km": 1281,
+            "completed_nearest_donor": 108
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4329,
+            "in_graph_other_component": 1039,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4437,
+          "unassigned_pooled_areas": 1281,
+          "unassigned_from_other_component": 987,
+          "unassigned_never_in_graph": 294,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 922.7358863294817,
+            "max": 3028.896875638405
+          }
+        },
+        "seconds": 2.0
+      },
+      "ABDE/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 17,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3634,
+            "unassigned_nearest_donor_beyond_100km": 1867,
+            "completed_nearest_donor": 217
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3634,
+            "in_graph_other_component": 1530,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 3851,
+          "unassigned_pooled_areas": 1867,
+          "unassigned_from_other_component": 1386,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 1.8303586013052537,
+            "median": 1492.1505918864698,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.1
+      },
+      "ABDE/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 16,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4351,
+            "unassigned_nearest_donor_beyond_100km": 1190,
+            "completed_nearest_donor": 177
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4351,
+            "in_graph_other_component": 1017,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4528,
+          "unassigned_pooled_areas": 1190,
+          "unassigned_from_other_component": 896,
+          "unassigned_never_in_graph": 294,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 960.9753077507853,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.2
+      },
+      "ABCE/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 11,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3661,
+            "unassigned_nearest_donor_beyond_100km": 1866,
+            "completed_nearest_donor": 191
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3661,
+            "in_graph_other_component": 1503,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 3852,
+          "unassigned_pooled_areas": 1866,
+          "unassigned_from_other_component": 1385,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 3.502463945783661,
+            "median": 1847.422713755192,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.0
+      },
+      "ABCE/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 12,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3973,
+            "unassigned_nearest_donor_beyond_100km": 1671,
+            "completed_nearest_donor": 74
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3973,
+            "in_graph_other_component": 1395,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4047,
+          "unassigned_pooled_areas": 1671,
+          "unassigned_from_other_component": 1377,
+          "unassigned_never_in_graph": 294,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 2382.277326233282,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 3.2
+      },
+      "ABCD/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 14,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3546,
+            "unassigned_nearest_donor_beyond_100km": 1983,
+            "completed_nearest_donor": 189
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3546,
+            "in_graph_other_component": 1618,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 3735,
+          "unassigned_pooled_areas": 1983,
+          "unassigned_from_other_component": 1492,
+          "unassigned_never_in_graph": 491,
+          "completion_distance_km": {
+            "min": 3.502463945783661,
+            "median": 1404.3769630667407,
+            "max": 9710.423596447665
+          }
+        },
+        "seconds": 3.0
+      },
+      "ABCD/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 19,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4834,
+            "unassigned_nearest_donor_beyond_100km": 786,
+            "completed_nearest_donor": 98
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4834,
+            "in_graph_other_component": 534,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4932,
+          "unassigned_pooled_areas": 786,
+          "unassigned_from_other_component": 530,
+          "unassigned_never_in_graph": 256,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 6482.622629592583,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 3.2
+      },
+      "reference/calibration": {
+        "outcome": "spectral_partition",
+        "n_clusters": 10,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 3536,
+            "unassigned_nearest_donor_beyond_100km": 2081,
+            "completed_nearest_donor": 101
+          },
+          "by_graph_support": {
+            "in_fitted_core": 3536,
+            "in_graph_other_component": 1628,
+            "never_in_graph": 554
+          },
+          "assigned_areas": 3637,
+          "unassigned_pooled_areas": 2081,
+          "unassigned_from_other_component": 1600,
+          "unassigned_never_in_graph": 481,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 1394.05494426713,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.5
+      },
+      "reference/selection": {
+        "outcome": "spectral_partition",
+        "n_clusters": 18,
+        "coverage": {
+          "master_areas": 5718,
+          "by_assignment_source": {
+            "spectral_core": 4687,
+            "unassigned_nearest_donor_beyond_100km": 937,
+            "completed_nearest_donor": 94
+          },
+          "by_graph_support": {
+            "in_fitted_core": 4687,
+            "in_graph_other_component": 681,
+            "never_in_graph": 350
+          },
+          "assigned_areas": 4781,
+          "unassigned_pooled_areas": 937,
+          "unassigned_from_other_component": 681,
+          "unassigned_never_in_graph": 256,
+          "completion_distance_km": {
+            "min": 5.19381345239355,
+            "median": 6410.393994422106,
+            "max": 8621.04192843659
+          }
+        },
+        "seconds": 2.4
+      }
+    },
+    "predictions:BASE,A,B,C,D,E,ABCDE,BCDE,ACDE,ABDE,ABCE,ABCD,reference": {
+      "BASE": {
+        "folds": 18,
+        "total_seconds": 276.8,
+        "target_rows": 97596,
+        "local_models_fitted": 291
+      },
+      "A": {
+        "folds": 18,
+        "total_seconds": 246.0,
+        "target_rows": 97596,
+        "local_models_fitted": 254
+      },
+      "B": {
+        "folds": 18,
+        "total_seconds": 468.3,
+        "target_rows": 97596,
+        "local_models_fitted": 237
+      },
+      "C": {
+        "folds": 18,
+        "total_seconds": 383.8,
+        "target_rows": 97596,
+        "local_models_fitted": 289
+      },
+      "D": {
+        "folds": 18,
+        "total_seconds": 292.9,
+        "target_rows": 97596,
+        "local_models_fitted": 288
+      },
+      "E": {
+        "folds": 18,
+        "total_seconds": 231.8,
+        "target_rows": 97596,
+        "local_models_fitted": 279
+      },
+      "ABCDE": {
+        "folds": 18,
+        "total_seconds": 520.7,
+        "target_rows": 97596,
+        "local_models_fitted": 206
+      },
+      "BCDE": {
+        "folds": 18,
+        "total_seconds": 507.4,
+        "target_rows": 97596,
+        "local_models_fitted": 243
+      },
+      "ACDE": {
+        "folds": 18,
+        "total_seconds": 347.1,
+        "target_rows": 97596,
+        "local_models_fitted": 247
+      },
+      "ABDE": {
+        "folds": 18,
+        "total_seconds": 419.4,
+        "target_rows": 97596,
+        "local_models_fitted": 255
+      },
+      "ABCE": {
+        "folds": 18,
+        "total_seconds": 480.6,
+        "target_rows": 97596,
+        "local_models_fitted": 189
+      },
+      "ABCD": {
+        "folds": 18,
+        "total_seconds": 604.2,
+        "target_rows": 97596,
+        "local_models_fitted": 288
+      },
+      "reference": {
+        "folds": 18,
+        "total_seconds": 337.3,
+        "target_rows": 97596,
+        "local_models_fitted": 233
+      }
+    },
+    "calibrate:BASE": {
+      "arm": "BASE",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 42
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 42
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 42
+      }
+    },
+    "thresholds:BASE": {
+      "arm": "BASE",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.88,
+          "gain": 0.002791
+        },
+        "calibrated": {
+          "tau": 0.7428571428571429,
+          "gain": 0.003538
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.4,
+          "gain": 0.021817
+        },
+        "calibrated": {
+          "tau": 0.2087912087912088,
+          "gain": 0.022247
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.44,
+          "gain": 0.008583
+        },
+        "calibrated": {
+          "tau": 0.25,
+          "gain": 0.004206
+        }
+      },
+      "frozen_thresholds_sha256": "88a775dcbc5e325864033bf899781e564192af772fc49f55a54461f9cdd074a4"
+    },
+    "calibrate:A": {
+      "arm": "A",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 41
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 41
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 41
+      }
+    },
+    "thresholds:A": {
+      "arm": "A",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": null,
+          "gain": 0.0
+        },
+        "calibrated": {
+          "tau": null,
+          "gain": 0.0
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.49,
+          "gain": 0.028137
+        },
+        "calibrated": {
+          "tau": 0.27288135593220336,
+          "gain": 0.032669
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.48,
+          "gain": 0.010581
+        },
+        "calibrated": {
+          "tau": 0.27408328154133,
+          "gain": 0.003831
+        }
+      },
+      "frozen_thresholds_sha256": "78c28f1a8977fa7b78aade08140fc9f597514a57a284d5546c6ea1576bb00054"
+    },
+    "calibrate:B": {
+      "arm": "B",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 40
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 40
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 40
+      }
+    },
+    "thresholds:B": {
+      "arm": "B",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.78,
+          "gain": 0.000834
+        },
+        "calibrated": {
+          "tau": 0.952755905511811,
+          "gain": 0.00059
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.43,
+          "gain": 0.013501
+        },
+        "calibrated": {
+          "tau": 0.35714285714285715,
+          "gain": 0.01678
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.51,
+          "gain": 0.004486
+        },
+        "calibrated": {
+          "tau": 0.4805194805194805,
+          "gain": 0.00251
+        }
+      },
+      "frozen_thresholds_sha256": "f5db10a2169cb0e99da986b4897b61cbc8393b1d5258a708c8132d4c680e672e"
+    },
+    "calibrate:C": {
+      "arm": "C",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      }
+    },
+    "thresholds:C": {
+      "arm": "C",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.67,
+          "gain": 0.003437
+        },
+        "calibrated": {
+          "tau": 0.8571428571428571,
+          "gain": 0.002281
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.51,
+          "gain": 0.021355
+        },
+        "calibrated": {
+          "tau": 0.27976190476190477,
+          "gain": 0.020413
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.52,
+          "gain": 0.002065
+        },
+        "calibrated": {
+          "tau": 0.42857142857142855,
+          "gain": 0.001968
+        }
+      },
+      "frozen_thresholds_sha256": "b801615c238f71aaa0ecc5d2094af8001398c279b2efd6a7a3e83bb02bbb1d8a"
+    },
+    "calibrate:D": {
+      "arm": "D",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      }
+    },
+    "thresholds:D": {
+      "arm": "D",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.87,
+          "gain": 0.000673
+        },
+        "calibrated": {
+          "tau": 0.9333333333333333,
+          "gain": 5e-06
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.66,
+          "gain": 0.017734
+        },
+        "calibrated": {
+          "tau": 0.356234096692112,
+          "gain": 0.018891
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.66,
+          "gain": 0.001827
+        },
+        "calibrated": {
+          "tau": 0.3333333333333333,
+          "gain": 0.001928
+        }
+      },
+      "frozen_thresholds_sha256": "cf152ff92ce25423acf922ecf2bd483798f3fac9160bdaa04513ba7e0ffc435a"
+    },
+    "calibrate:E": {
+      "arm": "E",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 37
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 37
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 37
+      }
+    },
+    "thresholds:E": {
+      "arm": "E",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.83,
+          "gain": 0.002245
+        },
+        "calibrated": {
+          "tau": 0.8285714285714286,
+          "gain": 0.002656
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.34,
+          "gain": 0.020008
+        },
+        "calibrated": {
+          "tau": 0.375,
+          "gain": 0.01617
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.56,
+          "gain": 0.001949
+        },
+        "calibrated": {
+          "tau": 0.9411764705882353,
+          "gain": 0.001022
+        }
+      },
+      "frozen_thresholds_sha256": "a9142bd69bc19d46e4b6b2efa5b03238b288b413ab1904fca3e45674c706c945"
+    },
+    "calibrate:ABCDE": {
+      "arm": "ABCDE",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 34
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 34
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 34
+      }
+    },
+    "thresholds:ABCDE": {
+      "arm": "ABCDE",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.63,
+          "gain": 0.001353
+        },
+        "calibrated": {
+          "tau": 0.5621301775147929,
+          "gain": 0.007345
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.43,
+          "gain": 0.022948
+        },
+        "calibrated": {
+          "tau": 0.4727272727272727,
+          "gain": 0.03276
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.5,
+          "gain": 0.00356
+        },
+        "calibrated": {
+          "tau": 0.6,
+          "gain": 0.002023
+        }
+      },
+      "frozen_thresholds_sha256": "cca7d7ed765c1853e02c127cea371784519c8faaf35fa6a28923e770a3e25f3e"
+    },
+    "calibrate:BCDE": {
+      "arm": "BCDE",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      }
+    },
+    "thresholds:BCDE": {
+      "arm": "BCDE",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.59,
+          "gain": 0.003096
+        },
+        "calibrated": {
+          "tau": 0.75,
+          "gain": 0.002009
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.54,
+          "gain": 0.019257
+        },
+        "calibrated": {
+          "tau": 0.2978723404255319,
+          "gain": 0.026461
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.48,
+          "gain": 0.004303
+        },
+        "calibrated": {
+          "tau": 0.2571428571428571,
+          "gain": 0.004324
+        }
+      },
+      "frozen_thresholds_sha256": "77b954b2ea89c067e1a2f4da95adebdcf8d9299470a651f285956bef16c14ac1"
+    },
+    "calibrate:ACDE": {
+      "arm": "ACDE",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 36
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 36
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 36
+      }
+    },
+    "thresholds:ACDE": {
+      "arm": "ACDE",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.62,
+          "gain": 0.000941
+        },
+        "calibrated": {
+          "tau": 0.6288659793814433,
+          "gain": 0.002176
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.51,
+          "gain": 0.019692
+        },
+        "calibrated": {
+          "tau": 0.36,
+          "gain": 0.034249
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.44,
+          "gain": 0.001744
+        },
+        "calibrated": {
+          "tau": 0.9154929577464789,
+          "gain": 0.00108
+        }
+      },
+      "frozen_thresholds_sha256": "ab83e90bebed02039c0378cf266fba729ffc09497be1ce6eede863516a3749c0"
+    },
+    "calibrate:ABDE": {
+      "arm": "ABDE",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 40
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 40
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 40
+      }
+    },
+    "thresholds:ABDE": {
+      "arm": "ABDE",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.63,
+          "gain": 0.002825
+        },
+        "calibrated": {
+          "tau": 0.7777777777777778,
+          "gain": 0.003064
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.4,
+          "gain": 0.030617
+        },
+        "calibrated": {
+          "tau": 0.3333333333333333,
+          "gain": 0.04259
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.46,
+          "gain": 0.006199
+        },
+        "calibrated": {
+          "tau": 0.8,
+          "gain": 0.001239
+        }
+      },
+      "frozen_thresholds_sha256": "9a58558bf2815e33daf8da82bb663bfdba22a52d40f6ad16ba5b34a6a2083dc9"
+    },
+    "calibrate:ABCE": {
+      "arm": "ABCE",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 33
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 33
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 33
+      }
+    },
+    "thresholds:ABCE": {
+      "arm": "ABCE",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": null,
+          "gain": 0.0
+        },
+        "calibrated": {
+          "tau": 0.9619047619047619,
+          "gain": 0.000969
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.4,
+          "gain": 0.018846
+        },
+        "calibrated": {
+          "tau": 0.2823529411764706,
+          "gain": 0.030931
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.5,
+          "gain": 0.003633
+        },
+        "calibrated": {
+          "tau": 0.9230769230769231,
+          "gain": 0.001883
+        }
+      },
+      "frozen_thresholds_sha256": "a9e09a3e340afed889f1f237ec70e9d87d981656ee6397c6fee0849ace5e5dcd"
+    },
+    "calibrate:ABCD": {
+      "arm": "ABCD",
+      "fit_years": [
+        2018
+      ],
+      "h4": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h8": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      },
+      "h12": {
+        "fit_rows": 16093,
+        "calendar_months": [
+          2,
+          6,
+          10
+        ],
+        "kinds": {
+          "2": "isotonic",
+          "6": "isotonic",
+          "10": "isotonic"
+        },
+        "dropped_group_calibrators": 43
+      }
+    },
+    "thresholds:ABCD": {
+      "arm": "ABCD",
+      "h4": {
+        "support_rows": 16298,
+        "excluded_no_persistence": 141,
+        "persistence_f1": 0.5970046479600619,
+        "calibration_routes": {
+          "month_pooled": 16298
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.58,
+          "gain": 0.001842
+        },
+        "calibrated": {
+          "tau": 0.8076923076923077,
+          "gain": 0.002859
+        }
+      },
+      "h8": {
+        "support_rows": 16157,
+        "excluded_no_persistence": 282,
+        "persistence_f1": 0.5132505870513251,
+        "calibration_routes": {
+          "month_pooled": 16157
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.4,
+          "gain": 0.030557
+        },
+        "calibrated": {
+          "tau": 0.3425196850393701,
+          "gain": 0.034636
+        }
+      },
+      "h12": {
+        "support_rows": 16016,
+        "excluded_no_persistence": 423,
+        "persistence_f1": 0.5857642940490082,
+        "calibration_routes": {
+          "month_pooled": 16016
+        },
+        "calibration_route_reasons": [
+          "group_absent_from_fit_window"
+        ],
+        "raw": {
+          "tau": 0.56,
+          "gain": 0.001906
+        },
+        "calibrated": {
+          "tau": 0.9590163934426229,
+          "gain": 0.001178
+        }
+      },
+      "frozen_thresholds_sha256": "57a46da5d6af8e9b311a9e0d1a9828f80fee0b02fc18b15f0d83e97cf53274e0"
+    },
+    "final:ABDE,reference": {
+      "frozen_winner": "ABDE",
+      "winner_score": 0.014422369014552794,
+      "recipe_selection_sha256": "58144fbcdba581d61a225910e6f11f47ca7f9ec4d0f5fb41d2ed7ed9906b544e",
+      "final_windows": {
+        "fs1": {
+          "horizon_months": 4,
+          "target_dates": [
+            "2021-06",
+            "2021-10",
+            "2022-02",
+            "2022-06",
+            "2022-10",
+            "2023-02",
+            "2023-06",
+            "2023-10",
+            "2024-02",
+            "2024-06",
+            "2024-10"
+          ]
+        },
+        "fs2": {
+          "horizon_months": 8,
+          "target_dates": [
+            "2021-10",
+            "2022-02",
+            "2022-06",
+            "2022-10",
+            "2023-02",
+            "2023-06",
+            "2023-10",
+            "2024-02",
+            "2024-06",
+            "2024-10"
+          ]
+        },
+        "fs3": {
+          "horizon_months": 12,
+          "target_dates": [
+            "2022-02",
+            "2022-06",
+            "2022-10",
+            "2023-02",
+            "2023-06",
+            "2023-10",
+            "2024-02",
+            "2024-06",
+            "2024-10"
+          ]
+        }
+      },
+      "stage1:ABDE": {
+        "jobs": 18,
+        "completed": 18,
+        "excluded": 0,
+        "failed": 0,
+        "total_seconds": 501.3,
+        "per_job_seconds": {
+          "min": 22.0,
+          "median": 24.2,
+          "max": 47.4,
+          "mean": 27.8
+        },
+        "projected_663_job_hours": 5.13
+      },
+      "stage2_inputs:ABDE": {
+        "arm": "ABDE",
+        "map_role": "final",
+        "information_cutoff": "2020-12",
+        "candidate_years": [
+          2018,
+          2019,
+          2020
+        ],
+        "scheduled_candidates": 27,
+        "completed_eligible_candidates": 27,
+        "validly_excluded_candidates": 0,
+        "failed_candidates": 0,
+        "not_run_candidates": 0,
+        "unaccounted_status_candidates": {},
+        "candidates_without_any_status": 0,
+        "candidate_status_counts": {
+          "completed": 27
+        },
+        "candidates_with_positive_stage2_weight": 0,
+        "month_ind": false,
+        "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+        "stage2_ready": true,
+        "stage2_blocked_reason": "",
+        "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+      },
+      "stage1:reference": {
+        "jobs": 18,
+        "completed": 18,
+        "excluded": 0,
+        "failed": 0,
+        "total_seconds": 459.3,
+        "per_job_seconds": {
+          "min": 17.7,
+          "median": 23.6,
+          "max": 39.8,
+          "mean": 25.5
+        },
+        "projected_663_job_hours": 4.7
+      },
+      "stage2_inputs:reference": {
+        "arm": "reference",
+        "map_role": "final",
+        "information_cutoff": "2020-12",
+        "candidate_years": [
+          2018,
+          2019,
+          2020
+        ],
+        "scheduled_candidates": 27,
+        "completed_eligible_candidates": 27,
+        "validly_excluded_candidates": 0,
+        "failed_candidates": 0,
+        "not_run_candidates": 0,
+        "unaccounted_status_candidates": {},
+        "candidates_without_any_status": 0,
+        "candidate_status_counts": {
+          "completed": 27
+        },
+        "candidates_with_positive_stage2_weight": 7,
+        "month_ind": false,
+        "map_granularity": "general (D55): one map per arm and role, all months and scopes pooled",
+        "stage2_ready": true,
+        "stage2_blocked_reason": "",
+        "note": "Weights are reported for transparency only; this module does not build the consensus graph or the map. Zero eligible candidates or any failed required evidence stops that map build (R23), it is not a no-split result. A documented D20 support exclusion is a completed outcome and does not block it."
+      },
+      "consensus": {
+        "ABDE/final": {
+          "outcome": "valid_unsplit_all_nonpositive_weights",
+          "n_clusters": 1,
+          "coverage": {
+            "master_areas": 5718,
+            "by_assignment_source": {
+              "pooled_valid_unsplit": 5718
+            },
+            "by_graph_support": {
+              "never_in_graph": 5718
+            },
+            "assigned_areas": 5718,
+            "unassigned_pooled_areas": 0,
+            "unassigned_from_other_component": 0,
+            "unassigned_never_in_graph": 0
+          },
+          "seconds": 0.6
+        },
+        "reference/final": {
+          "outcome": "spectral_partition",
+          "n_clusters": 14,
+          "coverage": {
+            "master_areas": 5718,
+            "by_assignment_source": {
+              "spectral_core": 4838,
+              "unassigned_nearest_donor_beyond_100km": 783,
+              "completed_nearest_donor": 97
+            },
+            "by_graph_support": {
+              "in_fitted_core": 4838,
+              "in_graph_other_component": 668,
+              "never_in_graph": 212
+            },
+            "assigned_areas": 4935,
+            "unassigned_pooled_areas": 783,
+            "unassigned_from_other_component": 606,
+            "unassigned_never_in_graph": 177,
+            "completion_distance_km": {
+              "min": 1.2263790437479762,
+              "median": 6487.18404214373,
+              "max": 8621.04192843659
+            }
+          },
+          "seconds": 3.1
+        }
+      },
+      "predictions": {
+        "ABDE": {
+          "folds": 30,
+          "total_seconds": 565.7,
+          "target_rows": 156548,
+          "local_models_fitted": 0
+        },
+        "reference": {
+          "folds": 30,
+          "total_seconds": 753.7,
+          "target_rows": 156548,
+          "local_models_fitted": 420
+        }
+      }
+    }
+  }
+}

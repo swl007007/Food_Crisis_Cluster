@@ -407,19 +407,25 @@ def expected_selection_cohort(run_dir: Path, role: str) -> Dict[int, pd.DataFram
 
     Comparing candidates only against each other establishes that they agree, not that
     they are right: every arm could omit the same difficult areas, or share a wrong
-    label, and pass. D22's "predeclared" keys have to come from outside the candidates,
-    so they are rebuilt here from the prepared sources and D36's exact-origin
-    persistence rule.
+    label, and pass. D22's and D39's "predeclared"/"identical" keys have to come from
+    outside the arms, so they are rebuilt here from the prepared sources and D36's
+    exact-origin persistence rule.
+
+    The final role's targets are horizon-specific (D40), unlike the development roles'
+    shared three-month sets, so they are taken per horizon from the frozen schedule.
     """
     context = rp.RunContext(run_dir, create=False)
     sources = pdata.load_prepared_sources(rp._prepared_cache(context))
-    targets = pdata.MAP_ROLES[role]["prediction_targets"]
-    if not targets:
-        raise ReportError(f"map role {role!r} declares no prediction targets")
+    if role != "final":
+        shared = pdata.MAP_ROLES[role]["prediction_targets"]
+        if not shared:
+            raise ReportError(f"map role {role!r} declares no prediction targets")
 
     out: Dict[int, pd.DataFrame] = {}
-    for scope, horizon in enumerate(pdata.HORIZONS, start=1):
-        del scope
+    for horizon in pdata.HORIZONS:
+        targets = (
+            pdata.final_target_dates(horizon) if role == "final" else shared
+        )
         frames: List[pd.DataFrame] = []
         for year, month in targets:
             _, target_rows, _ = rp.select_stage3_rows(sources, horizon, int(year), int(month))
@@ -428,6 +434,59 @@ def expected_selection_cohort(run_dir: Path, role: str) -> Dict[int, pd.DataFram
         block = block[block["persistence_available"]]
         out[int(horizon)] = _normalise_cohort(block)
     return out
+
+
+def reconcile_cohorts(
+    run_dir: Path, role: str, frames: Dict[str, pd.DataFrame]
+) -> Dict[str, object]:
+    """Every arm must sit on the same predeclared paired cohort (D36/D39/R43).
+
+    Equal row counts do not establish pairing: two arms can hold the same number of
+    rows over different areas, or the same keys with a different label or persistence
+    value, and a difference of gains computed across them would not be a matched
+    comparison. So each arm is reconciled key-by-key against the master-derived cohort,
+    carrying truth and persistence, and any difference makes the report incomplete.
+    """
+    expected = expected_selection_cohort(run_dir, role)
+    expected_signatures = {
+        horizon: _cohort_signature(cohort) for horizon, cohort in expected.items()
+    }
+    report: Dict[str, object] = {
+        "anchor": "prepared master with D36 exact-origin persistence",
+        "role": role,
+        "expected_rows_by_horizon": {
+            f"h{horizon}": int(len(cohort)) for horizon, cohort in expected.items()
+        },
+        "expected_cohort_sha256": {
+            f"h{horizon}": value for horizon, value in expected_signatures.items()
+        },
+    }
+    mismatches: Dict[str, object] = {}
+    for name, frame in frames.items():
+        actual = evaluation_cohort(frame)
+        detail: Dict[str, object] = {}
+        for horizon, cohort in expected.items():
+            if horizon not in actual:
+                detail[f"h{horizon}"] = "horizon absent from this arm"
+                continue
+            if _cohort_signature(actual[horizon]) == expected_signatures[horizon]:
+                continue
+            theirs = actual[horizon]
+            keys_expected = set(zip(cohort["FEWSNET_admin_code"], cohort["target_month"]))
+            keys_actual = set(zip(theirs["FEWSNET_admin_code"], theirs["target_month"]))
+            detail[f"h{horizon}"] = {
+                "rows_expected": int(len(cohort)), "rows_actual": int(len(theirs)),
+                "keys_missing": len(keys_expected - keys_actual),
+                "keys_unexpected": len(keys_actual - keys_expected),
+                "same_keys_different_values": bool(
+                    keys_expected == keys_actual
+                ),
+            }
+        if detail:
+            mismatches[name] = detail
+    report["arms_matching_expected_cohort"] = not mismatches
+    report["mismatches"] = mismatches
+    return report
 
 
 def select_recipe(
@@ -1037,6 +1096,17 @@ def final_report(run_dir: Path, *, verify: bool = False) -> Dict[str, object]:
             "full_support_standalone_rf": full_support_rf_table(run_dir, arm),
         }
 
+    # D39/R43: the two arms and the persistence stream must sit on identical paired
+    # keys within each horizon. Subtracting one arm's gains from the other's is only a
+    # matched comparison if that holds, so it is established before the subtraction.
+    report["cohort_reconciliation"] = reconcile_cohorts(run_dir, "final", frames)
+    if not report["cohort_reconciliation"]["arms_matching_expected_cohort"]:
+        raise ReportError(
+            "final arms do not sit on the predeclared paired cohort: "
+            f"{report['cohort_reconciliation']['mismatches']}. Under D45 this is "
+            "incomplete evidence, not a result."
+        )
+
     # D41: the matched increment attributable to the updated sources/engineering.
     report["winner_minus_reference"] = {
         "note": (
@@ -1052,6 +1122,18 @@ def final_report(run_dir: Path, *, verify: bool = False) -> Dict[str, object]:
     report["winner_minus_reference"]["mean"] = float(np.mean(
         list(report["winner_minus_reference"]["by_cell"].values())
     ))
+
+    # Per-date pooled confusion counts for both arms. These are what the metrics are
+    # actually computed from, so publishing them makes every reported number
+    # independently reconstructable without the ~223 MB of per-row predictions.
+    report["confusion_by_date"] = {
+        role_name: {
+            f"h{horizon}|{date}": entry
+            for (horizon, date), entry in
+            _cell_counts_by_date(frames[role_name], thresholds[role_name]).items()
+        }
+        for role_name in ("winner", "reference")
+    }
 
     primary = float(report["winner"]["primary_gain"])
     bootstrap = joint_bootstrap(frames["winner"], thresholds["winner"])
@@ -1143,6 +1225,36 @@ FINAL_LIMITATIONS: Tuple[str, ...] = (
     "z-scores (Rainf_zscore/Tair_zscore) were removed from the updated BASE and the "
     "corrected reference (D46), and assistance signals were excluded (D47). Raw "
     "rainfall and temperature fields are retained.",
+    # D33 made these disclosures a *condition* of retaining Gini and nightlight rather
+    # than reconstructing them, so they belong in the results report, not only in the
+    # source provenance.
+    "Retained-source construction (D33), disclosed as the condition of retaining these "
+    "predictors instead of reconstructing them: the old FEWS Gini uses two-sided linear "
+    "interpolation, so an earlier value can depend on a later survey endpoint; the old "
+    "nightlight-SD uses ungrouped forward filling after sorting regions and dates, "
+    "which can propagate a value across region boundaries, and nightlight mean/SD also "
+    "undergo zero filling in the old assembly code. These are verified generator "
+    "behaviours. The selected master has NOT been matched value-by-value to those "
+    "executions, so neither contamination of any particular value nor its exact "
+    "generation lineage is established here.",
+    "Block E's missing flags and ages refer to values visible in the supplied source "
+    "tables (D33). Existing interpolated, forward-filled or zero-filled values cannot "
+    "be distinguished from original measurements without metadata, so original "
+    "missingness is not recovered.",
+    "Population (D48) uses a prior-year snapshot: for origin O, the area's last "
+    "nonmissing record by source month within year(O)-1, held for the origin year. The "
+    "records' calendar year is not verified as the demographic estimate's reference "
+    "year, and prior-year alignment cannot establish historical availability of the "
+    "2018 GPW source snapshot.",
+    "Fixed-geography covariates (D49) preserve supplied snapshots throughout, including "
+    "origins earlier than a layer's reference or publication year; the market-access "
+    "vintage is 2015 and several dates and semantics remain unresolved. Inherited "
+    "names are identifiers, not verified descriptions of the underlying terrain or "
+    "river quantities.",
+    "Origin alignment was enforced for models, maps, calibration, thresholds and "
+    "derived features, but it is conditional on the supplied source snapshots. Its "
+    "success is NOT verification of leakage-free historical source data or of "
+    "operational real-time availability (D33/D49).",
     "Consensus weighting: D56's 1e-6 clip gives a plan whose pooled baseline F1 is "
     "exactly 0 a weight an order of magnitude above well-behaved plans. Two such plans "
     "carry 93.7% of the calibration-window weight. R60 mandates the released formula.",

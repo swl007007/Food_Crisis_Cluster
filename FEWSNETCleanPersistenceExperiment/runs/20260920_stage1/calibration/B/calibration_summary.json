@@ -1,0 +1,48 @@
+{
+  "arm": "B",
+  "fit_years": [
+    2018
+  ],
+  "h4": {
+    "fit_rows": 16093,
+    "calendar_months": [
+      2,
+      6,
+      10
+    ],
+    "kinds": {
+      "2": "isotonic",
+      "6": "isotonic",
+      "10": "isotonic"
+    },
+    "dropped_group_calibrators": 40
+  },
+  "h8": {
+    "fit_rows": 16093,
+    "calendar_months": [
+      2,
+      6,
+      10
+    ],
+    "kinds": {
+      "2": "isotonic",
+      "6": "isotonic",
+      "10": "isotonic"
+    },
+    "dropped_group_calibrators": 40
+  },
+  "h12": {
+    "fit_rows": 16093,
+    "calendar_months": [
+      2,
+      6,
+      10
+    ],
+    "kinds": {
+      "2": "isotonic",
+      "6": "isotonic",
+      "10": "isotonic"
+    },
+    "dropped_group_calibrators": 40
+  }
+}

@@ -1,0 +1,110 @@
+column_order,column,index,all_missing_in_fitting_rows,min,max,fill_value,fill_rule
+0,lat,0,False,-26.66055672814686,38.22374755974924,3822.374755974924,max*100
+1,lon,1,False,-92.18212153785024,73.33798817378396,7333.798817378395,max*100
+2,distance_to_nearest_acled,2,False,0.1027181540073678,499.94840236568734,49994.840236568736,max*100
+3,event_count_battles,3,False,0.0,15.0,1500.0,max*100
+4,event_count_explosions,4,False,0.0,5.0,500.0,max*100
+5,event_count_violence,5,False,0.0,14.0,1400.0,max*100
+6,sum_fatalities_battles,6,False,0.0,88.0,8800.0,max*100
+7,sum_fatalities_explosions,7,False,0.0,33.0,3300.0,max*100
+8,sum_fatalities_violence,8,False,0.0,270.0,27000.0,max*100
+9,event_count_battles_w5,9,False,0.0,34.0,3400.0,max*100
+10,event_count_explosions_w5,10,False,0.0,7.0,700.0,max*100
+11,event_count_violence_w5,11,False,0.0,28.0,2800.0,max*100
+12,sum_fatalities_battles_w5,12,False,0.0,116.0,11600.0,max*100
+13,sum_fatalities_explosions_w5,13,False,0.0,33.0,3300.0,max*100
+14,sum_fatalities_violence_w5,14,False,0.0,270.0,27000.0,max*100
+15,event_count_battles_w10,15,False,0.0,124.0,12400.0,max*100
+16,event_count_explosions_w10,16,False,0.0,16.0,1600.0,max*100
+17,event_count_violence_w10,17,False,0.0,52.0,5200.0,max*100
+18,sum_fatalities_battles_w10,18,False,0.0,451.0,45100.0,max*100
+19,sum_fatalities_explosions_w10,19,False,0.0,72.0,7200.0,max*100
+20,sum_fatalities_violence_w10,20,False,0.0,310.0,31000.0,max*100
+21,AEZ_10000,21,False,0.0,1.0,100.0,max*100
+22,AEZ_12000,22,False,0.0,1.0,100.0,max*100
+23,AEZ_15000,23,False,0.0,1.0,100.0,max*100
+24,AEZ_17000,24,False,0.0,1.0,100.0,max*100
+25,AEZ_19000,25,False,0.0,1.0,100.0,max*100
+26,AEZ_25000,26,False,0.0,1.0,100.0,max*100
+27,AEZ_31000,27,False,0.0,1.0,100.0,max*100
+28,AEZ_32000,28,False,0.0,1.0,100.0,max*100
+29,AEZ_33000,29,False,0.0,1.0,100.0,max*100
+30,AEZ_34000,30,False,0.0,1.0,100.0,max*100
+31,AEZ_36000,31,False,0.0,1.0,100.0,max*100
+32,AEZ_38000,32,False,0.0,1.0,100.0,max*100
+33,AEZ_4000,33,False,0.0,1.0,100.0,max*100
+34,AEZ_40000,34,False,0.0,1.0,100.0,max*100
+35,AEZ_43000,35,False,0.0,1.0,100.0,max*100
+36,AEZ_7000,36,False,0.0,1.0,100.0,max*100
+37,AEZ_9000,37,False,0.0,1.0,100.0,max*100
+38,crop,38,False,0.0,200.0,20000.0,max*100
+39,range,39,False,0.0,200.0,20000.0,max*100
+40,distance_to_river,40,False,0.0,6774.8,677480.0,max*100
+41,nightlight,41,False,0.0,43.1089859009,4310.898590090001,max*100
+42,nightlight_sd,42,False,0.0,35.9271987926,3592.71987926,max*100
+43,elevation,43,False,-1.0,4670.0,467000.0,max*100
+44,EVI,44,False,0.0,6677.53057325,667753.0573250001,max*100
+45,market_distance,45,False,0.1743782454895073,498.73704141900646,49873.70414190065,max*100
+46,FAO_price,46,False,27.5,333.86,33386.0,max*100
+47,Rainf_f_tavg_mean,47,False,0.0,0.000299153369269,0.029915336926900002,max*100
+48,Tair_f_tavg_mean,48,False,256.216161416,310.181204607,31018.1204607,max*100
+49,gpp_mean,49,False,0.0,65535.0,6553500.0,max*100
+50,sg_cec_5-15cm,50,False,25.0,697.0,69700.0,max*100
+51,sg_cfvo_5-15cm,51,False,3.0,682.0,68200.0,max*100
+52,sg_nitrogen_5-15cm,52,False,212.0,14127.0,1412700.0,max*100
+53,sg_phh2o_5-15cm,53,False,45.0,91.0,9100.0,max*100
+54,sg_soc_5-15cm,54,False,2.0,1042.0,104200.0,max*100
+55,market_access,55,False,0.0,4651.0,465100.0,max*100
+56,ruggedness,56,False,0.0001748863238894,1.0,100.0,max*100
+57,slope,57,False,0.0,1.0,100.0,max*100
+58,CPI,58,False,-3.23338934,557.2018174,55720.18174,max*100
+59,GDP,59,False,833.9202575,11470.36422,1147036.422,max*100
+60,CC,60,False,0.0,50.47618866,5047.618866,max*100
+61,gini,61,False,0.3432818400316667,0.5174695236196,51.74695236196,max*100
+62,WFP_Price,62,False,0.398,1996.92855,199692.855,max*100
+63,WFP_Price_std,63,False,0.0196575685169859,1369.0721958060271,136907.21958060272,max*100
+64,pop,64,False,0.0,13280072.0,1328007200.0,max*100
+65,Food_CPI,65,False,83.449598,1000.0,100000.0,max*100
+66,Food_food_inflation,66,False,-20.365986,835.800677,83580.0677,max*100
+67,year_2010,67,False,0.0,0.0,100.0,max==0 -> 100
+68,year_2011,68,False,0.0,0.0,100.0,max==0 -> 100
+69,year_2012,69,False,0.0,0.0,100.0,max==0 -> 100
+70,year_2013,70,False,0.0,0.0,100.0,max==0 -> 100
+71,year_2014,71,False,0.0,0.0,100.0,max==0 -> 100
+72,year_2015,72,False,0.0,0.0,100.0,max==0 -> 100
+73,year_2016,73,False,0.0,0.0,100.0,max==0 -> 100
+74,year_2017,74,False,0.0,0.0,100.0,max==0 -> 100
+75,year_2018,75,False,0.0,0.0,100.0,max==0 -> 100
+76,year_2019,76,False,0.0,1.0,100.0,max*100
+77,year_2020,77,False,0.0,1.0,100.0,max*100
+78,year_2021,78,False,0.0,1.0,100.0,max*100
+79,year_2022,79,False,0.0,1.0,100.0,max*100
+80,year_2023,80,False,0.0,0.0,100.0,max==0 -> 100
+81,year_2024,81,False,0.0,0.0,100.0,max==0 -> 100
+82,month_1,82,False,0.0,0.0,100.0,max==0 -> 100
+83,month_2,83,False,0.0,1.0,100.0,max*100
+84,month_4,84,False,0.0,0.0,100.0,max==0 -> 100
+85,month_6,85,False,0.0,1.0,100.0,max*100
+86,month_7,86,False,0.0,0.0,100.0,max==0 -> 100
+87,month_10,87,False,0.0,1.0,100.0,max*100
+88,fews_ipc_crisis_lag_4,88,False,0.0,1.0,100.0,max*100
+89,fews_ipc_crisis_lag_8,89,False,0.0,1.0,100.0,max*100
+90,fews_ipc_crisis_lag_12,90,False,0.0,1.0,100.0,max*100
+91,fews_ipc_lag_4,91,False,1.0,4.0,400.0,max*100
+92,fews_ipc_lag_8,92,False,1.0,4.0,400.0,max*100
+93,fews_ipc_lag_12,93,False,1.0,4.0,400.0,max*100
+94,EVI_l1,94,False,0.0,7316.6,731660.0,max*100
+95,EVI_l2,95,False,0.0,6719.66666667,671966.666667,max*100
+96,EVI_l3,96,False,0.0,6699.0,669900.0,max*100
+97,EVI_l4,97,False,0.0,6677.53057325,667753.0573250001,max*100
+98,EVI_l5,98,False,0.0,7316.6,731660.0,max*100
+99,EVI_l6,99,False,0.0,6719.66666667,671966.666667,max*100
+100,EVI_l7,100,False,0.0,6699.0,669900.0,max*100
+101,EVI_l8,101,False,0.0,6677.53057325,667753.0573250001,max*100
+102,EVI_l9,102,False,0.0,6759.0,675900.0,max*100
+103,EVI_l10,103,False,0.0,6624.41139241,662441.139241,max*100
+104,EVI_l11,104,False,0.0,6640.48789809,664048.789809,max*100
+105,EVI_l12,105,False,0.0,6677.53057325,667753.0573250001,max*100
+106,WFP_Price_m4,106,False,1.48725,6593.672272132353,659367.2272132353,max*100
+107,WFP_Price_m12,107,False,4.8305,15006.939971656164,1500693.9971656164,max*100
+108,nightlight_m12,108,False,0.0,426.6244516370999,42662.44516370999,max*100

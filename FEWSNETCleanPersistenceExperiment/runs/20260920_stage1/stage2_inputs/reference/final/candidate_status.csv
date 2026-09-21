@@ -1,0 +1,28 @@
+name,arm,variant,year,month,forecasting_scope,horizon_months,target_month,map_roles,status,reason,real_fitting_rows,real_validation_rows,labeled_target_rows,n_terminal_partitions,f1(1),f1_base(1),seconds
+GeoRF-reference_2018_02_fs1,reference,GeoRF-reference,2018,2,1,4,2018-02,"['selection', 'final']",completed,,35910,10365,5364,1,0.4976671850699845,0.4976671850699845,19.78
+GeoRF-reference_2018_02_fs2,reference,GeoRF-reference,2018,2,2,8,2018-02,"['selection', 'final']",completed,,40411,10363,5364,3,0.44897959183673475,0.48018648018648014,25.7
+GeoRF-reference_2018_02_fs3,reference,GeoRF-reference,2018,2,3,12,2018-02,"['selection', 'final']",completed,,40250,10164,5364,1,0.35918367346938773,0.35918367346938773,20.75
+GeoRF-reference_2018_06_fs1,reference,GeoRF-reference,2018,6,1,4,2018-06,"['selection', 'final']",completed,,36112,10522,5364,7,0.47386172006745364,0.45120999219359875,32.47
+GeoRF-reference_2018_06_fs2,reference,GeoRF-reference,2018,6,2,8,2018-06,"['selection', 'final']",completed,,35910,10365,5364,7,0.4648742411101474,0.47010647010647005,32.45
+GeoRF-reference_2018_06_fs3,reference,GeoRF-reference,2018,6,3,12,2018-06,"['selection', 'final']",completed,,40411,10363,5364,9,0.40462427745664736,0.412573673870334,38.73
+GeoRF-reference_2018_10_fs1,reference,GeoRF-reference,2018,10,1,4,2018-10,"['selection', 'final']",completed,,36472,10524,5365,6,0.47822644497228817,0.4665090622537431,32.93
+GeoRF-reference_2018_10_fs2,reference,GeoRF-reference,2018,10,2,8,2018-10,"['selection', 'final']",completed,,36115,10523,5365,7,0.4172413793103449,0.41291418861512313,33.97
+GeoRF-reference_2018_10_fs3,reference,GeoRF-reference,2018,10,3,12,2018-10,"['selection', 'final']",completed,,35914,10366,5365,7,0.3758865248226951,0.39295154185022024,32.78
+GeoRF-reference_2019_02_fs1,reference,GeoRF-reference,2019,2,1,4,2019-02,['final'],completed,,31626,10722,5365,1,0.5161290322580645,0.5161290322580645,17.7
+GeoRF-reference_2019_02_fs2,reference,GeoRF-reference,2019,2,2,8,2019-02,['final'],completed,,36472,10524,5365,10,0.47473200612557426,0.46352583586626145,34.74
+GeoRF-reference_2019_02_fs3,reference,GeoRF-reference,2019,2,3,12,2019-02,['final'],completed,,36115,10523,5365,7,0.4061990212071778,0.39836065573770496,31.43
+GeoRF-reference_2019_06_fs1,reference,GeoRF-reference,2019,6,1,4,2019-06,['final'],completed,,31829,10724,5365,1,0.453812771233726,0.453812771233726,17.66
+GeoRF-reference_2019_06_fs2,reference,GeoRF-reference,2019,6,2,8,2019-06,['final'],completed,,31626,10722,5365,7,0.4235924932975872,0.4320420223243598,30.48
+GeoRF-reference_2019_06_fs3,reference,GeoRF-reference,2019,6,3,12,2019-06,['final'],completed,,36472,10524,5365,7,0.3910614525139665,0.4065708418891171,30.23
+GeoRF-reference_2019_10_fs1,reference,GeoRF-reference,2019,10,1,4,2019-10,['final'],completed,,32031,10728,5365,1,0.46638207043756674,0.46638207043756674,17.03
+GeoRF-reference_2019_10_fs2,reference,GeoRF-reference,2019,10,2,8,2019-10,['final'],completed,,31829,10724,5365,1,0.3900226757369614,0.3900226757369614,18.34
+GeoRF-reference_2019_10_fs3,reference,GeoRF-reference,2019,10,3,12,2019-10,['final'],completed,,31626,10722,5365,10,0.31592356687898093,0.31102613129381773,31.07
+GeoRF-reference_2020_02_fs1,reference,GeoRF-reference,2020,2,1,4,2020-02,['final'],completed,,32036,10729,5506,1,0.5006418485237484,0.5006418485237484,18.47
+GeoRF-reference_2020_02_fs2,reference,GeoRF-reference,2020,2,2,8,2020-02,['final'],completed,,32031,10728,5506,1,0.610236220472441,0.610236220472441,27.17
+GeoRF-reference_2020_02_fs3,reference,GeoRF-reference,2020,2,3,12,2020-02,['final'],completed,,31829,10724,5506,1,0.44408427876823336,0.44408427876823336,17.32
+GeoRF-reference_2020_06_fs1,reference,GeoRF-reference,2020,6,1,4,2020-06,['final'],completed,,32185,10729,5506,1,0.5575826681870012,0.5575826681870012,18.83
+GeoRF-reference_2020_06_fs2,reference,GeoRF-reference,2020,6,2,8,2020-06,['final'],completed,,32036,10729,5506,6,0.5414220482713634,0.5487179487179487,29.63
+GeoRF-reference_2020_06_fs3,reference,GeoRF-reference,2020,6,3,12,2020-06,['final'],completed,,32031,10728,5506,1,0.4508426966292135,0.4508426966292135,39.12
+GeoRF-reference_2020_10_fs1,reference,GeoRF-reference,2020,10,1,4,2020-10,['final'],completed,,31855,10571,5427,1,0.5490196078431373,0.5490196078431373,17.84
+GeoRF-reference_2020_10_fs2,reference,GeoRF-reference,2020,10,2,8,2020-10,['final'],completed,,31711,10571,5427,1,0.4719887955182074,0.4719887955182074,18.4
+GeoRF-reference_2020_10_fs3,reference,GeoRF-reference,2020,10,3,12,2020-10,['final'],completed,,31562,10571,5427,10,0.4644628099173554,0.4522028262676643,32.11

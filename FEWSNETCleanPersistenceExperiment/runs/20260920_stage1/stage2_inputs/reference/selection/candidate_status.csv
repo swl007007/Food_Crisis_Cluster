@@ -1,0 +1,28 @@
+name,arm,variant,year,month,forecasting_scope,horizon_months,target_month,map_roles,status,reason,real_fitting_rows,real_validation_rows,labeled_target_rows,n_terminal_partitions,f1(1),f1_base(1),seconds
+GeoRF-reference_2016_02_fs1,reference,GeoRF-reference,2016,2,1,4,2016-02,"['calibration', 'selection']",completed,,39322,14727,5163,1,0.3172413793103448,0.3172413793103448,21.09
+GeoRF-reference_2016_02_fs2,reference,GeoRF-reference,2016,2,2,8,2016-02,"['calibration', 'selection']",completed,,44030,14727,5163,2,0.2527805864509606,0.2655935613682093,27.04
+GeoRF-reference_2016_02_fs3,reference,GeoRF-reference,2016,2,3,12,2016-02,"['calibration', 'selection']",completed,,43880,14726,5163,6,0.19267015706806284,0.21052631578947367,36.17
+GeoRF-reference_2016_06_fs1,reference,GeoRF-reference,2016,6,1,4,2016-06,"['calibration', 'selection']",completed,,39468,14726,5162,1,0.43008994276369583,0.43008994276369583,21.15
+GeoRF-reference_2016_06_fs2,reference,GeoRF-reference,2016,6,2,8,2016-06,"['calibration', 'selection']",completed,,39319,14726,5162,1,0.3716651333946642,0.3716651333946642,20.93
+GeoRF-reference_2016_06_fs3,reference,GeoRF-reference,2016,6,3,12,2016-06,"['calibration', 'selection']",completed,,44028,14726,5162,6,0.2608695652173913,0.2505091649694501,34.66
+GeoRF-reference_2016_10_fs1,reference,GeoRF-reference,2016,10,1,4,2016-10,"['calibration', 'selection']",completed,,39598,14866,5359,1,0.5118881118881119,0.5118881118881119,21.94
+GeoRF-reference_2016_10_fs2,reference,GeoRF-reference,2016,10,2,8,2016-10,"['calibration', 'selection']",completed,,39444,14717,5359,1,0.4922644163150493,0.4922644163150493,24.69
+GeoRF-reference_2016_10_fs3,reference,GeoRF-reference,2016,10,3,12,2016-10,"['calibration', 'selection']",completed,,39295,14717,5359,1,0.02882882882882883,0.02882882882882883,19.46
+GeoRF-reference_2017_02_fs1,reference,GeoRF-reference,2017,2,1,4,2017-02,['selection'],completed,,39027,9876,5216,5,0.1627450980392157,0.13813813813813813,57.61
+GeoRF-reference_2017_02_fs2,reference,GeoRF-reference,2017,2,2,8,2017-02,['selection'],completed,,39022,14578,5216,5,0.27347310847766637,0.22580645161290322,32.93
+GeoRF-reference_2017_02_fs3,reference,GeoRF-reference,2017,2,3,12,2017-02,['selection'],completed,,38868,14573,5216,2,0.0021551724137931034,0.0021598272138228943,33.14
+GeoRF-reference_2017_06_fs1,reference,GeoRF-reference,2017,6,1,4,2017-06,['selection'],completed,,40249,10164,5362,13,0.36602316602316604,0.37451437451437447,81.83
+GeoRF-reference_2017_06_fs2,reference,GeoRF-reference,2017,6,2,8,2017-06,['selection'],completed,,39747,10164,5362,7,0.3663663663663664,0.3795731707317073,62.4
+GeoRF-reference_2017_06_fs3,reference,GeoRF-reference,2017,6,3,12,2017-06,['selection'],completed,,39598,14866,5362,1,0.2751235584843493,0.2751235584843493,47.39
+GeoRF-reference_2017_10_fs1,reference,GeoRF-reference,2017,10,1,4,2017-10,['selection'],completed,,40411,10363,5364,3,0.44855967078189296,0.45962732919254656,55.02
+GeoRF-reference_2017_10_fs2,reference,GeoRF-reference,2017,10,2,8,2017-10,['selection'],completed,,40250,10164,5364,3,0.443701226309922,0.4544456641053787,34.48
+GeoRF-reference_2017_10_fs3,reference,GeoRF-reference,2017,10,3,12,2017-10,['selection'],completed,,39747,10164,5364,6,0.35570469798657717,0.3734533183352081,33.1
+GeoRF-reference_2018_02_fs1,reference,GeoRF-reference,2018,2,1,4,2018-02,['selection'],completed,,35910,10365,5364,1,0.4976671850699845,0.4976671850699845,19.78
+GeoRF-reference_2018_02_fs2,reference,GeoRF-reference,2018,2,2,8,2018-02,['selection'],completed,,40411,10363,5364,3,0.44897959183673475,0.48018648018648014,25.7
+GeoRF-reference_2018_02_fs3,reference,GeoRF-reference,2018,2,3,12,2018-02,['selection'],completed,,40250,10164,5364,1,0.35918367346938773,0.35918367346938773,20.75
+GeoRF-reference_2018_06_fs1,reference,GeoRF-reference,2018,6,1,4,2018-06,['selection'],completed,,36112,10522,5364,7,0.47386172006745364,0.45120999219359875,32.47
+GeoRF-reference_2018_06_fs2,reference,GeoRF-reference,2018,6,2,8,2018-06,['selection'],completed,,35910,10365,5364,7,0.4648742411101474,0.47010647010647005,32.45
+GeoRF-reference_2018_06_fs3,reference,GeoRF-reference,2018,6,3,12,2018-06,['selection'],completed,,40411,10363,5364,9,0.40462427745664736,0.412573673870334,38.73
+GeoRF-reference_2018_10_fs1,reference,GeoRF-reference,2018,10,1,4,2018-10,['selection'],completed,,36472,10524,5365,6,0.47822644497228817,0.4665090622537431,32.93
+GeoRF-reference_2018_10_fs2,reference,GeoRF-reference,2018,10,2,8,2018-10,['selection'],completed,,36115,10523,5365,7,0.4172413793103449,0.41291418861512313,33.97
+GeoRF-reference_2018_10_fs3,reference,GeoRF-reference,2018,10,3,12,2018-10,['selection'],completed,,35914,10366,5365,7,0.3758865248226951,0.39295154185022024,32.78

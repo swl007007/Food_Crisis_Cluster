@@ -261,6 +261,72 @@ class TestEvaluationCohort(unittest.TestCase):
         )
 
 
+class TestFinalCohortReconciliation(unittest.TestCase):
+    """D39/R43: the two final arms and persistence share one paired cohort.
+
+    Equal row counts are not pairing. These exercise the comparison that the close
+    audit found missing from the final report.
+    """
+
+    @staticmethod
+    def _cohort(rows):
+        import pandas as pd
+
+        return rr._normalise_cohort(pd.DataFrame(rows))
+
+    def test_same_row_count_over_different_areas_is_detected(self) -> None:
+        a = self._cohort([
+            {"FEWSNET_admin_code": 1, "target_month": "2022-02",
+             "target_label": 1, "persistence": 0},
+            {"FEWSNET_admin_code": 2, "target_month": "2022-02",
+             "target_label": 0, "persistence": 0},
+        ])
+        b = self._cohort([
+            {"FEWSNET_admin_code": 1, "target_month": "2022-02",
+             "target_label": 1, "persistence": 0},
+            {"FEWSNET_admin_code": 3, "target_month": "2022-02",
+             "target_label": 0, "persistence": 0},
+        ])
+        self.assertEqual(len(a), len(b))
+        self.assertNotEqual(rr._cohort_signature(a), rr._cohort_signature(b))
+
+    def test_same_keys_with_a_different_persistence_value_is_detected(self) -> None:
+        base = [{"FEWSNET_admin_code": 1, "target_month": "2022-02",
+                 "target_label": 1, "persistence": 0}]
+        altered = [dict(base[0], persistence=1)]
+        self.assertNotEqual(
+            rr._cohort_signature(self._cohort(base)),
+            rr._cohort_signature(self._cohort(altered)),
+        )
+
+    def test_row_order_does_not_affect_the_signature(self) -> None:
+        rows = [
+            {"FEWSNET_admin_code": 2, "target_month": "2022-02",
+             "target_label": 0, "persistence": 0},
+            {"FEWSNET_admin_code": 1, "target_month": "2022-02",
+             "target_label": 1, "persistence": 0},
+        ]
+        self.assertEqual(
+            rr._cohort_signature(self._cohort(rows)),
+            rr._cohort_signature(self._cohort(list(reversed(rows)))),
+        )
+
+    def test_required_source_disclosures_are_present(self) -> None:
+        """D33/D48/D49 made these disclosures a condition of retaining the predictors,
+        so their absence from the report is a contract violation, not a style choice."""
+        text = " ".join(rr.FINAL_LIMITATIONS).lower()
+        for required in (
+            "two-sided linear interpolation",   # D33 Gini
+            "ungrouped forward filling",        # D33 nightlight SD
+            "zero filling",                     # D33 nightlight mean/SD
+            "original missingness is not recovered",  # D33 block E
+            "prior-year snapshot",              # D48 population
+            "2018 gpw",                         # D48 availability
+            "market-access vintage is 2015",    # D49
+        ):
+            self.assertIn(required, text, f"missing required disclosure: {required!r}")
+
+
 class TestRoutingLabels(unittest.TestCase):
     def test_pooled_routes_are_distinguishable(self) -> None:
         """"unassigned", "below the gate" and "never trained" mean different things and
