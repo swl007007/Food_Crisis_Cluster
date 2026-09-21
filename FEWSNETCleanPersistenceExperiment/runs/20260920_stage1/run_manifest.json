@@ -53,7 +53,8 @@
     "thresholds:ABCE",
     "calibrate:ABCD",
     "thresholds:ABCD",
-    "final:ABDE,reference"
+    "final:ABDE,reference",
+    "predictions:BASE,reference"
   ],
   "limitations": [
     "Retrospective run on already-inspected historical years; not a fresh holdout.",
@@ -61,7 +62,7 @@
     "Stage 1 retains the released zero-feature class-recovery rows inside RF fitting; no SMOTE is not the absence of all artificial observations.",
     "Job counts are planning arithmetic before D20 support exclusions, not runtime."
   ],
-  "updated_utc": "2026-09-21T13:48:14Z",
+  "updated_utc": "2026-09-21T15:24:21Z",
   "prepared_run": {
     "run_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_prepare_final",
     "cache": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETCleanPersistenceExperiment\\runs\\20260920_prepare_final\\cache\\prepared_sources.npz",
@@ -3426,6 +3427,32 @@
           "target_rows": 156548,
           "local_models_fitted": 420
         }
+      }
+    },
+    "predictions:BASE,reference": {
+      "BASE": {
+        "folds": 18,
+        "folds_reused": 18,
+        "folds_refitted": 0,
+        "folds_reused_with_unverified_identity": [
+          "min_local_training_rows"
+        ],
+        "archived_superseded_folds": [],
+        "total_seconds": 276.8,
+        "target_rows": 97596,
+        "local_models_fitted": 291
+      },
+      "reference": {
+        "folds": 18,
+        "folds_reused": 18,
+        "folds_refitted": 0,
+        "folds_reused_with_unverified_identity": [
+          "min_local_training_rows"
+        ],
+        "archived_superseded_folds": [],
+        "total_seconds": 337.3,
+        "target_rows": 97596,
+        "local_models_fitted": 233
       }
     }
   }

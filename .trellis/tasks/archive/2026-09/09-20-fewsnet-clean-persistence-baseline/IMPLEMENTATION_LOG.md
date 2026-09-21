@@ -798,3 +798,69 @@ Four findings, all fixed:
 All ten verification checks now pass, including `ledger_reconstructs_every_gain`,
 `interval_matches_reconstructed_gains`, `rejection_only_for_empty_support` and
 `leave_one_year_out_reproduces`.
+
+## Independent completion audit — 2026-09-21
+
+The controller's own fresh reviewer audited `e0a364b` twice from an independent clone
+(attempts 2 and 3). Both returned **verdict: incomplete**.
+
+Both agreed the committed summary arithmetic is internally consistent with the ABDE
+selection and a negative final mean, and both ran the pinned Windows contract suite
+successfully (183 tests, 182 passed, one real-source preflight skipped). Both also
+raised the same evidence-gap objection and the same disclosure finding. Their other
+major finding differed, so between them they found three distinct defects:
+
+| finding | attempt | severity | disposition |
+|---|---|---|---|
+| A01 (2) final reporting certifies paired support without reconciling the two arms or the master cohort | 2 | major | fixed in `d3b327e` |
+| A02 (2/3) the report omits D33/D48/D49 disclosures that were conditions of retaining those predictors | 2 major / 3 minor | fixed in `d3b327e` |
+| A01 (3) restarting Stage 3 refits and overwrites completed fold evidence | 3 | major | fixed here |
+| G1-G3 required ledgers, manifests and maps absent from the audit package | both | evidence gap | fixed in `d3b327e` |
+
+### The Stage 3 restart defect
+
+`run_stage3_fold` overwrote an existing fold directory unconditionally. Stage 1 skips
+completed candidates; Stage 3 did not. So rerunning the documented
+`--stage predictions` command after a late failure silently refitted and replaced
+earlier successful folds, discarding their evidence and potentially invalidating
+downstream bindings frozen against it. **I did exactly this several times during this
+session**, which is how the superseded-artifact problem recurred even after adopting
+the archive-don't-delete policy.
+
+Fixed: `fold_identity` records the identity a fold's evidence must match (arm, role,
+target, horizon, map digest, RF parameters, support gate). `reusable_fold` reuses a
+completed fold only when that identity matches *and* its `predictions.csv` and
+`training_keys.csv` still hash to their recorded digests. A field that is present and
+different is a hard conflict; a field the record does not carry — because it predates
+that field — is reported as `identity_fields_unverified` rather than silently treated
+as a match. `--replace-folds` is the explicit authorization to refit, and it archives
+the existing evidence under `superseded/<utc>/` first.
+
+Verified on the real run: all 36 BASE and reference development folds are now reused in
+1.4 s instead of refitted in ~10 min, with `min_local_training_rows` correctly declared
+unverified (it is unchanged at 50; the earlier records simply did not record it).
+
+### On the evidence gaps
+
+G1–G3 are not claims that the work is wrong; they are that the auditor could not see
+it. Its independent clone receives only the committed repository, and the ~1 GB run
+root was gitignored, so it reported "Only five run JSONs exist in the supplied
+repository". `d3b327e` commits the ledgers, maps, fold records, calibrators, thresholds
+with their input bindings, full candidate traces and per-date pooled confusion counts —
+about 63 MB — leaving out only the ~223 MB of per-row predictions, whose content is
+reconstructable from the committed per-date counts.
+
+### Controller defect, reported not worked around
+
+The controller marks an attempt `attention` with "Reviewer is idle without result.json"
+**before the reviewer finishes**, and never ingests the result that appears afterwards.
+Observed on all three attempts; on attempt 3 the controller gave up while the reviewer
+was still demonstrably working. It also failed to deliver the prompt at all on attempts
+1 and 2 — each reviewer sat at the Codex splash screen until the controller's own
+`prompt.txt` was delivered to its own pane verbatim.
+
+Consequence: the gate never opened, so `recheck` is unavailable ("Recheck requires an
+open gate") and the audit of the fixed commits cannot be registered through the
+controller. The findings were nevertheless delivered, verified and fixed. No result was
+written or ingested on the controller's behalf; the audit content is entirely the
+reviewers' own.

@@ -327,6 +327,98 @@ class TestFinalCohortReconciliation(unittest.TestCase):
             self.assertIn(required, text, f"missing required disclosure: {required!r}")
 
 
+class TestFoldEvidencePreservation(unittest.TestCase):
+    """Stage 3 must not silently overwrite completed fold evidence on restart.
+
+    Stage 1 skips completed candidates; Stage 3 used to refit and replace them, so
+    rerunning after a late failure destroyed earlier successful evidence and could
+    invalidate downstream bindings frozen against it.
+    """
+
+    class _Context:
+        def __init__(self, root):
+            self.root = root
+
+    @staticmethod
+    def _fold():
+        return rp.Stage3Fold("reference", "calibration", 2018, 2, 1)
+
+    def _write(self, root, fold, summary):
+        import json
+
+        fold_dir = root / "stage3" / fold.arm / fold.name
+        fold_dir.mkdir(parents=True, exist_ok=True)
+        for name in ("predictions.csv", "training_keys.csv"):
+            (fold_dir / name).write_text("a,b\n1,2\n")
+        summary = dict(summary)
+        summary["predictions_sha256"] = rp.sha256_file(fold_dir / "predictions.csv")
+        summary["training_keys_sha256"] = rp.sha256_file(fold_dir / "training_keys.csv")
+        (fold_dir / "fold.json").write_text(json.dumps(summary))
+        return fold_dir
+
+    def test_matching_fold_is_reused(self) -> None:
+        import tempfile
+
+        fold = self._fold()
+        evidence = {"consensus_map_sha256": "abc"}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            identity = rp.fold_identity(fold, evidence)
+            self._write(root, fold, {**identity, "map": {"consensus_map_sha256": "abc"}})
+            reused = rp.reusable_fold(self._Context(root), fold, evidence)
+            self.assertIsNotNone(reused)
+
+    def test_a_different_map_refuses_rather_than_overwriting(self) -> None:
+        import tempfile
+
+        fold = self._fold()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            identity = rp.fold_identity(fold, {"consensus_map_sha256": "abc"})
+            self._write(root, fold, {**identity, "map": {"consensus_map_sha256": "abc"}})
+            with self.assertRaises(rp.PipelineError) as caught:
+                rp.reusable_fold(
+                    self._Context(root), fold, {"consensus_map_sha256": "DIFFERENT"}
+                )
+            self.assertIn("different identity", str(caught.exception))
+
+    def test_tampered_predictions_are_not_reused(self) -> None:
+        import tempfile
+
+        fold = self._fold()
+        evidence = {"consensus_map_sha256": "abc"}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            identity = rp.fold_identity(fold, evidence)
+            fold_dir = self._write(
+                root, fold, {**identity, "map": {"consensus_map_sha256": "abc"}}
+            )
+            (fold_dir / "predictions.csv").write_text("a,b\n9,9\n")
+            with self.assertRaises(rp.PipelineError):
+                rp.reusable_fold(self._Context(root), fold, evidence)
+
+    def test_absent_fold_is_simply_not_reusable(self) -> None:
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(
+                rp.reusable_fold(self._Context(Path(tmp)), self._fold(), {})
+            )
+
+    def test_archiving_moves_rather_than_deletes(self) -> None:
+        import tempfile
+
+        fold = self._fold()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            identity = rp.fold_identity(fold, {"consensus_map_sha256": "abc"})
+            self._write(root, fold, identity)
+            moved = rp.archive_fold(self._Context(root), fold)
+            self.assertIsNotNone(moved)
+            self.assertFalse((root / "stage3" / fold.arm / fold.name).exists())
+            self.assertTrue((Path(moved) / "fold.json").is_file())
+
+
 class TestRoutingLabels(unittest.TestCase):
     def test_pooled_routes_are_distinguishable(self) -> None:
         """"unassigned", "below the gate" and "never trained" mean different things and

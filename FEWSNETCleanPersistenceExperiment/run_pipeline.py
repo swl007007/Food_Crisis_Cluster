@@ -2297,6 +2297,84 @@ def load_frozen_map(context: RunContext, arm: str, role: str) -> Tuple[pd.DataFr
     return frame, evidence
 
 
+def fold_identity(fold: Stage3Fold, map_evidence: Dict) -> Dict[str, object]:
+    """What must match for an existing fold's evidence to be reusable."""
+    return {
+        **fold.identity(),
+        "consensus_map_sha256": map_evidence.get("consensus_map_sha256"),
+        "rf_params": dict(STAGE3_RF_PARAMS),
+        "min_local_training_rows": MIN_LOCAL_TRAINING_ROWS,
+    }
+
+
+def reusable_fold(
+    context: RunContext, fold: Stage3Fold, map_evidence: Dict
+) -> Optional[Dict[str, object]]:
+    """Return a completed fold's summary when it can be reused, else None.
+
+    Stage 1 skips completed candidates; Stage 3 used to refit and overwrite them. That
+    meant rerunning `--stage predictions` after a late failure silently replaced
+    already-successful fold evidence, and could invalidate downstream bindings that
+    were frozen against it. A fold is reusable only when its recorded identity and its
+    artifacts' digests still match.
+    """
+    fold_dir = context.root / "stage3" / fold.arm / fold.name
+    summary_path = fold_dir / "fold.json"
+    if not summary_path.is_file():
+        return None
+    existing = read_json(summary_path)
+    expected = fold_identity(fold, map_evidence)
+    # A field that is present and different is a real conflict and must fail. A field
+    # the record simply does not carry - because it was written before that field
+    # existed - cannot be checked; it is reported as unverified rather than silently
+    # treated as either a match or a conflict.
+    differing = {
+        key: (existing[key], value)
+        for key, value in expected.items()
+        if key != "consensus_map_sha256" and key in existing and existing[key] != value
+    }
+    unverified = [
+        key for key in expected
+        if key != "consensus_map_sha256" and key not in existing
+    ]
+    recorded_map = existing.get("map", {}).get("consensus_map_sha256")
+    if recorded_map is None:
+        unverified.append("consensus_map_sha256")
+    elif recorded_map != expected["consensus_map_sha256"]:
+        differing["consensus_map_sha256"] = (recorded_map, expected["consensus_map_sha256"])
+    if differing:
+        raise PipelineError(
+            f"{fold.name} already exists with a different identity {differing}. "
+            "Refusing to overwrite completed fold evidence; archive it under "
+            "superseded/ and rerun with --replace-folds, or use a fresh run root."
+        )
+    if unverified:
+        existing = dict(existing, identity_fields_unverified=sorted(unverified))
+    for name, recorded in (
+        ("predictions.csv", existing.get("predictions_sha256")),
+        ("training_keys.csv", existing.get("training_keys_sha256")),
+    ):
+        path = fold_dir / name
+        if not path.is_file() or (recorded and sha256_file(path) != recorded):
+            raise PipelineError(
+                f"{fold.name}: {name} is missing or no longer matches its recorded "
+                "digest; the existing evidence is not trustworthy for reuse"
+            )
+    return existing
+
+
+def archive_fold(context: RunContext, fold: Stage3Fold) -> Optional[str]:
+    """Move an existing fold's evidence under superseded/ instead of deleting it."""
+    fold_dir = context.root / "stage3" / fold.arm / fold.name
+    if not fold_dir.exists():
+        return None
+    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    target = context.root / "superseded" / stamp / "stage3" / fold.arm / fold.name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(fold_dir), str(target))
+    return str(target)
+
+
 def run_stage3_fold(
     context: RunContext, sources: pdata.PreparedSources, fold: Stage3Fold,
     frozen_map: pd.DataFrame, map_evidence: Dict,
@@ -2453,7 +2531,7 @@ def run_stage3_fold(
 
     routes = pd.Series(route).value_counts().to_dict()
     summary = {
-        **fold.identity(),
+        **fold_identity(fold, map_evidence),
         "rows": evidence,
         "features": len(columns),
         "map": {
@@ -2496,8 +2574,14 @@ def run_stage3_fold(
 
 
 def stage_predictions(
-    context: RunContext, arms: Sequence[str], *, final: bool = False
+    context: RunContext, arms: Sequence[str], *, final: bool = False,
+    replace_folds: bool = False,
 ) -> Dict[str, object]:
+    """Fit every fold for these arms, reusing completed ones rather than overwriting.
+
+    ``replace_folds`` is the explicit authorization to redo completed folds; it
+    archives their evidence under ``superseded/`` first rather than discarding it.
+    """
     sources = pdata.load_prepared_sources(_prepared_cache(context))
     roles = ("final",) if final else DEVELOPMENT_ROLES
     summary: Dict[str, object] = {}
@@ -2505,9 +2589,22 @@ def stage_predictions(
         maps = {role: load_frozen_map(context, arm, role) for role in roles}
         folds = final_folds(arm) if final else development_folds(arm)
         outcomes: List[Dict[str, object]] = []
+        reused = 0
+        archived: List[str] = []
         for position, fold in enumerate(folds, start=1):
-            context.log(f"[{position}/{len(folds)}] stage3 {fold.name}")
             frozen_map, map_evidence = maps[fold.role]
+            if replace_folds:
+                moved = archive_fold(context, fold)
+                if moved:
+                    archived.append(moved)
+            else:
+                existing = reusable_fold(context, fold, map_evidence)
+                if existing is not None:
+                    reused += 1
+                    context.log(f"[{position}/{len(folds)}] reuse {fold.name}")
+                    outcomes.append(existing)
+                    continue
+            context.log(f"[{position}/{len(folds)}] stage3 {fold.name}")
             outcome = run_stage3_fold(context, sources, fold, frozen_map, map_evidence)
             context.log(
                 f"  {outcome['rows']['target_rows']} target rows, "
@@ -2516,7 +2613,14 @@ def stage_predictions(
             outcomes.append(outcome)
         summary[arm] = {
             "folds": len(outcomes),
-            "total_seconds": round(sum(o["seconds"] for o in outcomes), 1),
+            "folds_reused": reused,
+            "folds_refitted": len(outcomes) - reused,
+            "folds_reused_with_unverified_identity": sorted({
+                field for outcome in outcomes
+                for field in outcome.get("identity_fields_unverified", [])
+            }),
+            "archived_superseded_folds": archived,
+            "total_seconds": round(sum(o.get("seconds", 0.0) for o in outcomes), 1),
             "target_rows": int(sum(o["rows"]["target_rows"] for o in outcomes)),
             "local_models_fitted": int(sum(o["local_models_fitted"] for o in outcomes)),
         }
@@ -2852,6 +2956,9 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser.add_argument("--scope", type=int, choices=(1, 2, 3), default=None)
     parser.add_argument("--limit", type=int, default=None,
                         help="Run only the first N scheduled jobs (bounded probing).")
+    parser.add_argument("--replace-folds", action="store_true",
+                        help="Explicitly authorize refitting completed Stage 3 folds. "
+                             "Their evidence is archived under superseded/ first.")
     parser.add_argument("--keep-work", action="store_true",
                         help="Retain each job's GeoRF working tree and checkpoints.")
     parser.add_argument("--verify-predict-test", action="store_true",
@@ -2941,7 +3048,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         unknown = [a for a in arms if a not in _known_arms()]
         if unknown:
             raise SystemExit(f"unknown arms {unknown}; known arms are {_known_arms()}")
-        summary = stage_predictions(context, arms)
+        summary = stage_predictions(context, arms, replace_folds=args.replace_folds)
         context.stage("predictions:" + ",".join(arms), summary)
         print(json.dumps(summary, indent=2))
         return 0
