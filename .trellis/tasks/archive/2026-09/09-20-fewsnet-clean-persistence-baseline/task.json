@@ -3,7 +3,7 @@
   "name": "fewsnet-clean-persistence-baseline",
   "title": "FEWS NET clean baseline and final feature-engineering trial",
   "description": "Plan an isolated full three-stage FEWS NET persistence-correction baseline with true F1 and no SMOTE, followed by a bounded final feature-engineering trial and a predefined stop or fallback decision.",
-  "status": "in_progress",
+  "status": "completed",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,11 +11,11 @@
   "creator": "swl007007",
   "assignee": "swl007007",
   "createdAt": "2026-09-20",
-  "completedAt": null,
+  "completedAt": "2026-09-21",
   "branch": "main",
   "base_branch": "main",
   "worktree_path": null,
-  "commit": null,
+  "commit": "e0a364b",
   "pr_url": null,
   "subtasks": [],
   "children": [],
@@ -25,6 +25,6 @@
     ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/design.md",
     ".trellis/tasks/09-20-fewsnet-clean-persistence-baseline/implement.md"
   ],
-  "notes": "D1-D64 resolved; approved planning artifacts complete. User authorized audit enrollment/start and planning commit; see audit-handoff.md. Implementation and experiments await separate instructions to the bound Opus 5 executor. Do not close before A1-A64 and committed reproduction evidence.",
+  "notes": "D1-D64 resolved; approved planning artifacts complete. User authorized audit enrollment/start and planning commit; see audit-handoff.md. Implementation and experiments await separate instructions to the bound Opus 5 executor. Do not close before A1-A64 and committed reproduction evidence. Implementation committed directly to main as e0a364b (no feature branch, so branch is null, matching 09-19-onset-partition-redesign). Result: D45 complete_fail, primary gain -0.002909124, 95% CI [-0.009842928, +0.002909607]; a completed negative, not proof of zero effect. User granted a D45 preservation exception for superseded reference artifacts; see IMPLEMENTATION_LOG.md.",
   "meta": {}
 }
