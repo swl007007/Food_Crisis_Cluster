@@ -1,0 +1,9 @@
+period,horizon_months,cohort,n_observations,n_areas,n_countries,n_positive_truth,prevalence,n_target_months_present,n_scheduled_target_months,n_scheduled_target_months_present,n_scheduled_target_months_absent,n_e_all_reference,n_persistence_available,persistence_coverage,n_persistence_missing,assignment_learned,assignment_nearest_donor,assignment_unresolved,route_partition:0,route_pooled_rf
+partial_2026,1,E_all,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,1,E_persist,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,3,E_all,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,3,E_persist,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,6,E_all,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,6,E_persist,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,12,E_all,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3
+partial_2026,12,E_persist,137,105,3,97,0.708029197080292,3,,,,137,137,1.0,0,133,1,3,134,3

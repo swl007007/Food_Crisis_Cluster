@@ -1,0 +1,38 @@
+{
+  "learned": {
+    "branch_columns": [
+      ""
+    ],
+    "accepted_splits": 0,
+    "terminal_branches": [
+      ""
+    ],
+    "terminal_branch_count": 1,
+    "max_branch_depth": 0,
+    "areas_in_root_column": 3264,
+    "learned_areas": 3264,
+    "placeholder_areas": 0,
+    "members_per_terminal_branch": {
+      "": 3264
+    },
+    "placeholder_note": "an area sitting in a branch that was split but which was never placed in either child; the inherited helper would call it root, which is a default and not learned membership (R4)"
+  },
+  "reconciliation": {
+    "active_groups": 3264,
+    "learned_areas": 3264,
+    "placeholder_areas": 0,
+    "placeholder_row_branches": {},
+    "placeholder_rows_not_default_root": {},
+    "row_branches_used": [
+      ""
+    ],
+    "checkpoints_present": [
+      "rf_",
+      "rf_0",
+      "rf_1"
+    ],
+    "checkpoints_missing": [],
+    "fragmented_groups": [],
+    "note": "a child checkpoint may contain an adopted parent model when the F1 gate kept the parent for that side; spatial branch and model-fit provenance are different facts"
+  }
+}

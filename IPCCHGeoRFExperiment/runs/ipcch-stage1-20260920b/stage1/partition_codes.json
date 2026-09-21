@@ -1,0 +1,7 @@
+{
+  "branch_to_code": {
+    "": 0
+  },
+  "unresolved_code": -1,
+  "note": "stable serialization of the branch string, not a reclustering"
+}

@@ -1,0 +1,21 @@
+2026-09-20T13:14:59Z run directory: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\ipcch-stage1-20260920b
+2026-09-20T13:14:59Z preflight: hashing inputs and recording the runtime
+2026-09-20T13:15:00Z baseline extracted and patched: 45 payload files verified
+2026-09-20T13:15:01Z R1: building the target ledger
+2026-09-20T13:15:16Z R1 gate passed: 42695 valid / 15206 positive in 6227 areas
+2026-09-20T13:15:16Z R3: assembling the 93-column feature matrix
+2026-09-20T13:15:33Z R3: 170780 rows x 93 columns, origins 2013-01..2026-03
+2026-09-20T13:15:33Z R2/Q8g: validating, repairing and building adjacency
+2026-09-20T13:16:16Z R2: 5974 geometries untouched, 36 repaired in place, 217 areal components extracted under the D1 scope extension; 6227 polygons in the adjacency (1231 isolated)
+2026-09-20T13:16:16Z R4/Q5a: splitting original 2014-2022 outcomes
+2026-09-20T13:16:16Z R4 gate passed: 8561 fit / 9558 validation outcomes, 1472 singletons
+2026-09-20T13:16:17Z Stage1 design: 72476 model rows (34244 fit / 38232 validation) across 3264 groups; targets up to 2022-10
+2026-09-20T13:16:17Z Stage1: entering the pinned baseline
+2026-09-20T13:16:20Z Q6c: imputer fitted on 34244 fitting rows; 0 columns were all-missing
+2026-09-20T13:16:20Z Stage1 fit: X=(72476, 93), groups=3264, MIN_DEPTH=1, MAX_DEPTH=6, N_JOBS=4 (inherited, not pinned)
+2026-09-20T13:16:42Z GeoRF.fit returned in 22.1s -> result_GeoRF
+2026-09-20T13:16:42Z map: 1 terminal branches (depth<=0), 3264 learned areas, 0 default-root placeholders
+2026-09-20T13:16:42Z Q5d: 3264 eligible donors
+2026-09-20T13:16:42Z Q8r: 3264 learned + 2367 donor-completed + 596 unresolved = 6227
+2026-09-20T13:16:42Z Q5v: scored 5888 singleton views over 1472 areas; class1 F1 = 0.6295594504973946
+2026-09-20T13:16:42Z stage 1 finished

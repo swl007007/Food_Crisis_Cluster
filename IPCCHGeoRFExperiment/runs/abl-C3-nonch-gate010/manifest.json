@@ -1,0 +1,888 @@
+{
+  "run_id": "abl-C3-nonch-gate010",
+  "status": "stage3_complete",
+  "scope": "stage1_and_stage3",
+  "created_utc": "2026-09-21T18:15:45Z",
+  "updated_utc": "2026-09-21T18:26:20Z",
+  "stages": {
+    "preflight": {
+      "seconds": 1.3
+    },
+    "target": {
+      "seconds": 21.2,
+      "gate": {
+        "rows": 1219868,
+        "valid": 42695,
+        "positive": 15206,
+        "negative": 27489,
+        "areas_total": 6227,
+        "areas_with_valid": 6224,
+        "countries_with_valid": 53,
+        "p5_filled": 84,
+        "normalized_share_equals_threshold": 2601,
+        "invalid_reasons": {
+          "missing_phase_1_to_4": 1176232,
+          "sum_out_of_bounds": 577,
+          "population_not_positive": 363,
+          "phase_share_out_of_bounds": 1
+        },
+        "gate_pass": true,
+        "gate_mismatches": {},
+        "cohort_filter": {
+          "filter": "non_ch",
+          "rule": "admin_code >= 100000 is Cadre Harmonise",
+          "applied_after": "check_target_gate, which still validated the full source",
+          "kept": {
+            "valid": 24336,
+            "positive": 12782,
+            "negative": 11554,
+            "areas_total": 4919
+          },
+          "dropped": {
+            "rows": 256368,
+            "areas": 1308,
+            "valid": 18359,
+            "positive": 2424,
+            "negative": 15935
+          },
+          "full_source_gate": {
+            "valid": 42695,
+            "positive": 15206,
+            "negative": 27489,
+            "areas_total": 6227
+          }
+        }
+      }
+    },
+    "features": {
+      "seconds": 16.7,
+      "rows": 97344,
+      "columns": 93,
+      "audit": {
+        "valid_outcomes": 24336,
+        "horizons": [
+          1,
+          3,
+          6,
+          12
+        ],
+        "feature_rows": 97344,
+        "feature_columns": 93,
+        "areas": 4916,
+        "origin_month_min": "2016-01",
+        "origin_month_max": "2026-03",
+        "rows_with_missing_origin_row": 0,
+        "rows_without_label_history": 23860,
+        "rows_without_prior_crisis": 45287,
+        "panel_grid_cells": 1220492,
+        "panel_grid_occupied": 1219868,
+        "panel_grid_gaps": 624,
+        "panel_areas_with_month_gaps": 39,
+        "panel_infinities_converted": {},
+        "assembled_infinities_converted": {},
+        "panel": {
+          "panel_rows": 1219868,
+          "panel_areas": 6227,
+          "panel_month_min": "2010-01",
+          "panel_month_max": "2026-04",
+          "non_numeric_coerced_to_nan": {},
+          "source_infinities_converted": {},
+          "source_infinity_total": 0
+        },
+        "source_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673"
+      }
+    },
+    "geography": {
+      "seconds": 47.4,
+      "repair": {
+        "features": 6227,
+        "unchanged_valid": 5974,
+        "repaired_polygonal": 36,
+        "repaired_collection_areal_extracted": 217,
+        "original_validity_reasons": {
+          "Self-intersection": 212,
+          "Ring Self-intersection": 30,
+          "Too few points in geometry component": 6,
+          "Nested shells": 5
+        },
+        "make_valid_geometry_types": {
+          "GeometryCollection": 217,
+          "MultiPolygon": 28,
+          "Polygon": 8
+        },
+        "repaired_geometry_types": {
+          "Polygon": 163,
+          "MultiPolygon": 90
+        },
+        "discarded_zero_area_parts": 217,
+        "discarded_area_total": 0.0,
+        "footprint_comparison": {
+          "exact_unchanged": 5974,
+          "diagnostic_invalid_original": 253
+        },
+        "footprint_change_of_repaired": {
+          "comparable": 253,
+          "unavailable": 0,
+          "median_relative": 1.2041148097179935e-06,
+          "over_0p1_percent": 59,
+          "over_1_percent": 37,
+          "max_relative": 0.984876097087674,
+          "max_relative_area_id": 162
+        },
+        "footprint_change_by_outcome": {
+          "repaired_collection_areal_extracted": {
+            "areas": 217,
+            "comparable": 217,
+            "unavailable": 0,
+            "median_relative": 1.5098285644327922e-05,
+            "over_0p1_percent": 55,
+            "over_1_percent": 35,
+            "max_relative": 0.29207774877206194,
+            "max_relative_area_id": 1425
+          },
+          "repaired_polygonal": {
+            "areas": 36,
+            "comparable": 36,
+            "unavailable": 0,
+            "median_relative": 2.1061630916795318e-16,
+            "over_0p1_percent": 4,
+            "over_1_percent": 2,
+            "max_relative": 0.984876097087674,
+            "max_relative_area_id": 162
+          }
+        },
+        "largest_footprint_changes": [
+          {
+            "area_id": 162,
+            "outcome": "repaired_polygonal",
+            "make_valid_geometry_type": "MultiPolygon",
+            "original_validity_reason": "Self-intersection[46.8883498816636 -24.224486396123]",
+            "area_relative_change": -0.984876097087674
+          },
+          {
+            "area_id": 133,
+            "outcome": "repaired_polygonal",
+            "make_valid_geometry_type": "MultiPolygon",
+            "original_validity_reason": "Self-intersection[45.9833942058555 -24.4360462357829]",
+            "area_relative_change": -0.965097807092575
+          },
+          {
+            "area_id": 1425,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[30.081363 -3.170613]",
+            "area_relative_change": -0.29207774877206194
+          },
+          {
+            "area_id": 1595,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[30.63102787 0.126216481]",
+            "area_relative_change": -0.28941820429555914
+          },
+          {
+            "area_id": 1578,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[30.63102787 0.126216481]",
+            "area_relative_change": -0.28941820429555914
+          },
+          {
+            "area_id": 1600,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[32.869330606 0.706809722]",
+            "area_relative_change": -0.24525476486750675
+          },
+          {
+            "area_id": 1635,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[32.869330606 0.706809722]",
+            "area_relative_change": -0.24525476486750675
+          },
+          {
+            "area_id": 3845,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[-88.921600264 14.469836431]",
+            "area_relative_change": -0.1727930875234121
+          },
+          {
+            "area_id": 3534,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[44.2164 13.37642]",
+            "area_relative_change": -0.16915879600261238
+          },
+          {
+            "area_id": 3504,
+            "outcome": "repaired_collection_areal_extracted",
+            "make_valid_geometry_type": "GeometryCollection",
+            "original_validity_reason": "Self-intersection[44.14861 13.2427]",
+            "area_relative_change": -0.16048739367711645
+          }
+        ],
+        "limitation": "an invalid original's area is diagnostic only, not ground truth; topology repair does not establish administrative identity (R2)",
+        "measured_against_recorded_evidence": "research/geometry-repair-trial.md records 34 of 217 collection cases over 1%; this run measures 35 of 217 under the declared geodesic measure, and an independent planar recomputation also gives 35 with a clear gap between 0.0088 and 0.0115, so the recorded 34 is an off-by-one. The worst case (area 1425, 29.21%) reconciles exactly."
+      },
+      "area_universe": {
+        "expected_universe": 6227,
+        "universe": 6227,
+        "geometry_areas": 6227,
+        "reference_areas": 6227,
+        "country_areas": 6227,
+        "id_min": 0,
+        "id_max": 101324,
+        "contiguous_0_to_n": false
+      },
+      "adjacency": {
+        "shapefile": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\abl-C3-nonch-gate010\\geography\\ipcch_admin_geometry_repaired.shp",
+        "id_column": "admin_code",
+        "polygons": 6227,
+        "edges_undirected": 12411,
+        "directed_entries": 24822,
+        "degree_min": 0,
+        "degree_max": 23,
+        "degree_mean": 3.9861891761682995,
+        "degree_median": 3.0,
+        "isolated_polygons": 1231,
+        "symmetric": true,
+        "definition": "touches() and intersection length > 0; point-only contact excluded (GeoRFBaseline/src/adjacency/adjacency_utils.py:99-103)",
+        "component_sha256": {
+          "ipcch_admin_geometry_repaired.shp": "9df70f3aa719eaa2458a3ff4a92f058da1f5fe1feeb85432e0dd88e515ccfadb",
+          "ipcch_admin_geometry_repaired.shx": "424554aec24b86d74609a5fe59a01e498c78269c6e6b4b87765e657a4fe6fc83",
+          "ipcch_admin_geometry_repaired.dbf": "62a2fc7cc8740d930095e43d29cfd81604046b0570b48ebbe57c2801b179314c",
+          "ipcch_admin_geometry_repaired.prj": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4",
+          "ipcch_admin_geometry_repaired.cpg": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+        },
+        "centroid_note": "centroids are for inherited polygon refinement only; donor distance uses the keyed reference coordinates (Q8r)",
+        "centroid_vs_reference_coordinate": {
+          "max_abs_degrees": 0.6770430174665678,
+          "median_abs_degrees": 3.836930773104541e-13,
+          "areas_over_1e_6_degrees": 735,
+          "note": "most areas coincide, but a substantial minority do not; donor distance must use the reference coordinates (Q8r), never these centroids"
+        }
+      }
+    },
+    "split": {
+      "seconds": 0.5,
+      "gate": {
+        "window": {
+          "first_month": "2014-01",
+          "last_month": "2022-12"
+        },
+        "original_labels": 8395,
+        "areas_with_outcomes": 3434,
+        "multi_outcome_areas": 2067,
+        "multi_outcome_labels": 7028,
+        "fit": 3248,
+        "validation": 3780,
+        "singleton_areas": 1367,
+        "zero_label_areas": 2793,
+        "positive_rate_fit": 0.583743842364532,
+        "positive_rate_validation": 0.6124338624338624,
+        "gate_pass": null,
+        "gate_mismatches": {
+          "original_labels": {
+            "expected": 19591,
+            "actual": 8395
+          },
+          "multi_outcome_areas": {
+            "expected": 3264,
+            "actual": 2067
+          },
+          "fit": {
+            "expected": 8561,
+            "actual": 3248
+          },
+          "validation": {
+            "expected": 9558,
+            "actual": 3780
+          },
+          "singleton_areas": {
+            "expected": 1472,
+            "actual": 1367
+          },
+          "zero_label_areas": {
+            "expected": 1491,
+            "actual": 2793
+          }
+        },
+        "gate_applicable": false,
+        "gate_skipped_reason": "cohort filter 'non_ch' is active; the audited split counts describe the unrestricted source and cannot apply. The unrestricted target gate still ran and passed earlier in this run."
+      },
+      "design": {
+        "learning_rows": 28112,
+        "fit_rows": 12992,
+        "validation_rows": 15120,
+        "fit_outcomes": 3248,
+        "validation_outcomes": 3780,
+        "singleton_rows": 5468,
+        "singleton_outcomes": 1367,
+        "active_groups": 2067,
+        "groups_with_fit_rows": 2067,
+        "groups_with_validation_rows": 2067,
+        "horizons": [
+          1,
+          3,
+          6,
+          12
+        ],
+        "target_month_min": "2017-01",
+        "target_month_max": "2022-10",
+        "origin_month_min": "2016-01",
+        "origin_month_max": "2022-09",
+        "information_cutoff": "2022-12",
+        "positive_rate_fit": 0.583743842364532,
+        "positive_rate_validation": 0.6124338624338624,
+        "feature_columns": 93
+      }
+    },
+    "stage1_fit": {
+      "seconds": 12.8,
+      "model_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\abl-C3-nonch-gate010\\stage1\\result_GeoRF",
+      "fit_seconds": 9.4,
+      "rows": 28112,
+      "learned_map": {
+        "branch_columns": [
+          ""
+        ],
+        "accepted_splits": 0,
+        "terminal_branches": [
+          ""
+        ],
+        "terminal_branch_count": 1,
+        "max_branch_depth": 0,
+        "areas_in_root_column": 2067,
+        "learned_areas": 2067,
+        "placeholder_areas": 0,
+        "members_per_terminal_branch": {
+          "": 2067
+        },
+        "placeholder_note": "an area sitting in a branch that was split but which was never placed in either child; the inherited helper would call it root, which is a default and not learned membership (R4)"
+      },
+      "reconciliation": {
+        "active_groups": 2067,
+        "learned_areas": 2067,
+        "placeholder_areas": 0,
+        "placeholder_rows_not_default_root": {},
+        "row_branches_used": [
+          ""
+        ],
+        "checkpoints_present": [
+          "rf_",
+          "rf_0",
+          "rf_1"
+        ],
+        "checkpoints_not_routed": [
+          "rf_0",
+          "rf_1"
+        ],
+        "checkpoints_missing": [],
+        "fragmented_groups": [],
+        "notes": [
+          "a child checkpoint may contain an adopted parent model when the F1 gate kept the parent for that side; spatial branch and model-fit provenance are different facts",
+          "checkpoints_not_routed are candidate children that were trained and then REJECTED by the F1 gate; no row routes to them and nothing downstream may load them"
+        ]
+      },
+      "root_estimator_params": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "n_estimators": 100,
+        "n_jobs": 4,
+        "random_state": 5
+      },
+      "effective_config": {
+        "config_module": {
+          "MODEL_CHOICE": "RF",
+          "MODE": "classification",
+          "NUM_CLASS": 2,
+          "MIN_DEPTH": 1,
+          "MAX_DEPTH": 6,
+          "N_JOBS": 4,
+          "MIN_BRANCH_SAMPLE_SIZE": 0,
+          "MIN_SCAN_CLASS_SAMPLE": 0,
+          "FLEX_OPTION": true,
+          "FLEX_RATIO": 0.1,
+          "FLEX_TYPE": "n_group",
+          "MIN_GROUP_POS_SAMPLE_SIZE_FLEX": 0,
+          "SIGLVL": 0.1,
+          "ES_THRD": 0.5,
+          "MD_THRD": 0.0005,
+          "CONTIGUITY": true,
+          "CONTIGUITY_TYPE": "polygon",
+          "REFINE_TIMES": 3,
+          "MIN_COMPONENT_SIZE": 5,
+          "GOVERNING_METRIC": "class_1_f1",
+          "CRISIS_FOCUSED_OPTIMIZATION": true,
+          "MIN_CLASS_1_IMPROVEMENT_THRESHOLD": 0.01,
+          "VAL_RATIO": 0.2,
+          "TRAIN_RATIO": 0.6,
+          "GROUP_SPLIT": {
+            "enable": true,
+            "min_val_per_group": 1,
+            "skip_singleton_groups": true,
+            "random_state": 42
+          },
+          "FEATURE_DROP": [],
+          "feature_drop": [],
+          "DISABLE_BASELINE_CV_MAP": true,
+          "PRESERVE_ISOLATED_POLYGONS": true,
+          "STEP_SIZE": 0.1
+        },
+        "georf_module": {
+          "FEATURE_DROP": {
+            "enable": false,
+            "cols": [],
+            "patterns": []
+          },
+          "feature_drop": {
+            "enable": false,
+            "cols": [],
+            "patterns": []
+          },
+          "MIN_DEPTH": 1,
+          "MAX_DEPTH": 6,
+          "N_JOBS": 4,
+          "NUM_CLASS": 2,
+          "CONTIGUITY": true,
+          "CONTIGUITY_TYPE": "polygon",
+          "MIN_COMPONENT_SIZE": 5,
+          "MODEL_CHOICE": "RF"
+        }
+      }
+    },
+    "assignment": {
+      "summary": {
+        "universe": 6227,
+        "learned": 2067,
+        "nearest_donor": 2350,
+        "unresolved": 1810,
+        "assigned_total": 4417,
+        "placeholder_root_areas_recompleted": 0,
+        "donor_distance_km": {
+          "p0": 1.084902739310158e-10,
+          "p25": 0.03233309034083627,
+          "p50": 2.86861472307838,
+          "p75": 39.68604516295477,
+          "p90": 70.91846613837909,
+          "p95": 82.0569514123145,
+          "p100": 99.97808454160861
+        },
+        "donor_distance_mean_km": 20.678467713343974,
+        "donor_within_10km": 1416,
+        "donor_within_50km": 1880,
+        "donor_at_cap_inclusive": 0,
+        "unresolved_nearest_eligible_km": {
+          "min": 100.16567425699103,
+          "median": 999.9991277189977,
+          "max": 7177.162131999908
+        },
+        "partition_code_counts": {
+          "-1": 1810,
+          "0": 4417
+        },
+        "cap_km": 100.0
+      },
+      "eligible_donors": 2067
+    },
+    "singletons": {
+      "rows": 5468,
+      "areas": 1367,
+      "threshold": 0.5,
+      "overall": {
+        "n": 5468,
+        "tp": 1338,
+        "fp": 642,
+        "fn": 918,
+        "tn": 2570,
+        "positives": 2256,
+        "predicted_positives": 1980,
+        "class1_f1": 0.6317280453257791,
+        "class1_precision": 0.6757575757575758,
+        "class1_recall": 0.5930851063829787,
+        "undefined_reason": ""
+      },
+      "by_horizon": {
+        "1": {
+          "n": 1367,
+          "tp": 332,
+          "fp": 152,
+          "fn": 232,
+          "tn": 651,
+          "positives": 564,
+          "predicted_positives": 484,
+          "class1_f1": 0.6335877862595419,
+          "class1_precision": 0.6859504132231405,
+          "class1_recall": 0.5886524822695035,
+          "undefined_reason": ""
+        },
+        "3": {
+          "n": 1367,
+          "tp": 333,
+          "fp": 153,
+          "fn": 231,
+          "tn": 650,
+          "positives": 564,
+          "predicted_positives": 486,
+          "class1_f1": 0.6342857142857142,
+          "class1_precision": 0.6851851851851852,
+          "class1_recall": 0.5904255319148937,
+          "undefined_reason": ""
+        },
+        "6": {
+          "n": 1367,
+          "tp": 335,
+          "fp": 176,
+          "fn": 229,
+          "tn": 627,
+          "positives": 564,
+          "predicted_positives": 511,
+          "class1_f1": 0.6232558139534884,
+          "class1_precision": 0.6555772994129159,
+          "class1_recall": 0.5939716312056738,
+          "undefined_reason": ""
+        },
+        "12": {
+          "n": 1367,
+          "tp": 338,
+          "fp": 161,
+          "fn": 226,
+          "tn": 642,
+          "positives": 564,
+          "predicted_positives": 499,
+          "class1_f1": 0.6359360301034808,
+          "class1_precision": 0.6773547094188377,
+          "class1_recall": 0.599290780141844,
+          "undefined_reason": ""
+        }
+      },
+      "by_assignment_source": {
+        "nearest_donor": {
+          "n": 3940,
+          "tp": 1023,
+          "fp": 504,
+          "fn": 601,
+          "tn": 1812,
+          "positives": 1624,
+          "predicted_positives": 1527,
+          "class1_f1": 0.6493176769279594,
+          "class1_precision": 0.6699410609037328,
+          "class1_recall": 0.6299261083743842,
+          "undefined_reason": ""
+        },
+        "unresolved": {
+          "n": 1528,
+          "tp": 315,
+          "fp": 138,
+          "fn": 317,
+          "tn": 758,
+          "positives": 632,
+          "predicted_positives": 453,
+          "class1_f1": 0.5806451612903226,
+          "class1_precision": 0.695364238410596,
+          "class1_recall": 0.49841772151898733,
+          "undefined_reason": ""
+        }
+      },
+      "status": "supplementary development diagnostic (Q5v); not Stage3 evidence"
+    },
+    "stage3": {
+      "seconds": 534.4,
+      "folds_scheduled": 138,
+      "folds_main": 122,
+      "folds_partial": 16,
+      "folds_fitted": 126,
+      "folds_empty": 12,
+      "prediction_rows": 58545,
+      "coverage": {
+        "scheduled_folds": 138,
+        "folds_with_rows": 126,
+        "folds_empty": 12,
+        "arms": {
+          "partitioned_rf": {
+            "rows": 58545,
+            "predicted_positive": 34034,
+            "missing": 0
+          },
+          "pooled_rf": {
+            "rows": 58545,
+            "predicted_positive": 35287,
+            "missing": 0
+          },
+          "xgb": {
+            "rows": 58545,
+            "predicted_positive": 36186,
+            "missing": 0
+          },
+          "persistence": {
+            "rows": 53022,
+            "predicted_positive": 27163,
+            "missing": 5523
+          }
+        },
+        "cohorts": {
+          "main": {
+            "E_all": 42725,
+            "E_persist": 37263,
+            "persistence_coverage": 0.8721591574019895,
+            "by_horizon": {
+              "1": {
+                "E_all": 11520,
+                "E_persist": 10201,
+                "positives": 5853,
+                "areas": 4695,
+                "countries": 35
+              },
+              "3": {
+                "E_all": 11117,
+                "E_persist": 10106,
+                "positives": 5593,
+                "areas": 4695,
+                "countries": 35
+              },
+              "6": {
+                "E_all": 10611,
+                "E_persist": 9160,
+                "positives": 5231,
+                "areas": 4635,
+                "countries": 35
+              },
+              "12": {
+                "E_all": 9477,
+                "E_persist": 7796,
+                "positives": 4625,
+                "areas": 4617,
+                "countries": 34
+              }
+            }
+          },
+          "partial_2026": {
+            "E_all": 15820,
+            "E_persist": 15759,
+            "persistence_coverage": 0.9961441213653603,
+            "by_horizon": {
+              "1": {
+                "E_all": 3955,
+                "E_persist": 3952,
+                "positives": 1826,
+                "areas": 3605,
+                "countries": 30
+              },
+              "3": {
+                "E_all": 3955,
+                "E_persist": 3952,
+                "positives": 1826,
+                "areas": 3605,
+                "countries": 30
+              },
+              "6": {
+                "E_all": 3955,
+                "E_persist": 3952,
+                "positives": 1826,
+                "areas": 3605,
+                "countries": 30
+              },
+              "12": {
+                "E_all": 3955,
+                "E_persist": 3903,
+                "positives": 1826,
+                "areas": 3605,
+                "countries": 30
+              }
+            }
+          }
+        },
+        "note": "E_persist is the history-available subset of E_all; rows without history keep an explicit missing persistence and stay in E_all (Q4b)"
+      },
+      "contrast": {
+        "stage1_terminal_branches": 1,
+        "single_partition_map": true,
+        "what_this_contrast_measures": "With a SINGLE learned partition the partitioned-minus-pooled delta no longer isolates spatial heterogeneity. It reduces to: one local model trained on the 4417 areas the frozen map assigns to a partition, versus one pooled model trained on all 6227 areas in the universe. A nonzero delta here is a training-set-size effect and MUST NOT be read as evidence of spatial structure.",
+        "areas_assigned_to_a_partition": 4417,
+        "areas_in_universe": 6227,
+        "areas_by_assignment_source": {
+          "nearest_donor": 2350,
+          "learned": 2067,
+          "unresolved": 1810
+        },
+        "rows_total": 58545,
+        "test_rows_served_by_pooled_in_both_arms": 5206,
+        "test_rows_served_by_a_local_model": 53339,
+        "rows_with_equal_probability": 8297,
+        "folds_with_all_probabilities_equal": 4,
+        "hard_label_disagreements": 7275,
+        "unassigned_train_rows_excluded_from_local": 65664,
+        "probability_gap": {
+          "max": 0.37999999999999995,
+          "mean": 0.050496711930993254,
+          "rows_above_0_05": 24395
+        },
+        "why_the_arms_differ": "Rows in unassigned areas belong to no partition, so the local model does not train on them while the pooled model does (R5: unassigned partitions fall back to the pooled RF; the released train_partitioned_model excludes partition -1 from training). Different training sets and the same seed give different forests, so the two arms legitimately disagree. The run asserts only what routing forces: every unassigned TEST row is served by the pooled model in both arms, and a local model that trained on the entire pool is the pooled forest. Nothing forces a locally-served row to agree.",
+        "stage1_gate": "no split passed the inherited strict >.01 class-1 F1 gate, so the learned map is the root branch alone"
+      },
+      "settings": {
+        "train_window_months": 36,
+        "train_window_rule": "exactly the calendar months [O-35, O], inclusive",
+        "main_target_schedule": {
+          "1": [
+            "2023-02",
+            "2025-12"
+          ],
+          "3": [
+            "2023-04",
+            "2025-12"
+          ],
+          "6": [
+            "2023-07",
+            "2025-12"
+          ],
+          "12": [
+            "2024-01",
+            "2025-12"
+          ]
+        },
+        "partial_period_years": [
+          2026
+        ],
+        "decision_threshold": 0.5,
+        "decision_rule": "p1 > threshold; an exact threshold is class 0 (Q7a)",
+        "rf_params": {
+          "n_estimators": 100,
+          "max_depth": null,
+          "random_state": 5,
+          "n_jobs": 1
+        },
+        "xgb_params": {
+          "objective": "binary:logistic",
+          "booster": "gbtree",
+          "tree_method": "hist",
+          "device": "cpu",
+          "n_estimators": 400,
+          "max_depth": 6,
+          "min_child_weight": 5,
+          "learning_rate": 0.05,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "reg_alpha": 0,
+          "reg_lambda": 1,
+          "gamma": 0,
+          "max_delta_step": 0,
+          "scale_pos_weight": 1,
+          "base_score": 0.5,
+          "random_state": 5,
+          "n_jobs": 1,
+          "max_bin": 256,
+          "grow_policy": "depthwise",
+          "num_parallel_tree": 1,
+          "eval_metric": "logloss"
+        },
+        "xgb_version": "3.0.0",
+        "min_partition_train_rows": 50,
+        "baseline_helpers": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\abl-C3-nonch-gate010\\baseline\\GeoRFBaseline\\scripts\\compare_partitioned_vs_pooled_rf_k40_nc4.py",
+        "map_source": "stage1/area_assignments.csv (frozen before any Stage 3 fit)",
+        "pseudo_rows": "none in Stage 3; Stage 1's per-class zero rows are not reused",
+        "sample_weights": "unit weights for every arm; no SMOTE, no class rebalancing",
+        "imputation": "one OutOfRangeImputer(max_plus, x100) per (origin, horizon), fitted on the common training pool only; pooled and every local RF reuse it; XGB receives the pre-imputation matrix with native NaN",
+        "fit_seconds": 529.7
+      },
+      "xgb_booster_effective": {
+        "xgboost_config_version": [
+          3,
+          0,
+          0
+        ],
+        "objective": "binary:logistic",
+        "booster": "gbtree",
+        "device": "cpu",
+        "seed": 5,
+        "n_jobs": 1,
+        "base_score": 0.5,
+        "num_feature": 93,
+        "num_boosted_rounds": 400,
+        "num_trees": 400,
+        "num_parallel_tree": 1,
+        "tree_method": "hist",
+        "updater": "grow_quantile_histmaker",
+        "max_depth": 6,
+        "min_child_weight": 5.0,
+        "learning_rate": 0.0500000007,
+        "subsample": 0.800000012,
+        "colsample_bytree": 0.800000012,
+        "reg_alpha": 0.0,
+        "reg_lambda": 1.0,
+        "gamma": 0.0,
+        "max_delta_step": 0.0,
+        "grow_policy": "depthwise",
+        "max_bin": 256,
+        "scale_pos_weight": 1.0,
+        "eval_metric": [
+          "logloss"
+        ],
+        "missing": "nan"
+      }
+    }
+  },
+  "limitations": [
+    "source publication timing is unverified; features assume observation-month availability (R3)",
+    "topology repair does not establish administrative identity, and the upstream geometry builder allowed unrestricted nearest-neighbour fallback (R2)",
+    "Stage1 internal validation uses per-area chronological cutoffs; it is a development score, not a globally forward forecast test (R4/Q5a)",
+    "singleton scores are supplementary post-map diagnostics only (R4/Q5v)",
+    "inferred (nearest-donor) membership is not observed or validated membership (R4/Q8r)",
+    "Stage1 accepted no split. With a single terminal partition a partitioned-vs-pooled contrast no longer isolates spatial heterogeneity: it reduces to a local model trained on the assigned areas versus a pooled model trained on the whole universe. See stage3/partitioned_vs_pooled_contrast.json",
+    "Stage 3 ran the partitioned arm against a SINGLE-partition map. The partitioned-minus-pooled delta reduces to a local model trained on 4417 areas versus a pooled model trained on all 6227; a nonzero delta is a training-set-size effect and is not evidence of spatial structure (see stage3/partitioned_vs_pooled_contrast.json)"
+  ],
+  "elapsed_seconds": 634.297,
+  "runtime": {
+    "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "python_version": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.15.2",
+      "geopandas": "1.0.1",
+      "shapely": "2.1.0",
+      "pyproj": "3.7.1",
+      "xgboost": "3.0.0",
+      "psutil": "7.0.0"
+    },
+    "cwd_at_start": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster"
+  },
+  "code": {
+    "experiment_files_sha256": {
+      "prepare_data.py": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "baseline_runtime.py": "ab79783b30b7810582275e510a7ac0f82ecf4b5a54ee61570a81cdb28014c74d",
+      "run_pipeline.py": "5fa6b42136c1d1a43c2ca36d082022ba266cbb12103794a00529e6b912dc341d",
+      "report_results.py": "b111c2e6418950ed5a8383cb3d803bc6e88fa22ac487752bdd42b9daf5ef0bda"
+    },
+    "baseline": {
+      "root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\abl-C3-nonch-gate010\\baseline\\GeoRFBaseline",
+      "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+      "manifest_version": "0.1.0-f1-nosmote",
+      "manifest_source_commit": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+      "payload_files_verified": 45,
+      "patch_applied": true,
+      "patch_diff": "--- pristine src/model/GeoRF.py\n+++ patched src/model/GeoRF.py\n-if CONTIGUITY:\n+if CONTIGUITY and contiguity_type != 'polygon':\n",
+      "pristine_target_sha256": "be2c362b82b2e861920e5d2c2e23c48c5bb3cefc44c578dde0a8e61f71804fe9",
+      "patched_target_sha256": "c36b89945c66cf45fffdf461e8ab78ab470386cd9f18b62e973b74225842f936",
+      "module_locations": {}
+    },
+    "release_zip": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\GeoRFBaseline\\releases\\georf-baseline-v0.1.0.zip"
+  },
+  "source": {
+    "source_root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH",
+    "csv": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\raw\\IPCCH_2026_completed.csv",
+    "csv_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+    "expected_csv_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673"
+  },
+  "stage1_outcome": "no_partition_learned"
+}

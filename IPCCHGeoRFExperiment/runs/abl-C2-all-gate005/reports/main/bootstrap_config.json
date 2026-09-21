@@ -1,0 +1,106 @@
+{
+  "main/h1/E_all": {
+    "cohort": "main/h1/E_all",
+    "n_countries": 53,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h1/E_persist": {
+    "cohort": "main/h1/E_persist",
+    "n_countries": 52,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h12/E_all": {
+    "cohort": "main/h12/E_all",
+    "n_countries": 52,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h12/E_persist": {
+    "cohort": "main/h12/E_persist",
+    "n_countries": 51,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h3/E_all": {
+    "cohort": "main/h3/E_all",
+    "n_countries": 53,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h3/E_persist": {
+    "cohort": "main/h3/E_persist",
+    "n_countries": 52,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h6/E_all": {
+    "cohort": "main/h6/E_all",
+    "n_countries": 53,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  },
+  "main/h6/E_persist": {
+    "cohort": "main/h6/E_persist",
+    "n_countries": 52,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "requested_draws": 1000,
+    "rng": "numpy.random.default_rng",
+    "sampler": "Generator.integers(0, K, size=(draws, K)) as indices into the sorted country list; K countries with replacement per draw",
+    "seed": 42
+  }
+}

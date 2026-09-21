@@ -1,0 +1,893 @@
+period,horizon_months,cohort,dimension,country_id,country_en,arm,n_observations,n_areas,n_countries,n_positive_truth,prevalence,predicted_positives,tp,fp,fn,tn,f1,precision,recall,f1_reason,precision_reason,recall_reason
+partial_2026,1,E_all,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,68,55,13,53,6,0.625,0.8088235294117647,0.5092592592592593,,,
+partial_2026,1,E_all,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,76,62,14,46,5,0.6739130434782609,0.8157894736842105,0.5740740740740741,,,
+partial_2026,1,E_all,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,73,60,13,48,6,0.6629834254143646,0.821917808219178,0.5555555555555556,,,
+partial_2026,1,E_all,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,4,0,4,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,4,0,4,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Angola,Angola,xgb,14,14,1,0,0.0,7,0,7,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,1,0,1,0,26,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,2,0,2,0,25,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Burundi,Burundi,xgb,27,27,1,0,0.0,1,0,1,0,26,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,1,1,0,6,0,0.25,1.0,0.14285714285714285,,,
+partial_2026,1,E_all,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,302,225,77,41,55,0.7922535211267606,0.7450331125827815,0.8458646616541353,,,
+partial_2026,1,E_all,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,277,203,74,63,58,0.7476979742173112,0.7328519855595668,0.7631578947368421,,,
+partial_2026,1,E_all,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,293,223,70,43,62,0.7978533094812165,0.7610921501706485,0.8383458646616542,,,
+partial_2026,1,E_all,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,8,5,3,16,3,0.3448275862068966,0.625,0.23809523809523808,,,
+partial_2026,1,E_all,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,18,12,6,9,0,0.6153846153846154,0.6666666666666666,0.5714285714285714,,,
+partial_2026,1,E_all,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,21,15,6,6,0,0.7142857142857143,0.7142857142857143,0.7142857142857143,,,
+partial_2026,1,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,136,82,54,96,183,0.5222929936305732,0.6029411764705882,0.4606741573033708,,,
+partial_2026,1,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,67,43,24,135,213,0.3510204081632653,0.6417910447761194,0.24157303370786518,,,
+partial_2026,1,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,77,56,21,122,216,0.4392156862745098,0.7272727272727273,0.3146067415730337,,,
+partial_2026,1,E_all,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,11,4,7,1,4,0.5,0.36363636363636365,0.8,,,
+partial_2026,1,E_all,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,12,5,7,0,4,0.5882352941176471,0.4166666666666667,1.0,,,
+partial_2026,1,E_all,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,4,3,1,2,10,0.6666666666666666,0.75,0.6,,,
+partial_2026,1,E_all,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,7,7,0,6,0,0.7,1.0,0.5384615384615384,,,
+partial_2026,1,E_all,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,7,7,0,6,0,0.7,1.0,0.5384615384615384,,,
+partial_2026,1,E_all,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,13,13,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,4,0,4,0,17,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,2,0,2,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,2,0,2,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,29,15,14,1,3,0.6666666666666666,0.5172413793103449,0.9375,,,
+partial_2026,1,E_all,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,30,15,15,1,2,0.6521739130434783,0.5,0.9375,,,
+partial_2026,1,E_all,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,25,16,9,0,8,0.7804878048780488,0.64,1.0,,,
+partial_2026,1,E_all,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,4,0,4,22,74,0.0,0.0,0.0,,,
+partial_2026,1,E_all,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,3,1,2,21,76,0.08,0.3333333333333333,0.045454545454545456,,,
+partial_2026,1,E_all,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,0,0,0,22,78,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,75,75,0,15,0,0.9090909090909091,1.0,0.8333333333333334,,,
+partial_2026,1,E_all,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,67,67,0,23,0,0.8535031847133758,1.0,0.7444444444444445,,,
+partial_2026,1,E_all,country,Haiti,Haiti,xgb,90,90,1,90,1.0,69,69,0,21,0,0.8679245283018868,1.0,0.7666666666666667,,,
+partial_2026,1,E_all,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,1,E_all,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,1,E_all,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,8,8,0,15,71,0.5161290322580645,1.0,0.34782608695652173,,,
+partial_2026,1,E_all,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,69,55,14,7,6,0.8396946564885496,0.7971014492753623,0.8870967741935484,,,
+partial_2026,1,E_all,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,69,55,14,7,6,0.8396946564885496,0.7971014492753623,0.8870967741935484,,,
+partial_2026,1,E_all,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,55,47,8,15,12,0.8034188034188035,0.8545454545454545,0.7580645161290323,,,
+partial_2026,1,E_all,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,1,E_all,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,1,E_all,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,1,E_all,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,7,0,7,0,25,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,8,0,8,0,24,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Malawi,Malawi,xgb,32,32,1,0,0.0,3,0,3,0,29,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,148,0,148,0,445,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,22,0,22,0,571,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,36,0,36,0,557,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,7,0,7,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,7,0,7,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Namibia,Namibia,xgb,15,15,1,0,0.0,10,0,10,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,85,46,39,14,60,0.6344827586206897,0.5411764705882353,0.7666666666666667,,,
+partial_2026,1,E_all,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,102,47,55,13,44,0.5802469135802469,0.46078431372549017,0.7833333333333333,,,
+partial_2026,1,E_all,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,86,47,39,13,60,0.6438356164383562,0.5465116279069767,0.7833333333333333,,,
+partial_2026,1,E_all,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,627,394,233,62,187,0.7276084949215144,0.6283891547049442,0.8640350877192983,,,
+partial_2026,1,E_all,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,476,315,161,141,259,0.6759656652360515,0.6617647058823529,0.6907894736842105,,,
+partial_2026,1,E_all,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,409,290,119,166,301,0.6705202312138728,0.7090464547677262,0.6359649122807017,,,
+partial_2026,1,E_all,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_all,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_all,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_all,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,165,127,38,45,18,0.7537091988130564,0.7696969696969697,0.7383720930232558,,,
+partial_2026,1,E_all,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,166,126,40,46,16,0.7455621301775148,0.7590361445783133,0.7325581395348837,,,
+partial_2026,1,E_all,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,199,146,53,26,3,0.7870619946091644,0.7336683417085427,0.8488372093023255,,,
+partial_2026,1,E_all,country,Sudan,Sudan,partitioned_rf,300,241,1,268,0.8933333333333333,221,198,23,70,9,0.8098159509202454,0.8959276018099548,0.7388059701492538,,,
+partial_2026,1,E_all,country,Sudan,Sudan,pooled_rf,300,241,1,268,0.8933333333333333,197,182,15,86,17,0.7827956989247312,0.9238578680203046,0.6791044776119403,,,
+partial_2026,1,E_all,country,Sudan,Sudan,xgb,300,241,1,268,0.8933333333333333,283,253,30,15,2,0.9183303085299456,0.8939929328621908,0.9440298507462687,,,
+partial_2026,1,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_all,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,56,32,24,5,26,0.6881720430107527,0.5714285714285714,0.8648648648648649,,,
+partial_2026,1,E_all,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,49,22,27,15,23,0.5116279069767442,0.4489795918367347,0.5945945945945946,,,
+partial_2026,1,E_all,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,39,29,10,8,40,0.7631578947368421,0.7435897435897436,0.7837837837837838,,,
+partial_2026,1,E_all,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_all,country,Yemen,Yemen,xgb,8,8,1,8,1.0,6,6,0,2,0,0.8571428571428571,1.0,0.75,,,
+partial_2026,1,E_all,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,14,1,13,19,51,0.058823529411764705,0.07142857142857142,0.05,,,
+partial_2026,1,E_all,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,3,0,3,20,61,0.0,0.0,0.0,,,
+partial_2026,1,E_all,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,11,0,11,20,53,0.0,0.0,0.0,,,
+partial_2026,1,E_all,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,4,0,4,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_all,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_persist,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,68,55,13,53,6,0.625,0.8088235294117647,0.5092592592592593,,,
+partial_2026,1,E_persist,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,76,62,14,46,5,0.6739130434782609,0.8157894736842105,0.5740740740740741,,,
+partial_2026,1,E_persist,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,73,60,13,48,6,0.6629834254143646,0.821917808219178,0.5555555555555556,,,
+partial_2026,1,E_persist,country,Afghanistan,Afghanistan,persistence,127,127,1,108,0.8503937007874016,34,33,1,75,18,0.4647887323943662,0.9705882352941176,0.3055555555555556,,,
+partial_2026,1,E_persist,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,4,0,4,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,4,0,4,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Angola,Angola,xgb,14,14,1,0,0.0,7,0,7,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Angola,Angola,persistence,14,14,1,0,0.0,9,0,9,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,1,0,1,0,26,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,2,0,2,0,25,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Burundi,Burundi,xgb,27,27,1,0,0.0,1,0,1,0,26,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Burundi,Burundi,persistence,27,27,1,0,0.0,3,0,3,0,24,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,1,1,0,6,0,0.25,1.0,0.14285714285714285,,,
+partial_2026,1,E_persist,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Cameroon,Cameroon,persistence,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,302,225,77,41,55,0.7922535211267606,0.7450331125827815,0.8458646616541353,,,
+partial_2026,1,E_persist,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,277,203,74,63,58,0.7476979742173112,0.7328519855595668,0.7631578947368421,,,
+partial_2026,1,E_persist,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,293,223,70,43,62,0.7978533094812165,0.7610921501706485,0.8383458646616542,,,
+partial_2026,1,E_persist,country,Central African Republic,Central African Republic,persistence,398,266,1,266,0.6683417085427136,225,161,64,105,68,0.6558044806517311,0.7155555555555555,0.6052631578947368,,,
+partial_2026,1,E_persist,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,8,5,3,16,3,0.3448275862068966,0.625,0.23809523809523808,,,
+partial_2026,1,E_persist,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,18,12,6,9,0,0.6153846153846154,0.6666666666666666,0.5714285714285714,,,
+partial_2026,1,E_persist,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,21,15,6,6,0,0.7142857142857143,0.7142857142857143,0.7142857142857143,,,
+partial_2026,1,E_persist,country,Chad,Chad,persistence,27,26,1,21,0.7777777777777778,4,3,1,18,5,0.24,0.75,0.14285714285714285,,,
+partial_2026,1,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,136,82,54,96,183,0.5222929936305732,0.6029411764705882,0.4606741573033708,,,
+partial_2026,1,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,67,43,24,135,213,0.3510204081632653,0.6417910447761194,0.24157303370786518,,,
+partial_2026,1,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,77,56,21,122,216,0.4392156862745098,0.7272727272727273,0.3146067415730337,,,
+partial_2026,1,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",persistence,415,381,1,178,0.42891566265060244,158,87,71,91,166,0.5178571428571429,0.5506329113924051,0.4887640449438202,,,
+partial_2026,1,E_persist,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,11,4,7,1,4,0.5,0.36363636363636365,0.8,,,
+partial_2026,1,E_persist,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,12,5,7,0,4,0.5882352941176471,0.4166666666666667,1.0,,,
+partial_2026,1,E_persist,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,4,3,1,2,10,0.6666666666666666,0.75,0.6,,,
+partial_2026,1,E_persist,country,Djibouti,Djibouti,persistence,16,16,1,5,0.3125,5,5,0,0,11,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,7,7,0,6,0,0.7,1.0,0.5384615384615384,,,
+partial_2026,1,E_persist,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,7,7,0,6,0,0.7,1.0,0.5384615384615384,,,
+partial_2026,1,E_persist,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,13,13,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Dominican Republic,Dominican Republic,persistence,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,El Salvador,El Salvador,persistence,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,4,0,4,0,17,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,2,0,2,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,2,0,2,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Eswatini,Eswatini,persistence,21,21,1,0,0.0,5,0,5,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,29,15,14,1,3,0.6666666666666666,0.5172413793103449,0.9375,,,
+partial_2026,1,E_persist,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,30,15,15,1,2,0.6521739130434783,0.5,0.9375,,,
+partial_2026,1,E_persist,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,25,16,9,0,8,0.7804878048780488,0.64,1.0,,,
+partial_2026,1,E_persist,country,Ethiopia,Ethiopia,persistence,33,33,1,16,0.48484848484848486,23,16,7,0,10,0.8205128205128205,0.6956521739130435,1.0,,,
+partial_2026,1,E_persist,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,4,0,4,22,74,0.0,0.0,0.0,,,
+partial_2026,1,E_persist,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,3,1,2,21,76,0.08,0.3333333333333333,0.045454545454545456,,,
+partial_2026,1,E_persist,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,0,0,0,22,78,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Guatemala,Guatemala,persistence,100,100,1,22,0.22,4,0,4,22,74,0.0,0.0,0.0,,,
+partial_2026,1,E_persist,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,75,75,0,15,0,0.9090909090909091,1.0,0.8333333333333334,,,
+partial_2026,1,E_persist,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,67,67,0,23,0,0.8535031847133758,1.0,0.7444444444444445,,,
+partial_2026,1,E_persist,country,Haiti,Haiti,xgb,90,90,1,90,1.0,69,69,0,21,0,0.8679245283018868,1.0,0.7666666666666667,,,
+partial_2026,1,E_persist,country,Haiti,Haiti,persistence,90,90,1,90,1.0,12,12,0,78,0,0.23529411764705882,1.0,0.13333333333333333,,,
+partial_2026,1,E_persist,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Honduras,Honduras,persistence,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,1,E_persist,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,1,E_persist,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,8,8,0,15,71,0.5161290322580645,1.0,0.34782608695652173,,,
+partial_2026,1,E_persist,country,Kenya,Kenya,persistence,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,1,E_persist,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,69,55,14,7,6,0.8396946564885496,0.7971014492753623,0.8870967741935484,,,
+partial_2026,1,E_persist,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,69,55,14,7,6,0.8396946564885496,0.7971014492753623,0.8870967741935484,,,
+partial_2026,1,E_persist,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,55,47,8,15,12,0.8034188034188035,0.8545454545454545,0.7580645161290323,,,
+partial_2026,1,E_persist,country,Lebanon,Lebanon,persistence,82,82,1,62,0.7560975609756098,59,50,9,12,11,0.8264462809917356,0.847457627118644,0.8064516129032258,,,
+partial_2026,1,E_persist,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,1,E_persist,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,1,E_persist,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,1,E_persist,country,Madagascar,Madagascar,persistence,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,7,0,7,0,25,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,8,0,8,0,24,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Malawi,Malawi,xgb,32,32,1,0,0.0,3,0,3,0,29,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Malawi,Malawi,persistence,32,32,1,0,0.0,11,0,11,0,21,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,148,0,148,0,445,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,22,0,22,0,571,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,36,0,36,0,557,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Mozambique,Mozambique,persistence,593,579,1,0,0.0,198,0,198,0,395,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,7,0,7,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,7,0,7,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Namibia,Namibia,xgb,15,15,1,0,0.0,10,0,10,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Namibia,Namibia,persistence,15,15,1,0,0.0,8,0,8,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,85,46,39,14,60,0.6344827586206897,0.5411764705882353,0.7666666666666667,,,
+partial_2026,1,E_persist,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,102,47,55,13,44,0.5802469135802469,0.46078431372549017,0.7833333333333333,,,
+partial_2026,1,E_persist,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,86,47,39,13,60,0.6438356164383562,0.5465116279069767,0.7833333333333333,,,
+partial_2026,1,E_persist,country,Pakistan,Pakistan,persistence,159,159,1,60,0.37735849056603776,74,34,40,26,59,0.5074626865671642,0.4594594594594595,0.5666666666666667,,,
+partial_2026,1,E_persist,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,"Palestine, State of","Palestine, State of",persistence,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,627,394,233,62,187,0.7276084949215144,0.6283891547049442,0.8640350877192983,,,
+partial_2026,1,E_persist,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,476,315,161,141,259,0.6759656652360515,0.6617647058823529,0.6907894736842105,,,
+partial_2026,1,E_persist,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,409,290,119,166,301,0.6705202312138728,0.7090464547677262,0.6359649122807017,,,
+partial_2026,1,E_persist,country,Somalia,Somalia,persistence,876,876,1,456,0.5205479452054794,436,312,124,144,296,0.6995515695067265,0.7155963302752294,0.6842105263157895,,,
+partial_2026,1,E_persist,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_persist,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_persist,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_persist,country,South Africa,South Africa,persistence,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_persist,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,165,127,38,45,18,0.7537091988130564,0.7696969696969697,0.7383720930232558,,,
+partial_2026,1,E_persist,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,166,126,40,46,16,0.7455621301775148,0.7590361445783133,0.7325581395348837,,,
+partial_2026,1,E_persist,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,199,146,53,26,3,0.7870619946091644,0.7336683417085427,0.8488372093023255,,,
+partial_2026,1,E_persist,country,South Sudan,South Sudan,persistence,228,157,1,172,0.7543859649122807,168,128,40,44,16,0.7529411764705882,0.7619047619047619,0.7441860465116279,,,
+partial_2026,1,E_persist,country,Sudan,Sudan,partitioned_rf,297,238,1,265,0.8922558922558923,218,195,23,70,9,0.8074534161490683,0.8944954128440367,0.7358490566037735,,,
+partial_2026,1,E_persist,country,Sudan,Sudan,pooled_rf,297,238,1,265,0.8922558922558923,196,181,15,84,17,0.7852494577006508,0.923469387755102,0.6830188679245283,,,
+partial_2026,1,E_persist,country,Sudan,Sudan,xgb,297,238,1,265,0.8922558922558923,280,250,30,15,2,0.9174311926605505,0.8928571428571429,0.9433962264150944,,,
+partial_2026,1,E_persist,country,Sudan,Sudan,persistence,297,238,1,265,0.8922558922558923,249,224,25,41,7,0.8715953307392996,0.8995983935742972,0.8452830188679246,,,
+partial_2026,1,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",persistence,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,1,E_persist,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,56,32,24,5,26,0.6881720430107527,0.5714285714285714,0.8648648648648649,,,
+partial_2026,1,E_persist,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,49,22,27,15,23,0.5116279069767442,0.4489795918367347,0.5945945945945946,,,
+partial_2026,1,E_persist,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,39,29,10,8,40,0.7631578947368421,0.7435897435897436,0.7837837837837838,,,
+partial_2026,1,E_persist,country,Uganda,Uganda,persistence,87,65,1,37,0.42528735632183906,14,5,9,32,41,0.19607843137254902,0.35714285714285715,0.13513513513513514,,,
+partial_2026,1,E_persist,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Yemen,Yemen,xgb,8,8,1,8,1.0,6,6,0,2,0,0.8571428571428571,1.0,0.75,,,
+partial_2026,1,E_persist,country,Yemen,Yemen,persistence,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,1,E_persist,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,14,1,13,19,51,0.058823529411764705,0.07142857142857142,0.05,,,
+partial_2026,1,E_persist,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,3,0,3,20,61,0.0,0.0,0.0,,,
+partial_2026,1,E_persist,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,11,0,11,20,53,0.0,0.0,0.0,,,
+partial_2026,1,E_persist,country,Zambia,Zambia,persistence,84,84,1,20,0.23809523809523808,17,2,15,18,49,0.10810810810810811,0.11764705882352941,0.1,,,
+partial_2026,1,E_persist,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,4,0,4,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,1,E_persist,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,1,E_persist,country,Zimbabwe,Zimbabwe,persistence,20,20,1,0,0.0,13,0,13,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,28,27,1,81,18,0.39705882352941174,0.9642857142857143,0.25,,,
+partial_2026,3,E_all,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,42,36,6,72,13,0.48,0.8571428571428571,0.3333333333333333,,,
+partial_2026,3,E_all,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,81,67,14,41,5,0.708994708994709,0.8271604938271605,0.6203703703703703,,,
+partial_2026,3,E_all,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,Angola,Angola,xgb,14,14,1,0,0.0,6,0,6,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,1,0,1,0,26,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,Burundi,Burundi,xgb,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,1,1,0,6,0,0.25,1.0,0.14285714285714285,,,
+partial_2026,3,E_all,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_all,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,251,177,74,89,58,0.6847195357833655,0.7051792828685259,0.6654135338345865,,,
+partial_2026,3,E_all,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,274,198,76,68,56,0.7333333333333333,0.7226277372262774,0.7443609022556391,,,
+partial_2026,3,E_all,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,285,213,72,53,60,0.7731397459165155,0.7473684210526316,0.8007518796992481,,,
+partial_2026,3,E_all,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,6,4,2,17,4,0.2962962962962963,0.6666666666666666,0.19047619047619047,,,
+partial_2026,3,E_all,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,3,1,2,20,4,0.08333333333333333,0.3333333333333333,0.047619047619047616,,,
+partial_2026,3,E_all,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,20,14,6,7,0,0.6829268292682927,0.7,0.6666666666666666,,,
+partial_2026,3,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,126,79,47,99,190,0.5197368421052632,0.626984126984127,0.4438202247191011,,,
+partial_2026,3,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,84,53,31,125,206,0.40458015267175573,0.6309523809523809,0.29775280898876405,,,
+partial_2026,3,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,67,47,20,131,217,0.3836734693877551,0.7014925373134329,0.2640449438202247,,,
+partial_2026,3,E_all,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,6,4,2,1,9,0.7272727272727273,0.6666666666666666,0.8,,,
+partial_2026,3,E_all,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,9,5,4,0,7,0.7142857142857143,0.5555555555555556,1.0,,,
+partial_2026,3,E_all,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,11,5,6,0,5,0.625,0.45454545454545453,1.0,,,
+partial_2026,3,E_all,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,2,2,0,11,0,0.26666666666666666,1.0,0.15384615384615385,,,
+partial_2026,3,E_all,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,4,0,4,0,17,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,3,0,3,0,18,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,3,0,3,0,18,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,27,16,11,0,6,0.7441860465116279,0.5925925925925926,1.0,,,
+partial_2026,3,E_all,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,25,16,9,0,8,0.7804878048780488,0.64,1.0,,,
+partial_2026,3,E_all,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,29,16,13,0,4,0.7111111111111111,0.5517241379310345,1.0,,,
+partial_2026,3,E_all,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,3,0,3,22,75,0.0,0.0,0.0,,,
+partial_2026,3,E_all,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,0,0,0,22,78,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,0,0,0,22,78,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,54,54,0,36,0,0.75,1.0,0.6,,,
+partial_2026,3,E_all,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,1,1,0,89,0,0.02197802197802198,1.0,0.011111111111111112,,,
+partial_2026,3,E_all,country,Haiti,Haiti,xgb,90,90,1,90,1.0,22,22,0,68,0,0.39285714285714285,1.0,0.24444444444444444,,,
+partial_2026,3,E_all,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,12,12,0,11,71,0.6857142857142857,1.0,0.5217391304347826,,,
+partial_2026,3,E_all,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,13,13,0,10,71,0.7222222222222222,1.0,0.5652173913043478,,,
+partial_2026,3,E_all,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,12,12,0,11,71,0.6857142857142857,1.0,0.5217391304347826,,,
+partial_2026,3,E_all,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,48,41,7,21,13,0.7454545454545455,0.8541666666666666,0.6612903225806451,,,
+partial_2026,3,E_all,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,48,41,7,21,13,0.7454545454545455,0.8541666666666666,0.6612903225806451,,,
+partial_2026,3,E_all,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,74,56,18,6,2,0.8235294117647058,0.7567567567567568,0.9032258064516129,,,
+partial_2026,3,E_all,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,2,0,2,43,34,0.0,0.0,0.0,,,
+partial_2026,3,E_all,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,5,0,5,0,27,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,5,0,5,0,27,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Malawi,Malawi,xgb,32,32,1,0,0.0,0,0,0,0,32,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,135,0,135,0,458,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,70,0,70,0,523,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,80,0,80,0,513,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,5,0,5,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,2,0,2,0,13,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Namibia,Namibia,xgb,15,15,1,0,0.0,3,0,3,0,12,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,60,33,27,27,72,0.55,0.55,0.55,,,
+partial_2026,3,E_all,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,68,35,33,25,66,0.546875,0.5147058823529411,0.5833333333333334,,,
+partial_2026,3,E_all,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,96,48,48,12,51,0.6153846153846154,0.5,0.8,,,
+partial_2026,3,E_all,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_all,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_all,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_all,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,448,303,145,153,275,0.6703539823008849,0.6763392857142857,0.6644736842105263,,,
+partial_2026,3,E_all,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,459,318,141,138,279,0.6950819672131148,0.6928104575163399,0.6973684210526315,,,
+partial_2026,3,E_all,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,485,340,145,116,275,0.722635494155154,0.7010309278350515,0.7456140350877193,,,
+partial_2026,3,E_all,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_all,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,121,81,40,91,16,0.552901023890785,0.6694214876033058,0.47093023255813954,,,
+partial_2026,3,E_all,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,131,94,37,78,19,0.6204620462046204,0.7175572519083969,0.5465116279069767,,,
+partial_2026,3,E_all,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,201,154,47,18,9,0.8257372654155496,0.7661691542288557,0.8953488372093024,,,
+partial_2026,3,E_all,country,Sudan,Sudan,partitioned_rf,300,241,1,268,0.8933333333333333,221,197,24,71,8,0.8057259713701431,0.8914027149321267,0.7350746268656716,,,
+partial_2026,3,E_all,country,Sudan,Sudan,pooled_rf,300,241,1,268,0.8933333333333333,209,193,16,75,16,0.8092243186582809,0.9234449760765551,0.7201492537313433,,,
+partial_2026,3,E_all,country,Sudan,Sudan,xgb,300,241,1,268,0.8933333333333333,271,243,28,25,4,0.9016697588126159,0.8966789667896679,0.9067164179104478,,,
+partial_2026,3,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,1,0,1,14,76,0.0,0.0,0.0,,,
+partial_2026,3,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_all,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,16,2,14,35,36,0.07547169811320754,0.125,0.05405405405405406,,,
+partial_2026,3,E_all,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,22,13,9,24,41,0.4406779661016949,0.5909090909090909,0.35135135135135137,,,
+partial_2026,3,E_all,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,28,22,6,15,44,0.676923076923077,0.7857142857142857,0.5945945945945946,,,
+partial_2026,3,E_all,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,7,7,0,1,0,0.9333333333333333,1.0,0.875,,,
+partial_2026,3,E_all,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_all,country,Yemen,Yemen,xgb,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_all,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,9,2,7,18,57,0.13793103448275862,0.2222222222222222,0.1,,,
+partial_2026,3,E_all,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,2,0,2,20,62,0.0,0.0,0.0,,,
+partial_2026,3,E_all,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,1,0,1,20,63,0.0,0.0,0.0,,,
+partial_2026,3,E_all,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_all,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,28,27,1,81,18,0.39705882352941174,0.9642857142857143,0.25,,,
+partial_2026,3,E_persist,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,42,36,6,72,13,0.48,0.8571428571428571,0.3333333333333333,,,
+partial_2026,3,E_persist,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,81,67,14,41,5,0.708994708994709,0.8271604938271605,0.6203703703703703,,,
+partial_2026,3,E_persist,country,Afghanistan,Afghanistan,persistence,127,127,1,108,0.8503937007874016,34,33,1,75,18,0.4647887323943662,0.9705882352941176,0.3055555555555556,,,
+partial_2026,3,E_persist,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,Angola,Angola,xgb,14,14,1,0,0.0,6,0,6,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Angola,Angola,persistence,14,14,1,0,0.0,9,0,9,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,1,0,1,0,26,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,Burundi,Burundi,xgb,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,Burundi,Burundi,persistence,27,27,1,0,0.0,3,0,3,0,24,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,1,1,0,6,0,0.25,1.0,0.14285714285714285,,,
+partial_2026,3,E_persist,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,Cameroon,Cameroon,persistence,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,251,177,74,89,58,0.6847195357833655,0.7051792828685259,0.6654135338345865,,,
+partial_2026,3,E_persist,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,274,198,76,68,56,0.7333333333333333,0.7226277372262774,0.7443609022556391,,,
+partial_2026,3,E_persist,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,285,213,72,53,60,0.7731397459165155,0.7473684210526316,0.8007518796992481,,,
+partial_2026,3,E_persist,country,Central African Republic,Central African Republic,persistence,398,266,1,266,0.6683417085427136,225,161,64,105,68,0.6558044806517311,0.7155555555555555,0.6052631578947368,,,
+partial_2026,3,E_persist,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,6,4,2,17,4,0.2962962962962963,0.6666666666666666,0.19047619047619047,,,
+partial_2026,3,E_persist,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,3,1,2,20,4,0.08333333333333333,0.3333333333333333,0.047619047619047616,,,
+partial_2026,3,E_persist,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,20,14,6,7,0,0.6829268292682927,0.7,0.6666666666666666,,,
+partial_2026,3,E_persist,country,Chad,Chad,persistence,27,26,1,21,0.7777777777777778,3,2,1,19,5,0.16666666666666666,0.6666666666666666,0.09523809523809523,,,
+partial_2026,3,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,126,79,47,99,190,0.5197368421052632,0.626984126984127,0.4438202247191011,,,
+partial_2026,3,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,84,53,31,125,206,0.40458015267175573,0.6309523809523809,0.29775280898876405,,,
+partial_2026,3,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,67,47,20,131,217,0.3836734693877551,0.7014925373134329,0.2640449438202247,,,
+partial_2026,3,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",persistence,415,381,1,178,0.42891566265060244,158,87,71,91,166,0.5178571428571429,0.5506329113924051,0.4887640449438202,,,
+partial_2026,3,E_persist,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,6,4,2,1,9,0.7272727272727273,0.6666666666666666,0.8,,,
+partial_2026,3,E_persist,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,9,5,4,0,7,0.7142857142857143,0.5555555555555556,1.0,,,
+partial_2026,3,E_persist,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,11,5,6,0,5,0.625,0.45454545454545453,1.0,,,
+partial_2026,3,E_persist,country,Djibouti,Djibouti,persistence,16,16,1,5,0.3125,5,5,0,0,11,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,2,2,0,11,0,0.26666666666666666,1.0,0.15384615384615385,,,
+partial_2026,3,E_persist,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Dominican Republic,Dominican Republic,persistence,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,El Salvador,El Salvador,persistence,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,4,0,4,0,17,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,3,0,3,0,18,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,3,0,3,0,18,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Eswatini,Eswatini,persistence,21,21,1,0,0.0,5,0,5,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,27,16,11,0,6,0.7441860465116279,0.5925925925925926,1.0,,,
+partial_2026,3,E_persist,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,25,16,9,0,8,0.7804878048780488,0.64,1.0,,,
+partial_2026,3,E_persist,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,29,16,13,0,4,0.7111111111111111,0.5517241379310345,1.0,,,
+partial_2026,3,E_persist,country,Ethiopia,Ethiopia,persistence,33,33,1,16,0.48484848484848486,23,16,7,0,10,0.8205128205128205,0.6956521739130435,1.0,,,
+partial_2026,3,E_persist,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,3,0,3,22,75,0.0,0.0,0.0,,,
+partial_2026,3,E_persist,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,0,0,0,22,78,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,0,0,0,22,78,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Guatemala,Guatemala,persistence,100,100,1,22,0.22,4,0,4,22,74,0.0,0.0,0.0,,,
+partial_2026,3,E_persist,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,54,54,0,36,0,0.75,1.0,0.6,,,
+partial_2026,3,E_persist,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,1,1,0,89,0,0.02197802197802198,1.0,0.011111111111111112,,,
+partial_2026,3,E_persist,country,Haiti,Haiti,xgb,90,90,1,90,1.0,22,22,0,68,0,0.39285714285714285,1.0,0.24444444444444444,,,
+partial_2026,3,E_persist,country,Haiti,Haiti,persistence,90,90,1,90,1.0,12,12,0,78,0,0.23529411764705882,1.0,0.13333333333333333,,,
+partial_2026,3,E_persist,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Honduras,Honduras,persistence,36,36,1,24,0.6666666666666666,0,0,0,24,12,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,12,12,0,11,71,0.6857142857142857,1.0,0.5217391304347826,,,
+partial_2026,3,E_persist,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,13,13,0,10,71,0.7222222222222222,1.0,0.5652173913043478,,,
+partial_2026,3,E_persist,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,12,12,0,11,71,0.6857142857142857,1.0,0.5217391304347826,,,
+partial_2026,3,E_persist,country,Kenya,Kenya,persistence,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,3,E_persist,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,48,41,7,21,13,0.7454545454545455,0.8541666666666666,0.6612903225806451,,,
+partial_2026,3,E_persist,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,48,41,7,21,13,0.7454545454545455,0.8541666666666666,0.6612903225806451,,,
+partial_2026,3,E_persist,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,74,56,18,6,2,0.8235294117647058,0.7567567567567568,0.9032258064516129,,,
+partial_2026,3,E_persist,country,Lebanon,Lebanon,persistence,82,82,1,62,0.7560975609756098,59,50,9,12,11,0.8264462809917356,0.847457627118644,0.8064516129032258,,,
+partial_2026,3,E_persist,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,2,0,2,43,34,0.0,0.0,0.0,,,
+partial_2026,3,E_persist,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Madagascar,Madagascar,persistence,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,5,0,5,0,27,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,5,0,5,0,27,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Malawi,Malawi,xgb,32,32,1,0,0.0,0,0,0,0,32,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,Malawi,Malawi,persistence,32,32,1,0,0.0,11,0,11,0,21,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,135,0,135,0,458,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,70,0,70,0,523,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,80,0,80,0,513,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Mozambique,Mozambique,persistence,593,579,1,0,0.0,209,0,209,0,384,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,5,0,5,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,2,0,2,0,13,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Namibia,Namibia,xgb,15,15,1,0,0.0,3,0,3,0,12,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Namibia,Namibia,persistence,15,15,1,0,0.0,8,0,8,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,60,33,27,27,72,0.55,0.55,0.55,,,
+partial_2026,3,E_persist,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,68,35,33,25,66,0.546875,0.5147058823529411,0.5833333333333334,,,
+partial_2026,3,E_persist,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,96,48,48,12,51,0.6153846153846154,0.5,0.8,,,
+partial_2026,3,E_persist,country,Pakistan,Pakistan,persistence,159,159,1,60,0.37735849056603776,74,34,40,26,59,0.5074626865671642,0.4594594594594595,0.5666666666666667,,,
+partial_2026,3,E_persist,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,"Palestine, State of","Palestine, State of",persistence,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,448,303,145,153,275,0.6703539823008849,0.6763392857142857,0.6644736842105263,,,
+partial_2026,3,E_persist,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,459,318,141,138,279,0.6950819672131148,0.6928104575163399,0.6973684210526315,,,
+partial_2026,3,E_persist,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,485,340,145,116,275,0.722635494155154,0.7010309278350515,0.7456140350877193,,,
+partial_2026,3,E_persist,country,Somalia,Somalia,persistence,876,876,1,456,0.5205479452054794,436,312,124,144,296,0.6995515695067265,0.7155963302752294,0.6842105263157895,,,
+partial_2026,3,E_persist,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,South Africa,South Africa,persistence,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,3,E_persist,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,121,81,40,91,16,0.552901023890785,0.6694214876033058,0.47093023255813954,,,
+partial_2026,3,E_persist,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,131,94,37,78,19,0.6204620462046204,0.7175572519083969,0.5465116279069767,,,
+partial_2026,3,E_persist,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,201,154,47,18,9,0.8257372654155496,0.7661691542288557,0.8953488372093024,,,
+partial_2026,3,E_persist,country,South Sudan,South Sudan,persistence,228,157,1,172,0.7543859649122807,188,148,40,24,16,0.8222222222222222,0.7872340425531915,0.8604651162790697,,,
+partial_2026,3,E_persist,country,Sudan,Sudan,partitioned_rf,297,238,1,265,0.8922558922558923,219,195,24,70,8,0.8057851239669421,0.8904109589041096,0.7358490566037735,,,
+partial_2026,3,E_persist,country,Sudan,Sudan,pooled_rf,297,238,1,265,0.8922558922558923,207,191,16,74,16,0.809322033898305,0.9227053140096618,0.720754716981132,,,
+partial_2026,3,E_persist,country,Sudan,Sudan,xgb,297,238,1,265,0.8922558922558923,268,240,28,25,4,0.900562851782364,0.8955223880597015,0.9056603773584906,,,
+partial_2026,3,E_persist,country,Sudan,Sudan,persistence,297,238,1,265,0.8922558922558923,249,224,25,41,7,0.8715953307392996,0.8995983935742972,0.8452830188679246,,,
+partial_2026,3,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,1,0,1,14,76,0.0,0.0,0.0,,,
+partial_2026,3,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",persistence,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,3,E_persist,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,16,2,14,35,36,0.07547169811320754,0.125,0.05405405405405406,,,
+partial_2026,3,E_persist,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,22,13,9,24,41,0.4406779661016949,0.5909090909090909,0.35135135135135137,,,
+partial_2026,3,E_persist,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,28,22,6,15,44,0.676923076923077,0.7857142857142857,0.5945945945945946,,,
+partial_2026,3,E_persist,country,Uganda,Uganda,persistence,87,65,1,37,0.42528735632183906,14,5,9,32,41,0.19607843137254902,0.35714285714285715,0.13513513513513514,,,
+partial_2026,3,E_persist,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,7,7,0,1,0,0.9333333333333333,1.0,0.875,,,
+partial_2026,3,E_persist,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,Yemen,Yemen,xgb,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,Yemen,Yemen,persistence,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,3,E_persist,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,9,2,7,18,57,0.13793103448275862,0.2222222222222222,0.1,,,
+partial_2026,3,E_persist,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,2,0,2,20,62,0.0,0.0,0.0,,,
+partial_2026,3,E_persist,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,1,0,1,20,63,0.0,0.0,0.0,,,
+partial_2026,3,E_persist,country,Zambia,Zambia,persistence,84,84,1,20,0.23809523809523808,17,2,15,18,49,0.10810810810810811,0.11764705882352941,0.1,,,
+partial_2026,3,E_persist,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,1,0,1,0,19,0.0,0.0,,,,no_observed_positives
+partial_2026,3,E_persist,country,Zimbabwe,Zimbabwe,persistence,20,20,1,0,0.0,13,0,13,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,117,98,19,10,0,0.8711111111111111,0.8376068376068376,0.9074074074074074,,,
+partial_2026,6,E_all,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,100,85,15,23,4,0.8173076923076923,0.85,0.7870370370370371,,,
+partial_2026,6,E_all,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,120,101,19,7,0,0.8859649122807017,0.8416666666666667,0.9351851851851852,,,
+partial_2026,6,E_all,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Angola,Angola,xgb,14,14,1,0,0.0,4,0,4,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,19,0,19,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Burundi,Burundi,xgb,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,5,5,0,2,0,0.8333333333333334,1.0,0.7142857142857143,,,
+partial_2026,6,E_all,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,2,2,0,5,0,0.4444444444444444,1.0,0.2857142857142857,,,
+partial_2026,6,E_all,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,3,3,0,4,0,0.6,1.0,0.42857142857142855,,,
+partial_2026,6,E_all,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,273,224,49,42,83,0.8311688311688312,0.8205128205128205,0.8421052631578947,,,
+partial_2026,6,E_all,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,337,247,90,19,42,0.8192371475953566,0.7329376854599406,0.9285714285714286,,,
+partial_2026,6,E_all,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,310,222,88,44,44,0.7708333333333334,0.7161290322580646,0.8345864661654135,,,
+partial_2026,6,E_all,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,19,14,5,7,1,0.7,0.7368421052631579,0.6666666666666666,,,
+partial_2026,6,E_all,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,18,14,4,7,2,0.717948717948718,0.7777777777777778,0.6666666666666666,,,
+partial_2026,6,E_all,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,22,16,6,5,0,0.7441860465116279,0.7272727272727273,0.7619047619047619,,,
+partial_2026,6,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,103,66,37,112,200,0.4697508896797153,0.6407766990291263,0.3707865168539326,,,
+partial_2026,6,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,261,128,133,50,104,0.5831435079726651,0.4904214559386973,0.7191011235955056,,,
+partial_2026,6,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,218,134,84,44,153,0.6767676767676768,0.6146788990825688,0.7528089887640449,,,
+partial_2026,6,E_all,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,9,4,5,1,6,0.5714285714285714,0.4444444444444444,0.8,,,
+partial_2026,6,E_all,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,13,5,8,0,3,0.5555555555555556,0.38461538461538464,1.0,,,
+partial_2026,6,E_all,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,13,5,8,0,3,0.5555555555555556,0.38461538461538464,1.0,,,
+partial_2026,6,E_all,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_all,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_all,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_all,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,1,1,0,8,9,0.2,1.0,0.1111111111111111,,,
+partial_2026,6,E_all,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,2,2,0,7,9,0.36363636363636365,1.0,0.2222222222222222,,,
+partial_2026,6,E_all,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,1,1,0,8,9,0.2,1.0,0.1111111111111111,,,
+partial_2026,6,E_all,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,6,0,6,0,15,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,7,0,7,0,14,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,5,0,5,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,32,16,16,0,1,0.6666666666666666,0.5,1.0,,,
+partial_2026,6,E_all,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,31,16,15,0,2,0.6808510638297872,0.5161290322580645,1.0,,,
+partial_2026,6,E_all,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,31,16,15,0,2,0.6808510638297872,0.5161290322580645,1.0,,,
+partial_2026,6,E_all,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,10,8,2,14,76,0.5,0.8,0.36363636363636365,,,
+partial_2026,6,E_all,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,18,10,8,12,70,0.5,0.5555555555555556,0.45454545454545453,,,
+partial_2026,6,E_all,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,7,3,4,19,74,0.20689655172413793,0.42857142857142855,0.13636363636363635,,,
+partial_2026,6,E_all,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,11,11,0,79,0,0.21782178217821782,1.0,0.12222222222222222,,,
+partial_2026,6,E_all,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,40,40,0,50,0,0.6153846153846154,1.0,0.4444444444444444,,,
+partial_2026,6,E_all,country,Haiti,Haiti,xgb,90,90,1,90,1.0,79,79,0,11,0,0.9349112426035503,1.0,0.8777777777777778,,,
+partial_2026,6,E_all,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,6,6,0,18,12,0.4,1.0,0.25,,,
+partial_2026,6,E_all,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,17,14,3,10,9,0.6829268292682927,0.8235294117647058,0.5833333333333334,,,
+partial_2026,6,E_all,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,7,7,0,17,12,0.45161290322580644,1.0,0.2916666666666667,,,
+partial_2026,6,E_all,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,28,18,10,5,61,0.7058823529411765,0.6428571428571429,0.782608695652174,,,
+partial_2026,6,E_all,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,25,13,12,10,59,0.5416666666666666,0.52,0.5652173913043478,,,
+partial_2026,6,E_all,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,6,E_all,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,56,47,9,15,11,0.7966101694915254,0.8392857142857143,0.7580645161290323,,,
+partial_2026,6,E_all,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,56,47,9,15,11,0.7966101694915254,0.8392857142857143,0.7580645161290323,,,
+partial_2026,6,E_all,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,59,51,8,11,12,0.8429752066115702,0.864406779661017,0.8225806451612904,,,
+partial_2026,6,E_all,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,19,12,7,31,29,0.3870967741935484,0.631578947368421,0.27906976744186046,,,
+partial_2026,6,E_all,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,2,1,1,42,35,0.044444444444444446,0.5,0.023255813953488372,,,
+partial_2026,6,E_all,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,6,E_all,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,3,0,3,0,29,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,9,0,9,0,23,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Malawi,Malawi,xgb,32,32,1,0,0.0,0,0,0,0,32,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,156,0,156,0,437,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,136,0,136,0,457,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,122,0,122,0,471,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,5,0,5,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,0,0,0,0,15,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Namibia,Namibia,xgb,15,15,1,0,0.0,4,0,4,0,11,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_all,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,104,50,54,10,45,0.6097560975609756,0.4807692307692308,0.8333333333333334,,,
+partial_2026,6,E_all,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,97,48,49,12,50,0.6114649681528662,0.4948453608247423,0.8,,,
+partial_2026,6,E_all,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,115,58,57,2,42,0.6628571428571428,0.5043478260869565,0.9666666666666667,,,
+partial_2026,6,E_all,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_all,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_all,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_all,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,576,371,205,85,215,0.7189922480620154,0.6440972222222222,0.8135964912280702,,,
+partial_2026,6,E_all,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,556,359,197,97,223,0.7094861660079052,0.64568345323741,0.7872807017543859,,,
+partial_2026,6,E_all,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,554,356,198,100,222,0.7049504950495049,0.6425992779783394,0.7807017543859649,,,
+partial_2026,6,E_all,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,109,86,23,86,33,0.6120996441281139,0.7889908256880734,0.5,,,
+partial_2026,6,E_all,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,223,170,53,2,3,0.8607594936708861,0.7623318385650224,0.9883720930232558,,,
+partial_2026,6,E_all,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,207,164,43,8,13,0.8654353562005277,0.7922705314009661,0.9534883720930233,,,
+partial_2026,6,E_all,country,Sudan,Sudan,partitioned_rf,300,241,1,268,0.8933333333333333,118,102,16,166,16,0.5284974093264249,0.864406779661017,0.3805970149253731,,,
+partial_2026,6,E_all,country,Sudan,Sudan,pooled_rf,300,241,1,268,0.8933333333333333,280,253,27,15,5,0.9233576642335767,0.9035714285714286,0.9440298507462687,,,
+partial_2026,6,E_all,country,Sudan,Sudan,xgb,300,241,1,268,0.8933333333333333,277,250,27,18,5,0.9174311926605505,0.9025270758122743,0.9328358208955224,,,
+partial_2026,6,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,8,0,8,14,69,0.0,0.0,0.0,,,
+partial_2026,6,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,2,0,2,14,75,0.0,0.0,0.0,,,
+partial_2026,6,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_all,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,57,28,29,9,21,0.5957446808510638,0.49122807017543857,0.7567567567567568,,,
+partial_2026,6,E_all,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,61,34,27,3,23,0.6938775510204082,0.5573770491803278,0.918918918918919,,,
+partial_2026,6,E_all,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,60,33,27,4,23,0.6804123711340206,0.55,0.8918918918918919,,,
+partial_2026,6,E_all,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_all,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_all,country,Yemen,Yemen,xgb,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_all,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,17,7,10,13,54,0.3783783783783784,0.4117647058823529,0.35,,,
+partial_2026,6,E_all,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,45,7,38,13,26,0.2153846153846154,0.15555555555555556,0.35,,,
+partial_2026,6,E_all,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,36,20,16,0,48,0.7142857142857143,0.5555555555555556,1.0,,,
+partial_2026,6,E_all,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_all,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,117,98,19,10,0,0.8711111111111111,0.8376068376068376,0.9074074074074074,,,
+partial_2026,6,E_persist,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,100,85,15,23,4,0.8173076923076923,0.85,0.7870370370370371,,,
+partial_2026,6,E_persist,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,120,101,19,7,0,0.8859649122807017,0.8416666666666667,0.9351851851851852,,,
+partial_2026,6,E_persist,country,Afghanistan,Afghanistan,persistence,127,127,1,108,0.8503937007874016,34,33,1,75,18,0.4647887323943662,0.9705882352941176,0.3055555555555556,,,
+partial_2026,6,E_persist,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,0,0,0,0,14,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Angola,Angola,xgb,14,14,1,0,0.0,4,0,4,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Angola,Angola,persistence,14,14,1,0,0.0,9,0,9,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,19,0,19,0,8,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Burundi,Burundi,xgb,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Burundi,Burundi,persistence,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,5,5,0,2,0,0.8333333333333334,1.0,0.7142857142857143,,,
+partial_2026,6,E_persist,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,2,2,0,5,0,0.4444444444444444,1.0,0.2857142857142857,,,
+partial_2026,6,E_persist,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,3,3,0,4,0,0.6,1.0,0.42857142857142855,,,
+partial_2026,6,E_persist,country,Cameroon,Cameroon,persistence,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,273,224,49,42,83,0.8311688311688312,0.8205128205128205,0.8421052631578947,,,
+partial_2026,6,E_persist,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,337,247,90,19,42,0.8192371475953566,0.7329376854599406,0.9285714285714286,,,
+partial_2026,6,E_persist,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,310,222,88,44,44,0.7708333333333334,0.7161290322580646,0.8345864661654135,,,
+partial_2026,6,E_persist,country,Central African Republic,Central African Republic,persistence,398,266,1,266,0.6683417085427136,282,200,82,66,50,0.7299270072992701,0.7092198581560284,0.7518796992481203,,,
+partial_2026,6,E_persist,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,19,14,5,7,1,0.7,0.7368421052631579,0.6666666666666666,,,
+partial_2026,6,E_persist,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,18,14,4,7,2,0.717948717948718,0.7777777777777778,0.6666666666666666,,,
+partial_2026,6,E_persist,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,22,16,6,5,0,0.7441860465116279,0.7272727272727273,0.7619047619047619,,,
+partial_2026,6,E_persist,country,Chad,Chad,persistence,27,26,1,21,0.7777777777777778,8,7,1,14,5,0.4827586206896552,0.875,0.3333333333333333,,,
+partial_2026,6,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,103,66,37,112,200,0.4697508896797153,0.6407766990291263,0.3707865168539326,,,
+partial_2026,6,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,261,128,133,50,104,0.5831435079726651,0.4904214559386973,0.7191011235955056,,,
+partial_2026,6,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,218,134,84,44,153,0.6767676767676768,0.6146788990825688,0.7528089887640449,,,
+partial_2026,6,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",persistence,415,381,1,178,0.42891566265060244,179,109,70,69,167,0.6106442577030813,0.6089385474860335,0.6123595505617978,,,
+partial_2026,6,E_persist,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,9,4,5,1,6,0.5714285714285714,0.4444444444444444,0.8,,,
+partial_2026,6,E_persist,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,13,5,8,0,3,0.5555555555555556,0.38461538461538464,1.0,,,
+partial_2026,6,E_persist,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,13,5,8,0,3,0.5555555555555556,0.38461538461538464,1.0,,,
+partial_2026,6,E_persist,country,Djibouti,Djibouti,persistence,16,16,1,5,0.3125,5,5,0,0,11,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,Dominican Republic,Dominican Republic,persistence,13,13,1,13,1.0,0,0,0,13,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,1,1,0,8,9,0.2,1.0,0.1111111111111111,,,
+partial_2026,6,E_persist,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,2,2,0,7,9,0.36363636363636365,1.0,0.2222222222222222,,,
+partial_2026,6,E_persist,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,1,1,0,8,9,0.2,1.0,0.1111111111111111,,,
+partial_2026,6,E_persist,country,El Salvador,El Salvador,persistence,18,18,1,9,0.5,3,2,1,7,8,0.3333333333333333,0.6666666666666666,0.2222222222222222,,,
+partial_2026,6,E_persist,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,6,0,6,0,15,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,7,0,7,0,14,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,5,0,5,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Eswatini,Eswatini,persistence,21,21,1,0,0.0,5,0,5,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,32,16,16,0,1,0.6666666666666666,0.5,1.0,,,
+partial_2026,6,E_persist,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,31,16,15,0,2,0.6808510638297872,0.5161290322580645,1.0,,,
+partial_2026,6,E_persist,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,31,16,15,0,2,0.6808510638297872,0.5161290322580645,1.0,,,
+partial_2026,6,E_persist,country,Ethiopia,Ethiopia,persistence,33,33,1,16,0.48484848484848486,23,16,7,0,10,0.8205128205128205,0.6956521739130435,1.0,,,
+partial_2026,6,E_persist,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,10,8,2,14,76,0.5,0.8,0.36363636363636365,,,
+partial_2026,6,E_persist,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,18,10,8,12,70,0.5,0.5555555555555556,0.45454545454545453,,,
+partial_2026,6,E_persist,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,7,3,4,19,74,0.20689655172413793,0.42857142857142855,0.13636363636363635,,,
+partial_2026,6,E_persist,country,Guatemala,Guatemala,persistence,100,100,1,22,0.22,12,0,12,22,66,0.0,0.0,0.0,,,
+partial_2026,6,E_persist,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,11,11,0,79,0,0.21782178217821782,1.0,0.12222222222222222,,,
+partial_2026,6,E_persist,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,40,40,0,50,0,0.6153846153846154,1.0,0.4444444444444444,,,
+partial_2026,6,E_persist,country,Haiti,Haiti,xgb,90,90,1,90,1.0,79,79,0,11,0,0.9349112426035503,1.0,0.8777777777777778,,,
+partial_2026,6,E_persist,country,Haiti,Haiti,persistence,90,90,1,90,1.0,12,12,0,78,0,0.23529411764705882,1.0,0.13333333333333333,,,
+partial_2026,6,E_persist,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,6,6,0,18,12,0.4,1.0,0.25,,,
+partial_2026,6,E_persist,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,17,14,3,10,9,0.6829268292682927,0.8235294117647058,0.5833333333333334,,,
+partial_2026,6,E_persist,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,7,7,0,17,12,0.45161290322580644,1.0,0.2916666666666667,,,
+partial_2026,6,E_persist,country,Honduras,Honduras,persistence,36,36,1,24,0.6666666666666666,3,3,0,21,12,0.2222222222222222,1.0,0.125,,,
+partial_2026,6,E_persist,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,28,18,10,5,61,0.7058823529411765,0.6428571428571429,0.782608695652174,,,
+partial_2026,6,E_persist,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,25,13,12,10,59,0.5416666666666666,0.52,0.5652173913043478,,,
+partial_2026,6,E_persist,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,6,E_persist,country,Kenya,Kenya,persistence,94,71,1,23,0.24468085106382978,11,11,0,12,71,0.6470588235294118,1.0,0.4782608695652174,,,
+partial_2026,6,E_persist,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,56,47,9,15,11,0.7966101694915254,0.8392857142857143,0.7580645161290323,,,
+partial_2026,6,E_persist,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,56,47,9,15,11,0.7966101694915254,0.8392857142857143,0.7580645161290323,,,
+partial_2026,6,E_persist,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,59,51,8,11,12,0.8429752066115702,0.864406779661017,0.8225806451612904,,,
+partial_2026,6,E_persist,country,Lebanon,Lebanon,persistence,82,82,1,62,0.7560975609756098,59,50,9,12,11,0.8264462809917356,0.847457627118644,0.8064516129032258,,,
+partial_2026,6,E_persist,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,19,12,7,31,29,0.3870967741935484,0.631578947368421,0.27906976744186046,,,
+partial_2026,6,E_persist,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,2,1,1,42,35,0.044444444444444446,0.5,0.023255813953488372,,,
+partial_2026,6,E_persist,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,1,1,0,42,36,0.045454545454545456,1.0,0.023255813953488372,,,
+partial_2026,6,E_persist,country,Madagascar,Madagascar,persistence,79,79,1,43,0.5443037974683544,0,0,0,43,36,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,3,0,3,0,29,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,9,0,9,0,23,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Malawi,Malawi,xgb,32,32,1,0,0.0,0,0,0,0,32,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Malawi,Malawi,persistence,32,32,1,0,0.0,11,0,11,0,21,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,156,0,156,0,437,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,136,0,136,0,457,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,122,0,122,0,471,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Mozambique,Mozambique,persistence,593,579,1,0,0.0,198,0,198,0,395,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,5,0,5,0,10,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,0,0,0,0,15,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Namibia,Namibia,xgb,15,15,1,0,0.0,4,0,4,0,11,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Namibia,Namibia,persistence,15,15,1,0,0.0,8,0,8,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,6,E_persist,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,104,50,54,10,45,0.6097560975609756,0.4807692307692308,0.8333333333333334,,,
+partial_2026,6,E_persist,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,97,48,49,12,50,0.6114649681528662,0.4948453608247423,0.8,,,
+partial_2026,6,E_persist,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,115,58,57,2,42,0.6628571428571428,0.5043478260869565,0.9666666666666667,,,
+partial_2026,6,E_persist,country,Pakistan,Pakistan,persistence,159,159,1,60,0.37735849056603776,74,34,40,26,59,0.5074626865671642,0.4594594594594595,0.5666666666666667,,,
+partial_2026,6,E_persist,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,"Palestine, State of","Palestine, State of",persistence,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,576,371,205,85,215,0.7189922480620154,0.6440972222222222,0.8135964912280702,,,
+partial_2026,6,E_persist,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,556,359,197,97,223,0.7094861660079052,0.64568345323741,0.7872807017543859,,,
+partial_2026,6,E_persist,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,554,356,198,100,222,0.7049504950495049,0.6425992779783394,0.7807017543859649,,,
+partial_2026,6,E_persist,country,Somalia,Somalia,persistence,876,876,1,456,0.5205479452054794,436,312,124,144,296,0.6995515695067265,0.7155963302752294,0.6842105263157895,,,
+partial_2026,6,E_persist,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,South Africa,South Africa,persistence,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,109,86,23,86,33,0.6120996441281139,0.7889908256880734,0.5,,,
+partial_2026,6,E_persist,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,223,170,53,2,3,0.8607594936708861,0.7623318385650224,0.9883720930232558,,,
+partial_2026,6,E_persist,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,207,164,43,8,13,0.8654353562005277,0.7922705314009661,0.9534883720930233,,,
+partial_2026,6,E_persist,country,South Sudan,South Sudan,persistence,228,157,1,172,0.7543859649122807,196,156,40,16,16,0.8478260869565217,0.7959183673469388,0.9069767441860465,,,
+partial_2026,6,E_persist,country,Sudan,Sudan,partitioned_rf,297,238,1,265,0.8922558922558923,118,102,16,163,16,0.5326370757180157,0.864406779661017,0.3849056603773585,,,
+partial_2026,6,E_persist,country,Sudan,Sudan,pooled_rf,297,238,1,265,0.8922558922558923,278,251,27,14,5,0.9244935543278084,0.9028776978417267,0.9471698113207547,,,
+partial_2026,6,E_persist,country,Sudan,Sudan,xgb,297,238,1,265,0.8922558922558923,274,247,27,18,5,0.9165120593692022,0.9014598540145985,0.9320754716981132,,,
+partial_2026,6,E_persist,country,Sudan,Sudan,persistence,297,238,1,265,0.8922558922558923,259,234,25,31,7,0.8931297709923665,0.9034749034749034,0.8830188679245283,,,
+partial_2026,6,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,8,0,8,14,69,0.0,0.0,0.0,,,
+partial_2026,6,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,2,0,2,14,75,0.0,0.0,0.0,,,
+partial_2026,6,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",persistence,91,65,1,14,0.15384615384615385,0,0,0,14,77,0.0,,0.0,,no_predicted_positives,
+partial_2026,6,E_persist,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,57,28,29,9,21,0.5957446808510638,0.49122807017543857,0.7567567567567568,,,
+partial_2026,6,E_persist,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,61,34,27,3,23,0.6938775510204082,0.5573770491803278,0.918918918918919,,,
+partial_2026,6,E_persist,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,60,33,27,4,23,0.6804123711340206,0.55,0.8918918918918919,,,
+partial_2026,6,E_persist,country,Uganda,Uganda,persistence,87,65,1,37,0.42528735632183906,35,12,23,25,27,0.3333333333333333,0.34285714285714286,0.32432432432432434,,,
+partial_2026,6,E_persist,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,Yemen,Yemen,xgb,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,Yemen,Yemen,persistence,8,8,1,8,1.0,8,8,0,0,0,1.0,1.0,1.0,,,
+partial_2026,6,E_persist,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,17,7,10,13,54,0.3783783783783784,0.4117647058823529,0.35,,,
+partial_2026,6,E_persist,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,45,7,38,13,26,0.2153846153846154,0.15555555555555556,0.35,,,
+partial_2026,6,E_persist,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,36,20,16,0,48,0.7142857142857143,0.5555555555555556,1.0,,,
+partial_2026,6,E_persist,country,Zambia,Zambia,persistence,84,84,1,20,0.23809523809523808,22,20,2,0,62,0.9523809523809523,0.9090909090909091,1.0,,,
+partial_2026,6,E_persist,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,0,0,0,0,20,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,6,E_persist,country,Zimbabwe,Zimbabwe,persistence,20,20,1,0,0.0,13,0,13,0,7,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,42,35,7,73,12,0.4666666666666667,0.8333333333333334,0.32407407407407407,,,
+partial_2026,12,E_all,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,56,48,8,60,11,0.5853658536585366,0.8571428571428571,0.4444444444444444,,,
+partial_2026,12,E_all,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,76,65,11,43,8,0.7065217391304348,0.8552631578947368,0.6018518518518519,,,
+partial_2026,12,E_all,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,14,0,14,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,14,0,14,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Angola,Angola,xgb,14,14,1,0,0.0,13,0,13,0,1,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,Burundi,Burundi,xgb,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,1,1,0,6,0,0.25,1.0,0.14285714285714285,,,
+partial_2026,12,E_all,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,243,212,31,54,101,0.8330058939096268,0.8724279835390947,0.7969924812030075,,,
+partial_2026,12,E_all,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,231,202,29,64,103,0.8128772635814889,0.8744588744588745,0.7593984962406015,,,
+partial_2026,12,E_all,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,215,187,28,79,104,0.7775467775467776,0.8697674418604651,0.7030075187969925,,,
+partial_2026,12,E_all,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,13,8,5,13,1,0.47058823529411764,0.6153846153846154,0.38095238095238093,,,
+partial_2026,12,E_all,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,6,4,2,17,4,0.2962962962962963,0.6666666666666666,0.19047619047619047,,,
+partial_2026,12,E_all,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,18,12,6,9,0,0.6153846153846154,0.6666666666666666,0.5714285714285714,,,
+partial_2026,12,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,181,121,60,57,177,0.6740947075208914,0.6685082872928176,0.6797752808988764,,,
+partial_2026,12,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,172,119,53,59,184,0.68,0.6918604651162791,0.6685393258426966,,,
+partial_2026,12,E_all,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,197,126,71,52,166,0.672,0.6395939086294417,0.7078651685393258,,,
+partial_2026,12,E_all,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,2,1,1,4,10,0.2857142857142857,0.5,0.2,,,
+partial_2026,12,E_all,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,0,0,0,5,11,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,0,0,0,5,11,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,12,12,0,1,0,0.96,1.0,0.9230769230769231,,,
+partial_2026,12,E_all,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,10,10,0,3,0,0.8695652173913043,1.0,0.7692307692307693,,,
+partial_2026,12,E_all,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,12,12,0,1,0,0.96,1.0,0.9230769230769231,,,
+partial_2026,12,E_all,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,1,0,1,9,8,0.0,0.0,0.0,,,
+partial_2026,12,E_all,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,3,0,3,0,18,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,0,0,0,0,21,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,1,0,1,0,20,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,11,11,0,5,17,0.8148148148148148,1.0,0.6875,,,
+partial_2026,12,E_all,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,15,11,4,5,13,0.7096774193548387,0.7333333333333333,0.6875,,,
+partial_2026,12,E_all,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,17,13,4,3,13,0.7878787878787878,0.7647058823529411,0.8125,,,
+partial_2026,12,E_all,country,Guatemala,Guatemala,partitioned_rf,100,100,1,22,0.22,17,7,10,15,68,0.358974358974359,0.4117647058823529,0.3181818181818182,,,
+partial_2026,12,E_all,country,Guatemala,Guatemala,pooled_rf,100,100,1,22,0.22,9,5,4,17,74,0.3225806451612903,0.5555555555555556,0.22727272727272727,,,
+partial_2026,12,E_all,country,Guatemala,Guatemala,xgb,100,100,1,22,0.22,1,1,0,21,78,0.08695652173913043,1.0,0.045454545454545456,,,
+partial_2026,12,E_all,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,90,90,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_all,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,90,90,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_all,country,Haiti,Haiti,xgb,90,90,1,90,1.0,89,89,0,1,0,0.994413407821229,1.0,0.9888888888888889,,,
+partial_2026,12,E_all,country,Honduras,Honduras,partitioned_rf,36,36,1,24,0.6666666666666666,5,3,2,21,10,0.20689655172413793,0.6,0.125,,,
+partial_2026,12,E_all,country,Honduras,Honduras,pooled_rf,36,36,1,24,0.6666666666666666,8,6,2,18,10,0.375,0.75,0.25,,,
+partial_2026,12,E_all,country,Honduras,Honduras,xgb,36,36,1,24,0.6666666666666666,4,3,1,21,11,0.21428571428571427,0.75,0.125,,,
+partial_2026,12,E_all,country,Kenya,Kenya,partitioned_rf,94,71,1,23,0.24468085106382978,7,7,0,16,71,0.4666666666666667,1.0,0.30434782608695654,,,
+partial_2026,12,E_all,country,Kenya,Kenya,pooled_rf,94,71,1,23,0.24468085106382978,10,10,0,13,71,0.6060606060606061,1.0,0.43478260869565216,,,
+partial_2026,12,E_all,country,Kenya,Kenya,xgb,94,71,1,23,0.24468085106382978,19,13,6,10,65,0.6190476190476191,0.6842105263157895,0.5652173913043478,,,
+partial_2026,12,E_all,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,77,58,19,4,1,0.8345323741007195,0.7532467532467533,0.9354838709677419,,,
+partial_2026,12,E_all,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,77,58,19,4,1,0.8345323741007195,0.7532467532467533,0.9354838709677419,,,
+partial_2026,12,E_all,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,75,57,18,5,2,0.8321167883211679,0.76,0.9193548387096774,,,
+partial_2026,12,E_all,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,9,6,3,37,33,0.23076923076923078,0.6666666666666666,0.13953488372093023,,,
+partial_2026,12,E_all,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,5,5,0,38,36,0.20833333333333334,1.0,0.11627906976744186,,,
+partial_2026,12,E_all,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,14,10,4,33,32,0.3508771929824561,0.7142857142857143,0.23255813953488372,,,
+partial_2026,12,E_all,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,3,0,3,0,29,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,10,0,10,0,22,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Malawi,Malawi,xgb,32,32,1,0,0.0,16,0,16,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Mozambique,Mozambique,partitioned_rf,593,579,1,0,0.0,127,0,127,0,466,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Mozambique,Mozambique,pooled_rf,593,579,1,0,0.0,75,0,75,0,518,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Mozambique,Mozambique,xgb,593,579,1,0,0.0,131,0,131,0,462,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,13,0,13,0,2,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,15,0,15,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Namibia,Namibia,xgb,15,15,1,0,0.0,14,0,14,0,1,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,49,30,19,30,80,0.5504587155963303,0.6122448979591837,0.5,,,
+partial_2026,12,E_all,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,51,30,21,30,78,0.5405405405405406,0.5882352941176471,0.5,,,
+partial_2026,12,E_all,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,57,33,24,27,75,0.5641025641025641,0.5789473684210527,0.55,,,
+partial_2026,12,E_all,country,"Palestine, State of","Palestine, State of",partitioned_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_all,country,"Palestine, State of","Palestine, State of",pooled_rf,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_all,country,"Palestine, State of","Palestine, State of",xgb,1,1,1,1,1.0,1,1,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_all,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,581,357,224,99,196,0.6885245901639344,0.6144578313253012,0.7828947368421053,,,
+partial_2026,12,E_all,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,472,318,154,138,266,0.6853448275862069,0.673728813559322,0.6973684210526315,,,
+partial_2026,12,E_all,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,464,313,151,143,269,0.6804347826086956,0.6745689655172413,0.6864035087719298,,,
+partial_2026,12,E_all,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_all,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,198,158,40,14,16,0.8540540540540541,0.797979797979798,0.9186046511627907,,,
+partial_2026,12,E_all,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,190,157,33,15,23,0.8674033149171271,0.8263157894736842,0.9127906976744186,,,
+partial_2026,12,E_all,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,182,146,36,26,20,0.8248587570621468,0.8021978021978022,0.8488372093023255,,,
+partial_2026,12,E_all,country,Sudan,Sudan,partitioned_rf,300,241,1,268,0.8933333333333333,130,119,11,149,21,0.5979899497487438,0.9153846153846154,0.44402985074626866,,,
+partial_2026,12,E_all,country,Sudan,Sudan,pooled_rf,300,241,1,268,0.8933333333333333,190,169,21,99,11,0.7379912663755459,0.8894736842105263,0.6305970149253731,,,
+partial_2026,12,E_all,country,Sudan,Sudan,xgb,300,241,1,268,0.8933333333333333,225,201,24,67,8,0.8154158215010142,0.8933333333333333,0.75,,,
+partial_2026,12,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,8,0,8,14,69,0.0,0.0,0.0,,,
+partial_2026,12,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,1,0,1,14,76,0.0,0.0,0.0,,,
+partial_2026,12,E_all,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,10,0,10,14,67,0.0,0.0,0.0,,,
+partial_2026,12,E_all,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,47,36,11,1,39,0.8571428571428571,0.7659574468085106,0.972972972972973,,,
+partial_2026,12,E_all,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,45,34,11,3,39,0.8292682926829268,0.7555555555555555,0.918918918918919,,,
+partial_2026,12,E_all,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,25,20,5,17,45,0.6451612903225806,0.8,0.5405405405405406,,,
+partial_2026,12,E_all,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,1,1,0,7,0,0.2222222222222222,1.0,0.125,,,
+partial_2026,12,E_all,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,0,0,0,8,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Yemen,Yemen,xgb,8,8,1,8,1.0,0,0,0,8,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_all,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,40,18,22,2,42,0.6,0.45,0.9,,,
+partial_2026,12,E_all,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,61,19,42,1,22,0.4691358024691358,0.3114754098360656,0.95,,,
+partial_2026,12,E_all,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,63,20,43,0,21,0.4819277108433735,0.31746031746031744,1.0,,,
+partial_2026,12,E_all,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,20,0,20,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,7,0,7,0,13,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_all,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,16,0,16,0,4,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Afghanistan,Afghanistan,partitioned_rf,127,127,1,108,0.8503937007874016,42,35,7,73,12,0.4666666666666667,0.8333333333333334,0.32407407407407407,,,
+partial_2026,12,E_persist,country,Afghanistan,Afghanistan,pooled_rf,127,127,1,108,0.8503937007874016,56,48,8,60,11,0.5853658536585366,0.8571428571428571,0.4444444444444444,,,
+partial_2026,12,E_persist,country,Afghanistan,Afghanistan,xgb,127,127,1,108,0.8503937007874016,76,65,11,43,8,0.7065217391304348,0.8552631578947368,0.6018518518518519,,,
+partial_2026,12,E_persist,country,Afghanistan,Afghanistan,persistence,127,127,1,108,0.8503937007874016,76,59,17,49,2,0.6413043478260869,0.7763157894736842,0.5462962962962963,,,
+partial_2026,12,E_persist,country,Angola,Angola,partitioned_rf,14,14,1,0,0.0,14,0,14,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Angola,Angola,pooled_rf,14,14,1,0,0.0,14,0,14,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Angola,Angola,xgb,14,14,1,0,0.0,13,0,13,0,1,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Angola,Angola,persistence,14,14,1,0,0.0,9,0,9,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Burundi,Burundi,partitioned_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,Burundi,Burundi,pooled_rf,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,Burundi,Burundi,xgb,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,Burundi,Burundi,persistence,27,27,1,0,0.0,0,0,0,0,27,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,Cameroon,Cameroon,partitioned_rf,7,7,1,7,1.0,1,1,0,6,0,0.25,1.0,0.14285714285714285,,,
+partial_2026,12,E_persist,country,Cameroon,Cameroon,pooled_rf,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Cameroon,Cameroon,xgb,7,7,1,7,1.0,0,0,0,7,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Cameroon,Cameroon,persistence,7,7,1,7,1.0,7,7,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_persist,country,Central African Republic,Central African Republic,partitioned_rf,398,266,1,266,0.6683417085427136,243,212,31,54,101,0.8330058939096268,0.8724279835390947,0.7969924812030075,,,
+partial_2026,12,E_persist,country,Central African Republic,Central African Republic,pooled_rf,398,266,1,266,0.6683417085427136,231,202,29,64,103,0.8128772635814889,0.8744588744588745,0.7593984962406015,,,
+partial_2026,12,E_persist,country,Central African Republic,Central African Republic,xgb,398,266,1,266,0.6683417085427136,215,187,28,79,104,0.7775467775467776,0.8697674418604651,0.7030075187969925,,,
+partial_2026,12,E_persist,country,Central African Republic,Central African Republic,persistence,398,266,1,266,0.6683417085427136,243,213,30,53,102,0.8369351669941061,0.8765432098765432,0.8007518796992481,,,
+partial_2026,12,E_persist,country,Chad,Chad,partitioned_rf,27,26,1,21,0.7777777777777778,13,8,5,13,1,0.47058823529411764,0.6153846153846154,0.38095238095238093,,,
+partial_2026,12,E_persist,country,Chad,Chad,pooled_rf,27,26,1,21,0.7777777777777778,6,4,2,17,4,0.2962962962962963,0.6666666666666666,0.19047619047619047,,,
+partial_2026,12,E_persist,country,Chad,Chad,xgb,27,26,1,21,0.7777777777777778,18,12,6,9,0,0.6153846153846154,0.6666666666666666,0.5714285714285714,,,
+partial_2026,12,E_persist,country,Chad,Chad,persistence,27,26,1,21,0.7777777777777778,22,16,6,5,0,0.7441860465116279,0.7272727272727273,0.7619047619047619,,,
+partial_2026,12,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",partitioned_rf,415,381,1,178,0.42891566265060244,181,121,60,57,177,0.6740947075208914,0.6685082872928176,0.6797752808988764,,,
+partial_2026,12,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",pooled_rf,415,381,1,178,0.42891566265060244,172,119,53,59,184,0.68,0.6918604651162791,0.6685393258426966,,,
+partial_2026,12,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",xgb,415,381,1,178,0.42891566265060244,197,126,71,52,166,0.672,0.6395939086294417,0.7078651685393258,,,
+partial_2026,12,E_persist,country,"Congo, The Democratic Republic of the","Congo, The Democratic Republic of the",persistence,415,381,1,178,0.42891566265060244,183,126,57,52,180,0.6980609418282548,0.6885245901639344,0.7078651685393258,,,
+partial_2026,12,E_persist,country,Djibouti,Djibouti,partitioned_rf,16,16,1,5,0.3125,2,1,1,4,10,0.2857142857142857,0.5,0.2,,,
+partial_2026,12,E_persist,country,Djibouti,Djibouti,pooled_rf,16,16,1,5,0.3125,0,0,0,5,11,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Djibouti,Djibouti,xgb,16,16,1,5,0.3125,0,0,0,5,11,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Djibouti,Djibouti,persistence,16,16,1,5,0.3125,0,0,0,5,11,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Dominican Republic,Dominican Republic,partitioned_rf,13,13,1,13,1.0,12,12,0,1,0,0.96,1.0,0.9230769230769231,,,
+partial_2026,12,E_persist,country,Dominican Republic,Dominican Republic,pooled_rf,13,13,1,13,1.0,10,10,0,3,0,0.8695652173913043,1.0,0.7692307692307693,,,
+partial_2026,12,E_persist,country,Dominican Republic,Dominican Republic,xgb,13,13,1,13,1.0,12,12,0,1,0,0.96,1.0,0.9230769230769231,,,
+partial_2026,12,E_persist,country,Dominican Republic,Dominican Republic,persistence,13,13,1,13,1.0,13,13,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_persist,country,El Salvador,El Salvador,partitioned_rf,18,18,1,9,0.5,1,0,1,9,8,0.0,0.0,0.0,,,
+partial_2026,12,E_persist,country,El Salvador,El Salvador,pooled_rf,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,El Salvador,El Salvador,xgb,18,18,1,9,0.5,0,0,0,9,9,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,El Salvador,El Salvador,persistence,18,18,1,9,0.5,1,1,0,8,9,0.2,1.0,0.1111111111111111,,,
+partial_2026,12,E_persist,country,Eswatini,Eswatini,partitioned_rf,21,21,1,0,0.0,3,0,3,0,18,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Eswatini,Eswatini,pooled_rf,21,21,1,0,0.0,0,0,0,0,21,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,Eswatini,Eswatini,xgb,21,21,1,0,0.0,1,0,1,0,20,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Eswatini,Eswatini,persistence,21,21,1,0,0.0,10,0,10,0,11,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Ethiopia,Ethiopia,partitioned_rf,33,33,1,16,0.48484848484848486,11,11,0,5,17,0.8148148148148148,1.0,0.6875,,,
+partial_2026,12,E_persist,country,Ethiopia,Ethiopia,pooled_rf,33,33,1,16,0.48484848484848486,15,11,4,5,13,0.7096774193548387,0.7333333333333333,0.6875,,,
+partial_2026,12,E_persist,country,Ethiopia,Ethiopia,xgb,33,33,1,16,0.48484848484848486,17,13,4,3,13,0.7878787878787878,0.7647058823529411,0.8125,,,
+partial_2026,12,E_persist,country,Ethiopia,Ethiopia,persistence,33,33,1,16,0.48484848484848486,16,13,3,3,14,0.8125,0.8125,0.8125,,,
+partial_2026,12,E_persist,country,Guatemala,Guatemala,partitioned_rf,98,98,1,21,0.21428571428571427,17,7,10,14,67,0.3684210526315789,0.4117647058823529,0.3333333333333333,,,
+partial_2026,12,E_persist,country,Guatemala,Guatemala,pooled_rf,98,98,1,21,0.21428571428571427,9,5,4,16,73,0.3333333333333333,0.5555555555555556,0.23809523809523808,,,
+partial_2026,12,E_persist,country,Guatemala,Guatemala,xgb,98,98,1,21,0.21428571428571427,1,1,0,20,77,0.09090909090909091,1.0,0.047619047619047616,,,
+partial_2026,12,E_persist,country,Guatemala,Guatemala,persistence,98,98,1,21,0.21428571428571427,25,14,11,7,66,0.6086956521739131,0.56,0.6666666666666666,,,
+partial_2026,12,E_persist,country,Haiti,Haiti,partitioned_rf,90,90,1,90,1.0,90,90,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_persist,country,Haiti,Haiti,pooled_rf,90,90,1,90,1.0,90,90,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_persist,country,Haiti,Haiti,xgb,90,90,1,90,1.0,89,89,0,1,0,0.994413407821229,1.0,0.9888888888888889,,,
+partial_2026,12,E_persist,country,Haiti,Haiti,persistence,90,90,1,90,1.0,90,90,0,0,0,1.0,1.0,1.0,,,
+partial_2026,12,E_persist,country,Honduras,Honduras,partitioned_rf,35,35,1,23,0.6571428571428571,5,3,2,20,10,0.21428571428571427,0.6,0.13043478260869565,,,
+partial_2026,12,E_persist,country,Honduras,Honduras,pooled_rf,35,35,1,23,0.6571428571428571,8,6,2,17,10,0.3870967741935484,0.75,0.2608695652173913,,,
+partial_2026,12,E_persist,country,Honduras,Honduras,xgb,35,35,1,23,0.6571428571428571,4,3,1,20,11,0.2222222222222222,0.75,0.13043478260869565,,,
+partial_2026,12,E_persist,country,Honduras,Honduras,persistence,35,35,1,23,0.6571428571428571,16,11,5,12,7,0.5641025641025641,0.6875,0.4782608695652174,,,
+partial_2026,12,E_persist,country,Kenya,Kenya,partitioned_rf,92,71,1,23,0.25,7,7,0,16,69,0.4666666666666667,1.0,0.30434782608695654,,,
+partial_2026,12,E_persist,country,Kenya,Kenya,pooled_rf,92,71,1,23,0.25,10,10,0,13,69,0.6060606060606061,1.0,0.43478260869565216,,,
+partial_2026,12,E_persist,country,Kenya,Kenya,xgb,92,71,1,23,0.25,19,13,6,10,63,0.6190476190476191,0.6842105263157895,0.5652173913043478,,,
+partial_2026,12,E_persist,country,Kenya,Kenya,persistence,92,71,1,23,0.25,26,15,11,8,58,0.6122448979591837,0.5769230769230769,0.6521739130434783,,,
+partial_2026,12,E_persist,country,Lebanon,Lebanon,partitioned_rf,82,82,1,62,0.7560975609756098,77,58,19,4,1,0.8345323741007195,0.7532467532467533,0.9354838709677419,,,
+partial_2026,12,E_persist,country,Lebanon,Lebanon,pooled_rf,82,82,1,62,0.7560975609756098,77,58,19,4,1,0.8345323741007195,0.7532467532467533,0.9354838709677419,,,
+partial_2026,12,E_persist,country,Lebanon,Lebanon,xgb,82,82,1,62,0.7560975609756098,75,57,18,5,2,0.8321167883211679,0.76,0.9193548387096774,,,
+partial_2026,12,E_persist,country,Lebanon,Lebanon,persistence,82,82,1,62,0.7560975609756098,54,42,12,20,8,0.7241379310344828,0.7777777777777778,0.6774193548387096,,,
+partial_2026,12,E_persist,country,Madagascar,Madagascar,partitioned_rf,79,79,1,43,0.5443037974683544,9,6,3,37,33,0.23076923076923078,0.6666666666666666,0.13953488372093023,,,
+partial_2026,12,E_persist,country,Madagascar,Madagascar,pooled_rf,79,79,1,43,0.5443037974683544,5,5,0,38,36,0.20833333333333334,1.0,0.11627906976744186,,,
+partial_2026,12,E_persist,country,Madagascar,Madagascar,xgb,79,79,1,43,0.5443037974683544,14,10,4,33,32,0.3508771929824561,0.7142857142857143,0.23255813953488372,,,
+partial_2026,12,E_persist,country,Madagascar,Madagascar,persistence,79,79,1,43,0.5443037974683544,12,8,4,35,32,0.2909090909090909,0.6666666666666666,0.18604651162790697,,,
+partial_2026,12,E_persist,country,Malawi,Malawi,partitioned_rf,32,32,1,0,0.0,3,0,3,0,29,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Malawi,Malawi,pooled_rf,32,32,1,0,0.0,10,0,10,0,22,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Malawi,Malawi,xgb,32,32,1,0,0.0,16,0,16,0,16,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Malawi,Malawi,persistence,32,32,1,0,0.0,19,0,19,0,13,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Mozambique,Mozambique,partitioned_rf,550,536,1,0,0.0,122,0,122,0,428,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Mozambique,Mozambique,pooled_rf,550,536,1,0,0.0,73,0,73,0,477,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Mozambique,Mozambique,xgb,550,536,1,0,0.0,122,0,122,0,428,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Mozambique,Mozambique,persistence,550,536,1,0,0.0,168,0,168,0,382,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Namibia,Namibia,partitioned_rf,15,15,1,0,0.0,13,0,13,0,2,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Namibia,Namibia,pooled_rf,15,15,1,0,0.0,15,0,15,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Namibia,Namibia,xgb,15,15,1,0,0.0,14,0,14,0,1,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Namibia,Namibia,persistence,15,15,1,0,0.0,10,0,10,0,5,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Pakistan,Pakistan,partitioned_rf,159,159,1,60,0.37735849056603776,49,30,19,30,80,0.5504587155963303,0.6122448979591837,0.5,,,
+partial_2026,12,E_persist,country,Pakistan,Pakistan,pooled_rf,159,159,1,60,0.37735849056603776,51,30,21,30,78,0.5405405405405406,0.5882352941176471,0.5,,,
+partial_2026,12,E_persist,country,Pakistan,Pakistan,xgb,159,159,1,60,0.37735849056603776,57,33,24,27,75,0.5641025641025641,0.5789473684210527,0.55,,,
+partial_2026,12,E_persist,country,Pakistan,Pakistan,persistence,159,159,1,60,0.37735849056603776,65,36,29,24,70,0.576,0.5538461538461539,0.6,,,
+partial_2026,12,E_persist,country,Somalia,Somalia,partitioned_rf,876,876,1,456,0.5205479452054794,581,357,224,99,196,0.6885245901639344,0.6144578313253012,0.7828947368421053,,,
+partial_2026,12,E_persist,country,Somalia,Somalia,pooled_rf,876,876,1,456,0.5205479452054794,472,318,154,138,266,0.6853448275862069,0.673728813559322,0.6973684210526315,,,
+partial_2026,12,E_persist,country,Somalia,Somalia,xgb,876,876,1,456,0.5205479452054794,464,313,151,143,269,0.6804347826086956,0.6745689655172413,0.6864035087719298,,,
+partial_2026,12,E_persist,country,Somalia,Somalia,persistence,876,876,1,456,0.5205479452054794,291,242,49,214,371,0.6479250334672021,0.8316151202749141,0.5307017543859649,,,
+partial_2026,12,E_persist,country,South Africa,South Africa,partitioned_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,South Africa,South Africa,pooled_rf,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,South Africa,South Africa,xgb,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,South Africa,South Africa,persistence,1,1,1,0,0.0,0,0,0,0,1,,,,no_positive_truth_and_no_positive_prediction,no_predicted_positives,no_observed_positives
+partial_2026,12,E_persist,country,South Sudan,South Sudan,partitioned_rf,228,157,1,172,0.7543859649122807,198,158,40,14,16,0.8540540540540541,0.797979797979798,0.9186046511627907,,,
+partial_2026,12,E_persist,country,South Sudan,South Sudan,pooled_rf,228,157,1,172,0.7543859649122807,190,157,33,15,23,0.8674033149171271,0.8263157894736842,0.9127906976744186,,,
+partial_2026,12,E_persist,country,South Sudan,South Sudan,xgb,228,157,1,172,0.7543859649122807,182,146,36,26,20,0.8248587570621468,0.8021978021978022,0.8488372093023255,,,
+partial_2026,12,E_persist,country,South Sudan,South Sudan,persistence,228,157,1,172,0.7543859649122807,204,170,34,2,22,0.9042553191489362,0.8333333333333334,0.9883720930232558,,,
+partial_2026,12,E_persist,country,Sudan,Sudan,partitioned_rf,297,238,1,265,0.8922558922558923,128,117,11,148,21,0.5954198473282443,0.9140625,0.44150943396226416,,,
+partial_2026,12,E_persist,country,Sudan,Sudan,pooled_rf,297,238,1,265,0.8922558922558923,187,166,21,99,11,0.7345132743362832,0.8877005347593583,0.6264150943396226,,,
+partial_2026,12,E_persist,country,Sudan,Sudan,xgb,297,238,1,265,0.8922558922558923,224,200,24,65,8,0.8179959100204499,0.8928571428571429,0.7547169811320755,,,
+partial_2026,12,E_persist,country,Sudan,Sudan,persistence,297,238,1,265,0.8922558922558923,255,230,25,35,7,0.8846153846153846,0.9019607843137255,0.8679245283018868,,,
+partial_2026,12,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",partitioned_rf,91,65,1,14,0.15384615384615385,8,0,8,14,69,0.0,0.0,0.0,,,
+partial_2026,12,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",pooled_rf,91,65,1,14,0.15384615384615385,1,0,1,14,76,0.0,0.0,0.0,,,
+partial_2026,12,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",xgb,91,65,1,14,0.15384615384615385,10,0,10,14,67,0.0,0.0,0.0,,,
+partial_2026,12,E_persist,country,"Tanzania, United Republic of","Tanzania, United Republic of",persistence,91,65,1,14,0.15384615384615385,7,0,7,14,70,0.0,0.0,0.0,,,
+partial_2026,12,E_persist,country,Uganda,Uganda,partitioned_rf,87,65,1,37,0.42528735632183906,47,36,11,1,39,0.8571428571428571,0.7659574468085106,0.972972972972973,,,
+partial_2026,12,E_persist,country,Uganda,Uganda,pooled_rf,87,65,1,37,0.42528735632183906,45,34,11,3,39,0.8292682926829268,0.7555555555555555,0.918918918918919,,,
+partial_2026,12,E_persist,country,Uganda,Uganda,xgb,87,65,1,37,0.42528735632183906,25,20,5,17,45,0.6451612903225806,0.8,0.5405405405405406,,,
+partial_2026,12,E_persist,country,Uganda,Uganda,persistence,87,65,1,37,0.42528735632183906,43,37,6,0,44,0.925,0.8604651162790697,1.0,,,
+partial_2026,12,E_persist,country,Yemen,Yemen,partitioned_rf,8,8,1,8,1.0,1,1,0,7,0,0.2222222222222222,1.0,0.125,,,
+partial_2026,12,E_persist,country,Yemen,Yemen,pooled_rf,8,8,1,8,1.0,0,0,0,8,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Yemen,Yemen,xgb,8,8,1,8,1.0,0,0,0,8,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Yemen,Yemen,persistence,8,8,1,8,1.0,0,0,0,8,0,0.0,,0.0,,no_predicted_positives,
+partial_2026,12,E_persist,country,Zambia,Zambia,partitioned_rf,84,84,1,20,0.23809523809523808,40,18,22,2,42,0.6,0.45,0.9,,,
+partial_2026,12,E_persist,country,Zambia,Zambia,pooled_rf,84,84,1,20,0.23809523809523808,61,19,42,1,22,0.4691358024691358,0.3114754098360656,0.95,,,
+partial_2026,12,E_persist,country,Zambia,Zambia,xgb,84,84,1,20,0.23809523809523808,63,20,43,0,21,0.4819277108433735,0.31746031746031744,1.0,,,
+partial_2026,12,E_persist,country,Zambia,Zambia,persistence,84,84,1,20,0.23809523809523808,40,20,20,0,44,0.6666666666666666,0.5,1.0,,,
+partial_2026,12,E_persist,country,Zimbabwe,Zimbabwe,partitioned_rf,20,20,1,0,0.0,20,0,20,0,0,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Zimbabwe,Zimbabwe,pooled_rf,20,20,1,0,0.0,7,0,7,0,13,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Zimbabwe,Zimbabwe,xgb,20,20,1,0,0.0,16,0,16,0,4,0.0,0.0,,,,no_observed_positives
+partial_2026,12,E_persist,country,Zimbabwe,Zimbabwe,persistence,20,20,1,0,0.0,18,0,18,0,2,0.0,0.0,,,,no_observed_positives

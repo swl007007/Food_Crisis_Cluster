@@ -1,0 +1,43 @@
+{
+  "rows": 1219868,
+  "valid": 42695,
+  "positive": 15206,
+  "negative": 27489,
+  "areas_total": 6227,
+  "areas_with_valid": 6224,
+  "countries_with_valid": 53,
+  "p5_filled": 84,
+  "normalized_share_equals_threshold": 2601,
+  "invalid_reasons": {
+    "missing_phase_1_to_4": 1176232,
+    "sum_out_of_bounds": 577,
+    "population_not_positive": 363,
+    "phase_share_out_of_bounds": 1
+  },
+  "gate_pass": true,
+  "gate_mismatches": {},
+  "cohort_filter": {
+    "filter": "non_ch",
+    "rule": "admin_code >= 100000 is Cadre Harmonise",
+    "applied_after": "check_target_gate, which still validated the full source",
+    "kept": {
+      "valid": 24336,
+      "positive": 12782,
+      "negative": 11554,
+      "areas_total": 4919
+    },
+    "dropped": {
+      "rows": 256368,
+      "areas": 1308,
+      "valid": 18359,
+      "positive": 2424,
+      "negative": 15935
+    },
+    "full_source_gate": {
+      "valid": 42695,
+      "positive": 15206,
+      "negative": 27489,
+      "areas_total": 6227
+    }
+  }
+}

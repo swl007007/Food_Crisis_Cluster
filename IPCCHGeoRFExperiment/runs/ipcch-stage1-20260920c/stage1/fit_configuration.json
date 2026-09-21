@@ -1,0 +1,122 @@
+{
+  "effective_config": {
+    "config_module": {
+      "MODEL_CHOICE": "RF",
+      "MODE": "classification",
+      "NUM_CLASS": 2,
+      "MIN_DEPTH": 1,
+      "MAX_DEPTH": 6,
+      "N_JOBS": 4,
+      "MIN_BRANCH_SAMPLE_SIZE": 0,
+      "MIN_SCAN_CLASS_SAMPLE": 0,
+      "FLEX_OPTION": true,
+      "FLEX_RATIO": 0.1,
+      "FLEX_TYPE": "n_group",
+      "MIN_GROUP_POS_SAMPLE_SIZE_FLEX": 0,
+      "SIGLVL": 0.1,
+      "ES_THRD": 0.5,
+      "MD_THRD": 0.0005,
+      "CONTIGUITY": true,
+      "CONTIGUITY_TYPE": "polygon",
+      "REFINE_TIMES": 3,
+      "MIN_COMPONENT_SIZE": 5,
+      "GOVERNING_METRIC": "class_1_f1",
+      "CRISIS_FOCUSED_OPTIMIZATION": true,
+      "MIN_CLASS_1_IMPROVEMENT_THRESHOLD": 0.01,
+      "VAL_RATIO": 0.2,
+      "TRAIN_RATIO": 0.6,
+      "GROUP_SPLIT": {
+        "enable": true,
+        "min_val_per_group": 1,
+        "skip_singleton_groups": true,
+        "random_state": 42
+      },
+      "FEATURE_DROP": [],
+      "feature_drop": [],
+      "DISABLE_BASELINE_CV_MAP": true,
+      "PRESERVE_ISOLATED_POLYGONS": true,
+      "STEP_SIZE": 0.1
+    },
+    "georf_module": {
+      "FEATURE_DROP": {
+        "enable": false,
+        "cols": [],
+        "patterns": []
+      },
+      "feature_drop": {
+        "enable": false,
+        "cols": [],
+        "patterns": []
+      },
+      "MIN_DEPTH": 1,
+      "MAX_DEPTH": 6,
+      "N_JOBS": 4,
+      "NUM_CLASS": 2,
+      "CONTIGUITY": true,
+      "CONTIGUITY_TYPE": "polygon",
+      "MIN_COMPONENT_SIZE": 5,
+      "MODEL_CHOICE": "RF"
+    }
+  },
+  "georf_instance": {
+    "min_model_depth": 1,
+    "max_model_depth": 6,
+    "n_trees_unit": 100,
+    "num_class": 2,
+    "max_depth": null,
+    "random_state": 5,
+    "n_jobs": 4,
+    "mode": "classification",
+    "name": "RF",
+    "drop_list_": [],
+    "model_dir": "result_GeoRF"
+  },
+  "root_estimator_params": {
+    "bootstrap": true,
+    "ccp_alpha": 0.0,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "n_estimators": 100,
+    "n_jobs": 4,
+    "random_state": 5
+  },
+  "module_locations": {
+    "config": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\config.py",
+    "src": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src",
+    "src.model.GeoRF": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\model\\GeoRF.py",
+    "src.helper.helper": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\helper\\helper.py",
+    "src.metrics.metrics": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\metrics\\metrics.py",
+    "src.model.model_RF": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\model\\model_RF.py",
+    "src.customize.customize": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\customize\\customize.py",
+    "src.initialization.initialization": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\initialization\\initialization.py",
+    "src.utils.split": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\utils\\split.py",
+    "src.model.train_branch": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\model\\train_branch.py",
+    "src.vis.visualization": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\vis\\visualization.py",
+    "src.partition.partition_opt": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\partition\\partition_opt.py",
+    "src.tests.static_table": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\tests\\static_table.py",
+    "src.tests.sig_test": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\tests\\sig_test.py",
+    "src.partition.transformation": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920c\\baseline\\GeoRFBaseline\\src\\partition\\transformation.py"
+  },
+  "call": {
+    "contiguity_type": "polygon",
+    "print_to_file": false,
+    "track_partition_metrics": false,
+    "VIS_DEBUG_MODE": false,
+    "polygon_contiguity_info_keys": [
+      "adjacency_dict",
+      "neighbor_distance_threshold",
+      "polygon_centroids",
+      "polygon_group_mapping"
+    ]
+  },
+  "branch_table_shape": [
+    64,
+    6
+  ],
+  "branch_table_accepted_nodes": 1,
+  "fit_seconds": 18.8
+}

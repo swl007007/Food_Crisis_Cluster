@@ -1,0 +1,101 @@
+{
+  "rows": 5888,
+  "areas": 1472,
+  "threshold": 0.5,
+  "overall": {
+    "n": 5888,
+    "tp": 1360,
+    "fp": 866,
+    "fn": 912,
+    "tn": 2750,
+    "positives": 2272,
+    "predicted_positives": 2226,
+    "class1_f1": 0.6047132058692752,
+    "class1_precision": 0.6109613656783468,
+    "class1_recall": 0.5985915492957746,
+    "undefined_reason": ""
+  },
+  "by_horizon": {
+    "1": {
+      "n": 1472,
+      "tp": 335,
+      "fp": 215,
+      "fn": 233,
+      "tn": 689,
+      "positives": 568,
+      "predicted_positives": 550,
+      "class1_f1": 0.5992844364937389,
+      "class1_precision": 0.6090909090909091,
+      "class1_recall": 0.5897887323943662,
+      "undefined_reason": ""
+    },
+    "3": {
+      "n": 1472,
+      "tp": 334,
+      "fp": 225,
+      "fn": 234,
+      "tn": 679,
+      "positives": 568,
+      "predicted_positives": 559,
+      "class1_f1": 0.5927240461401952,
+      "class1_precision": 0.5974955277280859,
+      "class1_recall": 0.5880281690140845,
+      "undefined_reason": ""
+    },
+    "6": {
+      "n": 1472,
+      "tp": 337,
+      "fp": 218,
+      "fn": 231,
+      "tn": 686,
+      "positives": 568,
+      "predicted_positives": 555,
+      "class1_f1": 0.6001780943900267,
+      "class1_precision": 0.6072072072072072,
+      "class1_recall": 0.5933098591549296,
+      "undefined_reason": ""
+    },
+    "12": {
+      "n": 1472,
+      "tp": 354,
+      "fp": 208,
+      "fn": 214,
+      "tn": 696,
+      "positives": 568,
+      "predicted_positives": 562,
+      "class1_f1": 0.6265486725663717,
+      "class1_precision": 0.6298932384341637,
+      "class1_recall": 0.6232394366197183,
+      "undefined_reason": ""
+    }
+  },
+  "by_assignment_source": {
+    "nearest_donor": {
+      "n": 4316,
+      "tp": 1060,
+      "fp": 729,
+      "fn": 580,
+      "tn": 1947,
+      "positives": 1640,
+      "predicted_positives": 1789,
+      "class1_f1": 0.6182560513269175,
+      "class1_precision": 0.5925097820011179,
+      "class1_recall": 0.6463414634146342,
+      "undefined_reason": ""
+    },
+    "unresolved": {
+      "n": 1572,
+      "tp": 300,
+      "fp": 137,
+      "fn": 332,
+      "tn": 803,
+      "positives": 632,
+      "predicted_positives": 437,
+      "class1_f1": 0.5612722170252572,
+      "class1_precision": 0.6864988558352403,
+      "class1_recall": 0.47468354430379744,
+      "undefined_reason": ""
+    }
+  },
+  "status": "supplementary development diagnostic (Q5v); not Stage3 evidence"
+}

@@ -1,0 +1,31 @@
+{
+  "universe": 6227,
+  "learned": 1197,
+  "nearest_donor": 335,
+  "unresolved": 4695,
+  "assigned_total": 1532,
+  "placeholder_root_areas_recompleted": 0,
+  "donor_distance_km": {
+    "p0": 0.0,
+    "p25": 0.03358595255762351,
+    "p50": 13.473640823950335,
+    "p75": 40.97514381948706,
+    "p90": 68.20937384258445,
+    "p95": 79.09083234936435,
+    "p100": 97.97801460438467
+  },
+  "donor_distance_mean_km": 23.574592275258137,
+  "donor_within_10km": 157,
+  "donor_within_50km": 275,
+  "donor_at_cap_inclusive": 0,
+  "unresolved_nearest_eligible_km": {
+    "min": 101.61146394723629,
+    "median": 2161.950428197398,
+    "max": 11192.793154487614
+  },
+  "partition_code_counts": {
+    "-1": 4695,
+    "0": 1532
+  },
+  "cap_km": 100.0
+}

@@ -1,0 +1,24 @@
+{
+  "filter": "non_ch",
+  "rule": "admin_code >= 100000 is Cadre Harmonise",
+  "applied_after": "check_target_gate, which still validated the full source",
+  "kept": {
+    "valid": 24336,
+    "positive": 12782,
+    "negative": 11554,
+    "areas_total": 4919
+  },
+  "dropped": {
+    "rows": 256368,
+    "areas": 1308,
+    "valid": 18359,
+    "positive": 2424,
+    "negative": 15935
+  },
+  "full_source_gate": {
+    "valid": 42695,
+    "positive": 15206,
+    "negative": 27489,
+    "areas_total": 6227
+  }
+}

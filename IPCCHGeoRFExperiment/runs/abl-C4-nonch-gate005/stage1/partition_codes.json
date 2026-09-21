@@ -1,0 +1,13 @@
+{
+  "branch_to_code": {
+    "000": 0,
+    "001": 1,
+    "0100": 2,
+    "01010": 3,
+    "01011": 4,
+    "011": 5,
+    "1": 6
+  },
+  "unresolved_code": -1,
+  "note": "stable serialization of the branch string, not a reclustering"
+}

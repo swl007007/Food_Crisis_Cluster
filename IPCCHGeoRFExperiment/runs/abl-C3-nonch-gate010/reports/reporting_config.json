@@ -1,0 +1,88 @@
+{
+  "arms": {
+    "E_all": [
+      "partitioned_rf",
+      "pooled_rf",
+      "xgb"
+    ],
+    "E_persist": [
+      "partitioned_rf",
+      "pooled_rf",
+      "xgb",
+      "persistence"
+    ]
+  },
+  "bootstrap": {
+    "cluster": "country_id, sorted before sampling",
+    "draws": 1000,
+    "min_countries": 2,
+    "min_defined_replicates": 2,
+    "nan_to_zero": false,
+    "no_redraw_until_valid": true,
+    "percentile_method": "linear",
+    "percentiles": [
+      2.5,
+      97.5
+    ],
+    "rng": "numpy.random.default_rng, re-seeded per horizon/cohort",
+    "scope": "main Stage3 horizon/cohort summaries only; no subgroup, partial-2026 or Stage1 intervals",
+    "scope_sentence": "Intervals describe country-composition uncertainty conditional on saved predictions - not future prediction, not partition or training uncertainty.",
+    "seed": 42,
+    "suppression_reason_order": [
+      "point_estimate_undefined",
+      "fewer_than_2_countries",
+      "fewer_than_2_defined_replicates"
+    ],
+    "suppression_scope": "only the interval is suppressed; the draws and replicate statistics are still produced and exported whenever the cohort has at least one country"
+  },
+  "breakdown_dimensions": [
+    "assignment_provenance",
+    "country",
+    "target_month",
+    "target_year"
+  ],
+  "cohorts": {
+    "E_all": "every valid test key in the approved R4 schedule; three learned arms",
+    "E_persist": "the history-available subset of E_all; all four arms on identical keys",
+    "empty_cohorts": "every approved horizon of the main period is emitted even with zero rows, with undefined metrics and a schedule reconciliation, so an absent horizon stays visible (Q9a)",
+    "membership": "history availability is read from the valid as-of label history and reconciled against the saved persistence columns, not taken from whichever rows the runner filled in (Q4/Q4b)"
+  },
+  "decision_threshold": 0.5,
+  "decision_threshold_note": "p1 > 0.5 gives 1, exactly 0.5 gives 0 (Q7a); the reporter verifies the saved hard labels and never re-derives a decision.",
+  "main_target_schedule": {
+    "1": [
+      "2023-02",
+      "2025-12"
+    ],
+    "12": [
+      "2024-01",
+      "2025-12"
+    ],
+    "3": [
+      "2023-04",
+      "2025-12"
+    ],
+    "6": [
+      "2023-07",
+      "2025-12"
+    ]
+  },
+  "metrics": {
+    "aggregation": "observation-level counts aggregated first, unit row weight, then the ratio; no population weighting and no country/month mean headline",
+    "f1": "2TP/(2TP+FP+FN)",
+    "precision": "TP/(TP+FP)",
+    "recall": "TP/(TP+FN)",
+    "zero_denominator": "NaN plus a reason",
+    "zero_numerator_positive_denominator": "0"
+  },
+  "periods": [
+    "main",
+    "partial_2026"
+  ],
+  "reference_arm": "partitioned_rf",
+  "versions": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "python": "3.12.10"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "learning_rows": 72476,
+  "fit_rows": 34244,
+  "validation_rows": 38232,
+  "fit_outcomes": 8561,
+  "validation_outcomes": 9558,
+  "singleton_rows": 5888,
+  "singleton_outcomes": 1472,
+  "active_groups": 3264,
+  "groups_with_fit_rows": 3264,
+  "groups_with_validation_rows": 3264,
+  "horizons": [
+    1,
+    3,
+    6,
+    12
+  ],
+  "target_month_min": "2014-01",
+  "target_month_max": "2022-10",
+  "origin_month_min": "2013-01",
+  "origin_month_max": "2022-09",
+  "information_cutoff": "2022-12",
+  "positive_rate_fit": 0.27660320056068216,
+  "positive_rate_validation": 0.3204645323289391,
+  "feature_columns": 93
+}

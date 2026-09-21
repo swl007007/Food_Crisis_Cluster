@@ -47,7 +47,7 @@ import platform
 import sys
 import time
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace as dataclass_replace
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -180,6 +180,26 @@ EXPERIMENT_SOURCE_FILES = (
     "run_pipeline.py",
     "report_results.py",
 )
+
+# ==========================================================================
+# Ablation knobs (task 09-21-ipcch-ch-gate-ablation)
+# ==========================================================================
+#
+# Two knobs, set per cell from the CLI and otherwise inert. With both at their
+# defaults this module behaves exactly as it did for run ipcch-v1-20260920d.
+
+#: Cadre Harmonise areas. Measured against country_area_id_lookup.csv: 1,308 of
+#: 6,227 areas across 19 countries, and the rule splits the Central African
+#: Republic (72 of its 298 areas), which is accepted rather than special-cased.
+CH_ADMIN_CODE_FLOOR = 100000
+
+#: None keeps every area; "non_ch" drops admin_code >= floor; "ch_only" keeps only
+#: those. Applied after the source gate, never before it.
+COHORT_FILTER: str | None = None
+
+#: None leaves the pinned config's MIN_CLASS_1_IMPROVEMENT_THRESHOLD (0.01) alone.
+#: A float overrides it in every consuming namespace and is verified by readback.
+SPLIT_GATE_OVERRIDE: float | None = None
 
 #: Read back from the pinned config after import, never from our own kwargs.
 REPORTED_CONFIG_KEYS = (
@@ -2002,6 +2022,45 @@ def _execute(context: RunContext, args) -> None:
     gate = pdata.check_target_gate(ledger)
     if not gate["gate_pass"]:
         raise PipelineError(f"target gate failed: {gate['gate_mismatches']}")
+
+    # Ablation knob: restrict the cohort AFTER the source gate, never before. The gate
+    # compares against hard-coded audited counts, so a restricted ledger would fail it
+    # by construction and we would lose the proof that this run read the same pinned
+    # source. Filtering here keeps that proof and makes the restriction a declared,
+    # measured step.
+    if COHORT_FILTER is not None:
+        before = ledger.summary()
+        is_ch = ledger.frame["admin_code"] >= CH_ADMIN_CODE_FLOOR
+        keep = ~is_ch if COHORT_FILTER == "non_ch" else is_ch
+        dropped = ledger.frame[~keep]
+        ledger = dataclass_replace(
+            ledger, frame=ledger.frame[keep].reset_index(drop=True)
+        )
+        after = ledger.summary()
+        cohort_evidence = {
+            "filter": COHORT_FILTER,
+            "rule": f"admin_code >= {CH_ADMIN_CODE_FLOOR} is Cadre Harmonise",
+            "applied_after": "check_target_gate, which still validated the full source",
+            "kept": {k: after[k] for k in ("valid", "positive", "negative", "areas_total")},
+            "dropped": {
+                "rows": int(len(dropped)),
+                "areas": int(dropped["admin_code"].nunique()),
+                "valid": int(before["valid"] - after["valid"]),
+                "positive": int(before["positive"] - after["positive"]),
+                "negative": int(before["negative"] - after["negative"]),
+            },
+            "full_source_gate": {
+                k: before[k] for k in ("valid", "positive", "negative", "areas_total")
+            },
+        }
+        _write_json(context.data_dir / "cohort_filter.json", cohort_evidence)
+        context.log(
+            f"cohort {COHORT_FILTER}: kept {after['valid']} valid rows over "
+            f"{after['areas_total']} areas; dropped {cohort_evidence['dropped']['valid']} "
+            f"rows over {cohort_evidence['dropped']['areas']} areas"
+        )
+        gate = dict(gate, cohort_filter=cohort_evidence)
+
     valid = ledger.valid()
     valid.to_csv(context.data_dir / "target_ledger_valid.csv.gz", index=False)
     # The 1.18M rows rejected for "no P1-P4" are the empty scaffold; only the
@@ -2111,14 +2170,39 @@ def _execute(context: RunContext, args) -> None:
     )
     split = pdata.build_stage1_split(ledger, all_area_ids=universe)
     split_gate = pdata.check_stage1_split_gate(split)
-    if not split_gate["gate_pass"]:
-        raise PipelineError(f"split gate failed: {split_gate['gate_mismatches']}")
+    if COHORT_FILTER is None:
+        # Full cohort: the audited-count gate must pass, which is what proves this run
+        # reproduces the baseline.
+        if not split_gate["gate_pass"]:
+            raise PipelineError(f"split gate failed: {split_gate['gate_mismatches']}")
+    else:
+        # Restricted cohort: these expectations are audited constants for the FULL
+        # source, so a declared restriction mismatches them by construction, exactly as
+        # it would have mismatched check_target_gate. The comparison is recorded as
+        # not-applicable rather than silently dropped, and the realized counts are kept
+        # so the restricted split is still fully measured.
+        split_gate = dict(
+            split_gate,
+            gate_pass=None,
+            gate_applicable=False,
+            gate_skipped_reason=(
+                f"cohort filter {COHORT_FILTER!r} is active; the audited split counts "
+                "describe the unrestricted source and cannot apply. The unrestricted "
+                "target gate still ran and passed earlier in this run."
+            ),
+        )
+        context.log(
+            f"R4 split gate not applicable under cohort {COHORT_FILTER}; realized "
+            f"{split_gate['fit']} fit / {split_gate['validation']} validation outcomes, "
+            f"{split_gate['singleton_areas']} singletons"
+        )
     split.outcomes.to_csv(context.stage1_dir / "split_outcomes.csv.gz", index=False)
     _write_json(context.stage1_dir / "split_gate.json", split_gate)
-    context.log(
-        f"R4 gate passed: {split_gate['fit']} fit / {split_gate['validation']} "
-        f"validation outcomes, {split_gate['singleton_areas']} singletons"
-    )
+    if COHORT_FILTER is None:
+        context.log(
+            f"R4 gate passed: {split_gate['fit']} fit / {split_gate['validation']} "
+            f"validation outcomes, {split_gate['singleton_areas']} singletons"
+        )
 
     design = build_stage1_design(matrix, split)
     _write_json(context.stage1_dir / "design_audit.json", design.audit)
@@ -2147,10 +2231,12 @@ def _execute(context: RunContext, args) -> None:
     started = time.time()
     context.log("Stage1: entering the pinned baseline")
     fit_payload = _run_stage1_fit(context, baseline, geography, design, matrix, split)
-    context.stage(
-        "stage1_fit",
-        {"seconds": round(time.time() - started, 1), **fit_payload["stage"]},
-    )
+    stage1_stage = {"seconds": round(time.time() - started, 1), **fit_payload["stage"]}
+    # R3/A2: the three-namespace readback is required evidence, so it has to reach the
+    # manifest. Only fit_payload["stage"] is persisted, so merge it in explicitly.
+    if "split_gate_override" in fit_payload:
+        stage1_stage["split_gate_override"] = fit_payload["split_gate_override"]
+    context.stage("stage1_fit", stage1_stage)
 
     # -- 6. map, donors, singletons --------------------------------------
     context.manifest["stages"]["assignment"] = fit_payload["assignment_stage"]
@@ -2203,6 +2289,39 @@ def _run_stage1_fit(context: RunContext, baseline, geography, design: Stage1Desi
         disabled_drop = {"enable": False, "cols": [], "patterns": []}
         georf_module.FEATURE_DROP = disabled_drop
         georf_module.feature_drop = disabled_drop
+
+        # Ablation knob: the class-1 F1 split gate. Same `from config import *`
+        # hazard as FEATURE_DROP, but worse, because it binds into THREE namespaces:
+        # src/tests/sig_test.py:12 and src/partition/transformation.py:13 each copy it
+        # from config, and transformation.py:17 then re-exports sig_test's copy over
+        # its own. Patching `config` alone would leave the learner gating at 0.01
+        # while REPORTED_CONFIG_KEYS faithfully reports the requested value.
+        gate = SPLIT_GATE_OVERRIDE
+        if gate is not None:
+            import src.partition.transformation as transformation_module  # noqa: PLC0415
+            import src.tests.sig_test as sig_test_module  # noqa: PLC0415
+
+            for module in (config, sig_test_module, transformation_module):
+                module.MIN_CLASS_1_IMPROVEMENT_THRESHOLD = float(gate)
+            readback = {
+                "config": getattr(config, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None),
+                "src.tests.sig_test": getattr(
+                    sig_test_module, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None
+                ),
+                "src.partition.transformation": getattr(
+                    transformation_module, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None
+                ),
+            }
+            disagreeing = {
+                name: value for name, value in readback.items()
+                if value != float(gate)
+            }
+            if disagreeing:
+                raise PipelineError(
+                    f"split-gate override did not take in every consuming namespace: "
+                    f"{disagreeing}; requested {gate}"
+                )
+            result["split_gate_override"] = {"requested": float(gate), "readback": readback}
 
         from src.customize.customize import OutOfRangeImputer  # noqa: PLC0415
 
@@ -2838,11 +2957,25 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--run-id", required=True, help="fresh run identity")
     parser.add_argument("--runs-dir", default=str(DEFAULT_RUNS_DIR))
     parser.add_argument("--release-zip", default=str(DEFAULT_RELEASE_ZIP))
+    parser.add_argument(
+        "--cohort", choices=("all", "non_ch", "ch_only"), default="all",
+        help="restrict the cohort by the Cadre Harmonise rule "
+             f"(admin_code >= {CH_ADMIN_CODE_FLOOR}); applied after the source gate",
+    )
+    parser.add_argument(
+        "--split-gate", type=float, default=None,
+        help="override MIN_CLASS_1_IMPROVEMENT_THRESHOLD in every consuming "
+             "namespace; omit to use the pinned config value",
+    )
     return parser
 
 
 def main(argv=None) -> int:
+    global COHORT_FILTER, SPLIT_GATE_OVERRIDE
+
     args = build_parser().parse_args(argv)
+    COHORT_FILTER = None if args.cohort == "all" else args.cohort
+    SPLIT_GATE_OVERRIDE = args.split_gate
     return run(args)
 
 

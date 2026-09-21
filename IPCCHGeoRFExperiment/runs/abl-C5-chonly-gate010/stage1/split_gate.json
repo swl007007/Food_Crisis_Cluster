@@ -1,0 +1,45 @@
+{
+  "window": {
+    "first_month": "2014-01",
+    "last_month": "2022-12"
+  },
+  "original_labels": 11196,
+  "areas_with_outcomes": 1302,
+  "multi_outcome_areas": 1197,
+  "multi_outcome_labels": 11091,
+  "fit": 5313,
+  "validation": 5778,
+  "singleton_areas": 105,
+  "zero_label_areas": 4925,
+  "positive_rate_fit": 0.08883869753434971,
+  "positive_rate_validation": 0.1294565593631014,
+  "gate_pass": null,
+  "gate_mismatches": {
+    "original_labels": {
+      "expected": 19591,
+      "actual": 11196
+    },
+    "multi_outcome_areas": {
+      "expected": 3264,
+      "actual": 1197
+    },
+    "fit": {
+      "expected": 8561,
+      "actual": 5313
+    },
+    "validation": {
+      "expected": 9558,
+      "actual": 5778
+    },
+    "singleton_areas": {
+      "expected": 1472,
+      "actual": 105
+    },
+    "zero_label_areas": {
+      "expected": 1491,
+      "actual": 4925
+    }
+  },
+  "gate_applicable": false,
+  "gate_skipped_reason": "cohort filter 'ch_only' is active; the audited split counts describe the unrestricted source and cannot apply. The unrestricted target gate still ran and passed earlier in this run."
+}

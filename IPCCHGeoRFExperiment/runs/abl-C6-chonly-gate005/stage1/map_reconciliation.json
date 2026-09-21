@@ -1,0 +1,80 @@
+{
+  "learned": {
+    "branch_columns": [
+      "",
+      "0",
+      "1",
+      "00",
+      "01",
+      "010",
+      "011"
+    ],
+    "accepted_splits": 3,
+    "terminal_branches": [
+      "00",
+      "010",
+      "011",
+      "1"
+    ],
+    "terminal_branch_count": 4,
+    "max_branch_depth": 3,
+    "areas_in_root_column": 1197,
+    "learned_areas": 1197,
+    "placeholder_areas": 0,
+    "members_per_terminal_branch": {
+      "00": 209,
+      "010": 141,
+      "011": 169,
+      "1": 678
+    },
+    "placeholder_note": "an area sitting in a branch that was split but which was never placed in either child; the inherited helper would call it root, which is a default and not learned membership (R4)"
+  },
+  "reconciliation": {
+    "active_groups": 1197,
+    "learned_areas": 1197,
+    "placeholder_areas": 0,
+    "placeholder_row_branches": {},
+    "placeholder_rows_not_default_root": {},
+    "row_branches_used": [
+      "00",
+      "010",
+      "011",
+      "1"
+    ],
+    "checkpoints_present": [
+      "rf_",
+      "rf_0",
+      "rf_00",
+      "rf_000",
+      "rf_001",
+      "rf_01",
+      "rf_010",
+      "rf_0100",
+      "rf_0101",
+      "rf_011",
+      "rf_0110",
+      "rf_0111",
+      "rf_1",
+      "rf_10",
+      "rf_11"
+    ],
+    "checkpoints_not_routed": [
+      "rf_0",
+      "rf_000",
+      "rf_001",
+      "rf_01",
+      "rf_0100",
+      "rf_0101",
+      "rf_0110",
+      "rf_0111",
+      "rf_10",
+      "rf_11"
+    ],
+    "checkpoints_missing": [],
+    "fragmented_groups": [],
+    "notes": [
+      "a child checkpoint may contain an adopted parent model when the F1 gate kept the parent for that side; spatial branch and model-fit provenance are different facts",
+      "checkpoints_not_routed are candidate children that were trained and then REJECTED by the F1 gate; no row routes to them and nothing downstream may load them"
+    ]
+  }
+}

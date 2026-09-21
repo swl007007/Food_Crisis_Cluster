@@ -1,0 +1,128 @@
+{
+  "run_id": "ipcch-stage1-20260920a",
+  "status": "failed",
+  "scope": "stage1_only",
+  "created_utc": "2026-09-20T13:12:23Z",
+  "updated_utc": "2026-09-20T13:13:43Z",
+  "stages": {
+    "preflight": {
+      "seconds": 1.3
+    },
+    "target": {
+      "seconds": 18.1,
+      "gate": {
+        "rows": 1219868,
+        "valid": 42695,
+        "positive": 15206,
+        "negative": 27489,
+        "areas_total": 6227,
+        "areas_with_valid": 6224,
+        "countries_with_valid": 53,
+        "p5_filled": 84,
+        "normalized_share_equals_threshold": 2601,
+        "invalid_reasons": {
+          "missing_phase_1_to_4": 1176232,
+          "sum_out_of_bounds": 577,
+          "population_not_positive": 363,
+          "phase_share_out_of_bounds": 1
+        },
+        "gate_pass": true,
+        "gate_mismatches": {}
+      }
+    },
+    "features": {
+      "seconds": 17.6,
+      "rows": 170780,
+      "columns": 93,
+      "audit": {
+        "valid_outcomes": 42695,
+        "horizons": [
+          1,
+          3,
+          6,
+          12
+        ],
+        "feature_rows": 170780,
+        "feature_columns": 93,
+        "areas": 6224,
+        "origin_month_min": "2013-01",
+        "origin_month_max": "2026-03",
+        "rows_with_missing_origin_row": 0,
+        "rows_without_label_history": 31213,
+        "rows_without_prior_crisis": 100463,
+        "panel_grid_cells": 1220492,
+        "panel_grid_occupied": 1219868,
+        "panel_grid_gaps": 624,
+        "panel_areas_with_month_gaps": 39,
+        "panel_infinities_converted": {},
+        "assembled_infinities_converted": {},
+        "panel": {
+          "panel_rows": 1219868,
+          "panel_areas": 6227,
+          "panel_month_min": "2010-01",
+          "panel_month_max": "2026-04",
+          "non_numeric_coerced_to_nan": {},
+          "source_infinities_converted": {},
+          "source_infinity_total": 0
+        },
+        "source_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673"
+      }
+    }
+  },
+  "limitations": [
+    "source publication timing is unverified; features assume observation-month availability (R3)",
+    "topology repair does not establish administrative identity, and the upstream geometry builder allowed unrestricted nearest-neighbour fallback (R2)",
+    "Stage1 internal validation uses per-area chronological cutoffs; it is a development score, not a globally forward forecast test (R4/Q5a)",
+    "singleton scores are supplementary post-map diagnostics only (R4/Q5v)",
+    "inferred (nearest-donor) membership is not observed or validated membership (R4/Q8r)"
+  ],
+  "elapsed_seconds": 79.867,
+  "runtime": {
+    "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "python_version": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.15.2",
+      "geopandas": "1.0.1",
+      "shapely": "2.1.0",
+      "pyproj": "3.7.1",
+      "xgboost": "3.0.0",
+      "psutil": "7.0.0"
+    },
+    "cwd_at_start": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster"
+  },
+  "code": {
+    "experiment_files_sha256": {
+      "prepare_data.py": "df2e7bca116b39f63b49304c1d466e516f0e36b66580775055a533b4f6bfdb4d",
+      "baseline_runtime.py": "47fda3bab52168b9aad978af6d6a9edbda480bd2659b41c8d6b0218cec87ab8d",
+      "run_pipeline.py": "ac5c8da023f3bfab09701f71d14ad6bdcacd10dfa8812b04a99e4d213c8a4bc2",
+      "report_results.py": "7b520e76a81571b6b132ed11da10694f3eab488d8581728a0196f61004c83de1"
+    },
+    "baseline": {
+      "root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-stage1-20260920a\\baseline\\GeoRFBaseline",
+      "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+      "manifest_version": "0.1.0-f1-nosmote",
+      "manifest_source_commit": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+      "payload_files_verified": 45,
+      "patch_applied": true,
+      "patch_diff": "--- pristine src/model/GeoRF.py\n+++ patched src/model/GeoRF.py\n-if CONTIGUITY:\n+if CONTIGUITY and contiguity_type != 'polygon':\n",
+      "pristine_target_sha256": "e5858ed5554177efde0100a1cfd3f789ac6273826b9e5edea72509f94ad8af60",
+      "patched_target_sha256": "070d2eddd92e572edfbab46eb4aad665ce3d57162eb8cda190305d8bbf40a386",
+      "module_locations": {}
+    },
+    "release_zip": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\GeoRFBaseline\\releases\\georf-baseline-v0.1.0.zip"
+  },
+  "source": {
+    "source_root": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH",
+    "csv": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\raw\\IPCCH_2026_completed.csv",
+    "csv_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+    "expected_csv_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673"
+  },
+  "failure": {
+    "reason": "'repaired'",
+    "detail": "Traceback (most recent call last):\n  File \"C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\run_pipeline.py\", line 956, in run\n    _execute(context, args)\n  File \"C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\run_pipeline.py\", line 1091, in _execute\n    f\"R2: {geography.audit['repair']['repaired']} geometries repaired; \"\n           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\nKeyError: 'repaired'\n"
+  }
+}

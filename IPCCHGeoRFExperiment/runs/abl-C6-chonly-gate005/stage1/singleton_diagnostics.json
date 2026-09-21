@@ -1,0 +1,101 @@
+{
+  "rows": 420,
+  "areas": 105,
+  "threshold": 0.5,
+  "overall": {
+    "n": 420,
+    "tp": 12,
+    "fp": 0,
+    "fn": 4,
+    "tn": 404,
+    "positives": 16,
+    "predicted_positives": 12,
+    "class1_f1": 0.8571428571428571,
+    "class1_precision": 1.0,
+    "class1_recall": 0.75,
+    "undefined_reason": ""
+  },
+  "by_horizon": {
+    "1": {
+      "n": 105,
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "tn": 101,
+      "positives": 4,
+      "predicted_positives": 3,
+      "class1_f1": 0.8571428571428571,
+      "class1_precision": 1.0,
+      "class1_recall": 0.75,
+      "undefined_reason": ""
+    },
+    "3": {
+      "n": 105,
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "tn": 101,
+      "positives": 4,
+      "predicted_positives": 3,
+      "class1_f1": 0.8571428571428571,
+      "class1_precision": 1.0,
+      "class1_recall": 0.75,
+      "undefined_reason": ""
+    },
+    "6": {
+      "n": 105,
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "tn": 101,
+      "positives": 4,
+      "predicted_positives": 3,
+      "class1_f1": 0.8571428571428571,
+      "class1_precision": 1.0,
+      "class1_recall": 0.75,
+      "undefined_reason": ""
+    },
+    "12": {
+      "n": 105,
+      "tp": 3,
+      "fp": 0,
+      "fn": 1,
+      "tn": 101,
+      "positives": 4,
+      "predicted_positives": 3,
+      "class1_f1": 0.8571428571428571,
+      "class1_precision": 1.0,
+      "class1_recall": 0.75,
+      "undefined_reason": ""
+    }
+  },
+  "by_assignment_source": {
+    "nearest_donor": {
+      "n": 364,
+      "tp": 0,
+      "fp": 0,
+      "fn": 4,
+      "tn": 360,
+      "positives": 4,
+      "predicted_positives": 0,
+      "class1_f1": 0.0,
+      "class1_precision": null,
+      "class1_recall": 0.0,
+      "undefined_reason": ""
+    },
+    "unresolved": {
+      "n": 56,
+      "tp": 12,
+      "fp": 0,
+      "fn": 0,
+      "tn": 44,
+      "positives": 12,
+      "predicted_positives": 12,
+      "class1_f1": 1.0,
+      "class1_precision": 1.0,
+      "class1_recall": 1.0,
+      "undefined_reason": ""
+    }
+  },
+  "status": "supplementary development diagnostic (Q5v); not Stage3 evidence"
+}

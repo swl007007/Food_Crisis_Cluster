@@ -1,6 +1,34 @@
-runs/
-.tmp*
 __pycache__/
-!test_*contracts.py
-!validation/*.json
-!validation/*.csv
+
+# Run outputs stay out of git, with the evidence that supports a reported claim
+# carved back in. The FEWS NET completion audit returned "incomplete" purely because
+# the ledgers were on disk but not in the commit, so the auditor's independent clone
+# could not see them; this package does not repeat that.
+#
+# Included for the ablation cells (~38 MB): manifests with the cohort filter and the
+# split-gate readback, Stage 1 gates and area assignments, and every reported metric
+# with its bootstrap draws. Excluded: the extracted baseline, geography, feature
+# matrices and per-row Stage 3 predictions, all reproducible from the pinned source.
+runs/*
+!runs/*/
+runs/*/*
+!runs/*/manifest.json
+!runs/*/run.log
+!runs/*/data/
+!runs/*/stage1/
+!runs/*/reports/
+
+runs/*/data/*
+!runs/*/data/cohort_filter.json
+!runs/*/data/target_gate.json
+
+runs/*/stage1/*
+!runs/*/stage1/*.json
+!runs/*/stage1/area_assignments.csv
+
+runs/*/reports/*
+!runs/*/reports/*.json
+!runs/*/reports/*/
+runs/*/reports/*/*
+!runs/*/reports/*/*.json
+!runs/*/reports/*/*.csv

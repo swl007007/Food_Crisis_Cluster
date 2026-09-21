@@ -1,0 +1,18 @@
+{
+  "window": {
+    "first_month": "2014-01",
+    "last_month": "2022-12"
+  },
+  "original_labels": 19591,
+  "areas_with_outcomes": 4736,
+  "multi_outcome_areas": 3264,
+  "multi_outcome_labels": 18119,
+  "fit": 8561,
+  "validation": 9558,
+  "singleton_areas": 1472,
+  "zero_label_areas": 1491,
+  "positive_rate_fit": 0.27660320056068216,
+  "positive_rate_validation": 0.3204645323289391,
+  "gate_pass": true,
+  "gate_mismatches": {}
+}
