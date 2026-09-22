@@ -1,0 +1,8 @@
+{
+  "all_reproduce": true,
+  "failures": [],
+  "folds": 110,
+  "models_checked": 660,
+  "note": "prediction-only replay: models were loaded from disk, not refitted",
+  "primary_family": "share_xgb"
+}

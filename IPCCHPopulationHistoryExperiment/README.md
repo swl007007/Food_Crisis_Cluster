@@ -70,13 +70,49 @@ python -B IPCCHPopulationHistoryExperiment/run_pipeline.py --run-dir RUN --stage
 python -B IPCCHPopulationHistoryExperiment/run_pipeline.py --run-dir RUN --stage select
 python -B IPCCHPopulationHistoryExperiment/run_pipeline.py --run-dir RUN --stage main --workers 12
 python -B IPCCHPopulationHistoryExperiment/run_pipeline.py --run-dir RUN --stage verify
+python -B IPCCHPopulationHistoryExperiment/run_pipeline.py --run-dir RUN --stage persist --workers 12
+python -B IPCCHPopulationHistoryExperiment/run_pipeline.py --run-dir RUN --stage replay-models
 python -B IPCCHPopulationHistoryExperiment/report_results.py --run-dir RUN --out-dir RUN/reports \
     --replay-into RUN/validation/reports_replay
 ```
 
 `--stage select` reads only stored 2020-2022 predictions and writes
-`freeze.json`; the main schedule refuses to run without it. Re-running a stage
-reuses folds that already completed, so an interrupted run resumes.
+`freeze.json`; the main schedule refuses to run without it.
+
+### Stages are immutable once complete
+
+A freeze is written once. Re-running `select` into a run that already has one is
+**refused**, because a second freeze with a fresh timestamp would silently
+relabel main-schedule predictions computed under the first. To re-derive it for
+comparison, use `--stage select --replay-into DIR`; `--refreeze` exists only for
+deliberately discarding a freeze.
+
+Every fold record carries an `identity`: the source/schema/candidate hashes, the
+key and calendar digests, the frozen selection digest and the code hashes.
+Resuming reuses only folds whose identity still matches, so an interrupted run
+resumes safely while a continuation after changed inputs, candidates or code is
+refused rather than mixed in. `--stage main` additionally refuses to run if the
+frozen inputs no longer describe the run, or if the code moved since the freeze
+(`--allow-code-drift` to override, and say why in the run record).
+
+### Retained models
+
+`--stage persist` refits each selected model at each main origin under the
+frozen choices and **keeps** the fitted object, recording its digest, its full
+`get_params()` readback, its booster configuration and round count, and the
+digest of the ordered fitting keys it was built from. It then requires the
+regenerated predictions to be identical to the stored ones, fold by fold,
+across the whole schedule — and writes to a scratch directory so `main/folds`
+is never rewritten.
+
+`--stage replay-models` is the check a refit cannot make: it loads each saved
+estimator off disk, verifies its digest and predicts, requiring the stored
+scores back. A model silently replaced or re-fitted under different data fails
+here even though a refit would pass.
+
+The 533 MB of estimators stay local. Their identity records are committed in
+full, along with the binaries for the first main fold at each horizon so a
+reviewer can exercise prediction-only replay directly.
 
 ### Recorded deviation: fold-level parallelism
 

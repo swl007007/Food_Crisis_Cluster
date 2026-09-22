@@ -92,10 +92,17 @@ inventories `IPCCHPopulationHistoryExperiment/config/feature-schema.json`
   (`run_pipeline.run_selection`, restricted to `E_history` and development
   months). Calendar causality is tested by
   `test_contracts.py::test_development_and_main_calendars_do_not_overlap`.
-* Replayed in a clean clone at `45b74fb`: `selections`, `primary_family`,
+* Replayed in a clean clone: `selections`, `primary_family`,
   `primary_mean_delta`, `persistence_development_f1`, spec identity, matrix
   hash, cutoff and cohort all reproduce exactly (see RESULTS.md,
-  "Reproduction").
+  "Reproduction"). The replay goes to `--replay-into DIR`.
+* **Immutable freeze.** `run_selection` refuses to overwrite an existing
+  `freeze.json` (`run_pipeline.py`, "Selection is frozen once written");
+  `--replay-into` re-derives it elsewhere, `--refreeze` discards one
+  deliberately. `RUN/validation/freeze_replay/freeze.json` is the re-derivation,
+  matching the committed freeze on all six scientific fields with a different
+  `frozen_utc`. Tested by
+  `test_contracts.py::test_identity_comparison_separates_code_drift_from_science`.
 
 ## A6 — recomputable metrics, shared draws, leave-year-out, conjunctive verdicts
 
@@ -125,9 +132,17 @@ inventories `IPCCHPopulationHistoryExperiment/config/feature-schema.json`
   numpy 2.2.6, pandas 2.2.3, sklearn 1.6.1, XGBoost 3.0.0, scipy 1.15.2,
   GeoPandas 1.0.1, Shapely 2.1.0, `pass: true`. `verify_runtime(strict=True)`
   stops the run on any mismatch; it compares rather than logs.
-* Effective parameters and booster identity for every one of the 5,214 fits:
-  `RUN/{development,main}/folds/*.json` → `routes[arm::config].effective_params`,
-  `boosted_rounds`, `train_rows`, `seconds`.
+* **Fitted-state readback**, not the requested dictionary:
+  `run_pipeline._fitted_identity` records the estimator's own `get_params()`,
+  its `save_config()` booster configuration and its realised round count.
+  `RUN/main/model_identity/*.json` carries these for all 660 selected models;
+  `RUN/development/effective_params.json` carries a real fitted readback for
+  each of the 36 (arm, candidate) pairs, which fix every parameter and the seed
+  and therefore do not vary by fold. Both the requested and the fitted values
+  are kept, so a gap between them is itself visible. Tested by
+  `test_contracts.py::test_fitted_identity_reads_the_estimator_back`.
+* Per-fit routes, timings, training counts and requested parameters for every
+  one of the 5,214 search and main fits: `RUN/{development,main}/folds/*.json`.
 * RF fills come only from matched training X, one imputer per fold reused
   across RF candidates: same JSONs → `imputer` (fitted rows, all-missing and
   negative-max column counts, fill values). Behaviour tested against the pinned
@@ -148,6 +163,16 @@ inventories `IPCCHPopulationHistoryExperiment/config/feature-schema.json`
 | development | 136 non-empty, 8 empty | 4,506 | 5,184 |
 | main | 110 non-empty, 12 empty | 660 | 732 |
 | verification replay | 8 | 48 | separate, ≤48 |
+| refit-for-provenance | 110 | 660 | separate |
+| development param readback | 1 | 36 | separate |
+
+**Immutability.** Every fold record carries an `identity` over source, schema,
+candidate inventory, key and calendar digests, frozen selections and code
+hashes; `completed_folds` reuses only matching records and reports the rest as
+refused. `--stage main` refuses to continue under drifted frozen inputs, or
+under drifted code without `--allow-code-drift`. The refit stage writes to a
+scratch directory, never over `main/folds`. Tested by
+`test_contracts.py::test_fold_reuse_refuses_a_record_from_another_identity`.
 
 Counts recomputable from `RUN/{development,main,validation}/folds/*.json` and
 summarised in `RUN/stage_{development,main,verify}.json`. The pilot is the
@@ -169,9 +194,22 @@ directory changed.
   without the feature matrix: 41/41 contract tests pass, selection reproduces
   every scientific field, and `summary.json` reproduces exactly apart from
   `run_dir`. Commands in RESULTS.md, "Reproduction".
-* Model identity behind each prediction: `routes[...]` in the per-fold JSONs
-  names the estimator, its effective parameters and its boosted-round count.
-  No claim in RESULTS.md rests on console output.
+* **Retained estimators, full schedule** — `RUN/validation/model_persistence.json`:
+  every selected model at every main origin was refitted under the frozen
+  choices and kept; all **110/110** folds and **660** models regenerate the
+  stored predictions exactly. Identity per model in
+  `RUN/main/model_identity/*.json`: SHA256, byte size, `get_params()` readback,
+  booster config, round count, and the digest of the ordered fitting keys.
+* **Prediction-only replay** — `RUN/validation/model_replay.json`: all **660**
+  saved estimators were loaded from disk, their digests verified, and their
+  scores reproduced without any fitting. This is the check a refit cannot make.
+* The binaries for the first main fold at each horizon are committed (24 models,
+  19 MB) so a reviewer can run that replay directly; the remaining 533 MB are
+  local and regenerable by `--stage persist`, which verifies them against the
+  stored predictions rather than asserting them.
+* Fitting-key digests make A3 checkable rather than trusted: the five matched
+  arms in a fold share one digest and `fullpool_xgb` has another.
+* No claim in RESULTS.md rests on console output.
 
 ## A10 — lifecycle
 
@@ -187,6 +225,21 @@ directory changed.
   replays), `45b74fb` (matrix hash binding), plus this documentation commit.
 * Completion is queued by `trellis-audit close` from the bound session. A
   launched audit is not a pass; this index is a pre-close deliverable.
+
+## Remediation of close audit 826221934ce1b02cad427dc8
+
+That audit met A1-A4 and A6 — including an independent rebuild of the full
+matrix from raw source that matched its SHA256 — and raised two majors, both
+valid. Both are now addressed in code, with evidence and with tests:
+
+| finding | fix | evidence |
+|---|---|---|
+| fitted estimators discarded; requested config labelled `effective_params` | `_fitted_identity` readback; `--stage persist` retains every selected model; `--stage replay-models` predicts from the saved ones | `main/model_identity/*.json`, `validation/model_persistence.json` (110/110), `validation/model_replay.json` (660/660) |
+| `select` overwrote an existing freeze; fold reuse checked no identity | freeze written once, `--replay-into` for replay; per-fold identity over inputs/schema/candidates/selections/code; `main` refuses drifted inputs or code | `validation/freeze_replay/`, `identity` in every fold record, `stage_*.json` → `folds_refused_stale` |
+
+Four new contract tests cover the readback, the model round trip and digest
+binding, identity-refused reuse, and the code-drift/science separation; 45/45
+pass.
 
 ## Known deviations, stated rather than buried
 

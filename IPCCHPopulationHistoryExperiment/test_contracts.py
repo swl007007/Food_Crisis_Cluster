@@ -474,13 +474,15 @@ def test_constant_targets_take_the_declared_route():
     arm = pipe.ARMS_BY_NAME["rich_direct_xgb"]
     resolved = pipe.resolve_config(SPEC.configs, "xgb", {"id": "X0"}, regressor=False)
     X = np.zeros((10, 4))
-    scores, route = pipe.fit_and_score(arm, resolved, X, np.ones(10), np.zeros((3, 4)))
+    scores, route, model = pipe.fit_and_score(arm, resolved, X, np.ones(10), np.zeros((3, 4)))
+    assert model is None, "a constant route has no estimator to retain"
     assert route["route"] == "constant_single_class"
     assert list(scores) == [1.0, 1.0, 1.0]
 
     share = pipe.ARMS_BY_NAME["share_xgb"]
     resolved = pipe.resolve_config(SPEC.configs, "xgb", {"id": "X0"}, regressor=True)
-    scores, route = pipe.fit_and_score(share, resolved, X, np.full(10, 0.37), np.zeros((2, 4)))
+    scores, route, model = pipe.fit_and_score(share, resolved, X, np.full(10, 0.37), np.zeros((2, 4)))
+    assert model is None
     assert route["route"] == "constant_target"
     assert list(scores) == [0.37, 0.37]
 
@@ -489,7 +491,7 @@ def test_constant_correction_target_stays_conditional_on_b():
     """An all-error fitting pool must still flip in both directions."""
     arm = pipe.ARMS_BY_NAME["correction_xgb"]
     resolved = pipe.resolve_config(SPEC.configs, "xgb", {"id": "X0"}, regressor=False)
-    raw, route = pipe.fit_and_score(arm, resolved, np.zeros((8, 3)), np.ones(8), np.zeros((2, 3)))
+    raw, route, _model = pipe.fit_and_score(arm, resolved, np.zeros((8, 3)), np.ones(8), np.zeros((2, 3)))
     assert route["route"] == "constant_single_class"
     crisis = pipe.crisis_oriented(arm, raw, np.array([0.0, 1.0]))
     assert list(crisis) == [1.0, 0.0], "a certain error means crisis under b=0, calm under b=1"
@@ -683,6 +685,96 @@ def test_class1_metrics_report_an_undefined_denominator():
     close(exact["f1"], 6 / 9)
     close(exact["precision"], 0.75)
     close(exact["recall"], 0.6)
+
+
+# --------------------------------------------------------------------------
+# Fitted-state provenance and stage immutability
+# --------------------------------------------------------------------------
+
+
+def test_fitted_identity_reads_the_estimator_back():
+    """The record must describe the fitted model, not the dictionary passed in."""
+    arm = pipe.ARMS_BY_NAME["rich_direct_xgb"]
+    resolved = pipe.resolve_config(SPEC.configs, "xgb", {"id": "X1", "max_depth": 3}, False)
+    rng = np.random.default_rng(1)
+    X = rng.standard_normal((120, 5))
+    y = (rng.random(120) < 0.4).astype(float)
+    _scores, route, model = pipe.fit_and_score(arm, resolved, X, y, X[:4])
+
+    assert model is not None, "a real fit must hand back its estimator"
+    assert route["route"] == "model"
+    # get_params() reports the library's full resolved parameter set, which is
+    # strictly larger than the candidate block we asked for.
+    assert len(route["fitted_params"]) > len(resolved)
+    assert route["fitted_params"]["max_depth"] == 3
+    assert route["boosted_rounds"] == resolved["n_estimators"]
+    assert route["booster_features"] == 5
+    assert isinstance(route["booster_config"], dict) and route["booster_config"]
+    assert "requested_params" not in route, "run_fold attaches that, not fit_and_score"
+
+
+def test_saved_model_round_trips_and_is_digest_bound():
+    import tempfile
+
+    arm = pipe.ARMS_BY_NAME["rich_direct_xgb"]
+    resolved = pipe.resolve_config(SPEC.configs, "xgb", {"id": "X1", "max_depth": 3}, False)
+    rng = np.random.default_rng(2)
+    X = rng.standard_normal((150, 6))
+    y = (rng.random(150) < 0.4).astype(float)
+    scores, _route, model = pipe.fit_and_score(arm, resolved, X, y, X[:20])
+
+    with tempfile.TemporaryDirectory() as tmp:
+        stem = Path(tmp) / "run" / "main" / "models" / "fold__arm__X1"
+        record = pipe.save_model(model, arm, stem)
+        assert record["path"] == "main/models/fold__arm__X1.ubj"
+        path = Path(tmp) / "run" / record["path"]
+        assert prep.sha256_file(path) == record["sha256"]
+        reloaded = pipe.load_model(arm, path)
+        assert np.array_equal(pipe.class1_probability(reloaded, X[:20]), scores)
+
+
+def test_fold_reuse_refuses_a_record_from_another_identity():
+    """A fold recorded under different inputs is not reused, it is refused."""
+    import tempfile
+
+    identity = {"spec": {"rich_count": 561}, "matrix_sha256": "aaa", "code_sha256": {"x": "1"}}
+    with tempfile.TemporaryDirectory() as tmp:
+        folds = Path(tmp) / "development" / "folds"
+        folds.mkdir(parents=True)
+        for name, recorded in (
+            ("same", identity),
+            ("moved", {**identity, "matrix_sha256": "bbb"}),
+        ):
+            (folds / f"{name}.json").write_text(
+                __import__("json").dumps(
+                    {"fold_id": name, "status": "complete", "identity": recorded}
+                )
+            )
+        # A record from before identities were kept is also not reusable.
+        (folds / "legacy.json").write_text(
+            __import__("json").dumps({"fold_id": "legacy", "status": "complete"})
+        )
+
+        done, stale = pipe.completed_folds(tmp, "development", identity)
+        assert done == {"same"}, done
+        assert len(stale) == 2, stale
+        assert any("matrix_sha256" in reason for reason in stale)
+        assert any("no identity recorded" in reason for reason in stale)
+
+        # Without an identity to compare against, every complete record counts.
+        done, stale = pipe.completed_folds(tmp, "development", None)
+        assert done == {"same", "moved", "legacy"} and stale == []
+
+
+def test_identity_comparison_separates_code_drift_from_science():
+    recorded = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "old"}}
+    current = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "new"}}
+    assert pipe.compare_identity(recorded, current) == [
+        "code_sha256: recorded {'f': 'old'} != current {'f': 'new'}"
+    ]
+    assert pipe.compare_identity(recorded, current, scientific_only=True) == []
+    moved = {**current, "matrix_sha256": "other"}
+    assert pipe.compare_identity(recorded, moved, scientific_only=True)
 
 
 # --------------------------------------------------------------------------

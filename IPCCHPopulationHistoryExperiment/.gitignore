@@ -51,10 +51,37 @@ runs/*/development/*
 !runs/*/development/selection_ledger.csv
 !runs/*/development/folds/
 
+# The retained estimators are 533 MB. Their identity records -- digest,
+# get_params() readback, booster config, round count and the digest of the
+# ordered fitting keys they were built from -- are committed in full, along
+# with the binaries for the first main fold at each horizon (19 MB) so a
+# reviewer can actually exercise prediction-only replay. --stage persist
+# regenerates the rest and proves they reproduce every stored prediction.
+runs/*/main/*
+!runs/*/main/folds/
+!runs/*/main/model_identity/
+!runs/*/main/models/
+runs/*/main/models/*
+!runs/*/main/models/mai_h01_2023-02__*
+!runs/*/main/models/mai_h03_2023-04__*
+!runs/*/main/models/mai_h06_2023-07__*
+!runs/*/main/models/mai_h12_2024-01__*
+!runs/*/main/model_identity/*.json
+
+# The refit predictions exist only to be compared against main/folds; the
+# comparison itself is committed in validation/model_persistence.json.
+runs/*/main_refit/
+
 runs/*/validation/*
 !runs/*/validation/replay.json
 !runs/*/validation/report_replay.json
+!runs/*/validation/model_persistence.json
+!runs/*/validation/model_replay.json
 !runs/*/validation/folds/
+!runs/*/validation/freeze_replay/
+runs/*/validation/freeze_replay/*
+!runs/*/validation/freeze_replay/*.json
+!runs/*/validation/freeze_replay/*.csv
 
 # The repository root ignores *.csv and *.json outright. Re-including a
 # directory is not enough: every evidence file under it has to be named back

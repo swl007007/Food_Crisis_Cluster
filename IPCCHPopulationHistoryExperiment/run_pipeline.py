@@ -29,6 +29,7 @@ have no persistence at all.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -324,11 +325,18 @@ def fit_and_score(
     X_train: np.ndarray,
     y_train: np.ndarray,
     X_eval: np.ndarray,
-) -> tuple[np.ndarray, dict]:
-    """Fit one estimator and return its raw scores plus the route actually taken.
+) -> tuple[np.ndarray, dict, object]:
+    """Fit one estimator, returning its scores, the route taken, and the model.
 
     A degenerate fitting target is answered with an explicit constant, not with
-    a fabricated row or a silently skipped arm (§4).
+    a fabricated row or a silently skipped arm (§4); those routes return
+    ``None`` for the model and carry the constant instead.
+
+    The route dictionary records the estimator's **fitted** state -- the
+    ``get_params()`` readback and, for XGB, ``save_config()`` and the realised
+    round count -- rather than the dictionary that was passed in. The two can
+    differ wherever the library resolves a default, and only the readback
+    establishes what actually produced a prediction.
     """
     if X_train.shape[0] == 0:
         raise PipelineError(f"{arm.name}: empty fitting pool reached the estimator")
@@ -337,25 +345,33 @@ def fit_and_score(
     if arm.family == "xgb_regressor":
         if unique.size == 1:
             value = float(unique[0])
-            return np.full(X_eval.shape[0], value), {
-                "route": "constant_target",
-                "constant": value,
-                "reason": "the regression target is constant on the fitting pool",
-            }
+            return (
+                np.full(X_eval.shape[0], value),
+                {
+                    "route": "constant_target",
+                    "constant": value,
+                    "reason": "the regression target is constant on the fitting pool",
+                },
+                None,
+            )
         from xgboost import XGBRegressor  # noqa: PLC0415
 
         model = XGBRegressor(**resolved)
         model.fit(X_train, y_train)
         scores = np.asarray(model.predict(X_eval), dtype=np.float64)
-        return scores, {"route": "model", "estimator": type(model).__name__, **_booster_identity(model)}
+        return scores, _fitted_identity(model), model
 
     if unique.size == 1:
         value = float(unique[0])
-        return np.full(X_eval.shape[0], value), {
-            "route": "constant_single_class",
-            "constant": value,
-            "reason": f"the fitting pool holds only class {int(value)}",
-        }
+        return (
+            np.full(X_eval.shape[0], value),
+            {
+                "route": "constant_single_class",
+                "constant": value,
+                "reason": f"the fitting pool holds only class {int(value)}",
+            },
+            None,
+        )
 
     labels = y_train.astype(np.int64)
     if arm.family == "xgb_classifier":
@@ -363,35 +379,89 @@ def fit_and_score(
 
         model = XGBClassifier(**resolved)
         model.fit(X_train, labels)
-        return class1_probability(model, X_eval), {
-            "route": "model",
-            "estimator": type(model).__name__,
-            **_booster_identity(model),
-        }
+        return class1_probability(model, X_eval), _fitted_identity(model), model
 
     if arm.family == "rf_classifier":
         from sklearn.ensemble import RandomForestClassifier  # noqa: PLC0415
 
         model = RandomForestClassifier(**resolved)
         model.fit(X_train, labels)
-        return class1_probability(model, X_eval), {
-            "route": "model",
-            "estimator": type(model).__name__,
-            "n_estimators_fitted": int(len(model.estimators_)),
-        }
+        return class1_probability(model, X_eval), _fitted_identity(model), model
 
     raise PipelineError(f"unknown family {arm.family}")
 
 
-def _booster_identity(model) -> dict:
+def _jsonable(value):
+    """Params can hold numpy scalars and None; JSON needs plain Python."""
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    if isinstance(value, (np.floating,)):
+        return float(value)
+    if isinstance(value, (np.bool_,)):
+        return bool(value)
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)
+
+
+def _fitted_identity(model) -> dict:
+    """What the estimator actually is after fitting, read back from itself."""
+    identity = {
+        "route": "model",
+        "estimator": type(model).__name__,
+        "fitted_params": {k: _jsonable(v) for k, v in model.get_params().items()},
+    }
     try:
         booster = model.get_booster()
-        return {
-            "boosted_rounds": int(booster.num_boosted_rounds()),
-            "booster_features": int(booster.num_features()),
-        }
-    except Exception:  # pragma: no cover - identity is evidence, not control flow
-        return {}
+        identity["boosted_rounds"] = int(booster.num_boosted_rounds())
+        identity["booster_features"] = int(booster.num_features())
+        # The full resolved booster configuration, as the library reports it.
+        identity["booster_config"] = json.loads(booster.save_config())
+    except AttributeError:
+        pass
+    if hasattr(model, "estimators_"):
+        identity["n_estimators_fitted"] = int(len(model.estimators_))
+        identity["classes"] = [int(c) for c in np.asarray(model.classes_).ravel()]
+    return identity
+
+
+#: Serialisation is per family: XGB has its own portable binary dump, while a
+#: scikit-learn forest only round-trips through pickle.
+def save_model(model, arm: Arm, path_stem: Path) -> dict:
+    """Persist one fitted estimator and return its path, size and digest."""
+    path_stem.parent.mkdir(parents=True, exist_ok=True)
+    if arm.family == "rf_classifier":
+        import joblib  # noqa: PLC0415
+
+        path = path_stem.with_suffix(".joblib")
+        joblib.dump(model, path, compress=3)
+    else:
+        path = path_stem.with_suffix(".ubj")
+        model.save_model(str(path))
+    return {
+        # POSIX separators so the record reads the same on either platform.
+        "path": path.relative_to(path_stem.parents[2]).as_posix(),
+        "bytes": int(path.stat().st_size),
+        "sha256": prep.sha256_file(path),
+    }
+
+
+def load_model(arm: Arm, path: Path):
+    """Reload a persisted estimator for prediction-only replay."""
+    if arm.family == "rf_classifier":
+        import joblib  # noqa: PLC0415
+
+        return joblib.load(path)
+    if arm.family == "xgb_regressor":
+        from xgboost import XGBRegressor  # noqa: PLC0415
+
+        model = XGBRegressor()
+    else:
+        from xgboost import XGBClassifier  # noqa: PLC0415
+
+        model = XGBClassifier()
+    model.load_model(str(path))
+    return model
 
 
 def crisis_oriented(arm: Arm, raw: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -421,7 +491,14 @@ def _worker_init(run_dir: str) -> None:
 def _run_fold_entry(payload: dict) -> dict:
     """Process-pool entry point; failures come back as data, not a dead worker."""
     try:
-        return run_fold(_WORKER["context"], _WORKER["baseline"], **payload)
+        payload = dict(payload)
+        persist = payload.pop("persist_models", None)
+        return run_fold(
+            _WORKER["context"],
+            _WORKER["baseline"],
+            persist_models=Path(persist) if persist else None,
+            **payload,
+        )
     except Exception as exc:  # noqa: BLE001 - reported and re-raised by the parent
         return {
             "fold_id": payload.get("fold_id"),
@@ -431,12 +508,25 @@ def _run_fold_entry(payload: dict) -> dict:
         }
 
 
+def _key_digest(keys: pd.DataFrame, rows: np.ndarray) -> str:
+    """A digest of the ordered (area, target, horizon) fitting keys.
+
+    Binds a saved estimator to the exact rows, in the exact order, that
+    produced it -- which is what makes a retained model auditable rather than
+    merely present.
+    """
+    block = keys.loc[rows, ["admin_code", "target_month", "horizon_months"]]
+    payload = "\n".join(f"{a}|{t}|{h}" for a, t, h in block.to_numpy())
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def run_fold(
     context: RunContext,
     baseline: brt.BaselineRuntime,
     fold_id: str,
     stage: str,
     selections: dict | None = None,
+    persist_models: Path | None = None,
 ) -> dict:
     """Fit every scheduled (arm, candidate) for one fold and write its predictions.
 
@@ -460,6 +550,7 @@ def run_fold(
             "fold_id": fold_id,
             "stage": stage,
             "status": "skipped_empty_test",
+            "identity": run_identity(context.run_dir, selections),
             "support": counts,
             "elapsed_seconds": 0.0,
         }
@@ -544,10 +635,17 @@ def run_fold(
                 context.configs, arm.candidate_family, candidate, arm.family == "xgb_regressor"
             )
             fit_started = time.time()
-            raw, route = fit_and_score(arm, resolved, X_train, y_train, X_eval)
+            raw, route, model = fit_and_score(arm, resolved, X_train, y_train, X_eval)
             route["seconds"] = round(time.time() - fit_started, 3)
             route["train_rows"] = int(len(train_rows))
-            route["effective_params"] = resolved
+            # Both are recorded: what was asked for, and what the fitted
+            # estimator reports back. A gap between them is itself evidence.
+            route["requested_params"] = resolved
+            route["fitting_keys_sha256"] = _key_digest(keys, train_rows)
+            if model is not None and persist_models is not None:
+                route["model"] = save_model(
+                    model, arm, persist_models / f"{fold_id}__{arm.name}__{candidate['id']}"
+                )
             routes[f"{arm.name}::{candidate['id']}"] = route
 
             crisis = crisis_oriented(arm, raw, b_eval)
@@ -577,6 +675,10 @@ def run_fold(
         "fold_id": fold_id,
         "stage": stage,
         "status": "complete",
+        # What this fold's numbers are bound to. completed_folds refuses to
+        # reuse a record whose identity no longer matches, so a continuation
+        # after changed inputs, candidates or code cannot be mixed in silently.
+        "identity": run_identity(context.run_dir, selections),
         "horizon_months": support.horizon,
         "target_month": record.target_month,
         "origin_month": record.origin_month,
@@ -600,19 +702,39 @@ def scheduled_folds(context: RunContext, stage: str) -> pd.DataFrame:
     return calendar[calendar["stage"] == stage].reset_index(drop=True)
 
 
-def completed_folds(run_dir: Path | str, stage: str) -> set[str]:
+def completed_folds(
+    run_dir: Path | str, stage: str, identity: dict | None = None
+) -> tuple[set[str], list[str]]:
+    """Folds already done, and the ones refused because their identity moved.
+
+    Reuse is not "a file exists". A record produced under a different source,
+    schema, candidate inventory, frozen selection or code revision describes a
+    different experiment, and mixing it into this one under the same run id is
+    exactly the failure the immutability rule exists to prevent.
+    """
     directory = Path(run_dir) / stage / "folds"
     if not directory.is_dir():
-        return set()
-    done = set()
-    for path in directory.glob("*.json"):
+        return set(), []
+    done: set[str] = set()
+    stale: list[str] = []
+    for path in sorted(directory.glob("*.json")):
         try:
             payload = json.loads(path.read_text())
         except json.JSONDecodeError:
             continue
-        if payload.get("status") in ("complete", "skipped_empty_test"):
-            done.add(payload["fold_id"])
-    return done
+        if payload.get("status") not in ("complete", "skipped_empty_test"):
+            continue
+        if identity is not None:
+            recorded = payload.get("identity")
+            if recorded is None:
+                stale.append(f"{payload['fold_id']}: no identity recorded")
+                continue
+            problems = compare_identity(recorded, identity)
+            if problems:
+                stale.append(f"{payload['fold_id']}: {problems[0]}")
+                continue
+        done.add(payload["fold_id"])
+    return done, stale
 
 
 def execute_stage(
@@ -621,6 +743,7 @@ def execute_stage(
     fold_ids: Sequence[str],
     workers: int,
     selections: dict | None = None,
+    persist_models: Path | None = None,
 ) -> dict:
     """Run a list of folds, sequentially or across worker processes.
 
@@ -632,14 +755,29 @@ def execute_stage(
     started = time.time()
     results: list[dict] = []
     payloads = [
-        {"fold_id": fold_id, "stage": stage, "selections": selections} for fold_id in fold_ids
+        {
+            "fold_id": fold_id,
+            "stage": stage,
+            "selections": selections,
+            "persist_models": str(persist_models) if persist_models else None,
+        }
+        for fold_id in fold_ids
     ]
 
     if workers <= 1:
         context = load_context(run_dir)
         baseline = attach_baseline(context.baseline_root)
         for payload in payloads:
-            results.append(run_fold(context, baseline, **payload))
+            payload = dict(payload)
+            persist = payload.pop("persist_models", None)
+            results.append(
+                run_fold(
+                    context,
+                    baseline,
+                    persist_models=Path(persist) if persist else None,
+                    **payload,
+                )
+            )
             _log(run_dir, stage, results[-1])
     else:
         with ProcessPoolExecutor(
@@ -858,6 +996,47 @@ def f1_from(truth: np.ndarray, pred: np.ndarray) -> float:
     return float("nan") if denominator == 0 else 2 * tp / denominator
 
 
+def code_identity() -> dict:
+    return {
+        name: prep.sha256_file(PACKAGE_DIR / name)
+        for name in ("prepare_data.py", "run_pipeline.py")
+    }
+
+
+def run_identity(run_dir: Path, selections: dict | None = None) -> dict:
+    """What a stage's outputs are bound to: inputs, schema, choices and code.
+
+    Written into every fold record and compared before any continuation, so a
+    later command cannot silently mix folds produced under different inputs,
+    candidate definitions or code into one run id.
+    """
+    spec = prep.load_frozen_spec(run_dir / "inputs")
+    identity = {
+        "spec": spec.identity(),
+        "matrix_sha256": matrix_identity(run_dir),
+        "keys_sha256": prep.sha256_file(run_dir / "data" / "keys.csv.gz"),
+        "calendar_sha256": prep.sha256_file(run_dir / "folds" / "calendar.csv"),
+        "code_sha256": code_identity(),
+    }
+    if selections is not None:
+        payload = json.dumps(selections, sort_keys=True).encode("utf-8")
+        identity["selections_sha256"] = hashlib.sha256(payload).hexdigest()
+    return identity
+
+
+def compare_identity(recorded: dict, current: dict, scientific_only: bool = False) -> list[str]:
+    """Differences between two identities, code drift reported separately."""
+    fields = ["spec", "matrix_sha256", "keys_sha256", "calendar_sha256", "selections_sha256"]
+    if not scientific_only:
+        fields.append("code_sha256")
+    return [
+        f"{field}: recorded {recorded.get(field)!r} != current {current.get(field)!r}"
+        for field in fields
+        if field in recorded or field in current
+        if recorded.get(field) != current.get(field)
+    ]
+
+
 def matrix_identity(run_dir: Path) -> str:
     """The feature matrix's hash, from the file if present, else the manifest.
 
@@ -880,12 +1059,25 @@ def matrix_identity(run_dir: Path) -> str:
     )
 
 
-def run_selection(run_dir: Path) -> dict:
+def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = False) -> dict:
     """Pick one candidate and threshold pair per arm/horizon, then one family.
 
     Every input is a 2020-2022 out-of-time development prediction that already
     exists on disk, so this step can be replayed without fitting anything.
+
+    The freeze is immutable once written. Re-running selection into a run that
+    already has one is refused: a second freeze with a fresh timestamp would
+    silently relabel main-schedule predictions that were computed under the
+    first. Pass ``into`` to replay selection into a separate directory, which
+    is how the freeze gets checked without being overwritten.
     """
+    target = Path(into) if into is not None else Path(run_dir)
+    if into is None and (target / "freeze.json").is_file() and not refreeze:
+        raise PipelineError(
+            f"{target / 'freeze.json'} already exists. Selection is frozen once "
+            "written; use --replay-into DIR to re-derive it for comparison, or "
+            "--refreeze only when deliberately discarding the existing freeze."
+        )
     # Selection reads only stored development scores and the key table, so it
     # must not demand the feature matrix: that is what lets it be replayed.
     context = load_context(run_dir, mmap=True, require_matrix=False)
@@ -998,10 +1190,15 @@ def run_selection(run_dir: Path) -> dict:
             for name in ("prepare_data.py", "run_pipeline.py")
         },
     }
-    prep._write_json(freeze, run_dir / "freeze.json")
-    pd.DataFrame(ledger_rows).to_csv(
-        run_dir / "development" / "selection_ledger.csv", index=False
+    target.mkdir(parents=True, exist_ok=True)
+    prep._write_json(freeze, target / "freeze.json")
+    ledger_path = (
+        target / "selection_ledger.csv"
+        if into is not None
+        else run_dir / "development" / "selection_ledger.csv"
     )
+    ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(ledger_rows).to_csv(ledger_path, index=False)
     return freeze
 
 
@@ -1031,16 +1228,29 @@ def stage_pilot(run_dir: Path, workers: int) -> dict:
     return execute_stage(run_dir, "development", [fold_id], workers)
 
 
-def stage_folds(run_dir: Path, stage: str, workers: int, selections: dict | None) -> dict:
-    context = load_context(run_dir)
+def stage_folds(
+    run_dir: Path,
+    stage: str,
+    workers: int,
+    selections: dict | None,
+    allow_stale_reuse: bool = False,
+) -> dict:
     calendar = pd.read_csv(run_dir / "folds" / "calendar.csv")
     scheduled = calendar[calendar["stage"] == stage]
-    done = completed_folds(run_dir, stage)
+    identity = run_identity(run_dir, selections)
+    done, stale = completed_folds(run_dir, stage, identity)
+    if stale and not allow_stale_reuse:
+        raise PipelineError(
+            f"{len(stale)} existing {stage} folds were produced under a different "
+            f"identity and will not be mixed into this run: {stale[:3]}. Start a "
+            "fresh run, or pass --allow-stale-reuse only if you can justify it."
+        )
     pending = [f for f in scheduled["fold_id"] if f not in done]
     summary = execute_stage(run_dir, stage, pending, workers, selections)
     summary["folds_reused"] = len(done)
+    summary["folds_refused_stale"] = stale
     summary["folds_scheduled"] = int(len(scheduled))
-    del context
+    summary["identity"] = identity
     return summary
 
 
@@ -1114,11 +1324,310 @@ def stage_verify(run_dir: Path) -> dict:
     return report
 
 
+def stage_persist(run_dir: Path, workers: int) -> dict:
+    """Retain the selected final estimators, and prove they are the ones used.
+
+    The main schedule scored and discarded its models. This refits every
+    selected model at every main origin under the frozen choices, keeps the
+    fitted object, records its digest, its ``get_params()`` readback and its
+    booster configuration, and then requires the regenerated predictions to be
+    identical to the stored ones -- fold by fold, across the whole schedule.
+
+    Identity, not just presence: each saved model carries the digest of the
+    ordered fitting keys it was built from, so a reviewer can tell which rows
+    produced it rather than taking the filename's word for it.
+
+    Predictions go to a scratch directory; ``main/folds`` is never rewritten.
+    """
+    freeze = json.loads((run_dir / "freeze.json").read_text())
+    calendar = pd.read_csv(run_dir / "folds" / "calendar.csv")
+    scheduled = calendar[(calendar["stage"] == "main") & (calendar["test_rows"] > 0)]
+    fold_ids = list(scheduled["fold_id"])
+
+    models_dir = run_dir / "main" / "models"
+    summary = execute_stage(
+        run_dir,
+        "main_refit",
+        fold_ids,
+        workers,
+        selections=freeze["selections"],
+        persist_models=models_dir,
+    )
+
+    comparisons = []
+    identity_dir = run_dir / "main" / "model_identity"
+    identity_dir.mkdir(parents=True, exist_ok=True)
+    for fold_id in fold_ids:
+        stored = pd.read_csv(run_dir / "main" / "folds" / f"{fold_id}.csv.gz")
+        refit = pd.read_csv(run_dir / "main_refit" / "folds" / f"{fold_id}.csv.gz")
+        order = ["arm", "config_id", "row_index"]
+        stored = stored.sort_values(order).reset_index(drop=True)
+        refit = refit.sort_values(order).reset_index(drop=True)
+        record = json.loads((run_dir / "main_refit" / "folds" / f"{fold_id}.json").read_text())
+        prep._write_json(
+            {
+                "fold_id": fold_id,
+                "identity": record["identity"],
+                "support": record["support"],
+                "imputer": record.get("imputer", {}),
+                "models": {
+                    key: {
+                        "route": route["route"],
+                        "estimator": route.get("estimator"),
+                        "constant": route.get("constant"),
+                        "fitting_keys_sha256": route.get("fitting_keys_sha256"),
+                        "train_rows": route.get("train_rows"),
+                        "fitted_params": route.get("fitted_params"),
+                        "booster_config": route.get("booster_config"),
+                        "boosted_rounds": route.get("boosted_rounds"),
+                        "n_estimators_fitted": route.get("n_estimators_fitted"),
+                        "model": route.get("model"),
+                    }
+                    for key, route in record["routes"].items()
+                },
+                "reproduces_stored_predictions": bool(stored.equals(refit)),
+            },
+            identity_dir / f"{fold_id}.json",
+        )
+        comparisons.append(
+            {"fold_id": fold_id, "rows": int(len(stored)), "identical": bool(stored.equals(refit))}
+        )
+
+    # The 36 (arm, candidate) fitted readbacks behind the development search.
+    # They do not vary by fold -- the candidate block fixes every parameter and
+    # the seed -- so one real fit per pair characterises all 4,506 of them.
+    development = _development_param_readback(run_dir)
+
+    mismatched = [c for c in comparisons if not c["identical"]]
+    report = {
+        "folds": comparisons,
+        "fold_count": len(fold_ids),
+        "fits": summary["fits"],
+        "all_reproduce_stored_predictions": not mismatched,
+        "models_dir": str(models_dir),
+        "development_param_readback": development,
+        "budget_note": (
+            f"{summary['fits']} refit-for-provenance fits plus "
+            f"{development['fits']} development readback fits, both counted "
+            "separately from the 4,506 search and 660 main budgets"
+        ),
+        "note": (
+            "the retained estimators regenerate every stored main prediction "
+            "exactly, across all folds, not only the eight verification folds"
+        ),
+    }
+    prep._write_json(report, run_dir / "validation" / "model_persistence.json")
+    if mismatched:
+        raise PipelineError(
+            f"{len(mismatched)} refitted folds do not reproduce the stored "
+            f"predictions: {[c['fold_id'] for c in mismatched][:5]}"
+        )
+    return report
+
+
+def _development_param_readback(run_dir: Path) -> dict:
+    """Fit each (arm, candidate) once and dump what the estimator reports back."""
+    context = load_context(run_dir)
+    baseline = attach_baseline(context.baseline_root)
+    calendar = context.calendar
+    development = calendar[
+        (calendar["stage"] == "development") & (calendar["test_rows_with_history"] > 0)
+    ].sort_values("target_ord")
+    record = development.iloc[0]
+    support = fold_support(context.keys, record)
+
+    matched_rows = np.where(support.matched)[0]
+    full_rows = np.where(support.full)[0]
+    eval_rows = np.where(support.test_history)[0][:1]
+
+    with brt.baseline_imports(baseline) as (_config, _georf):
+        from src.customize.customize import OutOfRangeImputer  # noqa: PLC0415
+
+        imputer = OutOfRangeImputer(strategy="max_plus", multiplier=100.0)
+        rf_train = _feature_slice(context.X, ARMS_BY_NAME["rich_rf"], context.spec, matched_rows)
+        imputer.fit(rf_train)
+        rf_train_imputed = np.asarray(imputer.transform(rf_train), dtype=np.float64)
+        rf_eval = np.asarray(
+            imputer.transform(
+                _feature_slice(context.X, ARMS_BY_NAME["rich_rf"], context.spec, eval_rows)
+            ),
+            dtype=np.float64,
+        )
+
+    readback: dict = {}
+    fits = 0
+    for arm in ARMS:
+        train_rows = matched_rows if arm.pool == "matched" else full_rows
+        y_train = _targets(arm, context.keys, train_rows)
+        if arm.family == "rf_classifier":
+            X_train, X_eval = rf_train_imputed, rf_eval
+        else:
+            X_train = _feature_slice(context.X, arm, context.spec, train_rows)
+            X_eval = _feature_slice(context.X, arm, context.spec, eval_rows)
+        for candidate in candidates_for(context.configs, arm):
+            resolved = resolve_config(
+                context.configs, arm.candidate_family, candidate, arm.family == "xgb_regressor"
+            )
+            _raw, route, _model = fit_and_score(arm, resolved, X_train, y_train, X_eval)
+            fits += 1
+            readback[f"{arm.name}::{candidate['id']}"] = {
+                "requested_params": resolved,
+                "fitted_params": route.get("fitted_params"),
+                "booster_config": route.get("booster_config"),
+                "boosted_rounds": route.get("boosted_rounds"),
+                "n_estimators_fitted": route.get("n_estimators_fitted"),
+            }
+    payload = {
+        "fold_used": record.fold_id,
+        "fits": fits,
+        "combinations": len(readback),
+        "rationale": (
+            "candidate parameters and the seed are fixed by the frozen block and "
+            "do not vary by fold, so one fitted readback per (arm, candidate) "
+            "characterises every development fit of that pair"
+        ),
+        "readback": readback,
+    }
+    prep._write_json(payload, run_dir / "development" / "effective_params.json")
+    return payload
+
+
+def stage_replay_models(run_dir: Path, workers: int) -> dict:
+    """Predict from the retained estimators without fitting anything.
+
+    This is the check the refit cannot make: it loads each saved model off
+    disk, verifies its digest, predicts, and requires the stored scores back.
+    A model that was silently replaced, truncated or re-fitted under different
+    data fails here even though a refit would have passed.
+    """
+    del workers
+    freeze = json.loads((run_dir / "freeze.json").read_text())
+    context = load_context(run_dir)
+    identity_dir = run_dir / "main" / "model_identity"
+    if not identity_dir.is_dir():
+        raise PipelineError("no retained models; run --stage persist first")
+
+    baseline = attach_baseline(context.baseline_root)
+    stored_all = pipe_stored_predictions(run_dir)
+
+    results = []
+    for path in sorted(identity_dir.glob("*.json")):
+        record = json.loads(path.read_text())
+        fold_id = record["fold_id"]
+        fold = context.calendar[context.calendar["fold_id"] == fold_id].iloc[0]
+        support = fold_support(context.keys, fold)
+        matched_rows = np.where(support.matched)[0]
+        eval_history = np.where(support.test_history)[0]
+        eval_all = np.where(support.test)[0]
+
+        rf_eval = None
+        if len(eval_history):
+            with brt.baseline_imports(baseline) as (_config, _georf):
+                from src.customize.customize import OutOfRangeImputer  # noqa: PLC0415
+
+                imputer = OutOfRangeImputer(strategy="max_plus", multiplier=100.0)
+                imputer.fit(
+                    _feature_slice(
+                        context.X, ARMS_BY_NAME["rich_rf"], context.spec, matched_rows
+                    )
+                )
+                rf_eval = np.asarray(
+                    imputer.transform(
+                        _feature_slice(
+                            context.X, ARMS_BY_NAME["rich_rf"], context.spec, eval_history
+                        )
+                    ),
+                    dtype=np.float64,
+                )
+
+        stored = stored_all[stored_all["fold_id"] == fold_id]
+        for key, entry in record["models"].items():
+            arm_name, config_id = key.split("::")
+            arm = ARMS_BY_NAME[arm_name]
+            score_rows = eval_all if arm_name == "fullpool_xgb" else eval_history
+            block = stored[(stored["arm"] == arm_name) & (stored["config_id"] == config_id)]
+            block = block.sort_values("row_index")
+            if entry["route"] != "model":
+                results.append(
+                    {
+                        "fold_id": fold_id,
+                        "key": key,
+                        "route": entry["route"],
+                        "identical": bool(
+                            np.allclose(block["raw_score"].to_numpy(), entry["constant"])
+                        ),
+                    }
+                )
+                continue
+            # save_model records the path relative to the run root.
+            model_path = run_dir / entry["model"]["path"]
+            if not model_path.is_file():
+                raise PipelineError(f"retained model missing: {model_path}")
+            digest = prep.sha256_file(model_path)
+            X_eval = (
+                rf_eval
+                if arm.family == "rf_classifier"
+                else _feature_slice(context.X, arm, context.spec, score_rows)
+            )
+            model = load_model(arm, model_path)
+            if arm.family == "xgb_regressor":
+                raw = np.asarray(model.predict(X_eval), dtype=np.float64)
+            else:
+                raw = class1_probability(model, X_eval)
+            expected = block["raw_score"].to_numpy(dtype=np.float64)
+            # Stored scores went through a CSV round trip, so compare at the
+            # precision that survives it rather than demanding exact bits.
+            identical = expected.shape == raw.shape and np.allclose(
+                expected, raw, rtol=0.0, atol=5e-16 + 1e-12
+            )
+            results.append(
+                {
+                    "fold_id": fold_id,
+                    "key": key,
+                    "route": "model",
+                    "digest_matches": digest == entry["model"]["sha256"],
+                    "rows": int(len(expected)),
+                    "max_abs_difference": float(np.max(np.abs(expected - raw)))
+                    if expected.shape == raw.shape
+                    else float("nan"),
+                    "identical": bool(identical),
+                }
+            )
+
+    failures = [r for r in results if not r["identical"] or not r.get("digest_matches", True)]
+    report = {
+        "models_checked": len(results),
+        "folds": len(set(r["fold_id"] for r in results)),
+        "all_reproduce": not failures,
+        "failures": failures[:20],
+        "primary_family": freeze["primary_family"],
+        "note": "prediction-only replay: models were loaded from disk, not refitted",
+    }
+    prep._write_json(report, run_dir / "validation" / "model_replay.json")
+    if failures:
+        raise PipelineError(f"{len(failures)} retained models did not reproduce their scores")
+    return report
+
+
+def pipe_stored_predictions(run_dir: Path) -> pd.DataFrame:
+    return load_stage_predictions(run_dir, "main")
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run-dir", required=True)
     parser.add_argument(
-        "--stage", required=True, choices=("pilot", "development", "select", "main", "verify")
+        "--stage",
+        required=True,
+        choices=(
+            "pilot",
+            "development",
+            "select",
+            "main",
+            "verify",
+            "persist",
+            "replay-models",
+        ),
     )
     parser.add_argument(
         "--workers",
@@ -1127,6 +1636,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="fold-level worker processes; every estimator stays at n_jobs=1",
     )
     parser.add_argument("--release-zip", default=str(DEFAULT_RELEASE_ZIP))
+    parser.add_argument(
+        "--replay-into", default=None, help="select: re-derive the freeze here instead"
+    )
+    parser.add_argument(
+        "--refreeze", action="store_true", help="select: deliberately discard an existing freeze"
+    )
+    parser.add_argument(
+        "--allow-code-drift",
+        action="store_true",
+        help="main: continue although the code moved since the freeze",
+    )
+    parser.add_argument(
+        "--allow-stale-reuse",
+        action="store_true",
+        help="reuse folds recorded under a different identity (justify it)",
+    )
     args = parser.parse_args(argv)
 
     run_dir = Path(args.run_dir)
@@ -1136,17 +1661,47 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.stage == "pilot":
         summary = stage_pilot(run_dir, args.workers)
     elif args.stage == "development":
-        summary = stage_folds(run_dir, "development", args.workers, None)
+        summary = stage_folds(
+            run_dir, "development", args.workers, None, args.allow_stale_reuse
+        )
     elif args.stage == "select":
-        summary = run_selection(run_dir)
+        summary = run_selection(
+            run_dir,
+            into=Path(args.replay_into) if args.replay_into else None,
+            refreeze=args.refreeze,
+        )
     elif args.stage == "verify":
         summary = stage_verify(run_dir)
+    elif args.stage == "persist":
+        summary = stage_persist(run_dir, args.workers)
+    elif args.stage == "replay-models":
+        summary = stage_replay_models(run_dir, args.workers)
     else:
         freeze_path = run_dir / "freeze.json"
         if not freeze_path.is_file():
             raise PipelineError("the main schedule requires freeze.json; run --stage select")
         freeze = json.loads(freeze_path.read_text())
-        summary = stage_folds(run_dir, "main", args.workers, freeze["selections"])
+        drift = compare_identity(
+            {"spec": freeze["spec"], "matrix_sha256": freeze["matrix_sha256"]},
+            run_identity(run_dir),
+            scientific_only=True,
+        )
+        if drift:
+            raise PipelineError(
+                "the frozen inputs no longer describe this run, so the main "
+                f"schedule would not be the one that was frozen: {drift}"
+            )
+        code_drift = freeze["code_sha256"] != code_identity()
+        if code_drift and not args.allow_code_drift:
+            raise PipelineError(
+                "the code has changed since the freeze. Re-run on the frozen "
+                "revision, or pass --allow-code-drift and justify it in the "
+                "run record."
+            )
+        summary = stage_folds(
+            run_dir, "main", args.workers, freeze["selections"], args.allow_stale_reuse
+        )
+        summary["code_drift_from_freeze"] = bool(code_drift)
 
     stage_path = run_dir / f"stage_{args.stage}.json"
     prep._write_json(summary, stage_path)

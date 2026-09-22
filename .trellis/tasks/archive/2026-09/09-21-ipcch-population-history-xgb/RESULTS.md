@@ -138,6 +138,8 @@ arm's choice varies by horizon. Full ledger in
 | development | 136 non-empty (8 empty) | 4,506 | 5,184 |
 | main | 110 non-empty (12 empty) | 660 | 732 |
 | verification replay | 8 | 48 | reported separately |
+| refit-for-provenance | 110 | 660 | reported separately |
+| development param readback | 1 | 36 | reported separately |
 
 21.0 h of development fit time and 4.3 h of main fit time, compressed to 97 and
 24 minutes wall by 12 fold-workers. Every fit took the `model` route; no
@@ -146,6 +148,42 @@ constant-target or single-class fallback was reached anywhere in the run.
 13 development folds and 12 main folds have evaluation rows but **no** rows with
 persistence — new areas appearing for the first time. Only `fullpool_xgb` runs
 there, which is exactly the routing the contract specifies.
+
+## Remediation after the first close audit
+
+The first close audit (`826221934ce1b02cad427dc8`) independently rebuilt the
+full 170,780 x 561 matrix from the raw source and matched its SHA256 exactly,
+recomputed all 266 fold masks and reconciled all 1,367,940 development and
+361,106 main prediction rows. A1-A4 and A6 were met. Two majors were raised and
+both were real:
+
+**Model-level provenance was missing.** The fitting helper discarded the fitted
+estimator and recorded the *requested* configuration dictionary as
+`effective_params`, so nothing established what had actually produced a
+prediction. Fixed: the route record now carries the estimator's own
+`get_params()` readback, its booster configuration and realised round count, and
+the digest of the ordered fitting keys it was built from. A new `--stage persist`
+refits every selected model at every main origin under the frozen choices,
+**retains** the fitted objects with their digests, and requires the regenerated
+predictions to be identical to the stored ones: **110/110 folds, 660 models, all
+identical**. A further `--stage replay-models` loads each saved estimator off
+disk, verifies its digest and re-predicts without fitting: **660/660 reproduce**.
+
+A side effect worth naming: the fitting-key digests make A3 directly checkable.
+All five matched arms in a fold share one digest, `fullpool_xgb` has another —
+so "byte-identical ordered fitting keys" is now a value a reviewer can compare
+rather than a property they have to trust.
+
+**Stages were not immutable.** `select` would overwrite an existing freeze with
+a fresh timestamp, and fold reuse keyed on nothing but "a file exists". Fixed:
+the freeze is written once and re-deriving it in place is refused
+(`--replay-into DIR` for comparison, `--refreeze` to discard deliberately);
+every fold record carries an identity over source, schema, candidates, keys,
+calendar, frozen selections and code, and only matching folds are reused;
+`--stage main` refuses to continue if the frozen inputs no longer describe the
+run, or if the code moved since the freeze without `--allow-code-drift`. The
+audit found no numerical mixing in pop-v1, and the guards are what stop it from
+being a question next time.
 
 ## Recorded deviation from the contract
 
@@ -168,10 +206,14 @@ rebuildable by `prepare_data.py` from the pinned source):
 ```
 python -B IPCCHPopulationHistoryExperiment/test_contracts.py
 python -B IPCCHPopulationHistoryExperiment/run_pipeline.py \
-    --run-dir IPCCHPopulationHistoryExperiment/runs/pop-v1 --stage select
+    --run-dir IPCCHPopulationHistoryExperiment/runs/pop-v1 --stage select \
+    --replay-into OUT/freeze_replay
 python -B IPCCHPopulationHistoryExperiment/report_results.py \
     --run-dir IPCCHPopulationHistoryExperiment/runs/pop-v1 --out-dir OUT
 ```
+
+`--replay-into` is required: the freeze is immutable once written, and
+re-deriving it in place is refused.
 
 Verified in a clean clone at `45b74fb`: 41/41 contract tests pass; the selection
 replay reproduces `selections`, `primary_family`, `primary_mean_delta`,
