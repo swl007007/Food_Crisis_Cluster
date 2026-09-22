@@ -27,6 +27,11 @@ PARTITION_METRICS_INTEGRATION.md
 !GeoRFBaseline/SOURCE_PROVENANCE.json
 !GeoRFBaseline/TESTED_ENVIRONMENT.json
 !EthiopiaForecastingExperiment/manifests/*.json
+# Frozen task inventories are part of the implementation contract, so an
+# independent reviewer's clone has to be able to read them.
+!.trellis/tasks/**/candidate-configs.json
+!.trellis/tasks/**/feature-schema.json
+!.trellis/tasks/**/research/*.json
 *.pkl
 
 test_*
