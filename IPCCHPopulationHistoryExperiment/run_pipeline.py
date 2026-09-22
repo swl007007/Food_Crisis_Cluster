@@ -577,8 +577,8 @@ def scheduled_folds(context: RunContext, stage: str) -> pd.DataFrame:
     return calendar[calendar["stage"] == stage].reset_index(drop=True)
 
 
-def completed_folds(run_dir: Path, stage: str) -> set[str]:
-    directory = run_dir / stage / "folds"
+def completed_folds(run_dir: Path | str, stage: str) -> set[str]:
+    directory = Path(run_dir) / stage / "folds"
     if not directory.is_dir():
         return set()
     done = set()
@@ -671,8 +671,8 @@ def _log(run_dir: Path, stage: str, result: dict) -> None:
 # --------------------------------------------------------------------------
 
 
-def load_stage_predictions(run_dir: Path, stage: str) -> pd.DataFrame:
-    directory = run_dir / stage / "folds"
+def load_stage_predictions(run_dir: Path | str, stage: str) -> pd.DataFrame:
+    directory = Path(run_dir) / stage / "folds"
     frames = []
     for path in sorted(directory.glob("*.csv.gz")):
         frame = pd.read_csv(path)
