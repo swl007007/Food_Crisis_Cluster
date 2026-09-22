@@ -1081,6 +1081,86 @@ def test_the_pilot_reuses_a_matching_fold_and_refuses_a_mismatched_one():
             raise AssertionError("the pilot refitted over a mismatched completed fold")
 
 
+def test_a_new_freeze_refuses_folds_it_cannot_bind_to_this_run():
+    """A complete cohort is not enough; it has to be *this* run's cohort.
+
+    Otherwise `--stage select` attaches current inputs, candidates and code to
+    predictions generated under different ones, and the main precondition then
+    trusts that freshly minted freeze.
+    """
+    import json
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as raw:
+        tmp = Path(raw)
+        keys, calendar, history = _development_cohort_fixture(tmp)
+        identity = {
+            "spec": {"rich_count": 561},
+            "matrix_sha256": "m",
+            "keys_sha256": "k",
+            "calendar_sha256": "c",
+            "code_sha256": {"run_pipeline.py": "1"},
+        }
+        folds = tmp / "development" / "folds"
+        for fold_id in calendar["fold_id"]:
+            (folds / f"{fold_id}.json").write_text(
+                json.dumps(
+                    {"fold_id": fold_id, "status": "complete", "identity": identity}
+                )
+            )
+        # Matching identity: the cohort binds.
+        bound = pipe.reconcile_development_cohort(
+            tmp, keys, calendar, history, identity=identity
+        )
+        assert bound["identity_enforced"] is True
+        assert bound["supported_folds"] == 8
+
+        # One fold produced under different inputs must stop a new freeze,
+        # even though the cohort is otherwise complete.
+        (folds / "dev_h03_2020-01.json").write_text(
+            json.dumps(
+                {
+                    "fold_id": "dev_h03_2020-01",
+                    "status": "complete",
+                    "identity": {**identity, "matrix_sha256": "different"},
+                }
+            )
+        )
+        try:
+            pipe.reconcile_development_cohort(tmp, keys, calendar, history, identity=identity)
+        except pipe.PipelineError as error:
+            assert "not produced under this run's identity" in str(error)
+        else:
+            raise AssertionError("a foreign development fold was folded into a new freeze")
+
+        # A read-only replay of historical evidence is still allowed, and says so.
+        replayed = pipe.reconcile_development_cohort(tmp, keys, calendar, history, identity=None)
+        assert replayed["identity_enforced"] is False
+
+
+def test_a_replay_freeze_can_never_drive_a_main_schedule():
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as raw:
+        root = Path(raw) / "run"
+        _synthetic_run(root)
+        identity = pipe.run_identity(root)
+        replay = {
+            "spec": identity["spec"],
+            "matrix_sha256": identity["matrix_sha256"],
+            "identity": identity,
+            "code_sha256": pipe.code_identity(),
+            "authoritative": False,
+            "kind": "read_only_replay",
+        }
+        try:
+            pipe.check_main_preconditions(root, replay)
+        except pipe.PipelineError as error:
+            assert "read_only_replay" in str(error)
+        else:
+            raise AssertionError("a replay freeze was accepted as a commitment")
+
+
 def test_identity_comparison_separates_code_drift_from_science():
     recorded = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "old"}}
     current = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "new"}}

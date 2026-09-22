@@ -308,6 +308,40 @@ unprovable or mismatched one stops the run.
 
 Three more tests; 51/51 pass.
 
+## Remediation of re-audit 5ec6c8c857a8ef8d6dbb1696
+
+A8 moved to **met**; A1-A4, A6, A7, A9 met. One major left, and it was the
+sharp version of the previous one:
+
+**A new freeze did not prove its folds were this run's folds.** The cohort
+check accepted any completed record, so if data, keys, candidate parameters or
+code changed after development, `--stage select` would attach the *current*
+identity to predictions generated under different conditions — and
+`check_main_preconditions` would then trust that freshly minted freeze.
+
+Fixed by separating the two things `select` was doing:
+
+* **Creating an authoritative freeze** now validates every consumed fold
+  against the expected development identity and refuses any mismatch or any
+  record that cannot prove one. The freeze records
+  `authoritative: true`, `kind: authoritative_freeze`, and a
+  `consumed_predictions_sha256` binding it to the exact prediction files it
+  was derived from.
+* **Replaying an existing run** (`--replay-into DIR`) is an explicitly labelled
+  read-only re-derivation of historical evidence: `authoritative: false`,
+  `kind: read_only_replay`, `identity_enforced: false`.
+  `check_main_preconditions` refuses such a freeze outright, so a replay can
+  never become a commitment.
+
+This is what preserves `pop-v1`: its development folds predate identity
+recording, so a new authoritative freeze over them is refused by name — with
+the error pointing at `--replay-into` — while the documented replay keeps
+working and reproduces `share_xgb` and every selected value.
+
+Two more tests: a complete cohort with one mismatched fold is refused while the
+same cohort replays fine; a replay freeze cannot drive a main schedule.
+53/53 pass.
+
 ## Known deviations, stated rather than buried
 
 1. **Fold-level parallelism.** `technical-contract.md` §7 asks for sequential

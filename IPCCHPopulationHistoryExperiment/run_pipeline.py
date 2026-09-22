@@ -1074,7 +1074,11 @@ def missing_identity_fields(recorded: dict, current: dict) -> list[str]:
 
 
 def reconcile_development_cohort(
-    run_dir: Path, keys: pd.DataFrame, calendar: pd.DataFrame, history: pd.DataFrame
+    run_dir: Path,
+    keys: pd.DataFrame,
+    calendar: pd.DataFrame,
+    history: pd.DataFrame,
+    identity: dict | None = None,
 ) -> dict:
     """Prove the development cohort is complete before anything is optimised.
 
@@ -1094,15 +1098,23 @@ def reconcile_development_cohort(
     supported = scheduled[scheduled["test_rows_with_history"] > 0]
     problems: list[str] = []
 
-    done, stale = completed_folds(run_dir, "development", None)
+    # ``identity`` is supplied when a new authoritative freeze is being
+    # created: every consumed fold must then prove it was produced under these
+    # same inputs, keys, candidates and code. It is None only for an explicitly
+    # labelled read-only replay of an existing run, where the folds are
+    # historical evidence and the output is not authoritative.
+    done, stale = completed_folds(run_dir, "development", identity)
     missing_records = sorted(set(supported["fold_id"]) - done)
     if missing_records:
         problems.append(
-            f"{len(missing_records)} supported development folds have no completed "
-            f"record: {missing_records[:5]}"
+            f"{len(missing_records)} supported development folds have no usable "
+            f"completed record: {missing_records[:5]}"
         )
     if stale:
-        problems.append(f"{len(stale)} development records are unusable: {stale[:3]}")
+        problems.append(
+            f"{len(stale)} development records were not produced under this run's "
+            f"identity: {stale[:3]}"
+        )
 
     present = set(history["fold_id"].unique())
     silent = sorted(set(supported["fold_id"]) - present)
@@ -1151,15 +1163,27 @@ def reconcile_development_cohort(
             )
 
     if problems:
-        raise PipelineError(
-            "the development cohort is incomplete, so a freeze derived from it "
-            "would not be comparable with the persistence baseline: "
-            + "; ".join(problems[:6])
+        why = (
+            "the development cohort cannot be bound to this run, so a freeze "
+            "derived from it would attach these inputs to predictions that may "
+            "not have been made under them"
+            if identity is not None
+            else "the development cohort is incomplete, so a freeze derived from "
+            "it would not be comparable with the persistence baseline"
         )
+        hint = (
+            " (for an existing run whose folds predate identity recording, use "
+            "--replay-into DIR, which produces a labelled read-only replay)"
+            if identity is not None
+            else ""
+        )
+        raise PipelineError(f"{why}: " + "; ".join(problems[:6]) + hint)
 
     return {
+        "identity_enforced": identity is not None,
         "supported_folds": int(len(supported)),
         "folds_with_predictions": len(present & set(supported["fold_id"])),
+        "consumed_predictions_sha256": _consumed_predictions_digest(run_dir, sorted(present)),
         "expected_keys_per_horizon": {str(h): len(expected[h]) for h in HORIZONS},
         "candidates_per_horizon": {k: len(v) for k, v in coverage.items()},
         "rule": (
@@ -1169,6 +1193,20 @@ def reconcile_development_cohort(
             "one support"
         ),
     }
+
+
+def _consumed_predictions_digest(run_dir: Path, fold_ids: Sequence[str]) -> str:
+    """Bind the freeze to the exact prediction files it was derived from."""
+    digest = hashlib.sha256()
+    for fold_id in sorted(fold_ids):
+        path = run_dir / "development" / "folds" / f"{fold_id}.csv.gz"
+        digest.update(fold_id.encode("utf-8"))
+        digest.update(b"\x00")
+        digest.update(
+            (prep.sha256_file(path) if path.is_file() else "absent").encode("utf-8")
+        )
+        digest.update(b"\n")
+    return digest.hexdigest()
 
 
 def matrix_identity(run_dir: Path) -> str:
@@ -1205,8 +1243,9 @@ def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = Fals
     first. Pass ``into`` to replay selection into a separate directory, which
     is how the freeze gets checked without being overwritten.
     """
-    target = Path(into) if into is not None else Path(run_dir)
-    if into is None and (target / "freeze.json").is_file() and not refreeze:
+    replay = into is not None
+    target = Path(into) if replay else Path(run_dir)
+    if not replay and (target / "freeze.json").is_file() and not refreeze:
         raise PipelineError(
             f"{target / 'freeze.json'} already exists. Selection is frozen once "
             "written; use --replay-into DIR to re-derive it for comparison, or "
@@ -1242,7 +1281,13 @@ def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = Fals
     history = joined[joined["support"] == "E_history"].copy()
 
     # Nothing is optimised until the cohort is shown to be complete.
-    cohort = reconcile_development_cohort(run_dir, keys, context.calendar, history)
+    cohort = reconcile_development_cohort(
+        run_dir,
+        keys,
+        context.calendar,
+        history,
+        identity=None if replay else run_identity(run_dir, None),
+    )
 
     persistence = {}
     for horizon in HORIZONS:
@@ -1317,6 +1362,10 @@ def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = Fals
         "information_cutoff": "2022-12",
         "selection_cohort": "E_history development predictions, 2020-2022 targets",
         "cohort_reconciliation": cohort,
+        # A replay re-derives an existing freeze for comparison. It is not an
+        # input-bound experimental commitment and must never drive a main run.
+        "authoritative": not replay,
+        "kind": "read_only_replay" if replay else "authoritative_freeze",
         "persistence_development_f1": {str(h): persistence[h] for h in HORIZONS},
         "selections": selections,
         "primary_family": primary,
@@ -1525,6 +1574,12 @@ def check_main_preconditions(
     drift, and is refused by name rather than by inventing a historical hash or
     by quietly passing: the two failure modes the check exists to avoid.
     """
+    if freeze.get("authoritative") is False:
+        raise PipelineError(
+            f"this freeze is a {freeze.get('kind')}, re-derived for comparison "
+            "from historical folds without proving their identity. It is not an "
+            "input-bound commitment and cannot drive a main schedule."
+        )
     current = run_identity(run_dir)
     recorded = freeze.get("identity")
     legacy = recorded is None

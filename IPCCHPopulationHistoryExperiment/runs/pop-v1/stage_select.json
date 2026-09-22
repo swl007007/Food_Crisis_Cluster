@@ -1,7 +1,8 @@
 {
+  "authoritative": false,
   "code_sha256": {
     "prepare_data.py": "d582ebad1112778eff1ce5c2d41a0df92bad6707df2455fd6fd5cde1d62814fc",
-    "run_pipeline.py": "d6419a219665b5362ccab87439044560cf25c06ff137347941b5814c79ef1c34"
+    "run_pipeline.py": "f76ecd4ed22025cbe45ed31376b74a6e71c1b3d332208d3487b5053369a66bbe"
   },
   "cohort_reconciliation": {
     "candidates_per_horizon": {
@@ -10,6 +11,7 @@
       "h3": 36,
       "h6": 36
     },
+    "consumed_predictions_sha256": "8444b8173bb5270b2618d410f42163157d26bf9f27b6f303175777ecbe0b9162",
     "expected_keys_per_horizon": {
       "1": 9668,
       "12": 8168,
@@ -17,15 +19,16 @@
       "6": 8887
     },
     "folds_with_predictions": 123,
+    "identity_enforced": false,
     "rule": "every supported development fold has a completed record and contributes predictions; each arm/candidate/horizon covers exactly the expected evaluation keys with no duplicates; candidates share one support",
     "supported_folds": 123
   },
-  "frozen_utc": "2026-09-22T12:48:26Z",
+  "frozen_utc": "2026-09-22T13:21:20Z",
   "identity": {
     "calendar_sha256": "c795f78dcca78019d0eec7f0555a3a029032561a5dce82c8203ecb79e4ea02b9",
     "code_sha256": {
       "prepare_data.py": "d582ebad1112778eff1ce5c2d41a0df92bad6707df2455fd6fd5cde1d62814fc",
-      "run_pipeline.py": "d6419a219665b5362ccab87439044560cf25c06ff137347941b5814c79ef1c34"
+      "run_pipeline.py": "f76ecd4ed22025cbe45ed31376b74a6e71c1b3d332208d3487b5053369a66bbe"
     },
     "keys_sha256": "8deeff1b6c2ad6ac2c75dfc119ad7ec19c35d69fa8ebfc2da4773b98cfbfa2fe",
     "matrix_sha256": "ce85badb07a37f0ce9df7b2e9d412bc64b651872a9aecd6048cca8079a618648",
@@ -38,6 +41,7 @@
     }
   },
   "information_cutoff": "2022-12",
+  "kind": "read_only_replay",
   "matrix_sha256": "ce85badb07a37f0ce9df7b2e9d412bc64b651872a9aecd6048cca8079a618648",
   "persistence_development_f1": {
     "1": 0.8190255220417634,
