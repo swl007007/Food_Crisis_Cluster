@@ -43,6 +43,9 @@
   },
   "claims": {
     "formulation_advantage": {
+      "own_comparisons_result": "not_supported",
+      "prerequisite": "prediction_gain",
+      "prerequisite_result": "not_supported",
       "required_comparisons": [
         "share_xgb_vs_rich_direct_xgb",
         "share_xgb_vs_fullpool_xgb"

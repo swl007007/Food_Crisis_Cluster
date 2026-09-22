@@ -177,8 +177,15 @@ succeed or not:
 
 1. **prediction gain** — primary family vs `rich_rf` *and* vs `persistence`;
 2. **formulation advantage** — only if the primary is `correction_xgb` or
-   `share_xgb`: additionally vs `rich_direct_xgb` *and* `fullpool_xgb`;
+   `share_xgb`: **additionally** vs `rich_direct_xgb` *and* `fullpool_xgb`;
 3. **information gain** — `rich_direct_xgb` vs `binary_history_xgb`.
+
+"Additionally" is load-bearing, so claim 2 carries claim 1 as a prerequisite. A
+reformulation that beats both direct classifiers but loses to `rich_rf` or to
+persistence has not shown a better *formulation* of the problem — it has shown
+nothing the prediction-gain claim did not already fail. Its own comparisons
+failing still settles it on their own; the prerequisite only pulls it down when
+its own comparisons would otherwise have carried it.
 
 A gain is *stable* only when four conditions hold together: mean delta F1 > 0,
 the 95% lower bound > 0, no horizon with a negative point delta, and a positive

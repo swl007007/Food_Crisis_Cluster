@@ -364,6 +364,40 @@ carries a standing warning not to write "more fitting support wins".
 
 No number changed; this was a claim about why the numbers look as they do.
 
+## Remediation of re-audit 4a44c2a63ed56ab327f39bd2
+
+That reviewer rebuilt the 170,780 x 561 matrix from raw source to the frozen
+hash, verified all 660 retained model binaries against their committed records,
+and replayed selection and reporting. It raised three findings; one was the
+support/ranking error already corrected in `48702de`, and two were new.
+
+**D17 / R10: the formulation-advantage claim had no prerequisite.** §6 asks for
+it "**additionally** vs `rich_direct_xgb` AND `fullpool_xgb`" — additionally to
+the prediction gain. The reporter evaluated the three claims independently, so a
+run whose primary beat both direct classifiers but lost to `rich_rf` would have
+reported `formulation_advantage: supported` alongside
+`prediction_gain: not_supported`. The reviewer built exactly that counterexample
+and confirmed it. Fixed: `required_pairs` now returns a prerequisite map and
+`evaluate_claims` applies it — a claim's own failing comparisons still settle it
+on their own, and the prerequisite only pulls it down when its own comparisons
+would otherwise have carried it; anything unprovable is `incomplete`. The
+reviewer's counterexample is now a regression test, along with the
+prerequisite-met, prerequisite-incomplete and own-failure branches.
+
+pop-v1's own verdicts are unchanged — all three claims remain `not_supported`,
+and `formulation_advantage` now records `own_comparisons_result: not_supported`
+beside `prerequisite_result: not_supported`. The defect was in how the rule
+would treat *other* results.
+
+**Empty folds were described as history-less folds.** RESULTS.md said "13
+development folds and 12 main folds have evaluation rows but no rows with
+persistence". The 12 main folds are **empty months** with no evaluation rows at
+all; the count of non-empty main folds lacking persistence is **zero**. Corrected
+to separate the two kinds of thin fold explicitly: 8 and 12 empty months in
+development and main, 13 history-less folds in development and none in main.
+
+54/54 tests pass; the report was regenerated under the corrected rule.
+
 ## Known deviations, stated rather than buried
 
 1. **Fold-level parallelism.** `technical-contract.md` §7 asks for sequential

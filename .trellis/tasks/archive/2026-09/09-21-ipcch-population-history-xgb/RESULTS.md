@@ -152,9 +152,14 @@ arm's choice varies by horizon. Full ledger in
 24 minutes wall by 12 fold-workers. Every fit took the `model` route; no
 constant-target or single-class fallback was reached anywhere in the run.
 
-13 development folds and 12 main folds have evaluation rows but **no** rows with
-persistence — new areas appearing for the first time. Only `fullpool_xgb` runs
-there, which is exactly the routing the contract specifies.
+Two different kinds of thin fold, which are easy to conflate:
+
+* **Empty months** — no evaluation rows at all, so nothing is fitted: 8 in
+  development, 12 in main. IPCCH simply published nothing for that target month.
+* **Evaluation rows but no persistence** — new areas appearing for the first
+  time, where only `fullpool_xgb` can run, which is exactly the routing the
+  contract specifies: **13 in development, and none in main**. All 110 non-empty
+  main folds have history-supported rows.
 
 ## Remediation after the first close audit
 

@@ -549,23 +549,78 @@ def stability_verdict(
     }
 
 
-def required_pairs(primary: str) -> tuple[list[tuple[str, str]], dict]:
-    """The comparisons each claim requires (§6)."""
+def required_pairs(primary: str) -> tuple[list[tuple[str, str]], dict, dict]:
+    """The comparisons each claim requires, and which claim each one builds on.
+
+    §6 asks for the formulation advantage "**additionally** vs
+    ``rich_direct_xgb`` AND ``fullpool_xgb``". Additionally to the prediction
+    gain -- a reformulation that beats the two direct classifiers but loses to
+    ``rich_rf`` or to persistence has not demonstrated a better *formulation*
+    of the problem, it has demonstrated nothing the prediction-gain claim did
+    not already fail. So that claim carries a prerequisite rather than standing
+    on its own comparisons alone.
+    """
     claims = {
         "prediction_gain": [(primary, "rich_rf"), (primary, "persistence")],
         "information_gain": [("rich_direct_xgb", "binary_history_xgb")],
     }
+    prerequisites: dict[str, str] = {}
     if primary in ("correction_xgb", "share_xgb"):
         claims["formulation_advantage"] = [
             (primary, "rich_direct_xgb"),
             (primary, "fullpool_xgb"),
         ]
+        prerequisites["formulation_advantage"] = "prediction_gain"
     pairs: list[tuple[str, str]] = []
     for entries in claims.values():
         for pair in entries:
             if pair not in pairs:
                 pairs.append(pair)
-    return pairs, claims
+    return pairs, claims, prerequisites
+
+
+def evaluate_claims(claims: dict, prerequisites: dict, verdicts: dict) -> dict:
+    """Resolve each claim conjunctively, then apply any prerequisite.
+
+    Order matters. Positive evidence of failure in a claim's own comparisons
+    settles it as ``not_supported`` whatever its prerequisite did; only when
+    its own comparisons would otherwise pass does an unmet or unprovable
+    prerequisite pull it down. Missing evidence anywhere is ``incomplete``,
+    which is never a pass.
+    """
+    own = {}
+    for claim, entries in claims.items():
+        labels = [f"{a}_vs_{b}" for a, b in entries]
+        outcomes = [verdicts[label]["verdict"] for label in labels]
+        own[claim] = {
+            "required_comparisons": labels,
+            "verdicts": dict(zip(labels, outcomes)),
+            "result": (
+                "incomplete"
+                if "incomplete" in outcomes
+                else ("supported" if all(o == "stable_gain" for o in outcomes) else "not_supported")
+            ),
+        }
+
+    resolved = {}
+    for claim, entry in own.items():
+        result = entry["result"]
+        record = dict(entry)
+        prerequisite = prerequisites.get(claim)
+        if prerequisite is not None:
+            upstream = own[prerequisite]["result"]
+            record["prerequisite"] = prerequisite
+            record["prerequisite_result"] = upstream
+            record["own_comparisons_result"] = result
+            if result == "not_supported" or upstream == "not_supported":
+                result = "not_supported"
+            elif result == "incomplete" or upstream == "incomplete":
+                result = "incomplete"
+            else:
+                result = "supported"
+        record["result"] = result
+        resolved[claim] = record
+    return resolved
 
 
 # --------------------------------------------------------------------------
@@ -760,7 +815,7 @@ def generate(run_dir: Path, out_dir: Path) -> dict:
 
     table = metric_table(scored)
     deltas = delta_table(table)
-    pairs, claims = required_pairs(primary)
+    pairs, claims, prerequisites = required_pairs(primary)
     bootstrap = joint_bootstrap(scored, pairs)
     omitted = leave_year_out(scored, pairs)
 
@@ -771,20 +826,7 @@ def generate(run_dir: Path, out_dir: Path) -> dict:
             pair, deltas, bootstrap["intervals"].get(label, {}), omitted.get(label, {})
         )
 
-    claim_results = {}
-    for claim, entries in claims.items():
-        labels = [f"{a}_vs_{b}" for a, b in entries]
-        outcomes = [verdicts[label]["verdict"] for label in labels]
-        claim_results[claim] = {
-            "required_comparisons": labels,
-            "verdicts": dict(zip(labels, outcomes)),
-            # Conjunctive: every required baseline must show a stable gain.
-            "result": (
-                "incomplete"
-                if "incomplete" in outcomes
-                else ("supported" if all(o == "stable_gain" for o in outcomes) else "not_supported")
-            ),
-        }
+    claim_results = evaluate_claims(claims, prerequisites, verdicts)
     if primary == "rich_direct_xgb":
         claim_results["formulation_advantage"] = {
             "result": "not_applicable",

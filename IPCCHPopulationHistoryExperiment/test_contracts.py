@@ -668,13 +668,59 @@ def test_one_bad_omitted_year_blocks_a_stable_gain():
 
 
 def test_required_pairs_follow_the_selected_family():
-    pairs, claims = rep.required_pairs("rich_direct_xgb")
+    pairs, claims, prerequisites = rep.required_pairs("rich_direct_xgb")
     assert "formulation_advantage" not in claims
+    assert prerequisites == {}
     assert ("rich_direct_xgb", "binary_history_xgb") in pairs
-    pairs, claims = rep.required_pairs("correction_xgb")
+    pairs, claims, prerequisites = rep.required_pairs("correction_xgb")
     assert ("correction_xgb", "rich_direct_xgb") in pairs
     assert ("correction_xgb", "fullpool_xgb") in pairs
     assert ("correction_xgb", "persistence") in pairs
+    assert prerequisites == {"formulation_advantage": "prediction_gain"}
+
+
+def test_a_formulation_advantage_needs_the_prediction_gain_under_it():
+    """§6 says "additionally", so beating the direct arms alone proves nothing.
+
+    The counterexample: the primary beats both direct classifiers but loses to
+    `rich_rf`. Reporting that as a supported formulation advantage while the
+    prediction gain is unsupported would claim a better formulation of a
+    problem the method has not been shown to predict better at all.
+    """
+    _pairs, claims, prerequisites = rep.required_pairs("share_xgb")
+    verdicts = {
+        "share_xgb_vs_rich_rf": {"verdict": "no_stable_gain"},
+        "share_xgb_vs_persistence": {"verdict": "stable_gain"},
+        "share_xgb_vs_rich_direct_xgb": {"verdict": "stable_gain"},
+        "share_xgb_vs_fullpool_xgb": {"verdict": "stable_gain"},
+        "rich_direct_xgb_vs_binary_history_xgb": {"verdict": "no_stable_gain"},
+    }
+    resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
+    assert resolved["prediction_gain"]["result"] == "not_supported"
+    formulation = resolved["formulation_advantage"]
+    assert formulation["own_comparisons_result"] == "supported"
+    assert formulation["prerequisite_result"] == "not_supported"
+    assert formulation["result"] == "not_supported", formulation
+
+    # With the prerequisite met, its own comparisons carry it.
+    verdicts["share_xgb_vs_rich_rf"] = {"verdict": "stable_gain"}
+    resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
+    assert resolved["prediction_gain"]["result"] == "supported"
+    assert resolved["formulation_advantage"]["result"] == "supported"
+
+    # Missing evidence upstream makes it incomplete, never a pass.
+    verdicts["share_xgb_vs_persistence"] = {"verdict": "incomplete"}
+    resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
+    assert resolved["formulation_advantage"]["result"] == "incomplete"
+
+    # Its own failure settles it regardless of what the prerequisite did.
+    verdicts["share_xgb_vs_persistence"] = {"verdict": "stable_gain"}
+    verdicts["share_xgb_vs_fullpool_xgb"] = {"verdict": "no_stable_gain"}
+    resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
+    assert resolved["formulation_advantage"]["result"] == "not_supported"
+
+    # A claim with no prerequisite is unaffected by any of this.
+    assert "prerequisite" not in resolved["information_gain"]
 
 
 def test_class1_metrics_report_an_undefined_denominator():
