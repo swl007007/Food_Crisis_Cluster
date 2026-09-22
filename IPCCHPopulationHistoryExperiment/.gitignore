@@ -1,0 +1,10 @@
+__pycache__/
+
+# The frozen inventories are the implementation contract. The repository root
+# ignores *.json wholesale, and a deeper .gitignore wins, so carve them back in
+# here: a reviewer who cannot read config/ cannot check a single feature name.
+!config/*.json
+
+# Generated runs stay local. Which parts are promoted into the commit is
+# decided once the run exists and its sizes are known; see README.md.
+runs/
