@@ -43,17 +43,29 @@
   },
   "claims": {
     "formulation_advantage": {
+      "inherited_comparisons": [
+        "share_xgb_vs_rich_rf",
+        "share_xgb_vs_persistence"
+      ],
+      "own_comparisons": [
+        "share_xgb_vs_rich_direct_xgb",
+        "share_xgb_vs_fullpool_xgb"
+      ],
       "own_comparisons_result": "not_supported",
       "prerequisite": "prediction_gain",
       "prerequisite_result": "not_supported",
       "required_comparisons": [
         "share_xgb_vs_rich_direct_xgb",
-        "share_xgb_vs_fullpool_xgb"
+        "share_xgb_vs_fullpool_xgb",
+        "share_xgb_vs_rich_rf",
+        "share_xgb_vs_persistence"
       ],
       "result": "not_supported",
       "verdicts": {
         "share_xgb_vs_fullpool_xgb": "no_stable_gain",
-        "share_xgb_vs_rich_direct_xgb": "stable_gain"
+        "share_xgb_vs_persistence": "stable_gain",
+        "share_xgb_vs_rich_direct_xgb": "stable_gain",
+        "share_xgb_vs_rich_rf": "no_stable_gain"
       }
     },
     "information_gain": {

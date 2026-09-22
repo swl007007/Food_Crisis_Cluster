@@ -579,46 +579,50 @@ def required_pairs(primary: str) -> tuple[list[tuple[str, str]], dict, dict]:
     return pairs, claims, prerequisites
 
 
-def evaluate_claims(claims: dict, prerequisites: dict, verdicts: dict) -> dict:
-    """Resolve each claim conjunctively, then apply any prerequisite.
+def _conjunctive(labels: Sequence[str], verdicts: dict) -> str:
+    """One conjunctive verdict over a set of comparisons.
 
-    Order matters. Positive evidence of failure in a claim's own comparisons
-    settles it as ``not_supported`` whatever its prerequisite did; only when
-    its own comparisons would otherwise pass does an unmet or unprovable
-    prerequisite pull it down. Missing evidence anywhere is ``incomplete``,
-    which is never a pass.
+    ``incomplete`` takes precedence over ``not_supported``: missing evidence
+    cannot be reported as a demonstrated negative any more than as a pass.
     """
-    own = {}
-    for claim, entries in claims.items():
-        labels = [f"{a}_vs_{b}" for a, b in entries]
-        outcomes = [verdicts[label]["verdict"] for label in labels]
-        own[claim] = {
-            "required_comparisons": labels,
-            "verdicts": dict(zip(labels, outcomes)),
-            "result": (
-                "incomplete"
-                if "incomplete" in outcomes
-                else ("supported" if all(o == "stable_gain" for o in outcomes) else "not_supported")
-            ),
-        }
+    outcomes = [verdicts[label]["verdict"] for label in labels]
+    if "incomplete" in outcomes:
+        return "incomplete"
+    return "supported" if all(o == "stable_gain" for o in outcomes) else "not_supported"
+
+
+def evaluate_claims(claims: dict, prerequisites: dict, verdicts: dict) -> dict:
+    """Resolve each claim conjunctively over every comparison it requires.
+
+    A claim with a prerequisite requires the **union** of its own comparisons
+    and its prerequisite's, judged by the one conjunctive rule. There is no
+    separate precedence between the two groups: the formulation advantage is
+    defined as an addition to the prediction gain, so all four comparisons are
+    simply the set that claim has to satisfy. Its own comparisons are still
+    reported on their own so a reader can see which half failed.
+    """
+    own = {
+        claim: [f"{a}_vs_{b}" for a, b in entries] for claim, entries in claims.items()
+    }
 
     resolved = {}
-    for claim, entry in own.items():
-        result = entry["result"]
-        record = dict(entry)
+    for claim, labels in own.items():
         prerequisite = prerequisites.get(claim)
+        required = list(labels)
+        record: dict = {}
         if prerequisite is not None:
-            upstream = own[prerequisite]["result"]
+            inherited = [label for label in own[prerequisite] if label not in required]
+            required = required + inherited
             record["prerequisite"] = prerequisite
-            record["prerequisite_result"] = upstream
-            record["own_comparisons_result"] = result
-            if result == "not_supported" or upstream == "not_supported":
-                result = "not_supported"
-            elif result == "incomplete" or upstream == "incomplete":
-                result = "incomplete"
-            else:
-                result = "supported"
-        record["result"] = result
+            record["inherited_comparisons"] = inherited
+            record["own_comparisons"] = labels
+            record["own_comparisons_result"] = _conjunctive(labels, verdicts)
+            record["prerequisite_result"] = _conjunctive(own[prerequisite], verdicts)
+        record["required_comparisons"] = required
+        record["verdicts"] = {
+            label: verdicts[label]["verdict"] for label in required
+        }
+        record["result"] = _conjunctive(required, verdicts)
         resolved[claim] = record
     return resolved
 

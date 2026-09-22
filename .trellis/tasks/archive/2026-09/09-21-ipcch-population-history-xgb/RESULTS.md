@@ -58,19 +58,22 @@ full claim: `rich_rf` and `fullpool_xgb` are both better than `share_xgb`, so
 | binary_history_xgb | .68150 | .67652 | .67103 | .67592 |
 | rich_direct_xgb | .68249 | .67749 | .66897 | .67170 |
 | correction_xgb | .68258 | .67839 | .67515 | .67615 |
-| share_xgb | .68314 | .68163 | .69007 | .68063 |
+| share_xgb | .68314 | .68163 | .69007 | **.68063** |
 | rich_rf | .68793 | **.68948** | **.69228** | .67803 |
-| fullpool_xgb | **.69449** | .68411 | .68757 | **.67982** |
+| fullpool_xgb | **.69449** | .68411 | .68757 | .67982 |
 
 n = 16,002 / 15,907 / 14,960 / 12,404. Every arm shares these keys exactly.
 
-The two strongest arms are `fullpool_xgb` and `rich_rf`, and they are strong for
-different reasons — which the design is built to separate, so it is worth not
-blurring:
+No arm wins across the board. The per-horizon winner is `fullpool_xgb` at h=1,
+`rich_rf` at h=3 and h=6, and `share_xgb` at h=12.
+
+The two arms that win anything are `fullpool_xgb` and `rich_rf`, and they are
+not comparable in the same way — which the design is built to separate, so it is
+worth not blurring:
 
 * `fullpool_xgb` is the **only** arm with expanded fitting support. It trains on
-  the superset that includes rows without persistence, so its edge is consistent
-  with a support advantage and is not a like-for-like model comparison.
+  the superset that includes rows without persistence, so it is not a
+  like-for-like model comparison with anything else in the table.
 * `rich_rf` trains on **exactly the same matched keys** as the other four matched
   arms, on the same 561 columns. Its edge over them is therefore an algorithm
   difference — a random forest against gradient boosting on identical rows —
@@ -273,11 +276,12 @@ start another feature or model search. Two things it does point at, if anyone
 wants them.
 
 `fullpool_xgb` — the one arm allowed a larger fitting pool — beats every matched
-arm at three of four horizons. That is consistent with fitting support mattering
-more than features here, but this design does not test it: support is confounded
-with nothing else only for that single arm, and there is no matched-support
-control for the extra rows. Treating it as established would need a deliberate
-support ablation, not this table.
+arm at **one** of four horizons (h=1). `rich_rf` takes h=3 and h=6 and
+`share_xgb` takes h=12, both on the matched pool. So the table does not even
+show a consistent advantage for the larger pool, let alone identify one: there
+is no matched-support control for the extra rows, so nothing here separates
+"more rows" from "different rows". A support claim would need a deliberate
+ablation, not this table.
 
 Finding 2 points somewhere cheaper: the threshold-selection step, not the model,
 may be where this design loses ground.

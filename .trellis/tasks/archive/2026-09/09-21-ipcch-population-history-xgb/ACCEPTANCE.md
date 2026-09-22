@@ -377,12 +377,14 @@ the prediction gain. The reporter evaluated the three claims independently, so a
 run whose primary beat both direct classifiers but lost to `rich_rf` would have
 reported `formulation_advantage: supported` alongside
 `prediction_gain: not_supported`. The reviewer built exactly that counterexample
-and confirmed it. Fixed: `required_pairs` now returns a prerequisite map and
-`evaluate_claims` applies it — a claim's own failing comparisons still settle it
-on their own, and the prerequisite only pulls it down when its own comparisons
-would otherwise have carried it; anything unprovable is `incomplete`. The
-reviewer's counterexample is now a regression test, along with the
-prerequisite-met, prerequisite-incomplete and own-failure branches.
+and confirmed it. Fixed: `required_pairs` returns a prerequisite map and
+`evaluate_claims` resolves the claim over the **union** of its own comparisons
+and its prerequisite's — all four judged by one conjunctive rule, with
+`incomplete` keeping precedence over `not_supported`, because missing evidence
+cannot be reported as a settled negative any more than as a pass. Its own
+comparisons are still reported separately so a reader can see which half failed.
+The reviewer's counterexample is a regression test, with the prerequisite-met,
+prerequisite-incomplete, incomplete-over-failure and own-failure branches.
 
 pop-v1's own verdicts are unchanged — all three claims remain `not_supported`,
 and `formulation_advantage` now records `own_comparisons_result: not_supported`
@@ -396,7 +398,18 @@ all; the count of non-empty main folds lacking persistence is **zero**. Correcte
 to separate the two kinds of thin fold explicitly: 8 and 12 empty months in
 development and main, 13 history-less folds in development and none in main.
 
-54/54 tests pass; the report was regenerated under the corrected rule.
+**A third finding: the headline table's winners were misread.** RESULTS.md said
+`fullpool_xgb` "beats every matched arm at three of four horizons". It does so at
+**one** — h=1. `rich_rf` wins h=3 and h=6 and `share_xgb` wins h=12, both on the
+matched pool, and the h=12 boldface was on `fullpool_xgb` (.67982) when
+`share_xgb` (.68063) is the maximum. Corrected: the boldface now marks the real
+per-horizon maxima, the winners are named explicitly, and the passage now says
+the table shows no consistent large-pool advantage rather than a weakened
+version of the claim it cannot support.
+
+54/54 tests pass; the report was regenerated under the corrected rule, and all
+three pop-v1 claims remain `not_supported` — `formulation_advantage` now
+resolved over all four required comparisons.
 
 ## Known deviations, stated rather than buried
 

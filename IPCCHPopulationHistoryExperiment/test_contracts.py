@@ -698,6 +698,13 @@ def test_a_formulation_advantage_needs_the_prediction_gain_under_it():
     resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
     assert resolved["prediction_gain"]["result"] == "not_supported"
     formulation = resolved["formulation_advantage"]
+    # All four comparisons are what the claim must satisfy.
+    assert set(formulation["required_comparisons"]) == {
+        "share_xgb_vs_rich_direct_xgb",
+        "share_xgb_vs_fullpool_xgb",
+        "share_xgb_vs_rich_rf",
+        "share_xgb_vs_persistence",
+    }
     assert formulation["own_comparisons_result"] == "supported"
     assert formulation["prerequisite_result"] == "not_supported"
     assert formulation["result"] == "not_supported", formulation
@@ -713,14 +720,22 @@ def test_a_formulation_advantage_needs_the_prediction_gain_under_it():
     resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
     assert resolved["formulation_advantage"]["result"] == "incomplete"
 
-    # Its own failure settles it regardless of what the prerequisite did.
-    verdicts["share_xgb_vs_persistence"] = {"verdict": "stable_gain"}
+    # Incomplete keeps precedence over a demonstrated failure: missing evidence
+    # cannot be reported as a settled negative either.
     verdicts["share_xgb_vs_fullpool_xgb"] = {"verdict": "no_stable_gain"}
+    resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
+    assert resolved["formulation_advantage"]["result"] == "incomplete"
+
+    # With nothing missing, its own failing comparison settles it.
+    verdicts["share_xgb_vs_persistence"] = {"verdict": "stable_gain"}
     resolved = rep.evaluate_claims(claims, prerequisites, verdicts)
     assert resolved["formulation_advantage"]["result"] == "not_supported"
 
     # A claim with no prerequisite is unaffected by any of this.
     assert "prerequisite" not in resolved["information_gain"]
+    assert resolved["information_gain"]["required_comparisons"] == [
+        "rich_direct_xgb_vs_binary_history_xgb"
+    ]
 
 
 def test_class1_metrics_report_an_undefined_denominator():
