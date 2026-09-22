@@ -29,6 +29,7 @@ have no persistence at all.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import sys
@@ -1622,87 +1623,139 @@ def check_main_preconditions(
     }
 
 
-def stage_persist(run_dir: Path, workers: int) -> dict:
+def stage_persist(run_dir: Path, workers: int, into: Path | None = None) -> dict:
     """Retain the selected final estimators, and prove they are the ones used.
 
     The main schedule scored and discarded its models. This refits every
     selected model at every main origin under the frozen choices, keeps the
     fitted object, records its digest, its ``get_params()`` readback and its
-    booster configuration, and then requires the regenerated predictions to be
+    booster configuration, and requires the regenerated predictions to be
     identical to the stored ones -- fold by fold, across the whole schedule.
 
     Identity, not just presence: each saved model carries the digest of the
     ordered fitting keys it was built from, so a reviewer can tell which rows
     produced it rather than taking the filename's word for it.
 
-    Predictions go to a scratch directory; ``main/folds`` is never rewritten.
+    Published evidence is never written over. Estimators are fitted into a
+    staging directory and every fold is verified *before* anything is
+    published, so a repeat attempt under changed code or inputs cannot destroy
+    digest-bound models and then discover it should not have: it is refused up
+    front, and a new attempt goes to a fresh destination via ``into``.
+    ``main/folds`` is never rewritten either.
     """
+    publish_root = Path(into) if into is not None else Path(run_dir)
+    models_dir = publish_root / "main" / "models"
+    identity_dir = publish_root / "main" / "model_identity"
+
+    # Refused before any fitting, and before anything else is even read.
+    existing = sorted(identity_dir.glob("*.json")) if identity_dir.is_dir() else []
+    if existing and into is None:
+        raise PipelineError(
+            f"{identity_dir} already holds {len(existing)} completed model identity "
+            "records, and the binaries they are bound to by digest. That evidence "
+            "is immutable and will not be written over. Send a new attempt to a "
+            "fresh destination with --persist-into DIR."
+        )
+
     freeze = json.loads((run_dir / "freeze.json").read_text())
     calendar = pd.read_csv(run_dir / "folds" / "calendar.csv")
     scheduled = calendar[(calendar["stage"] == "main") & (calendar["test_rows"] > 0)]
     fold_ids = list(scheduled["fold_id"])
 
-    models_dir = run_dir / "main" / "models"
+    # Staging is per attempt, so two attempts cannot collide either.
+    stage_name = "main_refit" if into is None else f"main_refit_{int(time.time())}"
+    staging_models = publish_root / "main" / f"{stage_name}_models"
     summary = execute_stage(
         run_dir,
-        "main_refit",
+        stage_name,
         fold_ids,
         workers,
         selections=freeze["selections"],
-        persist_models=models_dir,
+        persist_models=staging_models,
     )
 
+    # --- verify every fold BEFORE publishing anything ---------------------
     comparisons = []
-    identity_dir = run_dir / "main" / "model_identity"
-    identity_dir.mkdir(parents=True, exist_ok=True)
+    staged_records = {}
     for fold_id in fold_ids:
         stored = pd.read_csv(run_dir / "main" / "folds" / f"{fold_id}.csv.gz")
-        refit = pd.read_csv(run_dir / "main_refit" / "folds" / f"{fold_id}.csv.gz")
+        refit = pd.read_csv(run_dir / stage_name / "folds" / f"{fold_id}.csv.gz")
         order = ["arm", "config_id", "row_index"]
         stored = stored.sort_values(order).reset_index(drop=True)
         refit = refit.sort_values(order).reset_index(drop=True)
-        record = json.loads((run_dir / "main_refit" / "folds" / f"{fold_id}.json").read_text())
-        prep._write_json(
-            {
-                "fold_id": fold_id,
-                "identity": record["identity"],
-                "support": record["support"],
-                "imputer": record.get("imputer", {}),
-                "models": {
-                    key: {
-                        "route": route["route"],
-                        "estimator": route.get("estimator"),
-                        "constant": route.get("constant"),
-                        "fitting_keys_sha256": route.get("fitting_keys_sha256"),
-                        "train_rows": route.get("train_rows"),
-                        "fitted_params": route.get("fitted_params"),
-                        "booster_config": route.get("booster_config"),
-                        "boosted_rounds": route.get("boosted_rounds"),
-                        "n_estimators_fitted": route.get("n_estimators_fitted"),
-                        "model": route.get("model"),
-                    }
-                    for key, route in record["routes"].items()
-                },
-                "reproduces_stored_predictions": bool(stored.equals(refit)),
+        record = json.loads((run_dir / stage_name / "folds" / f"{fold_id}.json").read_text())
+        identical = bool(stored.equals(refit))
+        staged_records[fold_id] = {
+            "fold_id": fold_id,
+            "identity": record["identity"],
+            "support": record["support"],
+            "imputer": record.get("imputer", {}),
+            "models": {
+                key: {
+                    "route": route["route"],
+                    "estimator": route.get("estimator"),
+                    "constant": route.get("constant"),
+                    "fitting_keys_sha256": route.get("fitting_keys_sha256"),
+                    "train_rows": route.get("train_rows"),
+                    "fitted_params": route.get("fitted_params"),
+                    "booster_config": route.get("booster_config"),
+                    "boosted_rounds": route.get("boosted_rounds"),
+                    "n_estimators_fitted": route.get("n_estimators_fitted"),
+                    "model": route.get("model"),
+                }
+                for key, route in record["routes"].items()
             },
-            identity_dir / f"{fold_id}.json",
-        )
+            "reproduces_stored_predictions": identical,
+        }
         comparisons.append(
-            {"fold_id": fold_id, "rows": int(len(stored)), "identical": bool(stored.equals(refit))}
+            {"fold_id": fold_id, "rows": int(len(stored)), "identical": identical}
         )
+
+    mismatched = [c for c in comparisons if not c["identical"]]
+    if mismatched:
+        raise PipelineError(
+            f"{len(mismatched)} refitted folds do not reproduce the stored "
+            f"predictions: {[c['fold_id'] for c in mismatched][:5]}. Nothing was "
+            f"published; the staged attempt is under {staging_models}."
+        )
+
+    # --- publish; refuse to land on top of an existing file ---------------
+    models_dir.mkdir(parents=True, exist_ok=True)
+    identity_dir.mkdir(parents=True, exist_ok=True)
+    published_models = 0
+    for fold_id, record in staged_records.items():
+        for entry in record["models"].values():
+            model = entry.get("model")
+            if model is None:
+                continue
+            source = publish_root / model["path"]
+            target = models_dir / source.name
+            if target.exists():
+                raise PipelineError(f"refusing to overwrite a published model: {target}")
+            source.replace(target)
+            model["path"] = target.relative_to(publish_root).as_posix()
+            published_models += 1
+        target = identity_dir / f"{fold_id}.json"
+        if target.exists():
+            raise PipelineError(f"refusing to overwrite a published identity record: {target}")
+        prep._write_json(record, target)
+    with contextlib.suppress(OSError):
+        staging_models.rmdir()
 
     # The 36 (arm, candidate) fitted readbacks behind the development search.
     # They do not vary by fold -- the candidate block fixes every parameter and
     # the seed -- so one real fit per pair characterises all 4,506 of them.
     development = _development_param_readback(run_dir)
 
-    mismatched = [c for c in comparisons if not c["identical"]]
     report = {
         "folds": comparisons,
         "fold_count": len(fold_ids),
         "fits": summary["fits"],
-        "all_reproduce_stored_predictions": not mismatched,
+        "all_reproduce_stored_predictions": True,
         "models_dir": str(models_dir),
+        "models_published": published_models,
+        "publish_root": str(publish_root),
+        "staged_under": str(staging_models),
         "development_param_readback": development,
         "budget_note": (
             f"{summary['fits']} refit-for-provenance fits plus "
@@ -1711,15 +1764,12 @@ def stage_persist(run_dir: Path, workers: int) -> dict:
         ),
         "note": (
             "the retained estimators regenerate every stored main prediction "
-            "exactly, across all folds, not only the eight verification folds"
+            "exactly, across all folds, not only the eight verification folds; "
+            "every fold was verified before anything was published, and no "
+            "existing model or identity record was written over"
         ),
     }
-    prep._write_json(report, run_dir / "validation" / "model_persistence.json")
-    if mismatched:
-        raise PipelineError(
-            f"{len(mismatched)} refitted folds do not reproduce the stored "
-            f"predictions: {[c['fold_id'] for c in mismatched][:5]}"
-        )
+    prep._write_json(report, publish_root / "validation" / "model_persistence.json")
     return report
 
 
@@ -1975,6 +2025,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="main: continue although the code moved since the freeze",
     )
     parser.add_argument(
+        "--persist-into",
+        default=None,
+        help="persist: publish a new attempt here instead of over existing evidence",
+    )
+    parser.add_argument(
         "--allow-legacy-freeze",
         action="store_true",
         help="main: accept a freeze written before identities were recorded",
@@ -1998,7 +2053,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     elif args.stage == "verify":
         summary = stage_verify(run_dir)
     elif args.stage == "persist":
-        summary = stage_persist(run_dir, args.workers)
+        summary = stage_persist(
+            run_dir, args.workers, into=Path(args.persist_into) if args.persist_into else None
+        )
     elif args.stage == "replay-models":
         summary = stage_replay_models(run_dir, args.workers)
     else:

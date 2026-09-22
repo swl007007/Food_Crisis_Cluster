@@ -411,6 +411,35 @@ version of the claim it cannot support.
 three pop-v1 claims remain `not_supported` — `formulation_advantage` now
 resolved over all four required comparisons.
 
+## Remediation of re-audit 90558567b4255f2294299fce
+
+**Nine of ten criteria met** (A1-A7 and A9), A10 unverified, one major on A8.
+
+**`--stage persist` could destroy the evidence it exists to create.** It fitted
+straight into the published `main/models` and wrote `main/model_identity`
+records as it went, comparing predictions only afterwards. So an ordinary repeat
+under changed code or inputs would replace digest-bound models and identity
+records and *then* fail the equivalence check — losing the original run's model
+provenance under the same run id, even though the main prediction CSVs were
+untouched. Every other stage had this guard; this one did not.
+
+Fixed on all three points the reviewer asked for:
+
+* **Refused up front.** A run that already holds model identity records rejects
+  a repeat attempt before reading anything or fitting anything, and names
+  `--persist-into DIR` for sending a new attempt somewhere fresh.
+* **Verified before published.** Estimators are fitted into a per-attempt
+  staging directory; all 110 folds are checked first, and a mismatch raises with
+  the published set untouched and the staged attempt left on disk. Publishing
+  then refuses to land on any existing file.
+* **Regression check.** A repeat attempt against a run with a retained model and
+  identity record must raise *and* leave both files byte-identical; the test
+  hashes them before and after.
+
+Verified on pop-v1 itself: the repeat is refused, all 110 identity records and
+660 models remain in place, and `--stage replay-models` still reproduces
+660/660. 55/55 tests pass.
+
 ## Known deviations, stated rather than buried
 
 1. **Fold-level parallelism.** `technical-contract.md` §7 asks for sequential

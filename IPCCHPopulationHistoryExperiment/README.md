@@ -111,10 +111,17 @@ invented after the fact. Code that moved since the freeze needs
 `--stage persist` refits each selected model at each main origin under the
 frozen choices and **keeps** the fitted object, recording its digest, its full
 `get_params()` readback, its booster configuration and round count, and the
-digest of the ordered fitting keys it was built from. It then requires the
+digest of the ordered fitting keys it was built from. It requires the
 regenerated predictions to be identical to the stored ones, fold by fold,
-across the whole schedule — and writes to a scratch directory so `main/folds`
-is never rewritten.
+across the whole schedule.
+
+Published estimators are digest-bound evidence, so they are never written over.
+Models are fitted into a staging directory and **every fold is verified before
+anything is published** — a mismatch leaves the published set untouched and the
+staged attempt on disk for inspection. A repeat attempt against a run that
+already has model identity records is refused up front, before any fitting;
+send a new attempt somewhere fresh with `--persist-into DIR`. `main/folds` is
+never rewritten either.
 
 `--stage replay-models` is the check a refit cannot make: it loads each saved
 estimator off disk, verifies its digest and predicts, requiring the stored

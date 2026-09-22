@@ -1222,6 +1222,51 @@ def test_a_replay_freeze_can_never_drive_a_main_schedule():
             raise AssertionError("a replay freeze was accepted as a commitment")
 
 
+def test_a_repeat_persist_leaves_published_model_bytes_untouched():
+    """Published estimators are digest-bound evidence, not a scratch directory.
+
+    The failure this guards: an ordinary repeat under changed code refits over
+    the retained models and identity records, and only *then* discovers the
+    predictions no longer match — by which point the provenance of the original
+    run is gone under the same run id.
+    """
+    import hashlib
+    import json
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as raw:
+        root = Path(raw) / "run"
+        models = root / "main" / "models"
+        identity = root / "main" / "model_identity"
+        models.mkdir(parents=True)
+        identity.mkdir(parents=True)
+        (root / "freeze.json").write_text(json.dumps({"selections": {}}))
+
+        binary = models / "mai_h01_2023-02__rich_rf__R3.joblib"
+        binary.write_bytes(b"the originally retained estimator")
+        record = identity / "mai_h01_2023-02.json"
+        record.write_text(json.dumps({"fold_id": "mai_h01_2023-02", "models": {}}))
+        before = {
+            path: hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in (binary, record)
+        }
+
+        try:
+            pipe.stage_persist(root, workers=1)
+        except pipe.PipelineError as error:
+            message = str(error)
+            assert "--persist-into" in message, message
+            assert "immutable" in message
+        else:
+            raise AssertionError("a repeat persist attempt was allowed to publish")
+
+        after = {
+            path: hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in (binary, record)
+        }
+        assert after == before, "a refused attempt still altered published bytes"
+
+
 def test_identity_comparison_separates_code_drift_from_science():
     recorded = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "old"}}
     current = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "new"}}
