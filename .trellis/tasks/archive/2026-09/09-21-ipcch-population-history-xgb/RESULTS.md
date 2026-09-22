@@ -89,13 +89,43 @@ bursts; a three-month lookback almost never reaches a newer record than a
 one-month lookback. Any h=1 vs h=3 comparison of persistence is therefore not
 measuring lead time.
 
-**2. The tuned threshold pair is not clearly better than the definitional
-cutoff.** `share_xgb` with its frozen, development-optimised `(t0, t1)` gets
-.68314 at h=1; the fixed "predicted share > .20" rule gets **.70226** on the
-same rows. The fixed rule also wins at h=3 (.68583 vs .68163) and loses at h=6
-and h=12. Thresholds fitted on 2020-2022 transfer worse than the definition
-they are approximating. This is reported, not acted on: §6 forbids letting a
-supplemental score reselect the method after the freeze.
+**2. The decision rule should never have been a tuned free parameter, and the
+tuned one inflated the reliability of this study's own headline result.**
+
+The truth is `q3 > .20`. Cutting the *predicted* share at .20 is the plug-in
+rule, and it costs almost nothing: the F1-optimal cutoff on the test set is at
+.2105 / .2128 / .1971 / .2151 for h=1/3/6/12, and using .20 instead is worth at
+most **.0032 F1** at any horizon. A zero-parameter, pre-registerable rule is
+within a rounding error of an oracle that saw the answers.
+
+What the 104x104 two-threshold grid learned instead is shrinkage toward
+persistence. The frozen `t0` (the cutoff a `b=0` row must clear to be called a
+crisis) is **.4819** at h=1, against a definitional .20 — a non-crisis row needs
+a predicted share of nearly half the population before the model is allowed to
+disagree with persistence. `t1` runs the other way, .1741 down to .1424. The
+`b`-conditioning turned the share arm into a disguised persistence-correction
+arm; the natural rule for a share regressor is one cutoff on the share.
+
+That matters beyond a few thousandths of F1, because it is **the same rule that
+produced this study's one positive claim**. A decision rule that barely
+disagrees with `b` will of course show a small and stable delta against `b`.
+Re-scored at the definitional .20 with every other arm left frozen,
+`share_xgb` vs persistence moves from +.00737, CI [+.00136, +.01310],
+*stable gain* to **+.00964, CI [−.00945, +.02699]**, no stable gain — a higher
+mean with a roughly three times wider interval that now straddles zero, plus a
+negative h=12. The per-horizon pattern is +.0209 / +.0090 / +.0150 / −.0064 and
+all three leave-one-year-out means stay positive (+.0082 / +.0124 / +.0093).
+
+Read plainly: the direction of the share-regression advantage over persistence
+is consistent under both rules, at three of four horizons and in every omitted
+year, and its magnitude is somewhere around +.007 to +.010. What the frozen
+rule reported as *reliable* was partly the rule hugging the baseline, not the
+model being steady. The honest uncertainty on that advantage is the wider
+interval, not the narrow one.
+
+This is reported, not acted on: §6 forbids letting a supplemental score
+reselect the method after the freeze, and the .20 re-scoring was done after
+these scores were seen. It is a diagnostic and a design lesson, not a result.
 
 **3. The correction arm is almost a no-op.** Out of ~15,000 evaluation rows it
 flips 36 (h=1), 108 (h=3), 211 (h=6) and 24 (h=12). At h=1, h=3 and h=12 the
@@ -268,6 +298,13 @@ dropped for it.
   disclosed, not silently changed.
 * A good F1 decision threshold is not calibration, and a mean predicted share is
   not a crisis probability.
+* **The stability of the one positive claim is partly an artifact of the
+  decision rule.** `share_xgb` vs persistence passes the stable-gain test under
+  the frozen `b`-conditioned thresholds and fails it under the definitional .20
+  cutoff, with a *higher* mean and a three times wider interval (finding 2). The
+  frozen rule's asymmetric thresholds keep the arm close to persistence, which
+  suppresses the between-country variance the bootstrap measures. Anyone citing
+  the +.00737 / [+.00136, +.01310] figure should cite this alongside it.
 
 ## What this does not license
 
