@@ -440,6 +440,20 @@ Verified on pop-v1 itself: the repeat is refused, all 110 identity records and
 660 models remain in place, and `--stage replay-models` still reproduces
 660/660. 55/55 tests pass.
 
+## Final audit state
+
+Re-audit `fcd7ec5a646463813399b893` at `759374b`: **verdict `pass`, 5/5 criteria
+met, no findings, severity none.** The gate held by close-audit
+`826221934ce1b02cad427dc8` is released — 0 open gates on this task, 0 active
+runs, task `completed` and archived.
+
+Eight review rounds in total. **None of them changed a scientific number**: the
+science criteria (A1-A4, A6) were met from the first round onward, and every
+finding thereafter concerned provenance guards or the wording of this write-up.
+The audit cost is recorded honestly in the project memory note
+`audit-remediation-grows-its-own-surface`, because the shape of it is worth not
+repeating.
+
 ## Known deviations, stated rather than buried
 
 1. **Fold-level parallelism.** `technical-contract.md` §7 asks for sequential
