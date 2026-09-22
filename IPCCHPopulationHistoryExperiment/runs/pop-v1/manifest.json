@@ -51,6 +51,8 @@
       6,
       12
     ],
+    "matrix_sha256": "ce85badb07a37f0ce9df7b2e9d412bc64b651872a9aecd6048cca8079a618648",
+    "matrix_sha256_note": "backfilled after the run from the on-disk file and cross-checked against freeze.json, which recorded it during selection",
     "max_observations_per_area": 25,
     "original_columns": 93,
     "positives": 60824,

@@ -988,6 +988,10 @@ def prepare(source_root: Path | str, run_dir: Path | str, strict_runtime: bool =
             "rows_without_history": int((1 - keys["has_history"]).sum()),
             "positives": int(keys["ipcch_food_crisis"].sum()),
             "max_observations_per_area": index.max_area_span,
+            # Recorded here, at the one moment the file certainly exists. The
+            # matrix is too large to commit, so a later replay reads the hash
+            # from this manifest rather than from the absent file.
+            "matrix_sha256": sha256_file(data_dir / "rich561_X.npy"),
         },
         "original93_audit": matrix.audit,
         "alias_audit": alias_audit,

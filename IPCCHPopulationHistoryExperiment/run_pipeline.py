@@ -858,6 +858,28 @@ def f1_from(truth: np.ndarray, pred: np.ndarray) -> float:
     return float("nan") if denominator == 0 else 2 * tp / denominator
 
 
+def matrix_identity(run_dir: Path) -> str:
+    """The feature matrix's hash, from the file if present, else the manifest.
+
+    The freeze has to name the exact matrix it was computed from. That file is
+    731 MB and stays local, so on a replay the hash is read from the
+    preparation manifest, which recorded it while the file was in hand. A run
+    with neither is not replayable and says so.
+    """
+    path = run_dir / "data" / "rich561_X.npy"
+    if path.is_file():
+        return prep.sha256_file(path)
+    manifest_path = run_dir / "manifest.json"
+    if manifest_path.is_file():
+        recorded = json.loads(manifest_path.read_text()).get("matrix", {}).get("matrix_sha256")
+        if recorded:
+            return recorded
+    raise PipelineError(
+        "the feature matrix is absent and its hash was not recorded at "
+        "preparation time; this run cannot be bound to its inputs"
+    )
+
+
 def run_selection(run_dir: Path) -> dict:
     """Pick one candidate and threshold pair per arm/horizon, then one family.
 
@@ -970,7 +992,7 @@ def run_selection(run_dir: Path) -> dict:
         "primary_family": primary,
         "primary_mean_delta": means,
         "spec": context.spec.identity(),
-        "matrix_sha256": prep.sha256_file(run_dir / "data" / "rich561_X.npy"),
+        "matrix_sha256": matrix_identity(run_dir),
         "code_sha256": {
             name: prep.sha256_file(PACKAGE_DIR / name)
             for name in ("prepare_data.py", "run_pipeline.py")
