@@ -766,6 +766,102 @@ def test_fold_reuse_refuses_a_record_from_another_identity():
         assert done == {"same", "moved", "legacy"} and stale == []
 
 
+def test_a_freshly_frozen_run_reaches_main_scheduling():
+    """The gate must pass on an unchanged run, or the pipeline cannot be run.
+
+    This is the regression that a partial identity record caused: the freeze
+    carried two fields, the run computed five, and the two extra ones read as
+    drift, so `--stage main` refused on a run nothing had touched.
+    """
+    import json
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "run"
+        _synthetic_run(root)
+        identity = pipe.run_identity(root)
+        freeze = {
+            "spec": identity["spec"],
+            "matrix_sha256": identity["matrix_sha256"],
+            "identity": identity,
+            "code_sha256": pipe.code_identity(),
+        }
+        outcome = pipe.check_main_preconditions(root, freeze)
+        assert outcome["legacy_freeze"] is False
+        assert outcome["identity_fields_unprovable"] == []
+        assert outcome["code_drift_from_freeze"] is False
+        assert "keys_sha256" in outcome["identity_fields_compared"]
+        assert "calendar_sha256" in outcome["identity_fields_compared"]
+
+        # Real drift in those same fields must still be refused.
+        drifted = json.loads(json.dumps(freeze))
+        drifted["identity"]["calendar_sha256"] = "something else"
+        try:
+            pipe.check_main_preconditions(root, drifted)
+        except pipe.PipelineError as error:
+            assert "calendar_sha256" in str(error)
+        else:
+            raise AssertionError("calendar drift was not refused")
+
+
+def test_a_legacy_freeze_is_refused_by_name_not_waved_through():
+    """An old freeze cannot prove the new fields; say so instead of guessing."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "run"
+        _synthetic_run(root)
+        identity = pipe.run_identity(root)
+        legacy = {
+            "spec": identity["spec"],
+            "matrix_sha256": identity["matrix_sha256"],
+            "code_sha256": pipe.code_identity(),
+        }
+        try:
+            pipe.check_main_preconditions(root, legacy)
+        except pipe.PipelineError as error:
+            assert "--allow-legacy-freeze" in str(error)
+            assert "keys_sha256" in str(error)
+        else:
+            raise AssertionError("a legacy freeze was accepted silently")
+
+        outcome = pipe.check_main_preconditions(root, legacy, allow_legacy_freeze=True)
+        assert outcome["legacy_freeze"] is True
+        assert set(outcome["identity_fields_unprovable"]) == {
+            "keys_sha256",
+            "calendar_sha256",
+        }
+
+
+def test_a_stale_completed_fold_is_never_queued_for_refitting():
+    """Mismatched history is rejected outright; it is never overwritten."""
+    import json
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "run"
+        _synthetic_run(root)
+        folds = root / "main" / "folds"
+        # Give one completed fold an identity from a different experiment.
+        (folds / "mai_h01_2023-02.json").write_text(
+            json.dumps(
+                {
+                    "fold_id": "mai_h01_2023-02",
+                    "status": "complete",
+                    "identity": {"spec": {"rich_count": 999}, "matrix_sha256": "other"},
+                }
+            )
+        )
+        try:
+            pipe.stage_folds(root, "main", workers=1, selections=None)
+        except pipe.PipelineError as error:
+            message = str(error)
+            assert "immutable" in message and "fresh run directory" in message
+            assert "mai_h01_2023-02" in message
+        else:
+            raise AssertionError("a stale completed fold did not stop the run")
+
+
 def test_identity_comparison_separates_code_drift_from_science():
     recorded = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "old"}}
     current = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "new"}}

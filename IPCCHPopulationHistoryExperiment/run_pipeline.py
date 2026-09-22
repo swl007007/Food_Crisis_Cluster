@@ -1024,16 +1024,41 @@ def run_identity(run_dir: Path, selections: dict | None = None) -> dict:
     return identity
 
 
-def compare_identity(recorded: dict, current: dict, scientific_only: bool = False) -> list[str]:
-    """Differences between two identities, code drift reported separately."""
-    fields = ["spec", "matrix_sha256", "keys_sha256", "calendar_sha256", "selections_sha256"]
+SCIENTIFIC_IDENTITY_FIELDS = (
+    "spec",
+    "matrix_sha256",
+    "keys_sha256",
+    "calendar_sha256",
+    "selections_sha256",
+)
+
+
+def compare_identity(
+    recorded: dict, current: dict, scientific_only: bool = False
+) -> list[str]:
+    """Differences between two identities, code drift reported separately.
+
+    A field absent from one side is *not* drift. Treating it as drift is how an
+    older record ends up looking like a changed experiment, which would block
+    every continuation; treating it as agreement is how a real change would slip
+    through. Missing fields are reported separately by :func:`missing_identity_fields`.
+    """
+    fields = list(SCIENTIFIC_IDENTITY_FIELDS)
     if not scientific_only:
         fields.append("code_sha256")
     return [
-        f"{field}: recorded {recorded.get(field)!r} != current {current.get(field)!r}"
+        f"{field}: recorded {recorded[field]!r} != current {current[field]!r}"
         for field in fields
-        if field in recorded or field in current
-        if recorded.get(field) != current.get(field)
+        if field in recorded and field in current and recorded[field] != current[field]
+    ]
+
+
+def missing_identity_fields(recorded: dict, current: dict) -> list[str]:
+    """Scientific fields the current identity defines but the record does not."""
+    return [
+        field
+        for field in SCIENTIFIC_IDENTITY_FIELDS
+        if field in current and field not in recorded
     ]
 
 
@@ -1185,6 +1210,10 @@ def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = Fals
         "primary_mean_delta": means,
         "spec": context.spec.identity(),
         "matrix_sha256": matrix_identity(run_dir),
+        # The complete scientific identity, so the main schedule can prove it
+        # is running under the inputs that were frozen rather than comparing a
+        # partial record and guessing about the rest.
+        "identity": run_identity(run_dir),
         "code_sha256": {
             name: prep.sha256_file(PACKAGE_DIR / name)
             for name in ("prepare_data.py", "run_pipeline.py")
@@ -1228,27 +1257,47 @@ def stage_pilot(run_dir: Path, workers: int) -> dict:
     return execute_stage(run_dir, "development", [fold_id], workers)
 
 
-def stage_folds(
-    run_dir: Path,
-    stage: str,
-    workers: int,
-    selections: dict | None,
-    allow_stale_reuse: bool = False,
-) -> dict:
+def stage_folds(run_dir: Path, stage: str, workers: int, selections: dict | None) -> dict:
+    """Schedule the folds of one stage, never over a completed artifact.
+
+    A completed fold whose identity no longer matches is not re-fitted and not
+    reused: the run is rejected. Overwriting it in place would destroy the
+    evidence of what the earlier fold actually produced while keeping the same
+    run id, freeze and reports -- which is the specific failure R12's
+    fresh-run rule exists to prevent. The remedy is a fresh run directory.
+    """
     calendar = pd.read_csv(run_dir / "folds" / "calendar.csv")
     scheduled = calendar[calendar["stage"] == stage]
     identity = run_identity(run_dir, selections)
     done, stale = completed_folds(run_dir, stage, identity)
-    if stale and not allow_stale_reuse:
+    if stale:
+        unprovable = [reason for reason in stale if "no identity recorded" in reason]
+        detail = (
+            f"{len(unprovable)} of them predate identity recording and therefore "
+            "cannot be proved to match; "
+            if unprovable
+            else ""
+        )
         raise PipelineError(
-            f"{len(stale)} existing {stage} folds were produced under a different "
-            f"identity and will not be mixed into this run: {stale[:3]}. Start a "
-            "fresh run, or pass --allow-stale-reuse only if you can justify it."
+            f"{len(stale)} completed {stage} folds in {run_dir} do not match this "
+            f"run's identity: {stale[:3]}. {detail}"
+            "They are immutable, and continuing here would overwrite them under "
+            "the same run id, freeze and reports. Prepare a fresh run directory "
+            "instead. A stage that is already finished needs no continuation."
         )
     pending = [f for f in scheduled["fold_id"] if f not in done]
+
+    # Belt and braces: whatever the reuse logic decided, nothing already
+    # recorded as complete may enter the fitting queue.
+    recorded, _ = completed_folds(run_dir, stage, None)
+    collisions = sorted(set(pending) & recorded)
+    if collisions:
+        raise PipelineError(
+            f"refusing to refit {len(collisions)} folds that already have "
+            f"completed records: {collisions[:3]}"
+        )
     summary = execute_stage(run_dir, stage, pending, workers, selections)
     summary["folds_reused"] = len(done)
-    summary["folds_refused_stale"] = stale
     summary["folds_scheduled"] = int(len(scheduled))
     summary["identity"] = identity
     return summary
@@ -1322,6 +1371,61 @@ def stage_verify(run_dir: Path) -> dict:
             f"predictions: {[c['fold_id'] for c in mismatched]}"
         )
     return report
+
+
+def check_main_preconditions(
+    run_dir: Path,
+    freeze: dict,
+    allow_code_drift: bool = False,
+    allow_legacy_freeze: bool = False,
+) -> dict:
+    """Everything the main schedule must be true of before it fits anything.
+
+    The scientific identity is compared field by field against the one the
+    freeze recorded. A field the freeze never carried is an old schema, not
+    drift, and is refused by name rather than by inventing a historical hash or
+    by quietly passing: the two failure modes the check exists to avoid.
+    """
+    current = run_identity(run_dir)
+    recorded = freeze.get("identity")
+    legacy = recorded is None
+    if legacy:
+        # Freezes written before identities existed carry only these two.
+        recorded = {
+            key: freeze[key] for key in ("spec", "matrix_sha256") if key in freeze
+        }
+
+    drift = compare_identity(recorded, current, scientific_only=True)
+    if drift:
+        raise PipelineError(
+            "the frozen inputs no longer describe this run, so the main schedule "
+            f"would not be the one that was frozen: {drift}"
+        )
+
+    missing = missing_identity_fields(recorded, current)
+    if missing and not allow_legacy_freeze:
+        raise PipelineError(
+            f"this freeze predates {missing}, so those inputs cannot be proved "
+            "unchanged. Re-freeze on the current schema, or pass "
+            "--allow-legacy-freeze and record why that is acceptable."
+        )
+
+    code_drift = freeze.get("code_sha256") != code_identity()
+    if code_drift and not allow_code_drift:
+        raise PipelineError(
+            "the code has changed since the freeze. Re-run on the frozen "
+            "revision, or pass --allow-code-drift and justify it in the run record."
+        )
+    return {
+        "legacy_freeze": legacy,
+        "identity_fields_compared": sorted(
+            set(recorded) & set(current) & set(SCIENTIFIC_IDENTITY_FIELDS)
+        ),
+        "identity_fields_unprovable": missing,
+        "code_drift_from_freeze": bool(code_drift),
+        "allow_code_drift": bool(allow_code_drift),
+        "allow_legacy_freeze": bool(allow_legacy_freeze),
+    }
 
 
 def stage_persist(run_dir: Path, workers: int) -> dict:
@@ -1677,9 +1781,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="main: continue although the code moved since the freeze",
     )
     parser.add_argument(
-        "--allow-stale-reuse",
+        "--allow-legacy-freeze",
         action="store_true",
-        help="reuse folds recorded under a different identity (justify it)",
+        help="main: accept a freeze written before identities were recorded",
     )
     args = parser.parse_args(argv)
 
@@ -1690,9 +1794,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.stage == "pilot":
         summary = stage_pilot(run_dir, args.workers)
     elif args.stage == "development":
-        summary = stage_folds(
-            run_dir, "development", args.workers, None, args.allow_stale_reuse
-        )
+        summary = stage_folds(run_dir, "development", args.workers, None)
     elif args.stage == "select":
         summary = run_selection(
             run_dir,
@@ -1710,27 +1812,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not freeze_path.is_file():
             raise PipelineError("the main schedule requires freeze.json; run --stage select")
         freeze = json.loads(freeze_path.read_text())
-        drift = compare_identity(
-            {"spec": freeze["spec"], "matrix_sha256": freeze["matrix_sha256"]},
-            run_identity(run_dir),
-            scientific_only=True,
+        preconditions = check_main_preconditions(
+            run_dir,
+            freeze,
+            allow_code_drift=args.allow_code_drift,
+            allow_legacy_freeze=args.allow_legacy_freeze,
         )
-        if drift:
-            raise PipelineError(
-                "the frozen inputs no longer describe this run, so the main "
-                f"schedule would not be the one that was frozen: {drift}"
-            )
-        code_drift = freeze["code_sha256"] != code_identity()
-        if code_drift and not args.allow_code_drift:
-            raise PipelineError(
-                "the code has changed since the freeze. Re-run on the frozen "
-                "revision, or pass --allow-code-drift and justify it in the "
-                "run record."
-            )
-        summary = stage_folds(
-            run_dir, "main", args.workers, freeze["selections"], args.allow_stale_reuse
-        )
-        summary["code_drift_from_freeze"] = bool(code_drift)
+        summary = stage_folds(run_dir, "main", args.workers, freeze["selections"])
+        summary["preconditions"] = preconditions
 
     stage_path = run_dir / f"stage_{args.stage}.json"
     prep._write_json(summary, stage_path)

@@ -90,10 +90,21 @@ deliberately discarding a freeze.
 Every fold record carries an `identity`: the source/schema/candidate hashes, the
 key and calendar digests, the frozen selection digest and the code hashes.
 Resuming reuses only folds whose identity still matches, so an interrupted run
-resumes safely while a continuation after changed inputs, candidates or code is
-refused rather than mixed in. `--stage main` additionally refuses to run if the
-frozen inputs no longer describe the run, or if the code moved since the freeze
-(`--allow-code-drift` to override, and say why in the run record).
+resumes safely.
+
+A completed fold whose identity does **not** match is neither reused nor
+re-fitted — the run is rejected and you are pointed at a fresh run directory.
+There is deliberately no override: overwriting it in place would destroy the
+evidence of what that fold produced while keeping the same run id, freeze and
+reports. A second guard checks that nothing already recorded as complete can
+enter the fitting queue at all, whatever the reuse logic decided.
+
+`--stage main` also refuses to start when the frozen inputs no longer describe
+the run. The comparison is field by field, and a field the freeze never carried
+is treated as an *old schema*, not as drift: it is named and refused
+(`--allow-legacy-freeze`) rather than passed over or filled in with a hash
+invented after the fact. Code that moved since the freeze needs
+`--allow-code-drift`, and a reason in the run record.
 
 ### Retained models
 

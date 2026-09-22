@@ -238,8 +238,42 @@ valid. Both are now addressed in code, with evidence and with tests:
 | `select` overwrote an existing freeze; fold reuse checked no identity | freeze written once, `--replay-into` for replay; per-fold identity over inputs/schema/candidates/selections/code; `main` refuses drifted inputs or code | `validation/freeze_replay/`, `identity` in every fold record, `stage_*.json` → `folds_refused_stale` |
 
 Four new contract tests cover the readback, the model round trip and digest
-binding, identity-refused reuse, and the code-drift/science separation; 45/45
-pass.
+binding, identity-refused reuse, and the code-drift/science separation.
+
+## Remediation of re-audit 4c552551d350bf044879fdb9
+
+That re-audit closed the gate (`gate_open: 0`) and moved A7 and A9 to **met**,
+confirming the fitted-state readback and the retained-model replays. It then
+found two defects **in the guards themselves**, both real:
+
+**The stale-fold override destroyed evidence.** `--allow-stale-reuse` put
+mismatched completed folds into the in-place fitting queue, so the advertised
+way to continue a historical run would have overwritten its own prior fold
+evidence under the same run id and freeze. Fixed by deleting the override: a
+mismatched completed fold now rejects the run and points at a fresh directory,
+and a second guard refuses to queue any fold that already has a completed
+record, whatever the reuse logic decided.
+
+**A freshly frozen run could not reach main fitting.** The freeze carried two
+identity fields while `run_identity` computed five, and the comparison read
+"absent on one side" as drift — so `--stage main` refused on a run nothing had
+touched. Fixed: the freeze records the complete identity;
+`compare_identity` only compares fields present on both sides; absent fields
+are reported separately by `missing_identity_fields` and refused by name
+(`--allow-legacy-freeze`) rather than passed over or back-filled with a hash
+invented after the fact. `check_main_preconditions` is now a function the tests
+drive directly.
+
+Three further tests: a freshly frozen run reaches main scheduling and real
+key/calendar drift is still refused; a legacy freeze is refused by name and
+lists exactly which fields it cannot prove; a stale completed fold stops the
+run instead of being requeued. 48/48 pass.
+
+Consequence for `pop-v1`, stated plainly: its fold records predate identity
+recording, so `--stage main` now refuses to continue it — correctly, since the
+stage is finished and those records cannot prove what they were made under. The
+read-only stages (`replay-models`, `select --replay-into`, the reporter) all
+still run against it.
 
 ## Known deviations, stated rather than buried
 
