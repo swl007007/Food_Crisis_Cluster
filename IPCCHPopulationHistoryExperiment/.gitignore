@@ -5,6 +5,11 @@ __pycache__/
 # here: a reviewer who cannot read config/ cannot check a single feature name.
 !config/*.json
 
+# The root ignores test_* wholesale. The contract tests are the evidence that
+# the history formulas are right; a reviewer who cannot read them is reviewing
+# the implementation against itself.
+!test_contracts.py
+
 # Generated runs stay local. Which parts are promoted into the commit is
 # decided once the run exists and its sizes are known; see README.md.
 runs/
