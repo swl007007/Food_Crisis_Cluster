@@ -275,6 +275,39 @@ stage is finished and those records cannot prove what they were made under. The
 read-only stages (`replay-models`, `select --replay-into`, the reporter) all
 still run against it.
 
+## Remediation of re-audit 9c8d9909b25c6e16bd2c4d48
+
+A1-A4, A6, A7 and A9 met. Three majors, all real, all in the guards:
+
+**A partial identity dictionary passed as proof.** `compare_identity` compares
+only fields present on both sides — right for the legacy-freeze case, where a
+human names the gap and accepts it, wrong for a fold record joining a fitting
+queue with no one looking. `completed_folds` now rejects a record before
+comparing values if it omits any scientific field this run defines, or
+`code_sha256`. Tested with full / partial / empty / code-less records:
+only the full one is reusable.
+
+**Selection did not prove its cohort was complete.** It maximised F1 over
+whatever predictions were on disk while persistence was scored from the full
+calendar, so an interrupted run or a lost artifact would yield a perfectly
+valid-looking freeze derived from a smaller cohort than its own baseline.
+`reconcile_development_cohort` now runs before anything is optimised: every
+supported development fold must have a completed record and contribute
+predictions, each arm/candidate/horizon must cover exactly the expected
+evaluation keys with no duplicates and nothing outside the window, and all
+candidates must share one support. The result is recorded in the freeze as
+`cohort_reconciliation`. On pop-v1 it passes — 123 supported folds, all 36
+arm/candidate combinations covering 9,668 / 9,667 / 8,887 / 8,168 keys — which
+independently confirms the delivered selections were not affected.
+
+**The pilot bypassed the guards.** `stage_pilot` called the executor directly,
+so repeating the documented pilot command would refit and replace a completed
+fold, even after selection or main fitting. It now obeys the same rule as every
+other fold: an exactly matching completed pilot is reused with zero fits, and an
+unprovable or mismatched one stops the run.
+
+Three more tests; 51/51 pass.
+
 ## Known deviations, stated rather than buried
 
 1. **Fold-level parallelism.** `technical-contract.md` §7 asks for sequential

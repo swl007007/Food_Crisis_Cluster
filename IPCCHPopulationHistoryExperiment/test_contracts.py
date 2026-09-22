@@ -862,6 +862,225 @@ def test_a_stale_completed_fold_is_never_queued_for_refitting():
             raise AssertionError("a stale completed fold did not stop the run")
 
 
+def test_a_partial_identity_record_is_not_proof():
+    """Omitted fields cannot be compared, so the record cannot be reused."""
+    import json
+    import tempfile
+
+    identity = {
+        "spec": {"rich_count": 561},
+        "matrix_sha256": "m",
+        "keys_sha256": "k",
+        "calendar_sha256": "c",
+        "code_sha256": {"run_pipeline.py": "1"},
+    }
+    with tempfile.TemporaryDirectory() as tmp:
+        folds = Path(tmp) / "development" / "folds"
+        folds.mkdir(parents=True)
+        cases = {
+            "full": identity,
+            "partial": {"spec": identity["spec"], "matrix_sha256": "m"},
+            "empty": {},
+            "no_code": {k: v for k, v in identity.items() if k != "code_sha256"},
+        }
+        for name, recorded in cases.items():
+            (folds / f"{name}.json").write_text(
+                json.dumps({"fold_id": name, "status": "complete", "identity": recorded})
+            )
+        done, stale = pipe.completed_folds(tmp, "development", identity)
+        assert done == {"full"}, done
+        assert len(stale) == 3, stale
+        assert any("omits" in reason and "keys_sha256" in reason for reason in stale)
+        assert any("omits" in reason and "code_sha256" in reason for reason in stale)
+
+
+def _development_cohort_fixture(tmp: Path):
+    """A tiny but complete development cohort: 2 folds, 2 arms, 2 candidates."""
+    import json
+
+    months = ["2020-01", "2020-02"]
+    areas = [1, 2, 3]
+    keys = pd.DataFrame(
+        [
+            {
+                "admin_code": a,
+                "target_month": m,
+                "horizon_months": h,
+                "has_history": 1,
+            }
+            for h in rep.HORIZONS
+            for m in months
+            for a in areas
+        ]
+    )
+    calendar = pd.DataFrame(
+        [
+            {
+                "fold_id": f"dev_h{h:02d}_{m}",
+                "stage": "development",
+                "horizon_months": h,
+                "target_month": m,
+                "test_rows": len(areas),
+                "test_rows_with_history": len(areas),
+            }
+            for h in rep.HORIZONS
+            for m in months
+        ]
+    )
+    folds = tmp / "development" / "folds"
+    folds.mkdir(parents=True, exist_ok=True)
+    for fold_id in calendar["fold_id"]:
+        (folds / f"{fold_id}.json").write_text(
+            json.dumps({"fold_id": fold_id, "status": "complete"})
+        )
+    history = pd.DataFrame(
+        [
+            {
+                "fold_id": f"dev_h{h:02d}_{m}",
+                "arm": arm,
+                "config_id": cfg,
+                "horizon_months": h,
+                "admin_code": a,
+                "target_month": m,
+            }
+            for h in rep.HORIZONS
+            for m in months
+            for arm in ("rich_direct_xgb", "share_xgb")
+            for cfg in ("X0", "X1")
+            for a in areas
+        ]
+    )
+    return keys, calendar, history
+
+
+def test_selection_refuses_an_incomplete_development_cohort():
+    """A missing fold must stop the freeze, not quietly shrink the search."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as raw:
+        tmp = Path(raw)
+        keys, calendar, history = _development_cohort_fixture(tmp)
+        intact = pipe.reconcile_development_cohort(tmp, keys, calendar, history)
+        assert intact["supported_folds"] == 8
+        assert intact["folds_with_predictions"] == 8
+
+        # One fold's predictions vanish: persistence would still be scored on
+        # the full calendar, so the comparison would be mismatched.
+        lost = history[history["fold_id"] != "dev_h01_2020-02"]
+        try:
+            pipe.reconcile_development_cohort(tmp, keys, calendar, lost)
+        except pipe.PipelineError as error:
+            assert "contributed no E_history predictions" in str(error)
+        else:
+            raise AssertionError("a missing development fold was not detected")
+
+        # One candidate silently covering fewer keys is equally fatal.
+        short = history.drop(
+            history[
+                (history["arm"] == "share_xgb")
+                & (history["config_id"] == "X1")
+                & (history["admin_code"] == 3)
+            ].index
+        )
+        try:
+            pipe.reconcile_development_cohort(tmp, keys, calendar, short)
+        except pipe.PipelineError as error:
+            assert "expected" in str(error)
+        else:
+            raise AssertionError("an unequal candidate support was not detected")
+
+        # A duplicated key would double-count into the pooled confusion table.
+        doubled = pd.concat([history, history.iloc[[0]]], ignore_index=True)
+        try:
+            pipe.reconcile_development_cohort(tmp, keys, calendar, doubled)
+        except pipe.PipelineError as error:
+            assert "duplicated" in str(error)
+        else:
+            raise AssertionError("a duplicated evaluation key was not detected")
+
+
+def _pilot_run(root: Path) -> str:
+    """Minimal run directory with one supported 2020 h=1 development fold."""
+    import json
+
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "inputs").mkdir(exist_ok=True)
+    (root / "data").mkdir(exist_ok=True)
+    (root / "folds").mkdir(exist_ok=True)
+    for name in ("feature-schema.json", "candidate-configs.json"):
+        (root / "inputs" / name).write_bytes((prep.CONFIG_DIR / name).read_bytes())
+    keys = pd.DataFrame(
+        {
+            "admin_code": [1, 2],
+            "target_month": ["2020-01", "2020-01"],
+            "horizon_months": [1, 1],
+            "target_ord": [ordinal(2020, 1)] * 2,
+            "has_history": [1, 1],
+        }
+    )
+    keys.to_csv(root / "data" / "keys.csv.gz", index=False)
+    pd.DataFrame(
+        [
+            {
+                "fold_id": "dev_h01_2020-01",
+                "stage": "development",
+                "horizon_months": 1,
+                "target_month": "2020-01",
+                "target_ord": ordinal(2020, 1),
+                "origin_ord": ordinal(2020, 1) - 1,
+                "test_rows": 2,
+                "test_rows_with_history": 2,
+            }
+        ]
+    ).to_csv(root / "folds" / "calendar.csv", index=False)
+    (root / "manifest.json").write_text(
+        json.dumps({"matrix": {"matrix_sha256": "deadbeef"}})
+    )
+    return "dev_h01_2020-01"
+
+
+def test_the_pilot_reuses_a_matching_fold_and_refuses_a_mismatched_one():
+    """Repeating the pilot command must never refit over a completed fold."""
+    import json
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as raw:
+        root = Path(raw) / "run"
+        fold_id = _pilot_run(root)
+        folds = root / "development" / "folds"
+        folds.mkdir(parents=True)
+
+        # An exactly matching completed pilot is reused, not refitted.
+        (folds / f"{fold_id}.json").write_text(
+            json.dumps(
+                {
+                    "fold_id": fold_id,
+                    "status": "complete",
+                    "identity": pipe.run_identity(root, None),
+                }
+            )
+        )
+        summary = pipe.stage_pilot(root, workers=1)
+        assert summary["folds_reused"] == 1 and summary["fits"] == 0
+
+        # One whose identity moved stops the run instead of overwriting it.
+        (folds / f"{fold_id}.json").write_text(
+            json.dumps(
+                {
+                    "fold_id": fold_id,
+                    "status": "complete",
+                    "identity": {**pipe.run_identity(root, None), "matrix_sha256": "other"},
+                }
+            )
+        )
+        try:
+            pipe.stage_pilot(root, workers=1)
+        except pipe.PipelineError as error:
+            assert "immutable" in str(error) and fold_id in str(error)
+        else:
+            raise AssertionError("the pilot refitted over a mismatched completed fold")
+
+
 def test_identity_comparison_separates_code_drift_from_science():
     recorded = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "old"}}
     current = {"spec": {"a": 1}, "matrix_sha256": "m", "code_sha256": {"f": "new"}}

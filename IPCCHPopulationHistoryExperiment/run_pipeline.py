@@ -726,8 +726,19 @@ def completed_folds(
             continue
         if identity is not None:
             recorded = payload.get("identity")
-            if recorded is None:
+            if not recorded:
                 stale.append(f"{payload['fold_id']}: no identity recorded")
+                continue
+            # A partial record proves nothing about the fields it omits, so
+            # every field this run defines must be present before the values
+            # are compared at all. (The legacy-freeze path is deliberately
+            # different: there a human names the gap and accepts it. A fold
+            # record silently joining a fitting queue gets no such option.)
+            absent = missing_identity_fields(recorded, identity)
+            if "code_sha256" in identity and "code_sha256" not in recorded:
+                absent = absent + ["code_sha256"]
+            if absent:
+                stale.append(f"{payload['fold_id']}: identity omits {sorted(absent)}")
                 continue
             problems = compare_identity(recorded, identity)
             if problems:
@@ -1062,6 +1073,104 @@ def missing_identity_fields(recorded: dict, current: dict) -> list[str]:
     ]
 
 
+def reconcile_development_cohort(
+    run_dir: Path, keys: pd.DataFrame, calendar: pd.DataFrame, history: pd.DataFrame
+) -> dict:
+    """Prove the development cohort is complete before anything is optimised.
+
+    Selection maximises F1 over whatever predictions happen to be on disk,
+    while persistence is scored from the full calendar. If a fold is missing --
+    an interrupted run, a lost artifact -- the search silently optimises on a
+    smaller cohort than its own baseline, and the resulting configurations,
+    thresholds and primary family look perfectly valid. Nothing downstream can
+    detect that, so it is checked here and the freeze is refused if it fails.
+
+    Checked: every supported development fold has a completed record and
+    contributes predictions; each (arm, candidate, horizon) covers exactly the
+    expected evaluation keys, with no duplicates and nothing outside the
+    development window; and every candidate of every arm has identical support.
+    """
+    scheduled = calendar[calendar["stage"] == "development"]
+    supported = scheduled[scheduled["test_rows_with_history"] > 0]
+    problems: list[str] = []
+
+    done, stale = completed_folds(run_dir, "development", None)
+    missing_records = sorted(set(supported["fold_id"]) - done)
+    if missing_records:
+        problems.append(
+            f"{len(missing_records)} supported development folds have no completed "
+            f"record: {missing_records[:5]}"
+        )
+    if stale:
+        problems.append(f"{len(stale)} development records are unusable: {stale[:3]}")
+
+    present = set(history["fold_id"].unique())
+    silent = sorted(set(supported["fold_id"]) - present)
+    if silent:
+        problems.append(
+            f"{len(silent)} supported development folds contributed no E_history "
+            f"predictions: {silent[:5]}"
+        )
+    unexpected = sorted(present - set(scheduled["fold_id"]))
+    if unexpected:
+        problems.append(f"predictions from outside the development schedule: {unexpected[:5]}")
+
+    # The evaluation keys every arm and candidate must cover, per horizon.
+    development_months = set(scheduled["target_month"])
+    expected: dict[int, set] = {}
+    for horizon in HORIZONS:
+        block = keys[
+            (keys["horizon_months"] == horizon)
+            & (keys["has_history"] == 1)
+            & (keys["target_month"].isin(development_months))
+        ]
+        expected[horizon] = set(map(tuple, block[["admin_code", "target_month"]].to_numpy()))
+
+    coverage = {}
+    for (arm, config_id, horizon), block in history.groupby(
+        ["arm", "config_id", "horizon_months"], sort=True
+    ):
+        actual = list(map(tuple, block[["admin_code", "target_month"]].to_numpy()))
+        as_set = set(actual)
+        label = f"{arm}/{config_id}/h{horizon}"
+        if len(actual) != len(as_set):
+            problems.append(f"{label}: {len(actual) - len(as_set)} duplicated evaluation keys")
+        want = expected[int(horizon)]
+        if as_set != want:
+            problems.append(
+                f"{label}: covers {len(as_set)} evaluation keys, expected {len(want)} "
+                f"(missing {len(want - as_set)}, unexpected {len(as_set - want)})"
+            )
+        coverage.setdefault(f"h{horizon}", {})[f"{arm}/{config_id}"] = len(as_set)
+
+    for horizon_label, by_candidate in coverage.items():
+        sizes = set(by_candidate.values())
+        if len(sizes) > 1:
+            problems.append(
+                f"{horizon_label}: candidates do not share one support: {sorted(sizes)}"
+            )
+
+    if problems:
+        raise PipelineError(
+            "the development cohort is incomplete, so a freeze derived from it "
+            "would not be comparable with the persistence baseline: "
+            + "; ".join(problems[:6])
+        )
+
+    return {
+        "supported_folds": int(len(supported)),
+        "folds_with_predictions": len(present & set(supported["fold_id"])),
+        "expected_keys_per_horizon": {str(h): len(expected[h]) for h in HORIZONS},
+        "candidates_per_horizon": {k: len(v) for k, v in coverage.items()},
+        "rule": (
+            "every supported development fold has a completed record and "
+            "contributes predictions; each arm/candidate/horizon covers exactly "
+            "the expected evaluation keys with no duplicates; candidates share "
+            "one support"
+        ),
+    }
+
+
 def matrix_identity(run_dir: Path) -> str:
     """The feature matrix's hash, from the file if present, else the manifest.
 
@@ -1131,6 +1240,9 @@ def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = Fals
 
     # Selection uses E_history only: that is where all seven methods share keys.
     history = joined[joined["support"] == "E_history"].copy()
+
+    # Nothing is optimised until the cohort is shown to be complete.
+    cohort = reconcile_development_cohort(run_dir, keys, context.calendar, history)
 
     persistence = {}
     for horizon in HORIZONS:
@@ -1204,6 +1316,7 @@ def run_selection(run_dir: Path, into: Path | None = None, refreeze: bool = Fals
         "frozen_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "information_cutoff": "2022-12",
         "selection_cohort": "E_history development predictions, 2020-2022 targets",
+        "cohort_reconciliation": cohort,
         "persistence_development_f1": {str(h): persistence[h] for h in HORIZONS},
         "selections": selections,
         "primary_family": primary,
@@ -1245,7 +1358,7 @@ def stage_pilot(run_dir: Path, workers: int) -> dict:
     """The first supported 2020 h1 development target, all six arms and configs."""
     # calendar.csv already carries each fold's support counts, so "supported"
     # is read from it rather than recomputed.
-    folds = scheduled_folds(load_context(run_dir), "development")
+    folds = scheduled_folds(load_context(run_dir, require_matrix=False), "development")
     candidates = folds[
         (folds["horizon_months"] == 1)
         & (folds["target_month"].str.startswith("2020"))
@@ -1254,7 +1367,33 @@ def stage_pilot(run_dir: Path, workers: int) -> dict:
     if candidates.empty:
         raise PipelineError("no supported 2020 h1 development target exists")
     fold_id = candidates.iloc[0]["fold_id"]
-    return execute_stage(run_dir, "development", [fold_id], workers)
+
+    # The pilot is one development fold, not a stage of its own, so it obeys
+    # the same rule as the rest: an exactly matching completed record is
+    # reused, anything else refuses. Repeating the documented pilot command
+    # must never quietly refit over a fold the search already depends on.
+    identity = run_identity(run_dir, None)
+    done, stale = completed_folds(run_dir, "development", identity)
+    if fold_id in done:
+        return {
+            "stage": "development",
+            "pilot_fold": fold_id,
+            "folds_requested": 0,
+            "folds_complete": 0,
+            "folds_reused": 1,
+            "fits": 0,
+            "note": "the pilot fold is already complete under this identity; reused, not refitted",
+        }
+    blocking = [reason for reason in stale if reason.startswith(f"{fold_id}:")]
+    if blocking:
+        raise PipelineError(
+            f"the pilot fold {fold_id} already has a completed record that does "
+            f"not match this run: {blocking[0]}. It is immutable; prepare a "
+            "fresh run directory rather than refitting over it."
+        )
+    summary = execute_stage(run_dir, "development", [fold_id], workers)
+    summary["pilot_fold"] = fold_id
+    return summary
 
 
 def stage_folds(run_dir: Path, stage: str, workers: int, selections: dict | None) -> dict:
