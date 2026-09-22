@@ -64,10 +64,17 @@ full claim: `rich_rf` and `fullpool_xgb` are both better than `share_xgb`, so
 
 n = 16,002 / 15,907 / 14,960 / 12,404. Every arm shares these keys exactly.
 
-The two strongest arms are the ones with the *least* constrained fitting
-support: `fullpool_xgb`, which trains on the superset including rows without
-persistence, and `rich_rf`. The same ordering appeared in the earlier CH/gate
-ablation, where XGB was the strongest learned arm.
+The two strongest arms are `fullpool_xgb` and `rich_rf`, and they are strong for
+different reasons — which the design is built to separate, so it is worth not
+blurring:
+
+* `fullpool_xgb` is the **only** arm with expanded fitting support. It trains on
+  the superset that includes rows without persistence, so its edge is consistent
+  with a support advantage and is not a like-for-like model comparison.
+* `rich_rf` trains on **exactly the same matched keys** as the other four matched
+  arms, on the same 561 columns. Its edge over them is therefore an algorithm
+  difference — a random forest against gradient boosting on identical rows —
+  and nothing to do with how much data it saw.
 
 ## Five findings worth carrying forward
 
@@ -258,6 +265,14 @@ dropped for it.
 
 A negative result on these three claims is a complete outcome, not a mandate to
 start another feature or model search. Two things it does point at, if anyone
-wants them: `fullpool_xgb`'s consistent edge says the binding constraint is
-*fitting support*, not features; and finding 2 says the threshold-selection
-step, not the model, may be where this design loses ground.
+wants them.
+
+`fullpool_xgb` — the one arm allowed a larger fitting pool — beats every matched
+arm at three of four horizons. That is consistent with fitting support mattering
+more than features here, but this design does not test it: support is confounded
+with nothing else only for that single arm, and there is no matched-support
+control for the extra rows. Treating it as established would need a deliberate
+support ablation, not this table.
+
+Finding 2 points somewhere cheaper: the threshold-selection step, not the model,
+may be where this design loses ground.

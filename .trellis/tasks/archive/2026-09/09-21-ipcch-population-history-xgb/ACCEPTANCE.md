@@ -342,6 +342,28 @@ Two more tests: a complete cohort with one mismatched fold is refused while the
 same cohort replays fine; a replay freeze cannot drive a main schedule.
 53/53 pass.
 
+## Remediation of re-audit c5499895121d3c7b179654a9
+
+A4, A6, A8 and **A10** met, no violated acceptance criterion, gate closed. One
+minor finding against R10 — an interpretation error in my own write-up, and a
+correct catch:
+
+RESULTS.md described `fullpool_xgb` and `rich_rf` together as "the two arms with
+the least constrained fitting support". That is true of `fullpool_xgb` and false
+of `rich_rf`, which trains on exactly the same matched keys and the same 561
+columns as the other four matched arms. Its edge is an *algorithm* difference —
+forest against boosting on identical rows — not a support advantage, and this
+matched-pool design gives no evidence for one.
+
+Corrected in RESULTS.md in both places it appeared: the headline-table commentary
+now separates the two reasons explicitly, and "What this does not license" now
+says that even `fullpool_xgb`'s support advantage is *consistent with* the data
+rather than established by it, since there is no matched-support control for the
+extra rows. The same error was corrected in the project memory note, which now
+carries a standing warning not to write "more fitting support wins".
+
+No number changed; this was a claim about why the numbers look as they do.
+
 ## Known deviations, stated rather than buried
 
 1. **Fold-level parallelism.** `technical-contract.md` §7 asks for sequential
