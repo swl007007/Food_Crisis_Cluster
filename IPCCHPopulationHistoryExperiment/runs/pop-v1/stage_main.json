@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 15401.6,
+  "fits": 660,
+  "folds_complete": 110,
+  "folds_requested": 122,
+  "folds_reused": 0,
+  "folds_scheduled": 122,
+  "folds_skipped_empty": 12,
+  "stage": "main",
+  "wall_seconds": 1432.0,
+  "workers": 12
+}

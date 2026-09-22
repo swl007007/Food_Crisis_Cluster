@@ -1,0 +1,12 @@
+{
+  "fit_seconds": 66754.4,
+  "fits": 3678,
+  "folds_complete": 113,
+  "folds_requested": 119,
+  "folds_reused": 25,
+  "folds_scheduled": 144,
+  "folds_skipped_empty": 6,
+  "stage": "development",
+  "wall_seconds": 5840.4,
+  "workers": 12
+}

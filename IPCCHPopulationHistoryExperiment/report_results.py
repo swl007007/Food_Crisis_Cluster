@@ -115,7 +115,9 @@ def build_scored_table(run_dir: Path) -> tuple[pd.DataFrame, dict]:
     no ``b`` and is routed to fullpool_xgb at the fixed cutoff instead.
     """
     freeze = json.loads((run_dir / "freeze.json").read_text())
-    context = pipe.load_context(run_dir, mmap=True)
+    # Reporting never touches X; not requiring it keeps the whole report
+    # reproducible from committed evidence in a fresh clone.
+    context = pipe.load_context(run_dir, mmap=True, require_matrix=False)
     predictions = pipe.load_stage_predictions(run_dir, "main")
 
     key_columns = [
@@ -263,17 +265,17 @@ def _cohort_audit(scored: pd.DataFrame, keys: pd.DataFrame, freeze: dict, run_di
             f"{len(union_gap)} scheduled evaluation keys are absent from the "
             "combined fullpool stream"
         )
+    # The partition is per (area, target month, HORIZON). The same area-month
+    # is routinely E_history at h=1 and E_no_history at h=12, when its first
+    # observation falls between the two origins -- that is the supports working,
+    # not overlapping.
+    partition_columns = ["admin_code", "target_month", "horizon_months"]
     overlap = set(
-        map(
-            tuple,
-            fullpool.loc[fullpool["support"] == "E_history", ["admin_code", "target_month"]].to_numpy(),
-        )
+        map(tuple, fullpool.loc[fullpool["support"] == "E_history", partition_columns].to_numpy())
     ) & set(
         map(
             tuple,
-            fullpool.loc[
-                fullpool["support"] == "E_no_history", ["admin_code", "target_month"]
-            ].to_numpy(),
+            fullpool.loc[fullpool["support"] == "E_no_history", partition_columns].to_numpy(),
         )
     )
     if overlap:

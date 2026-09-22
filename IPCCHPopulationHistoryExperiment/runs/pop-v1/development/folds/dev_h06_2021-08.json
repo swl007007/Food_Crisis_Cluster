@@ -1,0 +1,13 @@
+{
+  "elapsed_seconds": 0.0,
+  "fold_id": "dev_h06_2021-08",
+  "stage": "development",
+  "status": "skipped_empty_test",
+  "support": {
+    "full_pool_rows": 9493,
+    "matched_pool_rows": 6535,
+    "test_rows": 0,
+    "test_rows_with_history": 0,
+    "test_rows_without_history": 0
+  }
+}

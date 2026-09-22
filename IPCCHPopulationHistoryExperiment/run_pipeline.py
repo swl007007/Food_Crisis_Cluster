@@ -124,15 +124,38 @@ class RunContext:
         return self.spec.configs
 
 
-def load_context(run_dir: Path | str, mmap: bool = True) -> RunContext:
+def load_context(run_dir: Path | str, mmap: bool = True, require_matrix: bool = True) -> RunContext:
+    """Load a run's keys, calendar, frozen spec and (optionally) its matrix.
+
+    ``require_matrix=False`` exists for the replay paths. Selection and
+    reporting read only stored scores and the key table, and the 731 MB feature
+    matrix is too large to commit. Letting them run without it is what makes
+    those results reproducible from a fresh clone rather than only on the
+    machine that fitted them.
+    """
     run_dir = Path(run_dir)
     data = run_dir / "data"
-    if not (data / "rich561_X.npy").is_file():
-        raise PipelineError(f"{run_dir} has no prepared matrix; run prepare_data.py first")
     spec = prep.load_frozen_spec(run_dir / "inputs")
     keys = pd.read_csv(data / "keys.csv.gz")
     calendar = pd.read_csv(run_dir / "folds" / "calendar.csv")
-    X = np.load(data / "rich561_X.npy", mmap_mode="r" if mmap else None)
+
+    matrix_path = data / "rich561_X.npy"
+    if not matrix_path.is_file():
+        if require_matrix:
+            raise PipelineError(
+                f"{run_dir} has no prepared matrix; run prepare_data.py first"
+            )
+        X = np.empty((len(keys), 0), dtype=np.float64)
+        return RunContext(
+            run_dir=run_dir,
+            keys=keys,
+            calendar=calendar,
+            spec=spec,
+            X=X,
+            baseline_root=run_dir / "baseline" / "GeoRFBaseline",
+        )
+
+    X = np.load(matrix_path, mmap_mode="r" if mmap else None)
     if X.shape[1] != len(spec.rich_features):
         raise PipelineError("prepared matrix width disagrees with the frozen schema")
     if X.shape[0] != len(keys):
@@ -841,7 +864,9 @@ def run_selection(run_dir: Path) -> dict:
     Every input is a 2020-2022 out-of-time development prediction that already
     exists on disk, so this step can be replayed without fitting anything.
     """
-    context = load_context(run_dir, mmap=True)
+    # Selection reads only stored development scores and the key table, so it
+    # must not demand the feature matrix: that is what lets it be replayed.
+    context = load_context(run_dir, mmap=True, require_matrix=False)
     predictions = load_stage_predictions(run_dir, "development")
     keys = context.keys
     joined = predictions.merge(

@@ -1,0 +1,148 @@
+{
+  "alias_audit": {
+    "aliases_checked": [
+      "hist_age_obs1",
+      "hist_crisis_age",
+      "hist_crisis_obs1",
+      "hist_no_crisis",
+      "hist_support_common_all_age"
+    ],
+    "rule": "each aliased history name was recomputed and compared exactly against the original93 column it reuses"
+  },
+  "created_utc": "2026-09-22T05:40:37Z",
+  "elapsed_seconds": 53.8,
+  "feature_audit_summary": {
+    "all_nan_columns": [],
+    "constant_columns": [
+      "hist_q5_m06_slope"
+    ]
+  },
+  "folds": {
+    "development_nonempty": 136,
+    "development_scheduled": 144,
+    "main_nonempty": 110,
+    "main_scheduled": 122,
+    "scheduled": 266
+  },
+  "inputs": {
+    "country_lookup": {
+      "areas": 6227,
+      "areas_missing_country_code": 15,
+      "areas_missing_iso3": 31,
+      "countries": 53,
+      "countries_missing_country_code": [
+        "Namibia"
+      ],
+      "countries_missing_iso3": [
+        "C\u00f4te d'Ivoire"
+      ],
+      "note": "areas with a blank ISO3 are retained; no ISO repair is authorized",
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\country_area_id_lookup.csv",
+      "rows": 6227,
+      "sha256": "e2baf6ae9481b42b127db5ce81f3c53ad784bb08ae56dfa56cea74e416b44c90"
+    },
+    "source_path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\raw\\IPCCH_2026_completed.csv",
+    "source_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673"
+  },
+  "matrix": {
+    "horizons": [
+      1,
+      3,
+      6,
+      12
+    ],
+    "max_observations_per_area": 25,
+    "original_columns": 93,
+    "positives": 60824,
+    "rich_columns": 561,
+    "rows": 170780,
+    "rows_with_history": 139567,
+    "rows_without_history": 31213
+  },
+  "original93_audit": {
+    "areas": 6224,
+    "assembled_infinities_converted": {},
+    "feature_columns": 93,
+    "feature_rows": 170780,
+    "horizons": [
+      1,
+      3,
+      6,
+      12
+    ],
+    "origin_month_max": "2026-03",
+    "origin_month_min": "2013-01",
+    "panel": {
+      "non_numeric_coerced_to_nan": {},
+      "panel_areas": 6227,
+      "panel_month_max": "2026-04",
+      "panel_month_min": "2010-01",
+      "panel_rows": 1219868,
+      "source_infinities_converted": {},
+      "source_infinity_total": 0
+    },
+    "panel_areas_with_month_gaps": 39,
+    "panel_grid_cells": 1220492,
+    "panel_grid_gaps": 624,
+    "panel_grid_occupied": 1219868,
+    "panel_infinities_converted": {},
+    "rows_with_missing_origin_row": 0,
+    "rows_without_label_history": 31213,
+    "rows_without_prior_crisis": 100463,
+    "source_sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+    "valid_outcomes": 42695
+  },
+  "run_dir": "IPCCHPopulationHistoryExperiment\\runs\\pop-v1",
+  "runtime": {
+    "actual": {
+      "geopandas": "1.0.1",
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "python": "3.12.10",
+      "scipy": "1.15.2",
+      "shapely": "2.1.0",
+      "sklearn": "1.6.1",
+      "xgboost": "3.0.0"
+    },
+    "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "expected": {
+      "geopandas": "1.0.1",
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "python": "3.12.10",
+      "scipy": "1.15.2",
+      "shapely": "2.1.0",
+      "sklearn": "1.6.1",
+      "xgboost": "3.0.0"
+    },
+    "mismatches": {},
+    "pass": true,
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "spec": {
+    "additional_count": 468,
+    "candidate_configs_sha256": "5055e11ef641de8a4b6fd2561f31af4c1cd188f9ff1d1131a2bc60d760cb556f",
+    "feature_schema_sha256": "c660d360f2d2b26a5ef33b2bc793841db4f6a107d9418558be9d93c65036d344",
+    "original_count": 93,
+    "rich_count": 561
+  },
+  "target_gate": {
+    "areas_total": 6227,
+    "areas_with_valid": 6224,
+    "countries_with_valid": 53,
+    "gate_mismatches": {},
+    "gate_pass": true,
+    "invalid_reasons": {
+      "missing_phase_1_to_4": 1176232,
+      "phase_share_out_of_bounds": 1,
+      "population_not_positive": 363,
+      "sum_out_of_bounds": 577
+    },
+    "negative": 27489,
+    "normalized_share_equals_threshold": 2601,
+    "p5_filled": 84,
+    "positive": 15206,
+    "rows": 1219868,
+    "valid": 42695
+  }
+}

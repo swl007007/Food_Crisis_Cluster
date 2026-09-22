@@ -1,0 +1,58 @@
+{
+  "all_identical": true,
+  "budget_note": "48 verification fits, counted separately from the search and main budgets",
+  "fits": 48,
+  "fold_count": 8,
+  "folds": [
+    {
+      "fold_id": "mai_h01_2023-02",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 142
+    },
+    {
+      "fold_id": "mai_h01_2025-10",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 12720
+    },
+    {
+      "fold_id": "mai_h03_2023-04",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 847
+    },
+    {
+      "fold_id": "mai_h03_2025-10",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 12720
+    },
+    {
+      "fold_id": "mai_h06_2023-07",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 1632
+    },
+    {
+      "fold_id": "mai_h06_2025-10",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 12720
+    },
+    {
+      "fold_id": "mai_h12_2024-01",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 6918
+    },
+    {
+      "fold_id": "mai_h12_2025-10",
+      "identical": true,
+      "max_abs_score_difference": NaN,
+      "rows": 12530
+    }
+  ],
+  "note": "the replay is sequential; identity here also shows the parallel main schedule did not alter any prediction",
+  "workers_used_for_replay": 1
+}

@@ -1,0 +1,148 @@
+{
+  "attempts": 2000,
+  "conditioning": "conditional on the trained predictions; not a refit bootstrap",
+  "countries": 52,
+  "country_axis": [
+    "Afghanistan",
+    "Angola",
+    "Bangladesh",
+    "Benin",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cameroon",
+    "Central African Republic",
+    "Chad",
+    "Congo, The Democratic Republic of the",
+    "C\u00f4te d'Ivoire",
+    "Djibouti",
+    "Dominican Republic",
+    "El Salvador",
+    "Eswatini",
+    "Ethiopia",
+    "Gambia",
+    "Ghana",
+    "Guatemala",
+    "Guinea",
+    "Guinea-Bissau",
+    "Haiti",
+    "Honduras",
+    "Kenya",
+    "Lebanon",
+    "Lesotho",
+    "Liberia",
+    "Madagascar",
+    "Malawi",
+    "Mali",
+    "Mauritania",
+    "Mozambique",
+    "Namibia",
+    "Niger",
+    "Nigeria",
+    "Pakistan",
+    "Palestine, State of",
+    "Senegal",
+    "Sierra Leone",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Sudan",
+    "Tajikistan",
+    "Tanzania, United Republic of",
+    "Timor-Leste",
+    "Togo",
+    "Uganda",
+    "Yemen",
+    "Zambia",
+    "Zimbabwe"
+  ],
+  "draw_ledger": [
+    {
+      "attempt": 1,
+      "draw": 1,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 2,
+      "draw": 2,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 3,
+      "draw": 3,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 4,
+      "draw": 4,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 5,
+      "draw": 5,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 500,
+      "draw": 500,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 1000,
+      "draw": 1000,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 1500,
+      "draw": 1500,
+      "multiplicity_sum": 52.0
+    },
+    {
+      "attempt": 2000,
+      "draw": 2000,
+      "multiplicity_sum": 52.0
+    }
+  ],
+  "intervals": {
+    "rich_direct_xgb_vs_binary_history_xgb": {
+      "complete": true,
+      "lower_2.5": -0.0052682481822281975,
+      "mean": -0.0010652265310956588,
+      "upper_97.5": 0.002764155948743516,
+      "valid_draws": 2000
+    },
+    "share_xgb_vs_fullpool_xgb": {
+      "complete": true,
+      "lower_2.5": -0.00914179425190635,
+      "mean": -0.002897878262605331,
+      "upper_97.5": 0.0034164544260676826,
+      "valid_draws": 2000
+    },
+    "share_xgb_vs_persistence": {
+      "complete": true,
+      "lower_2.5": 0.0013572718883016852,
+      "mean": 0.00735782843473695,
+      "upper_97.5": 0.013099491410516709,
+      "valid_draws": 2000
+    },
+    "share_xgb_vs_rich_direct_xgb": {
+      "complete": true,
+      "lower_2.5": 0.0032698937345134135,
+      "mean": 0.00868149137451525,
+      "upper_97.5": 0.014139216838821531,
+      "valid_draws": 2000
+    },
+    "share_xgb_vs_rich_rf": {
+      "complete": true,
+      "lower_2.5": -0.009150537598115962,
+      "mean": -0.0027271254911445603,
+      "upper_97.5": 0.004303501678957752,
+      "valid_draws": 2000
+    }
+  },
+  "rejection_reasons": [],
+  "rejections": 0,
+  "requested_draws": 2000,
+  "seed": 42,
+  "valid_draws": 2000
+}

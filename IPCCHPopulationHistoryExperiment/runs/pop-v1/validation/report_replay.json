@@ -1,0 +1,97 @@
+{
+  "all_identical": true,
+  "files": [
+    {
+      "file": "bootstrap.json",
+      "identical": true,
+      "sha256_first": "38d247dc58c5a262cfd991d23a1bb7a2ef588cb1dc40a59b7b094f65549368a5",
+      "sha256_second": "38d247dc58c5a262cfd991d23a1bb7a2ef588cb1dc40a59b7b094f65549368a5"
+    },
+    {
+      "file": "bootstrap_draws.csv.gz",
+      "identical": true,
+      "sha256_first": "f80e7b3ce386b8563edfbee04160cd157d96f7fe4e68310e71a6e0e8e7a848b1",
+      "sha256_second": "5e345e23858a0e13bb3016fb217d902236074d0dbd616cf6a7009e4f10add2d9"
+    },
+    {
+      "file": "correction_flips.csv",
+      "identical": true,
+      "sha256_first": "39156efa8a0518ead4c837e7cac7d0b446ad7dada3a449207894788f0fc04468",
+      "sha256_second": "39156efa8a0518ead4c837e7cac7d0b446ad7dada3a449207894788f0fc04468"
+    },
+    {
+      "file": "deltas_e_history.csv",
+      "identical": true,
+      "sha256_first": "a0c2848e4c0e29526ad9392ea4735a9454e2e0729aa1d2265a2c4633dc11fa58",
+      "sha256_second": "a0c2848e4c0e29526ad9392ea4735a9454e2e0729aa1d2265a2c4633dc11fa58"
+    },
+    {
+      "file": "leave_year_out.json",
+      "identical": true,
+      "sha256_first": "d87453a7375f53fe8d75f2e7a05155926e3f518e232dd771751658ec09c24271",
+      "sha256_second": "d87453a7375f53fe8d75f2e7a05155926e3f518e232dd771751658ec09c24271"
+    },
+    {
+      "file": "main_predictions.csv.gz",
+      "identical": true,
+      "sha256_first": "8c1a123368ceab32bdcea7d81267e3d7b9f1402840d7eefcaa0214c9966bdb11",
+      "sha256_second": "4366278f6be8d186074629012ba9b39b9c2a1a2f073a1d7635c2051941130973"
+    },
+    {
+      "file": "metrics_e_all_combined.csv",
+      "identical": true,
+      "sha256_first": "648392e41bb237624a09595a351c6aa3b5fdf708fffc3ca5b9a477b3e2afa869",
+      "sha256_second": "648392e41bb237624a09595a351c6aa3b5fdf708fffc3ca5b9a477b3e2afa869"
+    },
+    {
+      "file": "metrics_e_history.csv",
+      "identical": true,
+      "sha256_first": "ab30f2a2a4bd9a3529603b0ea20f2300b86b712119d6020fc749402ab898abb4",
+      "sha256_second": "ab30f2a2a4bd9a3529603b0ea20f2300b86b712119d6020fc749402ab898abb4"
+    },
+    {
+      "file": "share_diagnostics.csv",
+      "identical": true,
+      "sha256_first": "ac6699873b688bac886763f34a12055fc6fc0c09d4757857d2259ff4daa32124",
+      "sha256_second": "ac6699873b688bac886763f34a12055fc6fc0c09d4757857d2259ff4daa32124"
+    },
+    {
+      "file": "stratified_by_cohort.csv",
+      "identical": true,
+      "sha256_first": "e460541c4968d9ea6121a4613fbc7af4566611af7a9e994aa7676af21debf947",
+      "sha256_second": "e460541c4968d9ea6121a4613fbc7af4566611af7a9e994aa7676af21debf947"
+    },
+    {
+      "file": "stratified_by_country.csv",
+      "identical": true,
+      "sha256_first": "2c535ca9ec452cd8a06046ea69a0dd07b77b3fe5bfb036d4e1eae516e188d157",
+      "sha256_second": "2c535ca9ec452cd8a06046ea69a0dd07b77b3fe5bfb036d4e1eae516e188d157"
+    },
+    {
+      "file": "stratified_by_history_age.csv",
+      "identical": true,
+      "sha256_first": "0cf9ee424aedcab275d62f28844026e9a2cf115557f3fff299be7158bb448654",
+      "sha256_second": "0cf9ee424aedcab275d62f28844026e9a2cf115557f3fff299be7158bb448654"
+    },
+    {
+      "file": "stratified_by_source_support.csv",
+      "identical": true,
+      "sha256_first": "c36bece75bc2a21bd9018a0bbfb4b5817594c2de32cebb7b3455a4b92f7308b6",
+      "sha256_second": "c36bece75bc2a21bd9018a0bbfb4b5817594c2de32cebb7b3455a4b92f7308b6"
+    },
+    {
+      "file": "stratified_by_target_year.csv",
+      "identical": true,
+      "sha256_first": "3c5f231071cafe3117c4d980384fb5b5dff986f97492793764c2c6ccc51a597d",
+      "sha256_second": "3c5f231071cafe3117c4d980384fb5b5dff986f97492793764c2c6ccc51a597d"
+    },
+    {
+      "file": "summary.json",
+      "identical": true,
+      "sha256_first": "238afeaa952479d31295edebbe1ef216188dc51e1ec6e6c7ecf79a9f6ee0aa47",
+      "sha256_second": "238afeaa952479d31295edebbe1ef216188dc51e1ec6e6c7ecf79a9f6ee0aa47"
+    }
+  ],
+  "mismatched": [],
+  "note": "gzip payloads are compared decoded; their containers embed an mtime"
+}

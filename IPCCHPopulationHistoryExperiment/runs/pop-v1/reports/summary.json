@@ -1,0 +1,473 @@
+{
+  "bootstrap": {
+    "attempts": 2000,
+    "intervals": {
+      "rich_direct_xgb_vs_binary_history_xgb": {
+        "complete": true,
+        "lower_2.5": -0.0052682481822281975,
+        "mean": -0.0010652265310956588,
+        "upper_97.5": 0.002764155948743516,
+        "valid_draws": 2000
+      },
+      "share_xgb_vs_fullpool_xgb": {
+        "complete": true,
+        "lower_2.5": -0.00914179425190635,
+        "mean": -0.002897878262605331,
+        "upper_97.5": 0.0034164544260676826,
+        "valid_draws": 2000
+      },
+      "share_xgb_vs_persistence": {
+        "complete": true,
+        "lower_2.5": 0.0013572718883016852,
+        "mean": 0.00735782843473695,
+        "upper_97.5": 0.013099491410516709,
+        "valid_draws": 2000
+      },
+      "share_xgb_vs_rich_direct_xgb": {
+        "complete": true,
+        "lower_2.5": 0.0032698937345134135,
+        "mean": 0.00868149137451525,
+        "upper_97.5": 0.014139216838821531,
+        "valid_draws": 2000
+      },
+      "share_xgb_vs_rich_rf": {
+        "complete": true,
+        "lower_2.5": -0.009150537598115962,
+        "mean": -0.0027271254911445603,
+        "upper_97.5": 0.004303501678957752,
+        "valid_draws": 2000
+      }
+    },
+    "rejections": 0,
+    "valid_draws": 2000
+  },
+  "claims": {
+    "formulation_advantage": {
+      "required_comparisons": [
+        "share_xgb_vs_rich_direct_xgb",
+        "share_xgb_vs_fullpool_xgb"
+      ],
+      "result": "not_supported",
+      "verdicts": {
+        "share_xgb_vs_fullpool_xgb": "no_stable_gain",
+        "share_xgb_vs_rich_direct_xgb": "stable_gain"
+      }
+    },
+    "information_gain": {
+      "required_comparisons": [
+        "rich_direct_xgb_vs_binary_history_xgb"
+      ],
+      "result": "not_supported",
+      "verdicts": {
+        "rich_direct_xgb_vs_binary_history_xgb": "no_stable_gain"
+      }
+    },
+    "prediction_gain": {
+      "required_comparisons": [
+        "share_xgb_vs_rich_rf",
+        "share_xgb_vs_persistence"
+      ],
+      "result": "not_supported",
+      "verdicts": {
+        "share_xgb_vs_persistence": "stable_gain",
+        "share_xgb_vs_rich_rf": "no_stable_gain"
+      }
+    }
+  },
+  "cohort_audit": {
+    "e_all_rows": 64741,
+    "e_history_rows": 59273,
+    "e_no_history_rows": 5468,
+    "per_horizon": {
+      "1": {
+        "by_arm": {
+          "binary_history_xgb": 16002,
+          "correction_xgb": 16002,
+          "fullpool_xgb": 16002,
+          "rich_direct_xgb": 16002,
+          "rich_rf": 16002,
+          "share_xgb": 16002
+        },
+        "common_keys": 16002
+      },
+      "12": {
+        "by_arm": {
+          "binary_history_xgb": 12404,
+          "correction_xgb": 12404,
+          "fullpool_xgb": 12404,
+          "rich_direct_xgb": 12404,
+          "rich_rf": 12404,
+          "share_xgb": 12404
+        },
+        "common_keys": 12404
+      },
+      "3": {
+        "by_arm": {
+          "binary_history_xgb": 15907,
+          "correction_xgb": 15907,
+          "fullpool_xgb": 15907,
+          "rich_direct_xgb": 15907,
+          "rich_rf": 15907,
+          "share_xgb": 15907
+        },
+        "common_keys": 15907
+      },
+      "6": {
+        "by_arm": {
+          "binary_history_xgb": 14960,
+          "correction_xgb": 14960,
+          "fullpool_xgb": 14960,
+          "rich_direct_xgb": 14960,
+          "rich_rf": 14960,
+          "share_xgb": 14960
+        },
+        "common_keys": 14960
+      }
+    },
+    "primary_family": "share_xgb"
+  },
+  "headline_f1": {
+    "binary_history_xgb": {
+      "1": 0.6815032200211951,
+      "12": 0.6759173604687018,
+      "3": 0.6765188834154351,
+      "6": 0.6710302160853582
+    },
+    "correction_xgb": {
+      "1": 0.6825799068094498,
+      "12": 0.6761463163317878,
+      "3": 0.678394449950446,
+      "6": 0.6751490346116202
+    },
+    "fullpool_xgb": {
+      "1": 0.694486519236595,
+      "12": 0.6798229435632608,
+      "3": 0.6841091492776886,
+      "6": 0.6875727832307437
+    },
+    "persistence": {
+      "1": 0.6813921264976771,
+      "12": 0.6759173604687018,
+      "3": 0.6768172888015717,
+      "6": 0.6718610066272613
+    },
+    "rich_direct_xgb": {
+      "1": 0.6824881338995753,
+      "12": 0.6717032967032966,
+      "3": 0.6774888189498095,
+      "6": 0.668966143233185
+    },
+    "rich_rf": {
+      "1": 0.6879334257975035,
+      "12": 0.6780267369610243,
+      "3": 0.6894813851406275,
+      "6": 0.6922810661128418
+    },
+    "share_xgb": {
+      "1": 0.6831364124597207,
+      "12": 0.6806302481366167,
+      "3": 0.6816296657721396,
+      "6": 0.6900683486625602
+    }
+  },
+  "limitations": [
+    "retrospective: the 2023-2025 outcomes were already inspected before this design",
+    "source-month alignment does not establish publication-time availability",
+    "claim 3 contrasts a tuned feature pipeline, not a fixed-hyperparameter ablation; the rich schema adds continuous shares AND longer binary history together",
+    "the interval is conditional on the trained predictions, not a refit bootstrap"
+  ],
+  "primary_family": "share_xgb",
+  "primary_mean_development_delta": {
+    "correction_xgb": 0.004542902535105919,
+    "rich_direct_xgb": 0.012815168973603352,
+    "share_xgb": 0.012879586641997315
+  },
+  "run_dir": "IPCCHPopulationHistoryExperiment\\runs\\pop-v1",
+  "verdicts": {
+    "rich_direct_xgb_vs_binary_history_xgb": {
+      "baseline": "binary_history_xgb",
+      "conditions": {
+        "lower_bound_positive": false,
+        "mean_delta_positive": false,
+        "no_negative_horizon": false,
+        "positive_without_each_year": false
+      },
+      "interval": {
+        "complete": true,
+        "lower_2.5": -0.0052682481822281975,
+        "mean": -0.0010652265310956588,
+        "upper_97.5": 0.002764155948743516,
+        "valid_draws": 2000
+      },
+      "leave_year_out": {
+        "2023": {
+          "mean_delta": -0.00041185778878405355,
+          "per_horizon": {
+            "1": 0.002772090666658178,
+            "12": -0.004214063765405118,
+            "3": 0.0022093843161163917,
+            "6": -0.0024148423725056656
+          },
+          "rows": 364819
+        },
+        "2024": {
+          "mean_delta": -0.0011928673028621384,
+          "per_horizon": {
+            "1": 0.0010843257472804568,
+            "12": -0.0033739915513221197,
+            "3": -0.0009993825650792543,
+            "6": -0.0014824208423276364
+          },
+          "rows": 314650
+        },
+        "2025": {
+          "mean_delta": -0.0027051585515259213,
+          "per_horizon": {
+            "1": -0.0033394580358715453,
+            "12": -0.008871870354360434,
+            "3": 0.0032772137257421896,
+            "6": -0.0018865195416138958
+          },
+          "rows": 150353
+        }
+      },
+      "mean_delta_f1": -0.0010808218012059168,
+      "method": "rich_direct_xgb",
+      "per_horizon_delta": {
+        "1": 0.000984913878380178,
+        "12": -0.004214063765405118,
+        "3": 0.0009699355343744109,
+        "6": -0.0020640728521731377
+      },
+      "verdict": "no_stable_gain"
+    },
+    "share_xgb_vs_fullpool_xgb": {
+      "baseline": "fullpool_xgb",
+      "conditions": {
+        "lower_bound_positive": false,
+        "mean_delta_positive": false,
+        "no_negative_horizon": false,
+        "positive_without_each_year": false
+      },
+      "interval": {
+        "complete": true,
+        "lower_2.5": -0.00914179425190635,
+        "mean": -0.002897878262605331,
+        "upper_97.5": 0.0034164544260676826,
+        "valid_draws": 2000
+      },
+      "leave_year_out": {
+        "2023": {
+          "mean_delta": -0.0013380329249776113,
+          "per_horizon": {
+            "1": -0.006506331065608828,
+            "12": 0.0008073045733558715,
+            "3": -0.0015173504725524145,
+            "6": 0.001864245264894926
+          },
+          "rows": 364819
+        },
+        "2024": {
+          "mean_delta": -0.005202909177658005,
+          "per_horizon": {
+            "1": -0.018841759086716814,
+            "12": -0.00045131645961904443,
+            "3": -0.0034851926636378927,
+            "6": 0.001966631499341731
+          },
+          "rows": 314650
+        },
+        "2025": {
+          "mean_delta": 0.0011423875704143216,
+          "per_horizon": {
+            "1": -0.005808831069082254,
+            "12": 0.006565613660359904,
+            "3": -0.0021937101837833373,
+            "6": 0.006006477874162974
+          },
+          "rows": 150353
+        }
+      },
+      "mean_delta_f1": -0.0026316800693127473,
+      "method": "share_xgb",
+      "per_horizon_delta": {
+        "1": -0.011350106776874314,
+        "12": 0.0008073045733558715,
+        "3": -0.0024794835055490516,
+        "6": 0.0024955654318165044
+      },
+      "verdict": "no_stable_gain"
+    },
+    "share_xgb_vs_persistence": {
+      "baseline": "persistence",
+      "conditions": {
+        "lower_bound_positive": true,
+        "mean_delta_positive": true,
+        "no_negative_horizon": true,
+        "positive_without_each_year": true
+      },
+      "interval": {
+        "complete": true,
+        "lower_2.5": 0.0013572718883016852,
+        "mean": 0.00735782843473695,
+        "upper_97.5": 0.013099491410516709,
+        "valid_draws": 2000
+      },
+      "leave_year_out": {
+        "2023": {
+          "mean_delta": 0.00820165638690204,
+          "per_horizon": {
+            "1": 0.003117900604497126,
+            "12": 0.004712887667914889,
+            "3": 0.005711174202534419,
+            "6": 0.019264663072661725
+          },
+          "rows": 364819
+        },
+        "2024": {
+          "mean_delta": 0.006797446886340208,
+          "per_horizon": {
+            "1": 0.00016010295507251637,
+            "12": 0.004081971138571339,
+            "3": 0.0032325544179206966,
+            "6": 0.01971515903379628
+          },
+          "rows": 314650
+        },
+        "2025": {
+          "mean_delta": 0.006816662902155185,
+          "per_horizon": {
+            "1": 0.0024787451322508813,
+            "12": 0.005357203984527437,
+            "3": 0.006915949342648164,
+            "6": 0.012514753149194258
+          },
+          "rows": 150353
+        }
+      },
+      "mean_delta_f1": 0.007369223158956301,
+      "method": "share_xgb",
+      "per_horizon_delta": {
+        "1": 0.001744285962043568,
+        "12": 0.004712887667914889,
+        "3": 0.004812376970567911,
+        "6": 0.018207342035298835
+      },
+      "verdict": "stable_gain"
+    },
+    "share_xgb_vs_rich_direct_xgb": {
+      "baseline": "rich_direct_xgb",
+      "conditions": {
+        "lower_bound_positive": true,
+        "mean_delta_positive": true,
+        "no_negative_horizon": true,
+        "positive_without_each_year": true
+      },
+      "interval": {
+        "complete": true,
+        "lower_2.5": 0.0032698937345134135,
+        "mean": 0.00868149137451525,
+        "upper_97.5": 0.014139216838821531,
+        "valid_draws": 2000
+      },
+      "leave_year_out": {
+        "2023": {
+          "mean_delta": 0.008746683834929714,
+          "per_horizon": {
+            "1": 0.00021541228377364163,
+            "12": 0.008926951433320007,
+            "3": 0.003699304897733402,
+            "6": 0.022145066724891804
+          },
+          "rows": 364819
+        },
+        "2024": {
+          "mean_delta": 0.008085223780460699,
+          "per_horizon": {
+            "1": -0.001058023033949751,
+            "12": 0.007455962689893458,
+            "3": 0.004227538290731192,
+            "6": 0.021715417175167895
+          },
+          "rows": 314650
+        },
+        "2025": {
+          "mean_delta": 0.01050474110968469,
+          "per_horizon": {
+            "1": 0.005818203168122427,
+            "12": 0.01422907433888787,
+            "3": 0.0048836597040270435,
+            "6": 0.01708802722770142
+          },
+          "rows": 150353
+        }
+      },
+      "mean_delta_f1": 0.008704570561292646,
+      "method": "share_xgb",
+      "per_horizon_delta": {
+        "1": 0.0006482785601453767,
+        "12": 0.008926951433320007,
+        "3": 0.004140846822330069,
+        "6": 0.02110220542937513
+      },
+      "verdict": "stable_gain"
+    },
+    "share_xgb_vs_rich_rf": {
+      "baseline": "rich_rf",
+      "conditions": {
+        "lower_bound_positive": false,
+        "mean_delta_positive": false,
+        "no_negative_horizon": false,
+        "positive_without_each_year": false
+      },
+      "interval": {
+        "complete": true,
+        "lower_2.5": -0.009150537598115962,
+        "mean": -0.0027271254911445603,
+        "upper_97.5": 0.004303501678957752,
+        "valid_draws": 2000
+      },
+      "leave_year_out": {
+        "2023": {
+          "mean_delta": -0.003620371479458012,
+          "per_horizon": {
+            "1": -0.004086887497061764,
+            "12": 0.0026035111755923213,
+            "3": -0.009349934534943038,
+            "6": -0.0036481750614195674
+          },
+          "rows": 364819
+        },
+        "2024": {
+          "mean_delta": -0.005135172592367537,
+          "per_horizon": {
+            "1": -0.008126961670792854,
+            "12": 0.0011659327546867937,
+            "3": -0.011924390336190194,
+            "6": -0.0016552711171738954
+          },
+          "rows": 314650
+        },
+        "2025": {
+          "mean_delta": 0.004642739780765182,
+          "per_horizon": {
+            "1": 0.0020210195667582642,
+            "12": 0.008429429917167441,
+            "3": 0.006209749285096766,
+            "6": 0.0019107603540382545
+          },
+          "rows": 150353
+        }
+      },
+      "mean_delta_f1": -0.003064484745240015,
+      "method": "share_xgb",
+      "per_horizon_delta": {
+        "1": -0.004797013337782818,
+        "12": 0.0026035111755923213,
+        "3": -0.007851719368487942,
+        "6": -0.0022127174502816205
+      },
+      "verdict": "no_stable_gain"
+    }
+  }
+}

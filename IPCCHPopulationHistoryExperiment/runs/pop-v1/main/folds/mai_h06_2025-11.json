@@ -1,0 +1,13 @@
+{
+  "elapsed_seconds": 0.0,
+  "fold_id": "mai_h06_2025-11",
+  "stage": "main",
+  "status": "skipped_empty_test",
+  "support": {
+    "full_pool_rows": 16721,
+    "matched_pool_rows": 13536,
+    "test_rows": 0,
+    "test_rows_with_history": 0,
+    "test_rows_without_history": 0
+  }
+}

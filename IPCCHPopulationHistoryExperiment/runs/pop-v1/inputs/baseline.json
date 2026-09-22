@@ -1,0 +1,13 @@
+{
+  "manifest_source_commit": "2dfa121a9398de9a1918ba9c0af34b31ecbb117a",
+  "manifest_version": "0.1.0-f1-nosmote",
+  "module_locations": {},
+  "note": "pristine; the polygon refinement patch is NOT applied here",
+  "patch_applied": false,
+  "patch_diff": "",
+  "patched_target_sha256": "",
+  "payload_files_verified": 45,
+  "pristine_target_sha256": "",
+  "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+  "root": "IPCCHPopulationHistoryExperiment\\runs\\pop-v1\\baseline\\GeoRFBaseline"
+}

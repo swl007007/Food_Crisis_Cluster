@@ -706,9 +706,13 @@ def _synthetic_run(root: Path) -> None:
     for h, month_list in months.items():
         for month in month_list:
             for area in areas:
-                # Every fourth area has no persistence at all, which is what
-                # sends it down the E_no_history route.
+                # Every fourth area has no persistence at any horizon. Area 1
+                # is the harder, real case: its first observation sits between
+                # the h=12 and h=1 origins, so the SAME area-month is
+                # E_history at short horizons and E_no_history at h=12.
                 has_history = 0 if area % 4 == 0 else 1
+                if area == 1 and h == 12:
+                    has_history = 0
                 rows.append(
                     {
                         "admin_code": area,
@@ -816,12 +820,13 @@ def test_report_runs_end_to_end_on_a_synthetic_run():
 
         assert summary["primary_family"] == "correction_xgb"
         audit = summary["cohort_audit"]
-        # 20 areas, 5 of them history-less, 12 fold-months.
-        assert audit["e_history_rows"] == 15 * 12
-        assert audit["e_no_history_rows"] == 5 * 12
+        # 20 areas, 5 history-less at every horizon, plus area 1 which is
+        # history-less only at h=12: 3 extra no-history rows there.
+        assert audit["e_history_rows"] == 15 * 12 - 3
+        assert audit["e_no_history_rows"] == 5 * 12 + 3
         assert audit["e_all_rows"] == audit["e_history_rows"] + audit["e_no_history_rows"]
         for h in rep.HORIZONS:
-            assert audit["per_horizon"][str(h)]["common_keys"] == 45
+            assert audit["per_horizon"][str(h)]["common_keys"] == (42 if h == 12 else 45)
 
         # The primary is a reformulation, so the formulation claim is required.
         assert set(summary["claims"]) == {

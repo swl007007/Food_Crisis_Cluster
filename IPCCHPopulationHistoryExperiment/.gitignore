@@ -10,6 +10,62 @@ __pycache__/
 # the implementation against itself.
 !test_contracts.py
 
-# Generated runs stay local. Which parts are promoted into the commit is
-# decided once the run exists and its sizes are known; see README.md.
-runs/
+# --------------------------------------------------------------------------
+# Run outputs: local by default, with the evidence a reported number rests on
+# carved back in. The rule of thumb is that an independent clone must be able
+# to recompute every published figure without the 731 MB feature matrix.
+#
+# Included (~55 MB): the manifests, the fold calendar with its support counts,
+# every per-fold score and route, the selection ledger, the freeze, both
+# replays and the full report. Excluded: rich561_X.npy (731 MB, hash-bound in
+# freeze.json and rebuildable by prepare_data.py from the pinned source), the
+# full unfiltered target ledger, the extracted baseline copy of an already
+# tracked release, and the replay's duplicate report tree -- report_replay.json
+# already records that the two agreed file by file.
+# --------------------------------------------------------------------------
+runs/*
+!runs/*/
+
+runs/*/*
+!runs/*/manifest.json
+!runs/*/freeze.json
+!runs/*/stage_*.json
+!runs/*/run.log
+!runs/*/inputs/
+!runs/*/data/
+!runs/*/folds/
+!runs/*/development/
+!runs/*/main/
+!runs/*/validation/
+!runs/*/reports/
+
+runs/*/data/*
+!runs/*/data/keys.csv.gz
+!runs/*/data/history_source_keys.csv.gz
+!runs/*/data/target_ledger_valid.csv.gz
+!runs/*/data/country_lookup.csv.gz
+!runs/*/data/feature_schema.csv
+!runs/*/data/feature_audit.json
+
+runs/*/development/*
+!runs/*/development/selection_ledger.csv
+!runs/*/development/folds/
+
+runs/*/validation/*
+!runs/*/validation/replay.json
+!runs/*/validation/report_replay.json
+!runs/*/validation/folds/
+
+# The repository root ignores *.csv and *.json outright. Re-including a
+# directory is not enough: every evidence file under it has to be named back
+# in, or the per-fold routes, the metric tables and the verdicts all vanish
+# from the commit while looking present on disk.
+!runs/*/inputs/*.json
+!runs/*/data/*.json
+!runs/*/folds/*.csv
+!runs/*/development/folds/*.json
+!runs/*/development/*.csv
+!runs/*/main/folds/*.json
+!runs/*/validation/folds/*.json
+!runs/*/reports/*.json
+!runs/*/reports/*.csv

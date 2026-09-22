@@ -1,0 +1,235 @@
+{
+  "code_sha256": {
+    "prepare_data.py": "628a7eee9de0293391ea637050e9cc3291da106997eeacb5cbdf7b9b4a8acc2c",
+    "run_pipeline.py": "bc466bd48da1853dc698399ab913650ab417db8e1333f62fe0c9e7c0c5d7f69b"
+  },
+  "frozen_utc": "2026-09-22T09:59:43Z",
+  "information_cutoff": "2022-12",
+  "matrix_sha256": "ce85badb07a37f0ce9df7b2e9d412bc64b651872a9aecd6048cca8079a618648",
+  "persistence_development_f1": {
+    "1": 0.8190255220417634,
+    "12": 0.7792682926829269,
+    "3": 0.8190255220417634,
+    "6": 0.7833148763381321
+  },
+  "primary_family": "share_xgb",
+  "primary_mean_delta": {
+    "correction_xgb": 0.004542902535105919,
+    "rich_direct_xgb": 0.012815168973603352,
+    "share_xgb": 0.012879586641997315
+  },
+  "selection_cohort": "E_history development predictions, 2020-2022 targets",
+  "selections": {
+    "binary_history_xgb": {
+      "1": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.004208492019167287,
+        "development_f1": 0.8232340140609307,
+        "development_rows": 9668,
+        "t0": 0.9731263518333436,
+        "t1": 0.20040139853954314
+      },
+      "12": {
+        "config_id": "X0",
+        "delta_vs_persistence": 0.0,
+        "development_f1": 0.7792682926829269,
+        "development_rows": 8168,
+        "t0": 0.9948423504829408,
+        "t1": "-Infinity"
+      },
+      "3": {
+        "config_id": "X3",
+        "delta_vs_persistence": 0.007142702257302069,
+        "development_f1": 0.8261682242990654,
+        "development_rows": 9667,
+        "t0": 0.9573051929473876,
+        "t1": 0.31547302305698394
+      },
+      "6": {
+        "config_id": "X4",
+        "delta_vs_persistence": 0.007243385183036799,
+        "development_f1": 0.7905582615211689,
+        "development_rows": 8887,
+        "t0": 0.9567803144454956,
+        "t1": 0.17437108129262924
+      }
+    },
+    "correction_xgb": {
+      "1": {
+        "config_id": "X3",
+        "delta_vs_persistence": 0.004543276083445846,
+        "development_f1": 0.8235687981252092,
+        "development_rows": 9668,
+        "t0": 0.923141598701477,
+        "t1": 0.17290175914764402
+      },
+      "12": {
+        "config_id": "X0",
+        "delta_vs_persistence": 0.000949232455591531,
+        "development_f1": 0.7802175251385184,
+        "development_rows": 8168,
+        "t0": 0.986408233642578,
+        "t1": 0.11984006404876703
+      },
+      "3": {
+        "config_id": "X0",
+        "delta_vs_persistence": 0.007009980916816483,
+        "development_f1": 0.8260355029585799,
+        "development_rows": 9667,
+        "t0": 0.9463170766830444,
+        "t1": 0.22333611488342278
+      },
+      "6": {
+        "config_id": "X1",
+        "delta_vs_persistence": 0.005669120684569817,
+        "development_f1": 0.7889839970227019,
+        "development_rows": 8887,
+        "t0": 0.7140753382444378,
+        "t1": 0.22911772489547727
+      }
+    },
+    "fullpool_xgb": {
+      "1": {
+        "config_id": "X5",
+        "delta_vs_persistence": 0.016644513823903417,
+        "development_f1": 0.8356700358656668,
+        "development_rows": 9668,
+        "t0": 0.5,
+        "t1": 0.32296291828155527
+      },
+      "12": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.01980075308898932,
+        "development_f1": 0.7990690457719162,
+        "development_rows": 8168,
+        "t0": 0.5,
+        "t1": 0.26042713373899457
+      },
+      "3": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.018921810841423636,
+        "development_f1": 0.837947332883187,
+        "development_rows": 9667,
+        "t0": 0.7396601289510734,
+        "t1": 0.28990570187568665
+      },
+      "6": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.026924411363593026,
+        "development_f1": 0.8102392877017252,
+        "development_rows": 8887,
+        "t0": 0.5837789309024801,
+        "t1": 0.28361399173736573
+      }
+    },
+    "rich_direct_xgb": {
+      "1": {
+        "config_id": "X1",
+        "delta_vs_persistence": 0.013624751182280348,
+        "development_f1": 0.8326502732240437,
+        "development_rows": 9668,
+        "t0": 0.9726144671440125,
+        "t1": 0.31348806381225586
+      },
+      "12": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.008274695471448434,
+        "development_f1": 0.7875429881543753,
+        "development_rows": 8168,
+        "t0": 0.5216008925437928,
+        "t1": 0.18062232196331018
+      },
+      "3": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.012600161018345934,
+        "development_f1": 0.8316256830601093,
+        "development_rows": 9667,
+        "t0": 0.9441049695014954,
+        "t1": 0.2938459372520446
+      },
+      "6": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.016761068222338693,
+        "development_f1": 0.8000759445604708,
+        "development_rows": 8887,
+        "t0": 0.7956280016899104,
+        "t1": 0.2537915682792663
+      }
+    },
+    "rich_rf": {
+      "1": {
+        "config_id": "R3",
+        "delta_vs_persistence": 0.01584765114822484,
+        "development_f1": 0.8348731731899882,
+        "development_rows": 9668,
+        "t0": 0.6484560411022376,
+        "t1": 0.3207422262623618
+      },
+      "12": {
+        "config_id": "R4",
+        "delta_vs_persistence": 0.016676892224150253,
+        "development_f1": 0.7959451849070771,
+        "development_rows": 8168,
+        "t0": 0.44025747112956964,
+        "t1": 0.35601153954435494
+      },
+      "3": {
+        "config_id": "R3",
+        "delta_vs_persistence": 0.017884349202871852,
+        "development_f1": 0.8369098712446352,
+        "development_rows": 9667,
+        "t0": 0.5627987378058699,
+        "t1": 0.36999108954967386
+      },
+      "6": {
+        "config_id": "R3",
+        "delta_vs_persistence": 0.025418432936497926,
+        "development_f1": 0.80873330927463,
+        "development_rows": 8887,
+        "t0": 0.528858073336657,
+        "t1": 0.31631369430601486
+      }
+    },
+    "share_xgb": {
+      "1": {
+        "config_id": "X2",
+        "delta_vs_persistence": 0.010892510745121875,
+        "development_f1": 0.8299180327868853,
+        "development_rows": 9668,
+        "t0": 0.481910228729248,
+        "t1": 0.17410743653774255
+      },
+      "12": {
+        "config_id": "X1",
+        "delta_vs_persistence": 0.01173699832236419,
+        "development_f1": 0.791005291005291,
+        "development_rows": 8168,
+        "t0": 0.25140874505043026,
+        "t1": 0.14239925563335418
+      },
+      "3": {
+        "config_id": "X3",
+        "delta_vs_persistence": 0.012203713838635277,
+        "development_f1": 0.8312292358803987,
+        "development_rows": 9667,
+        "t0": 0.3215825015306472,
+        "t1": 0.1622403711080551
+      },
+      "6": {
+        "config_id": "X5",
+        "delta_vs_persistence": 0.016685123661867918,
+        "development_f1": 0.8,
+        "development_rows": 8887,
+        "t0": 0.27305088758468626,
+        "t1": 0.1526727965474128
+      }
+    }
+  },
+  "spec": {
+    "additional_count": 468,
+    "candidate_configs_sha256": "5055e11ef641de8a4b6fd2561f31af4c1cd188f9ff1d1131a2bc60d760cb556f",
+    "feature_schema_sha256": "c660d360f2d2b26a5ef33b2bc793841db4f6a107d9418558be9d93c65036d344",
+    "original_count": 93,
+    "rich_count": 561
+  }
+}
