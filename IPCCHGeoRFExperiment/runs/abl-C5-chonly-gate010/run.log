@@ -1,43 +1,43 @@
-2026-09-21T18:36:57Z run directory: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C5-chonly-gate010
-2026-09-21T18:36:57Z preflight: hashing inputs and recording the runtime
-2026-09-21T18:36:58Z baseline extracted and patched: 45 payload files verified
-2026-09-21T18:36:59Z R1: building the target ledger
-2026-09-21T18:37:15Z cohort ch_only: kept 18359 valid rows over 1308 areas; dropped 24336 rows over 4919 areas
-2026-09-21T18:37:16Z R1 gate passed: 42695 valid / 15206 positive in 6227 areas
-2026-09-21T18:37:16Z R3: assembling the 93-column feature matrix
-2026-09-21T18:37:30Z R3: 73436 rows x 93 columns, origins 2013-01..2026-03
-2026-09-21T18:37:30Z R2/Q8g: validating, repairing and building adjacency
-2026-09-21T18:38:10Z R2: 5974 geometries untouched, 36 repaired in place, 217 areal components extracted under the D1 scope extension; 6227 polygons in the adjacency (1231 isolated)
-2026-09-21T18:38:10Z R4/Q5a: splitting original 2014-2022 outcomes
-2026-09-21T18:38:10Z R4 split gate not applicable under cohort ch_only; realized 5313 fit / 5778 validation outcomes, 105 singletons
-2026-09-21T18:38:11Z Stage1 design: 44364 model rows (21252 fit / 23112 validation) across 1197 groups; targets up to 2022-09
-2026-09-21T18:38:11Z Stage1: entering the pinned baseline
-2026-09-21T18:38:12Z Q6c: imputer fitted on 21252 fitting rows; 0 columns were all-missing
-2026-09-21T18:38:12Z Stage1 fit: X=(44364, 93), groups=1197, MIN_DEPTH=1, MAX_DEPTH=6, N_JOBS=4 (inherited, not pinned)
-2026-09-21T18:38:25Z GeoRF.fit returned in 13.4s -> result_GeoRF
-2026-09-21T18:38:25Z map: 1 terminal branches (depth<=0), 1197 learned areas, 0 default-root placeholders
-2026-09-21T18:38:25Z NULL PARTITION: no split passed the strict >.01 class-1 F1 gate; the learned map is the root branch alone and every area, learned or completed, routes to the same root model
-2026-09-21T18:38:25Z Q5d: 1197 eligible donors
-2026-09-21T18:38:26Z Q8r: 1197 learned + 335 donor-completed + 4695 unresolved = 6227
-2026-09-21T18:38:26Z Q5v: scored 420 singleton views over 105 areas; class1 F1 = 0.8571428571428571
-2026-09-21T18:38:26Z Stage3: rolling four-arm forecasts
-2026-09-21T18:38:26Z Stage3 panel: 73436 rows over 1308 areas; persistence history on 66083 rows
-2026-09-21T18:38:26Z R4 schedule: 122 main folds + 12 partial-2026 folds
-2026-09-21T18:38:26Z DEGENERATE CONTRAST: Stage 1 accepted no split, so the map holds ONE terminal partition. The partitioned-minus-pooled delta therefore does not isolate spatial heterogeneity: it reduces to one local model trained on 1532 assigned areas versus one pooled model trained on all 6227. A nonzero delta is a training-set-size effect, not evidence of spatial structure.
-2026-09-21T18:38:26Z Stage3 helpers: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C5-chonly-gate010\baseline\GeoRFBaseline\scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py
-2026-09-21T18:38:30Z   fold 10/134 h1_2023-11 (5s elapsed)
-2026-09-21T18:38:39Z   fold 20/134 h1_2024-09 (13s elapsed)
-2026-09-21T18:38:47Z   fold 30/134 h1_2025-07 (21s elapsed)
-2026-09-21T18:38:51Z   fold 40/134 h3_2023-08 (25s elapsed)
-2026-09-21T18:38:59Z   fold 50/134 h3_2024-06 (33s elapsed)
-2026-09-21T18:39:11Z   fold 60/134 h3_2025-04 (45s elapsed)
-2026-09-21T18:39:15Z   fold 70/134 h6_2023-08 (49s elapsed)
-2026-09-21T18:39:23Z   fold 80/134 h6_2024-06 (57s elapsed)
-2026-09-21T18:39:35Z   fold 90/134 h6_2025-04 (69s elapsed)
-2026-09-21T18:39:43Z   fold 100/134 h12_2024-02 (77s elapsed)
-2026-09-21T18:39:47Z   fold 110/134 h12_2024-12 (81s elapsed)
-2026-09-21T18:39:59Z   fold 120/134 h12_2025-10 (93s elapsed)
-2026-09-21T18:40:28Z   fold 130/134 h6_2026-02 (122s elapsed)
-2026-09-21T18:40:45Z   fold 134/134 h12_2026-04 (139s elapsed)
-2026-09-21T18:40:46Z Stage3: 35 fitted folds / 99 empty of 134 scheduled; 22564 prediction rows in 139s
-2026-09-21T18:40:46Z stage 1 and stage 3 finished; reporting is a separate entry point
+2026-09-22T04:07:45Z run directory: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C5-chonly-gate010
+2026-09-22T04:07:45Z preflight: hashing inputs and recording the runtime
+2026-09-22T04:07:45Z baseline extracted and patched: 45 payload files verified
+2026-09-22T04:07:46Z R1: building the target ledger
+2026-09-22T04:08:06Z cohort ch_only: kept 18359 valid rows over 1308 areas; dropped 24336 rows over 4919 areas
+2026-09-22T04:08:07Z R1 gate passed: 42695 valid / 15206 positive in 6227 areas
+2026-09-22T04:08:07Z R3: assembling the 93-column feature matrix
+2026-09-22T04:08:24Z R3: 73436 rows x 93 columns, origins 2013-01..2026-03
+2026-09-22T04:08:24Z R2/Q8g: validating, repairing and building adjacency
+2026-09-22T04:09:12Z R2: 5974 geometries untouched, 36 repaired in place, 217 areal components extracted under the D1 scope extension; 6227 polygons in the adjacency (1231 isolated)
+2026-09-22T04:09:12Z R4/Q5a: splitting original 2014-2022 outcomes
+2026-09-22T04:09:12Z R4 split gate not applicable under cohort ch_only; realized 5313 fit / 5778 validation outcomes, 105 singletons
+2026-09-22T04:09:12Z Stage1 design: 44364 model rows (21252 fit / 23112 validation) across 1197 groups; targets up to 2022-09
+2026-09-22T04:09:12Z Stage1: entering the pinned baseline
+2026-09-22T04:09:15Z Q6c: imputer fitted on 21252 fitting rows; 0 columns were all-missing
+2026-09-22T04:09:15Z Stage1 fit: X=(44364, 93), groups=1197, MIN_DEPTH=1, MAX_DEPTH=6, N_JOBS=4 (inherited, not pinned)
+2026-09-22T04:09:30Z GeoRF.fit returned in 15.2s -> result_GeoRF
+2026-09-22T04:09:30Z map: 1 terminal branches (depth<=0), 1197 learned areas, 0 default-root placeholders
+2026-09-22T04:09:30Z NULL PARTITION: no split passed the strict >.01 class-1 F1 gate; the learned map is the root branch alone and every area, learned or completed, routes to the same root model
+2026-09-22T04:09:30Z Q5d: 1197 eligible donors
+2026-09-22T04:09:31Z Q8r: 1197 learned + 335 donor-completed + 4695 unresolved = 6227
+2026-09-22T04:09:31Z Q5v: scored 420 singleton views over 105 areas; class1 F1 = 0.8571428571428571
+2026-09-22T04:09:31Z Stage3: rolling four-arm forecasts
+2026-09-22T04:09:31Z Stage3 panel: 73436 rows over 1308 areas; persistence history on 66083 rows
+2026-09-22T04:09:31Z R4 schedule: 122 main folds + 12 partial-2026 folds
+2026-09-22T04:09:31Z DEGENERATE CONTRAST: Stage 1 accepted no split, so the map holds ONE terminal partition. The partitioned-minus-pooled delta therefore does not isolate spatial heterogeneity: it reduces to one local model trained on 1532 assigned areas versus one pooled model trained on all 6227. A nonzero delta is a training-set-size effect, not evidence of spatial structure.
+2026-09-22T04:09:31Z Stage3 helpers: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C5-chonly-gate010\baseline\GeoRFBaseline\scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py
+2026-09-22T04:09:36Z   fold 10/134 h1_2023-11 (5s elapsed)
+2026-09-22T04:09:44Z   fold 20/134 h1_2024-09 (13s elapsed)
+2026-09-22T04:09:53Z   fold 30/134 h1_2025-07 (22s elapsed)
+2026-09-22T04:09:57Z   fold 40/134 h3_2023-08 (26s elapsed)
+2026-09-22T04:10:05Z   fold 50/134 h3_2024-06 (34s elapsed)
+2026-09-22T04:10:18Z   fold 60/134 h3_2025-04 (47s elapsed)
+2026-09-22T04:10:22Z   fold 70/134 h6_2023-08 (51s elapsed)
+2026-09-22T04:10:31Z   fold 80/134 h6_2024-06 (60s elapsed)
+2026-09-22T04:10:45Z   fold 90/134 h6_2025-04 (74s elapsed)
+2026-09-22T04:10:53Z   fold 100/134 h12_2024-02 (82s elapsed)
+2026-09-22T04:10:57Z   fold 110/134 h12_2024-12 (86s elapsed)
+2026-09-22T04:11:10Z   fold 120/134 h12_2025-10 (99s elapsed)
+2026-09-22T04:11:41Z   fold 130/134 h6_2026-02 (130s elapsed)
+2026-09-22T04:11:58Z   fold 134/134 h12_2026-04 (147s elapsed)
+2026-09-22T04:11:59Z Stage3: 35 fitted folds / 99 empty of 134 scheduled; 22564 prediction rows in 147s
+2026-09-22T04:11:59Z stage 1 and stage 3 finished; reporting is a separate entry point

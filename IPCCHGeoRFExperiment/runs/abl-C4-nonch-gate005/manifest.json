@@ -2,14 +2,14 @@
   "run_id": "abl-C4-nonch-gate005",
   "status": "stage3_complete",
   "scope": "stage1_and_stage3",
-  "created_utc": "2026-09-21T18:26:21Z",
-  "updated_utc": "2026-09-21T18:36:56Z",
+  "created_utc": "2026-09-22T03:56:29Z",
+  "updated_utc": "2026-09-22T04:07:44Z",
   "stages": {
     "preflight": {
-      "seconds": 1.2
+      "seconds": 1.3
     },
     "target": {
-      "seconds": 18.2,
+      "seconds": 23.4,
       "gate": {
         "rows": 1219868,
         "valid": 42695,
@@ -55,7 +55,7 @@
       }
     },
     "features": {
-      "seconds": 15.2,
+      "seconds": 17.6,
       "rows": 97344,
       "columns": 93,
       "audit": {
@@ -93,7 +93,7 @@
       }
     },
     "geography": {
-      "seconds": 40.1,
+      "seconds": 51.1,
       "repair": {
         "features": 6227,
         "unchanged_valid": 5974,
@@ -252,7 +252,7 @@
         "component_sha256": {
           "ipcch_admin_geometry_repaired.shp": "9df70f3aa719eaa2458a3ff4a92f058da1f5fe1feeb85432e0dd88e515ccfadb",
           "ipcch_admin_geometry_repaired.shx": "424554aec24b86d74609a5fe59a01e498c78269c6e6b4b87765e657a4fe6fc83",
-          "ipcch_admin_geometry_repaired.dbf": "62a2fc7cc8740d930095e43d29cfd81604046b0570b48ebbe57c2801b179314c",
+          "ipcch_admin_geometry_repaired.dbf": "fed4240b8be7428f31ed719614658d271a9659a3a54a87f97246da980e48b871",
           "ipcch_admin_geometry_repaired.prj": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4",
           "ipcch_admin_geometry_repaired.cpg": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
         },
@@ -340,9 +340,9 @@
       }
     },
     "stage1_fit": {
-      "seconds": 22.3,
+      "seconds": 26.5,
       "model_dir": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\abl-C4-nonch-gate005\\stage1\\result_GeoRF",
-      "fit_seconds": 19.1,
+      "fit_seconds": 24.3,
       "rows": 28112,
       "learned_map": {
         "branch_columns": [
@@ -521,8 +521,9 @@
           "MODEL_CHOICE": "RF"
         }
       },
-      "split_gate_override": {
-        "requested": 0.005,
+      "split_gate": {
+        "source": "cli_override",
+        "effective": 0.005,
         "readback": {
           "config": 0.005,
           "src.tests.sig_test": 0.005,
@@ -672,7 +673,7 @@
       "status": "supplementary development diagnostic (Q5v); not Stage3 evidence"
     },
     "stage3": {
-      "seconds": 538.2,
+      "seconds": 554.7,
       "folds_scheduled": 138,
       "folds_main": 122,
       "folds_partial": 16,
@@ -868,7 +869,7 @@
         "pseudo_rows": "none in Stage 3; Stage 1's per-class zero rows are not reused",
         "sample_weights": "unit weights for every arm; no SMOTE, no class rebalancing",
         "imputation": "one OutOfRangeImputer(max_plus, x100) per (origin, horizon), fitted on the common training pool only; pooled and every local RF reuse it; XGB receives the pre-imputation matrix with native NaN",
-        "fit_seconds": 532.7
+        "fit_seconds": 549.0
       },
       "xgb_booster_effective": {
         "xgboost_config_version": [
@@ -914,7 +915,7 @@
     "singleton scores are supplementary post-map diagnostics only (R4/Q5v)",
     "inferred (nearest-donor) membership is not observed or validated membership (R4/Q8r)"
   ],
-  "elapsed_seconds": 635.621,
+  "elapsed_seconds": 675.084,
   "runtime": {
     "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
     "python_version": "3.12.10",
@@ -936,7 +937,7 @@
     "experiment_files_sha256": {
       "prepare_data.py": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
       "baseline_runtime.py": "ab79783b30b7810582275e510a7ac0f82ecf4b5a54ee61570a81cdb28014c74d",
-      "run_pipeline.py": "5fa6b42136c1d1a43c2ca36d082022ba266cbb12103794a00529e6b912dc341d",
+      "run_pipeline.py": "2bfb3efa5ebdf7a9a747381b125fc3bc3245fb60a0c9052fd4056f38c207dd44",
       "report_results.py": "b111c2e6418950ed5a8383cb3d803bc6e88fa22ac487752bdd42b9daf5ef0bda"
     },
     "baseline": {

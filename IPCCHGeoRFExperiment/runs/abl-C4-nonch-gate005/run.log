@@ -1,41 +1,41 @@
-2026-09-21T18:26:21Z run directory: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C4-nonch-gate005
-2026-09-21T18:26:21Z preflight: hashing inputs and recording the runtime
-2026-09-21T18:26:21Z baseline extracted and patched: 45 payload files verified
-2026-09-21T18:26:22Z R1: building the target ledger
-2026-09-21T18:26:40Z cohort non_ch: kept 24336 valid rows over 4919 areas; dropped 18359 rows over 1308 areas
-2026-09-21T18:26:40Z R1 gate passed: 42695 valid / 15206 positive in 6227 areas
-2026-09-21T18:26:40Z R3: assembling the 93-column feature matrix
-2026-09-21T18:26:55Z R3: 97344 rows x 93 columns, origins 2016-01..2026-03
-2026-09-21T18:26:55Z R2/Q8g: validating, repairing and building adjacency
-2026-09-21T18:27:35Z R2: 5974 geometries untouched, 36 repaired in place, 217 areal components extracted under the D1 scope extension; 6227 polygons in the adjacency (1231 isolated)
-2026-09-21T18:27:35Z R4/Q5a: splitting original 2014-2022 outcomes
-2026-09-21T18:27:35Z R4 split gate not applicable under cohort non_ch; realized 3248 fit / 3780 validation outcomes, 1367 singletons
-2026-09-21T18:27:36Z Stage1 design: 28112 model rows (12992 fit / 15120 validation) across 2067 groups; targets up to 2022-10
-2026-09-21T18:27:36Z Stage1: entering the pinned baseline
-2026-09-21T18:27:39Z Q6c: imputer fitted on 12992 fitting rows; 0 columns were all-missing
-2026-09-21T18:27:39Z Stage1 fit: X=(28112, 93), groups=2067, MIN_DEPTH=1, MAX_DEPTH=6, N_JOBS=4 (inherited, not pinned)
-2026-09-21T18:27:58Z GeoRF.fit returned in 19.1s -> result_GeoRF
-2026-09-21T18:27:58Z map: 7 terminal branches (depth<=5), 2067 learned areas, 0 default-root placeholders
-2026-09-21T18:27:58Z Q5d: 2067 eligible donors
-2026-09-21T18:27:58Z Q8r: 2067 learned + 2350 donor-completed + 1810 unresolved = 6227
-2026-09-21T18:27:58Z Q5v: scored 5468 singleton views over 1367 areas; class1 F1 = 0.6078569748294519
-2026-09-21T18:27:58Z Stage3: rolling four-arm forecasts
-2026-09-21T18:27:58Z Stage3 panel: 97344 rows over 4916 areas; persistence history on 73484 rows
-2026-09-21T18:27:58Z R4 schedule: 122 main folds + 16 partial-2026 folds
-2026-09-21T18:27:58Z Stage3 helpers: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C4-nonch-gate005\baseline\GeoRFBaseline\scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py
-2026-09-21T18:28:35Z   fold 10/138 h1_2023-11 (36s elapsed)
-2026-09-21T18:29:13Z   fold 20/138 h1_2024-09 (75s elapsed)
-2026-09-21T18:29:56Z   fold 30/138 h1_2025-07 (118s elapsed)
-2026-09-21T18:30:29Z   fold 40/138 h3_2023-08 (151s elapsed)
-2026-09-21T18:31:07Z   fold 50/138 h3_2024-06 (189s elapsed)
-2026-09-21T18:31:42Z   fold 60/138 h3_2025-04 (223s elapsed)
-2026-09-21T18:32:18Z   fold 70/138 h6_2023-08 (260s elapsed)
-2026-09-21T18:32:54Z   fold 80/138 h6_2024-06 (296s elapsed)
-2026-09-21T18:33:28Z   fold 90/138 h6_2025-04 (330s elapsed)
-2026-09-21T18:34:02Z   fold 100/138 h12_2024-02 (363s elapsed)
-2026-09-21T18:34:34Z   fold 110/138 h12_2024-12 (395s elapsed)
-2026-09-21T18:35:11Z   fold 120/138 h12_2025-10 (433s elapsed)
-2026-09-21T18:36:10Z   fold 130/138 h3_2026-04 (492s elapsed)
-2026-09-21T18:36:51Z   fold 138/138 h12_2026-04 (533s elapsed)
-2026-09-21T18:36:56Z Stage3: 126 fitted folds / 12 empty of 138 scheduled; 58545 prediction rows in 533s
-2026-09-21T18:36:56Z stage 1 and stage 3 finished; reporting is a separate entry point
+2026-09-22T03:56:29Z run directory: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C4-nonch-gate005
+2026-09-22T03:56:29Z preflight: hashing inputs and recording the runtime
+2026-09-22T03:56:29Z baseline extracted and patched: 45 payload files verified
+2026-09-22T03:56:30Z R1: building the target ledger
+2026-09-22T03:56:53Z cohort non_ch: kept 24336 valid rows over 4919 areas; dropped 18359 rows over 1308 areas
+2026-09-22T03:56:53Z R1 gate passed: 42695 valid / 15206 positive in 6227 areas
+2026-09-22T03:56:53Z R3: assembling the 93-column feature matrix
+2026-09-22T03:57:11Z R3: 97344 rows x 93 columns, origins 2016-01..2026-03
+2026-09-22T03:57:11Z R2/Q8g: validating, repairing and building adjacency
+2026-09-22T03:58:02Z R2: 5974 geometries untouched, 36 repaired in place, 217 areal components extracted under the D1 scope extension; 6227 polygons in the adjacency (1231 isolated)
+2026-09-22T03:58:02Z R4/Q5a: splitting original 2014-2022 outcomes
+2026-09-22T03:58:02Z R4 split gate not applicable under cohort non_ch; realized 3248 fit / 3780 validation outcomes, 1367 singletons
+2026-09-22T03:58:03Z Stage1 design: 28112 model rows (12992 fit / 15120 validation) across 2067 groups; targets up to 2022-10
+2026-09-22T03:58:03Z Stage1: entering the pinned baseline
+2026-09-22T03:58:04Z Q6c: imputer fitted on 12992 fitting rows; 0 columns were all-missing
+2026-09-22T03:58:04Z Stage1 fit: X=(28112, 93), groups=2067, MIN_DEPTH=1, MAX_DEPTH=6, N_JOBS=4 (inherited, not pinned)
+2026-09-22T03:58:28Z GeoRF.fit returned in 24.3s -> result_GeoRF
+2026-09-22T03:58:28Z map: 7 terminal branches (depth<=5), 2067 learned areas, 0 default-root placeholders
+2026-09-22T03:58:28Z Q5d: 2067 eligible donors
+2026-09-22T03:58:29Z Q8r: 2067 learned + 2350 donor-completed + 1810 unresolved = 6227
+2026-09-22T03:58:29Z Q5v: scored 5468 singleton views over 1367 areas; class1 F1 = 0.6078569748294519
+2026-09-22T03:58:29Z Stage3: rolling four-arm forecasts
+2026-09-22T03:58:29Z Stage3 panel: 97344 rows over 4916 areas; persistence history on 73484 rows
+2026-09-22T03:58:29Z R4 schedule: 122 main folds + 16 partial-2026 folds
+2026-09-22T03:58:29Z Stage3 helpers: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoRFExperiment\runs\abl-C4-nonch-gate005\baseline\GeoRFBaseline\scripts\compare_partitioned_vs_pooled_rf_k40_nc4.py
+2026-09-22T03:59:10Z   fold 10/138 h1_2023-11 (41s elapsed)
+2026-09-22T03:59:52Z   fold 20/138 h1_2024-09 (83s elapsed)
+2026-09-22T04:00:36Z   fold 30/138 h1_2025-07 (127s elapsed)
+2026-09-22T04:01:13Z   fold 40/138 h3_2023-08 (164s elapsed)
+2026-09-22T04:01:50Z   fold 50/138 h3_2024-06 (200s elapsed)
+2026-09-22T04:02:23Z   fold 60/138 h3_2025-04 (234s elapsed)
+2026-09-22T04:03:01Z   fold 70/138 h6_2023-08 (272s elapsed)
+2026-09-22T04:03:38Z   fold 80/138 h6_2024-06 (309s elapsed)
+2026-09-22T04:04:12Z   fold 90/138 h6_2025-04 (343s elapsed)
+2026-09-22T04:04:46Z   fold 100/138 h12_2024-02 (377s elapsed)
+2026-09-22T04:05:20Z   fold 110/138 h12_2024-12 (410s elapsed)
+2026-09-22T04:06:01Z   fold 120/138 h12_2025-10 (452s elapsed)
+2026-09-22T04:06:53Z   fold 130/138 h3_2026-04 (504s elapsed)
+2026-09-22T04:07:38Z   fold 138/138 h12_2026-04 (549s elapsed)
+2026-09-22T04:07:44Z Stage3: 126 fitted folds / 12 empty of 138 scheduled; 58545 prediction rows in 549s
+2026-09-22T04:07:44Z stage 1 and stage 3 finished; reporting is a separate entry point

@@ -2232,10 +2232,10 @@ def _execute(context: RunContext, args) -> None:
     context.log("Stage1: entering the pinned baseline")
     fit_payload = _run_stage1_fit(context, baseline, geography, design, matrix, split)
     stage1_stage = {"seconds": round(time.time() - started, 1), **fit_payload["stage"]}
-    # R3/A2: the three-namespace readback is required evidence, so it has to reach the
-    # manifest. Only fit_payload["stage"] is persisted, so merge it in explicitly.
-    if "split_gate_override" in fit_payload:
-        stage1_stage["split_gate_override"] = fit_payload["split_gate_override"]
+    # R3/A2: the three-namespace readback is required evidence for EVERY cell, so it
+    # has to reach the manifest. Only fit_payload["stage"] is persisted, so merge it in.
+    if "split_gate" in fit_payload:
+        stage1_stage["split_gate"] = fit_payload["split_gate"]
     context.stage("stage1_fit", stage1_stage)
 
     # -- 6. map, donors, singletons --------------------------------------
@@ -2296,32 +2296,43 @@ def _run_stage1_fit(context: RunContext, baseline, geography, design: Stage1Desi
         # from config, and transformation.py:17 then re-exports sig_test's copy over
         # its own. Patching `config` alone would leave the learner gating at 0.01
         # while REPORTED_CONFIG_KEYS faithfully reports the requested value.
+        # The readback is unconditional. A default-gate cell needs run-bound proof that
+        # it gated at 0.01 just as much as an overridden cell needs proof it gated at
+        # 0.005 - "we did not touch it" is an assumption, not evidence, and a zero-split
+        # outcome is consistent with 0.01 without demonstrating it.
+        import src.partition.transformation as transformation_module  # noqa: PLC0415
+        import src.tests.sig_test as sig_test_module  # noqa: PLC0415
+
         gate = SPLIT_GATE_OVERRIDE
         if gate is not None:
-            import src.partition.transformation as transformation_module  # noqa: PLC0415
-            import src.tests.sig_test as sig_test_module  # noqa: PLC0415
-
             for module in (config, sig_test_module, transformation_module):
                 module.MIN_CLASS_1_IMPROVEMENT_THRESHOLD = float(gate)
-            readback = {
-                "config": getattr(config, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None),
-                "src.tests.sig_test": getattr(
-                    sig_test_module, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None
-                ),
-                "src.partition.transformation": getattr(
-                    transformation_module, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None
-                ),
-            }
-            disagreeing = {
-                name: value for name, value in readback.items()
-                if value != float(gate)
-            }
-            if disagreeing:
-                raise PipelineError(
-                    f"split-gate override did not take in every consuming namespace: "
-                    f"{disagreeing}; requested {gate}"
-                )
-            result["split_gate_override"] = {"requested": float(gate), "readback": readback}
+        readback = {
+            "config": getattr(config, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None),
+            "src.tests.sig_test": getattr(
+                sig_test_module, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None
+            ),
+            "src.partition.transformation": getattr(
+                transformation_module, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD", None
+            ),
+        }
+        expected = float(gate) if gate is not None else float(
+            getattr(config, "MIN_CLASS_1_IMPROVEMENT_THRESHOLD")
+        )
+        disagreeing = {
+            name: value for name, value in readback.items() if value != expected
+        }
+        if disagreeing:
+            raise PipelineError(
+                f"split gate disagrees across consuming namespaces: {disagreeing}; "
+                f"expected {expected} "
+                f"({'override' if gate is not None else 'pinned default'})"
+            )
+        result["split_gate"] = {
+            "source": "cli_override" if gate is not None else "pinned_config_default",
+            "effective": expected,
+            "readback": readback,
+        }
 
         from src.customize.customize import OutOfRangeImputer  # noqa: PLC0415
 

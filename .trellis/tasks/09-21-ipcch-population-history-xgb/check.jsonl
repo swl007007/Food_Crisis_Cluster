@@ -1,0 +1,8 @@
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Shared no-leak/source identity and artifact guidance; current IPCCH task explicitly supersedes ETH-specific feature/runtime/model clauses."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/prd.md", "reason": "Requirements, acceptance and proposed final technical freeze."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/technical-contract.md", "reason": "Exact formulas, support, fitting, selection, inference and edge cases."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/feature-schema.json", "reason": "Exact original93 and appended468 names, order and deduplication aliases."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/candidate-configs.json", "reason": "Six declared candidates for each estimator family."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/design.md", "reason": "Minimal new package, existing helper reuse and artifact lineage."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/implement.md", "reason": "Ordered execution and independent evidence/audit handoff."}
+{"file": ".trellis/tasks/09-21-ipcch-population-history-xgb/research/reuse-and-evidence.md", "reason": "Verified helper signatures, source boundaries and limitations."}
