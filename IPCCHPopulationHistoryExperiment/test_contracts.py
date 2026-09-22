@@ -686,6 +686,188 @@ def test_class1_metrics_report_an_undefined_denominator():
 
 
 # --------------------------------------------------------------------------
+# End-to-end reporting on a synthetic run
+# --------------------------------------------------------------------------
+
+
+def _synthetic_run(root: Path) -> None:
+    """A miniature but structurally complete run directory.
+
+    Small enough to reason about, complete enough that ``generate`` exercises
+    the real joins, the cohort audit, the threshold application and the
+    bootstrap rather than a stubbed version of them.
+    """
+    rng = np.random.default_rng(5)
+    areas = list(range(1, 21))
+    months = {1: ["2023-02", "2024-02", "2025-02"], 3: ["2023-04", "2024-04", "2025-04"],
+              6: ["2023-07", "2024-07", "2025-07"], 12: ["2024-01", "2025-01", "2025-02"]}
+
+    rows = []
+    for h, month_list in months.items():
+        for month in month_list:
+            for area in areas:
+                # Every fourth area has no persistence at all, which is what
+                # sends it down the E_no_history route.
+                has_history = 0 if area % 4 == 0 else 1
+                rows.append(
+                    {
+                        "admin_code": area,
+                        "target_month": month,
+                        "horizon_months": h,
+                        "target_ord": int(month[:4]) * 12 + int(month[5:7]) - 1,
+                        "origin_ord": int(month[:4]) * 12 + int(month[5:7]) - 1 - h,
+                        "origin_month": month,
+                        "ipcch_food_crisis": int(rng.random() < 0.4),
+                        "persistence_b": float(rng.integers(0, 2)) if has_history else np.nan,
+                        "has_history": has_history,
+                        "country_key": f"C{area % 5}",
+                        "cohort": "CH" if area > 15 else "IPC",
+                        "q3_target": float(rng.random()),
+                    }
+                )
+    keys = pd.DataFrame(rows)
+    (root / "data").mkdir(parents=True, exist_ok=True)
+    (root / "inputs").mkdir(parents=True, exist_ok=True)
+    (root / "folds").mkdir(parents=True, exist_ok=True)
+    (root / "main" / "folds").mkdir(parents=True, exist_ok=True)
+    keys.to_csv(root / "data" / "keys.csv.gz", index=False)
+    np.save(root / "data" / "rich561_X.npy", np.zeros((len(keys), 561)))
+    for name in ("feature-schema.json", "candidate-configs.json"):
+        (root / "inputs" / name).write_bytes((prep.CONFIG_DIR / name).read_bytes())
+
+    provenance = keys[["admin_code", "target_month", "horizon_months"]].copy()
+    provenance["observations_available"] = 3
+    provenance["obs1_month"] = "2022-12"
+    provenance.to_csv(root / "data" / "history_source_keys.csv.gz", index=False)
+
+    calendar_rows = []
+    for h, month_list in months.items():
+        for month in month_list:
+            block = keys[(keys["horizon_months"] == h) & (keys["target_month"] == month)]
+            calendar_rows.append(
+                {
+                    "fold_id": f"mai_h{h:02d}_{month}",
+                    "stage": "main",
+                    "horizon_months": h,
+                    "target_month": month,
+                    "origin_month": month,
+                    "target_ord": int(block["target_ord"].iloc[0]),
+                    "origin_ord": int(block["origin_ord"].iloc[0]),
+                    "test_rows": len(block),
+                    "test_rows_with_history": int(block["has_history"].sum()),
+                    "test_rows_without_history": int((1 - block["has_history"]).sum()),
+                    "full_pool_rows": 100,
+                    "matched_pool_rows": 80,
+                }
+            )
+    pd.DataFrame(calendar_rows).to_csv(root / "folds" / "calendar.csv", index=False)
+
+    selections = {
+        arm.name: {
+            str(h): {"config_id": "R0" if arm.name == "rich_rf" else "X0", "t0": 0.5, "t1": 0.5}
+            for h in pipe.HORIZONS
+        }
+        for arm in pipe.ARMS
+    }
+    (root / "freeze.json").write_text(
+        __import__("json").dumps(
+            {
+                "primary_family": "correction_xgb",
+                "primary_mean_delta": {"correction_xgb": 0.01},
+                "selections": selections,
+            }
+        )
+    )
+
+    for record in calendar_rows:
+        h, month = record["horizon_months"], record["target_month"]
+        block = keys[(keys["horizon_months"] == h) & (keys["target_month"] == month)]
+        frames = []
+        for arm in pipe.ARMS:
+            scored = block if arm.name == "fullpool_xgb" else block[block["has_history"] == 1]
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "fold_id": record["fold_id"],
+                        "arm": arm.name,
+                        "config_id": "R0" if arm.name == "rich_rf" else "X0",
+                        "row_index": scored.index.to_numpy(),
+                        "support": np.where(
+                            scored["has_history"].to_numpy() == 1, "E_history", "E_no_history"
+                        ),
+                        "raw_score": rng.random(len(scored)),
+                        "crisis_score": rng.random(len(scored)),
+                        "route": "model",
+                    }
+                )
+            )
+        pd.concat(frames, ignore_index=True).to_csv(
+            root / "main" / "folds" / f"{record['fold_id']}.csv.gz", index=False
+        )
+
+
+def test_report_runs_end_to_end_on_a_synthetic_run():
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "run"
+        _synthetic_run(root)
+        summary = rep.generate(root, root / "reports")
+
+        assert summary["primary_family"] == "correction_xgb"
+        audit = summary["cohort_audit"]
+        # 20 areas, 5 of them history-less, 12 fold-months.
+        assert audit["e_history_rows"] == 15 * 12
+        assert audit["e_no_history_rows"] == 5 * 12
+        assert audit["e_all_rows"] == audit["e_history_rows"] + audit["e_no_history_rows"]
+        for h in rep.HORIZONS:
+            assert audit["per_horizon"][str(h)]["common_keys"] == 45
+
+        # The primary is a reformulation, so the formulation claim is required.
+        assert set(summary["claims"]) == {
+            "prediction_gain",
+            "formulation_advantage",
+            "information_gain",
+        }
+        assert all(
+            entry["result"] in ("supported", "not_supported", "incomplete")
+            for entry in summary["claims"].values()
+        )
+        for name in (
+            "metrics_e_history.csv",
+            "deltas_e_history.csv",
+            "metrics_e_all_combined.csv",
+            "correction_flips.csv",
+            "share_diagnostics.csv",
+            "bootstrap_draws.csv.gz",
+            "summary.json",
+        ):
+            assert (root / "reports" / name).is_file(), name
+
+        replay = rep.replay_check(root, root / "reports", root / "reports_replay")
+        assert replay["all_identical"], replay["mismatched"]
+
+
+def test_report_rejects_a_missing_evaluation_key():
+    """Dropping one scheduled row must fail the cohort audit, not be averaged over."""
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp) / "run"
+        _synthetic_run(root)
+        path = root / "main" / "folds" / "mai_h01_2023-02.csv.gz"
+        frame = pd.read_csv(path)
+        drop = frame[(frame["arm"] == "fullpool_xgb")].index[:1]
+        frame.drop(index=drop).to_csv(path, index=False)
+        try:
+            rep.generate(root, root / "reports")
+        except rep.ReportError as error:
+            assert "cohort audit failed" in str(error), error
+            return
+    raise AssertionError("a missing evaluation key was not detected")
+
+
+# --------------------------------------------------------------------------
 # Imputation (needs the pinned release)
 # --------------------------------------------------------------------------
 
