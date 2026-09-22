@@ -1,0 +1,65 @@
+{
+  "train_window_months": 36,
+  "train_window_rule": "exactly the calendar months [O-35, O], inclusive",
+  "main_target_schedule": {
+    "1": [
+      "2023-02",
+      "2025-12"
+    ],
+    "3": [
+      "2023-04",
+      "2025-12"
+    ],
+    "6": [
+      "2023-07",
+      "2025-12"
+    ],
+    "12": [
+      "2024-01",
+      "2025-12"
+    ]
+  },
+  "partial_period_years": [
+    2026
+  ],
+  "decision_threshold": 0.5,
+  "decision_rule": "p1 > threshold; an exact threshold is class 0 (Q7a)",
+  "rf_params": {
+    "n_estimators": 100,
+    "max_depth": null,
+    "random_state": 5,
+    "n_jobs": 1
+  },
+  "xgb_params": {
+    "objective": "binary:logistic",
+    "booster": "gbtree",
+    "tree_method": "hist",
+    "device": "cpu",
+    "n_estimators": 400,
+    "max_depth": 6,
+    "min_child_weight": 5,
+    "learning_rate": 0.05,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_alpha": 0,
+    "reg_lambda": 1,
+    "gamma": 0,
+    "max_delta_step": 0,
+    "scale_pos_weight": 1,
+    "base_score": 0.5,
+    "random_state": 5,
+    "n_jobs": 1,
+    "max_bin": 256,
+    "grow_policy": "depthwise",
+    "num_parallel_tree": 1,
+    "eval_metric": "logloss"
+  },
+  "xgb_version": "3.0.0",
+  "min_partition_train_rows": 50,
+  "baseline_helpers": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\abl-C5-chonly-gate010\\baseline\\GeoRFBaseline\\scripts\\compare_partitioned_vs_pooled_rf_k40_nc4.py",
+  "map_source": "stage1/area_assignments.csv (frozen before any Stage 3 fit)",
+  "pseudo_rows": "none in Stage 3; Stage 1's per-class zero rows are not reused",
+  "sample_weights": "unit weights for every arm; no SMOTE, no class rebalancing",
+  "imputation": "one OutOfRangeImputer(max_plus, x100) per (origin, horizon), fitted on the common training pool only; pooled and every local RF reuse it; XGB receives the pre-imputation matrix with native NaN",
+  "fit_seconds": 146.6
+}

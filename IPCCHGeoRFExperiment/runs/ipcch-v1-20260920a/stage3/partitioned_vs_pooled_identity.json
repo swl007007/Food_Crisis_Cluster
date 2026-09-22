@@ -1,0 +1,18 @@
+{
+  "stage1_terminal_branches": 1,
+  "single_partition_map": true,
+  "folds_where_partitioned_equals_pooled": 4,
+  "rows_where_partitioned_equals_pooled": 10334,
+  "rows_total": 81109,
+  "identical_hard_labels": false,
+  "hard_label_disagreements": 8256,
+  "unassigned_train_rows_excluded_from_local": 71146,
+  "test_rows_served_by_pooled_in_both_arms": 5411,
+  "probability_gap": {
+    "max": 0.33999999999999997,
+    "mean": 0.0474880716073432,
+    "rows_above_0_05": 31162
+  },
+  "difference_source": "the ONLY reason the two arms can differ under a single-partition map: rows in unassigned areas belong to no partition, so the local model does not train on them while the pooled model does (R5 'unassigned partitions fall back to the pooled RF'; baseline train_partitioned_model excludes partition -1 from training). Where a fold's pool holds no unassigned row the two arms are asserted identical, and every unassigned TEST row is asserted identical.",
+  "interpretation": "Stage 1 accepted no split (class-1 F1 gain 0.007434 against the inherited strict >.01 gate), so there is ONE terminal partition. The partitioned arm is therefore NOT a spatial model here: it is the pooled model on every unassigned row, and elsewhere a single global model that differs from the pooled one only by the unassigned-area training rows it was denied. No partition advantage may be read from this contrast."
+}

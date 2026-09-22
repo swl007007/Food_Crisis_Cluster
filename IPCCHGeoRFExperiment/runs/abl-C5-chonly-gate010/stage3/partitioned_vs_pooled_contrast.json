@@ -1,0 +1,26 @@
+{
+  "stage1_terminal_branches": 1,
+  "single_partition_map": true,
+  "what_this_contrast_measures": "With a SINGLE learned partition the partitioned-minus-pooled delta no longer isolates spatial heterogeneity. It reduces to: one local model trained on the 1532 areas the frozen map assigns to a partition, versus one pooled model trained on all 6227 areas in the universe. A nonzero delta here is a training-set-size effect and MUST NOT be read as evidence of spatial structure.",
+  "areas_assigned_to_a_partition": 1532,
+  "areas_in_universe": 6227,
+  "areas_by_assignment_source": {
+    "unresolved": 4695,
+    "learned": 1197,
+    "nearest_donor": 335
+  },
+  "rows_total": 22564,
+  "test_rows_served_by_pooled_in_both_arms": 270,
+  "test_rows_served_by_a_local_model": 22294,
+  "rows_with_equal_probability": 2280,
+  "folds_with_all_probabilities_equal": 0,
+  "hard_label_disagreements": 817,
+  "unassigned_train_rows_excluded_from_local": 2201,
+  "probability_gap": {
+    "max": 0.29,
+    "mean": 0.03851045913845063,
+    "rows_above_0_05": 6130
+  },
+  "why_the_arms_differ": "Rows in unassigned areas belong to no partition, so the local model does not train on them while the pooled model does (R5: unassigned partitions fall back to the pooled RF; the released train_partitioned_model excludes partition -1 from training). Different training sets and the same seed give different forests, so the two arms legitimately disagree. The run asserts only what routing forces: every unassigned TEST row is served by the pooled model in both arms, and a local model that trained on the entire pool is the pooled forest. Nothing forces a locally-served row to agree.",
+  "stage1_gate": "no split passed the inherited strict >.01 class-1 F1 gate, so the learned map is the root branch alone"
+}

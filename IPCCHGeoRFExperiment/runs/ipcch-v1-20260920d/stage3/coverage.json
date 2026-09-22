@@ -1,0 +1,100 @@
+{
+  "scheduled_folds": 138,
+  "folds_with_rows": 126,
+  "folds_empty": 12,
+  "arms": {
+    "partitioned_rf": {
+      "rows": 81109,
+      "predicted_positive": 36120,
+      "missing": 0
+    },
+    "pooled_rf": {
+      "rows": 81109,
+      "predicted_positive": 36176,
+      "missing": 0
+    },
+    "xgb": {
+      "rows": 81109,
+      "predicted_positive": 38388,
+      "missing": 0
+    },
+    "persistence": {
+      "rows": 75580,
+      "predicted_positive": 30951,
+      "missing": 5529
+    }
+  },
+  "cohorts": {
+    "main": {
+      "E_all": 64741,
+      "E_persist": 59273,
+      "persistence_coverage": 0.9155403839915973,
+      "by_horizon": {
+        "1": {
+          "E_all": 17322,
+          "E_persist": 16002,
+          "positives": 6792,
+          "areas": 5999,
+          "countries": 53
+        },
+        "3": {
+          "E_all": 16919,
+          "E_persist": 15907,
+          "positives": 6532,
+          "areas": 5999,
+          "countries": 53
+        },
+        "6": {
+          "E_all": 16413,
+          "E_persist": 14960,
+          "positives": 6170,
+          "areas": 5939,
+          "countries": 53
+        },
+        "12": {
+          "E_all": 14087,
+          "E_persist": 12404,
+          "positives": 5419,
+          "areas": 5921,
+          "countries": 52
+        }
+      }
+    },
+    "partial_2026": {
+      "E_all": 16368,
+      "E_persist": 16307,
+      "persistence_coverage": 0.9962732160312805,
+      "by_horizon": {
+        "1": {
+          "E_all": 4092,
+          "E_persist": 4089,
+          "positives": 1923,
+          "areas": 3710,
+          "countries": 32
+        },
+        "3": {
+          "E_all": 4092,
+          "E_persist": 4089,
+          "positives": 1923,
+          "areas": 3710,
+          "countries": 32
+        },
+        "6": {
+          "E_all": 4092,
+          "E_persist": 4089,
+          "positives": 1923,
+          "areas": 3710,
+          "countries": 32
+        },
+        "12": {
+          "E_all": 4092,
+          "E_persist": 4040,
+          "positives": 1923,
+          "areas": 3710,
+          "countries": 32
+        }
+      }
+    }
+  },
+  "note": "E_persist is the history-available subset of E_all; rows without history keep an explicit missing persistence and stay in E_all (Q4b)"
+}

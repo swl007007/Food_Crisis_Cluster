@@ -25,6 +25,20 @@ runs/*/data/*
 runs/*/stage1/*
 !runs/*/stage1/*.json
 !runs/*/stage1/area_assignments.csv
+# R6: the candidate-evaluation transcripts check_cells.py parses. 12 MB each raw,
+# ~0.1 MB gzipped; without them the committed checker exits 1 in a fresh clone.
+!runs/*/stage1/georf_fit_stdout.txt.gz
+
+# The per-row predictions the same-key reference is computed from, for both the
+# ablation cells and the prior baseline they are compared against. ~10 MB total.
+!runs/*/stage3/
+runs/*/stage3/*
+!runs/*/stage3/predictions.csv.gz
+!runs/*/stage3/*.json
+
+# The valid target ledger that defines persistence availability, and the prior run's
+# cohort keys - needed to reconcile the evaluation cohort independently.
+!runs/*/data/target_ledger_valid.csv.gz
 
 runs/*/reports/*
 !runs/*/reports/*.json

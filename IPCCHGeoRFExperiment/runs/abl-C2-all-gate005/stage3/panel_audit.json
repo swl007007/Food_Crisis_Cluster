@@ -1,0 +1,42 @@
+{
+  "rows": 170780,
+  "areas": 6224,
+  "countries": 53,
+  "target_month_min": "2014-01",
+  "target_month_max": "2026-04",
+  "rows_by_horizon": {
+    "1": 42695,
+    "3": 42695,
+    "6": 42695,
+    "12": 42695
+  },
+  "rows_by_assignment_source": {
+    "learned": 125260,
+    "nearest_donor": 38152,
+    "unresolved": 7368
+  },
+  "persistence_available_rows": 139567,
+  "partition_codes": [
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "branch_by_code": {
+    "8": "1",
+    "7": "011",
+    "4": "001",
+    "6": "0101",
+    "0": "00000",
+    "3": "00011",
+    "5": "0100",
+    "1": "00001",
+    "2": "00010"
+  }
+}

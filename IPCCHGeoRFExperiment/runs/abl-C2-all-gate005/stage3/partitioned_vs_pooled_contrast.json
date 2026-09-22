@@ -1,0 +1,26 @@
+{
+  "stage1_terminal_branches": 9,
+  "single_partition_map": false,
+  "what_this_contrast_measures": "the map holds more than one terminal partition, so the contrast is a genuine partitioned-versus-pooled comparison",
+  "areas_assigned_to_a_partition": 5631,
+  "areas_in_universe": 6227,
+  "areas_by_assignment_source": {
+    "learned": 3264,
+    "nearest_donor": 2367,
+    "unresolved": 596
+  },
+  "rows_total": 81109,
+  "test_rows_served_by_pooled_in_both_arms": 5411,
+  "test_rows_served_by_a_local_model": 75698,
+  "rows_with_equal_probability": 8957,
+  "folds_with_all_probabilities_equal": 4,
+  "hard_label_disagreements": 9819,
+  "unassigned_train_rows_excluded_from_local": 71146,
+  "probability_gap": {
+    "max": 0.5599999999999999,
+    "mean": 0.06836590267417919,
+    "rows_above_0_05": 42163
+  },
+  "why_the_arms_differ": "Rows in unassigned areas belong to no partition, so the local model does not train on them while the pooled model does (R5: unassigned partitions fall back to the pooled RF; the released train_partitioned_model excludes partition -1 from training). Different training sets and the same seed give different forests, so the two arms legitimately disagree. The run asserts only what routing forces: every unassigned TEST row is served by the pooled model in both arms, and a local model that trained on the entire pool is the pooled forest. Nothing forces a locally-served row to agree.",
+  "stage1_gate": ""
+}

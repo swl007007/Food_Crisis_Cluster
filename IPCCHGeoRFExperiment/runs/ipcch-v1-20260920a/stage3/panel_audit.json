@@ -1,0 +1,26 @@
+{
+  "rows": 170780,
+  "areas": 6224,
+  "countries": 53,
+  "target_month_min": "2014-01",
+  "target_month_max": "2026-04",
+  "rows_by_horizon": {
+    "1": 42695,
+    "3": 42695,
+    "6": 42695,
+    "12": 42695
+  },
+  "rows_by_assignment_source": {
+    "learned": 125260,
+    "nearest_donor": 38152,
+    "unresolved": 7368
+  },
+  "persistence_available_rows": 139567,
+  "partition_codes": [
+    -1,
+    0
+  ],
+  "branch_by_code": {
+    "0": ""
+  }
+}
