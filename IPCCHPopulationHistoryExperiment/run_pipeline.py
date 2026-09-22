@@ -1559,10 +1559,24 @@ def stage_replay_models(run_dir: Path, workers: int) -> dict:
                     }
                 )
                 continue
-            # save_model records the path relative to the run root.
+            # save_model records the path relative to the run root. Only a
+            # subset of the 533 MB of estimators is committed, so an absent
+            # binary is reported as unchecked rather than treated as a pass --
+            # and never as a failure, which would make the committed subset
+            # unusable in a fresh clone.
             model_path = run_dir / entry["model"]["path"]
             if not model_path.is_file():
-                raise PipelineError(f"retained model missing: {model_path}")
+                results.append(
+                    {
+                        "fold_id": fold_id,
+                        "key": key,
+                        "route": "model",
+                        "checked": False,
+                        "reason": "binary not present; regenerate with --stage persist",
+                        "identical": None,
+                    }
+                )
+                continue
             digest = prep.sha256_file(model_path)
             X_eval = (
                 rf_eval
@@ -1594,18 +1608,33 @@ def stage_replay_models(run_dir: Path, workers: int) -> dict:
                 }
             )
 
-    failures = [r for r in results if not r["identical"] or not r.get("digest_matches", True)]
+    checked = [r for r in results if r.get("checked", True)]
+    skipped = [r for r in results if not r.get("checked", True)]
+    failures = [
+        r for r in checked if not r["identical"] or not r.get("digest_matches", True)
+    ]
     report = {
-        "models_checked": len(results),
-        "folds": len(set(r["fold_id"] for r in results)),
-        "all_reproduce": not failures,
+        "models_checked": len(checked),
+        "models_absent": len(skipped),
+        "folds": len(set(r["fold_id"] for r in checked)),
+        "all_checked_reproduce": not failures,
         "failures": failures[:20],
         "primary_family": freeze["primary_family"],
-        "note": "prediction-only replay: models were loaded from disk, not refitted",
+        "note": (
+            "prediction-only replay: models were loaded from disk, not refitted. "
+            "An absent binary is reported as unchecked, never as a pass"
+        ),
     }
     prep._write_json(report, run_dir / "validation" / "model_replay.json")
     if failures:
-        raise PipelineError(f"{len(failures)} retained models did not reproduce their scores")
+        raise PipelineError(
+            f"{len(failures)} retained models did not reproduce their scores"
+        )
+    if not checked:
+        raise PipelineError(
+            "no retained model binaries were present, so nothing was verified; "
+            "run --stage persist to regenerate them"
+        )
     return report
 
 

@@ -1,8 +1,9 @@
 {
-  "all_reproduce": true,
+  "all_checked_reproduce": true,
   "failures": [],
   "folds": 110,
+  "models_absent": 0,
   "models_checked": 660,
-  "note": "prediction-only replay: models were loaded from disk, not refitted",
+  "note": "prediction-only replay: models were loaded from disk, not refitted. An absent binary is reported as unchecked, never as a pass",
   "primary_family": "share_xgb"
 }
