@@ -99,28 +99,13 @@ class FittedRF:
 
 
 def load_consensus(path):
-    record = json.loads(Path(path).read_text(encoding="utf-8"))
-    stage2 = Path(path).parent
-    if record.get("code") != code_identity() or record.get("runtime") != runtime_identity():
-        raise ValueError("Stage 2 consensus was produced by different package code or runtime")
-    required = ["candidate_ledger.csv", "plan_weights.csv"]
-    if record.get("route") == "learned_map":
-        cluster_rel = Path(record["cluster_map"]).resolve().relative_to(stage2.resolve()).as_posix()
-        required += [cluster_rel, "experiment/linked_tables/main_index.csv",
-                     "experiment/knn_sparsification_results/knn_analysis_report_k40_general.json"]
-    problems = check_inventory(stage2, record.get("outputs") or {}, required)
-    if problems:
-        raise ValueError(f"Stage 2 outputs missing or changed: {problems[:5]}")
-    if record.get("route") == "null_consensus":
-        return record, None
-    if record.get("route") != "learned_map":
-        raise ValueError(f"unknown consensus route in {path}")
-    mapping = pd.read_csv(record["cluster_map"])
-    if file_sha256(record["cluster_map"]) != record["cluster_map_sha256"]:
-        raise ValueError("cluster map differs from the digest Stage 2 recorded")
-    if mapping["FEWSNET_admin_code"].duplicated().any():
-        raise ValueError("cluster map assigns an area twice")
-    return record, dict(zip(mapping["FEWSNET_admin_code"].astype(int), mapping["cluster_id"].astype(int)))
+    """Accept Stage 2 only through the acceptance chain (ledger and weights re-derived
+    from accepted Stage 1 evidence, row by row). ``path`` is <run>/stage2/consensus.json."""
+    from src.utils.acceptance import accept_stage2
+    path = Path(path).resolve()
+    if path.name != "consensus.json" or path.parent.name != "stage2":
+        raise ValueError("consensus must be <run>/stage2/consensus.json")
+    return accept_stage2(path.parents[1])
 
 
 def fit_fold(snap, features, test_month, horizon, cluster_of):
@@ -228,30 +213,9 @@ def fit_fold(snap, features, test_month, horizon, cluster_of):
 
 
 def reconcile_horizon(run_dir: Path, out_dir: Path, horizon: int, only_month=None) -> None:
-    """Refuse to publish a horizon whose folds, models or predictions differ from the
-    schedule and the routes actually used (inventories derived from evidence)."""
-    from src.utils.inventories import stage3_fold_problems, stage3_horizon_problems
-    schedule = json.loads((run_dir / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
-    if only_month:
-        schedule = {**schedule, "stage3": [r for r in schedule["stage3"] if r["target_month"] == only_month]}
-    records = {p.name: json.loads((p / "fold.json").read_text(encoding="utf-8"))
-               for p in sorted((out_dir / "folds").iterdir())}
-    preds = pd.read_csv(out_dir / "predictions.csv.gz", float_precision="round_trip")
-    base = pd.read_csv(run_dir / "prepared" / "ledgers" / "baselines.csv", low_memory=False)
-    base = base[(base["horizon"] == horizon) & base["target_label"].isin(
-        [r["target_month"] for r in schedule["stage3"] if r["horizon"] == horizon])]
-    problems = stage3_horizon_problems(horizon, schedule, records, preds,
-                                       set(zip(base["area"], base["target_label"])))
-    for month, record in records.items():
-        if record.get("status") == "fitted":
-            support = out_dir / "folds" / month / "local_support.csv"
-            try:
-                local = pd.read_csv(support)
-            except pd.errors.EmptyDataError:
-                local = pd.DataFrame(columns=["cluster_id", "route"])
-            problems += stage3_fold_problems(month, record, preds[preds["target_month"] == month], local)
-    if problems:
-        raise RuntimeError(f"h{horizon}: Stage 3 inventory does not reconcile: {problems[:8]}")
+    """Refuse to publish a horizon unless the acceptance chain accepts it."""
+    from src.utils.acceptance import accept_stage3_horizon
+    accept_stage3_horizon(run_dir, horizon, only_month=only_month, out_dir=out_dir)
 
 
 def save_bundle(path: Path, bundle) -> None:

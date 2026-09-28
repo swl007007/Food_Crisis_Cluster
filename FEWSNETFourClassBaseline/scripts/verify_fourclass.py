@@ -143,14 +143,14 @@ def verify_stage1(run, results):
         observed = [mi(x) for x in cand["train_label_months_observed"]]
         if min(observed) < origin - 35 or max(observed) >= origin or max(observed) > mi("2020-12"):
             bad.append(name)
-        preds = pd.read_csv(d / "target_predictions.csv")
+        preds = pd.read_csv(d / "target_predictions.csv", float_precision="round_trip")
         for arm, key in (("y_pred_partitioned_code", "macro_f1"), ("y_pred_pooled_code", "macro_f1_base")):
             if not np.isclose(macro(preds["y_true_code"], preds[arm]), cand["scores"][key], rtol=0, atol=1e-12):
                 rescored.append((name, key))
         pseudo = {e["pseudo_rows"] for e in cand["fits"]["georf_fit_log"]}
         if pseudo != {4}:
             bad.append(f"{name}:pseudo_rows={pseudo}")
-        members = pd.read_csv(d / "fold_membership.csv.gz")
+        members = pd.read_csv(d / "fold_membership.csv.gz", float_precision="round_trip")
         if set(members.loc[members.role != "heldout_target", "target_month"].map(mi)) - set(range(origin - 35, origin)):
             bad.append(f"{name}:membership")
     check(results, f"stage1: {len(scheduled)} scheduled folds all completed within [O-35,O) and <= 2020-12 with 4 pseudo rows per fit",
@@ -160,9 +160,9 @@ def verify_stage1(run, results):
 
 def verify_stage2(run, results):
     from scripts.step4_similarity_matrix import compute_plan_weights
-    ledger = pd.read_csv(run / "stage2" / "candidate_ledger.csv")
+    ledger = pd.read_csv(run / "stage2" / "candidate_ledger.csv", float_precision="round_trip")
     completed = ledger[ledger["status"] == "completed"]
-    weights = pd.read_csv(run / "stage2" / "plan_weights.csv")
+    weights = pd.read_csv(run / "stage2" / "plan_weights.csv", float_precision="round_trip")
     f = np.clip(completed["macro_f1"].to_numpy(), 1e-6, 1 - 1e-6)
     b = np.clip(completed["macro_f1_base"].to_numpy(), 1e-6, 1 - 1e-6)
     expected = np.maximum(np.log(f / (1 - f)) - np.log(b / (1 - b)), 0)
@@ -171,15 +171,15 @@ def verify_stage2(run, results):
     route_ok = (record["route"] == "null_consensus") == bool((expected == 0).all())
     check(results, f"stage2: consensus route '{record['route']}' matches the weights", route_ok)
     if record["route"] == "learned_map":
-        check(results, "stage2: cluster map digest", sha256(record["cluster_map"]) == record["cluster_map_sha256"])
+        check(results, "stage2: cluster map digest", sha256(run / "stage2" / record["cluster_map"]) == record["cluster_map_sha256"])
 
 
 def verify_stage3(run, results):
-    baselines = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv")
+    baselines = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv", float_precision="round_trip")
     for horizon in HORIZONS:
         out = run / "stage3" / f"h{horizon}"
         manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
-        preds = pd.read_csv(out / "predictions.csv.gz")
+        preds = pd.read_csv(out / "predictions.csv.gz", float_precision="round_trip")
         base_keys = set(zip(baselines.loc[baselines.horizon == horizon, "area"],
                             baselines.loc[baselines.horizon == horizon, "target_label"]))
         check(results, f"stage3 h{horizon}: prediction keys == baseline truth keys",
@@ -189,7 +189,7 @@ def verify_stage3(run, results):
             if fold["status"] != "fitted":
                 continue
             rec = json.loads((out / "folds" / fold["target_month"] / "fold.json").read_text(encoding="utf-8"))
-            keys = pd.read_csv(out / "folds" / fold["target_month"] / "training_keys.csv.gz")
+            keys = pd.read_csv(out / "folds" / fold["target_month"] / "training_keys.csv.gz", float_precision="round_trip")
             origin = mi(fold["origin_month"])
             if keys["target_month"].min() < origin - 35 or keys["target_month"].max() >= origin:
                 wrong.append(fold["target_month"])
@@ -206,7 +206,7 @@ def verify_stage3(run, results):
 
 def verify_report(run, results):
     report = json.loads((run / "report" / "report.json").read_text(encoding="utf-8"))
-    keyed = pd.read_csv(run / "report" / "keyed_evaluation.csv.gz")
+    keyed = pd.read_csv(run / "report" / "keyed_evaluation.csv.gz", float_precision="round_trip")
     col = {"partitioned": "y_pred_partitioned_code", "pooled": "y_pred_pooled_code",
            "expert": "expert_code", "persistence": "persistence_code"}
     bad = []
@@ -222,7 +222,7 @@ def verify_report(run, results):
             if not np.isclose(macro(rows.truth_code, rows[col[arm]].astype(int)), summary["macro_f1"], rtol=0, atol=1e-12):
                 bad.append((cohort, arm))
     check(results, "report: every cohort size and arm macro F1 recomputes with sklearn", not bad, bad)
-    draws = pd.read_csv(run / "report" / "bootstrap_draws.csv.gz")
+    draws = pd.read_csv(run / "report" / "bootstrap_draws.csv.gz", float_precision="round_trip")
     countries = report["bootstrap"]["countries"]
     sample = draws.sample(n=min(25, len(draws)), random_state=3)
     bad = []
@@ -280,11 +280,11 @@ def verify_replay(run, results, out):
             same = hashes_ok and diff == 0.0
             same = same and np.array_equal(fc.argmax_codes(p_pooled), original["y_pred_pooled_code"]) \
                 and np.array_equal(fc.argmax_codes(p_part), original["y_pred_partitioned_code"])
-            keys = pd.read_csv(fold / "training_keys.csv.gz")
+            keys = pd.read_csv(fold / "training_keys.csv.gz", float_precision="round_trip")
             cluster_of = {}
             consensus = json.loads((run / "stage2" / "consensus.json").read_text(encoding="utf-8"))
             if consensus["route"] == "learned_map":
-                cmap = pd.read_csv(consensus["cluster_map"])
+                cmap = pd.read_csv(run / "stage2" / consensus["cluster_map"], float_precision="round_trip")
                 cluster_of = dict(zip(cmap["FEWSNET_admin_code"], cmap["cluster_id"]))
             key_cluster = keys["area"].map(cluster_of).fillna(-1).astype(int).to_numpy()
             def digest(frame):
@@ -324,7 +324,7 @@ def verify_replay(run, results, out):
             rows = routed == branch
             model.load(branch)
             pred[rows] = model.predict(X[rows])
-        saved = pd.read_csv(run / "stage1" / "folds" / name / "target_predictions.csv").sort_values("FEWSNET_admin_code")
+        saved = pd.read_csv(run / "stage1" / "folds" / name / "target_predictions.csv", float_precision="round_trip").sort_values("FEWSNET_admin_code")
         check(results, f"replay stage1 {name}: retained checkpoints reproduce {len(pred)} partitioned predictions",
               np.array_equal(pred, saved["y_pred_partitioned_code"].to_numpy()))
 
@@ -340,19 +340,18 @@ def main():
     out.mkdir()
     results = []
     from src.utils.run_identity import code_identity, code_identity_at, git_head, verifier_identity
+    from src.utils.acceptance import accept_stage3, identity_problems
     identity = json.loads((run / "prepared" / "manifests" / "identity.json").read_text(encoding="utf-8"))
-    head_code = code_identity_at("HEAD")
-    check(results, "run code identity == committed code at HEAD == current working tree",
-          identity["code"] == head_code == code_identity() and identity.get("code_equals_git_head"),
-          {"run": identity["code"], "head": head_code, "run_git_head": identity.get("git_head"),
-           "current_head": git_head()})
-    from src.utils.run_identity import verifier_identity_at
-    current_verifier = verifier_identity()
-    run_verifier = verifier_identity_at(identity["git_head"])
-    head_verifier = verifier_identity_at("HEAD")
-    check(results, "verifier == committed verifier at the run's git_head == committed at HEAD",
-          current_verifier == run_verifier == head_verifier,
-          {"current": current_verifier, "run_git_head": run_verifier, "head": head_verifier})
+    problems = identity_problems(run)
+    check(results, "producer code and verifier == committed blobs at the run's git_head and HEAD == working tree",
+          not problems, {"problems": problems, "run_git_head": identity.get("git_head"), "current_head": git_head()})
+    try:
+        accept_stage3(run)
+        accepted = None
+    except Exception as exc:
+        accepted = str(exc)
+    check(results, "acceptance chain accepts prepared -> Stage 1 -> Stage 2 -> all Stage 3 horizons "
+                   "(derived inventories, row-level routes, recomputed ledger/weights)", accepted is None, accepted)
     recorded = json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
     drift = [p for p, h in recorded.items() if sha256(run / "prepared" / p) != h]
     check(results, f"prepared outputs match {len(recorded)} recorded hashes", not drift, drift)

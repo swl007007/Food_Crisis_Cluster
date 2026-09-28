@@ -33,47 +33,18 @@ KEY = ["area", "target_month", "horizon"]
 
 
 def verify_stage3(run: Path) -> None:
-    """Report only from complete Stage 3 outputs made by the current code/runtime."""
-    from src.utils.run_identity import (REQUIRED_STAGE3_FOLD, check_inventory, code_identity, file_sha256,
-                                        require_prepared, runtime_identity)
-    require_prepared(run)
-    for horizon in HORIZONS:
-        out = run / "stage3" / f"h{horizon}"
-        manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
-        if manifest.get("code") != code_identity() or manifest.get("runtime") != runtime_identity():
-            raise RuntimeError(f"h{horizon}: Stage 3 made by different code or runtime")
-        if file_sha256(out / "predictions.csv.gz") != manifest["predictions_sha256"]:
-            raise RuntimeError(f"h{horizon}: predictions differ from the Stage 3 record")
-        if manifest.get("horizon") != horizon or not manifest.get("fold_records") or manifest.get("only_month"):
-            raise RuntimeError(f"h{horizon}: Stage 3 record is for another horizon, partial or lists no folds")
-        from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import reconcile_horizon
-        reconcile_horizon(run, out, horizon)
-        listed = set(manifest["fold_records"])
-        on_disk = {p.name for p in (out / "folds").iterdir() if p.is_dir()}
-        if listed != on_disk:
-            raise RuntimeError(f"h{horizon}: fold records {sorted(listed ^ on_disk)[:5]} differ from fold directories")
-        for month, sha in manifest["fold_records"].items():
-            fold = out / "folds" / month
-            if file_sha256(fold / "fold.json") != sha:
-                raise RuntimeError(f"h{horizon} {month}: fold record changed")
-            record = json.loads((fold / "fold.json").read_text(encoding="utf-8"))
-            if record.get("target_month") != month or record.get("horizon") != horizon:
-                raise RuntimeError(f"h{horizon} {month}: fold record describes another fold")
-            required = REQUIRED_STAGE3_FOLD if record["status"] == "fitted" else ()
-            required = list(required) + [f"models/local_{c}.pkl.xz"
-                                         for c in (int(k.split('_')[1]) for k in record.get("estimators", {})
-                                                   if k.startswith("local_"))]
-            problems = check_inventory(fold, record.get("outputs") or {}, required)
-            if problems:
-                raise RuntimeError(f"h{horizon} {month}: {problems[:5]}")
+    """Report only from outputs the acceptance chain accepts (prepared -> Stage 1 ->
+    Stage 2 -> every Stage 3 horizon, all bound to the current committed code)."""
+    from src.utils.acceptance import accept_stage3
+    accept_stage3(run, HORIZONS)
 
 
 def load_keyed(run: Path) -> pd.DataFrame:
-    base = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv")
+    base = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv", float_precision="round_trip")
     base["target_month"] = base["target_label"]
     frames = []
     for horizon in HORIZONS:
-        preds = pd.read_csv(run / "stage3" / f"h{horizon}" / "predictions.csv.gz")
+        preds = pd.read_csv(run / "stage3" / f"h{horizon}" / "predictions.csv.gz", float_precision="round_trip")
         if preds.duplicated(KEY).any():
             raise RuntimeError(f"h{horizon}: duplicate prediction keys")
         frames.append(preds)

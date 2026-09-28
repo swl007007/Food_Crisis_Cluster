@@ -682,12 +682,40 @@ class DerivedInventories(unittest.TestCase):
         ledger = pd.DataFrame({'candidate': ['fs1_2018-02'], 'status': ['completed']})
         self.assertTrue(inv.stage2_ledger_problems(self.schedule, ledger))
 
-    def test_verifier_only_mismatch_is_detected(self):
-        current = rid.verifier_identity()
-        head = rid.verifier_identity_at('HEAD')
-        self.assertEqual(set(current), set(head))
-        changed = {k: '0' * 64 for k in current}
-        self.assertNotEqual(changed, head)  # the verifier check compares these exactly
+    def test_row_level_route_conflict_is_refused(self):
+        """Round 4 A02: one row of a local cluster routed to pooled is refused, per row."""
+        from src.utils.acceptance import route_row_problems
+        preds = pd.DataFrame({'area': [1, 2, 3, 4], 'cluster_id': [0, 0, 1, -1],
+                              'partitioned_route': ['local_model', 'local_model',
+                                                    'pooled_fallback:single_class_local', 'unmapped_area_pooled'],
+                              'p_pooled_1': [.1, .2, .3, .4], 'p_partitioned_1': [.9, .8, .3, .4]})
+        support = pd.DataFrame({'cluster_id': [0, 1], 'route': ['local_model', 'pooled_fallback'],
+                                'reason': [np.nan, 'single_class_local']})
+        clusters = {1: 0, 2: 0, 3: 1}
+        self.assertEqual(route_row_problems('m', preds, clusters, support, 'learned_map'), [])
+        mixed = preds.copy()
+        mixed.loc[1, 'partitioned_route'] = 'pooled_fallback:single_class_local'
+        self.assertTrue(route_row_problems('m', mixed, clusters, support, 'learned_map'))
+        wrong_cluster = preds.copy(); wrong_cluster.loc[0, 'cluster_id'] = 1
+        self.assertTrue(route_row_problems('m', wrong_cluster, clusters, support, 'learned_map'))
+        not_pooled = preds.copy(); not_pooled.loc[2, 'p_partitioned_1'] = .7
+        self.assertTrue(route_row_problems('m', not_pooled, clusters, support, 'learned_map'))
+
+    def test_verifier_only_mismatch_is_rejected_by_production_check(self):
+        """Round 4 A03: drive the real identity predicate with only the verifier changed."""
+        from src.utils.acceptance import identity_problems
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp)
+            (run / 'prepared' / 'manifests').mkdir(parents=True)
+            head = rid.git_head()
+            rid.write_json_atomic(run / 'prepared' / 'manifests' / 'identity.json', {
+                'code': rid.code_identity_at('HEAD'), 'git_head': head, 'code_equals_git_head': True})
+            committed_code = rid.code_identity_at('HEAD')
+            committed_verifier = rid.verifier_identity_at('HEAD')
+            self.assertEqual(identity_problems(run, committed_code, committed_verifier), [])
+            forged = {k: '0' * 64 for k in committed_verifier}
+            problems = identity_problems(run, committed_code, forged)
+            self.assertEqual(problems, ['verifier differs between working tree, run git_head and HEAD'])
 
 
 class Stage2AndReporting(unittest.TestCase):
@@ -738,6 +766,9 @@ class Stage2AndReporting(unittest.TestCase):
                 'scope': 1, 'target_month': term,
                 'scores': {'macro_f1': f1, 'macro_f1_base': .5}, 'partition': {'n_terminal': 2},
                 'rows': {'heldout_target': 60}}))
+            for rel in rid.REQUIRED_STAGE1_FOLD:
+                if not (fold / rel).exists():
+                    (fold / rel).write_text('x')
             results = root / 'stage1' / 'GeoRFResults'
             archive = results / f'result_GeoRF_2018_fs1_{term}_visual'
             archive.mkdir(parents=True)
@@ -777,7 +808,8 @@ class Stage2AndReporting(unittest.TestCase):
                 record = json.loads((run / 'stage2' / 'consensus.json').read_text())
                 if positive:
                     self.assertEqual(record['route'], 'learned_map')
-                    mapping = pd.read_csv(record['cluster_map'])
+                    self.assertFalse(Path(record['cluster_map']).is_absolute())
+                    mapping = pd.read_csv(run / 'stage2' / record['cluster_map'])
                     self.assertEqual(sorted(mapping['FEWSNET_admin_code']), list(range(60)))
                     self.assertEqual(record['actual_clusters'], record['recommended_clusters'])
                     consensus, clusters = compare.load_consensus(run / 'stage2' / 'consensus.json')
@@ -786,6 +818,33 @@ class Stage2AndReporting(unittest.TestCase):
                     self.assertEqual(record['route'], 'null_consensus')
                     self.assertFalse((run / 'stage2' / 'experiment').exists())
                     self.assertEqual(compare.load_consensus(run / 'stage2' / 'consensus.json')[1], None)
+                    self.consumer_refuses_forged_ledgers(run)
+
+    def consumer_refuses_forged_ledgers(self, run):
+        """Round 4 A01: the Stage 3 consumer re-derives the ledger; a hash- and identity-
+        consistent consensus whose ledger omits or alters a scheduled candidate is refused."""
+        from scripts import run_stage2
+        stage2 = run / 'stage2'
+        original = (stage2 / 'candidate_ledger.csv').read_bytes()
+        weights = (stage2 / 'plan_weights.csv').read_bytes()
+        forgeries = {
+            'omitted_candidate': lambda l: l[l['candidate'] != 'fs1_2018-06'],
+            'altered_score': lambda l: l.assign(macro_f1=l['macro_f1'].where(l['candidate'] != 'fs1_2018-06', .99)),
+        }
+        for label, forge in forgeries.items():
+            ledger = pd.read_csv(stage2 / 'candidate_ledger.csv')
+            forge(ledger).to_csv(stage2 / 'candidate_ledger.csv', index=False)
+            record = json.loads((stage2 / 'consensus.json').read_text())
+            record.pop('outputs')
+            run_stage2.finish(stage2, record)  # re-hash: record is self-consistent
+            with self.assertRaises(Exception, msg=label):
+                compare.load_consensus(stage2 / 'consensus.json')
+            (stage2 / 'candidate_ledger.csv').write_bytes(original)
+        (stage2 / 'plan_weights.csv').write_bytes(weights.replace(b'0.0', b'9.0', 1))
+        record = json.loads((stage2 / 'consensus.json').read_text()); record.pop('outputs')
+        run_stage2.finish(stage2, record)
+        with self.assertRaises(Exception, msg='altered weights'):
+            compare.load_consensus(stage2 / 'consensus.json')
 
     def test_country_bootstrap_matches_direct_recount(self):
         frame = pd.DataFrame({

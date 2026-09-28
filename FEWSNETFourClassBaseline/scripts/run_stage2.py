@@ -41,37 +41,14 @@ def sha256(path: Path) -> str:
 
 
 def candidate_ledger(run: Path, prepared_identity=None) -> pd.DataFrame:
+    """The ledger re-derived from Stage 1 evidence accepted by the acceptance chain."""
+    from src.utils.acceptance import accept_stage1, expected_ledger
     schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
-    rows, problems = [], []
-    for fold in schedule["stage1"]:
-        name = f"fs{fold['scope']}_{fold['target_month']}"
-        if fold["status"] != "scheduled":
-            rows.append({"candidate": name, "status": fold["status"]})
-            continue
-        fold_dir = run / "stage1" / "folds" / name
-        record = fold_dir / "candidate.json"
-        try:
-            if prepared_identity is None:
-                raise RuntimeError("no verified preparation")
-            plan = json.loads((run / "stage1" / "retain_plan.json").read_text(encoding="utf-8"))
-            verify_fold(run, name, prepared_identity,
-                        retain_expected=f"fs{fold['scope']}:{fold['target_month']}" in plan)
-        except Exception as exc:  # missing, partial, stale or foreign fold
-            problems.append(f"{name}: {exc}")
-            continue
-        data = json.loads(record.read_text(encoding="utf-8"))
-        scores = data["scores"]
-        if not np.isfinite([scores["macro_f1"], scores["macro_f1_base"]]).all():
-            problems.append(f"{name}: non-finite held-out score")
-        rows.append({"candidate": name, "status": "completed", "scope": fold["scope"],
-                     "target_month": fold["target_month"], "macro_f1": scores["macro_f1"],
-                     "macro_f1_base": scores["macro_f1_base"],
-                     "n_terminal": data["partition"]["n_terminal"],
-                     "heldout_rows": data["rows"]["heldout_target"]})
-    if problems:
-        raise RuntimeError("incomplete Stage 1 candidate ledger (not a D15 null consensus):\n"
-                           + "\n".join(problems))
-    return pd.DataFrame(rows)
+    try:
+        candidates = accept_stage1(run)
+    except Exception as exc:
+        raise RuntimeError(f"incomplete Stage 1 candidate ledger (not a D15 null consensus): {exc}") from exc
+    return expected_ledger(schedule, candidates)
 
 
 def finish(out: Path, record: dict) -> None:
@@ -88,13 +65,7 @@ def main() -> None:
     run = args.run_dir.resolve()
     out = run / "stage2"
     refuse_existing(out, "Stage 2")
-    ledger = candidate_ledger(run, require_prepared(run))
-    from src.utils.inventories import stage1_population_problems, stage2_ledger_problems
-    schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
-    present = [p.name for p in (run / "stage1" / "folds").iterdir() if p.is_dir()]
-    problems = stage1_population_problems(schedule, present) + stage2_ledger_problems(schedule, ledger)
-    if problems:
-        raise RuntimeError(f"Stage 1 population does not match the schedule: {problems}")
+    ledger = candidate_ledger(run)
     out.mkdir(parents=True)
     ledger.to_csv(out / "candidate_ledger.csv", index=False)
     completed = ledger[ledger["status"] == "completed"].copy()
@@ -137,7 +108,9 @@ def main() -> None:
     mapping = pd.read_csv(cluster_map)
     summary = json.loads((experiment / "similarity_matrices" / "summary_statistics.json").read_text(encoding="utf-8"))
     record.update(
-        route="learned_map", cluster_map=str(cluster_map), cluster_map_sha256=sha256(cluster_map),
+        # Relative to stage2/, so a copied or cloned run resolves its own map.
+        route="learned_map", cluster_map=cluster_map.relative_to(out).as_posix(),
+        cluster_map_sha256=sha256(cluster_map),
         recommended_clusters=n_clusters, actual_clusters=int(mapping["cluster_id"].nunique()),
         areas_in_scope=int(len(mapping)), outlier_areas_1nn=int(mapping["is_outlier"].sum()),
         connectivity=report["connectivity"], similarity=summary, steps=steps,
