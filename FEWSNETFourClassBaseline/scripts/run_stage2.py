@@ -89,6 +89,12 @@ def main() -> None:
     out = run / "stage2"
     refuse_existing(out, "Stage 2")
     ledger = candidate_ledger(run, require_prepared(run))
+    from src.utils.inventories import stage1_population_problems, stage2_ledger_problems
+    schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
+    present = [p.name for p in (run / "stage1" / "folds").iterdir() if p.is_dir()]
+    problems = stage1_population_problems(schedule, present) + stage2_ledger_problems(schedule, ledger)
+    if problems:
+        raise RuntimeError(f"Stage 1 population does not match the schedule: {problems}")
     out.mkdir(parents=True)
     ledger.to_csv(out / "candidate_ledger.csv", index=False)
     completed = ledger[ledger["status"] == "completed"].copy()

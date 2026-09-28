@@ -44,8 +44,14 @@ def verify_stage3(run: Path) -> None:
             raise RuntimeError(f"h{horizon}: Stage 3 made by different code or runtime")
         if file_sha256(out / "predictions.csv.gz") != manifest["predictions_sha256"]:
             raise RuntimeError(f"h{horizon}: predictions differ from the Stage 3 record")
-        if manifest.get("horizon") != horizon or not manifest.get("fold_records"):
-            raise RuntimeError(f"h{horizon}: Stage 3 record is for another horizon or lists no folds")
+        if manifest.get("horizon") != horizon or not manifest.get("fold_records") or manifest.get("only_month"):
+            raise RuntimeError(f"h{horizon}: Stage 3 record is for another horizon, partial or lists no folds")
+        from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import reconcile_horizon
+        reconcile_horizon(run, out, horizon)
+        listed = set(manifest["fold_records"])
+        on_disk = {p.name for p in (out / "folds").iterdir() if p.is_dir()}
+        if listed != on_disk:
+            raise RuntimeError(f"h{horizon}: fold records {sorted(listed ^ on_disk)[:5]} differ from fold directories")
         for month, sha in manifest["fold_records"].items():
             fold = out / "folds" / month
             if file_sha256(fold / "fold.json") != sha:

@@ -346,8 +346,13 @@ def main():
           identity["code"] == head_code == code_identity() and identity.get("code_equals_git_head"),
           {"run": identity["code"], "head": head_code, "run_git_head": identity.get("git_head"),
            "current_head": git_head()})
-    results.append({"check": "verifier identity (not part of the producer identity)", "passed": True,
-                    "detail": verifier_identity()})
+    from src.utils.run_identity import verifier_identity_at
+    current_verifier = verifier_identity()
+    run_verifier = verifier_identity_at(identity["git_head"])
+    head_verifier = verifier_identity_at("HEAD")
+    check(results, "verifier == committed verifier at the run's git_head == committed at HEAD",
+          current_verifier == run_verifier == head_verifier,
+          {"current": current_verifier, "run_git_head": run_verifier, "head": head_verifier})
     recorded = json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
     drift = [p for p, h in recorded.items() if sha256(run / "prepared" / p) != h]
     check(results, f"prepared outputs match {len(recorded)} recorded hashes", not drift, drift)

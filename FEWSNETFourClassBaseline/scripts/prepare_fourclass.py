@@ -469,7 +469,8 @@ def main() -> None:
     manifests = out / "manifests"
 
     from src.utils.run_identity import code_identity as _code, code_identity_at as _code_at
-    if not args.preflight_only and _code() != _code_at("HEAD"):
+    from src.utils.run_identity import verifier_identity as _ver, verifier_identity_at as _ver_at
+    if not args.preflight_only and (_code() != _code_at("HEAD") or _ver() != _ver_at("HEAD")):
         raise PreflightError("package code differs from the committed HEAD; commit before an "
                              "authoritative run so the run is bound to committed code")
     runtime = runtime_identity()

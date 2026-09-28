@@ -46,6 +46,17 @@ def verifier_identity() -> dict:
     return {rel: file_sha256(PACKAGE / rel) for rel in VERIFIER_FILES}
 
 
+def verifier_identity_at(rev: str) -> dict:
+    """Verifier blob hashes at a commit (audit repair round 3, A02)."""
+    import subprocess
+    out = {}
+    for rel in VERIFIER_FILES:
+        blob = subprocess.run(["git", "show", f"{rev}:{PACKAGE.name}/{rel}"], cwd=PACKAGE.parent,
+                              capture_output=True, check=True).stdout
+        out[rel] = hashlib.sha256(blob).hexdigest()
+    return out
+
+
 def code_identity_at(rev: str = "HEAD") -> dict:
     """The same identity computed from committed Git blobs (audit A01): a run is bound
     to committed code only if its recorded identity equals this for the audited commit."""

@@ -227,6 +227,33 @@ def fit_fold(snap, features, test_month, horizon, cluster_of):
                            "bundles": bundles}
 
 
+def reconcile_horizon(run_dir: Path, out_dir: Path, horizon: int, only_month=None) -> None:
+    """Refuse to publish a horizon whose folds, models or predictions differ from the
+    schedule and the routes actually used (inventories derived from evidence)."""
+    from src.utils.inventories import stage3_fold_problems, stage3_horizon_problems
+    schedule = json.loads((run_dir / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
+    if only_month:
+        schedule = {**schedule, "stage3": [r for r in schedule["stage3"] if r["target_month"] == only_month]}
+    records = {p.name: json.loads((p / "fold.json").read_text(encoding="utf-8"))
+               for p in sorted((out_dir / "folds").iterdir())}
+    preds = pd.read_csv(out_dir / "predictions.csv.gz", float_precision="round_trip")
+    base = pd.read_csv(run_dir / "prepared" / "ledgers" / "baselines.csv", low_memory=False)
+    base = base[(base["horizon"] == horizon) & base["target_label"].isin(
+        [r["target_month"] for r in schedule["stage3"] if r["horizon"] == horizon])]
+    problems = stage3_horizon_problems(horizon, schedule, records, preds,
+                                       set(zip(base["area"], base["target_label"])))
+    for month, record in records.items():
+        if record.get("status") == "fitted":
+            support = out_dir / "folds" / month / "local_support.csv"
+            try:
+                local = pd.read_csv(support)
+            except pd.errors.EmptyDataError:
+                local = pd.DataFrame(columns=["cluster_id", "route"])
+            problems += stage3_fold_problems(month, record, preds[preds["target_month"] == month], local)
+    if problems:
+        raise RuntimeError(f"h{horizon}: Stage 3 inventory does not reconcile: {problems[:8]}")
+
+
 def save_bundle(path: Path, bundle) -> None:
     with lzma.open(path, "wb", preset=6) as handle:
         pickle.dump(bundle, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -338,6 +365,7 @@ def main():
         "prediction_rows": int(len(all_preds)),
         "python": sys.version.split()[0],
     }
+    reconcile_horizon(run_dir, out_dir, horizon, args.only_month)
     manifest.update(code=code_identity(), runtime=runtime_identity(),
                     predictions_sha256=_sha(out_dir / "predictions.csv.gz"),
                     fold_records={f["target_month"]: _sha(out_dir / "folds" / f["target_month"] / "fold.json")

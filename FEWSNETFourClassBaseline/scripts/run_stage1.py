@@ -120,6 +120,11 @@ def verify_fold(run: Path, name: str, prepared_identity: dict, retain_expected=N
     if not isinstance(outputs, dict):
         raise RuntimeError(f'{name}: completion record has no output inventory')
     problems = check_inventory(run / 'stage1', outputs, required_fold_outputs(name, bool(record.get('retain'))))
+    if not problems and record.get('retain'):
+        import pandas as pd  # noqa: PLC0415
+        from src.utils.inventories import retained_checkpoint_problems  # noqa: PLC0415
+        s_branch = pd.read_pickle(run / 'stage1' / 'retained' / name / 'space_partitions' / 's_branch.pkl')
+        problems = retained_checkpoint_problems(name, outputs, list(s_branch.columns))
     if problems:
         raise RuntimeError(f'{name}: {problems[:5]}')
     candidate = json.loads((run / 'stage1' / 'folds' / name / 'candidate.json').read_text(encoding='utf-8'))

@@ -520,9 +520,11 @@ class Continuation(unittest.TestCase):
             (fold / rel).write_text('x')
         (fold / 'candidate.json').write_text(json.dumps({'scope': 1, 'target_month': term}))
         if retain:
-            for rel in ('checkpoints/rf_', 'space_partitions/s_branch.pkl'):
-                (run / 'stage1' / 'retained' / name / rel).parent.mkdir(parents=True, exist_ok=True)
-                (run / 'stage1' / 'retained' / name / rel).write_bytes(b'model')
+            retained = run / 'stage1' / 'retained' / name
+            for rel in ('checkpoints/rf_', 'space_partitions/branch_table.npy', 'space_partitions/X_branch_id.npy'):
+                (retained / rel).parent.mkdir(parents=True, exist_ok=True)
+                (retained / rel).write_bytes(b'model')
+            pd.DataFrame({'': [10, 20]}).to_pickle(retained / 'space_partitions' / 's_branch.pkl')  # root only
         rid.write_json_atomic(fold / 'completion.json', {
             'fold': name, 'prepared': prepared['outputs_sha256'], 'code': rid.code_identity(),
             'runtime': rid.runtime_identity(), 'retain': retain,
@@ -552,6 +554,15 @@ class Continuation(unittest.TestCase):
                 stage1.verify_fold(run, name, {**prepared, 'outputs_sha256': 'other'})
             (run / 'stage1' / 'retained' / name / 'checkpoints' / 'rf_').unlink()
             with self.assertRaises(RuntimeError):     # missing retained checkpoint
+                stage1.verify_fold(run, name, prepared)
+        with tempfile.TemporaryDirectory() as tmp:
+            run, name, prepared = self.completed_run(tmp, retain=True)
+            retained = run / 'stage1' / 'retained' / name / 'space_partitions' / 's_branch.pkl'
+            pd.DataFrame({'': [10, 20], '0': [10, -1], '1': [20, -1]}).to_pickle(retained)
+            record = json.loads((run / 'stage1' / 'folds' / name / 'completion.json').read_text())
+            record['outputs'] = stage1.fold_outputs(run, name, 1, '2018-02', True)
+            rid.write_json_atomic(run / 'stage1' / 'folds' / name / 'completion.json', record)
+            with self.assertRaises(RuntimeError):     # routed branches 0/1 have no checkpoints
                 stage1.verify_fold(run, name, prepared)
         with tempfile.TemporaryDirectory() as tmp:
             run, name, prepared = self.completed_run(tmp)
@@ -603,6 +614,80 @@ class Continuation(unittest.TestCase):
             (Path(tmp) / 'stage2').mkdir()
             with self.assertRaises(FileExistsError):
                 rid.refuse_existing(Path(tmp) / 'stage2', 'Stage 2')
+
+
+class DerivedInventories(unittest.TestCase):
+    """Round 3: membership comes from independent evidence, never from the record."""
+
+    schedule = {'stage1': [{'scope': 1, 'target_month': '2018-02', 'status': 'scheduled'},
+                           {'scope': 1, 'target_month': '2018-03', 'status': 'skipped_empty_target'}],
+                'stage3': [{'horizon': 4, 'target_month': '2021-05', 'status': 'skipped_empty_target'},
+                           {'horizon': 4, 'target_month': '2021-06', 'status': 'scheduled'}]}
+
+    def preds(self):
+        return pd.DataFrame({'area': [1, 2, 3], 'target_month': '2021-06', 'cluster_id': [0, 1, -1],
+                             'partitioned_route': ['local_model', 'pooled_fallback:single_class_local',
+                                                   'unmapped_area_pooled']})
+
+    def fold_record(self):
+        return {'status': 'fitted', 'route': 'learned_map', 'rows': {'test': 3},
+                'estimators': {'pooled': {}, 'local_0': {}},
+                'outputs': {'models/pooled.pkl.xz': 'a', 'models/local_0.pkl.xz': 'b'}}
+
+    def support(self):
+        return pd.DataFrame({'cluster_id': [0, 1], 'route': ['local_model', 'pooled_fallback']})
+
+    def test_genuine_inventories_accept(self):
+        from src.utils import inventories as inv
+        records = {'2021-05': {'status': 'skipped_empty_target'}, '2021-06': self.fold_record()}
+        keys = {(1, '2021-06'), (2, '2021-06'), (3, '2021-06')}
+        self.assertEqual(inv.stage3_horizon_problems(4, self.schedule, records, self.preds(), keys), [])
+        self.assertEqual(inv.stage3_fold_problems('2021-06', self.fold_record(), self.preds(), self.support()), [])
+        self.assertEqual(inv.stage1_population_problems(self.schedule, ['fs1_2018-02']), [])
+
+    def test_omitted_fitted_fold_is_refused(self):
+        from src.utils import inventories as inv
+        keys = {(1, '2021-06'), (2, '2021-06'), (3, '2021-06')}
+        only_skipped = {'2021-05': {'status': 'skipped_empty_target'}}
+        self.assertTrue(inv.stage3_horizon_problems(4, self.schedule, only_skipped, self.preds(), keys))
+        relabelled = {'2021-05': {'status': 'skipped_empty_target'}, '2021-06': {'status': 'skipped_empty_target'}}
+        self.assertTrue(inv.stage3_horizon_problems(4, self.schedule, relabelled, self.preds(), keys))
+        self.assertTrue(inv.stage3_horizon_problems(4, self.schedule, {'2021-05': {}, '2021-06': self.fold_record()},
+                                                    self.preds().iloc[:2], keys))
+
+    def test_omitted_routed_local_model_is_refused(self):
+        from src.utils import inventories as inv
+        record = self.fold_record()
+        record['estimators'].pop('local_0')
+        record['outputs'].pop('models/local_0.pkl.xz')
+        self.assertTrue(inv.stage3_fold_problems('2021-06', record, self.preds(), self.support()))
+        record = self.fold_record()
+        record['outputs'].pop('models/local_0.pkl.xz')
+        self.assertTrue(inv.stage3_fold_problems('2021-06', record, self.preds(), self.support()))
+        self.assertTrue(inv.stage3_fold_problems('2021-06', self.fold_record(), self.preds(),
+                                                 self.support().iloc[:1]))
+
+    def test_omitted_branch_checkpoint_is_refused(self):
+        from src.utils import inventories as inv
+        outputs = {f'retained/fs1_2018-02/space_partitions/{f}': 'x' for f in inv.SPACE_PARTITIONS}
+        outputs['retained/fs1_2018-02/checkpoints/rf_'] = 'x'
+        self.assertTrue(inv.retained_checkpoint_problems('fs1_2018-02', outputs, ['', '0', '1']))
+        outputs.update({'retained/fs1_2018-02/checkpoints/rf_0': 'x', 'retained/fs1_2018-02/checkpoints/rf_1': 'x'})
+        self.assertEqual(inv.retained_checkpoint_problems('fs1_2018-02', outputs, ['', '0', '1']), [])
+
+    def test_missing_or_extra_stage1_fold_is_refused(self):
+        from src.utils import inventories as inv
+        self.assertTrue(inv.stage1_population_problems(self.schedule, []))
+        self.assertTrue(inv.stage1_population_problems(self.schedule, ['fs1_2018-02', 'fs1_2018-03']))
+        ledger = pd.DataFrame({'candidate': ['fs1_2018-02'], 'status': ['completed']})
+        self.assertTrue(inv.stage2_ledger_problems(self.schedule, ledger))
+
+    def test_verifier_only_mismatch_is_detected(self):
+        current = rid.verifier_identity()
+        head = rid.verifier_identity_at('HEAD')
+        self.assertEqual(set(current), set(head))
+        changed = {k: '0' * 64 for k in current}
+        self.assertNotEqual(changed, head)  # the verifier check compares these exactly
 
 
 class Stage2AndReporting(unittest.TestCase):
