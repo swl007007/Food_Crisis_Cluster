@@ -39,3 +39,9 @@ Findings: repair close-audit 026f8908 (A01-A05, evidence gap) and spot re-audit
   that binds a run, so checking-code fixes cannot misattribute a run again. That
   changed run_identity.py (producer code), so a fresh run v6 was produced after
   committing; v5 is superseded and not committed.
+- Run v6 (bound to cfbc710, code_equals_git_head true): tables identical to v2;
+  verification 36/36 incl. bit-identical saved-model replay (max diff 0.0).
+- Committed evidence: v6 is authoritative. v2 (original close, pre-repair; its tables are
+  byte-identical to v6) remains for history; v3 (round-1 repair run, whose code identity
+  did not match its commit) is removed from the index to avoid two conflicting
+  authoritative-looking runs; it stays in git history at c155ef3.

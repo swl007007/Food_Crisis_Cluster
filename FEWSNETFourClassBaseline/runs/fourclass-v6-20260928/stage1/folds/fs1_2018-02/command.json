@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "-B",
+    "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\app\\main_model_GF.py",
+    "--data",
+    "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\runs\\fourclass-v6-20260928\\prepared\\snapshot_h4.parquet",
+    "--geometry-dir",
+    "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\runs\\fourclass-v6-20260928\\prepared\\geometry",
+    "--schema",
+    "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\feature-schema.json",
+    "--forecasting_scope",
+    "1",
+    "--desired_terms",
+    "2018-02",
+    "--retain-checkpoints",
+    "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\runs\\fourclass-v6-20260928\\stage1\\retained\\fs1_2018-02"
+  ],
+  "cwd": "C:\\Users\\swl00\\AppData\\Local\\Temp\\fourclass_stage1\\fourclass-v6-20260928\\fs1_2018-02"
+}

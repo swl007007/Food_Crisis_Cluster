@@ -1,0 +1,33 @@
+{
+  "id": "ipcch-population-history-xgb",
+  "name": "ipcch-population-history-xgb",
+  "title": "IPCCH population-history and pooled XGBoost objective comparison",
+  "description": "Plan a controlled IPCCH experiment testing continuous phase-share history and comparing direct binary XGBoost, persistence correction and P3+ share regression, with Opus execution and independent Codex audit after planning approval.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "swl007007",
+  "assignee": "swl007007",
+  "createdAt": "2026-09-21",
+  "completedAt": "2026-09-22",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/tasks/09-21-ipcch-population-history-xgb/prd.md",
+    ".trellis/tasks/09-21-ipcch-population-history-xgb/design.md",
+    ".trellis/tasks/09-21-ipcch-population-history-xgb/implement.md",
+    ".trellis/tasks/09-21-ipcch-population-history-xgb/technical-contract.md",
+    ".trellis/tasks/09-21-ipcch-population-history-xgb/feature-schema.json",
+    ".trellis/tasks/09-21-ipcch-population-history-xgb/candidate-configs.json"
+  ],
+  "notes": "Planning only. D1-D21 approved; v0.9 exact technical defaults await final user review. No implementation, training, commit or audit start. Prior IPCCH ablation open audit gate must be rechecked/resolved before execution; do not bypass or treat this new research as remediation.",
+  "meta": {}
+}

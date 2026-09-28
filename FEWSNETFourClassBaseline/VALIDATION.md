@@ -1,7 +1,7 @@
 # Validation — 2026-09-28
 
 Executed with Windows Python 3.12.10 and the pinned package versions recorded in
-`runs/fourclass-v3-20260928/prepared/manifests/runtime.json`.
+`runs/fourclass-v6-20260928/prepared/manifests/runtime.json`.
 
 ## Focused tests
 
@@ -25,13 +25,13 @@ expert/persistence joins without backfill.
 
 ## Real run
 
-`./run_all.sh runs/fourclass-v3-20260928` completed: 27 Stage 1 folds (81 empty
+`./run_all.sh runs/fourclass-v6-20260928` completed: 27 Stage 1 folds (81 empty
 target months recorded, not fitted), learned 13-cluster general consensus from 3
 positive-weight candidates, Stage 3 11/10/9 fitted folds at 4/8/12 months (33/30/27
 empty), report with 2,000 of 2,000 bootstrap draws accepted.
 
-`python -B scripts/verify_fourclass.py --run-dir runs/fourclass-v3-20260928`:
-**34/34 checks pass** (`runs/fourclass-v3-20260928/verification/verification.json`).
+`python -B scripts/verify_fourclass.py --run-dir runs/fourclass-v6-20260928`:
+**36/36 checks pass** (`runs/fourclass-v6-20260928/verification/verification.json`).
 These include independent re-derivation of 1,200 sampled keys x 17 feature columns
 from the raw panel, sklearn recomputation of every Stage 1 score and every reported
 arm metric, bootstrap draws recomputed by row replication from saved multiplicities,

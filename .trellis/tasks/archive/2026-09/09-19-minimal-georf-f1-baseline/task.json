@@ -1,0 +1,29 @@
+{
+  "id": "minimal-georf-f1-baseline",
+  "name": "minimal-georf-f1-baseline",
+  "title": "Minimal GeoRF F1 baseline package",
+  "description": "Extract standalone GeoRF stages 1-3; align statistics, q scan and split selection to class-1 F1; disable SMOTE; release baseline before IPCCH planning.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "swl007007",
+  "assignee": "swl007007",
+  "createdAt": "2026-09-19",
+  "completedAt": "2026-09-19",
+  "branch": "main",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "Local source release complete and verified; see STATUS.md. No commit/push or scientific rerun. Ready for IPCCH specification.",
+  "meta": {
+    "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+    "implementation_status": "verified"
+  }
+}

@@ -7,7 +7,7 @@ persistence and the calendar-aligned FEWS NET expert (4 and 8 months only).
 Specification: `.trellis/tasks/09-28-fewsnet-four-class-perturbation/` (`prd.md`
 R1-R15/A1-A9, `design.md`, `feature-contract.md`, `feature-schema.json`).
 Execution record: `.trellis/tasks/archive/2026-09/09-28-fewsnet-four-class-perturbation/` (`IMPLEMENTATION_LOG.md`, `RESULTS.md`); audit repair in `.trellis/tasks/09-28-fourclass-audit-repair/`..
-Authoritative run: `runs/fourclass-v3-20260928/`.
+Authoritative run: `runs/fourclass-v6-20260928/`.
 
 This is a four-class baseline with explicit preprocessing and feature changes. It is
 **not** a single-variable perturbation of the old binary experiment; no gain or loss
@@ -57,7 +57,7 @@ scikit-learn 1.6.1, scipy 1.15.2, geopandas 1.0.1, shapely 2.1.0, polars 1.27.1;
 preparation refuses to run on any other versions):
 
 ```bash
-python -B tests/test_baseline.py                  # 34 focused contract tests
+python -B tests/test_baseline.py                  # 37 focused contract tests
 ./run_all.sh runs/<fresh-id>                        # ~15 minutes on 32 GB
 python -B scripts/verify_fourclass.py --run-dir runs/<fresh-id>
 ```

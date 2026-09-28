@@ -1,0 +1,475 @@
+{
+  "scope": 1,
+  "horizon": 4,
+  "target_month": "2018-10",
+  "origin_month": "2018-06",
+  "train_label_months": [
+    "2015-07",
+    "2018-05"
+  ],
+  "train_label_months_observed": [
+    "2015-07",
+    "2015-10",
+    "2016-02",
+    "2016-06",
+    "2016-10",
+    "2017-02",
+    "2017-06",
+    "2017-10",
+    "2018-02"
+  ],
+  "rows": {
+    "fitting": 36472,
+    "validation": 10524,
+    "heldout_target": 5365
+  },
+  "class_counts": {
+    "fitting": [
+      20749,
+      10440,
+      4640,
+      643
+    ],
+    "validation": [
+      5985,
+      2990,
+      1348,
+      201
+    ],
+    "heldout_target": [
+      2793,
+      1675,
+      864,
+      33
+    ]
+  },
+  "areas": {
+    "training": 5365,
+    "heldout_target": 5365,
+    "heldout_target_without_training_rows": 0
+  },
+  "inherited_restrictions": {
+    "training_restricted_to_target_month_areas": true,
+    "note": "customize.train_test_split_rolling_window keeps only training areas present in the target month; held-out areas without training rows route to the root."
+  },
+  "validation_split": {
+    "val_ratio": 0.2,
+    "min_val_per_group": 1,
+    "skip_singleton_groups": true,
+    "random_state": 42,
+    "groups_with_validation": 5365,
+    "singleton_groups_train_only": 0
+  },
+  "partition": {
+    "terminal_partitions": [
+      "root"
+    ],
+    "n_terminal": 1,
+    "accepted_splits": 0,
+    "decisions": [
+      {
+        "branch_id": "",
+        "depth": 0,
+        "outcome": "rejected_gate",
+        "parent_macro_f1": "20545494380075/23516666936208",
+        "best_macro_f1": "121545337067077/138493164569010",
+        "gain": "2155112520698210944924711/542816270685141789247285680",
+        "scores": {
+          "parent_parent": "20545494380075/23516666936208",
+          "child_parent": "121545337067077/138493164569010",
+          "parent_child": "2753394500291/3191460978588",
+          "child_child": "686576998613/792203475672"
+        },
+        "selected_children": [
+          false,
+          false
+        ],
+        "n_groups": [
+          2125,
+          3240
+        ],
+        "rows_train": [
+          14284,
+          22188
+        ],
+        "rows_val": [
+          4146,
+          6378
+        ]
+      }
+    ],
+    "gate": "strict fixed-four macro-F1 gain > 0.01 on the parent's validation rows; parent wins ties",
+    "terminal_checkpoint_routes": {
+      "root": {
+        "saved_as": "",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 36472,
+        "real_class_counts": [
+          20749,
+          10440,
+          4640,
+          643
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+      }
+    },
+    "parent_routed_areas": {
+      "train_areas": 0,
+      "train_rows": 0,
+      "heldout_rows": 0,
+      "labels": [],
+      "note": "areas without validation rows are not in any accepted scan subset; they keep the parent branch and use the parent's checkpoint (routing and correspondence agree)"
+    },
+    "correspondence_source": "space_partitions/X_branch_id.npy == s_branch routing (checked)"
+  },
+  "scores": {
+    "macro_f1": 0.6105452115889937,
+    "macro_f1_base": 0.6105452115889937,
+    "partitioned": {
+      "n": 5365,
+      "macro_f1": 0.6105452115889937,
+      "accuracy": 0.7664492078285182,
+      "category_step_mae": 0.25088536812674744,
+      "per_class": {
+        "1": {
+          "support": 2793,
+          "predicted": 2946,
+          "tp": 2503,
+          "fp": 443,
+          "fn": 290,
+          "f1": 0.872277400243945,
+          "precision": 0.8496266123557366,
+          "recall": 0.8961689939133548
+        },
+        "2": {
+          "support": 1675,
+          "predicted": 1983,
+          "tp": 1258,
+          "fp": 725,
+          "fn": 417,
+          "f1": 0.6878075451066157,
+          "precision": 0.6343923348461926,
+          "recall": 0.751044776119403
+        },
+        "3": {
+          "support": 864,
+          "predicted": 429,
+          "tp": 344,
+          "fp": 85,
+          "fn": 520,
+          "f1": 0.5320959010054138,
+          "precision": 0.8018648018648019,
+          "recall": 0.39814814814814814
+        },
+        "4\u62165": {
+          "support": 33,
+          "predicted": 7,
+          "tp": 7,
+          "fp": 0,
+          "fn": 26,
+          "f1": 0.35,
+          "precision": 1.0,
+          "recall": 0.21212121212121213
+        }
+      },
+      "confusion_rows_truth_cols_pred": [
+        [
+          2503,
+          290,
+          0,
+          0
+        ],
+        [
+          354,
+          1258,
+          63,
+          0
+        ],
+        [
+          89,
+          431,
+          344,
+          0
+        ],
+        [
+          0,
+          4,
+          22,
+          7
+        ]
+      ]
+    },
+    "pooled": {
+      "n": 5365,
+      "macro_f1": 0.6105452115889937,
+      "accuracy": 0.7664492078285182,
+      "category_step_mae": 0.25088536812674744,
+      "per_class": {
+        "1": {
+          "support": 2793,
+          "predicted": 2946,
+          "tp": 2503,
+          "fp": 443,
+          "fn": 290,
+          "f1": 0.872277400243945,
+          "precision": 0.8496266123557366,
+          "recall": 0.8961689939133548
+        },
+        "2": {
+          "support": 1675,
+          "predicted": 1983,
+          "tp": 1258,
+          "fp": 725,
+          "fn": 417,
+          "f1": 0.6878075451066157,
+          "precision": 0.6343923348461926,
+          "recall": 0.751044776119403
+        },
+        "3": {
+          "support": 864,
+          "predicted": 429,
+          "tp": 344,
+          "fp": 85,
+          "fn": 520,
+          "f1": 0.5320959010054138,
+          "precision": 0.8018648018648019,
+          "recall": 0.39814814814814814
+        },
+        "4\u62165": {
+          "support": 33,
+          "predicted": 7,
+          "tp": 7,
+          "fp": 0,
+          "fn": 26,
+          "f1": 0.35,
+          "precision": 1.0,
+          "recall": 0.21212121212121213
+        }
+      },
+      "confusion_rows_truth_cols_pred": [
+        [
+          2503,
+          290,
+          0,
+          0
+        ],
+        [
+          354,
+          1258,
+          63,
+          0
+        ],
+        [
+          89,
+          431,
+          344,
+          0
+        ],
+        [
+          0,
+          4,
+          22,
+          7
+        ]
+      ]
+    },
+    "note": "held-out target-month scores; NOT the within-window split-validation scores"
+  },
+  "fits": {
+    "georf_fit_log": [
+      {
+        "fit_seq": 0,
+        "trained_under": "",
+        "real_rows": 36472,
+        "real_class_counts": [
+          20749,
+          10440,
+          4640,
+          643
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+      },
+      {
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 36472,
+        "real_class_counts": [
+          20749,
+          10440,
+          4640,
+          643
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+      },
+      {
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 14284,
+        "real_class_counts": [
+          11265,
+          2361,
+          617,
+          41
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "595825c8e2bb1ad971a140e160a9cc71560b15c200e1e49caa36eec3197be4e7"
+      },
+      {
+        "fit_seq": 3,
+        "trained_under": "",
+        "real_rows": 22188,
+        "real_class_counts": [
+          9484,
+          8079,
+          4023,
+          602
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "0b8c7d9451a99cbb68bae70d0cb5ccedf6f39f7a454d13d38835367abfc708b2"
+      }
+    ],
+    "georf_saved_log": [
+      {
+        "saved_as": "",
+        "fit_seq": 0,
+        "trained_under": "",
+        "real_rows": 36472,
+        "real_class_counts": [
+          20749,
+          10440,
+          4640,
+          643
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+      },
+      {
+        "saved_as": "",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 36472,
+        "real_class_counts": [
+          20749,
+          10440,
+          4640,
+          643
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+      },
+      {
+        "saved_as": "0",
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 14284,
+        "real_class_counts": [
+          11265,
+          2361,
+          617,
+          41
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "595825c8e2bb1ad971a140e160a9cc71560b15c200e1e49caa36eec3197be4e7"
+      },
+      {
+        "saved_as": "1",
+        "fit_seq": 3,
+        "trained_under": "",
+        "real_rows": 22188,
+        "real_class_counts": [
+          9484,
+          8079,
+          4023,
+          602
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "0b8c7d9451a99cbb68bae70d0cb5ccedf6f39f7a454d13d38835367abfc708b2"
+      }
+    ],
+    "pooled_eval_fit": {
+      "fit_seq": 0,
+      "trained_under": "eval",
+      "real_rows": 36472,
+      "real_class_counts": [
+        20749,
+        10440,
+        4640,
+        643
+      ],
+      "pseudo_rows": 4,
+      "imputer_sha256": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+    },
+    "pseudo_rows_per_fit": 4,
+    "pseudo_row_rule": "one zero-feature row per class appended after real-row imputation"
+  },
+  "imputers": {
+    "root": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef",
+    "pooled_eval": "4f6049a0014ddb1f85905097caeec91a5aa04c525dacf79dca8bd9ea0a8a12ef"
+  },
+  "estimator_params": {
+    "bootstrap": true,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "n_estimators": 100,
+    "random_state": 5
+  },
+  "config": {
+    "MIN_DEPTH": 1,
+    "MAX_DEPTH": 6,
+    "NUM_CLASS": 4,
+    "GOVERNING_METRIC": "macro_f1",
+    "MIN_MACRO_F1_IMPROVEMENT_THRESHOLD": 0.01,
+    "MIN_BRANCH_SAMPLE_SIZE": 0,
+    "MIN_SCAN_CLASS_SAMPLE": 0,
+    "CONTIGUITY": true,
+    "REFINE_TIMES": 3,
+    "FEATURE_DROP": {
+      "enable": false,
+      "cols": [
+        "year",
+        "month",
+        "fews_ha",
+        "IPC_admin_code",
+        "ISO_encoded",
+        "years"
+      ],
+      "patterns": []
+    },
+    "N_JOBS": 4,
+    "RUN_PRE_PARTITION_DIAGNOSTIC": false
+  },
+  "module_locations": {
+    "config": "config.py",
+    "src": "src\\__init__.py",
+    "src.customize.customize": "src\\customize\\customize.py",
+    "src.feature.fourclass_features": "src\\feature\\fourclass_features.py",
+    "src.helper.helper": "src\\helper\\helper.py",
+    "src.metrics.fourclass": "src\\metrics\\fourclass.py",
+    "src.metrics.metrics": "src\\metrics\\metrics.py",
+    "src.model.model_RF": "src\\model\\model_RF.py",
+    "src.initialization.initialization": "src\\initialization\\initialization.py",
+    "src.utils.split": "src\\utils\\split.py",
+    "src.model.train_branch": "src\\model\\train_branch.py",
+    "src.vis.visualization": "src\\vis\\visualization.py",
+    "src.partition.partition_opt": "src\\partition\\partition_opt.py",
+    "src.tests.static_table": "src\\tests\\static_table.py",
+    "src.tests.sig_test": "src\\tests\\sig_test.py",
+    "src.partition.transformation": "src\\partition\\transformation.py",
+    "src.model.GeoRF": "src\\model\\GeoRF.py",
+    "src.utils.lag_schedules": "src\\utils\\lag_schedules.py",
+    "src.adjacency.adjacency_utils": "src\\adjacency\\adjacency_utils.py",
+    "config_visual": "config_visual.py",
+    "src.merge.terminal": "src\\merge\\terminal.py",
+    "src.vis.visualization_fix": "src\\vis\\visualization_fix.py"
+  },
+  "timings": {
+    "fit_seconds": 14.78,
+    "total_seconds": 20.11
+  }
+}

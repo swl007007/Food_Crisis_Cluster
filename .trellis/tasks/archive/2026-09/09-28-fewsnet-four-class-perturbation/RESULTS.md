@@ -1,6 +1,6 @@
 # Results and acceptance index — FEWS NET four-class baseline
 
-Authoritative run: `FEWSNETFourClassBaseline/runs/fourclass-v3-20260928/`
+Authoritative run: `FEWSNETFourClassBaseline/runs/fourclass-v6-20260928/`
 (package `FEWSNETFourClassBaseline/`, base SHA 8a56272, audit run
 321911af42cc46809237d7a003700ed9). Superseded: `fourclass-v1-20260928` (aborted at
 Stage 3 h8 by a coverage gate that departed from the release definition; see
@@ -87,7 +87,17 @@ python -B scripts/verify_fourclass.py --run-dir runs/<fresh-id>
 
 Close audit fa38f19ad8fafc36567f90ac found A01 (Stage 3 discarded fitted forests) and A02
 (Stage 1 continuation trusted a completion filename). Repaired in task
-`09-28-fourclass-audit-repair`. The authoritative run is now `fourclass-v3-20260928`,
+`09-28-fourclass-audit-repair`. The authoritative run is now `fourclass-v6-20260928`,
 produced by the repaired code; its `report/contrasts.csv` and `report/arm_metrics.csv`
 are byte-for-byte equal to v2's, so every number above is unchanged. v3 persists every
 Stage 3 estimator bundle (committed, hash-bound in fold.json) and replay now loads them.
+
+## Audit repair round 2 (2026-09-28)
+
+Repair close-audit 026f8908 and spot re-audit 175302c2 were remediated in task
+`09-28-fourclass-audit-repair-2`. Authoritative run is now `fourclass-v6-20260928`,
+produced from committed code cfbc710 (`code_equals_git_head: true`); report tables are
+byte-identical to v2/v3/v5, so every number above is unchanged. Verification 36/36:
+run code identity equals committed HEAD, per-estimator training-key digests, and
+bit-identical saved-model replay (labels and all four probabilities) for first/last
+fitted fold per horizon. Runs v3-v5 are superseded and not committed.
