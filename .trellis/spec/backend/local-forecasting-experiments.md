@@ -81,6 +81,25 @@ production defaults.
 - Assert all four residual expert calendar mappings, month-grouped horizon-safe
   OOF targets, and score thresholds outside `[0, 1]` when validation selects them.
 
+## 6a. Multiclass GeoRF packages (FEWSNETFourClassBaseline pattern)
+
+- Score every stage with fixed-K macro F1 on aggregated counts; a zero F1
+  denominator scores 0 and the class is still averaged. Never reuse the release
+  `get_prf` mean fill or any class-1 helper.
+- Each RF owns its imputer: fit on its real fitting rows, save forest + imputer +
+  fit record as ONE checkpoint bundle, so `load(parent); save(child)` inheritance and
+  pooled fallback can never pair a forest with another estimator's fill values.
+  Append class-recovery rows only after imputation.
+- Build features once per (area, target, horizon) key from the complete monthly
+  scaffold at calendar offsets from O; feed the aligned snapshot directly. Never pass
+  it through `prepare_features`, `comp_impute`, row shifts or FEATURE_DROP.
+- Keep bulky Stage 1 working trees (checkpoints) outside Dropbox-synced paths; Dropbox
+  locks fresh directories (WinError 32). Copy retained evidence back afterwards.
+- Keep inherited gate definitions exactly (e.g. Stage 3 unmapped coverage is the share
+  of all labelled panel rows); disclose additional shares instead of gating on them.
+- A missing Stage 1 candidate or non-finite score stops Stage 2; only a complete ledger
+  of all-zero weights may take the null-consensus route.
+
 ## 7. Wrong vs Correct
 
 ```python

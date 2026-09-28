@@ -1,0 +1,276 @@
+{
+  "scaffold": {
+    "rows": 1029240,
+    "areas": 5718,
+    "months": 180,
+    "first": "2010-01-01",
+    "last": "2024-12-01",
+    "admin_code_range": [
+      0,
+      5717
+    ]
+  },
+  "truth": {
+    "valid": 259440,
+    "missing": 769800,
+    "raw_counts": {
+      "1": 133211,
+      "2": 82907,
+      "3": 39062,
+      "4": 4186,
+      "5": 74
+    },
+    "binary_matches_phase_ge3": 259440,
+    "binary_without_phase": 0,
+    "label_months": [
+      "2010-01",
+      "2010-04",
+      "2010-07",
+      "2010-10",
+      "2011-01",
+      "2011-04",
+      "2011-07",
+      "2011-10",
+      "2012-01",
+      "2012-04",
+      "2012-07",
+      "2012-10",
+      "2013-01",
+      "2013-04",
+      "2013-07",
+      "2013-10",
+      "2014-01",
+      "2014-04",
+      "2014-07",
+      "2014-10",
+      "2015-01",
+      "2015-04",
+      "2015-07",
+      "2015-10",
+      "2016-02",
+      "2016-06",
+      "2016-10",
+      "2017-02",
+      "2017-06",
+      "2017-10",
+      "2018-02",
+      "2018-06",
+      "2018-10",
+      "2019-02",
+      "2019-06",
+      "2019-10",
+      "2020-02",
+      "2020-06",
+      "2020-10",
+      "2021-02",
+      "2021-06",
+      "2021-10",
+      "2022-02",
+      "2022-06",
+      "2022-10",
+      "2023-02",
+      "2023-06",
+      "2023-10",
+      "2024-02",
+      "2024-06",
+      "2024-10"
+    ]
+  },
+  "fews_proj_near": {
+    "valid": 233213,
+    "missing": 796027,
+    "raw_counts": {
+      "1": 118817,
+      "2": 73160,
+      "3": 36611,
+      "4": 4468,
+      "5": 157
+    }
+  },
+  "fews_proj_med": {
+    "valid": 232489,
+    "missing": 796751,
+    "raw_counts": {
+      "1": 120014,
+      "2": 71455,
+      "3": 35618,
+      "4": 5278,
+      "5": 124
+    }
+  },
+  "countries": {
+    "AF": 509,
+    "BF": 65,
+    "BI": 46,
+    "CD": 345,
+    "CM": 96,
+    "ET": 1040,
+    "GT": 353,
+    "HT": 174,
+    "KE": 640,
+    "MG": 154,
+    "ML": 115,
+    "MW": 83,
+    "MZ": 233,
+    "NE": 182,
+    "NG": 284,
+    "SD": 361,
+    "SO": 199,
+    "SS": 79,
+    "TD": 93,
+    "UG": 318,
+    "YE": 145,
+    "ZW": 204
+  },
+  "coordinates": {
+    "areas": 5718,
+    "max_abs_diff_vs_panel": 0.0
+  },
+  "static_invariance": {
+    "lat": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "lon": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_10000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_12000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_15000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_17000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_19000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_25000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_31000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_32000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_33000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_34000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_36000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_38000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_4000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_40000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_43000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_7000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "AEZ_9000": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "distance_to_river": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "elevation": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "sg_cec_5-15cm": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "sg_cfvo_5-15cm": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "sg_nitrogen_5-15cm": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "sg_phh2o_5-15cm": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "sg_soc_5-15cm": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "ruggedness": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    },
+    "slope": {
+      "areas_with_conflict": 0,
+      "missing_cells": 0
+    }
+  },
+  "fewsnet_agreement": {
+    "fewsnet_rows_dropped_null_key": 1,
+    "fews_ipc": {
+      "both": 259440,
+      "disagree": 0,
+      "panel_only": 0,
+      "fewsnet_only": 8785,
+      "fewsnet_only_by_month": {
+        "2009-07": 4292,
+        "2009-10": 4493
+      }
+    },
+    "fews_proj_near": {
+      "both": 233213,
+      "disagree": 0,
+      "panel_only": 0,
+      "fewsnet_only": 0,
+      "fewsnet_only_by_month": {}
+    },
+    "fews_proj_med": {
+      "both": 232489,
+      "disagree": 0,
+      "panel_only": 0,
+      "fewsnet_only": 0,
+      "fewsnet_only_by_month": {}
+    },
+    "resolution": "The panel is the model input and the sole truth/expert/history source. FEWSNET.csv agrees on every shared key; its extra truth rows predate the panel scaffold (2009) and are not used."
+  },
+  "infinite_source_cells": {
+    "Tair_zscore": 30780,
+    "Rainf_zscore": 30780
+  },
+  "infinite_policy": "The release converts +/-inf to NaN before max_plus imputation (preprocess.comp_impute); each estimator's imputer does the same."
+}

@@ -1,0 +1,15 @@
+{
+  "shapefile_polygons": 5718,
+  "crs": "EPSG:4326",
+  "invalid_geometries": 1,
+  "invalid_geometry_note": "used as released; adjacency uses touches() with a positive shared length",
+  "area_universe": "areas with at least one valid label (release setup_spatial_groups filters to labelled rows)",
+  "areas": 5716,
+  "areas_in_shapefile": 5716,
+  "adjacency_degree": {
+    "min": 0,
+    "max": 16,
+    "mean": 4.062631210636809,
+    "isolated": 654
+  }
+}

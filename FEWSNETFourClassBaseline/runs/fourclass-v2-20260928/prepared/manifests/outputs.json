@@ -1,0 +1,16 @@
+{
+  "geometry/FEWSNET_admin_code_lat_lon.csv": "a06be85849bb726a4505ed284bed14b100b61f998fb4586a6e14439aca8a4bcb",
+  "geometry/polygon_adjacency_cache.pkl": "d82b38caa806fe73c4067f13689fd5c4f953c667dc6132f9b25ad40dfe98414c",
+  "geometry/polygon_contiguity_info.pkl": "81e90a3211618c471e43ce7b782e51bd4e01a28ab67d18059d81d3792cf77c5b",
+  "ledgers/baselines.csv": "acf8184ccd7bba3b52ac9ce447bdd0a05723e939ed1eb2e0b32b3b0cad30fa86",
+  "ledgers/observations.csv": "c1ba4d2e4c84d035cb91760f1f589965563dca08e67a647c4c71aa357bb0b873",
+  "manifests/features.json": "5146319adf10f66b12934003b6cc02d857f7a9607d2bc53da2da82ca09852605",
+  "manifests/geometry.json": "5bccb423eb8ce63daab60495e3c63a52e07184ecfdd0c82d159ccb9f44247a93",
+  "manifests/preflight.json": "1aa3d963f6618e4c626224a19a4cfd643629fc2e75051d2892289d3fc52a1874",
+  "manifests/runtime.json": "92a67a06f61501adbff2c50deea40850d2dda8bc73f44a016c4479a7b01c5b9d",
+  "manifests/schedule.json": "00df50378c3aa299ed1bcedfa8dba1ae9bd64541ceb5c1f19b5cce0d38f679ca",
+  "manifests/sources.json": "d9619edbbe58ffd9a12c4637056726df2044f8bcaef4be76f5b4e1a17b348671",
+  "snapshot_h12.parquet": "1e165a3c882fc850944a5cc8b26420b2a9bc9484550b19f23d89693d24403812",
+  "snapshot_h4.parquet": "f8a353923095e83e419007aa7d69ebd6ec0c03001724cf56d2c7160ce36d1da5",
+  "snapshot_h8.parquet": "93229a029c9aed8f7376319d9f36d166412e6c25472e20e440bd65deb7d223b1"
+}

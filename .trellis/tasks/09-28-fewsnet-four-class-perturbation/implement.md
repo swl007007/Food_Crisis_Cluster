@@ -9,11 +9,16 @@ binary target.
 
 - Registered repository (preserve this exact spelling):
   `/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster`.
-- Verified live Claude pane `wF:p2`, session `18826b65-ca2f-4276-b70a-2888ebc93341`,
+- Verified live Claude pane `wF:p2`, session `ba823c27-909b-4deb-aecd-e92bf448c229`,
   terminal `term_65c8c701e80398`; register succeeded against this identity.
-  Pane displays `Opus 5 (1M context)`; the requested `5.5` version is not verified.
+  Rebound after the user replaced the stale runtime; the earlier `Opus 5`
+  display belonged to the superseded session, not this new session.
 - Controller boot succeeded in `wF:p3` and reported `running: true`.
   No active task run existed at setup; no base SHA has been established for this task.
+- Subsequent live verification after rebinding: the new executor started run
+  `321911af42cc46809237d7a003700ed9`, base SHA
+  `8a562720097f89c5c89e0cba0c92dd87c0bac2d5`; task is now `in_progress`.
+  The pre-start instructions below are retained as setup history; do not restart.
 - Next, the bound executor verifies current state, runs GitNexus detect_changes,
   commits these approved planning files, then runs the following from its own
   session before implementation (Codex has not committed or started this task):

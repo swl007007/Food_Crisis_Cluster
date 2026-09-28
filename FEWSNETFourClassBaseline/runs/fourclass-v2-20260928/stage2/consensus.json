@@ -1,0 +1,73 @@
+{
+  "candidates_scheduled": 108,
+  "candidates_completed": 27,
+  "candidates_skipped_empty": 81,
+  "positive_weight_candidates": 3,
+  "weight_rule": "max(0, logit(clip(F_part)) - logit(clip(F_pooled))), clip [1e-6, 1-1e-6] (D9)",
+  "consensus_pool": "general, fs1-fs3 together (month-specific consensus not run)",
+  "route": "learned_map",
+  "cluster_map": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\runs\\fourclass-v2-20260928\\stage2\\experiment\\knn_sparsification_results\\cluster_mapping_k40_nc13_general.csv",
+  "cluster_map_sha256": "fc2c919f3db6a8a8a77e6c8e2a1a6d2fdc65ee4996eac20300523c985ea91b46",
+  "recommended_clusters": 13,
+  "actual_clusters": 13,
+  "areas_in_scope": 5506,
+  "outlier_areas_1nn": 1177,
+  "connectivity": {
+    "n_components": 144,
+    "largest_component_size": 4329,
+    "n_outliers": 1177,
+    "largest_component_pct": 78.62332001452961
+  },
+  "similarity": {
+    "n_admin_codes": 5506,
+    "scope": "in_scope_only",
+    "admin_code_min": 0,
+    "admin_code_max": 5652,
+    "n_plans": 27,
+    "month_filter": null,
+    "sigma_degrees": 5.0,
+    "similarity_nonzero": 20433715,
+    "final_nonzero": 16462173,
+    "final_max": 1.0,
+    "final_mean": 0.05536508932709694
+  },
+  "steps": [
+    {
+      "script": "step1_merge_results.py",
+      "returncode": 0
+    },
+    {
+      "script": "step3_create_linked_tables.py",
+      "returncode": 0
+    },
+    {
+      "script": "step4_similarity_matrix.py",
+      "returncode": 0
+    },
+    {
+      "script": "step5_sparsification.py",
+      "returncode": 0
+    },
+    {
+      "script": "step6_complete_clustering_pipeline.py",
+      "returncode": 0
+    }
+  ],
+  "cluster_sizes": {
+    "0": 972,
+    "1": 517,
+    "2": 818,
+    "3": 154,
+    "4": 642,
+    "5": 147,
+    "6": 653,
+    "7": 176,
+    "8": 190,
+    "9": 143,
+    "10": 402,
+    "11": 279,
+    "12": 413
+  },
+  "scope_rule": "in-scope areas = any non-s-1 assignment in some candidate (step4 default)",
+  "admin_universe": "0..5717 (step3); out-of-scope areas are unmapped and use the pooled RF in Stage 3"
+}

@@ -1,0 +1,868 @@
+{
+  "scope": 1,
+  "horizon": 4,
+  "target_month": "2020-06",
+  "origin_month": "2020-02",
+  "train_label_months": [
+    "2017-03",
+    "2020-01"
+  ],
+  "train_label_months_observed": [
+    "2017-06",
+    "2017-10",
+    "2018-02",
+    "2018-06",
+    "2018-10",
+    "2019-02",
+    "2019-06",
+    "2019-10"
+  ],
+  "rows": {
+    "fitting": 32185,
+    "validation": 10729,
+    "heldout_target": 5506
+  },
+  "class_counts": {
+    "fitting": [
+      16434,
+      10166,
+      5249,
+      336
+    ],
+    "validation": [
+      5577,
+      3267,
+      1792,
+      93
+    ],
+    "heldout_target": [
+      1946,
+      2593,
+      922,
+      45
+    ]
+  },
+  "areas": {
+    "training": 5365,
+    "heldout_target": 5506,
+    "heldout_target_without_training_rows": 141
+  },
+  "inherited_restrictions": {
+    "training_restricted_to_target_month_areas": true,
+    "note": "customize.train_test_split_rolling_window keeps only training areas present in the target month; held-out areas without training rows route to the root."
+  },
+  "validation_split": {
+    "val_ratio": 0.2,
+    "min_val_per_group": 1,
+    "skip_singleton_groups": true,
+    "random_state": 42,
+    "groups_with_validation": 5365,
+    "singleton_groups_train_only": 0
+  },
+  "partition": {
+    "terminal_partitions": [
+      "00",
+      "01",
+      "1"
+    ],
+    "n_terminal": 3,
+    "accepted_splits": 2,
+    "decisions": [
+      {
+        "branch_id": "",
+        "depth": 0,
+        "outcome": "accepted",
+        "parent_macro_f1": "15047343531/18599840896",
+        "best_macro_f1": "1056020085933/1282301131840",
+        "gain": "5415311567928837327/372665578640386245760",
+        "scores": {
+          "parent_parent": "15047343531/18599840896",
+          "child_parent": "1056020085933/1282301131840",
+          "parent_child": "32720216575975/40609970452784",
+          "child_child": "20392553809/24861545280"
+        },
+        "selected_children": [
+          true,
+          false
+        ],
+        "n_groups": [
+          2156,
+          3209
+        ],
+        "rows_train": [
+          12936,
+          19249
+        ],
+        "rows_val": [
+          4312,
+          6417
+        ]
+      },
+      {
+        "branch_id": "0",
+        "depth": 1,
+        "outcome": "accepted",
+        "parent_macro_f1": "10275196643/16724662152",
+        "best_macro_f1": "38089251217/60440646060",
+        "gain": "1332527894209721867/84237448800175826760",
+        "scores": {
+          "parent_parent": "10275196643/16724662152",
+          "child_parent": "38089251217/60440646060",
+          "parent_child": "188693333/319588563",
+          "child_child": "213496549873/352451434450"
+        },
+        "selected_children": [
+          true,
+          false
+        ],
+        "n_groups": [
+          941,
+          1215
+        ],
+        "rows_train": [
+          5646,
+          7290
+        ],
+        "rows_val": [
+          1882,
+          2430
+        ]
+      },
+      {
+        "branch_id": "1",
+        "depth": 1,
+        "outcome": "rejected_gate",
+        "parent_macro_f1": "316793573069/361579543480",
+        "best_macro_f1": "316793573069/361579543480",
+        "gain": "0",
+        "scores": {
+          "parent_parent": "316793573069/361579543480",
+          "child_parent": "2272204983499/2597376072732",
+          "parent_child": "1740718374299/2013576086632",
+          "child_child": "162165188593/187885415760"
+        },
+        "selected_children": [
+          false,
+          false
+        ],
+        "n_groups": [
+          1497,
+          1712
+        ],
+        "rows_train": [
+          8978,
+          10271
+        ],
+        "rows_val": [
+          2993,
+          3424
+        ]
+      },
+      {
+        "branch_id": "00",
+        "depth": 2,
+        "outcome": "rejected_gate",
+        "parent_macro_f1": "123990973/243277026",
+        "best_macro_f1": "5215153/10047840",
+        "gain": "1271414101481/135800479606880",
+        "scores": {
+          "parent_parent": "123990973/243277026",
+          "child_parent": "5215153/10047840",
+          "parent_child": "8918951/17526600",
+          "child_child": "7320445621/14120240592"
+        },
+        "selected_children": [
+          false,
+          false
+        ],
+        "n_groups": [
+          397,
+          544
+        ],
+        "rows_train": [
+          2382,
+          3264
+        ],
+        "rows_val": [
+          794,
+          1088
+        ]
+      },
+      {
+        "branch_id": "01",
+        "depth": 2,
+        "outcome": "rejected_gate",
+        "parent_macro_f1": "30884873/37630632",
+        "best_macro_f1": "30884873/37630632",
+        "gain": "0",
+        "scores": {
+          "parent_parent": "30884873/37630632",
+          "child_parent": "331537981/404798856",
+          "parent_child": "1924528823/2723119256",
+          "child_child": "240914903/341341770"
+        },
+        "selected_children": [
+          false,
+          false
+        ],
+        "n_groups": [
+          523,
+          692
+        ],
+        "rows_train": [
+          3138,
+          4152
+        ],
+        "rows_val": [
+          1046,
+          1384
+        ]
+      }
+    ],
+    "gate": "strict fixed-four macro-F1 gain > 0.01 on the parent's validation rows; parent wins ties",
+    "terminal_checkpoint_routes": {
+      "00": {
+        "saved_as": "00",
+        "fit_seq": 4,
+        "trained_under": "0",
+        "real_rows": 5646,
+        "real_class_counts": [
+          3931,
+          1205,
+          451,
+          59
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "1bbdae63df9bdd36a96d2ef92a3c6b84e3949b25cbdf99193cc83f18eaaeb6fe"
+      },
+      "01": {
+        "saved_as": "01",
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 12936,
+        "real_class_counts": [
+          9973,
+          2030,
+          846,
+          87
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "d8c956b3c3c6cdea9053df9e8719477248c4cc5339c97dfb15bbde636020d584"
+      },
+      "1": {
+        "saved_as": "1",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 32185,
+        "real_class_counts": [
+          16434,
+          10166,
+          5249,
+          336
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+      }
+    },
+    "parent_routed_areas": {
+      "train_areas": 0,
+      "train_rows": 0,
+      "heldout_rows": 0,
+      "labels": [],
+      "note": "areas without validation rows are not in any accepted scan subset; they keep the parent branch and use the parent's checkpoint (routing and correspondence agree)"
+    },
+    "correspondence_source": "space_partitions/X_branch_id.npy == s_branch routing (checked)"
+  },
+  "scores": {
+    "macro_f1": 0.6065744329594919,
+    "macro_f1_base": 0.6011715961387197,
+    "partitioned": {
+      "n": 5506,
+      "macro_f1": 0.6065744329594919,
+      "accuracy": 0.7172175808209227,
+      "category_step_mae": 0.2920450417726117,
+      "per_class": {
+        "1": {
+          "support": 1946,
+          "predicted": 2423,
+          "tp": 1768,
+          "fp": 655,
+          "fn": 178,
+          "f1": 0.8093385214007782,
+          "precision": 0.7296739579034255,
+          "recall": 0.9085303186022611
+        },
+        "2": {
+          "support": 2593,
+          "predicted": 2061,
+          "tp": 1592,
+          "fp": 469,
+          "fn": 1001,
+          "f1": 0.6841426729694886,
+          "precision": 0.772440562833576,
+          "recall": 0.6139606633243347
+        },
+        "3": {
+          "support": 922,
+          "predicted": 1013,
+          "tp": 580,
+          "fp": 433,
+          "fn": 342,
+          "f1": 0.599483204134367,
+          "precision": 0.5725567620927937,
+          "recall": 0.6290672451193059
+        },
+        "4\u62165": {
+          "support": 45,
+          "predicted": 9,
+          "tp": 9,
+          "fp": 0,
+          "fn": 36,
+          "f1": 0.3333333333333333,
+          "precision": 1.0,
+          "recall": 0.2
+        }
+      },
+      "confusion_rows_truth_cols_pred": [
+        [
+          1768,
+          151,
+          27,
+          0
+        ],
+        [
+          631,
+          1592,
+          370,
+          0
+        ],
+        [
+          24,
+          318,
+          580,
+          0
+        ],
+        [
+          0,
+          0,
+          36,
+          9
+        ]
+      ]
+    },
+    "pooled": {
+      "n": 5506,
+      "macro_f1": 0.6011715961387197,
+      "accuracy": 0.7190337813294587,
+      "category_step_mae": 0.29258990192517254,
+      "per_class": {
+        "1": {
+          "support": 1946,
+          "predicted": 2428,
+          "tp": 1769,
+          "fp": 659,
+          "fn": 177,
+          "f1": 0.8088705989940558,
+          "precision": 0.7285831960461285,
+          "recall": 0.909044193216855
+        },
+        "2": {
+          "support": 2593,
+          "predicted": 2017,
+          "tp": 1582,
+          "fp": 435,
+          "fn": 1011,
+          "f1": 0.6863340563991324,
+          "precision": 0.7843331680713932,
+          "recall": 0.610104126494408
+        },
+        "3": {
+          "support": 922,
+          "predicted": 1053,
+          "tp": 600,
+          "fp": 453,
+          "fn": 322,
+          "f1": 0.6075949367088608,
+          "precision": 0.5698005698005698,
+          "recall": 0.6507592190889371
+        },
+        "4\u62165": {
+          "support": 45,
+          "predicted": 8,
+          "tp": 8,
+          "fp": 0,
+          "fn": 37,
+          "f1": 0.3018867924528302,
+          "precision": 1.0,
+          "recall": 0.17777777777777778
+        }
+      },
+      "confusion_rows_truth_cols_pred": [
+        [
+          1769,
+          144,
+          33,
+          0
+        ],
+        [
+          628,
+          1582,
+          383,
+          0
+        ],
+        [
+          31,
+          291,
+          600,
+          0
+        ],
+        [
+          0,
+          0,
+          37,
+          8
+        ]
+      ]
+    },
+    "note": "held-out target-month scores; NOT the within-window split-validation scores"
+  },
+  "fits": {
+    "georf_fit_log": [
+      {
+        "fit_seq": 0,
+        "trained_under": "",
+        "real_rows": 32185,
+        "real_class_counts": [
+          16434,
+          10166,
+          5249,
+          336
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+      },
+      {
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 32185,
+        "real_class_counts": [
+          16434,
+          10166,
+          5249,
+          336
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+      },
+      {
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 12936,
+        "real_class_counts": [
+          9973,
+          2030,
+          846,
+          87
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "d8c956b3c3c6cdea9053df9e8719477248c4cc5339c97dfb15bbde636020d584"
+      },
+      {
+        "fit_seq": 3,
+        "trained_under": "",
+        "real_rows": 19249,
+        "real_class_counts": [
+          6461,
+          8136,
+          4403,
+          249
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "fd3095f6a4e51193d918b2a0372df616c56219de0eaec007ebe79cb9b96511af"
+      },
+      {
+        "fit_seq": 4,
+        "trained_under": "0",
+        "real_rows": 5646,
+        "real_class_counts": [
+          3931,
+          1205,
+          451,
+          59
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "1bbdae63df9bdd36a96d2ef92a3c6b84e3949b25cbdf99193cc83f18eaaeb6fe"
+      },
+      {
+        "fit_seq": 5,
+        "trained_under": "0",
+        "real_rows": 7290,
+        "real_class_counts": [
+          6042,
+          825,
+          395,
+          28
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "67cc76238322f9856c55caafe3bea84c386d91d874d5a4326e1c6b9eae346080"
+      },
+      {
+        "fit_seq": 6,
+        "trained_under": "1",
+        "real_rows": 8978,
+        "real_class_counts": [
+          1431,
+          5515,
+          1982,
+          50
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "7201748ec61bcf66f617718aaf15260a4267e30bba2bf8cd0475ecc17e7ff390"
+      },
+      {
+        "fit_seq": 7,
+        "trained_under": "1",
+        "real_rows": 10271,
+        "real_class_counts": [
+          5030,
+          2621,
+          2421,
+          199
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5e22269b318a74c514b4a969dbc29eab6fe49cbd20d6cc06cd5187bc4fcfd63b"
+      },
+      {
+        "fit_seq": 8,
+        "trained_under": "00",
+        "real_rows": 2382,
+        "real_class_counts": [
+          1282,
+          854,
+          235,
+          11
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "b537a989c007236ff54fc25bb9437b9b86922926036e318853213770632de15d"
+      },
+      {
+        "fit_seq": 9,
+        "trained_under": "00",
+        "real_rows": 3264,
+        "real_class_counts": [
+          2649,
+          351,
+          216,
+          48
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5125913537acbc9b67cdb354c52bd8dafa05a1131fe8ea9f32c74fe88306297b"
+      },
+      {
+        "fit_seq": 10,
+        "trained_under": "01",
+        "real_rows": 3138,
+        "real_class_counts": [
+          2692,
+          305,
+          132,
+          9
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "d10964d3fc13123757b6f4061f9526eb0e295f4486423f84e7bdf2c5860abc94"
+      },
+      {
+        "fit_seq": 11,
+        "trained_under": "01",
+        "real_rows": 4152,
+        "real_class_counts": [
+          3350,
+          520,
+          263,
+          19
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "35e935d0b28e9263fa863184fbd7b4eacf31214253644d8d275e75ebeecf8761"
+      }
+    ],
+    "georf_saved_log": [
+      {
+        "saved_as": "",
+        "fit_seq": 0,
+        "trained_under": "",
+        "real_rows": 32185,
+        "real_class_counts": [
+          16434,
+          10166,
+          5249,
+          336
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+      },
+      {
+        "saved_as": "",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 32185,
+        "real_class_counts": [
+          16434,
+          10166,
+          5249,
+          336
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+      },
+      {
+        "saved_as": "0",
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 12936,
+        "real_class_counts": [
+          9973,
+          2030,
+          846,
+          87
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "d8c956b3c3c6cdea9053df9e8719477248c4cc5339c97dfb15bbde636020d584"
+      },
+      {
+        "saved_as": "1",
+        "fit_seq": 3,
+        "trained_under": "",
+        "real_rows": 19249,
+        "real_class_counts": [
+          6461,
+          8136,
+          4403,
+          249
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "fd3095f6a4e51193d918b2a0372df616c56219de0eaec007ebe79cb9b96511af"
+      },
+      {
+        "saved_as": "1",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 32185,
+        "real_class_counts": [
+          16434,
+          10166,
+          5249,
+          336
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+      },
+      {
+        "saved_as": "00",
+        "fit_seq": 4,
+        "trained_under": "0",
+        "real_rows": 5646,
+        "real_class_counts": [
+          3931,
+          1205,
+          451,
+          59
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "1bbdae63df9bdd36a96d2ef92a3c6b84e3949b25cbdf99193cc83f18eaaeb6fe"
+      },
+      {
+        "saved_as": "01",
+        "fit_seq": 5,
+        "trained_under": "0",
+        "real_rows": 7290,
+        "real_class_counts": [
+          6042,
+          825,
+          395,
+          28
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "67cc76238322f9856c55caafe3bea84c386d91d874d5a4326e1c6b9eae346080"
+      },
+      {
+        "saved_as": "01",
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 12936,
+        "real_class_counts": [
+          9973,
+          2030,
+          846,
+          87
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "d8c956b3c3c6cdea9053df9e8719477248c4cc5339c97dfb15bbde636020d584"
+      },
+      {
+        "saved_as": "10",
+        "fit_seq": 6,
+        "trained_under": "1",
+        "real_rows": 8978,
+        "real_class_counts": [
+          1431,
+          5515,
+          1982,
+          50
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "7201748ec61bcf66f617718aaf15260a4267e30bba2bf8cd0475ecc17e7ff390"
+      },
+      {
+        "saved_as": "11",
+        "fit_seq": 7,
+        "trained_under": "1",
+        "real_rows": 10271,
+        "real_class_counts": [
+          5030,
+          2621,
+          2421,
+          199
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5e22269b318a74c514b4a969dbc29eab6fe49cbd20d6cc06cd5187bc4fcfd63b"
+      },
+      {
+        "saved_as": "000",
+        "fit_seq": 8,
+        "trained_under": "00",
+        "real_rows": 2382,
+        "real_class_counts": [
+          1282,
+          854,
+          235,
+          11
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "b537a989c007236ff54fc25bb9437b9b86922926036e318853213770632de15d"
+      },
+      {
+        "saved_as": "001",
+        "fit_seq": 9,
+        "trained_under": "00",
+        "real_rows": 3264,
+        "real_class_counts": [
+          2649,
+          351,
+          216,
+          48
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "5125913537acbc9b67cdb354c52bd8dafa05a1131fe8ea9f32c74fe88306297b"
+      },
+      {
+        "saved_as": "010",
+        "fit_seq": 10,
+        "trained_under": "01",
+        "real_rows": 3138,
+        "real_class_counts": [
+          2692,
+          305,
+          132,
+          9
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "d10964d3fc13123757b6f4061f9526eb0e295f4486423f84e7bdf2c5860abc94"
+      },
+      {
+        "saved_as": "011",
+        "fit_seq": 11,
+        "trained_under": "01",
+        "real_rows": 4152,
+        "real_class_counts": [
+          3350,
+          520,
+          263,
+          19
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "35e935d0b28e9263fa863184fbd7b4eacf31214253644d8d275e75ebeecf8761"
+      }
+    ],
+    "pooled_eval_fit": {
+      "fit_seq": 0,
+      "trained_under": "eval",
+      "real_rows": 32185,
+      "real_class_counts": [
+        16434,
+        10166,
+        5249,
+        336
+      ],
+      "pseudo_rows": 4,
+      "imputer_sha256": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+    },
+    "pseudo_rows_per_fit": 4,
+    "pseudo_row_rule": "one zero-feature row per class appended after real-row imputation"
+  },
+  "imputers": {
+    "root": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd",
+    "pooled_eval": "5d206d621ea18ee4b3d2feffddaac194a60a34c4783c15565973ccfeb5b321dd"
+  },
+  "estimator_params": {
+    "bootstrap": true,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "n_estimators": 100,
+    "random_state": 5
+  },
+  "config": {
+    "MIN_DEPTH": 1,
+    "MAX_DEPTH": 6,
+    "NUM_CLASS": 4,
+    "GOVERNING_METRIC": "macro_f1",
+    "MIN_MACRO_F1_IMPROVEMENT_THRESHOLD": 0.01,
+    "MIN_BRANCH_SAMPLE_SIZE": 0,
+    "MIN_SCAN_CLASS_SAMPLE": 0,
+    "CONTIGUITY": true,
+    "REFINE_TIMES": 3,
+    "FEATURE_DROP": {
+      "enable": false,
+      "cols": [
+        "year",
+        "month",
+        "fews_ha",
+        "IPC_admin_code",
+        "ISO_encoded",
+        "years"
+      ],
+      "patterns": []
+    },
+    "N_JOBS": 4,
+    "RUN_PRE_PARTITION_DIAGNOSTIC": false
+  },
+  "module_locations": {
+    "config": "config.py",
+    "src": "src\\__init__.py",
+    "src.customize.customize": "src\\customize\\customize.py",
+    "src.feature.fourclass_features": "src\\feature\\fourclass_features.py",
+    "src.helper.helper": "src\\helper\\helper.py",
+    "src.metrics.fourclass": "src\\metrics\\fourclass.py",
+    "src.metrics.metrics": "src\\metrics\\metrics.py",
+    "src.model.model_RF": "src\\model\\model_RF.py",
+    "src.initialization.initialization": "src\\initialization\\initialization.py",
+    "src.utils.split": "src\\utils\\split.py",
+    "src.model.train_branch": "src\\model\\train_branch.py",
+    "src.vis.visualization": "src\\vis\\visualization.py",
+    "src.partition.partition_opt": "src\\partition\\partition_opt.py",
+    "src.tests.static_table": "src\\tests\\static_table.py",
+    "src.tests.sig_test": "src\\tests\\sig_test.py",
+    "src.partition.transformation": "src\\partition\\transformation.py",
+    "src.model.GeoRF": "src\\model\\GeoRF.py",
+    "src.utils.lag_schedules": "src\\utils\\lag_schedules.py",
+    "src.adjacency.adjacency_utils": "src\\adjacency\\adjacency_utils.py",
+    "config_visual": "config_visual.py",
+    "src.merge.terminal": "src\\merge\\terminal.py",
+    "src.vis.visualization_fix": "src\\vis\\visualization_fix.py"
+  },
+  "timings": {
+    "fit_seconds": 22.9,
+    "total_seconds": 27.26
+  }
+}

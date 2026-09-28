@@ -1,0 +1,115 @@
+{
+  "finished_utc": "2026-09-28T19:34:15.215752+00:00",
+  "scope": 2,
+  "horizon": 8,
+  "months": [
+    "2021-09",
+    "2024-12"
+  ],
+  "only_month": "2024-10",
+  "data": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\runs\\fourclass-v2-20260928\\prepared\\snapshot_h8.parquet",
+  "data_sha256": "93229a029c9aed8f7376319d9f36d166412e6c25472e20e440bd65deb7d223b1",
+  "consensus": {
+    "candidates_scheduled": 108,
+    "candidates_completed": 27,
+    "candidates_skipped_empty": 81,
+    "positive_weight_candidates": 3,
+    "weight_rule": "max(0, logit(clip(F_part)) - logit(clip(F_pooled))), clip [1e-6, 1-1e-6] (D9)",
+    "consensus_pool": "general, fs1-fs3 together (month-specific consensus not run)",
+    "route": "learned_map",
+    "cluster_map": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\runs\\fourclass-v2-20260928\\stage2\\experiment\\knn_sparsification_results\\cluster_mapping_k40_nc13_general.csv",
+    "cluster_map_sha256": "fc2c919f3db6a8a8a77e6c8e2a1a6d2fdc65ee4996eac20300523c985ea91b46",
+    "recommended_clusters": 13,
+    "actual_clusters": 13,
+    "areas_in_scope": 5506,
+    "outlier_areas_1nn": 1177,
+    "connectivity": {
+      "n_components": 144,
+      "largest_component_size": 4329,
+      "n_outliers": 1177,
+      "largest_component_pct": 78.62332001452961
+    },
+    "similarity": {
+      "n_admin_codes": 5506,
+      "scope": "in_scope_only",
+      "admin_code_min": 0,
+      "admin_code_max": 5652,
+      "n_plans": 27,
+      "month_filter": null,
+      "sigma_degrees": 5.0,
+      "similarity_nonzero": 20433715,
+      "final_nonzero": 16462173,
+      "final_max": 1.0,
+      "final_mean": 0.05536508932709694
+    },
+    "steps": [
+      {
+        "script": "step1_merge_results.py",
+        "returncode": 0
+      },
+      {
+        "script": "step3_create_linked_tables.py",
+        "returncode": 0
+      },
+      {
+        "script": "step4_similarity_matrix.py",
+        "returncode": 0
+      },
+      {
+        "script": "step5_sparsification.py",
+        "returncode": 0
+      },
+      {
+        "script": "step6_complete_clustering_pipeline.py",
+        "returncode": 0
+      }
+    ],
+    "cluster_sizes": {
+      "0": 972,
+      "1": 517,
+      "2": 818,
+      "3": 154,
+      "4": 642,
+      "5": 147,
+      "6": 653,
+      "7": 176,
+      "8": 190,
+      "9": 143,
+      "10": 402,
+      "11": 279,
+      "12": 413
+    },
+    "scope_rule": "in-scope areas = any non-s-1 assignment in some candidate (step4 default)",
+    "admin_universe": "0..5717 (step3); out-of-scope areas are unmapped and use the pooled RF in Stage 3"
+  },
+  "coverage": {
+    "gate_population": "all labelled panel rows (release definition)",
+    "unmapped_pct_gate": 0.4567530064754856,
+    "unmapped_pct_evaluated_targets_disclosed": 2.0733500066820674,
+    "unmapped_areas_evaluated": 208,
+    "threshold_pct": 2.0,
+    "unmapped_route": "pooled RF of the same fold"
+  },
+  "rf_params": {
+    "n_estimators": 100,
+    "max_depth": null,
+    "random_state": 5,
+    "class_weight": null
+  },
+  "n_jobs": 8,
+  "min_partition_samples": 50,
+  "decision": "fixed-axis argmax; ties to the first class; no threshold calibration",
+  "pseudo_rows": 0,
+  "smote": false,
+  "folds": [
+    {
+      "target_month": "2024-10",
+      "origin_month": "2024-02",
+      "status": "fitted"
+    }
+  ],
+  "fitted_folds": 1,
+  "skipped_empty": 0,
+  "prediction_rows": 5336,
+  "python": "3.12.10"
+}
