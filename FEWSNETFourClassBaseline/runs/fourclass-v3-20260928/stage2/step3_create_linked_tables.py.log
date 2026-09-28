@@ -1,0 +1,133 @@
+================================================================================
+CREATING LINKED TABLES FROM MERGED CORRESPONDENCE TABLES
+================================================================================
+Experiment directory: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\runs\fourclass-v3-20260928\stage2\experiment
+Loading merged correspondence tables from C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\runs\fourclass-v3-20260928\stage2\experiment\merged_correspondence_tables.pkl...
+Loaded 27 merged correspondence tables
+
+Creating main index table...
+Main table created with 27 rows
+Columns: ['name', 'variant', 'year', 'month', 'forecasting_scope', 'macro_f1', 'macro_f1_base']
+
+Creating partition tables...
+  GeoRF_2018_02_fs1: 5363/5718 admin codes have partition assignments, 355 filled with 's-1'
+  GeoRF_2018_06_fs1: 5364/5718 admin codes have partition assignments, 354 filled with 's-1'
+  GeoRF_2018_10_fs1: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2018_02_fs2: 5361/5718 admin codes have partition assignments, 357 filled with 's-1'
+  GeoRF_2018_06_fs2: 5363/5718 admin codes have partition assignments, 355 filled with 's-1'
+  GeoRF_2018_10_fs2: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2018_02_fs3: 5359/5718 admin codes have partition assignments, 359 filled with 's-1'
+  GeoRF_2018_06_fs3: 5361/5718 admin codes have partition assignments, 357 filled with 's-1'
+  GeoRF_2018_10_fs3: 5364/5718 admin codes have partition assignments, 354 filled with 's-1'
+  GeoRF_2019_02_fs1: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_06_fs1: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_10_fs1: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_02_fs2: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_06_fs2: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_10_fs2: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_02_fs3: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_06_fs3: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2019_10_fs3: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_02_fs1: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_06_fs1: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_10_fs1: 5427/5718 admin codes have partition assignments, 291 filled with 's-1'
+  GeoRF_2020_02_fs2: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_06_fs2: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_10_fs2: 5286/5718 admin codes have partition assignments, 432 filled with 's-1'
+  GeoRF_2020_02_fs3: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_06_fs3: 5365/5718 admin codes have partition assignments, 353 filled with 's-1'
+  GeoRF_2020_10_fs3: 5286/5718 admin codes have partition assignments, 432 filled with 's-1'
+
+Successfully created 27 partition tables
+Saved to: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\runs\fourclass-v3-20260928\stage2\experiment\linked_tables\partitions
+
+Main index table saved to: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\runs\fourclass-v3-20260928\stage2\experiment\linked_tables\main_index.csv
+
+Table link mapping saved to: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\runs\fourclass-v3-20260928\stage2\experiment\linked_tables\table_links.csv
+
+Summary report saved to: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\runs\fourclass-v3-20260928\stage2\experiment\linked_tables\summary_report.txt
+
+================================================================================
+LINKED TABLES CREATION SUMMARY
+================================================================================
+
+1. MAIN INDEX TABLE
+--------------------------------------------------------------------------------
+   File: main_index.csv
+   Rows: 27
+   Columns: name, variant, year, month, forecasting_scope, macro_f1, macro_f1_base
+
+   Summary by variant:
+     - GeoRF: 27
+
+   Summary by year:
+     - 2018: 9
+     - 2019: 9
+     - 2020: 9
+
+   Summary by forecasting scope:
+     - fs1: 9
+     - fs2: 9
+     - fs3: 9
+
+2. PARTITION TABLES
+--------------------------------------------------------------------------------
+   Directory: partitions/
+   Number of files: 27
+   Naming pattern: {name}_partition.csv
+   Columns: FEWSNET_admin_code, partition_id
+   Admin code range: 0 - 5717 (5718 total codes)
+   Missing partition indicator: 's-1'
+
+3. F1 SCORE STATISTICS
+--------------------------------------------------------------------------------
+   Mean macro_f1: 0.5591
+   Mean macro_f1_base: 0.5597
+   Mean improvement: -0.0006
+
+   By variant:
+     GeoRF:
+       macro_f1: 0.5591
+       macro_f1_base: 0.5597
+       improvement: -0.0006
+
+4. FILE STRUCTURE
+--------------------------------------------------------------------------------
+   linked_tables/
+   |-- main_index.csv                    # Main index table
+   |-- table_links.csv                   # Mapping between tables
+   |-- summary_report.txt                # This report
+   `-- partitions/
+       |-- GeoRF_2021_02_fs1_partition.csv
+       |-- GeoRF_2021_02_fs2_partition.csv
+       `-- ... (70 partition tables)
+
+5. USAGE INSTRUCTIONS
+--------------------------------------------------------------------------------
+   To use the linked tables:
+
+   import pandas as pd
+
+   # Load main index table
+   main_df = pd.read_csv('linked_tables/main_index.csv')
+
+   # Load specific partition table
+   name = 'GeoRF_2021_02_fs1'
+   partition_df = pd.read_csv(f'linked_tables/partitions/{name}_partition.csv')
+
+   # Or use the mapping file
+   links = pd.read_csv('linked_tables/table_links.csv')
+   partition_file = links[links['name'] == name]['partition_table_path'].iloc[0]
+   partition_df = pd.read_csv(f'linked_tables/{partition_file}')
+
+================================================================================
+
+================================================================================
+LINKED TABLES CREATION COMPLETED SUCCESSFULLY
+================================================================================
+
+All files saved to: linked_tables/
+  - main_index.csv: Main table with metadata and metrics
+  - table_links.csv: Mapping file
+  - summary_report.txt: Detailed summary report
+  - partitions/: Directory containing all partition tables

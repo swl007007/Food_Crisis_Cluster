@@ -6,8 +6,8 @@ persistence and the calendar-aligned FEWS NET expert (4 and 8 months only).
 
 Specification: `.trellis/tasks/09-28-fewsnet-four-class-perturbation/` (`prd.md`
 R1-R15/A1-A9, `design.md`, `feature-contract.md`, `feature-schema.json`).
-Execution record: that task's `IMPLEMENTATION_LOG.md` and `RESULTS.md`.
-Authoritative run: `runs/fourclass-v2-20260928/`.
+Execution record: `.trellis/tasks/archive/2026-09/09-28-fewsnet-four-class-perturbation/` (`IMPLEMENTATION_LOG.md`, `RESULTS.md`); audit repair in `.trellis/tasks/09-28-fourclass-audit-repair/`..
+Authoritative run: `runs/fourclass-v3-20260928/`.
 
 This is a four-class baseline with explicit preprocessing and feature changes. It is
 **not** a single-variable perturbation of the old binary experiment; no gain or loss
@@ -57,7 +57,7 @@ scikit-learn 1.6.1, scipy 1.15.2, geopandas 1.0.1, shapely 2.1.0, polars 1.27.1;
 preparation refuses to run on any other versions):
 
 ```bash
-python -B tests/test_baseline.py                  # 30 focused contract tests
+python -B tests/test_baseline.py                  # 34 focused contract tests
 ./run_all.sh runs/<fresh-id>                        # ~15 minutes on 32 GB
 python -B scripts/verify_fourclass.py --run-dir runs/<fresh-id>
 ```
@@ -115,3 +115,13 @@ the release is recorded in `prepared/manifests/sources.json` (`package.modified`
 - max_plus with a negative column maximum can fill inside the observed range.
 - Source-month alignment is not verified real-time availability; the 2021-2024
   evaluation years had been inspected before this study.
+
+## Run integrity (audit repair A01/A02)
+
+No stage continues into existing output. Each stage writes its completion record last
+(`prepared/manifests/identity.json`, `stage1/folds/*/completion.json`,
+`stage2/consensus.json`, `stage3/h*/folds/*/fold.json`, `stage3/h*/run_manifest.json`),
+binding code, runtime, upstream identity and the SHA-256 of every output; downstream
+stages accept inputs only through those records. Every Stage 3 pooled/local estimator is
+saved as `stage3/h*/folds/*/models/*.pkl.xz` (forest + imputer + feature order + fit
+identity) and replay loads them without refitting.

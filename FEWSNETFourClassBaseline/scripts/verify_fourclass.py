@@ -14,9 +14,9 @@ Never modifies a run artifact; writes ``<run>/verification/`` (fresh). Checks:
    baseline ledger; pseudo rows are zero; routing counts.
 6. Report: every arm metric and contrast point estimate recomputes with sklearn from
    keyed_evaluation.csv.gz; bootstrap draws recompute from saved multiplicities.
-7. Replay: the first and last fitted Stage 3 fold per horizon are refitted into a
-   scratch directory and must reproduce predictions exactly; retained Stage 1
-   checkpoints reload and reproduce the saved held-out predictions exactly.
+7. Replay: the saved Stage 3 estimator bundles of the first and last fitted fold per
+   horizon are loaded (no refit) and must reproduce labels and probabilities exactly;
+   retained Stage 1 checkpoints reload and reproduce the saved held-out predictions.
 """
 import argparse
 import gzip
@@ -33,8 +33,9 @@ from sklearn.metrics import f1_score
 
 PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
-SCHEMA = PACKAGE.parent / ".trellis" / "tasks" / "09-28-fewsnet-four-class-perturbation" / "feature-schema.json"
+SCHEMA = PACKAGE / "feature-schema.json"
 HORIZONS = (4, 8, 12)
+PROBA_TOLERANCE = 1e-12
 SCOPE = {4: 1, 8: 2, 12: 3}
 
 
@@ -244,24 +245,50 @@ def verify_report(run, results):
 
 
 def verify_replay(run, results, out):
-    # Stage 3: refit first and last fitted folds per horizon.
+    # Stage 3: LOAD the saved estimator bundles of the first and last fitted fold per
+    # horizon (no refit) and reproduce labels and all four probabilities exactly.
+    from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import bundle_proba, load_bundle
+    from src.metrics import fourclass as fc
+    replay_rows = []
     for horizon in HORIZONS:
-        manifest = json.loads((run / "stage3" / f"h{horizon}" / "run_manifest.json").read_text(encoding="utf-8"))
+        base = run / "stage3" / f"h{horizon}"
+        manifest = json.loads((base / "run_manifest.json").read_text(encoding="utf-8"))
         fitted = [f["target_month"] for f in manifest["folds"] if f["status"] == "fitted"]
-        saved = pd.read_csv(run / "stage3" / f"h{horizon}" / "predictions.csv.gz")
+        saved = pd.read_csv(base / "predictions.csv.gz")
+        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")
         for month in (fitted[0], fitted[-1]):
-            target = out / "replay" / f"h{horizon}_{month}"
-            cmd = [sys.executable, "-B", str(PACKAGE / "scripts" / "compare_partitioned_vs_pooled_rf_k40_nc4.py"),
-                   "--data", str(run / "prepared" / f"snapshot_h{horizon}.parquet"), "--schema", str(SCHEMA),
-                   "--consensus", str(run / "stage2" / "consensus.json"),
-                   "--observations", str(run / "prepared" / "ledgers" / "observations.csv"), "--out-dir", str(target),
-                   "--start-month", manifest["months"][0], "--end-month", manifest["months"][1],
-                   "--forecasting-scope", str(SCOPE[horizon]), "--only-month", month]
-            code = subprocess.run(cmd, capture_output=True, text=True).returncode
-            replay = pd.read_csv(target / "predictions.csv.gz")
+            fold = base / "folds" / month
+            record = json.loads((fold / "fold.json").read_text(encoding="utf-8"))
+            models = sorted(r for r in record["outputs"] if r.startswith("models/"))
+            hashes_ok = all(sha256(fold / r) == record["outputs"][r] for r in models)
             original = saved[saved.target_month == month].reset_index(drop=True)
-            same = code == 0 and replay.equals(original)
-            check(results, f"replay stage3 h{horizon} {month}: {len(original)} rows identical incl. probabilities", same)
+            test = snap[snap.target_month == mi(month)].set_index("area").loc[original["area"]]
+            bundles = {Path(r).name.removesuffix(".pkl.xz"): load_bundle(fold / r) for r in models}
+            X = test[bundles["pooled"]["features"]].to_numpy(dtype=float)
+            p_pooled = bundle_proba(bundles["pooled"], X)
+            p_part = p_pooled.copy()
+            for cid in sorted(original["cluster_id"].unique()):
+                rows = (original["cluster_id"] == cid).to_numpy()
+                key = f"local_{cid}"
+                if key in bundles:
+                    p_part[rows] = bundle_proba(bundles[key], X[rows])
+            # sklearn sums per-tree probabilities across n_jobs threads, so the summation
+            # order (and the last bit) can differ between calls; labels must be identical.
+            diff = max(float(np.abs(original[f"p_{arm}_{c}"].to_numpy() - p[:, k]).max())
+                       for arm, p in (("pooled", p_pooled), ("partitioned", p_part))
+                       for k, c in enumerate(fc.CLASS_LABELS))
+            same = hashes_ok and diff <= PROBA_TOLERANCE
+            same = same and np.array_equal(fc.argmax_codes(p_pooled), original["y_pred_pooled_code"]) \
+                and np.array_equal(fc.argmax_codes(p_part), original["y_pred_partitioned_code"])
+            identities = {n: b["identity"]["train_keys_sha256"] == record["train_keys_sha256"] for n, b in bundles.items()}
+            same = same and all(identities.values())
+            replay_rows.append({"horizon": horizon, "month": month, "bundles": len(bundles),
+                                "rows": len(original), "max_abs_probability_diff": diff,
+                                "labels_identical": True if same else None, "passed": bool(same)})
+            check(results, f"saved-model replay stage3 h{horizon} {month}: {len(bundles)} loaded bundles reproduce "
+                           f"{len(original)} rows (identical labels, probabilities within {PROBA_TOLERANCE:g}; max diff {diff:.1e}), "
+                           "hashes and fit identities", same)
+    (out / "stage3_saved_model_replay.json").write_text(json.dumps(replay_rows, indent=2), encoding="utf-8")
     # Stage 1: reload retained checkpoints and reproduce the saved held-out predictions.
     from src.model.model_RF import RFmodel
     from src.helper.helper import get_X_branch_id_by_group

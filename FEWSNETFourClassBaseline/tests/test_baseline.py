@@ -34,6 +34,8 @@ from scripts.step4_similarity_matrix import compute_plan_weights, load_lat_lon
 from scripts.step1_merge_results import MODEL_CONFIG, load_results_table
 
 SCHEMA = prep.SCHEMA_PATH
+from scripts import run_stage1 as stage1  # noqa: E402
+from src.utils import run_identity as rid  # noqa: E402
 
 
 def m(label):
@@ -420,6 +422,26 @@ class Stage3Routing(unittest.TestCase):
         self.assertEqual(preds.filter(like='p_partitioned_').shape[1], 4)
         np.testing.assert_allclose(preds.filter(like='p_pooled_').sum(axis=1), 1)
 
+    def test_saved_bundles_reproduce_probabilities(self):
+        snap, features = self.snapshot(n_areas=8)
+        clusters = {0: 0, 1: 0, 2: 1, 6: 1, 3: 2, 4: 2, 7: 3}
+        with patch.dict(compare.RF_PARAMS, {'n_estimators': 5}):
+            preds, record, extras = compare.fit_fold(snap, features, pd.Period('2021-06', 'M'), 4, clusters)
+        self.assertEqual(sorted(extras['bundles']), ['local_0', 'local_1', 'local_2', 'pooled'])
+        with tempfile.TemporaryDirectory() as tmp:
+            for name, bundle in extras['bundles'].items():
+                compare.save_bundle(Path(tmp) / f'{name}.pkl.xz', bundle)
+            loaded = {n: compare.load_bundle(Path(tmp) / f'{n}.pkl.xz') for n in extras['bundles']}
+        test = snap[snap.target_month == m('2021-06')]
+        X = test[features].to_numpy(dtype=float)
+        p = compare.bundle_proba(loaded['pooled'], X)
+        np.testing.assert_array_equal(p, preds.filter(like='p_pooled_').to_numpy())
+        rows = (preds['cluster_id'] == 0).to_numpy()
+        np.testing.assert_array_equal(compare.bundle_proba(loaded['local_0'], X[rows]),
+                                      preds.loc[rows].filter(like='p_partitioned_').to_numpy())
+        self.assertEqual(loaded['local_0']['identity']['train_keys_sha256'], record['train_keys_sha256'])
+        self.assertEqual(loaded['pooled']['features'], features)
+
     def test_local_fit_uses_its_own_imputer(self):
         X = np.array([[1.0], [np.nan], [2.0], [np.nan]])
         y = np.array([0, 1, 0, 1])
@@ -434,6 +456,91 @@ class Stage3Routing(unittest.TestCase):
         snap = snap[snap['target_month'] >= m('2021-06')]
         with self.assertRaises(RuntimeError):
             compare.fit_fold(snap, features, pd.Period('2021-06', 'M'), 4, None)
+
+
+def make_prepared_identity(root):
+    prepared = root / 'prepared'
+    (prepared / 'manifests').mkdir(parents=True, exist_ok=True)
+    rid.write_json_atomic(prepared / 'manifests' / 'outputs.json', rid.output_hashes(prepared))
+    rid.write_json_atomic(prepared / 'manifests' / 'identity.json', {
+        'stage': 'prepare', 'code': rid.code_identity(), 'runtime': rid.runtime_identity(),
+        'outputs_sha256': rid.file_sha256(prepared / 'manifests' / 'outputs.json')})
+
+
+class Continuation(unittest.TestCase):
+    """Audit A02: no fold is accepted or skipped on a completion filename alone."""
+
+    def completed_run(self, tmp, retain=False):
+        run = Path(tmp) / 'run'
+        (run / 'prepared' / 'manifests').mkdir(parents=True)
+        (run / 'prepared' / 'snapshot.bin').write_bytes(b'snapshot')
+        make_prepared_identity(run)
+        prepared = rid.require_prepared(run)
+        name, term = 'fs1_2018-02', '2018-02'
+        paths = stage1.handoff_paths(run, 1, term)
+        paths['archive'].mkdir(parents=True)
+        (paths['archive'] / 'correspondence_table_2018-02.csv').write_text('a')
+        paths['metrics'].write_text('m')
+        paths['predictions'].write_text('p')
+        fold = run / 'stage1' / 'folds' / name
+        fold.mkdir(parents=True)
+        (fold / 'candidate.json').write_text('{}')
+        if retain:
+            (run / 'stage1' / 'retained' / name / 'checkpoints').mkdir(parents=True)
+            (run / 'stage1' / 'retained' / name / 'checkpoints' / 'rf_').write_bytes(b'model')
+        rid.write_json_atomic(fold / 'completion.json', {
+            'fold': name, 'prepared': prepared['outputs_sha256'], 'code': rid.code_identity(),
+            'runtime': rid.runtime_identity(), 'retain': retain,
+            'outputs': stage1.fold_outputs(run, name, 1, term, retain)})
+        return run, name, prepared
+
+    def test_forged_marker_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp) / 'run'
+            (run / 'stage1' / 'folds' / 'fs1_2018-02').mkdir(parents=True)
+            (run / 'stage1' / 'folds' / 'fs1_2018-02' / 'candidate.json').write_text('{}')
+            fold = {'scope': 1, 'target_month': '2018-02'}
+            with self.assertRaises(FileExistsError):
+                stage1.run_fold(run, fold, 'NO_EXECUTABLE', True, {'outputs_sha256': 'x'})
+            with self.assertRaises(RuntimeError):
+                stage1.verify_fold(run, 'fs1_2018-02', {'outputs_sha256': 'x'})
+            with self.assertRaises(RuntimeError):
+                rid.require_prepared(run)
+
+    def test_complete_fold_verifies_and_every_breach_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run, name, prepared = self.completed_run(tmp, retain=True)
+            stage1.verify_fold(run, name, prepared)
+            with self.assertRaises(FileExistsError):  # never continued, even when complete
+                stage1.run_fold(run, {'scope': 1, 'target_month': '2018-02'}, 'X', True, prepared)
+            with self.assertRaises(RuntimeError):     # different preparation identity
+                stage1.verify_fold(run, name, {**prepared, 'outputs_sha256': 'other'})
+            (run / 'stage1' / 'retained' / name / 'checkpoints' / 'rf_').unlink()
+            with self.assertRaises(RuntimeError):     # missing retained checkpoint
+                stage1.verify_fold(run, name, prepared)
+        with tempfile.TemporaryDirectory() as tmp:
+            run, name, prepared = self.completed_run(tmp)
+            stage1.handoff_paths(run, 1, '2018-02')['metrics'].write_text('changed')
+            with self.assertRaises(RuntimeError):     # changed handoff output
+                stage1.verify_fold(run, name, prepared)
+        with tempfile.TemporaryDirectory() as tmp:
+            run, name, prepared = self.completed_run(tmp)
+            (run / 'prepared' / 'snapshot.bin').write_bytes(b'other input')
+            with self.assertRaises(RuntimeError):     # changed prepared input
+                rid.require_prepared(run)
+        with tempfile.TemporaryDirectory() as tmp:
+            run, name, prepared = self.completed_run(tmp)
+            record = json.loads((run / 'stage1' / 'folds' / name / 'completion.json').read_text())
+            record['code'] = {'sha256': 'older', 'files': 1}
+            rid.write_json_atomic(run / 'stage1' / 'folds' / name / 'completion.json', record)
+            with self.assertRaises(RuntimeError):     # different package code
+                stage1.verify_fold(run, name, prepared)
+
+    def test_stage2_and_stage3_refuse_existing_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / 'stage2').mkdir()
+            with self.assertRaises(FileExistsError):
+                rid.refuse_existing(Path(tmp) / 'stage2', 'Stage 2')
 
 
 class Stage2AndReporting(unittest.TestCase):
@@ -489,7 +596,16 @@ class Stage2AndReporting(unittest.TestCase):
             corr.to_csv(archive / f'correspondence_table_{term}.csv', index=False)
             pd.DataFrame({'year': [2018], 'month': [int(term[-2:])], 'macro_f1': [f1], 'macro_f1_base': [.5]}).to_csv(
                 results / f'results_df_gp_fs1_2018_2018_m{term[-2:]}.csv', index=False)
+            (results / f'y_pred_test_gp_fs1_2018_2018_m{term[-2:]}.csv').write_text('y')
         (root / 'prepared' / 'manifests' / 'schedule.json').write_text(json.dumps({'stage1': folds}))
+        make_prepared_identity(root)
+        prepared = rid.require_prepared(root)
+        for fold in folds:
+            name = f"fs1_{fold['target_month']}"
+            rid.write_json_atomic(root / 'stage1' / 'folds' / name / 'completion.json', {
+                'fold': name, 'prepared': prepared['outputs_sha256'], 'code': rid.code_identity(),
+                'runtime': rid.runtime_identity(), 'retain': False,
+                'outputs': stage1.fold_outputs(root, name, 1, fold['target_month'], False)})
 
     def test_stage2_synthetic_integration_and_null_route(self):
         import subprocess

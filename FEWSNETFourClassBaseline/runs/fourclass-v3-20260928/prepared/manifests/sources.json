@@ -1,0 +1,164 @@
+{
+  "sources": {
+    "panel": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+      "sha256": "611f9e776380e28da3fc845888d66a117626f91b37868e236ce849d44bc8f651",
+      "bytes": 716303754
+    },
+    "fewsnet": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWSNET.csv",
+      "sha256": "8fdd4cca6f6ba26b84efc209c8eb36492e1257d51e24edd2c2ad4962df7b38d0",
+      "bytes": 51422500
+    },
+    "coordinates": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_admin_code_lat_lon.csv",
+      "sha256": "a06be85849bb726a4505ed284bed14b100b61f998fb4586a6e14439aca8a4bcb",
+      "bytes": 244419
+    },
+    "shapefile": {
+      "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWS NET Admin Boundaries\\FEWS_Admin_LZ_v3.shp",
+      "sha256": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+      "bytes": 98094620,
+      "sidecars": {
+        ".shx": {
+          "sha256": "16061b9a97add1220d0aa54e432f55ed277f919a7bf233da06a5867ee709dfb0",
+          "bytes": 45844
+        },
+        ".dbf": {
+          "sha256": "2175dc97d3c6969c627ebb07c4f456e05231b7050321b4bd40e9079f86b102d3",
+          "bytes": 7942848
+        },
+        ".prj": {
+          "sha256": "94ba1b071fb00c93429718b8005a15b45c5846baafe222b77dcb38847d5e2f49",
+          "bytes": 306
+        },
+        ".cpg": {
+          "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+          "bytes": 5
+        }
+      }
+    }
+  },
+  "package": {
+    "release_zip": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\GeoRFBaseline\\releases\\georf-baseline-v0.1.0.zip",
+    "release_sha256": "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0",
+    "unchanged": [
+      "MANIFEST.json",
+      "SOURCE_PROVENANCE.json",
+      "TESTED_ENVIRONMENT.json",
+      "requirements.txt",
+      "scripts/refine_partitions_contiguity.py",
+      "scripts/step5_sparsification.py",
+      "scripts/step6_complete_clustering_pipeline.py",
+      "src/adjacency/adjacency_utils.py",
+      "src/customize/customize.py",
+      "src/diagnostics/pre_partition_diagnostic.py",
+      "src/feature/feature.py",
+      "src/feature/strict_lag.py",
+      "src/helper/helper.py",
+      "src/initialization/initialization.py",
+      "src/merge/terminal.py",
+      "src/model/adapters.py",
+      "src/model/train_branch.py",
+      "src/preprocess/preprocess.py",
+      "src/tests/class_wise_metrics.py",
+      "src/tests/sig_test.py",
+      "src/tests/static_table.py",
+      "src/utils/admin_code.py",
+      "src/utils/force_clean.py",
+      "src/utils/lag_schedules.py",
+      "src/utils/save_results.py",
+      "src/utils/split.py",
+      "src/vis/partition_map.py",
+      "src/vis/visualization.py",
+      "src/vis/visualization_fix.py"
+    ],
+    "modified": {
+      ".gitignore": {
+        "release": "ff3d1713917a9d6b33de2bd25b21c88377c65e56e5bd499d4a45a7d71aa49984",
+        "package": "6e99f9dc8130ed9895af172da33c4199f56207ef7a3a492c088126046b6e0927"
+      },
+      "README.md": {
+        "release": "365fc6c20c797956c3b1ea696fb7dbd4084bfd1ec0fa9a5098f43f1b3d239286",
+        "package": "61431961d65485029805d94b1562d546a1d596f9ed792abdb6e87b7b6f911335"
+      },
+      "VALIDATION.md": {
+        "release": "f1245fd0ec3d0d8bf7c5f04b38cf7d4c7a64e5b1e0e39cb2162eeb3ba2ebd31c",
+        "package": "a0cf642cf8861a013bf38b2a9ec6b4cba36bf313ded6d6b68fa473c5c4883447"
+      },
+      "app/main_model_GF.py": {
+        "release": "0bba3cf4e70ed1594395b40e8d28e549364f63fbb611cefba86f4b636d23e38d",
+        "package": "70d8ed8942028c4f3d9fe90232002c0c774dd4be612aa177d524d0070682e9fa"
+      },
+      "config.py": {
+        "release": "3da43e0b7e1692e8d9acd697a2f9c8ff2d0f7792fc6a401ceeca5fb7eb603e0c",
+        "package": "dfb94cc3cc7441991f5cb998c2af51c2736b7f3d4d1fea11597fba1026c552b8"
+      },
+      "config_visual.py": {
+        "release": "1cf8cda589e653d6201968fd52425e770db1375b0cb21522cb81594c4d50d053",
+        "package": "ca11785a279ea137ab343f0fb4e14f95e26e013f3d432429217908f447ec7b13"
+      },
+      "scripts/compare_partitioned_vs_pooled_rf_k40_nc4.py": {
+        "release": "d33b23163014e8881b0fb3a73eeab0342ea5b11b7a2e5e3c9cfb35249216f8d7",
+        "package": "d4a00e508b0d988482726a6f108444881e9d9dcd975bc4eb852eaf1ed3adfc8d"
+      },
+      "scripts/run_stage1.py": {
+        "release": "cb73eb84509ddab104288b152611bb96bef95a90d0ecb14da25bff3568cee4da",
+        "package": "f81a570632abb8035591bc0caab9fd1623c0bc71db5c2aaaa97857ac80557486"
+      },
+      "scripts/step1_merge_results.py": {
+        "release": "fcfd7b4746fb14ffffe0411e93325893b0e4426644b28237e72898612adf2c26",
+        "package": "b98d2622fbe458002fb477a0b10a4cd64dd36371444d2693f1f49b688daee63f"
+      },
+      "scripts/step3_create_linked_tables.py": {
+        "release": "c921a763420b82e92bd866602cad0277524cce01ccd16e475deed617881fb7a6",
+        "package": "4893325e0363fa2a1b6ed7be8ccdee50e4f585df72b751659ca60fab28bb8932"
+      },
+      "scripts/step4_similarity_matrix.py": {
+        "release": "7c34f7e3d4ece61251aca731543221387eabb95a945839dcb7432f7857bb037d",
+        "package": "80a561564188cadd2310340c6dd722d9f75967f5b89ade6b00efe12c699679b1"
+      },
+      "src/metrics/metrics.py": {
+        "release": "0b5a549ee1678d40ca9cec6cbd73a70b487728898dcf33d30ece46829c1286b4",
+        "package": "9ca2021b95dcdd12a2d21b8ddf75ec49bbcba6a9d3cb40f61f7da8729d457ee1"
+      },
+      "src/model/GeoRF.py": {
+        "release": "be2c362b82b2e861920e5d2c2e23c48c5bb3cefc44c578dde0a8e61f71804fe9",
+        "package": "ff8170e5c189c6fb7cc5c1a615e7d25ca154f1e343ca539ba72899ef38531eae"
+      },
+      "src/model/model_RF.py": {
+        "release": "f238b4da089b769ad4e520127915d0ecebdab410e2b907d0d6acad252f311a9d",
+        "package": "2a2a33dff005c4088dd3394fe608101f1440a36724335893a45e705b377591bf"
+      },
+      "src/partition/partition_opt.py": {
+        "release": "dfac6783410bb22c071ecd7f244780262141ce48ee5dcc1a9daf138de9ffa851",
+        "package": "23afa65d4a7219c1cc0ee9697e17f9d1a7ebad42b49d78e112ae1f9755e6ed19"
+      },
+      "src/partition/transformation.py": {
+        "release": "fb2a8fba99ac0753045c405bc5dc2b60d09fa4521a2c0f324f05253e9759e425",
+        "package": "1e198ba05f632afe26bd37fd526acf5db41f5bcf9b5f407f6dd9112b04b8cfe3"
+      },
+      "tests/test_baseline.py": {
+        "release": "c1d7a471127f1bf7b079bae5c245875da62d13dd83800081f46d90ac1fd783f9",
+        "package": "b893374b04c7aca07cc49d6b6e96ff4f8f4d15990de49af27615cba36718745b"
+      }
+    },
+    "removed": [],
+    "added": {
+      "feature-schema.json": "51b6f8b21b76a78510522c34e2d1f2a648b7aec768bbcac3dd2318669fa13349",
+      "run_all.sh": "93b9c9619f02596fd9f55a3101dac2a8069a8e5b8ac55be1bcfd7fd6161f9995",
+      "scripts/prepare_fourclass.py": "108eac6fc125fd3183ea63f8f62ef30211383a0ae08f4611e3f85a541528971f",
+      "scripts/report_fourclass.py": "5b26e4b689e9515655497cad775c274756dc9e258f49aad1059158d4985ee5f0",
+      "scripts/run_stage2.py": "1b347aa7516c71c945d76d36960803fc8a6f7a07f08cecfa035b9352db42d838",
+      "scripts/verify_fourclass.py": "c9acded955c69315ba4513088658acb189ababf264adc8313141ce5966ae8acc",
+      "src/__init__.py": "d2a6ca78606df0a94738b54a150d651c0be70f7fb8f284eceff4ed09ecb88c04",
+      "src/feature/fourclass_features.py": "fbb78c2cd7fddf6b2769ece2db2a65798f6bd86cb4018014ea1d86af9820d510",
+      "src/metrics/fourclass.py": "c89fdb38f9d67877c673593999f58a598226ad9017065e479441f933d817a5c7",
+      "src/utils/run_identity.py": "dc2e8809576776df6a01f1c8b0664a4efd2f977de01bb4b0d590d4232da56601"
+    }
+  },
+  "feature_schema": {
+    "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\FEWSNETFourClassBaseline\\feature-schema.json",
+    "sha256": "51b6f8b21b76a78510522c34e2d1f2a648b7aec768bbcac3dd2318669fa13349"
+  }
+}

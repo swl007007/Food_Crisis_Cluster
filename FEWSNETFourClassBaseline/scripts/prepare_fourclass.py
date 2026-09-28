@@ -33,11 +33,13 @@ sys.path.insert(0, str(PACKAGE))
 from src.feature import fourclass_features as ff  # noqa: E402
 from src.metrics.fourclass import merge_phase  # noqa: E402
 
-TASK_DIR = PACKAGE.parent / ".trellis" / "tasks" / "09-28-fewsnet-four-class-perturbation"
-SCHEMA_PATH = TASK_DIR / "feature-schema.json"
+#: Package copy of the approved schema (byte-identical to the archived task's
+#: feature-schema.json; SHA-256 recorded in every run).
+SCHEMA_PATH = PACKAGE / "feature-schema.json"
+APPROVED_SCHEMA_SHA256 = "51b6f8b21b76a78510522c34e2d1f2a648b7aec768bbcac3dd2318669fa13349"
 RELEASE_ZIP = PACKAGE.parent / "GeoRFBaseline" / "releases" / "georf-baseline-v0.1.0.zip"
 RELEASE_SHA256 = "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0"
-DEFAULT_SOURCE_ROOT = PACKAGE.parents[3] / "1.Source Data"
+DEFAULT_SOURCE_ROOT = Path(__file__).resolve().parents[5] / "1.Source Data"
 
 #: research/release-and-integration.md, "Inspected input identities".
 PINNED_SOURCES = {
@@ -464,6 +466,8 @@ def main() -> None:
 
     runtime = runtime_identity()
     sources = pin_sources(args.source_root)
+    if sha256(SCHEMA_PATH) != APPROVED_SCHEMA_SHA256:
+        raise PreflightError("feature-schema.json differs from the approved schema")
     schema = ff.load_schema(SCHEMA_PATH)
     write_json(manifests / "runtime.json", runtime)
     write_json(manifests / "sources.json", {"sources": sources, "package": package_identity(),
@@ -504,7 +508,12 @@ def main() -> None:
     write_json(manifests / "geometry.json", geometry)
     hashes = {p.relative_to(out).as_posix(): sha256(p) for p in sorted(out.rglob("*"))
               if p.is_file() and p.name != "outputs.json"}
+    from src.utils.run_identity import code_identity, runtime_identity as runtime_digest
     write_json(manifests / "outputs.json", hashes)
+    # Completion marker, written last: binds these outputs to code and runtime.
+    write_json(manifests / "identity.json", {
+        "stage": "prepare", "code": code_identity(), "runtime": runtime_digest(),
+        "outputs_sha256": sha256(manifests / "outputs.json")})
     print("preparation complete", flush=True)
 
 

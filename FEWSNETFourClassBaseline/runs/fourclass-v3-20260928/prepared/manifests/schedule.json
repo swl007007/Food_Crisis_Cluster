@@ -1,0 +1,2761 @@
+{
+  "stage1": [
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-01",
+      "origin_month": "2017-09",
+      "train_label_months": [
+        "2014-10",
+        "2017-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-02",
+      "origin_month": "2017-10",
+      "train_label_months": [
+        "2014-11",
+        "2017-09"
+      ],
+      "target_rows": 5364,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-03",
+      "origin_month": "2017-11",
+      "train_label_months": [
+        "2014-12",
+        "2017-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-04",
+      "origin_month": "2017-12",
+      "train_label_months": [
+        "2015-01",
+        "2017-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-05",
+      "origin_month": "2018-01",
+      "train_label_months": [
+        "2015-02",
+        "2017-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-06",
+      "origin_month": "2018-02",
+      "train_label_months": [
+        "2015-03",
+        "2018-01"
+      ],
+      "target_rows": 5364,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-07",
+      "origin_month": "2018-03",
+      "train_label_months": [
+        "2015-04",
+        "2018-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-08",
+      "origin_month": "2018-04",
+      "train_label_months": [
+        "2015-05",
+        "2018-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-09",
+      "origin_month": "2018-05",
+      "train_label_months": [
+        "2015-06",
+        "2018-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-10",
+      "origin_month": "2018-06",
+      "train_label_months": [
+        "2015-07",
+        "2018-05"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-11",
+      "origin_month": "2018-07",
+      "train_label_months": [
+        "2015-08",
+        "2018-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2018-12",
+      "origin_month": "2018-08",
+      "train_label_months": [
+        "2015-09",
+        "2018-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-01",
+      "origin_month": "2018-09",
+      "train_label_months": [
+        "2015-10",
+        "2018-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-02",
+      "origin_month": "2018-10",
+      "train_label_months": [
+        "2015-11",
+        "2018-09"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-03",
+      "origin_month": "2018-11",
+      "train_label_months": [
+        "2015-12",
+        "2018-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-04",
+      "origin_month": "2018-12",
+      "train_label_months": [
+        "2016-01",
+        "2018-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-05",
+      "origin_month": "2019-01",
+      "train_label_months": [
+        "2016-02",
+        "2018-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-06",
+      "origin_month": "2019-02",
+      "train_label_months": [
+        "2016-03",
+        "2019-01"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-07",
+      "origin_month": "2019-03",
+      "train_label_months": [
+        "2016-04",
+        "2019-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-08",
+      "origin_month": "2019-04",
+      "train_label_months": [
+        "2016-05",
+        "2019-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-09",
+      "origin_month": "2019-05",
+      "train_label_months": [
+        "2016-06",
+        "2019-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-10",
+      "origin_month": "2019-06",
+      "train_label_months": [
+        "2016-07",
+        "2019-05"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-11",
+      "origin_month": "2019-07",
+      "train_label_months": [
+        "2016-08",
+        "2019-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2019-12",
+      "origin_month": "2019-08",
+      "train_label_months": [
+        "2016-09",
+        "2019-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-01",
+      "origin_month": "2019-09",
+      "train_label_months": [
+        "2016-10",
+        "2019-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-02",
+      "origin_month": "2019-10",
+      "train_label_months": [
+        "2016-11",
+        "2019-09"
+      ],
+      "target_rows": 5506,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-03",
+      "origin_month": "2019-11",
+      "train_label_months": [
+        "2016-12",
+        "2019-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-04",
+      "origin_month": "2019-12",
+      "train_label_months": [
+        "2017-01",
+        "2019-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-05",
+      "origin_month": "2020-01",
+      "train_label_months": [
+        "2017-02",
+        "2019-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-06",
+      "origin_month": "2020-02",
+      "train_label_months": [
+        "2017-03",
+        "2020-01"
+      ],
+      "target_rows": 5506,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-07",
+      "origin_month": "2020-03",
+      "train_label_months": [
+        "2017-04",
+        "2020-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-08",
+      "origin_month": "2020-04",
+      "train_label_months": [
+        "2017-05",
+        "2020-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-09",
+      "origin_month": "2020-05",
+      "train_label_months": [
+        "2017-06",
+        "2020-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-10",
+      "origin_month": "2020-06",
+      "train_label_months": [
+        "2017-07",
+        "2020-05"
+      ],
+      "target_rows": 5427,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-11",
+      "origin_month": "2020-07",
+      "train_label_months": [
+        "2017-08",
+        "2020-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2020-12",
+      "origin_month": "2020-08",
+      "train_label_months": [
+        "2017-09",
+        "2020-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-01",
+      "origin_month": "2017-05",
+      "train_label_months": [
+        "2014-06",
+        "2017-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-02",
+      "origin_month": "2017-06",
+      "train_label_months": [
+        "2014-07",
+        "2017-05"
+      ],
+      "target_rows": 5364,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-03",
+      "origin_month": "2017-07",
+      "train_label_months": [
+        "2014-08",
+        "2017-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-04",
+      "origin_month": "2017-08",
+      "train_label_months": [
+        "2014-09",
+        "2017-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-05",
+      "origin_month": "2017-09",
+      "train_label_months": [
+        "2014-10",
+        "2017-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-06",
+      "origin_month": "2017-10",
+      "train_label_months": [
+        "2014-11",
+        "2017-09"
+      ],
+      "target_rows": 5364,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-07",
+      "origin_month": "2017-11",
+      "train_label_months": [
+        "2014-12",
+        "2017-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-08",
+      "origin_month": "2017-12",
+      "train_label_months": [
+        "2015-01",
+        "2017-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-09",
+      "origin_month": "2018-01",
+      "train_label_months": [
+        "2015-02",
+        "2017-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-10",
+      "origin_month": "2018-02",
+      "train_label_months": [
+        "2015-03",
+        "2018-01"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-11",
+      "origin_month": "2018-03",
+      "train_label_months": [
+        "2015-04",
+        "2018-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2018-12",
+      "origin_month": "2018-04",
+      "train_label_months": [
+        "2015-05",
+        "2018-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-01",
+      "origin_month": "2018-05",
+      "train_label_months": [
+        "2015-06",
+        "2018-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-02",
+      "origin_month": "2018-06",
+      "train_label_months": [
+        "2015-07",
+        "2018-05"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-03",
+      "origin_month": "2018-07",
+      "train_label_months": [
+        "2015-08",
+        "2018-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-04",
+      "origin_month": "2018-08",
+      "train_label_months": [
+        "2015-09",
+        "2018-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-05",
+      "origin_month": "2018-09",
+      "train_label_months": [
+        "2015-10",
+        "2018-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-06",
+      "origin_month": "2018-10",
+      "train_label_months": [
+        "2015-11",
+        "2018-09"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-07",
+      "origin_month": "2018-11",
+      "train_label_months": [
+        "2015-12",
+        "2018-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-08",
+      "origin_month": "2018-12",
+      "train_label_months": [
+        "2016-01",
+        "2018-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-09",
+      "origin_month": "2019-01",
+      "train_label_months": [
+        "2016-02",
+        "2018-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-10",
+      "origin_month": "2019-02",
+      "train_label_months": [
+        "2016-03",
+        "2019-01"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-11",
+      "origin_month": "2019-03",
+      "train_label_months": [
+        "2016-04",
+        "2019-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2019-12",
+      "origin_month": "2019-04",
+      "train_label_months": [
+        "2016-05",
+        "2019-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-01",
+      "origin_month": "2019-05",
+      "train_label_months": [
+        "2016-06",
+        "2019-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-02",
+      "origin_month": "2019-06",
+      "train_label_months": [
+        "2016-07",
+        "2019-05"
+      ],
+      "target_rows": 5506,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-03",
+      "origin_month": "2019-07",
+      "train_label_months": [
+        "2016-08",
+        "2019-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-04",
+      "origin_month": "2019-08",
+      "train_label_months": [
+        "2016-09",
+        "2019-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-05",
+      "origin_month": "2019-09",
+      "train_label_months": [
+        "2016-10",
+        "2019-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-06",
+      "origin_month": "2019-10",
+      "train_label_months": [
+        "2016-11",
+        "2019-09"
+      ],
+      "target_rows": 5506,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-07",
+      "origin_month": "2019-11",
+      "train_label_months": [
+        "2016-12",
+        "2019-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-08",
+      "origin_month": "2019-12",
+      "train_label_months": [
+        "2017-01",
+        "2019-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-09",
+      "origin_month": "2020-01",
+      "train_label_months": [
+        "2017-02",
+        "2019-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-10",
+      "origin_month": "2020-02",
+      "train_label_months": [
+        "2017-03",
+        "2020-01"
+      ],
+      "target_rows": 5427,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-11",
+      "origin_month": "2020-03",
+      "train_label_months": [
+        "2017-04",
+        "2020-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2020-12",
+      "origin_month": "2020-04",
+      "train_label_months": [
+        "2017-05",
+        "2020-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-01",
+      "origin_month": "2017-01",
+      "train_label_months": [
+        "2014-02",
+        "2016-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-02",
+      "origin_month": "2017-02",
+      "train_label_months": [
+        "2014-03",
+        "2017-01"
+      ],
+      "target_rows": 5364,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-03",
+      "origin_month": "2017-03",
+      "train_label_months": [
+        "2014-04",
+        "2017-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-04",
+      "origin_month": "2017-04",
+      "train_label_months": [
+        "2014-05",
+        "2017-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-05",
+      "origin_month": "2017-05",
+      "train_label_months": [
+        "2014-06",
+        "2017-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-06",
+      "origin_month": "2017-06",
+      "train_label_months": [
+        "2014-07",
+        "2017-05"
+      ],
+      "target_rows": 5364,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-07",
+      "origin_month": "2017-07",
+      "train_label_months": [
+        "2014-08",
+        "2017-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-08",
+      "origin_month": "2017-08",
+      "train_label_months": [
+        "2014-09",
+        "2017-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-09",
+      "origin_month": "2017-09",
+      "train_label_months": [
+        "2014-10",
+        "2017-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-10",
+      "origin_month": "2017-10",
+      "train_label_months": [
+        "2014-11",
+        "2017-09"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-11",
+      "origin_month": "2017-11",
+      "train_label_months": [
+        "2014-12",
+        "2017-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2018-12",
+      "origin_month": "2017-12",
+      "train_label_months": [
+        "2015-01",
+        "2017-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-01",
+      "origin_month": "2018-01",
+      "train_label_months": [
+        "2015-02",
+        "2017-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-02",
+      "origin_month": "2018-02",
+      "train_label_months": [
+        "2015-03",
+        "2018-01"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-03",
+      "origin_month": "2018-03",
+      "train_label_months": [
+        "2015-04",
+        "2018-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-04",
+      "origin_month": "2018-04",
+      "train_label_months": [
+        "2015-05",
+        "2018-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-05",
+      "origin_month": "2018-05",
+      "train_label_months": [
+        "2015-06",
+        "2018-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-06",
+      "origin_month": "2018-06",
+      "train_label_months": [
+        "2015-07",
+        "2018-05"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-07",
+      "origin_month": "2018-07",
+      "train_label_months": [
+        "2015-08",
+        "2018-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-08",
+      "origin_month": "2018-08",
+      "train_label_months": [
+        "2015-09",
+        "2018-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-09",
+      "origin_month": "2018-09",
+      "train_label_months": [
+        "2015-10",
+        "2018-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-10",
+      "origin_month": "2018-10",
+      "train_label_months": [
+        "2015-11",
+        "2018-09"
+      ],
+      "target_rows": 5365,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-11",
+      "origin_month": "2018-11",
+      "train_label_months": [
+        "2015-12",
+        "2018-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2019-12",
+      "origin_month": "2018-12",
+      "train_label_months": [
+        "2016-01",
+        "2018-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-01",
+      "origin_month": "2019-01",
+      "train_label_months": [
+        "2016-02",
+        "2018-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-02",
+      "origin_month": "2019-02",
+      "train_label_months": [
+        "2016-03",
+        "2019-01"
+      ],
+      "target_rows": 5506,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-03",
+      "origin_month": "2019-03",
+      "train_label_months": [
+        "2016-04",
+        "2019-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-04",
+      "origin_month": "2019-04",
+      "train_label_months": [
+        "2016-05",
+        "2019-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-05",
+      "origin_month": "2019-05",
+      "train_label_months": [
+        "2016-06",
+        "2019-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-06",
+      "origin_month": "2019-06",
+      "train_label_months": [
+        "2016-07",
+        "2019-05"
+      ],
+      "target_rows": 5506,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-07",
+      "origin_month": "2019-07",
+      "train_label_months": [
+        "2016-08",
+        "2019-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-08",
+      "origin_month": "2019-08",
+      "train_label_months": [
+        "2016-09",
+        "2019-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-09",
+      "origin_month": "2019-09",
+      "train_label_months": [
+        "2016-10",
+        "2019-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-10",
+      "origin_month": "2019-10",
+      "train_label_months": [
+        "2016-11",
+        "2019-09"
+      ],
+      "target_rows": 5427,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-11",
+      "origin_month": "2019-11",
+      "train_label_months": [
+        "2016-12",
+        "2019-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2020-12",
+      "origin_month": "2019-12",
+      "train_label_months": [
+        "2017-01",
+        "2019-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    }
+  ],
+  "stage3": [
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-05",
+      "origin_month": "2021-01",
+      "train_label_months": [
+        "2018-02",
+        "2020-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-06",
+      "origin_month": "2021-02",
+      "train_label_months": [
+        "2018-03",
+        "2021-01"
+      ],
+      "target_rows": 4385,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-07",
+      "origin_month": "2021-03",
+      "train_label_months": [
+        "2018-04",
+        "2021-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-08",
+      "origin_month": "2021-04",
+      "train_label_months": [
+        "2018-05",
+        "2021-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-09",
+      "origin_month": "2021-05",
+      "train_label_months": [
+        "2018-06",
+        "2021-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-10",
+      "origin_month": "2021-06",
+      "train_label_months": [
+        "2018-07",
+        "2021-05"
+      ],
+      "target_rows": 4974,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-11",
+      "origin_month": "2021-07",
+      "train_label_months": [
+        "2018-08",
+        "2021-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2021-12",
+      "origin_month": "2021-08",
+      "train_label_months": [
+        "2018-09",
+        "2021-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-01",
+      "origin_month": "2021-09",
+      "train_label_months": [
+        "2018-10",
+        "2021-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-02",
+      "origin_month": "2021-10",
+      "train_label_months": [
+        "2018-11",
+        "2021-09"
+      ],
+      "target_rows": 4974,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-03",
+      "origin_month": "2021-11",
+      "train_label_months": [
+        "2018-12",
+        "2021-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-04",
+      "origin_month": "2021-12",
+      "train_label_months": [
+        "2019-01",
+        "2021-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-05",
+      "origin_month": "2022-01",
+      "train_label_months": [
+        "2019-02",
+        "2021-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-06",
+      "origin_month": "2022-02",
+      "train_label_months": [
+        "2019-03",
+        "2022-01"
+      ],
+      "target_rows": 4864,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-07",
+      "origin_month": "2022-03",
+      "train_label_months": [
+        "2019-04",
+        "2022-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-08",
+      "origin_month": "2022-04",
+      "train_label_months": [
+        "2019-05",
+        "2022-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-09",
+      "origin_month": "2022-05",
+      "train_label_months": [
+        "2019-06",
+        "2022-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-10",
+      "origin_month": "2022-06",
+      "train_label_months": [
+        "2019-07",
+        "2022-05"
+      ],
+      "target_rows": 5012,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-11",
+      "origin_month": "2022-07",
+      "train_label_months": [
+        "2019-08",
+        "2022-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2022-12",
+      "origin_month": "2022-08",
+      "train_label_months": [
+        "2019-09",
+        "2022-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-01",
+      "origin_month": "2022-09",
+      "train_label_months": [
+        "2019-10",
+        "2022-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-02",
+      "origin_month": "2022-10",
+      "train_label_months": [
+        "2019-11",
+        "2022-09"
+      ],
+      "target_rows": 4860,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-03",
+      "origin_month": "2022-11",
+      "train_label_months": [
+        "2019-12",
+        "2022-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-04",
+      "origin_month": "2022-12",
+      "train_label_months": [
+        "2020-01",
+        "2022-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-05",
+      "origin_month": "2023-01",
+      "train_label_months": [
+        "2020-02",
+        "2022-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-06",
+      "origin_month": "2023-02",
+      "train_label_months": [
+        "2020-03",
+        "2023-01"
+      ],
+      "target_rows": 5555,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-07",
+      "origin_month": "2023-03",
+      "train_label_months": [
+        "2020-04",
+        "2023-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-08",
+      "origin_month": "2023-04",
+      "train_label_months": [
+        "2020-05",
+        "2023-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-09",
+      "origin_month": "2023-05",
+      "train_label_months": [
+        "2020-06",
+        "2023-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-10",
+      "origin_month": "2023-06",
+      "train_label_months": [
+        "2020-07",
+        "2023-05"
+      ],
+      "target_rows": 5410,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-11",
+      "origin_month": "2023-07",
+      "train_label_months": [
+        "2020-08",
+        "2023-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2023-12",
+      "origin_month": "2023-08",
+      "train_label_months": [
+        "2020-09",
+        "2023-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-01",
+      "origin_month": "2023-09",
+      "train_label_months": [
+        "2020-10",
+        "2023-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-02",
+      "origin_month": "2023-10",
+      "train_label_months": [
+        "2020-11",
+        "2023-09"
+      ],
+      "target_rows": 5697,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-03",
+      "origin_month": "2023-11",
+      "train_label_months": [
+        "2020-12",
+        "2023-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-04",
+      "origin_month": "2023-12",
+      "train_label_months": [
+        "2021-01",
+        "2023-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-05",
+      "origin_month": "2024-01",
+      "train_label_months": [
+        "2021-02",
+        "2023-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-06",
+      "origin_month": "2024-02",
+      "train_label_months": [
+        "2021-03",
+        "2024-01"
+      ],
+      "target_rows": 5697,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-07",
+      "origin_month": "2024-03",
+      "train_label_months": [
+        "2021-04",
+        "2024-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-08",
+      "origin_month": "2024-04",
+      "train_label_months": [
+        "2021-05",
+        "2024-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-09",
+      "origin_month": "2024-05",
+      "train_label_months": [
+        "2021-06",
+        "2024-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-10",
+      "origin_month": "2024-06",
+      "train_label_months": [
+        "2021-07",
+        "2024-05"
+      ],
+      "target_rows": 5336,
+      "status": "scheduled"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-11",
+      "origin_month": "2024-07",
+      "train_label_months": [
+        "2021-08",
+        "2024-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 1,
+      "horizon": 4,
+      "target_month": "2024-12",
+      "origin_month": "2024-08",
+      "train_label_months": [
+        "2021-09",
+        "2024-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2021-09",
+      "origin_month": "2021-01",
+      "train_label_months": [
+        "2018-02",
+        "2020-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2021-10",
+      "origin_month": "2021-02",
+      "train_label_months": [
+        "2018-03",
+        "2021-01"
+      ],
+      "target_rows": 4974,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2021-11",
+      "origin_month": "2021-03",
+      "train_label_months": [
+        "2018-04",
+        "2021-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2021-12",
+      "origin_month": "2021-04",
+      "train_label_months": [
+        "2018-05",
+        "2021-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-01",
+      "origin_month": "2021-05",
+      "train_label_months": [
+        "2018-06",
+        "2021-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-02",
+      "origin_month": "2021-06",
+      "train_label_months": [
+        "2018-07",
+        "2021-05"
+      ],
+      "target_rows": 4974,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-03",
+      "origin_month": "2021-07",
+      "train_label_months": [
+        "2018-08",
+        "2021-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-04",
+      "origin_month": "2021-08",
+      "train_label_months": [
+        "2018-09",
+        "2021-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-05",
+      "origin_month": "2021-09",
+      "train_label_months": [
+        "2018-10",
+        "2021-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-06",
+      "origin_month": "2021-10",
+      "train_label_months": [
+        "2018-11",
+        "2021-09"
+      ],
+      "target_rows": 4864,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-07",
+      "origin_month": "2021-11",
+      "train_label_months": [
+        "2018-12",
+        "2021-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-08",
+      "origin_month": "2021-12",
+      "train_label_months": [
+        "2019-01",
+        "2021-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-09",
+      "origin_month": "2022-01",
+      "train_label_months": [
+        "2019-02",
+        "2021-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-10",
+      "origin_month": "2022-02",
+      "train_label_months": [
+        "2019-03",
+        "2022-01"
+      ],
+      "target_rows": 5012,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-11",
+      "origin_month": "2022-03",
+      "train_label_months": [
+        "2019-04",
+        "2022-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2022-12",
+      "origin_month": "2022-04",
+      "train_label_months": [
+        "2019-05",
+        "2022-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-01",
+      "origin_month": "2022-05",
+      "train_label_months": [
+        "2019-06",
+        "2022-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-02",
+      "origin_month": "2022-06",
+      "train_label_months": [
+        "2019-07",
+        "2022-05"
+      ],
+      "target_rows": 4860,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-03",
+      "origin_month": "2022-07",
+      "train_label_months": [
+        "2019-08",
+        "2022-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-04",
+      "origin_month": "2022-08",
+      "train_label_months": [
+        "2019-09",
+        "2022-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-05",
+      "origin_month": "2022-09",
+      "train_label_months": [
+        "2019-10",
+        "2022-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-06",
+      "origin_month": "2022-10",
+      "train_label_months": [
+        "2019-11",
+        "2022-09"
+      ],
+      "target_rows": 5555,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-07",
+      "origin_month": "2022-11",
+      "train_label_months": [
+        "2019-12",
+        "2022-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-08",
+      "origin_month": "2022-12",
+      "train_label_months": [
+        "2020-01",
+        "2022-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-09",
+      "origin_month": "2023-01",
+      "train_label_months": [
+        "2020-02",
+        "2022-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-10",
+      "origin_month": "2023-02",
+      "train_label_months": [
+        "2020-03",
+        "2023-01"
+      ],
+      "target_rows": 5410,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-11",
+      "origin_month": "2023-03",
+      "train_label_months": [
+        "2020-04",
+        "2023-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2023-12",
+      "origin_month": "2023-04",
+      "train_label_months": [
+        "2020-05",
+        "2023-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-01",
+      "origin_month": "2023-05",
+      "train_label_months": [
+        "2020-06",
+        "2023-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-02",
+      "origin_month": "2023-06",
+      "train_label_months": [
+        "2020-07",
+        "2023-05"
+      ],
+      "target_rows": 5697,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-03",
+      "origin_month": "2023-07",
+      "train_label_months": [
+        "2020-08",
+        "2023-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-04",
+      "origin_month": "2023-08",
+      "train_label_months": [
+        "2020-09",
+        "2023-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-05",
+      "origin_month": "2023-09",
+      "train_label_months": [
+        "2020-10",
+        "2023-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-06",
+      "origin_month": "2023-10",
+      "train_label_months": [
+        "2020-11",
+        "2023-09"
+      ],
+      "target_rows": 5697,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-07",
+      "origin_month": "2023-11",
+      "train_label_months": [
+        "2020-12",
+        "2023-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-08",
+      "origin_month": "2023-12",
+      "train_label_months": [
+        "2021-01",
+        "2023-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-09",
+      "origin_month": "2024-01",
+      "train_label_months": [
+        "2021-02",
+        "2023-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-10",
+      "origin_month": "2024-02",
+      "train_label_months": [
+        "2021-03",
+        "2024-01"
+      ],
+      "target_rows": 5336,
+      "status": "scheduled"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-11",
+      "origin_month": "2024-03",
+      "train_label_months": [
+        "2021-04",
+        "2024-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 2,
+      "horizon": 8,
+      "target_month": "2024-12",
+      "origin_month": "2024-04",
+      "train_label_months": [
+        "2021-05",
+        "2024-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-01",
+      "origin_month": "2021-01",
+      "train_label_months": [
+        "2018-02",
+        "2020-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-02",
+      "origin_month": "2021-02",
+      "train_label_months": [
+        "2018-03",
+        "2021-01"
+      ],
+      "target_rows": 4974,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-03",
+      "origin_month": "2021-03",
+      "train_label_months": [
+        "2018-04",
+        "2021-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-04",
+      "origin_month": "2021-04",
+      "train_label_months": [
+        "2018-05",
+        "2021-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-05",
+      "origin_month": "2021-05",
+      "train_label_months": [
+        "2018-06",
+        "2021-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-06",
+      "origin_month": "2021-06",
+      "train_label_months": [
+        "2018-07",
+        "2021-05"
+      ],
+      "target_rows": 4864,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-07",
+      "origin_month": "2021-07",
+      "train_label_months": [
+        "2018-08",
+        "2021-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-08",
+      "origin_month": "2021-08",
+      "train_label_months": [
+        "2018-09",
+        "2021-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-09",
+      "origin_month": "2021-09",
+      "train_label_months": [
+        "2018-10",
+        "2021-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-10",
+      "origin_month": "2021-10",
+      "train_label_months": [
+        "2018-11",
+        "2021-09"
+      ],
+      "target_rows": 5012,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-11",
+      "origin_month": "2021-11",
+      "train_label_months": [
+        "2018-12",
+        "2021-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2022-12",
+      "origin_month": "2021-12",
+      "train_label_months": [
+        "2019-01",
+        "2021-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-01",
+      "origin_month": "2022-01",
+      "train_label_months": [
+        "2019-02",
+        "2021-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-02",
+      "origin_month": "2022-02",
+      "train_label_months": [
+        "2019-03",
+        "2022-01"
+      ],
+      "target_rows": 4860,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-03",
+      "origin_month": "2022-03",
+      "train_label_months": [
+        "2019-04",
+        "2022-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-04",
+      "origin_month": "2022-04",
+      "train_label_months": [
+        "2019-05",
+        "2022-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-05",
+      "origin_month": "2022-05",
+      "train_label_months": [
+        "2019-06",
+        "2022-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-06",
+      "origin_month": "2022-06",
+      "train_label_months": [
+        "2019-07",
+        "2022-05"
+      ],
+      "target_rows": 5555,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-07",
+      "origin_month": "2022-07",
+      "train_label_months": [
+        "2019-08",
+        "2022-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-08",
+      "origin_month": "2022-08",
+      "train_label_months": [
+        "2019-09",
+        "2022-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-09",
+      "origin_month": "2022-09",
+      "train_label_months": [
+        "2019-10",
+        "2022-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-10",
+      "origin_month": "2022-10",
+      "train_label_months": [
+        "2019-11",
+        "2022-09"
+      ],
+      "target_rows": 5410,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-11",
+      "origin_month": "2022-11",
+      "train_label_months": [
+        "2019-12",
+        "2022-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2023-12",
+      "origin_month": "2022-12",
+      "train_label_months": [
+        "2020-01",
+        "2022-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-01",
+      "origin_month": "2023-01",
+      "train_label_months": [
+        "2020-02",
+        "2022-12"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-02",
+      "origin_month": "2023-02",
+      "train_label_months": [
+        "2020-03",
+        "2023-01"
+      ],
+      "target_rows": 5697,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-03",
+      "origin_month": "2023-03",
+      "train_label_months": [
+        "2020-04",
+        "2023-02"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-04",
+      "origin_month": "2023-04",
+      "train_label_months": [
+        "2020-05",
+        "2023-03"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-05",
+      "origin_month": "2023-05",
+      "train_label_months": [
+        "2020-06",
+        "2023-04"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-06",
+      "origin_month": "2023-06",
+      "train_label_months": [
+        "2020-07",
+        "2023-05"
+      ],
+      "target_rows": 5697,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-07",
+      "origin_month": "2023-07",
+      "train_label_months": [
+        "2020-08",
+        "2023-06"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-08",
+      "origin_month": "2023-08",
+      "train_label_months": [
+        "2020-09",
+        "2023-07"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-09",
+      "origin_month": "2023-09",
+      "train_label_months": [
+        "2020-10",
+        "2023-08"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-10",
+      "origin_month": "2023-10",
+      "train_label_months": [
+        "2020-11",
+        "2023-09"
+      ],
+      "target_rows": 5336,
+      "status": "scheduled"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-11",
+      "origin_month": "2023-11",
+      "train_label_months": [
+        "2020-12",
+        "2023-10"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    },
+    {
+      "scope": 3,
+      "horizon": 12,
+      "target_month": "2024-12",
+      "origin_month": "2023-12",
+      "train_label_months": [
+        "2021-01",
+        "2023-11"
+      ],
+      "target_rows": 0,
+      "status": "skipped_empty_target"
+    }
+  ],
+  "stage1_counts": {
+    "scheduled_folds": 27,
+    "skipped_empty": 81,
+    "first_supported_target": {
+      "4": "2018-02",
+      "8": "2018-02",
+      "12": "2018-02"
+    }
+  },
+  "stage3_counts": {
+    "scheduled_folds": 30,
+    "skipped_empty": 90,
+    "first_supported_target": {
+      "4": "2021-06",
+      "8": "2021-10",
+      "12": "2022-02"
+    }
+  },
+  "training_window_rule": "labels in [O-35, O): 35 calendar months, origin excluded (D11); inherited from train_start = O - (36 - 1), date < O"
+}

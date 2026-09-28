@@ -1,6 +1,6 @@
 # Results and acceptance index — FEWS NET four-class baseline
 
-Authoritative run: `FEWSNETFourClassBaseline/runs/fourclass-v2-20260928/`
+Authoritative run: `FEWSNETFourClassBaseline/runs/fourclass-v3-20260928/`
 (package `FEWSNETFourClassBaseline/`, base SHA 8a56272, audit run
 321911af42cc46809237d7a003700ed9). Superseded: `fourclass-v1-20260928` (aborted at
 Stage 3 h8 by a coverage gate that departed from the release definition; see
@@ -82,3 +82,12 @@ python -B tests/test_baseline.py
 ./run_all.sh runs/<fresh-id>
 python -B scripts/verify_fourclass.py --run-dir runs/<fresh-id>
 ```
+
+## Audit repair (2026-09-28)
+
+Close audit fa38f19ad8fafc36567f90ac found A01 (Stage 3 discarded fitted forests) and A02
+(Stage 1 continuation trusted a completion filename). Repaired in task
+`09-28-fourclass-audit-repair`. The authoritative run is now `fourclass-v3-20260928`,
+produced by the repaired code; its `report/contrasts.csv` and `report/arm_metrics.csv`
+are byte-for-byte equal to v2's, so every number above is unchanged. v3 persists every
+Stage 3 estimator bundle (committed, hash-bound in fold.json) and replay now loads them.

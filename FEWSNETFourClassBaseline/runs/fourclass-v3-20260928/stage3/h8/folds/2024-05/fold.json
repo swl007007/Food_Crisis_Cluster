@@ -1,0 +1,22 @@
+{
+  "target_month": "2024-05",
+  "origin_month": "2023-09",
+  "horizon": 8,
+  "train_label_months": [
+    "2020-10",
+    "2023-08"
+  ],
+  "train_label_months_observed": [
+    "2020-10",
+    "2021-02",
+    "2021-06",
+    "2021-10",
+    "2022-02",
+    "2022-06",
+    "2022-10",
+    "2023-02",
+    "2023-06"
+  ],
+  "status": "skipped_empty_target",
+  "outputs": {}
+}

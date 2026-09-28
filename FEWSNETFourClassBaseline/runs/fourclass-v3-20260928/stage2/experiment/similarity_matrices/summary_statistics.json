@@ -1,0 +1,13 @@
+{
+  "n_admin_codes": 5506,
+  "scope": "in_scope_only",
+  "admin_code_min": 0,
+  "admin_code_max": 5652,
+  "n_plans": 27,
+  "month_filter": null,
+  "sigma_degrees": 5.0,
+  "similarity_nonzero": 20433715,
+  "final_nonzero": 16462173,
+  "final_max": 1.0,
+  "final_mean": 0.05536508932709694
+}

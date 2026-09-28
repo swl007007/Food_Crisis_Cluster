@@ -1,0 +1,1269 @@
+{
+  "ordered_features": [
+    "lat",
+    "lon",
+    "AEZ_10000",
+    "AEZ_12000",
+    "AEZ_15000",
+    "AEZ_17000",
+    "AEZ_19000",
+    "AEZ_25000",
+    "AEZ_31000",
+    "AEZ_32000",
+    "AEZ_33000",
+    "AEZ_34000",
+    "AEZ_36000",
+    "AEZ_38000",
+    "AEZ_4000",
+    "AEZ_40000",
+    "AEZ_43000",
+    "AEZ_7000",
+    "AEZ_9000",
+    "distance_to_river",
+    "elevation",
+    "sg_cec_5-15cm",
+    "sg_cfvo_5-15cm",
+    "sg_nitrogen_5-15cm",
+    "sg_phh2o_5-15cm",
+    "sg_soc_5-15cm",
+    "ruggedness",
+    "slope",
+    "distance_to_nearest_acled",
+    "event_count_battles",
+    "event_count_explosions",
+    "event_count_violence",
+    "sum_fatalities_battles",
+    "sum_fatalities_explosions",
+    "sum_fatalities_violence",
+    "event_count_battles_w5",
+    "event_count_explosions_w5",
+    "event_count_violence_w5",
+    "sum_fatalities_battles_w5",
+    "sum_fatalities_explosions_w5",
+    "sum_fatalities_violence_w5",
+    "event_count_battles_w10",
+    "event_count_explosions_w10",
+    "event_count_violence_w10",
+    "sum_fatalities_battles_w10",
+    "sum_fatalities_explosions_w10",
+    "sum_fatalities_violence_w10",
+    "crop",
+    "range",
+    "nightlight",
+    "nightlight_sd",
+    "EVI",
+    "market_distance",
+    "FAO_price",
+    "Rainf_f_tavg_mean",
+    "Tair_f_tavg_mean",
+    "gpp_mean",
+    "market_access",
+    "CPI",
+    "GDP",
+    "CC",
+    "gini",
+    "WFP_Price",
+    "WFP_Price_std",
+    "pop",
+    "Food_CPI",
+    "Food_food_inflation",
+    "Tair_zscore",
+    "Rainf_zscore",
+    "WFP_Price_m4",
+    "WFP_Price_m12",
+    "nightlight_m12",
+    "EVI_l1",
+    "EVI_l2",
+    "EVI_l3",
+    "EVI_l4",
+    "EVI_l5",
+    "EVI_l6",
+    "EVI_l7",
+    "EVI_l8",
+    "EVI_l9",
+    "EVI_l10",
+    "EVI_l11",
+    "EVI_l12",
+    "target_year",
+    "target_month_sin",
+    "target_month_cos",
+    "hist_phase_o00",
+    "hist_crisis_o00",
+    "hist_phase_o04",
+    "hist_crisis_o04",
+    "hist_phase_o08",
+    "hist_crisis_o08",
+    "hist_phase_o12",
+    "hist_crisis_o12",
+    "hist_delta_o00_o04",
+    "hist_direction_o00_o04",
+    "hist_delta_o04_o08",
+    "hist_direction_o04_o08",
+    "hist_delta_o08_o12",
+    "hist_direction_o08_o12",
+    "hist_delta_o00_o12",
+    "hist_direction_o00_o12",
+    "hist_w12_frac1",
+    "hist_w12_frac2",
+    "hist_w12_frac3",
+    "hist_w12_frac4or5",
+    "hist_w12_min_phase",
+    "hist_w12_max_phase",
+    "hist_w12_up_rate",
+    "hist_w12_down_rate",
+    "hist_w12_n_obs",
+    "hist_w12_n_pairs",
+    "hist_w12_span_months",
+    "hist_w12_latest_age",
+    "hist_w24_frac1",
+    "hist_w24_frac2",
+    "hist_w24_frac3",
+    "hist_w24_frac4or5",
+    "hist_w24_min_phase",
+    "hist_w24_max_phase",
+    "hist_w24_up_rate",
+    "hist_w24_down_rate",
+    "hist_w24_n_obs",
+    "hist_w24_n_pairs",
+    "hist_w24_span_months",
+    "hist_w24_latest_age",
+    "hist_w36_frac1",
+    "hist_w36_frac2",
+    "hist_w36_frac3",
+    "hist_w36_frac4or5",
+    "hist_w36_min_phase",
+    "hist_w36_max_phase",
+    "hist_w36_up_rate",
+    "hist_w36_down_rate",
+    "hist_w36_n_obs",
+    "hist_w36_n_pairs",
+    "hist_w36_span_months",
+    "hist_w36_latest_age",
+    "hist_latest_observed_phase",
+    "hist_latest_observed_age",
+    "hist_no_history",
+    "hist_crisis_age",
+    "hist_crisis_absent",
+    "hist_phase4or5_age",
+    "hist_phase4or5_absent",
+    "hist_change_age",
+    "hist_change_absent",
+    "hist_run_n",
+    "hist_run_span",
+    "hist_origin_phase1_x_w12_up_rate",
+    "hist_origin_phase1_x_w12_down_rate",
+    "hist_origin_phase1_x_w12_frac4or5",
+    "hist_origin_phase2_x_w12_up_rate",
+    "hist_origin_phase2_x_w12_down_rate",
+    "hist_origin_phase2_x_w12_frac4or5",
+    "hist_origin_phase3_x_w12_up_rate",
+    "hist_origin_phase3_x_w12_down_rate",
+    "hist_origin_phase3_x_w12_frac4or5",
+    "hist_origin_phase4_x_w12_up_rate",
+    "hist_origin_phase4_x_w12_down_rate",
+    "hist_origin_phase4_x_w12_frac4or5"
+  ],
+  "count": 162,
+  "schema_sha256": "51b6f8b21b76a78510522c34e2d1f2a648b7aec768bbcac3dd2318669fa13349",
+  "provenance": {
+    "lat": {
+      "role": "static",
+      "source": "lat",
+      "month": "O (invariant; checked)"
+    },
+    "lon": {
+      "role": "static",
+      "source": "lon",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_10000": {
+      "role": "static",
+      "source": "AEZ_10000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_12000": {
+      "role": "static",
+      "source": "AEZ_12000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_15000": {
+      "role": "static",
+      "source": "AEZ_15000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_17000": {
+      "role": "static",
+      "source": "AEZ_17000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_19000": {
+      "role": "static",
+      "source": "AEZ_19000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_25000": {
+      "role": "static",
+      "source": "AEZ_25000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_31000": {
+      "role": "static",
+      "source": "AEZ_31000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_32000": {
+      "role": "static",
+      "source": "AEZ_32000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_33000": {
+      "role": "static",
+      "source": "AEZ_33000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_34000": {
+      "role": "static",
+      "source": "AEZ_34000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_36000": {
+      "role": "static",
+      "source": "AEZ_36000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_38000": {
+      "role": "static",
+      "source": "AEZ_38000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_4000": {
+      "role": "static",
+      "source": "AEZ_4000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_40000": {
+      "role": "static",
+      "source": "AEZ_40000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_43000": {
+      "role": "static",
+      "source": "AEZ_43000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_7000": {
+      "role": "static",
+      "source": "AEZ_7000",
+      "month": "O (invariant; checked)"
+    },
+    "AEZ_9000": {
+      "role": "static",
+      "source": "AEZ_9000",
+      "month": "O (invariant; checked)"
+    },
+    "distance_to_river": {
+      "role": "static",
+      "source": "distance_to_river",
+      "month": "O (invariant; checked)"
+    },
+    "elevation": {
+      "role": "static",
+      "source": "elevation",
+      "month": "O (invariant; checked)"
+    },
+    "sg_cec_5-15cm": {
+      "role": "static",
+      "source": "sg_cec_5-15cm",
+      "month": "O (invariant; checked)"
+    },
+    "sg_cfvo_5-15cm": {
+      "role": "static",
+      "source": "sg_cfvo_5-15cm",
+      "month": "O (invariant; checked)"
+    },
+    "sg_nitrogen_5-15cm": {
+      "role": "static",
+      "source": "sg_nitrogen_5-15cm",
+      "month": "O (invariant; checked)"
+    },
+    "sg_phh2o_5-15cm": {
+      "role": "static",
+      "source": "sg_phh2o_5-15cm",
+      "month": "O (invariant; checked)"
+    },
+    "sg_soc_5-15cm": {
+      "role": "static",
+      "source": "sg_soc_5-15cm",
+      "month": "O (invariant; checked)"
+    },
+    "ruggedness": {
+      "role": "static",
+      "source": "ruggedness",
+      "month": "O (invariant; checked)"
+    },
+    "slope": {
+      "role": "static",
+      "source": "slope",
+      "month": "O (invariant; checked)"
+    },
+    "distance_to_nearest_acled": {
+      "role": "dynamic",
+      "source": "distance_to_nearest_acled",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_battles": {
+      "role": "dynamic",
+      "source": "event_count_battles",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_explosions": {
+      "role": "dynamic",
+      "source": "event_count_explosions",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_violence": {
+      "role": "dynamic",
+      "source": "event_count_violence",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_battles": {
+      "role": "dynamic",
+      "source": "sum_fatalities_battles",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_explosions": {
+      "role": "dynamic",
+      "source": "sum_fatalities_explosions",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_violence": {
+      "role": "dynamic",
+      "source": "sum_fatalities_violence",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_battles_w5": {
+      "role": "dynamic",
+      "source": "event_count_battles_w5",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_explosions_w5": {
+      "role": "dynamic",
+      "source": "event_count_explosions_w5",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_violence_w5": {
+      "role": "dynamic",
+      "source": "event_count_violence_w5",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_battles_w5": {
+      "role": "dynamic",
+      "source": "sum_fatalities_battles_w5",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_explosions_w5": {
+      "role": "dynamic",
+      "source": "sum_fatalities_explosions_w5",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_violence_w5": {
+      "role": "dynamic",
+      "source": "sum_fatalities_violence_w5",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_battles_w10": {
+      "role": "dynamic",
+      "source": "event_count_battles_w10",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_explosions_w10": {
+      "role": "dynamic",
+      "source": "event_count_explosions_w10",
+      "month": "exactly O, no earlier substitution"
+    },
+    "event_count_violence_w10": {
+      "role": "dynamic",
+      "source": "event_count_violence_w10",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_battles_w10": {
+      "role": "dynamic",
+      "source": "sum_fatalities_battles_w10",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_explosions_w10": {
+      "role": "dynamic",
+      "source": "sum_fatalities_explosions_w10",
+      "month": "exactly O, no earlier substitution"
+    },
+    "sum_fatalities_violence_w10": {
+      "role": "dynamic",
+      "source": "sum_fatalities_violence_w10",
+      "month": "exactly O, no earlier substitution"
+    },
+    "crop": {
+      "role": "dynamic",
+      "source": "crop",
+      "month": "exactly O, no earlier substitution"
+    },
+    "range": {
+      "role": "dynamic",
+      "source": "range",
+      "month": "exactly O, no earlier substitution"
+    },
+    "nightlight": {
+      "role": "dynamic",
+      "source": "nightlight",
+      "month": "exactly O, no earlier substitution"
+    },
+    "nightlight_sd": {
+      "role": "dynamic",
+      "source": "nightlight_sd",
+      "month": "exactly O, no earlier substitution"
+    },
+    "EVI": {
+      "role": "dynamic",
+      "source": "EVI",
+      "month": "exactly O, no earlier substitution"
+    },
+    "market_distance": {
+      "role": "dynamic",
+      "source": "market_distance",
+      "month": "exactly O, no earlier substitution"
+    },
+    "FAO_price": {
+      "role": "dynamic",
+      "source": "FAO_price",
+      "month": "exactly O, no earlier substitution"
+    },
+    "Rainf_f_tavg_mean": {
+      "role": "dynamic",
+      "source": "Rainf_f_tavg_mean",
+      "month": "exactly O, no earlier substitution"
+    },
+    "Tair_f_tavg_mean": {
+      "role": "dynamic",
+      "source": "Tair_f_tavg_mean",
+      "month": "exactly O, no earlier substitution"
+    },
+    "gpp_mean": {
+      "role": "dynamic",
+      "source": "gpp_mean",
+      "month": "exactly O, no earlier substitution"
+    },
+    "market_access": {
+      "role": "dynamic",
+      "source": "market_access",
+      "month": "exactly O, no earlier substitution"
+    },
+    "CPI": {
+      "role": "dynamic",
+      "source": "CPI",
+      "month": "exactly O, no earlier substitution"
+    },
+    "GDP": {
+      "role": "dynamic",
+      "source": "GDP",
+      "month": "exactly O, no earlier substitution"
+    },
+    "CC": {
+      "role": "dynamic",
+      "source": "CC",
+      "month": "exactly O, no earlier substitution"
+    },
+    "gini": {
+      "role": "dynamic",
+      "source": "gini",
+      "month": "exactly O, no earlier substitution"
+    },
+    "WFP_Price": {
+      "role": "dynamic",
+      "source": "WFP_Price",
+      "month": "exactly O, no earlier substitution"
+    },
+    "WFP_Price_std": {
+      "role": "dynamic",
+      "source": "WFP_Price_std",
+      "month": "exactly O, no earlier substitution"
+    },
+    "pop": {
+      "role": "dynamic",
+      "source": "pop",
+      "month": "exactly O, no earlier substitution"
+    },
+    "Food_CPI": {
+      "role": "dynamic",
+      "source": "Food_CPI",
+      "month": "exactly O, no earlier substitution"
+    },
+    "Food_food_inflation": {
+      "role": "dynamic",
+      "source": "Food_food_inflation",
+      "month": "exactly O, no earlier substitution"
+    },
+    "Tair_zscore": {
+      "role": "dynamic",
+      "source": "Tair_zscore",
+      "month": "exactly O, no earlier substitution"
+    },
+    "Rainf_zscore": {
+      "role": "dynamic",
+      "source": "Rainf_zscore",
+      "month": "exactly O, no earlier substitution"
+    },
+    "WFP_Price_m4": {
+      "role": "covariate_derived",
+      "source": "WFP_Price",
+      "month": "sum over [O-4, O-1], all 4 values required"
+    },
+    "WFP_Price_m12": {
+      "role": "covariate_derived",
+      "source": "WFP_Price",
+      "month": "sum over [O-12, O-1], all 12 values required"
+    },
+    "nightlight_m12": {
+      "role": "covariate_derived",
+      "source": "nightlight",
+      "month": "sum over [O-12, O-1], all 12 values required"
+    },
+    "EVI_l1": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-1"
+    },
+    "EVI_l2": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-2"
+    },
+    "EVI_l3": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-3"
+    },
+    "EVI_l4": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-4"
+    },
+    "EVI_l5": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-5"
+    },
+    "EVI_l6": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-6"
+    },
+    "EVI_l7": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-7"
+    },
+    "EVI_l8": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-8"
+    },
+    "EVI_l9": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-9"
+    },
+    "EVI_l10": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-10"
+    },
+    "EVI_l11": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-11"
+    },
+    "EVI_l12": {
+      "role": "covariate_derived",
+      "source": "EVI",
+      "month": "exactly O-12"
+    },
+    "target_year": {
+      "role": "calendar",
+      "source": "target month T",
+      "month": "T (known in advance)"
+    },
+    "target_month_sin": {
+      "role": "calendar",
+      "source": "target month T",
+      "month": "T (known in advance)"
+    },
+    "target_month_cos": {
+      "role": "calendar",
+      "source": "target month T",
+      "month": "T (known in advance)"
+    },
+    "hist_phase_o00": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_crisis_o00": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_phase_o04": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_crisis_o04": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_phase_o08": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_crisis_o08": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_phase_o12": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_crisis_o12": {
+      "role": "history:exact_levels",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_delta_o00_o04": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_direction_o00_o04": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_delta_o04_o08": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_direction_o04_o08": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_delta_o08_o12": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_direction_o08_o12": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_delta_o00_o12": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_direction_o00_o12": {
+      "role": "history:exact_changes",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_frac1": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_frac2": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_frac3": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_frac4or5": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_min_phase": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_max_phase": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_up_rate": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_down_rate": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_n_obs": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_n_pairs": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_span_months": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w12_latest_age": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_frac1": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_frac2": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_frac3": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_frac4or5": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_min_phase": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_max_phase": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_up_rate": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_down_rate": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_n_obs": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_n_pairs": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_span_months": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w24_latest_age": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_frac1": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_frac2": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_frac3": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_frac4or5": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_min_phase": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_max_phase": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_up_rate": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_down_rate": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_n_obs": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_n_pairs": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_span_months": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_w36_latest_age": {
+      "role": "history:windows",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_latest_observed_phase": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_latest_observed_age": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_no_history": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_crisis_age": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_crisis_absent": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_phase4or5_age": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_phase4or5_absent": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_change_age": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_change_absent": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_run_n": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_run_span": {
+      "role": "history:events_and_run",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase1_x_w12_up_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase1_x_w12_down_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase1_x_w12_frac4or5": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase2_x_w12_up_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase2_x_w12_down_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase2_x_w12_frac4or5": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase3_x_w12_up_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase3_x_w12_down_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase3_x_w12_frac4or5": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase4_x_w12_up_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase4_x_w12_down_rate": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    },
+    "hist_origin_phase4_x_w12_frac4or5": {
+      "role": "history:interactions",
+      "source": "fews_ipc merged 1..4",
+      "month": "same-area observations at months <= O"
+    }
+  },
+  "excluded_from_X": [
+    "FEWSNET_admin_code",
+    "ISO",
+    "ISO3",
+    "unit_name",
+    "ADMIN0",
+    "ADMIN1",
+    "ADMIN2",
+    "ADMIN3",
+    "date",
+    "fews_ha",
+    "fews_ipc_adjusted",
+    "fews_proj_near",
+    "fews_proj_near_ha",
+    "fews_proj_med",
+    "fews_proj_med_ha",
+    "fews_proj_med_adjusted",
+    "fews_ipc (current outcome)",
+    "fews_ipc_crisis (current outcome)"
+  ],
+  "raw_missingness_before_imputation": {
+    "4": {
+      "keys": 182067,
+      "nan_cells": {
+        "market_distance": 7235,
+        "FAO_price": 7235,
+        "CPI": 31533,
+        "GDP": 17299,
+        "CC": 11033,
+        "gini": 112491,
+        "WFP_Price": 104203,
+        "WFP_Price_std": 106805,
+        "pop": 39625,
+        "Food_CPI": 13326,
+        "Food_food_inflation": 13326,
+        "Tair_zscore": 105,
+        "Rainf_zscore": 209,
+        "WFP_Price_m4": 112018,
+        "WFP_Price_m12": 122925,
+        "hist_phase_o00": 42705,
+        "hist_crisis_o00": 42705,
+        "hist_phase_o04": 48820,
+        "hist_crisis_o04": 48820,
+        "hist_phase_o08": 16295,
+        "hist_crisis_o08": 16295,
+        "hist_phase_o12": 56327,
+        "hist_crisis_o12": 56327,
+        "hist_delta_o00_o04": 50591,
+        "hist_direction_o00_o04": 50591,
+        "hist_delta_o04_o08": 56903,
+        "hist_direction_o04_o08": 56903,
+        "hist_delta_o08_o12": 63114,
+        "hist_direction_o08_o12": 63114,
+        "hist_delta_o00_o12": 58107,
+        "hist_direction_o00_o12": 58107,
+        "hist_w12_frac1": 1599,
+        "hist_w12_frac2": 1599,
+        "hist_w12_frac3": 1599,
+        "hist_w12_frac4or5": 1599,
+        "hist_w12_min_phase": 1599,
+        "hist_w12_max_phase": 1599,
+        "hist_w12_up_rate": 3261,
+        "hist_w12_down_rate": 3261,
+        "hist_w12_span_months": 1599,
+        "hist_w12_latest_age": 1599,
+        "hist_w24_frac1": 1011,
+        "hist_w24_frac2": 1011,
+        "hist_w24_frac3": 1011,
+        "hist_w24_frac4or5": 1011,
+        "hist_w24_min_phase": 1011,
+        "hist_w24_max_phase": 1011,
+        "hist_w24_up_rate": 3047,
+        "hist_w24_down_rate": 3047,
+        "hist_w24_span_months": 1011,
+        "hist_w24_latest_age": 1011,
+        "hist_w36_frac1": 1008,
+        "hist_w36_frac2": 1008,
+        "hist_w36_frac3": 1008,
+        "hist_w36_frac4or5": 1008,
+        "hist_w36_min_phase": 1008,
+        "hist_w36_max_phase": 1008,
+        "hist_w36_up_rate": 1865,
+        "hist_w36_down_rate": 1865,
+        "hist_w36_span_months": 1008,
+        "hist_w36_latest_age": 1008,
+        "hist_latest_observed_phase": 1005,
+        "hist_latest_observed_age": 1005,
+        "hist_crisis_age": 82324,
+        "hist_phase4or5_age": 159150,
+        "hist_change_age": 34287,
+        "hist_run_n": 1005,
+        "hist_run_span": 1005,
+        "hist_origin_phase1_x_w12_up_rate": 44009,
+        "hist_origin_phase1_x_w12_down_rate": 44009,
+        "hist_origin_phase1_x_w12_frac4or5": 42705,
+        "hist_origin_phase2_x_w12_up_rate": 44009,
+        "hist_origin_phase2_x_w12_down_rate": 44009,
+        "hist_origin_phase2_x_w12_frac4or5": 42705,
+        "hist_origin_phase3_x_w12_up_rate": 44009,
+        "hist_origin_phase3_x_w12_down_rate": 44009,
+        "hist_origin_phase3_x_w12_frac4or5": 42705,
+        "hist_origin_phase4_x_w12_up_rate": 44009,
+        "hist_origin_phase4_x_w12_down_rate": 44009,
+        "hist_origin_phase4_x_w12_frac4or5": 42705
+      },
+      "inf_cells": {
+        "Tair_zscore": 5782,
+        "Rainf_zscore": 5778
+      }
+    },
+    "8": {
+      "keys": 182067,
+      "nan_cells": {
+        "market_distance": 7143,
+        "FAO_price": 7143,
+        "CPI": 26176,
+        "GDP": 11826,
+        "CC": 5336,
+        "gini": 107955,
+        "WFP_Price": 103667,
+        "WFP_Price_std": 106268,
+        "pop": 44788,
+        "Food_CPI": 11482,
+        "Food_food_inflation": 11482,
+        "Tair_zscore": 105,
+        "Rainf_zscore": 209,
+        "WFP_Price_m4": 111693,
+        "WFP_Price_m12": 121413,
+        "hist_phase_o00": 48820,
+        "hist_crisis_o00": 48820,
+        "hist_phase_o04": 16295,
+        "hist_crisis_o04": 16295,
+        "hist_phase_o08": 56327,
+        "hist_crisis_o08": 56327,
+        "hist_phase_o12": 62345,
+        "hist_crisis_o12": 62345,
+        "hist_delta_o00_o04": 56903,
+        "hist_direction_o00_o04": 56903,
+        "hist_delta_o04_o08": 63114,
+        "hist_direction_o04_o08": 63114,
+        "hist_delta_o08_o12": 68986,
+        "hist_direction_o08_o12": 68986,
+        "hist_delta_o00_o12": 63933,
+        "hist_direction_o00_o12": 63933,
+        "hist_w12_frac1": 3046,
+        "hist_w12_frac2": 3046,
+        "hist_w12_frac3": 3046,
+        "hist_w12_frac4or5": 3046,
+        "hist_w12_min_phase": 3046,
+        "hist_w12_max_phase": 3046,
+        "hist_w12_up_rate": 4706,
+        "hist_w12_down_rate": 4706,
+        "hist_w12_span_months": 3046,
+        "hist_w12_latest_age": 3046,
+        "hist_w24_frac1": 1870,
+        "hist_w24_frac2": 1870,
+        "hist_w24_frac3": 1870,
+        "hist_w24_frac4or5": 1870,
+        "hist_w24_min_phase": 1870,
+        "hist_w24_max_phase": 1870,
+        "hist_w24_up_rate": 3907,
+        "hist_w24_down_rate": 3907,
+        "hist_w24_span_months": 1870,
+        "hist_w24_latest_age": 1870,
+        "hist_w36_frac1": 1864,
+        "hist_w36_frac2": 1864,
+        "hist_w36_frac3": 1864,
+        "hist_w36_frac4or5": 1864,
+        "hist_w36_min_phase": 1864,
+        "hist_w36_max_phase": 1864,
+        "hist_w36_up_rate": 2722,
+        "hist_w36_down_rate": 2722,
+        "hist_w36_span_months": 1864,
+        "hist_w36_latest_age": 1864,
+        "hist_latest_observed_phase": 1859,
+        "hist_latest_observed_age": 1859,
+        "hist_crisis_age": 83994,
+        "hist_phase4or5_age": 159721,
+        "hist_change_age": 35386,
+        "hist_run_n": 1859,
+        "hist_run_span": 1859,
+        "hist_origin_phase1_x_w12_up_rate": 50124,
+        "hist_origin_phase1_x_w12_down_rate": 50124,
+        "hist_origin_phase1_x_w12_frac4or5": 48820,
+        "hist_origin_phase2_x_w12_up_rate": 50124,
+        "hist_origin_phase2_x_w12_down_rate": 50124,
+        "hist_origin_phase2_x_w12_frac4or5": 48820,
+        "hist_origin_phase3_x_w12_up_rate": 50124,
+        "hist_origin_phase3_x_w12_down_rate": 50124,
+        "hist_origin_phase3_x_w12_frac4or5": 48820,
+        "hist_origin_phase4_x_w12_up_rate": 50124,
+        "hist_origin_phase4_x_w12_down_rate": 50124,
+        "hist_origin_phase4_x_w12_frac4or5": 48820
+      },
+      "inf_cells": {
+        "Tair_zscore": 5782,
+        "Rainf_zscore": 5778
+      }
+    },
+    "12": {
+      "keys": 182067,
+      "nan_cells": {
+        "market_distance": 7061,
+        "FAO_price": 7061,
+        "CPI": 20817,
+        "GDP": 6714,
+        "gini": 103421,
+        "WFP_Price": 103915,
+        "WFP_Price_std": 105876,
+        "pop": 10325,
+        "Food_CPI": 9734,
+        "Food_food_inflation": 9734,
+        "Tair_zscore": 105,
+        "Rainf_zscore": 209,
+        "WFP_Price_m4": 111794,
+        "WFP_Price_m12": 118863,
+        "hist_phase_o00": 16295,
+        "hist_crisis_o00": 16295,
+        "hist_phase_o04": 56327,
+        "hist_crisis_o04": 56327,
+        "hist_phase_o08": 62345,
+        "hist_crisis_o08": 62345,
+        "hist_phase_o12": 28341,
+        "hist_crisis_o12": 28341,
+        "hist_delta_o00_o04": 63114,
+        "hist_direction_o00_o04": 63114,
+        "hist_delta_o04_o08": 68986,
+        "hist_direction_o04_o08": 68986,
+        "hist_delta_o08_o12": 74439,
+        "hist_direction_o08_o12": 74439,
+        "hist_delta_o00_o12": 30712,
+        "hist_direction_o00_o12": 30712,
+        "hist_w12_frac1": 4493,
+        "hist_w12_frac2": 4493,
+        "hist_w12_frac3": 4493,
+        "hist_w12_frac4or5": 4493,
+        "hist_w12_min_phase": 4493,
+        "hist_w12_max_phase": 4493,
+        "hist_w12_up_rate": 6012,
+        "hist_w12_down_rate": 6012,
+        "hist_w12_span_months": 4493,
+        "hist_w12_latest_age": 4493,
+        "hist_w24_frac1": 2726,
+        "hist_w24_frac2": 2726,
+        "hist_w24_frac3": 2726,
+        "hist_w24_frac4or5": 2726,
+        "hist_w24_min_phase": 2726,
+        "hist_w24_max_phase": 2726,
+        "hist_w24_up_rate": 4625,
+        "hist_w24_down_rate": 4625,
+        "hist_w24_span_months": 2726,
+        "hist_w24_latest_age": 2726,
+        "hist_w36_frac1": 2720,
+        "hist_w36_frac2": 2720,
+        "hist_w36_frac3": 2720,
+        "hist_w36_frac4or5": 2720,
+        "hist_w36_min_phase": 2720,
+        "hist_w36_max_phase": 2720,
+        "hist_w36_up_rate": 3439,
+        "hist_w36_down_rate": 3439,
+        "hist_w36_span_months": 2720,
+        "hist_w36_latest_age": 2720,
+        "hist_latest_observed_phase": 2713,
+        "hist_latest_observed_age": 2713,
+        "hist_crisis_age": 85670,
+        "hist_phase4or5_age": 160237,
+        "hist_change_age": 36435,
+        "hist_run_n": 2713,
+        "hist_run_span": 2713,
+        "hist_origin_phase1_x_w12_up_rate": 17608,
+        "hist_origin_phase1_x_w12_down_rate": 17608,
+        "hist_origin_phase1_x_w12_frac4or5": 16295,
+        "hist_origin_phase2_x_w12_up_rate": 17608,
+        "hist_origin_phase2_x_w12_down_rate": 17608,
+        "hist_origin_phase2_x_w12_frac4or5": 16295,
+        "hist_origin_phase3_x_w12_up_rate": 17608,
+        "hist_origin_phase3_x_w12_down_rate": 17608,
+        "hist_origin_phase3_x_w12_frac4or5": 16295,
+        "hist_origin_phase4_x_w12_up_rate": 17608,
+        "hist_origin_phase4_x_w12_down_rate": 17608,
+        "hist_origin_phase4_x_w12_frac4or5": 16295
+      },
+      "inf_cells": {
+        "Tair_zscore": 5782,
+        "Rainf_zscore": 5778
+      }
+    }
+  },
+  "snapshot_key_rule": "every valid labelled area-month from 2014-01; features depend only on the complete scaffold and on observations <= O, never on which keys are selected"
+}

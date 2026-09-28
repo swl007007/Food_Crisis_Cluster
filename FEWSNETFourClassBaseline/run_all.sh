@@ -3,7 +3,7 @@
 set -euo pipefail
 RUN=${1:?run directory}
 PY=${PYTHON_EXE:-/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe}
-SCHEMA=../.trellis/tasks/09-28-fewsnet-four-class-perturbation/feature-schema.json
+SCHEMA=feature-schema.json
 cd "$(dirname "$0")"
 $PY -B scripts/prepare_fourclass.py --run-dir "$RUN"
 # Keep first and last supported fold checkpoints per scope for replay (A8).

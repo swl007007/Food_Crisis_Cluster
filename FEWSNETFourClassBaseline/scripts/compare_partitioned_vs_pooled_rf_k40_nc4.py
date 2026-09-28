@@ -12,15 +12,19 @@ python scripts/compare_partitioned_vs_pooled_rf_k40_nc4.py --data SNAPSHOT \
 cluster map; with ``route == "null_consensus"`` (D15) only the pooled RF is fitted
 and the partitioned arm reuses its predictions exactly.
 
-Per fold, in ``DIR/folds/<YYYY-MM>/``: fold.json, local_support.csv,
-imputer_statistics.csv.gz, training_keys.csv.gz. For the horizon:
-predictions.csv.gz and run_manifest.json. Existing output is never overwritten.
+Per fold, in ``DIR/folds/<YYYY-MM>/``: local_support.csv, imputer_statistics.csv.gz,
+training_keys.csv.gz, models/<estimator>.pkl.xz (every pooled/local RF actually used,
+bundled with its imputer, feature order and fit identity) and, written last, fold.json
+with the SHA-256 of every file. For the horizon: predictions.csv.gz and, written last,
+run_manifest.json. Existing output is never overwritten or continued.
 """
 import argparse
 import gzip
 import hashlib
 import json
+import lzma
 import os
+import pickle
 import sys
 import time
 from datetime import datetime, timezone
@@ -39,6 +43,8 @@ from src.feature.fourclass_features import load_schema, month_label
 from src.metrics import fourclass
 from src.model.model_RF import MaxPlusImputer
 from src.utils.lag_schedules import forecasting_scope_to_lag
+from src.utils.run_identity import (code_identity, file_sha256 as _sha, output_hashes, refuse_existing,
+                                    require_prepared, runtime_identity, write_json_atomic)
 
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF.py default)
 PARTITION_UNMAPPED_THRESHOLD_PCT = 2.0
@@ -76,6 +82,11 @@ class FittedRF:
         raw = self.forest.predict_proba(self.imputer.transform(X))
         return fourclass.align_probabilities(raw, self.forest.classes_)
 
+    def bundle(self, features, identity):
+        """The persisted estimator: forest + its own imputer + feature order + fit identity."""
+        return {"forest": self.forest, "imputer": self.imputer, "features": list(features),
+                "identity": {**identity, **self.record()}}
+
     def record(self):
         return {"rows": self.n_rows, "class_counts": self.class_counts,
                 "classes_": [int(c) for c in self.forest.classes_],
@@ -85,6 +96,13 @@ class FittedRF:
 
 def load_consensus(path):
     record = json.loads(Path(path).read_text(encoding="utf-8"))
+    stage2 = Path(path).parent
+    if record.get("code") != code_identity() or record.get("runtime") != runtime_identity():
+        raise ValueError("Stage 2 consensus was produced by different package code or runtime")
+    problems = [rel for rel, sha in record.get("outputs", {}).items()
+                if not (stage2 / rel).is_file() or _sha(stage2 / rel) != sha]
+    if not record.get("outputs") or problems:
+        raise ValueError(f"Stage 2 outputs missing or changed: {problems[:5]}")
     if record.get("route") == "null_consensus":
         return record, None
     if record.get("route") != "learned_map":
@@ -192,8 +210,30 @@ def fit_fold(snap, features, test_month, horizon, cluster_of):
     })
     fills = pd.DataFrame({name: est.imputer.fill_ for name, est in estimators.items()}, index=features)
     fills.index.name = "feature"
+    identity = {"target_month": str(test_month), "origin_month": month_label([origin])[0],
+                "horizon": horizon, "train_keys_sha256": record["train_keys_sha256"]}
+    bundles = {name: est.bundle(features, {**identity, "estimator": name}) for name, est in estimators.items()}
     return preds, record, {"local_support": pd.DataFrame(local_rows), "imputer_fills": fills,
-                           "training_keys": train[["area", "target_month", "class_code"]]}
+                           "training_keys": train[["area", "target_month", "class_code"]],
+                           "bundles": bundles}
+
+
+def save_bundle(path: Path, bundle) -> None:
+    with lzma.open(path, "wb", preset=6) as handle:
+        pickle.dump(bundle, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def load_bundle(path: Path):
+    with lzma.open(path, "rb") as handle:
+        bundle = pickle.load(handle)
+    if set(bundle) != {"forest", "imputer", "features", "identity"}:
+        raise ValueError(f"{path} is not a Stage 3 estimator bundle")
+    return bundle
+
+
+def bundle_proba(bundle, X):
+    raw = bundle["forest"].predict_proba(bundle["imputer"].transform(X))
+    return fourclass.align_probabilities(raw, bundle["forest"].classes_)
 
 
 def main():
@@ -210,8 +250,9 @@ def main():
     args = parser.parse_args()
 
     out_dir = Path(args.out_dir)
-    if out_dir.exists():
-        raise FileExistsError(f"{out_dir} exists; Stage 3 output is never overwritten")
+    refuse_existing(out_dir, "Stage 3")
+    run_dir = Path(args.data).resolve().parents[1]
+    require_prepared(run_dir)
     out_dir.mkdir(parents=True)
     horizon = forecasting_scope_to_lag(args.forecasting_scope, LAGS_MONTHS)
     features = load_schema(Path(args.schema))["ordered_features"]
@@ -248,9 +289,10 @@ def main():
         preds, record, extras = fit_fold(snap, features, month, horizon, cluster_of)
         fold_dir = out_dir / "folds" / str(month)
         fold_dir.mkdir(parents=True)
-        (fold_dir / "fold.json").write_text(json.dumps(record, indent=2, default=str), encoding="utf-8")
         folds.append({k: record[k] for k in ("target_month", "origin_month", "status")})
         if preds is None:
+            record["outputs"] = {}
+            write_json_atomic(fold_dir / "fold.json", record)
             print(f"{month}: skipped (no labelled target rows)", flush=True)
             continue
         extras["local_support"].to_csv(fold_dir / "local_support.csv", index=False)
@@ -258,6 +300,12 @@ def main():
             extras["imputer_fills"].to_csv(handle)
         with gzip.open(fold_dir / "training_keys.csv.gz", "wt", encoding="utf-8", newline="") as handle:
             extras["training_keys"].to_csv(handle, index=False)
+        (fold_dir / "models").mkdir()
+        for name, bundle in extras["bundles"].items():
+            save_bundle(fold_dir / "models" / f"{name}.pkl.xz", bundle)
+        # Completion record last: every fold output with its hash.
+        record["outputs"] = output_hashes(fold_dir)
+        write_json_atomic(fold_dir / "fold.json", record)
         predictions.append(preds)
         print(f"{month}: n={record['rows']['test']} pooled={record['pooled_summary']['macro_f1']:.4f} "
               f"partitioned={record['partitioned_summary']['macro_f1']:.4f} "
@@ -281,7 +329,11 @@ def main():
         "prediction_rows": int(len(all_preds)),
         "python": sys.version.split()[0],
     }
-    (out_dir / "run_manifest.json").write_text(json.dumps(manifest, indent=2, default=str), encoding="utf-8")
+    manifest.update(code=code_identity(), runtime=runtime_identity(),
+                    predictions_sha256=_sha(out_dir / "predictions.csv.gz"),
+                    fold_records={f["target_month"]: _sha(out_dir / "folds" / f["target_month"] / "fold.json")
+                                  for f in folds})
+    write_json_atomic(out_dir / "run_manifest.json", manifest)
 
 
 if __name__ == '__main__':

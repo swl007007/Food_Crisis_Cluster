@@ -1,0 +1,22 @@
+{
+  "target_month": "2022-09",
+  "origin_month": "2021-09",
+  "horizon": 12,
+  "train_label_months": [
+    "2018-10",
+    "2021-08"
+  ],
+  "train_label_months_observed": [
+    "2018-10",
+    "2019-02",
+    "2019-06",
+    "2019-10",
+    "2020-02",
+    "2020-06",
+    "2020-10",
+    "2021-02",
+    "2021-06"
+  ],
+  "status": "skipped_empty_target",
+  "outputs": {}
+}

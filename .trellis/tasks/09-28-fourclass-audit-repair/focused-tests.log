@@ -1,0 +1,42 @@
+*** TRANSFORMATION.PY MODULE LOADED - DEBUG LOGGING ACTIVE ***
+test_counts_aggregate_before_f1 (__main__.ClassesAndMetrics.test_counts_aggregate_before_f1) ... ok
+test_fixed_four_macro_absent_class_scores_zero (__main__.ClassesAndMetrics.test_fixed_four_macro_absent_class_scores_zero) ... ok
+test_get_prf_has_no_mean_fill (__main__.ClassesAndMetrics.test_get_prf_has_no_mean_fill) ... ok
+test_phase_merge_and_missing (__main__.ClassesAndMetrics.test_phase_merge_and_missing) ... ok
+test_probability_axis_alignment_and_ties (__main__.ClassesAndMetrics.test_probability_axis_alignment_and_ties) ... ok
+test_wrong_class_counts_fp_and_fn (__main__.ClassesAndMetrics.test_wrong_class_counts_fp_and_fn) ... ok
+test_complete_fold_verifies_and_every_breach_is_refused (__main__.Continuation.test_complete_fold_verifies_and_every_breach_is_refused) ... ok
+test_forged_marker_is_refused (__main__.Continuation.test_forged_marker_is_refused) ... ok
+test_stage2_and_stage3_refuse_existing_output (__main__.Continuation.test_stage2_and_stage3_refuse_existing_output) ... ok
+test_covariate_offsets_sums_and_area_isolation (__main__.HistoryFeatures.test_covariate_offsets_sums_and_area_isolation) ... ok
+test_exact_offsets_windows_events_and_run (__main__.HistoryFeatures.test_exact_offsets_windows_events_and_run) ... ok
+test_schema_order_and_exclusions (__main__.HistoryFeatures.test_schema_order_and_exclusions) ... ok
+test_sparse_gap_missing_origin_and_window_edge (__main__.HistoryFeatures.test_sparse_gap_missing_origin_and_window_edge) ... ok
+test_max_plus_rules_and_fit_only_on_given_rows (__main__.Imputation.test_max_plus_rules_and_fit_only_on_given_rows) ... ok
+test_pseudo_rows_after_imputation_and_bundle_roundtrip (__main__.Imputation.test_pseudo_rows_after_imputation_and_bundle_roundtrip) ... ok
+test_parent_normalized_masses_and_zero_columns (__main__.ScanStatistics.test_parent_normalized_masses_and_zero_columns) ... ok
+test_zero_exposure_scan_is_finite (__main__.ScanStatistics.test_zero_exposure_scan_is_finite) ... ok
+test_exact_boundary_ties_and_strict_gain (__main__.SplitGate.test_exact_boundary_ties_and_strict_gain) ... ok
+test_mixed_parent_child_combination (__main__.SplitGate.test_mixed_parent_child_combination) ... ok
+test_no_class1_path_remains (__main__.SplitGate.test_no_class1_path_remains) ... ok
+test_partition_root_rejection_and_inherited_checkpoint_bundle (__main__.SplitGate.test_partition_root_rejection_and_inherited_checkpoint_bundle) ... ok
+test_zero_error_parent_gives_no_candidate (__main__.SplitGate.test_zero_error_parent_gives_no_candidate) ... ok
+test_baseline_calendar_join_and_no_backfill (__main__.Stage2AndReporting.test_baseline_calendar_join_and_no_backfill) ... ok
+test_cohorts_share_keys_and_exclude_missing_baselines (__main__.Stage2AndReporting.test_cohorts_share_keys_and_exclude_missing_baselines) ... ok
+test_country_bootstrap_matches_direct_recount (__main__.Stage2AndReporting.test_country_bootstrap_matches_direct_recount) ... ok
+test_macro_logit_weights_and_all_zero (__main__.Stage2AndReporting.test_macro_logit_weights_and_all_zero) ... ok
+test_stage2_missing_candidate_is_not_null_consensus (__main__.Stage2AndReporting.test_stage2_missing_candidate_is_not_null_consensus) ... ok
+test_stage2_synthetic_integration_and_null_route (__main__.Stage2AndReporting.test_stage2_synthetic_integration_and_null_route) ... ok
+test_step1_reads_explicit_macro_columns (__main__.Stage2AndReporting.test_step1_reads_explicit_macro_columns) ... ok
+test_empty_training_pool_is_an_error (__main__.Stage3Routing.test_empty_training_pool_is_an_error) ... ok
+test_local_fallbacks_and_class_axis (__main__.Stage3Routing.test_local_fallbacks_and_class_axis) ... ok
+test_local_fit_uses_its_own_imputer (__main__.Stage3Routing.test_local_fit_uses_its_own_imputer) ... ok
+test_null_consensus_reuses_pooled_exactly (__main__.Stage3Routing.test_null_consensus_reuses_pooled_exactly) ... ok
+test_saved_bundles_reproduce_probabilities (__main__.Stage3Routing.test_saved_bundles_reproduce_probabilities) ... ok
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+
+----------------------------------------------------------------------
+Ran 34 tests in 7.490s
+
+OK

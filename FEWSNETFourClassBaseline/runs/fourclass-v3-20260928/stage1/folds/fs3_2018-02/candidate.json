@@ -1,0 +1,476 @@
+{
+  "scope": 3,
+  "horizon": 12,
+  "target_month": "2018-02",
+  "origin_month": "2017-02",
+  "train_label_months": [
+    "2014-03",
+    "2017-01"
+  ],
+  "train_label_months_observed": [
+    "2014-04",
+    "2014-07",
+    "2014-10",
+    "2015-01",
+    "2015-04",
+    "2015-07",
+    "2015-10",
+    "2016-02",
+    "2016-06",
+    "2016-10"
+  ],
+  "rows": {
+    "fitting": 40250,
+    "validation": 10164,
+    "heldout_target": 5364
+  },
+  "class_counts": {
+    "fitting": [
+      25848,
+      10524,
+      3431,
+      447
+    ],
+    "validation": [
+      6523,
+      2579,
+      930,
+      132
+    ],
+    "heldout_target": [
+      2896,
+      1696,
+      733,
+      39
+    ]
+  },
+  "areas": {
+    "training": 5359,
+    "heldout_target": 5364,
+    "heldout_target_without_training_rows": 5
+  },
+  "inherited_restrictions": {
+    "training_restricted_to_target_month_areas": true,
+    "note": "customize.train_test_split_rolling_window keeps only training areas present in the target month; held-out areas without training rows route to the root."
+  },
+  "validation_split": {
+    "val_ratio": 0.2,
+    "min_val_per_group": 1,
+    "skip_singleton_groups": true,
+    "random_state": 42,
+    "groups_with_validation": 5159,
+    "singleton_groups_train_only": 200
+  },
+  "partition": {
+    "terminal_partitions": [
+      "root"
+    ],
+    "n_terminal": 1,
+    "accepted_splits": 0,
+    "decisions": [
+      {
+        "branch_id": "",
+        "depth": 0,
+        "outcome": "rejected_gate",
+        "parent_macro_f1": "2041537309267/2394189394917",
+        "best_macro_f1": "245038988541/284758576225",
+        "gain": "5324490208962068269022/681765963309559172048325",
+        "scores": {
+          "parent_parent": "2041537309267/2394189394917",
+          "child_parent": "245038988541/284758576225",
+          "parent_child": "200832554833/238995584240",
+          "child_child": "78855277805/92976133206"
+        },
+        "selected_children": [
+          false,
+          false
+        ],
+        "n_groups": [
+          2175,
+          2984
+        ],
+        "rows_train": [
+          16724,
+          23526
+        ],
+        "rows_val": [
+          4204,
+          5960
+        ]
+      }
+    ],
+    "gate": "strict fixed-four macro-F1 gain > 0.01 on the parent's validation rows; parent wins ties",
+    "terminal_checkpoint_routes": {
+      "root": {
+        "saved_as": "",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 40250,
+        "real_class_counts": [
+          25848,
+          10524,
+          3431,
+          447
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+      }
+    },
+    "parent_routed_areas": {
+      "train_areas": 0,
+      "train_rows": 0,
+      "heldout_rows": 0,
+      "labels": [],
+      "note": "areas without validation rows are not in any accepted scan subset; they keep the parent branch and use the parent's checkpoint (routing and correspondence agree)"
+    },
+    "correspondence_source": "space_partitions/X_branch_id.npy == s_branch routing (checked)"
+  },
+  "scores": {
+    "macro_f1": 0.4653873493924815,
+    "macro_f1_base": 0.4653873493924815,
+    "partitioned": {
+      "n": 5364,
+      "macro_f1": 0.4653873493924815,
+      "accuracy": 0.7289336316181954,
+      "category_step_mae": 0.296607009694258,
+      "per_class": {
+        "1": {
+          "support": 2896,
+          "predicted": 3344,
+          "tp": 2642,
+          "fp": 702,
+          "fn": 254,
+          "f1": 0.8467948717948718,
+          "precision": 0.7900717703349283,
+          "recall": 0.912292817679558
+        },
+        "2": {
+          "support": 1696,
+          "predicted": 1789,
+          "tp": 1077,
+          "fp": 712,
+          "fn": 619,
+          "f1": 0.618077474892396,
+          "precision": 0.602012297372834,
+          "recall": 0.6350235849056604
+        },
+        "3": {
+          "support": 733,
+          "predicted": 230,
+          "tp": 191,
+          "fp": 39,
+          "fn": 542,
+          "f1": 0.39667705088265837,
+          "precision": 0.8304347826086956,
+          "recall": 0.2605729877216917
+        },
+        "4\u62165": {
+          "support": 39,
+          "predicted": 1,
+          "tp": 0,
+          "fp": 1,
+          "fn": 39,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0
+        }
+      },
+      "confusion_rows_truth_cols_pred": [
+        [
+          2642,
+          247,
+          7,
+          0
+        ],
+        [
+          599,
+          1077,
+          20,
+          0
+        ],
+        [
+          103,
+          438,
+          191,
+          1
+        ],
+        [
+          0,
+          27,
+          12,
+          0
+        ]
+      ]
+    },
+    "pooled": {
+      "n": 5364,
+      "macro_f1": 0.4653873493924815,
+      "accuracy": 0.7289336316181954,
+      "category_step_mae": 0.296607009694258,
+      "per_class": {
+        "1": {
+          "support": 2896,
+          "predicted": 3344,
+          "tp": 2642,
+          "fp": 702,
+          "fn": 254,
+          "f1": 0.8467948717948718,
+          "precision": 0.7900717703349283,
+          "recall": 0.912292817679558
+        },
+        "2": {
+          "support": 1696,
+          "predicted": 1789,
+          "tp": 1077,
+          "fp": 712,
+          "fn": 619,
+          "f1": 0.618077474892396,
+          "precision": 0.602012297372834,
+          "recall": 0.6350235849056604
+        },
+        "3": {
+          "support": 733,
+          "predicted": 230,
+          "tp": 191,
+          "fp": 39,
+          "fn": 542,
+          "f1": 0.39667705088265837,
+          "precision": 0.8304347826086956,
+          "recall": 0.2605729877216917
+        },
+        "4\u62165": {
+          "support": 39,
+          "predicted": 1,
+          "tp": 0,
+          "fp": 1,
+          "fn": 39,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0
+        }
+      },
+      "confusion_rows_truth_cols_pred": [
+        [
+          2642,
+          247,
+          7,
+          0
+        ],
+        [
+          599,
+          1077,
+          20,
+          0
+        ],
+        [
+          103,
+          438,
+          191,
+          1
+        ],
+        [
+          0,
+          27,
+          12,
+          0
+        ]
+      ]
+    },
+    "note": "held-out target-month scores; NOT the within-window split-validation scores"
+  },
+  "fits": {
+    "georf_fit_log": [
+      {
+        "fit_seq": 0,
+        "trained_under": "",
+        "real_rows": 40250,
+        "real_class_counts": [
+          25848,
+          10524,
+          3431,
+          447
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+      },
+      {
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 40250,
+        "real_class_counts": [
+          25848,
+          10524,
+          3431,
+          447
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+      },
+      {
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 16724,
+        "real_class_counts": [
+          13628,
+          2328,
+          751,
+          17
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "90d9b16e1f5377e85f64e839667aa2fb43898ddd7a2ac3edb01614748a266650"
+      },
+      {
+        "fit_seq": 3,
+        "trained_under": "",
+        "real_rows": 23526,
+        "real_class_counts": [
+          12220,
+          8196,
+          2680,
+          430
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "39787533b1598f1c97bc34fbc43d5da96c575a6d8f612552b4c118fdc1e11957"
+      }
+    ],
+    "georf_saved_log": [
+      {
+        "saved_as": "",
+        "fit_seq": 0,
+        "trained_under": "",
+        "real_rows": 40250,
+        "real_class_counts": [
+          25848,
+          10524,
+          3431,
+          447
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+      },
+      {
+        "saved_as": "",
+        "fit_seq": 1,
+        "trained_under": "",
+        "real_rows": 40250,
+        "real_class_counts": [
+          25848,
+          10524,
+          3431,
+          447
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+      },
+      {
+        "saved_as": "0",
+        "fit_seq": 2,
+        "trained_under": "",
+        "real_rows": 16724,
+        "real_class_counts": [
+          13628,
+          2328,
+          751,
+          17
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "90d9b16e1f5377e85f64e839667aa2fb43898ddd7a2ac3edb01614748a266650"
+      },
+      {
+        "saved_as": "1",
+        "fit_seq": 3,
+        "trained_under": "",
+        "real_rows": 23526,
+        "real_class_counts": [
+          12220,
+          8196,
+          2680,
+          430
+        ],
+        "pseudo_rows": 4,
+        "imputer_sha256": "39787533b1598f1c97bc34fbc43d5da96c575a6d8f612552b4c118fdc1e11957"
+      }
+    ],
+    "pooled_eval_fit": {
+      "fit_seq": 0,
+      "trained_under": "eval",
+      "real_rows": 40250,
+      "real_class_counts": [
+        25848,
+        10524,
+        3431,
+        447
+      ],
+      "pseudo_rows": 4,
+      "imputer_sha256": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+    },
+    "pseudo_rows_per_fit": 4,
+    "pseudo_row_rule": "one zero-feature row per class appended after real-row imputation"
+  },
+  "imputers": {
+    "root": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1",
+    "pooled_eval": "f469a772a529319dca0e4f09374e24f5432caee095c4efc5b625f6c033d2e3e1"
+  },
+  "estimator_params": {
+    "bootstrap": true,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "sqrt",
+    "n_estimators": 100,
+    "random_state": 5
+  },
+  "config": {
+    "MIN_DEPTH": 1,
+    "MAX_DEPTH": 6,
+    "NUM_CLASS": 4,
+    "GOVERNING_METRIC": "macro_f1",
+    "MIN_MACRO_F1_IMPROVEMENT_THRESHOLD": 0.01,
+    "MIN_BRANCH_SAMPLE_SIZE": 0,
+    "MIN_SCAN_CLASS_SAMPLE": 0,
+    "CONTIGUITY": true,
+    "REFINE_TIMES": 3,
+    "FEATURE_DROP": {
+      "enable": false,
+      "cols": [
+        "year",
+        "month",
+        "fews_ha",
+        "IPC_admin_code",
+        "ISO_encoded",
+        "years"
+      ],
+      "patterns": []
+    },
+    "N_JOBS": 4,
+    "RUN_PRE_PARTITION_DIAGNOSTIC": false
+  },
+  "module_locations": {
+    "config": "config.py",
+    "src": "src\\__init__.py",
+    "src.customize.customize": "src\\customize\\customize.py",
+    "src.feature.fourclass_features": "src\\feature\\fourclass_features.py",
+    "src.helper.helper": "src\\helper\\helper.py",
+    "src.metrics.fourclass": "src\\metrics\\fourclass.py",
+    "src.metrics.metrics": "src\\metrics\\metrics.py",
+    "src.model.model_RF": "src\\model\\model_RF.py",
+    "src.initialization.initialization": "src\\initialization\\initialization.py",
+    "src.utils.split": "src\\utils\\split.py",
+    "src.model.train_branch": "src\\model\\train_branch.py",
+    "src.vis.visualization": "src\\vis\\visualization.py",
+    "src.partition.partition_opt": "src\\partition\\partition_opt.py",
+    "src.tests.static_table": "src\\tests\\static_table.py",
+    "src.tests.sig_test": "src\\tests\\sig_test.py",
+    "src.partition.transformation": "src\\partition\\transformation.py",
+    "src.model.GeoRF": "src\\model\\GeoRF.py",
+    "src.utils.lag_schedules": "src\\utils\\lag_schedules.py",
+    "src.adjacency.adjacency_utils": "src\\adjacency\\adjacency_utils.py",
+    "config_visual": "config_visual.py",
+    "src.merge.terminal": "src\\merge\\terminal.py",
+    "src.vis.visualization_fix": "src\\vis\\visualization_fix.py"
+  },
+  "timings": {
+    "fit_seconds": 15.39,
+    "total_seconds": 20.92
+  }
+}

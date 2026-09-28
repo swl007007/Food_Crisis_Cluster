@@ -23,6 +23,9 @@ import pandas as pd
 PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
 from scripts.step4_similarity_matrix import compute_plan_weights  # noqa: E402
+from scripts.run_stage1 import verify_fold  # noqa: E402
+from src.utils.run_identity import (code_identity, output_hashes, refuse_existing,  # noqa: E402
+                                    require_prepared, runtime_identity, write_json_atomic)
 
 STEPS = (
     ("step1_merge_results.py", ["--model-type", "georf"]),
@@ -37,7 +40,7 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def candidate_ledger(run: Path) -> pd.DataFrame:
+def candidate_ledger(run: Path, prepared_identity=None) -> pd.DataFrame:
     schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
     rows, problems = [], []
     for fold in schedule["stage1"]:
@@ -47,8 +50,12 @@ def candidate_ledger(run: Path) -> pd.DataFrame:
             continue
         fold_dir = run / "stage1" / "folds" / name
         record = fold_dir / "candidate.json"
-        if not record.exists() or not (fold_dir / "correspondence_table.csv").exists():
-            problems.append(f"{name}: missing completion record or correspondence")
+        try:
+            if prepared_identity is None:
+                raise RuntimeError("no verified preparation")
+            verify_fold(run, name, prepared_identity)
+        except Exception as exc:  # missing, partial, stale or foreign fold
+            problems.append(f"{name}: {exc}")
             continue
         data = json.loads(record.read_text(encoding="utf-8"))
         scores = data["scores"]
@@ -65,15 +72,21 @@ def candidate_ledger(run: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def finish(out: Path, record: dict) -> None:
+    """consensus.json is the completion record, written last with every output hash."""
+    record.update(code=code_identity(), runtime=runtime_identity(),
+                  outputs={rel: sha for rel, sha in output_hashes(out).items() if rel != "consensus.json"})
+    write_json_atomic(out / "consensus.json", record)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run-dir", type=Path, required=True)
     args = parser.parse_args()
     run = args.run_dir.resolve()
     out = run / "stage2"
-    if out.exists():
-        raise FileExistsError(f"{out} exists; consensus is never rebuilt in place")
-    ledger = candidate_ledger(run)
+    refuse_existing(out, "Stage 2")
+    ledger = candidate_ledger(run, require_prepared(run))
     out.mkdir(parents=True)
     ledger.to_csv(out / "candidate_ledger.csv", index=False)
     completed = ledger[ledger["status"] == "completed"].copy()
@@ -89,7 +102,7 @@ def main() -> None:
         record.update(route="null_consensus",
                       note=("D15: the complete candidate ledger has only zero weights. No similarity, "
                             "graph or clustering is built; Stage 3's partitioned arm reuses the pooled RF."))
-        (out / "consensus.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+        finish(out, record)
         print("null consensus", flush=True)
         return
 
@@ -123,7 +136,7 @@ def main() -> None:
         cluster_sizes={str(k): int(v) for k, v in mapping["cluster_id"].value_counts().sort_index().items()},
         scope_rule="in-scope areas = any non-s-1 assignment in some candidate (step4 default)",
         admin_universe="0..5717 (step3); out-of-scope areas are unmapped and use the pooled RF in Stage 3")
-    (out / "consensus.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+    finish(out, record)
     print(f"learned map with {n_clusters} clusters", flush=True)
 
 

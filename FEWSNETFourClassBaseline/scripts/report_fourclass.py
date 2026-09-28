@@ -32,6 +32,25 @@ HORIZONS = (4, 8, 12)
 KEY = ["area", "target_month", "horizon"]
 
 
+def verify_stage3(run: Path) -> None:
+    """Report only from complete Stage 3 outputs made by the current code/runtime."""
+    from src.utils.run_identity import code_identity, file_sha256, require_prepared, runtime_identity
+    require_prepared(run)
+    for horizon in HORIZONS:
+        out = run / "stage3" / f"h{horizon}"
+        manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
+        if manifest.get("code") != code_identity() or manifest.get("runtime") != runtime_identity():
+            raise RuntimeError(f"h{horizon}: Stage 3 made by different code or runtime")
+        if file_sha256(out / "predictions.csv.gz") != manifest["predictions_sha256"]:
+            raise RuntimeError(f"h{horizon}: predictions differ from the Stage 3 record")
+        for month, sha in manifest["fold_records"].items():
+            fold = out / "folds" / month
+            record = json.loads((fold / "fold.json").read_text(encoding="utf-8"))
+            if file_sha256(fold / "fold.json") != sha or any(
+                    file_sha256(fold / rel) != h for rel, h in record["outputs"].items()):
+                raise RuntimeError(f"h{horizon} {month}: fold outputs missing or changed")
+
+
 def load_keyed(run: Path) -> pd.DataFrame:
     base = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv")
     base["target_month"] = base["target_label"]
@@ -139,6 +158,7 @@ def main() -> None:
     out = run / "report"
     if out.exists():
         raise FileExistsError(f"{out} exists")
+    verify_stage3(run)
     frame = load_keyed(run)
     groups = cohorts(frame)
     countries = sorted(frame["country"].unique().tolist())
