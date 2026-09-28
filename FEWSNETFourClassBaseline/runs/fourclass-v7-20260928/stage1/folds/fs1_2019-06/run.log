@@ -1,0 +1,19 @@
+*** TRANSFORMATION.PY MODULE LOADED - DEBUG LOGGING ACTIVE ***
+C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\FEWSNETFourClassBaseline\src\customize\customize.py:401: FutureWarning: 'M' is deprecated and will be removed in a future version, please use 'ME' instead.
+  if test_month.freq != 'M':
+Medium memory system (31.8GB): Using N_JOBS=4
+Final N_JOBS configuration: 4
+
+================================================================================
+MONTHLY SPLIT | TEST=2019-06 | LAG=4 months
+================================================================================
+TRAIN: 2016-03-01 to 2019-01-31 (35 months, 42553 samples)
+TEST:  2019-06-01 to 2019-06-30 (1 month, 5365 samples)
+TRAIN ends 4 months before TEST | Gap ensures no leakage
+Disjoint: TRAIN < 2019-02-01 <= ... <= 2019-06-01 <= TEST
+================================================================================
+
+model_dir: result_GeoRF
+HIGH memory pressure detected (Available: 1.6GB, Used: 95.1%)
+Using n_jobs=1 to prevent bitmap allocation failure
+Random Forest training successful with n_jobs=1

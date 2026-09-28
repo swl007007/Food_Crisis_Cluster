@@ -1,0 +1,112 @@
+{
+  "source": "/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/state.db (runs table, read-only export)",
+  "exported_note": "Durable controller records of every four-class audit run: task, base_sha at start, remediation_for, executor, close data. Exported verbatim; not reconstructed.",
+  "runs": [
+    {
+      "id": "321911af42cc46809237d7a003700ed9",
+      "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+      "task_id": "fewsnet-four-class-perturbation",
+      "task_dir": ".trellis/tasks/09-28-fewsnet-four-class-perturbation",
+      "base_sha": "8a562720097f89c5c89e0cba0c92dd87c0bac2d5",
+      "phase": "closed",
+      "executor": {
+        "agent": "claude",
+        "agent_session": {
+          "agent": "claude",
+          "kind": "id",
+          "source": "herdr:claude",
+          "value": "ba823c27-909b-4deb-aecd-e92bf448c229"
+        },
+        "terminal_id": "term_65c8c701e80398"
+      },
+      "remediation_for": null,
+      "close_data": {
+        "closed_at": 1790624409.611339,
+        "completion_sha": "ecd2b70f6c774ae2f8000b59f38d16edb9d183bd",
+        "job_id": "fa38f19ad8fafc36567f90ac",
+        "snapshot_path": "/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/runs/321911af42cc46809237d7a003700ed9/52b9030ce50e6c66593346fe8a5f9ff1f2d503e5b2ba5552f196843ad8224f1e.json",
+        "snapshot_sha256": "52b9030ce50e6c66593346fe8a5f9ff1f2d503e5b2ba5552f196843ad8224f1e"
+      },
+      "error": null,
+      "created": 1790613676.1233556
+    },
+    {
+      "id": "ff3984c50d574bedb7c8b764c8c0bec3",
+      "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+      "task_id": "fourclass-audit-repair",
+      "task_dir": ".trellis/tasks/09-28-fourclass-audit-repair",
+      "base_sha": "621fed5c518e0db2ba12d1935079f0b3b285b69e",
+      "phase": "closed",
+      "executor": {
+        "agent": "claude",
+        "agent_session": {
+          "agent": "claude",
+          "kind": "id",
+          "source": "herdr:claude",
+          "value": "ba823c27-909b-4deb-aecd-e92bf448c229"
+        },
+        "terminal_id": "term_65c8c701e80398"
+      },
+      "remediation_for": "fa38f19ad8fafc36567f90ac",
+      "close_data": {
+        "closed_at": 1790627562.5432742,
+        "completion_sha": "c155ef30e180fb27f9dd564e8e40a44b0c314851",
+        "job_id": "026f8908081e8266ea640366",
+        "snapshot_path": "/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/runs/ff3984c50d574bedb7c8b764c8c0bec3/9d3d60f78402120761732c418a9daed8840bd23fb8129686a69720011cfdc9ba.json",
+        "snapshot_sha256": "9d3d60f78402120761732c418a9daed8840bd23fb8129686a69720011cfdc9ba"
+      },
+      "error": "Trellis archive failed: \n\u001b[0;31mError: Task not found: .trellis/tasks/09-28-fourclass-audit-repair\u001b[0m\nActive tasks:\n",
+      "created": 1790625244.465538
+    },
+    {
+      "id": "e1d5a144b47e4cfaa34dc8d4a98dec4d",
+      "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+      "task_id": "fourclass-audit-repair-2",
+      "task_dir": ".trellis/tasks/09-28-fourclass-audit-repair-2",
+      "base_sha": "a9d479972af92556077b54dd1a93b27c9cc214fa",
+      "phase": "closed",
+      "executor": {
+        "agent": "claude",
+        "agent_session": {
+          "agent": "claude",
+          "kind": "id",
+          "source": "herdr:claude",
+          "value": "ba823c27-909b-4deb-aecd-e92bf448c229"
+        },
+        "terminal_id": "term_65c8c701e80398"
+      },
+      "remediation_for": "026f8908081e8266ea640366",
+      "close_data": {
+        "closed_at": 1790632964.6085808,
+        "completion_sha": "55706e3a08ed8b46d2feed77eea7f37d7dc361df",
+        "job_id": "140f13de0d542e0668bb23d4",
+        "snapshot_path": "/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/runs/e1d5a144b47e4cfaa34dc8d4a98dec4d/c26c5244870de69bd3def287bfe0693cd757411cf9bc51ebf3e283d45bc55820.json",
+        "snapshot_sha256": "c26c5244870de69bd3def287bfe0693cd757411cf9bc51ebf3e283d45bc55820"
+      },
+      "error": null,
+      "created": 1790628913.9338899
+    },
+    {
+      "id": "52d28c0718044d7e9b3bae10ae168d27",
+      "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+      "task_id": "fourclass-audit-repair-3",
+      "task_dir": ".trellis/tasks/09-28-fourclass-audit-repair-3",
+      "base_sha": "770e9a29277386f29909314a9f1f24dd78d4e5bb",
+      "phase": "active",
+      "executor": {
+        "agent": "claude",
+        "agent_session": {
+          "agent": "claude",
+          "kind": "id",
+          "source": "herdr:claude",
+          "value": "ba823c27-909b-4deb-aecd-e92bf448c229"
+        },
+        "terminal_id": "term_65c8c701e80398"
+      },
+      "remediation_for": "140f13de0d542e0668bb23d4",
+      "close_data": null,
+      "error": null,
+      "created": 1790633819.948434
+    }
+  ]
+}

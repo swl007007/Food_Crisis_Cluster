@@ -1,0 +1,43 @@
+{
+  "fold": "fs1_2018-02",
+  "prepared": "718f3ad1e2bbc089b3f340e7385a4acf7623450d8b01374bce48f74ab57ed74b",
+  "code": {
+    "sha256": "bea05111247e6f3cf9f056a98c7bb8a1bb08e19930e5fa4bdff6c170c8589629",
+    "files": 48
+  },
+  "runtime": {
+    "python": "3.12.10",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1",
+    "scipy": "1.15.2",
+    "geopandas": "1.0.1",
+    "shapely": "2.1.0",
+    "polars": "1.27.1"
+  },
+  "retain": true,
+  "outputs": {
+    "folds/fs1_2018-02/branch_table.npy": "6acdc65a96c0cde7be4d47fc059abd818681b0d19e3e68515df8d48e32707eb3",
+    "folds/fs1_2018-02/candidate.json": "39080b0b13806cf225dc0c896370467f1af9352fd603dcd1ca153104080dbd53",
+    "folds/fs1_2018-02/command.json": "aa6ac2a65237e983d88b2c8eaa06568790433927169a6f85f52965b021080276",
+    "folds/fs1_2018-02/correspondence_table.csv": "40ed6c177c618b394407b50d6efd06dcc0f3c06db7a0a2df6efe386426a46eaa",
+    "folds/fs1_2018-02/feature_name_reference.csv": "5e97a2d26cb007460307298a5097852f30ba4e6bd1a0b9dd7aa78a45f48c9eba",
+    "folds/fs1_2018-02/fold_membership.csv.gz": "2b3d4fbdad08dd5afcc59481cb92474beba3924b284deed69e81a2c6915140e8",
+    "folds/fs1_2018-02/heldout_scores.csv": "22e0368b0df50c12d4d1527fd057ac7d78c3ad4d7c0f1e3d311672809b466458",
+    "folds/fs1_2018-02/log_print.txt": "18ddfdea3774d81d1800f740a1b9db9d516e4ca9e356c41c0896004bc3907cc8",
+    "folds/fs1_2018-02/run.log": "aefaa203a2819d8c130daecee4bb87de77b54c7f74e08ad9322df104fa9cfbf2",
+    "folds/fs1_2018-02/s_branch.pkl": "fad906820c18a1ec390384ca6c6b66d1dcd9263f313256b23d67edcf38901cb8",
+    "folds/fs1_2018-02/target_predictions.csv": "a7434b1a2a994ef5d078299f72274cdc2acadd4960e57f14c79dfd9efa02f54d",
+    "folds/fs1_2018-02/val_coverage_by_group.csv": "79801cc062a581bc0620cda7b3b2fe9dc7f792c8b89311e806ba1cc3cae3df6e",
+    "folds/fs1_2018-02/X_branch_id.npy": "465c51c9898969d1577ba4ad6928dd8e008c750eaeb43378ed1a37d5f9cb242d",
+    "GeoRFResults/result_GeoRF_2018_fs1_2018-02_visual/correspondence_table_2018-02.csv": "40ed6c177c618b394407b50d6efd06dcc0f3c06db7a0a2df6efe386426a46eaa",
+    "GeoRFResults/results_df_gp_fs1_2018_2018_m02.csv": "22e0368b0df50c12d4d1527fd057ac7d78c3ad4d7c0f1e3d311672809b466458",
+    "GeoRFResults/y_pred_test_gp_fs1_2018_2018_m02.csv": "a7434b1a2a994ef5d078299f72274cdc2acadd4960e57f14c79dfd9efa02f54d",
+    "retained/fs1_2018-02/checkpoints/rf_": "744cc367a6047261197b8bbb90975cd16951d9467719c5db52449b93cfefbcd6",
+    "retained/fs1_2018-02/checkpoints/rf_0": "7e1c5695ad4503db0327c3eb220fcf87d076c42d508f6dda4d0094d478beefb0",
+    "retained/fs1_2018-02/checkpoints/rf_1": "c2b3a030285593625e332de661e20e7b4cbfcab891d172ff16b7ff26db70b4ec",
+    "retained/fs1_2018-02/space_partitions/branch_table.npy": "6acdc65a96c0cde7be4d47fc059abd818681b0d19e3e68515df8d48e32707eb3",
+    "retained/fs1_2018-02/space_partitions/s_branch.pkl": "fad906820c18a1ec390384ca6c6b66d1dcd9263f313256b23d67edcf38901cb8",
+    "retained/fs1_2018-02/space_partitions/X_branch_id.npy": "465c51c9898969d1577ba4ad6928dd8e008c750eaeb43378ed1a37d5f9cb242d"
+  }
+}

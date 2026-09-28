@@ -1,0 +1,37 @@
+{
+  "fold": "fs2_2020-02",
+  "prepared": "718f3ad1e2bbc089b3f340e7385a4acf7623450d8b01374bce48f74ab57ed74b",
+  "code": {
+    "sha256": "bea05111247e6f3cf9f056a98c7bb8a1bb08e19930e5fa4bdff6c170c8589629",
+    "files": 48
+  },
+  "runtime": {
+    "python": "3.12.10",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1",
+    "scipy": "1.15.2",
+    "geopandas": "1.0.1",
+    "shapely": "2.1.0",
+    "polars": "1.27.1"
+  },
+  "retain": false,
+  "outputs": {
+    "folds/fs2_2020-02/branch_table.npy": "13eece5a088357120d2952d0df4378b19b576af1e403d6b72dce383707fd306a",
+    "folds/fs2_2020-02/candidate.json": "25fa6236f8156039932de56b315ec613078085da23ad9a7f8c76014157592b28",
+    "folds/fs2_2020-02/command.json": "2f3e95547c80897e33ef46028dd2334093b112fd329721a8b4a578070dea502b",
+    "folds/fs2_2020-02/correspondence_table.csv": "9bd5098d743a4afec6d78ecd600a3bf18bf498f1a23f9796dd3ec93e01f00ab8",
+    "folds/fs2_2020-02/feature_name_reference.csv": "5e97a2d26cb007460307298a5097852f30ba4e6bd1a0b9dd7aa78a45f48c9eba",
+    "folds/fs2_2020-02/fold_membership.csv.gz": "690922dc976a5cc1c96e9e6f3958b12e4b2617e5bf253d7cdf6bfd5dc92051ea",
+    "folds/fs2_2020-02/heldout_scores.csv": "1b23e704bbd80c92e121df9ade2d55e406029aec07c10e71630a35c02c361dec",
+    "folds/fs2_2020-02/log_print.txt": "a01de9c6f2a2a34ccccf4cd8b956d34e4e1b680e24e869f5f61e581751dccd62",
+    "folds/fs2_2020-02/run.log": "fbff6dcae0da8e8df86f40b1f65f337b7e6585cb7176c19e204484a025cf45bc",
+    "folds/fs2_2020-02/s_branch.pkl": "bf324132fec22649d5ef95de0d20721ca19e60044056d5f34d410c2d7a54ba4a",
+    "folds/fs2_2020-02/target_predictions.csv": "d569fdf6287acacb27266752333a3b7110c5c2ccfd0dc0c56d95f7c513348830",
+    "folds/fs2_2020-02/val_coverage_by_group.csv": "263872ecfb9d7116e1f8c09112ac264afac5a5f7def075efafe488045331a81a",
+    "folds/fs2_2020-02/X_branch_id.npy": "d6afc4c9d0138f698f97543b5865e711903dd0e219c4cec0e19a6930e81c9a77",
+    "GeoRFResults/result_GeoRF_2020_fs2_2020-02_visual/correspondence_table_2020-02.csv": "9bd5098d743a4afec6d78ecd600a3bf18bf498f1a23f9796dd3ec93e01f00ab8",
+    "GeoRFResults/results_df_gp_fs2_2020_2020_m02.csv": "1b23e704bbd80c92e121df9ade2d55e406029aec07c10e71630a35c02c361dec",
+    "GeoRFResults/y_pred_test_gp_fs2_2020_2020_m02.csv": "d569fdf6287acacb27266752333a3b7110c5c2ccfd0dc0c56d95f7c513348830"
+  }
+}
