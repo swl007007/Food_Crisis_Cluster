@@ -53,7 +53,9 @@ def candidate_ledger(run: Path, prepared_identity=None) -> pd.DataFrame:
         try:
             if prepared_identity is None:
                 raise RuntimeError("no verified preparation")
-            verify_fold(run, name, prepared_identity)
+            plan = json.loads((run / "stage1" / "retain_plan.json").read_text(encoding="utf-8"))
+            verify_fold(run, name, prepared_identity,
+                        retain_expected=f"fs{fold['scope']}:{fold['target_month']}" in plan)
         except Exception as exc:  # missing, partial, stale or foreign fold
             problems.append(f"{name}: {exc}")
             continue

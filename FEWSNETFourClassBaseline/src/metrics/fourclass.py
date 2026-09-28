@@ -106,6 +106,20 @@ def summary(y_true, y_pred):
     }
 
 
+def deterministic_proba(forest, X):
+    """predict_proba with one thread: sklearn adds per-tree probabilities in thread
+    completion order, so multi-threaded sums can differ in the last bit between calls.
+    Fitting parallelism is unaffected (forests are identical for any n_jobs)."""
+    if not hasattr(forest, "n_jobs"):  # single estimators have no threaded summation
+        return forest.predict_proba(X)
+    saved = forest.n_jobs
+    forest.n_jobs = 1
+    try:
+        return forest.predict_proba(X)
+    finally:
+        forest.n_jobs = saved
+
+
 def align_probabilities(proba, classes):
     """Place predict_proba columns on the fixed 0..3 axis; absent classes get 0."""
     proba = np.asarray(proba, dtype=float)

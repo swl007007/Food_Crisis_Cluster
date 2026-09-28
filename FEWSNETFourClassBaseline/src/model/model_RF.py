@@ -24,7 +24,7 @@ import os
 from config import *
 from src.helper.helper import get_X_branch_id_by_group
 from src.metrics.metrics import *
-from src.metrics.fourclass import align_probabilities, argmax_codes
+from src.metrics.fourclass import align_probabilities, argmax_codes, deterministic_proba
 
 
 class MaxPlusImputer:
@@ -179,7 +179,7 @@ class RFmodel():
     """Fixed four-class probabilities or argmax codes, via this estimator's own imputer."""
 
     X_filled = self.imputer.transform(X)
-    y_pred_prob = align_probabilities(self.model.predict_proba(X_filled), self.model.classes_)
+    y_pred_prob = align_probabilities(deterministic_proba(self.model, X_filled), self.model.classes_)
 
     if prob:
       return y_pred_prob

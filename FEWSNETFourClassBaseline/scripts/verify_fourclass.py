@@ -35,7 +35,6 @@ PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
 SCHEMA = PACKAGE / "feature-schema.json"
 HORIZONS = (4, 8, 12)
-PROBA_TOLERANCE = 1e-12
 SCOPE = {4: 1, 8: 2, 12: 3}
 
 
@@ -272,22 +271,37 @@ def verify_replay(run, results, out):
                 key = f"local_{cid}"
                 if key in bundles:
                     p_part[rows] = bundle_proba(bundles[key], X[rows])
-            # sklearn sums per-tree probabilities across n_jobs threads, so the summation
-            # order (and the last bit) can differ between calls; labels must be identical.
+            # Prediction is single-threaded (fourclass.deterministic_proba), so replay
+            # must reproduce every probability bit for bit.
             diff = max(float(np.abs(original[f"p_{arm}_{c}"].to_numpy() - p[:, k]).max())
                        for arm, p in (("pooled", p_pooled), ("partitioned", p_part))
                        for k, c in enumerate(fc.CLASS_LABELS))
-            same = hashes_ok and diff <= PROBA_TOLERANCE
+            same = hashes_ok and diff == 0.0
             same = same and np.array_equal(fc.argmax_codes(p_pooled), original["y_pred_pooled_code"]) \
                 and np.array_equal(fc.argmax_codes(p_part), original["y_pred_partitioned_code"])
-            identities = {n: b["identity"]["train_keys_sha256"] == record["train_keys_sha256"] for n, b in bundles.items()}
+            keys = pd.read_csv(fold / "training_keys.csv.gz")
+            cluster_of = {}
+            consensus = json.loads((run / "stage2" / "consensus.json").read_text(encoding="utf-8"))
+            if consensus["route"] == "learned_map":
+                cmap = pd.read_csv(consensus["cluster_map"])
+                cluster_of = dict(zip(cmap["FEWSNET_admin_code"], cmap["cluster_id"]))
+            key_cluster = keys["area"].map(cluster_of).fillna(-1).astype(int).to_numpy()
+            def digest(frame):
+                return hashlib.sha256(np.ascontiguousarray(
+                    frame[["area", "target_month"]].to_numpy(np.int64)).tobytes()).hexdigest()
+            identities = {}
+            for n, b in bundles.items():
+                subset = keys if n == "pooled" else keys[key_cluster == int(n.split("_")[1])]
+                identities[n] = (b["identity"]["train_keys_sha256"] == digest(subset)
+                                 and b["identity"]["rows"] == len(subset)
+                                 and b["identity"]["pool_train_keys_sha256"] == record["train_keys_sha256"])
             same = same and all(identities.values())
             replay_rows.append({"horizon": horizon, "month": month, "bundles": len(bundles),
                                 "rows": len(original), "max_abs_probability_diff": diff,
                                 "labels_identical": True if same else None, "passed": bool(same)})
             check(results, f"saved-model replay stage3 h{horizon} {month}: {len(bundles)} loaded bundles reproduce "
-                           f"{len(original)} rows (identical labels, probabilities within {PROBA_TOLERANCE:g}; max diff {diff:.1e}), "
-                           "hashes and fit identities", same)
+                           f"{len(original)} rows bit-identical (labels and 4 probabilities), hashes and "
+                           "per-estimator fit identities", same)
     (out / "stage3_saved_model_replay.json").write_text(json.dumps(replay_rows, indent=2), encoding="utf-8")
     # Stage 1: reload retained checkpoints and reproduce the saved held-out predictions.
     from src.model.model_RF import RFmodel
@@ -324,6 +338,13 @@ def main():
         raise FileExistsError(f"{out} exists")
     out.mkdir()
     results = []
+    from src.utils.run_identity import code_identity, code_identity_at, git_head
+    identity = json.loads((run / "prepared" / "manifests" / "identity.json").read_text(encoding="utf-8"))
+    head_code = code_identity_at("HEAD")
+    check(results, "run code identity == committed code at HEAD == current working tree",
+          identity["code"] == head_code == code_identity() and identity.get("code_equals_git_head"),
+          {"run": identity["code"], "head": head_code, "run_git_head": identity.get("git_head"),
+           "current_head": git_head()})
     recorded = json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
     drift = [p for p, h in recorded.items() if sha256(run / "prepared" / p) != h]
     check(results, f"prepared outputs match {len(recorded)} recorded hashes", not drift, drift)

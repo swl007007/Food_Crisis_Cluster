@@ -34,7 +34,8 @@ KEY = ["area", "target_month", "horizon"]
 
 def verify_stage3(run: Path) -> None:
     """Report only from complete Stage 3 outputs made by the current code/runtime."""
-    from src.utils.run_identity import code_identity, file_sha256, require_prepared, runtime_identity
+    from src.utils.run_identity import (REQUIRED_STAGE3_FOLD, check_inventory, code_identity, file_sha256,
+                                        require_prepared, runtime_identity)
     require_prepared(run)
     for horizon in HORIZONS:
         out = run / "stage3" / f"h{horizon}"
@@ -43,12 +44,22 @@ def verify_stage3(run: Path) -> None:
             raise RuntimeError(f"h{horizon}: Stage 3 made by different code or runtime")
         if file_sha256(out / "predictions.csv.gz") != manifest["predictions_sha256"]:
             raise RuntimeError(f"h{horizon}: predictions differ from the Stage 3 record")
+        if manifest.get("horizon") != horizon or not manifest.get("fold_records"):
+            raise RuntimeError(f"h{horizon}: Stage 3 record is for another horizon or lists no folds")
         for month, sha in manifest["fold_records"].items():
             fold = out / "folds" / month
+            if file_sha256(fold / "fold.json") != sha:
+                raise RuntimeError(f"h{horizon} {month}: fold record changed")
             record = json.loads((fold / "fold.json").read_text(encoding="utf-8"))
-            if file_sha256(fold / "fold.json") != sha or any(
-                    file_sha256(fold / rel) != h for rel, h in record["outputs"].items()):
-                raise RuntimeError(f"h{horizon} {month}: fold outputs missing or changed")
+            if record.get("target_month") != month or record.get("horizon") != horizon:
+                raise RuntimeError(f"h{horizon} {month}: fold record describes another fold")
+            required = REQUIRED_STAGE3_FOLD if record["status"] == "fitted" else ()
+            required = list(required) + [f"models/local_{c}.pkl.xz"
+                                         for c in (int(k.split('_')[1]) for k in record.get("estimators", {})
+                                                   if k.startswith("local_"))]
+            problems = check_inventory(fold, record.get("outputs") or {}, required)
+            if problems:
+                raise RuntimeError(f"h{horizon} {month}: {problems[:5]}")
 
 
 def load_keyed(run: Path) -> pd.DataFrame:

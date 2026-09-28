@@ -30,7 +30,8 @@ from pathlib import Path
 
 PACKAGE = Path(__file__).resolve().parents[1]
 _sys.path.insert(0, str(PACKAGE))
-from src.utils.run_identity import (SCHEMA_PATH as SCHEMA, code_identity, file_sha256, output_hashes,  # noqa: E402
+from src.utils.run_identity import (REQUIRED_STAGE1_FOLD, SCHEMA_PATH as SCHEMA,  # noqa: E402
+                                    check_inventory, code_identity, file_sha256, output_hashes,
                                     require_prepared, runtime_identity, write_json_atomic)
 HORIZON_OF = {1: 4, 2: 8, 3: 12}
 
@@ -92,24 +93,43 @@ def fold_outputs(run: Path, name: str, scope: int, term: str, retain: bool) -> d
     return record
 
 
-def verify_fold(run: Path, name: str, prepared_identity: dict) -> dict:
-    """Stage 2's only way to accept a fold: identity and every recorded output match."""
+def required_fold_outputs(name: str, retain: bool) -> list:
+    scope, term = int(name[2]), name.split('_')[1]
+    paths = handoff_paths(Path('.'), scope, term)
+    required = [f'folds/{name}/{rel}' for rel in REQUIRED_STAGE1_FOLD]
+    required += [f"GeoRFResults/{paths['archive'].name}/correspondence_table_{term}.csv",
+                 f"GeoRFResults/{paths['metrics'].name}", f"GeoRFResults/{paths['predictions'].name}"]
+    if retain:
+        required += [f'retained/{name}/checkpoints/rf_', f'retained/{name}/space_partitions/s_branch.pkl']
+    return required
+
+
+def verify_fold(run: Path, name: str, prepared_identity: dict, retain_expected=None) -> dict:
+    """Stage 2's only way to accept a fold: its own identity, the run identities, every
+    REQUIRED output (fold evidence, Stage 2 handoff, requested checkpoints) recorded,
+    and every recorded file present with its hash."""
     marker = run / 'stage1' / 'folds' / name / 'completion.json'
     if not marker.is_file():
         raise RuntimeError(f'{name}: no completion record')
     record = json.loads(marker.read_text(encoding='utf-8'))
+    if record.get('fold') != name:
+        raise RuntimeError(f'{name}: completion record belongs to {record.get("fold")!r}')
+    if retain_expected is not None and bool(record.get('retain')) != bool(retain_expected):
+        raise RuntimeError(f'{name}: retention differs from the run plan')
+    outputs = record.get('outputs')
+    if not isinstance(outputs, dict):
+        raise RuntimeError(f'{name}: completion record has no output inventory')
+    problems = check_inventory(run / 'stage1', outputs, required_fold_outputs(name, bool(record.get('retain'))))
+    if problems:
+        raise RuntimeError(f'{name}: {problems[:5]}')
+    candidate = json.loads((run / 'stage1' / 'folds' / name / 'candidate.json').read_text(encoding='utf-8'))
+    if f"fs{candidate.get('scope')}_{candidate.get('target_month')}" != name:
+        raise RuntimeError(f'{name}: candidate.json describes a different fold')
     expected = {'prepared': prepared_identity['outputs_sha256'], 'code': code_identity(),
                 'runtime': runtime_identity()}
     for key, value in expected.items():
         if record.get(key) != value:
             raise RuntimeError(f'{name}: {key} identity differs from the current run')
-    if record.get('retain') and not any(k.startswith(f'retained/{name}/') for k in record['outputs']):
-        raise RuntimeError(f'{name}: retention was requested but no retained checkpoint is recorded')
-    stage1 = run / 'stage1'
-    bad = [rel for rel, sha in record['outputs'].items()
-           if not (stage1 / rel).is_file() or file_sha256(stage1 / rel) != sha]
-    if bad:
-        raise RuntimeError(f'{name}: recorded outputs missing or changed: {bad[:5]}')
     return record
 
 
@@ -174,6 +194,10 @@ def main() -> None:
     retain = {s for s in args.retain.split(',') if s}
     ledger_path = run / 'stage1' / 'ledger.jsonl'
     ledger_path.parent.mkdir(parents=True, exist_ok=True)
+    plan = run / 'stage1' / 'retain_plan.json'
+    if plan.exists():
+        raise FileExistsError(f'{plan} exists; Stage 1 runs once per run directory')
+    write_json_atomic(plan, sorted(retain))
     python = sys.executable
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         jobs = [pool.submit(run_fold, run, f, python, f"fs{f['scope']}:{f['target_month']}" in retain,

@@ -37,6 +37,36 @@ def code_identity() -> dict:
     return {"sha256": digest, "files": len(listing)}
 
 
+def code_identity_at(rev: str = "HEAD") -> dict:
+    """The same identity computed from committed Git blobs (audit A01): a run is bound
+    to committed code only if its recorded identity equals this for the audited commit."""
+    import subprocess
+    repo = PACKAGE.parent
+    prefix = PACKAGE.name + "/"
+    names = subprocess.run(["git", "ls-tree", "-r", "--name-only", rev, prefix], cwd=repo,
+                           capture_output=True, text=True, check=True).stdout.splitlines()
+    wanted = []
+    for full in names:
+        rel = full[len(prefix):]
+        top = rel.split("/")[0]
+        if rel in CODE_FILES or (top in CODE_ROOTS and "__pycache__" not in rel
+                                 and Path(rel).suffix in (".py", ".sh", ".json")):
+            wanted.append(rel)
+    listing = []
+    for rel in wanted:
+        blob = subprocess.run(["git", "show", f"{rev}:{prefix}{rel}"], cwd=repo,
+                              capture_output=True, check=True).stdout
+        listing.append((rel, hashlib.sha256(blob).hexdigest()))
+    listing.sort()
+    return {"sha256": hashlib.sha256(json.dumps(listing).encode()).hexdigest(), "files": len(listing)}
+
+
+def git_head() -> str:
+    import subprocess
+    return subprocess.run(["git", "rev-parse", "HEAD"], cwd=PACKAGE.parent, capture_output=True,
+                          text=True, check=True).stdout.strip()
+
+
 def runtime_identity() -> dict:
     from importlib.metadata import version
     return {"python": platform.python_version(), **{name: version(name) for name in RUNTIME_PACKAGES}}
@@ -56,6 +86,30 @@ def verify_outputs(directory: Path, recorded: dict) -> list:
                  if (directory / rel).is_file() and file_sha256(directory / rel) != sha]
     actual = output_hashes(directory)
     problems += [f"unrecorded {rel}" for rel in actual if rel not in recorded]
+    return problems
+
+
+#: Files every completed stage unit MUST record (audit A04): an accepted record must
+#: list each of these, and each listed file must exist with its recorded hash.
+REQUIRED_PREPARED = ("manifests/sources.json", "manifests/runtime.json", "manifests/preflight.json",
+                     "manifests/schedule.json", "manifests/features.json", "manifests/geometry.json",
+                     "ledgers/observations.csv", "ledgers/baselines.csv",
+                     "snapshot_h4.parquet", "snapshot_h8.parquet", "snapshot_h12.parquet",
+                     "geometry/polygon_contiguity_info.pkl", "geometry/FEWSNET_admin_code_lat_lon.csv")
+REQUIRED_STAGE1_FOLD = ("candidate.json", "correspondence_table.csv", "target_predictions.csv",
+                        "heldout_scores.csv", "fold_membership.csv.gz", "s_branch.pkl",
+                        "branch_table.npy", "X_branch_id.npy", "command.json", "run.log")
+REQUIRED_STAGE3_FOLD = ("local_support.csv", "imputer_statistics.csv.gz", "training_keys.csv.gz",
+                        "models/pooled.pkl.xz")
+
+
+def check_inventory(base: Path, recorded: dict, required) -> list:
+    """Problems if a required file is not recorded, or a recorded file is missing/changed."""
+    base = Path(base)
+    problems = [f"required {rel} not recorded" for rel in required if rel not in recorded]
+    problems += [f"missing {rel}" for rel in recorded if not (base / rel).is_file()]
+    problems += [f"changed {rel}" for rel, sha in recorded.items()
+                 if (base / rel).is_file() and file_sha256(base / rel) != sha]
     return problems
 
 
@@ -83,7 +137,10 @@ def require_prepared(run: Path) -> dict:
     outputs_path = prepared / "manifests" / "outputs.json"
     if file_sha256(outputs_path) != identity["outputs_sha256"]:
         raise RuntimeError("prepared outputs.json differs from its completion record")
-    problems = verify_outputs(prepared, json.loads(outputs_path.read_text(encoding="utf-8")))
+    recorded = json.loads(outputs_path.read_text(encoding="utf-8"))
+    problems = verify_outputs(prepared, recorded) + check_inventory(prepared, recorded, REQUIRED_PREPARED)
+    if identity.get("stage") != "prepare":
+        problems.append("completion record is not a preparation record")
     if problems:
         raise RuntimeError(f"prepared outputs do not match their record: {problems[:5]}")
     if identity["code"] != code_identity() or identity["runtime"] != runtime_identity():

@@ -464,6 +464,10 @@ def main() -> None:
     out.mkdir(parents=True)
     manifests = out / "manifests"
 
+    from src.utils.run_identity import code_identity as _code, code_identity_at as _code_at
+    if not args.preflight_only and _code() != _code_at("HEAD"):
+        raise PreflightError("package code differs from the committed HEAD; commit before an "
+                             "authoritative run so the run is bound to committed code")
     runtime = runtime_identity()
     sources = pin_sources(args.source_root)
     if sha256(SCHEMA_PATH) != APPROVED_SCHEMA_SHA256:
@@ -508,11 +512,15 @@ def main() -> None:
     write_json(manifests / "geometry.json", geometry)
     hashes = {p.relative_to(out).as_posix(): sha256(p) for p in sorted(out.rglob("*"))
               if p.is_file() and p.name != "outputs.json"}
-    from src.utils.run_identity import code_identity, runtime_identity as runtime_digest
+    from src.utils.run_identity import code_identity, code_identity_at, git_head, runtime_identity as runtime_digest
     write_json(manifests / "outputs.json", hashes)
-    # Completion marker, written last: binds these outputs to code and runtime.
+    # Completion marker, written last: binds these outputs to code and runtime. The
+    # working-tree code must equal the committed code at git_head (audit A01).
+    code = code_identity()
+    head = git_head()
     write_json(manifests / "identity.json", {
-        "stage": "prepare", "code": code_identity(), "runtime": runtime_digest(),
+        "stage": "prepare", "code": code, "runtime": runtime_digest(),
+        "git_head": head, "code_equals_git_head": code == code_identity_at(head),
         "outputs_sha256": sha256(manifests / "outputs.json")})
     print("preparation complete", flush=True)
 

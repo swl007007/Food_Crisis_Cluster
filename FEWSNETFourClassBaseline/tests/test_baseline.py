@@ -436,18 +436,28 @@ class Stage3Routing(unittest.TestCase):
         X = test[features].to_numpy(dtype=float)
         p = compare.bundle_proba(loaded['pooled'], X)
         np.testing.assert_array_equal(p, preds.filter(like='p_pooled_').to_numpy())
+        for _ in range(3):  # single-threaded prediction is bit-stable across calls
+            np.testing.assert_array_equal(compare.bundle_proba(loaded['pooled'], X), p)
         rows = (preds['cluster_id'] == 0).to_numpy()
         np.testing.assert_array_equal(compare.bundle_proba(loaded['local_0'], X[rows]),
                                       preds.loc[rows].filter(like='p_partitioned_').to_numpy())
-        self.assertEqual(loaded['local_0']['identity']['train_keys_sha256'], record['train_keys_sha256'])
+        self.assertEqual(loaded['pooled']['identity']['train_keys_sha256'], record['train_keys_sha256'])
+        self.assertEqual(loaded['local_0']['identity']['pool_train_keys_sha256'], record['train_keys_sha256'])
+        train = snap[(snap.target_month >= m('2021-06') - 4 - 35) & (snap.target_month < m('2021-06') - 4)]
+        local_keys = train[train['area'].map(clusters).eq(0)][['area', 'target_month']].to_numpy(np.int64)
+        self.assertEqual(loaded['local_0']['identity']['train_keys_sha256'],
+                         compare.sha256_bytes(np.ascontiguousarray(local_keys).tobytes()))
+        self.assertEqual(loaded['local_0']['identity']['rows'], len(local_keys))
         self.assertEqual(loaded['pooled']['features'], features)
 
     def test_local_fit_uses_its_own_imputer(self):
         X = np.array([[1.0], [np.nan], [2.0], [np.nan]])
         y = np.array([0, 1, 0, 1])
         with patch.dict(compare.RF_PARAMS, {'n_estimators': 3}):
-            a = compare.FittedRF(X[:2], y[:2], n_jobs=1)
-            b = compare.FittedRF(X, y, n_jobs=1)
+            keys = np.column_stack([np.arange(4), np.full(4, 100)])
+            a = compare.FittedRF(X[:2], y[:2], keys[:2], n_jobs=1)
+            b = compare.FittedRF(X, y, keys, n_jobs=1)
+        self.assertNotEqual(a.train_keys_sha256, b.train_keys_sha256)
         self.assertEqual(a.imputer.fill_[0], 100.0)
         self.assertEqual(b.imputer.fill_[0], 200.0)
 
@@ -467,6 +477,18 @@ def make_prepared_identity(root):
         'outputs_sha256': rid.file_sha256(prepared / 'manifests' / 'outputs.json')})
 
 
+class CommittedCode(unittest.TestCase):
+    def test_schema_is_committed_and_identity_matches_git(self):
+        import subprocess
+        repo = Path(__file__).resolve().parents[2]
+        listed = subprocess.run(['git', 'ls-files', 'FEWSNETFourClassBaseline/feature-schema.json'],
+                                cwd=repo, capture_output=True, text=True).stdout.strip()
+        self.assertEqual(listed, 'FEWSNETFourClassBaseline/feature-schema.json')
+        self.assertEqual(rid.file_sha256(prep.SCHEMA_PATH), prep.APPROVED_SCHEMA_SHA256)
+        head = rid.code_identity_at('HEAD')
+        self.assertEqual(head['files'], rid.code_identity()['files'])
+
+
 class Continuation(unittest.TestCase):
     """Audit A02: no fold is accepted or skipped on a completion filename alone."""
 
@@ -474,6 +496,9 @@ class Continuation(unittest.TestCase):
         run = Path(tmp) / 'run'
         (run / 'prepared' / 'manifests').mkdir(parents=True)
         (run / 'prepared' / 'snapshot.bin').write_bytes(b'snapshot')
+        for rel in rid.REQUIRED_PREPARED:
+            (run / 'prepared' / rel).parent.mkdir(parents=True, exist_ok=True)
+            (run / 'prepared' / rel).write_text(rel)
         make_prepared_identity(run)
         prepared = rid.require_prepared(run)
         name, term = 'fs1_2018-02', '2018-02'
@@ -484,10 +509,13 @@ class Continuation(unittest.TestCase):
         paths['predictions'].write_text('p')
         fold = run / 'stage1' / 'folds' / name
         fold.mkdir(parents=True)
-        (fold / 'candidate.json').write_text('{}')
+        for rel in rid.REQUIRED_STAGE1_FOLD:
+            (fold / rel).write_text('x')
+        (fold / 'candidate.json').write_text(json.dumps({'scope': 1, 'target_month': term}))
         if retain:
-            (run / 'stage1' / 'retained' / name / 'checkpoints').mkdir(parents=True)
-            (run / 'stage1' / 'retained' / name / 'checkpoints' / 'rf_').write_bytes(b'model')
+            for rel in ('checkpoints/rf_', 'space_partitions/s_branch.pkl'):
+                (run / 'stage1' / 'retained' / name / rel).parent.mkdir(parents=True, exist_ok=True)
+                (run / 'stage1' / 'retained' / name / rel).write_bytes(b'model')
         rid.write_json_atomic(fold / 'completion.json', {
             'fold': name, 'prepared': prepared['outputs_sha256'], 'code': rid.code_identity(),
             'runtime': rid.runtime_identity(), 'retain': retain,
@@ -535,6 +563,33 @@ class Continuation(unittest.TestCase):
             rid.write_json_atomic(run / 'stage1' / 'folds' / name / 'completion.json', record)
             with self.assertRaises(RuntimeError):     # different package code
                 stage1.verify_fold(run, name, prepared)
+
+    def test_identity_matching_record_with_empty_or_partial_inventory_is_refused(self):
+        for mutate in ('empty', 'drop_required', 'wrong_fold', 'retain_mismatch', 'no_inventory'):
+            with tempfile.TemporaryDirectory() as tmp:
+                run, name, prepared = self.completed_run(tmp, retain=True)
+                path = run / 'stage1' / 'folds' / name / 'completion.json'
+                record = json.loads(path.read_text())
+                if mutate == 'empty':
+                    record['outputs'] = {}
+                elif mutate == 'drop_required':
+                    record['outputs'].pop(f'folds/{name}/candidate.json')
+                elif mutate == 'wrong_fold':
+                    record['fold'] = 'fs1_2018-06'
+                elif mutate == 'no_inventory':
+                    record.pop('outputs')
+                rid.write_json_atomic(path, record)
+                with self.assertRaises(RuntimeError, msg=mutate):
+                    stage1.verify_fold(run, name, prepared,
+                                       retain_expected=False if mutate == 'retain_mismatch' else None)
+
+    def test_prepared_record_needs_required_inventory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp) / 'run'
+            (run / 'prepared' / 'manifests').mkdir(parents=True)
+            make_prepared_identity(run)  # identity matches, but no required outputs exist
+            with self.assertRaises(RuntimeError):
+                rid.require_prepared(run)
 
     def test_stage2_and_stage3_refuse_existing_output(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -588,6 +643,7 @@ class Stage2AndReporting(unittest.TestCase):
             corr.to_csv(fold / 'correspondence_table.csv', index=False)
             f1 = .7 if weights_positive else .5
             (fold / 'candidate.json').write_text(json.dumps({
+                'scope': 1, 'target_month': term,
                 'scores': {'macro_f1': f1, 'macro_f1_base': .5}, 'partition': {'n_terminal': 2},
                 'rows': {'heldout_target': 60}}))
             results = root / 'stage1' / 'GeoRFResults'
@@ -598,6 +654,16 @@ class Stage2AndReporting(unittest.TestCase):
                 results / f'results_df_gp_fs1_2018_2018_m{term[-2:]}.csv', index=False)
             (results / f'y_pred_test_gp_fs1_2018_2018_m{term[-2:]}.csv').write_text('y')
         (root / 'prepared' / 'manifests' / 'schedule.json').write_text(json.dumps({'stage1': folds}))
+        for rel in rid.REQUIRED_PREPARED:
+            if not (root / 'prepared' / rel).exists():
+                (root / 'prepared' / rel).parent.mkdir(parents=True, exist_ok=True)
+                (root / 'prepared' / rel).write_text(rel)
+        rid.write_json_atomic(root / 'stage1' / 'retain_plan.json', [])
+        for fold in folds:
+            d = root / 'stage1' / 'folds' / f"fs1_{fold['target_month']}"
+            for rel in rid.REQUIRED_STAGE1_FOLD:
+                if not (d / rel).exists():
+                    (d / rel).write_text('x')
         make_prepared_identity(root)
         prepared = rid.require_prepared(root)
         for fold in folds:

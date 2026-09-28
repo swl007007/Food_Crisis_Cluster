@@ -43,7 +43,8 @@ from src.feature.fourclass_features import load_schema, month_label
 from src.metrics import fourclass
 from src.model.model_RF import MaxPlusImputer
 from src.utils.lag_schedules import forecasting_scope_to_lag
-from src.utils.run_identity import (code_identity, file_sha256 as _sha, output_hashes, refuse_existing,
+from src.utils.run_identity import (REQUIRED_STAGE3_FOLD, check_inventory, code_identity,
+                                    file_sha256 as _sha, output_hashes, refuse_existing,
                                     require_prepared, runtime_identity, write_json_atomic)
 
 RANDOM_STATE = 5  # MUST match main pipeline (GeoRF.py default)
@@ -71,15 +72,17 @@ def file_sha256(path) -> str:
 class FittedRF:
     """One Stage 3 estimator: its own training-only imputer plus a real-rows-only forest."""
 
-    def __init__(self, X, y, n_jobs=N_JOBS):
+    def __init__(self, X, y, keys, n_jobs=N_JOBS):
         self.imputer = MaxPlusImputer().fit(X)
+        # Digest of THIS estimator's own ordered fitting keys (area, target_month).
+        self.train_keys_sha256 = sha256_bytes(np.ascontiguousarray(keys, dtype=np.int64).tobytes())
         self.forest = RandomForestClassifier(n_jobs=n_jobs, **RF_PARAMS)
         self.forest.fit(self.imputer.transform(X), y)
         self.n_rows = int(len(y))
         self.class_counts = [int(np.sum(y == k)) for k in range(fourclass.N_CLASSES)]
 
     def proba(self, X):
-        raw = self.forest.predict_proba(self.imputer.transform(X))
+        raw = fourclass.deterministic_proba(self.forest, self.imputer.transform(X))
         return fourclass.align_probabilities(raw, self.forest.classes_)
 
     def bundle(self, features, identity):
@@ -89,6 +92,7 @@ class FittedRF:
 
     def record(self):
         return {"rows": self.n_rows, "class_counts": self.class_counts,
+                "train_keys_sha256": self.train_keys_sha256,
                 "classes_": [int(c) for c in self.forest.classes_],
                 "imputer_sha256": self.imputer.digest(),
                 "params": {k: v for k, v in self.forest.get_params().items() if k in RF_PARAMS}}
@@ -99,9 +103,13 @@ def load_consensus(path):
     stage2 = Path(path).parent
     if record.get("code") != code_identity() or record.get("runtime") != runtime_identity():
         raise ValueError("Stage 2 consensus was produced by different package code or runtime")
-    problems = [rel for rel, sha in record.get("outputs", {}).items()
-                if not (stage2 / rel).is_file() or _sha(stage2 / rel) != sha]
-    if not record.get("outputs") or problems:
+    required = ["candidate_ledger.csv", "plan_weights.csv"]
+    if record.get("route") == "learned_map":
+        cluster_rel = Path(record["cluster_map"]).resolve().relative_to(stage2.resolve()).as_posix()
+        required += [cluster_rel, "experiment/linked_tables/main_index.csv",
+                     "experiment/knn_sparsification_results/knn_analysis_report_k40_general.json"]
+    problems = check_inventory(stage2, record.get("outputs") or {}, required)
+    if problems:
         raise ValueError(f"Stage 2 outputs missing or changed: {problems[:5]}")
     if record.get("route") == "null_consensus":
         return record, None
@@ -136,8 +144,9 @@ def fit_fold(snap, features, test_month, horizon, cluster_of):
     Xtr = train[features].to_numpy(dtype=float)
     ytr = train["class_code"].to_numpy(dtype=np.int64)
     Xte = test[features].to_numpy(dtype=float)
+    keys_tr = train[["area", "target_month"]].to_numpy(dtype=np.int64)
     started = time.time()
-    pooled = FittedRF(Xtr, ytr)
+    pooled = FittedRF(Xtr, ytr, keys_tr)
     p_pooled = pooled.proba(Xte)
     estimators = {"pooled": pooled}
     local_rows = []
@@ -171,7 +180,7 @@ def fit_fold(snap, features, test_month, horizon, cluster_of):
                 route[rows_te] = f"pooled_fallback:{reason}"
                 entry.update(route="pooled_fallback", reason=reason)
             else:
-                local = FittedRF(Xtr[rows_tr], ytr[rows_tr])
+                local = FittedRF(Xtr[rows_tr], ytr[rows_tr], keys_tr[rows_tr])
                 estimators[f"local_{cid}"] = local
                 p_part[rows_te] = local.proba(Xte[rows_te])
                 route[rows_te] = "local_model"
@@ -211,7 +220,7 @@ def fit_fold(snap, features, test_month, horizon, cluster_of):
     fills = pd.DataFrame({name: est.imputer.fill_ for name, est in estimators.items()}, index=features)
     fills.index.name = "feature"
     identity = {"target_month": str(test_month), "origin_month": month_label([origin])[0],
-                "horizon": horizon, "train_keys_sha256": record["train_keys_sha256"]}
+                "horizon": horizon, "pool_train_keys_sha256": record["train_keys_sha256"]}
     bundles = {name: est.bundle(features, {**identity, "estimator": name}) for name, est in estimators.items()}
     return preds, record, {"local_support": pd.DataFrame(local_rows), "imputer_fills": fills,
                            "training_keys": train[["area", "target_month", "class_code"]],
@@ -232,7 +241,7 @@ def load_bundle(path: Path):
 
 
 def bundle_proba(bundle, X):
-    raw = bundle["forest"].predict_proba(bundle["imputer"].transform(X))
+    raw = fourclass.deterministic_proba(bundle["forest"], bundle["imputer"].transform(X))
     return fourclass.align_probabilities(raw, bundle["forest"].classes_)
 
 
