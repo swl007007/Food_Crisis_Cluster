@@ -39,7 +39,10 @@ SCHEMA_PATH = PACKAGE / "feature-schema.json"
 APPROVED_SCHEMA_SHA256 = "51b6f8b21b76a78510522c34e2d1f2a648b7aec768bbcac3dd2318669fa13349"
 RELEASE_ZIP = PACKAGE.parent / "GeoRFBaseline" / "releases" / "georf-baseline-v0.1.0.zip"
 RELEASE_SHA256 = "39a26138e3fafb0be2bbd22e9760095d6cdefa7d79b98b4f798cb3aa79b500a0"
-DEFAULT_SOURCE_ROOT = Path(__file__).resolve().parents[5] / "1.Source Data"
+#: The repository sits at Analysis/2.source_code/Step5_Geo_RF_trial/<repo>; the pinned
+#: sources are Analysis/1.Source Data. A relocated checkout must pass --source-root.
+_PARENTS = Path(__file__).resolve().parents
+DEFAULT_SOURCE_ROOT = _PARENTS[5] / "1.Source Data" if len(_PARENTS) > 5 else None
 
 #: research/release-and-integration.md, "Inspected input identities".
 PINNED_SOURCES = {
@@ -455,7 +458,8 @@ def feature_manifest(schema: dict, snapshots: dict) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run-dir", type=Path, required=True)
-    parser.add_argument("--source-root", type=Path, default=DEFAULT_SOURCE_ROOT)
+    parser.add_argument("--source-root", type=Path, default=DEFAULT_SOURCE_ROOT,
+                        required=DEFAULT_SOURCE_ROOT is None)
     parser.add_argument("--preflight-only", action="store_true")
     args = parser.parse_args()
     out = args.run_dir / "prepared"
