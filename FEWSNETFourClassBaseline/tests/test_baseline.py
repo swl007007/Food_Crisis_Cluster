@@ -436,6 +436,11 @@ class Stage3Routing(unittest.TestCase):
         X = test[features].to_numpy(dtype=float)
         p = compare.bundle_proba(loaded['pooled'], X)
         np.testing.assert_array_equal(p, preds.filter(like='p_pooled_').to_numpy())
+        with tempfile.TemporaryDirectory() as tmp:  # saved CSV round-trips exactly
+            path = Path(tmp) / 'p.csv.gz'
+            preds.to_csv(path, index=False, float_format='%.17g')
+            back = pd.read_csv(path, float_precision='round_trip')
+            np.testing.assert_array_equal(back.filter(like='p_pooled_').to_numpy(), p)
         for _ in range(3):  # single-threaded prediction is bit-stable across calls
             np.testing.assert_array_equal(compare.bundle_proba(loaded['pooled'], X), p)
         rows = (preds['cluster_id'] == 0).to_numpy()
@@ -487,6 +492,8 @@ class CommittedCode(unittest.TestCase):
         self.assertEqual(rid.file_sha256(prep.SCHEMA_PATH), prep.APPROVED_SCHEMA_SHA256)
         head = rid.code_identity_at('HEAD')
         self.assertEqual(head['files'], rid.code_identity()['files'])
+        self.assertNotIn('scripts/verify_fourclass.py', json.dumps(head))
+        self.assertEqual(set(rid.verifier_identity()), {'scripts/verify_fourclass.py'})
 
 
 class Continuation(unittest.TestCase):

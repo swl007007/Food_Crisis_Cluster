@@ -16,6 +16,10 @@ PACKAGE = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = PACKAGE / "feature-schema.json"
 CODE_ROOTS = ("app", "scripts", "src")
 CODE_FILES = ("config.py", "config_visual.py", "feature-schema.json", "run_all.sh")
+#: Read-only checking code. It never writes a run artifact, so it is identified
+#: separately (verifier identity) and excluded from the PRODUCER identity that binds
+#: runs; a later verifier fix therefore does not misattribute or invalidate a run.
+VERIFIER_FILES = ("scripts/verify_fourclass.py",)
 RUNTIME_PACKAGES = ("numpy", "pandas", "scikit-learn", "scipy", "geopandas", "shapely", "polars")
 
 
@@ -32,9 +36,14 @@ def code_identity() -> dict:
     for root in CODE_ROOTS:
         files += [p for p in (PACKAGE / root).rglob("*") if p.is_file() and "__pycache__" not in p.parts
                   and p.suffix in (".py", ".sh", ".json")]
-    listing = sorted((p.relative_to(PACKAGE).as_posix(), file_sha256(p)) for p in files)
+    listing = sorted((p.relative_to(PACKAGE).as_posix(), file_sha256(p)) for p in files
+                     if p.relative_to(PACKAGE).as_posix() not in VERIFIER_FILES)
     digest = hashlib.sha256(json.dumps(listing).encode()).hexdigest()
     return {"sha256": digest, "files": len(listing)}
+
+
+def verifier_identity() -> dict:
+    return {rel: file_sha256(PACKAGE / rel) for rel in VERIFIER_FILES}
 
 
 def code_identity_at(rev: str = "HEAD") -> dict:
@@ -49,6 +58,8 @@ def code_identity_at(rev: str = "HEAD") -> dict:
     for full in names:
         rel = full[len(prefix):]
         top = rel.split("/")[0]
+        if rel in VERIFIER_FILES:
+            continue
         if rel in CODE_FILES or (top in CODE_ROOTS and "__pycache__" not in rel
                                  and Path(rel).suffix in (".py", ".sh", ".json")):
             wanted.append(rel)

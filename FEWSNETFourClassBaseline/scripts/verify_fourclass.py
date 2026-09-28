@@ -253,7 +253,8 @@ def verify_replay(run, results, out):
         base = run / "stage3" / f"h{horizon}"
         manifest = json.loads((base / "run_manifest.json").read_text(encoding="utf-8"))
         fitted = [f["target_month"] for f in manifest["folds"] if f["status"] == "fitted"]
-        saved = pd.read_csv(base / "predictions.csv.gz")
+        # round_trip: pandas' default fast float parser is not exact for 17-digit values.
+        saved = pd.read_csv(base / "predictions.csv.gz", float_precision="round_trip")
         snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")
         for month in (fitted[0], fitted[-1]):
             fold = base / "folds" / month
@@ -338,13 +339,15 @@ def main():
         raise FileExistsError(f"{out} exists")
     out.mkdir()
     results = []
-    from src.utils.run_identity import code_identity, code_identity_at, git_head
+    from src.utils.run_identity import code_identity, code_identity_at, git_head, verifier_identity
     identity = json.loads((run / "prepared" / "manifests" / "identity.json").read_text(encoding="utf-8"))
     head_code = code_identity_at("HEAD")
     check(results, "run code identity == committed code at HEAD == current working tree",
           identity["code"] == head_code == code_identity() and identity.get("code_equals_git_head"),
           {"run": identity["code"], "head": head_code, "run_git_head": identity.get("git_head"),
            "current_head": git_head()})
+    results.append({"check": "verifier identity (not part of the producer identity)", "passed": True,
+                    "detail": verifier_identity()})
     recorded = json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
     drift = [p for p, h in recorded.items() if sha256(run / "prepared" / p) != h]
     check(results, f"prepared outputs match {len(recorded)} recorded hashes", not drift, drift)
