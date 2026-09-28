@@ -701,6 +701,28 @@ class DerivedInventories(unittest.TestCase):
         not_pooled = preds.copy(); not_pooled.loc[2, 'p_partitioned_1'] = .7
         self.assertTrue(route_row_problems('m', not_pooled, clusters, support, 'learned_map'))
 
+    def test_manifest_folds_reconciled_with_schedule(self):
+        """b5eb9f46 A01: omitting or reordering manifest.folds (records/dirs intact) is refused,
+        and consumers iterate the schedule-derived population, not the manifest list."""
+        from src.utils import acceptance as acc
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp)
+            (run / 'prepared' / 'manifests').mkdir(parents=True)
+            (run / 'prepared' / 'manifests' / 'schedule.json').write_text(json.dumps({'stage1': [], 'stage3': [
+                {'horizon': 4, 'target_month': '2021-06', 'origin_month': '2021-02', 'status': 'scheduled'},
+                {'horizon': 4, 'target_month': '2021-07', 'origin_month': '2021-03', 'status': 'skipped_empty_target'},
+                {'horizon': 4, 'target_month': '2021-10', 'origin_month': '2021-06', 'status': 'scheduled'}]}))
+            population = acc.validated_folds(run, 4)
+            self.assertEqual([f['target_month'] for f in population if f['status'] == 'fitted'], ['2021-06', '2021-10'])
+            records = {f['target_month']: {'status': f['status'], 'origin_month': f['origin_month']} for f in population}
+            manifest = {'folds': population, 'fold_records': {f['target_month']: 'h' for f in population}}
+            self.assertEqual(acc.manifest_fold_problems(run, 4, manifest, records), [])
+            for label, folds in (('omitted', population[1:]), ('reordered', population[::-1]),
+                                 ('relabelled', [{**population[0], 'status': 'skipped_empty_target'}] + population[1:])):
+                self.assertTrue(acc.manifest_fold_problems(run, 4, {**manifest, 'folds': folds}, records), label)
+            self.assertTrue(acc.manifest_fold_problems(run, 4, manifest, {**records, '2021-10': {'status': 'skipped_empty_target',
+                                                                                                'origin_month': '2021-06'}}))
+
     def test_verifier_only_mismatch_is_rejected_by_production_check(self):
         """Round 4 A03: drive the real identity predicate with only the verifier changed."""
         from src.utils.acceptance import identity_problems

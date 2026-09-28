@@ -1,6 +1,6 @@
 # Results and acceptance index — FEWS NET four-class baseline
 
-Authoritative run: `FEWSNETFourClassBaseline/runs/fourclass-v7-20260928/`
+Authoritative run: `FEWSNETFourClassBaseline/runs/fourclass-v9-20260928/` (current; see "Run history" at the end)
 (package `FEWSNETFourClassBaseline/`, base SHA 8a56272, audit run
 321911af42cc46809237d7a003700ed9). Superseded: `fourclass-v1-20260928` (aborted at
 Stage 3 h8 by a coverage gate that departed from the release definition; see
@@ -87,7 +87,7 @@ python -B scripts/verify_fourclass.py --run-dir runs/<fresh-id>
 
 Close audit fa38f19ad8fafc36567f90ac found A01 (Stage 3 discarded fitted forests) and A02
 (Stage 1 continuation trusted a completion filename). Repaired in task
-`09-28-fourclass-audit-repair`. The authoritative run is now `fourclass-v7-20260928`,
+`09-28-fourclass-audit-repair`. The authoritative run is now `fourclass-v3-20260928`,
 produced by the repaired code; its `report/contrasts.csv` and `report/arm_metrics.csv`
 are byte-for-byte equal to v2's, so every number above is unchanged. v3 persists every
 Stage 3 estimator bundle (committed, hash-bound in fold.json) and replay now loads them.
@@ -95,7 +95,7 @@ Stage 3 estimator bundle (committed, hash-bound in fold.json) and replay now loa
 ## Audit repair round 2 (2026-09-28)
 
 Repair close-audit 026f8908 and spot re-audit 175302c2 were remediated in task
-`09-28-fourclass-audit-repair-2`. Authoritative run is now `fourclass-v7-20260928`,
+`09-28-fourclass-audit-repair-2`. Authoritative run is now `fourclass-v6-20260928`,
 produced from committed code cfbc710 (`code_equals_git_head: true`); report tables are
 byte-identical to v2/v3/v5, so every number above is unchanged. Verification 36/36:
 run code identity equals committed HEAD, per-estimator training-key digests, and
@@ -113,3 +113,30 @@ saved predictions, local support, retained partition tree), and the verifier mus
 its committed blob at the run's git_head and at HEAD. Authoritative run is now
 `fourclass-v7-20260928` (committed code fe40de3); report tables byte-identical to v2;
 verification 36/36. The auditors' partial-inventory fixture is refused by the new code.
+
+## Audit repair round 4 (2026-09-28)
+
+Close-audit 2152a5d3 (repair-3) and rechecks ed300952 / b5eb9f46 found that consumers
+still trusted persisted records (Stage 2 ledger at its Stage 3 consumer; the Stage 3
+manifest's fold list used by the verifier) and that route checks were set-level.
+Repaired in `09-28-fourclass-audit-repair-4`: one acceptance chain used by every
+consumer, the ledger and weights re-derived row by row, row-level route checks, and
+manifest folds reconciled with the schedule and fold records before any use.
+Authoritative run is now `fourclass-v9-20260928`. Recheck 8b837ad9 of the original
+close-audit gate fa38f19a completed with no major finding (gate cleared).
+
+## Run history (each paragraph above names the run authoritative at that time)
+
+| run | producer commit | role | committed evidence |
+|---|---|---|---|
+| fourclass-v1-20260928 | pre-ecd2b70 working tree | aborted at a Stage 3 coverage gate | no |
+| fourclass-v2-20260928 | ecd2b70 | original close | yes |
+| fourclass-v3-20260928 | pre-c155ef3 working tree | round-1 repair (verifier edited after the run) | at c155ef3 only |
+| fourclass-v4-20260928 | c642c8f working tree (no identity record written) | aborted preparation (killed start) | no |
+| fourclass-v5-20260928 | 4ad1109 | superseded (verifier CSV float parsing) | no |
+| fourclass-v6-20260928 | cfbc710 | round-2 repair | at 55706e3 only |
+| fourclass-v7-20260928 | fe40de3 | round-3 repair | at 235c87b only |
+| fourclass-v8-20260928 | 39aa806 | superseded within round 4 (manifest.folds fix followed) | no |
+| fourclass-v9-20260928 | see its prepared/manifests/identity.json | round-4 repair, current | yes |
+
+Every run's report tables (contrasts.csv, arm_metrics.csv) are byte-identical to v2's.

@@ -185,7 +185,8 @@ def verify_stage3(run, results):
         check(results, f"stage3 h{horizon}: prediction keys == baseline truth keys",
               base_keys == set(zip(preds["area"], preds["target_month"])))
         wrong = []
-        for fold in manifest["folds"]:
+        from src.utils.acceptance import validated_folds
+        for fold in validated_folds(run, horizon):
             if fold["status"] != "fitted":
                 continue
             rec = json.loads((out / "folds" / fold["target_month"] / "fold.json").read_text(encoding="utf-8"))
@@ -252,7 +253,8 @@ def verify_replay(run, results, out):
     for horizon in HORIZONS:
         base = run / "stage3" / f"h{horizon}"
         manifest = json.loads((base / "run_manifest.json").read_text(encoding="utf-8"))
-        fitted = [f["target_month"] for f in manifest["folds"] if f["status"] == "fitted"]
+        from src.utils.acceptance import validated_folds
+        fitted = [f["target_month"] for f in validated_folds(run, horizon) if f["status"] == "fitted"]
         # round_trip: pandas' default fast float parser is not exact for 17-digit values.
         saved = pd.read_csv(base / "predictions.csv.gz", float_precision="round_trip")
         snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")

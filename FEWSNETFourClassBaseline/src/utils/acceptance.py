@@ -239,6 +239,36 @@ def accept_stage3_horizon(run: Path, horizon: int, stage2=None, only_month=None,
     _raise(problems, f"h{horizon} Stage 3")
 
 
+def validated_folds(run: Path, horizon: int) -> list:
+    """The Stage 3 fold population for a horizon, from the prepared schedule (in
+    chronological order): [{target_month, origin_month, status}]. Every consumer that
+    iterates folds uses this, never the manifest's own list."""
+    rows = [r for r in _schedule(run)["stage3"] if r["horizon"] == horizon]
+    return [{"target_month": r["target_month"], "origin_month": r["origin_month"],
+             "status": "fitted" if r["status"] == "scheduled" else r["status"]}
+            for r in sorted(rows, key=lambda r: r["target_month"])]
+
+
+def manifest_fold_problems(run: Path, horizon: int, manifest: dict, records: dict) -> list:
+    """manifest.folds and fold_records must each equal the validated population, one to
+    one, in order, with matching statuses; each fold record must agree too."""
+    expected = validated_folds(run, horizon)
+    problems = []
+    listed = [{k: f.get(k) for k in ("target_month", "origin_month", "status")} for f in manifest.get("folds", [])]
+    if listed != expected:
+        missing = sorted({f["target_month"] for f in expected} - {f["target_month"] for f in listed})
+        extra = sorted({f["target_month"] for f in listed} - {f["target_month"] for f in expected})
+        problems.append(f"h{horizon}: manifest.folds != schedule (missing {missing[:5]}, extra {extra[:5]}, "
+                        f"or order/status/origin differs)")
+    if list(manifest.get("fold_records", {})) != [f["target_month"] for f in expected]:
+        problems.append(f"h{horizon}: fold_records != schedule months in order")
+    for f in expected:
+        record = records.get(f["target_month"])
+        if record is None or record.get("status") != f["status"] or record.get("origin_month") != f["origin_month"]:
+            problems.append(f"h{horizon} {f['target_month']}: fold record status/origin differs from schedule")
+    return problems
+
+
 def accept_stage3(run: Path, horizons=(4, 8, 12)) -> None:
     """Complete published horizons: manifests bound to current code, predictions hash,
     fold records == fold directories, full reconciliation."""
@@ -256,9 +286,12 @@ def accept_stage3(run: Path, horizons=(4, 8, 12)) -> None:
         on_disk = {p.name for p in (out / "folds").iterdir() if p.is_dir()}
         if set(manifest["fold_records"]) != on_disk:
             raise AcceptanceError(f"h{horizon}: fold records differ from fold directories")
+        records = {}
         for month, sha in manifest["fold_records"].items():
             if rid.file_sha256(out / "folds" / month / "fold.json") != sha:
                 raise AcceptanceError(f"h{horizon} {month}: fold record changed")
+            records[month] = json.loads((out / "folds" / month / "fold.json").read_text(encoding="utf-8"))
+        _raise(manifest_fold_problems(run, horizon, manifest, records), f"h{horizon} manifest")
         accept_stage3_horizon(run, horizon, stage2=stage2)
 
 
