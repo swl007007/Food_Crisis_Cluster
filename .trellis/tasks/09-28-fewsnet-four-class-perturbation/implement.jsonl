@@ -1,0 +1,6 @@
+{"file": ".trellis/tasks/09-28-fewsnet-four-class-perturbation/prd.md", "reason": "Approved requirements R1-R15 and acceptance A1-A9."}
+{"file": ".trellis/tasks/09-28-fewsnet-four-class-perturbation/design.md", "reason": "Three-stage integration, matched score provenance and approved defaults."}
+{"file": ".trellis/tasks/09-28-fewsnet-four-class-perturbation/implement.md", "reason": "Execution ordering and review evidence; planning does not authorize execution."}
+{"file": ".trellis/tasks/09-28-fewsnet-four-class-perturbation/feature-contract.md", "reason": "Exact causal feature formulas and imputation boundaries (approved)."}
+{"file": ".trellis/tasks/09-28-fewsnet-four-class-perturbation/feature-schema.json", "reason": "Approved fixed feature order and role inventory."}
+{"file": ".trellis/tasks/09-28-fewsnet-four-class-perturbation/research/release-and-integration.md", "reason": "Pinned source/release evidence and inherited pitfalls."}
