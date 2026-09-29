@@ -48,4 +48,4 @@ Run v9 (from 23297d4) finished but was NOT verified and is NOT committed. Commit
 remains run v7 (235c87b). The round-4 code (23297d4) is committed but not re-audited.
 Controller gates 026f8908, 140f13de, 2152a5d3 were waived by that instruction (status
 'waived', findings left unresolved; DB backed up first). This is not an audit pass.
-The scientific result is unchanged across every run v2-v9 checked (tables byte-identical).
+The scientific result is unchanged across every compared run v2-v8 (tables byte-identical); v9 was not compared.
