@@ -1,0 +1,7 @@
+{"file":".trellis/spec/backend/index.md","reason":"Backend guideline index; use the package-specific forecasting contract."}
+{"file":".trellis/spec/backend/local-forecasting-experiments.md","reason":"Section 6a: fixed-four scoring, aligned snapshots, candidate completeness and scratch location; the task replaces RF imputation with native XGB NaN only in the fork."}
+{"file":".trellis/tasks/10-01-geoxgb-shared-parameter-design/evaluation-contract.md","reason":"Separate q, parent-child acceptance, candidate weights, local activation and final paired inference."}
+{"file":".trellis/tasks/10-01-geoxgb-shared-parameter-design/experiment-plan.md","reason":"D24-approved bounded design: parameters, dates, support, comparisons and disclosed development bias; D25 separately authorizes execution after audit-wrapper start."}
+{"file":".trellis/tasks/10-01-geoxgb-shared-parameter-design/research/backend-contract.md","reason":"Native XGB continuation, fixed class axis, base-score preservation and inherited weighting facts."}
+{"file":".trellis/tasks/10-01-geoxgb-shared-parameter-design/research/sample-support.md","reason":"Observed date/class support and early feature coverage limit claims of sufficient sample size."}
+{"file":".trellis/tasks/10-01-geoxgb-shared-parameter-design/research/candidate-diversity.md","reason":"Observed sparse positive weights and coverage-aware candidate diagnostics; historical seed proposal is superseded."}
