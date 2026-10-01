@@ -68,3 +68,11 @@ These existing shapes do not yet express development subsets or the six-date gat
 ## 5. Planning status
 
 D24 accepts design and D25 authorizes execution. Final planning review and context validation passed. Actual executor binding/start and technical compatibility checks remain prerequisites before product implementation/authoritative experiments; record them in PROGRESS.md. Planning research did not run models or create the code fork.
+
+## 6. D26 amendment (2026-10-01): binary crisis endpoint, Stage 1 first
+
+- [x] Stop the fourclass batch (old Stage 1 dispatcher and minirun-2 progression) by verified PIDs; preserve all artifacts (19 completed roots, the 0xC0000409 crash scratch, 6 interrupted roots).
+- [ ] Add a crisis scorer (argmax → IPC≥3 collapse; exact crisis-positive F1; crisis scan masses) next to the fixed-four metrics; keep fixed-four as secondary in every record.
+- [ ] Stage 1: E1 crisis masses, E2 exact crisis gain on complete parent keys (families unchanged), E3 crisis F1 vs root, E4 weight input = crisis F1. Tests for each.
+- [ ] Re-select G from the saved 72 G predictions by development crisis F1 (no new fits).
+- [ ] Bounded representative Stage 1 subset on the full-geometry data; report E2-vs-E3 generalisation and per-class/binary confusion. Stop for user review before the full 648 candidates or any Stage 2/3.

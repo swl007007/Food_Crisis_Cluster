@@ -140,3 +140,19 @@ Stage 2 沿用 fs1–fs3 合池产生**一张 general map**。每组包含三个
 ## 8. 设计确认与执行边界
 
 D24确认整套参数/支持、80-round路径上限、三seeds、648候选/24方案、六日期gate、选择偏差、诊断臂及停止规则；D25随后授权开始执行。冻结规划先提交，实际Claude会话绑定后通过审计start，再实施/检查/实验；不扩大范围或根据最终成绩更改设计。
+
+## A1. 修订（D26，2026-10-01）：保留四分类概率，按二分类危机评价；先解决 Stage 1
+
+本节修订第2–7节中的评价/择优口径；未提及的数值、预算、日程与边界保持 v1.0。D24/D25 的原始采用与授权记录不变。
+
+**终点。** 模型仍为原生四分类 XGB（softprob、`num_class=4`、固定类轴、无重加权/伪行/阈值调参）。危机 crisis = IPC≥3 = 类码{2,3}。预测：四分类 argmax 后折叠为 crisis/non-crisis（开发期实测优于 P3+P4或5≥0.5：H4 .6281 vs .6195，H8 .5371 vs .5293，H12 .4938 vs .4740）。主指标：crisis-positive F1 = 2TP/(2TP+FP+FN)，分母为0记0；fixed-four macro-F1 作为次要指标照常记录。
+
+**G 重选（无新拟合）。** 用已保存的 `gscreen/predictions.csv.gz`（72个开发 pooled 折）在开发主 cohort 同键上按 crisis F1（精确有理数、合并计数）重选每 H 的 G；平局规则不变（较少rounds、较浅、编号）。原四分类 G 选择记录保留为历史。
+
+**Stage 1 对齐。** E1：区域扫描质量改用 crisis 单列 TP/FP/FN（`D_g=2TP_g+FP_g+FN_g`，`Y=D_g/D`，`A=2TP_g/D`），沿用既有 q/scan 算法。E2：在完整父验证键上比较四种父/子路由的精确 crisis F1，严格 >0 与 >0.01 两族、父模型赢平局。E3：目标月 partitioned 与该候选 root 的 crisis F1。E4：权重输入改为 crisis F1，即 `max(0, logit(clip F_part) − logit(clip F_pool))`。支持底线（含“≥2个观察四分类类别”）、59个月窗、80轮路径上限、续训前缀约束不变。
+
+**执行顺序。** 先在正确几何（完整固定 shapefile）的有界代表性子集上修复并测试 Stage 1：报告 E2 增益与 E3 增益的对应（泛化）、逐类四分类与二分类混淆。用户审阅前不运行完整 648 候选、Stage 2 或 Stage 3。
+
+**待审的下游对齐（尚未授权执行）。** 若继续：Stage 2 consensus 权重沿用 E4（crisis F1）；Stage 3 每区 gate 改为 crisis F1 精确增益 >0.01（其余支持资格不变）；开发24方案择优改为 crisis F1 相对 persistence/expert（persistence、expert 同样按 IPC≥3 折叠）；最终 D3 改为各 H 的 crisis F1 相对 persistence 点增益 >0 且国家块 bootstrap 95% 下界 >0，expert 为 H4/H8 报告目标；四分类结果作为次要报告。上述需在 Stage 1 结果审阅后另行确认。
+
+**被取代的执行。** 四分类口径的权威运行 `geoxgb-v1-20261001`（代码 268c17b；G3/G2/G2；Stage 1 完成19/162根、1根原生崩溃 0xC0000409、6根被停止）及 minirun-1/2 保留为证据，不作为二分类结果。

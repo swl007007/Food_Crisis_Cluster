@@ -203,3 +203,7 @@ W=59 的真实标签窗在 Stage 3 可覆盖 14 个观测月份，但仍有 35.4
 已选定 `FEWSNETFourClassBaseline/`；source commit/release、独立目录 `FEWSNETGeoXGBExperiment/`、旧结果身份与隔离import边界见 `implement.md`。
 只复制55个已跟踪源／包文件，不复制大批 runs/，不覆盖旧结果；当前未创建 fork。
 最终规划及真实上下文清单已完成复核，D25已授权执行。先按AGENTS.md提交规划、绑定实际Claude会话并审计start；设计批准D24本身不启动执行。
+
+## D26 修订（2026-10-01）
+
+保留原生四分类 XGB 概率与固定类轴，评价终点改为二分类危机（IPC≥3，argmax 后折叠），主指标 crisis-positive F1；Stage 1 的 E1–E4 改为该终点，先在正确几何的有界子集验证。数值预算与边界不变。详见 experiment-plan.md A1。
