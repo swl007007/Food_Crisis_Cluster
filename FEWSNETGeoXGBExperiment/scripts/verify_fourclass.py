@@ -1,30 +1,31 @@
-"""Independent reconstruction and replay for a completed run (A2-A8).
+"""Independent reconstruction and replay for a completed GeoXGBoost run.
 
-python scripts/verify_fourclass.py --run-dir runs/<id>
+python scripts/verify_fourclass.py --run-dir RUN
 
-Never modifies a run artifact; writes ``<run>/verification/`` (fresh). Checks:
+Never modifies a run artifact; writes ``RUN/verification/`` (fresh). Checks:
 
-1. Source/snapshot identities: prepared outputs still match their recorded hashes.
-2. Feature recomputation: an independent row-wise re-derivation of a keyed sample
-   from the raw panel (exact offsets, windows, events) equals the snapshot.
-3. Stage 1 ledger: every scheduled fold completed; training windows are [O-35, O);
-   no training label after 2020-12; per-fold held-out scores recompute from rows.
-4. Stage 2: plan weights recompute from the candidate scores; consensus route.
-5. Stage 3: fold training keys reproduce the window rule; prediction keys equal the
-   baseline ledger; pseudo rows are zero; routing counts.
-6. Report: every arm metric and contrast point estimate recomputes with sklearn from
-   keyed_evaluation.csv.gz; bootstrap draws recompute from saved multiplicities.
-7. Replay: the saved Stage 3 estimator bundles of the first and last fitted fold per
-   horizon are loaded (no refit) and must reproduce labels and probabilities exactly;
-   retained Stage 1 checkpoints reload and reproduce the saved held-out predictions.
+1. Identity: producer code and verifier equal the committed blobs at the run's git_head
+   and HEAD; prepared outputs still match their recorded hashes.
+2. Features: an independent row-wise re-derivation of a keyed sample from the raw panel.
+3. Stage 1: the 162 roots / 648 candidates are accepted; fitting rows lie in [O-59, O)
+   and <= 2020-12, fitting/validation keys are disjoint; held-out E3 scores recompute
+   with sklearn; every recorded E2 decision equals its own exact threshold rule; for a
+   sample of candidates every saved child checkpoint carries the root's exact structural
+   prefix and the terminal checkpoints reproduce the saved held-out probabilities.
+4. G screening and development: G choice and the 24-scheme ranking recompute with
+   sklearn from saved keyed predictions; every map's weights recompute.
+5. Gates: every development and final gate decision recomputes from its saved pairs,
+   and every prediction row's route equals its region decision.
+6. Final: keys == truth keys for every arm; saved global/local boosters of the first and
+   last fold per horizon and arm replay the saved probabilities exactly (no refit); shared
+   locals carry the global's exact prefix; no fit window reaches the target.
+7. Report: arm metrics, bootstrap draws (sample) and the D3 decision recompute.
 """
 import argparse
-import gzip
 import hashlib
 import json
-import subprocess
 import sys
-import tempfile
+from fractions import Fraction
 from pathlib import Path
 
 import numpy as np
@@ -35,7 +36,6 @@ PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
 SCHEMA = PACKAGE / "feature-schema.json"
 HORIZONS = (4, 8, 12)
-SCOPE = {4: 1, 8: 2, 12: 3}
 
 
 def sha256(path) -> str:
@@ -47,17 +47,41 @@ def sha256(path) -> str:
 
 
 def mi(label: str) -> int:
-    y, m = label.split("-")
+    y, m = str(label).split("-")
     return int(y) * 12 + int(m) - 1
 
 
 def macro(truth, pred):
-    return float(f1_score(truth, pred, labels=[0, 1, 2, 3], average="macro", zero_division=0))
+    return float(f1_score(np.asarray(truth, int), np.asarray(pred, int), labels=[0, 1, 2, 3], average="macro",
+                          zero_division=0))
+
+
+def exact_macro(truth, pred):
+    truth, pred = np.asarray(truth, int), np.asarray(pred, int)
+    total = Fraction(0)
+    for k in range(4):
+        tp = int(np.sum((truth == k) & (pred == k)))
+        fp = int(np.sum((truth != k) & (pred == k)))
+        fn = int(np.sum((truth == k) & (pred != k)))
+        if 2 * tp + fp + fn:
+            total += Fraction(2 * tp, 2 * tp + fp + fn)
+    return total / 4
 
 
 def check(results, name, ok, detail=None):
     results.append({"check": name, "passed": bool(ok), "detail": detail})
-    print(("PASS " if ok else "FAIL ") + name + (f" :: {detail}" if detail is not None and not ok else ""), flush=True)
+    print(("PASS " if ok else "FAIL ") + name + (f" :: {str(detail)[:400]}" if detail and not ok else ""), flush=True)
+
+
+def read(path):
+    return pd.read_csv(path, float_precision="round_trip", low_memory=False)
+
+
+def main_cohort(frame, h):
+    keep = frame["persistence_code"].notna()
+    if h in (4, 8):
+        keep &= frame["expert_code"].notna()
+    return frame[keep]
 
 
 # ---------------------------------------------------------------------------------
@@ -131,204 +155,294 @@ def verify_features(run, results, n_keys=400):
               bool((snap["target_month"] - snap["origin_month"] == horizon).all()))
 
 
+
+
 def verify_stage1(run, results):
-    schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
-    scheduled = [f for f in schedule["stage1"] if f["status"] == "scheduled"]
-    bad, rescored = [], []
-    for fold in scheduled:
-        name = f"fs{fold['scope']}_{fold['target_month']}"
-        d = run / "stage1" / "folds" / name
-        cand = json.loads((d / "candidate.json").read_text(encoding="utf-8"))
-        origin = mi(fold["origin_month"])
-        observed = [mi(x) for x in cand["train_label_months_observed"]]
-        if min(observed) < origin - 35 or max(observed) >= origin or max(observed) > mi("2020-12"):
-            bad.append(name)
-        preds = pd.read_csv(d / "target_predictions.csv", float_precision="round_trip")
-        for arm, key in (("y_pred_partitioned_code", "macro_f1"), ("y_pred_pooled_code", "macro_f1_base")):
-            if not np.isclose(macro(preds["y_true_code"], preds[arm]), cand["scores"][key], rtol=0, atol=1e-12):
-                rescored.append((name, key))
-        pseudo = {e["pseudo_rows"] for e in cand["fits"]["georf_fit_log"]}
-        if pseudo != {4}:
-            bad.append(f"{name}:pseudo_rows={pseudo}")
-        members = pd.read_csv(d / "fold_membership.csv.gz", float_precision="round_trip")
-        if set(members.loc[members.role != "heldout_target", "target_month"].map(mi)) - set(range(origin - 35, origin)):
-            bad.append(f"{name}:membership")
-    check(results, f"stage1: {len(scheduled)} scheduled folds all completed within [O-35,O) and <= 2020-12 with 4 pseudo rows per fit",
-          not bad, bad)
-    check(results, "stage1: held-out macro F1 recomputes with sklearn from saved rows", not rescored, rescored)
+    from src.utils import acceptance as acc
+    from src.model import native_xgb as nx
+    cands = acc.accept_stage1(run)
+    check(results, f"stage1: {len(cands)} scheduled candidates accepted "
+                   f"({sum(c['status'] == 'completed' for c in cands.values())} completed)", len(cands) == 648)
+    stage1 = run / "stage1"
+    bad_window, rescored, e2, keys = [], [], [], []
+    roots = sorted({c["root"] for c in cands.values()})
+    for root in roots:
+        r = json.loads((stage1 / "roots" / root / "root.json").read_text(encoding="utf-8"))
+        if r["status"] != "completed":
+            continue
+        origin = mi(r["origin_month"])
+        months = [mi(x) for x in r["train_label_months_observed"]]
+        if min(months) < origin - 59 or max(months) >= origin or max(months) > mi("2020-12"):
+            bad_window.append(root)
+        members = read(stage1 / "roots" / root / "fold_membership.csv.gz")
+        inner = members[members.role != "heldout_target"]
+        if set(inner["target_month"].map(mi)) - set(range(origin - 59, origin)):
+            bad_window.append(f"{root}:membership")
+        fit = set(zip(inner.loc[inner.role == "fitting", "area"], inner.loc[inner.role == "fitting", "target_month"]))
+        val = set(zip(inner.loc[inner.role == "validation", "area"], inner.loc[inner.role == "validation", "target_month"]))
+        if fit & val or len(fit) != r["rows"]["fitting"] or len(val) != r["rows"]["validation"]:
+            keys.append(root)
+        pooled = read(stage1 / "roots" / root / "root_target_predictions.csv")
+        for cand in r["candidates"]:
+            c = json.loads((stage1 / "candidates" / cand / "candidate.json").read_text(encoding="utf-8"))
+            preds = read(stage1 / "candidates" / cand / "target_predictions.csv")
+            if not (np.isclose(macro(preds.y_true_code, preds.y_pred_partitioned_code), c["scores"]["macro_f1"], rtol=0, atol=1e-12)
+                    and np.isclose(macro(pooled.y_true_code, pooled.y_pred_pooled_code), c["scores"]["macro_f1_base"], rtol=0, atol=1e-12)
+                    and (preds.y_pred_pooled_code.to_numpy() == pooled.y_pred_pooled_code.to_numpy()).all()):
+                rescored.append(cand)
+            threshold = Fraction(c["threshold"])
+            for d in c["partition"]["decisions"]:
+                if d["outcome"] in ("accepted", "rejected_gate"):
+                    accept = Fraction(d["gain"]) > threshold
+                    if accept != (d["outcome"] == "accepted"):
+                        e2.append((cand, d["branch_id"]))
+    check(results, "stage1: fitting/validation rows in [O-59,O) and <= 2020-12", not bad_window, bad_window)
+    check(results, "stage1: fitting and validation keys disjoint and complete", not keys, keys)
+    check(results, "stage1: E3 partitioned/pooled macro F1 recompute; pooled E3 = the candidate's own root", not rescored, rescored)
+    check(results, "stage1: every E2 decision equals 'exact gain > its family threshold'", not e2, e2[:5])
+    replay_stage1(run, results, cands)
 
 
-def verify_stage2(run, results):
-    from scripts.step4_similarity_matrix import compute_plan_weights
-    ledger = pd.read_csv(run / "stage2" / "candidate_ledger.csv", float_precision="round_trip")
-    completed = ledger[ledger["status"] == "completed"]
-    weights = pd.read_csv(run / "stage2" / "plan_weights.csv", float_precision="round_trip")
-    f = np.clip(completed["macro_f1"].to_numpy(), 1e-6, 1 - 1e-6)
-    b = np.clip(completed["macro_f1_base"].to_numpy(), 1e-6, 1 - 1e-6)
-    expected = np.maximum(np.log(f / (1 - f)) - np.log(b / (1 - b)), 0)
-    check(results, "stage2: D9 weights recompute", np.allclose(expected, weights["weight"], rtol=0, atol=1e-12))
-    record = json.loads((run / "stage2" / "consensus.json").read_text(encoding="utf-8"))
-    route_ok = (record["route"] == "null_consensus") == bool((expected == 0).all())
-    check(results, f"stage2: consensus route '{record['route']}' matches the weights", route_ok)
-    if record["route"] == "learned_map":
-        check(results, "stage2: cluster map digest", sha256(run / "stage2" / record["cluster_map"]) == record["cluster_map_sha256"])
+def replay_stage1(run, results, cands, per_h=2):
+    """Structural prefix of every saved checkpoint and terminal replay, sampled candidates."""
+    from src.model import native_xgb as nx
+    from src.feature.fourclass_features import load_schema
+    features = load_schema(SCHEMA)["ordered_features"]
+    stage1 = run / "stage1"
+    for h in HORIZONS:
+        names = sorted(n for n, c in cands.items() if c["horizon"] == h and c["status"] == "completed")
+        sample = [names[0], names[-1]][:per_h]
+        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{h}.parquet")
+        for name in sample:
+            c = json.loads((stage1 / "candidates" / name / "candidate.json").read_text(encoding="utf-8"))
+            ckpt = stage1 / "checkpoints" / name
+            changed = [f for f, s in c["checkpoints"]["sha256"].items() if sha256(ckpt / f) != s]
+            root = nx.from_raw((ckpt / "xgb_root.ubj").read_bytes())
+            root_sha = nx.prefix_identity(root)["sha256"]
+            n0 = root.num_boosted_rounds()
+            prefix_bad = [f for f in sorted(ckpt.glob("*.ubj"))
+                          if nx.prefix_identity(nx.from_raw(f.read_bytes()), n0)["sha256"] != root_sha]
+            preds = read(stage1 / "candidates" / name / "target_predictions.csv")
+            test = snap[snap.target_month == mi(c["candidate"].split("_")[1])].set_index("area").loc[preds.FEWSNET_admin_code]
+            got = np.zeros((len(preds), 4))
+            for branch in preds.branch_id.unique():
+                rows = (preds.branch_id == branch).to_numpy()
+                booster = nx.from_raw((ckpt / f"xgb_{'root' if branch == 'root' else branch}.ubj").read_bytes())
+                got[rows] = nx.proba(booster, test[features].to_numpy(float)[rows])
+            want = preds.filter(like="p_partitioned_").to_numpy()
+            check(results, f"replay stage1 {name}: {len(c['checkpoints']['sha256'])} checkpoint files unchanged, "
+                           f"every booster carries the root prefix, held-out probabilities exact",
+                  not changed and not prefix_bad and np.array_equal(got, want),
+                  {"changed": changed, "prefix_bad": [p.name for p in prefix_bad],
+                   "max_abs": float(np.abs(got - want).max())})
 
 
-def verify_stage3(run, results):
-    baselines = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv", float_precision="round_trip")
-    for horizon in HORIZONS:
-        out = run / "stage3" / f"h{horizon}"
-        manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
-        preds = pd.read_csv(out / "predictions.csv.gz", float_precision="round_trip")
-        base_keys = set(zip(baselines.loc[baselines.horizon == horizon, "area"],
-                            baselines.loc[baselines.horizon == horizon, "target_label"]))
-        check(results, f"stage3 h{horizon}: prediction keys == baseline truth keys",
-              base_keys == set(zip(preds["area"], preds["target_month"])))
-        wrong = []
-        from src.utils.acceptance import validated_folds
-        for fold in validated_folds(run, horizon):
-            if fold["status"] != "fitted":
-                continue
-            rec = json.loads((out / "folds" / fold["target_month"] / "fold.json").read_text(encoding="utf-8"))
-            keys = pd.read_csv(out / "folds" / fold["target_month"] / "training_keys.csv.gz", float_precision="round_trip")
-            origin = mi(fold["origin_month"])
-            if keys["target_month"].min() < origin - 35 or keys["target_month"].max() >= origin:
-                wrong.append(fold["target_month"])
-            if rec["pseudo_rows"] != 0 or len(keys) != rec["rows"]["train"]:
-                wrong.append(fold["target_month"] + ":rows")
-            digest = hashlib.sha256(np.ascontiguousarray(keys[["area", "target_month"]].to_numpy(np.int64)).tobytes()).hexdigest()
-            if digest != rec["train_keys_sha256"]:
-                wrong.append(fold["target_month"] + ":keys")
-        check(results, f"stage3 h{horizon}: training windows [O-35,O), real rows only, keys match digests", not wrong, wrong)
-        probs = preds.filter(like="p_pooled_").to_numpy()
-        check(results, f"stage3 h{horizon}: hard predictions are fixed-axis argmax",
-              bool((probs.argmax(axis=1) == preds["y_pred_pooled_code"]).all()))
+def verify_gscreen(run, results):
+    from src.experiment import plan
+    sel = json.loads((run / "gscreen" / "selection.json").read_text(encoding="utf-8"))
+    preds = read(run / "gscreen" / "predictions.csv.gz")
+    base = read(run / "prepared" / "ledgers" / "dev_baselines.csv")
+    base["target_month"] = base["target_label"]
+    bad = []
+    for h in HORIZONS:
+        scores = {}
+        for g in plan.G_CONFIGS:
+            p = preds[(preds.horizon == h) & (preds.g_config == g)]
+            k = main_cohort(base[base.horizon == h].merge(p, on=["area", "target_month", "horizon"], validate="one_to_one"), h)
+            if len(p) != int((base.horizon == h).sum()):
+                bad.append((h, g, "keys"))
+            scores[g] = (exact_macro(k.truth_code, k.y_pred_code), tuple(-x for x in plan.g_tiebreak_key(g)))
+        if max(scores, key=scores.get) != sel["selected"][str(h)]:
+            bad.append((h, "selection"))
+    check(results, "gscreen: every G scored on all development truth keys; selection recomputes", not bad, bad)
+
+
+def verify_maps(run, results):
+    bad = []
+    count = 0
+    for d in sorted((run / "maps").iterdir()):
+        record = json.loads((d / "consensus.json").read_text(encoding="utf-8"))
+        count += 1
+        if record["route"] == "no_prior_candidates":
+            continue
+        w = read(d / "plan_weights.csv")
+        f = np.clip(w["macro_f1"].to_numpy(), 1e-6, 1 - 1e-6)
+        b = np.clip(w["macro_f1_base"].to_numpy(), 1e-6, 1 - 1e-6)
+        expect = np.maximum(np.log(f / (1 - f)) - np.log(b / (1 - b)), 0)
+        if not np.allclose(expect, w["weight"], rtol=0, atol=1e-12) or \
+                (record["route"] == "null_consensus") != (expect.max() <= 0):
+            bad.append(d.name)
+        if record["route"] == "learned_map" and sha256(d / record["cluster_map"]) != record["cluster_map_sha256"]:
+            bad.append(f"{d.name}:map")
+    check(results, f"maps: D9 weights and routes recompute for {count} consensus builds", not bad, bad)
+
+
+def verify_gate_dir(fold_dir, problems):
+    gate = json.loads((fold_dir / "gate.json").read_text(encoding="utf-8"))
+    preds = read(fold_dir / "predictions.csv.gz")
+    if not gate["regions"]:
+        if preds["route"].str.contains("local").any():
+            problems.append(f"{fold_dir}: local rows without regions")
+        return 0
+    pairs = read(fold_dir / "gate_pairs.csv.gz")
+    for d in gate["regions"]:
+        sub = pairs[pairs.cluster_id == d["cluster_id"]]
+        rows = len(sub)
+        dates = sub.groupby("validation_month")["local_fit_ok"].any() if rows else pd.Series(dtype=bool)
+        support = (rows >= 100 and sub.area.nunique() >= 20 and len(dates) >= 3 and int(dates.sum()) >= 3)
+        gain = exact_macro(sub.y_true, sub.y_local_routed) - exact_macro(sub.y_true, sub.y_global) if rows else None
+        enabled = bool(support and gain > Fraction(1, 100))
+        if enabled != d["enabled"] or (rows and Fraction(d["gain"]) != gain):
+            problems.append(f"{fold_dir.name} c{d['cluster_id']}: gate decision does not recompute")
+        bad_fit = sub[~sub.local_fit_ok & (sub.y_local_routed != sub.y_global)]
+        if len(bad_fit):
+            problems.append(f"{fold_dir.name} c{d['cluster_id']}: failed-fit rows not on the global prediction")
+        cur = d["current_fit_support"]
+        fit_ok = cur["rows"] >= 500 and cur["areas"] >= 50 and cur["dates"] >= 6 and cur["classes"] >= 2
+        want = "local_model" if (enabled and fit_ok) else "global_fallback"
+        routes = set(preds.loc[preds.cluster_id == d["cluster_id"], "route"].str.split(":").str[0])
+        if d["route"] != want or routes != {want}:
+            problems.append(f"{fold_dir.name} c{d['cluster_id']}: route {d['route']} / {routes} != {want}")
+    return len(gate["regions"])
+
+
+def verify_development(run, results):
+    from src.experiment import plan
+    problems, regions, folds = [], 0, 0
+    for fold_dir in sorted((run / "development").glob("*/h*/*/*")):
+        if (fold_dir / "fold.json").is_file():
+            folds += 1
+            regions += verify_gate_dir(fold_dir, problems)
+    check(results, f"development: {regions} region gate decisions over {folds} arm-folds recompute from saved pairs; "
+                   "rows follow their decision", not problems, problems[:5])
+    table = read(run / "development" / "selection_table.csv")
+    sel = json.loads((run / "development" / "selection.json").read_text(encoding="utf-8"))
+    index = json.loads((run / "development" / "scheme_fold_index.json").read_text(encoding="utf-8"))
+    base = read(run / "prepared" / "ledgers" / "dev_baselines.csv")
+    base["target_month"] = base["target_label"]
+    keys, bad = {}, []
+    for scheme in plan.schemes():
+        deltas, expert = {}, {}
+        for h in HORIZONS:
+            frames = [read(run / "development" / "folds" / f"h{h}" / t / index[f"h{h}_{t}"][scheme["scheme"]] /
+                           "predictions.csv.gz") for t in plan.DEV_TARGETS]
+            p = pd.concat(frames)
+            k = base[base.horizon == h].merge(p, on=["area", "target_month", "horizon"], validate="one_to_one")
+            if len(k) != int((base.horizon == h).sum()):
+                bad.append((scheme["scheme"], h, "keys"))
+            k = main_cohort(k, h)
+            deltas[h] = exact_macro(k.truth_code, k.y_pred_code) - exact_macro(k.truth_code, k.persistence_code)
+            if h in (4, 8):
+                expert[h] = exact_macro(k.truth_code, k.y_pred_code) - exact_macro(k.truth_code, k.expert_code)
+        keys[scheme["scheme"]] = (min(deltas.values()), sum(deltas.values()) / 3, (expert[4] + expert[8]) / 2,
+                                  sum(v == "L1" for v in scheme["l_vector"].values()),
+                                  -plan.STRATEGIES.index(scheme["strategy"]), -scheme["l_vector_id"])
+        row = table[table.scheme == scheme["scheme"]].iloc[0]
+        if Fraction(row["delta_persistence_exact_h4"]) != deltas[4]:
+            bad.append((scheme["scheme"], "table"))
+    winner = max(keys, key=keys.get)
+    check(results, "development: 24-scheme deltas recompute on all truth keys and the lexicographic winner matches",
+          not bad and winner == sel["selected_scheme"], {"bad": bad[:5], "winner": winner})
+
+
+def verify_final(run, results):
+    from src.model import native_xgb as nx
+    from src.feature.fourclass_features import load_schema
+    from src.utils import acceptance as acc
+    features = load_schema(SCHEMA)["ordered_features"]
+    frozen = json.loads((run / "frozen" / "frozen.json").read_text(encoding="utf-8"))
+    sched = acc.schedule(run)
+    problems, regions = [], 0
+    arms = ("pooled", "rfmap_independent", "rfmap_shared", "xgbmap_shared")
+    base = read(run / "prepared" / "ledgers" / "baselines.csv")
+    base["target_month"] = base["target_label"]
+    for h in HORIZONS:
+        folds = [f for f in sched["stage3"] if f["horizon"] == h and f["status"] == "scheduled"]
+        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{h}.parquet")
+        for arm in arms:
+            frames = []
+            for i, f in enumerate(folds):
+                d = run / "final" / f"h{h}" / f["target_month"] / arm
+                regions += verify_gate_dir(d, problems)
+                p = read(d / "predictions.csv.gz")
+                frames.append(p)
+                gate = json.loads((d / "gate.json").read_text(encoding="utf-8"))
+                g_path = run / "globals" / f"h{h}" / frozen["g_selection"][str(h)] / f"O{f['origin_month']}"
+                g_rec = json.loads(g_path.with_suffix(".json").read_text(encoding="utf-8"))
+                if mi(g_rec["fit_label_months"][1]) >= mi(f["origin_month"]):
+                    problems.append(f"{d}: global window reaches the origin")
+                if g_rec["booster_sha256"] != gate["global"]["booster_sha256"]:
+                    problems.append(f"{d}: fold global differs from the stored global")
+                if i not in (0, len(folds) - 1):
+                    continue
+                g = nx.from_raw(g_path.with_suffix(".ubj").read_bytes())
+                g_struct = nx.prefix_identity(g)["sha256"]
+                test = snap[snap.target_month == mi(f["target_month"])].set_index("area").loc[p.area]
+                X = test[features].to_numpy(float)
+                got = nx.proba(g, X)
+                for c, record in gate["locals"].items():
+                    rows = (p.cluster_id == int(c)).to_numpy()
+                    booster = nx.from_raw((d / "models" / f"local_{c}.ubj").read_bytes())
+                    if nx.sha(booster) != record["booster_sha256"]:
+                        problems.append(f"{d}: local_{c} bytes differ from the record")
+                    if arm != "rfmap_independent" and \
+                            nx.prefix_identity(booster, g.num_boosted_rounds())["sha256"] != g_struct:
+                        problems.append(f"{d}: shared local_{c} lacks the global prefix")
+                    got[rows] = nx.proba(booster, X[rows])
+                if not np.array_equal(got, p.filter(like="p_").to_numpy()):
+                    problems.append(f"{d}: saved boosters do not replay the saved probabilities")
+            pred = pd.concat(frames)
+            want = base[base.horizon == h]
+            if set(zip(pred.area, pred.target_month)) != set(zip(want.area, want.target_month)) or len(pred) != len(want):
+                problems.append(f"h{h} {arm}: prediction keys differ from the truth keys")
+    check(results, f"final: {regions} gates recompute; keys == truth keys for every arm; first/last fold per H and arm "
+                   "replay exactly from saved boosters; shared locals carry the global prefix", not problems, problems[:8])
 
 
 def verify_report(run, results):
     report = json.loads((run / "report" / "report.json").read_text(encoding="utf-8"))
-    keyed = pd.read_csv(run / "report" / "keyed_evaluation.csv.gz", float_precision="round_trip")
-    col = {"partitioned": "y_pred_partitioned_code", "pooled": "y_pred_pooled_code",
-           "expert": "expert_code", "persistence": "persistence_code"}
+    keyed = read(run / "report" / "keyed_evaluation.csv.gz")
+    col = {"main": "y_pred_xgbmap_shared", "pooled": "y_pred_pooled", "rfmap_shared": "y_pred_rfmap_shared",
+           "rfmap_independent": "y_pred_rfmap_independent", "expert": "expert_code", "persistence": "persistence_code",
+           "v7_partitioned_rf": "y_pred_v7_partitioned_rf", "v7_pooled_rf": "y_pred_v7_pooled_rf"}
+
+    def cohort_rows(cohort):
+        h = int(cohort.split("_h")[1])
+        rows = keyed[(keyed.horizon == h) & keyed.persistence_code.notna()]
+        return rows[rows.expert_code.notna()] if cohort.startswith("main") and h != 12 else rows
     bad = []
     for cohort, entry in report["metrics"].items():
-        h = int(cohort.split("_h")[1])
-        rows = keyed[keyed.horizon == h]
-        rows = rows[rows.persistence_code.notna()]
-        if cohort.startswith("main") and h != 12:
-            rows = rows[rows.expert_code.notna()]
+        rows = cohort_rows(cohort)
         if len(rows) != entry["n"]:
             bad.append((cohort, "n"))
         for arm, summary in entry["arms"].items():
             if not np.isclose(macro(rows.truth_code, rows[col[arm]].astype(int)), summary["macro_f1"], rtol=0, atol=1e-12):
                 bad.append((cohort, arm))
     check(results, "report: every cohort size and arm macro F1 recomputes with sklearn", not bad, bad)
-    draws = pd.read_csv(run / "report" / "bootstrap_draws.csv.gz", float_precision="round_trip")
+    draws = read(run / "report" / "bootstrap_draws.csv.gz")
     countries = report["bootstrap"]["countries"]
-    sample = draws.sample(n=min(25, len(draws)), random_state=3)
     bad = []
-    for _, draw in sample.iterrows():
+    for _, draw in draws.sample(n=min(20, len(draws)), random_state=3).iterrows():
         mult = draw[countries].astype(int)
         for cohort, entry in report["metrics"].items():
-            h = int(cohort.split("_h")[1])
-            rows = keyed[(keyed.horizon == h) & keyed.persistence_code.notna()]
-            if cohort.startswith("main") and h != 12:
-                rows = rows[rows.expert_code.notna()]
-            reps = np.repeat(np.arange(len(rows)), rows["country"].map(mult).to_numpy())
-            rep = rows.iloc[reps]
+            rows = cohort_rows(cohort)
+            rep = rows.iloc[np.repeat(np.arange(len(rows)), rows["country"].map(mult).to_numpy())]
             for arm in entry["arms"]:
                 if not np.isclose(macro(rep.truth_code, rep[col[arm]].astype(int)), draw[f"{cohort}:{arm}"], rtol=0, atol=1e-9):
                     bad.append((int(draw["draw"]), cohort, arm))
-    check(results, "report: 25 bootstrap draws recompute by row replication from saved multiplicities", not bad, bad[:5])
-    check(results, f"report: {report['bootstrap']['draws_accepted']} of 2000 draws accepted",
-          report["bootstrap"]["complete"])
-
-
-def verify_replay(run, results, out):
-    # Stage 3: LOAD the saved estimator bundles of the first and last fitted fold per
-    # horizon (no refit) and reproduce labels and all four probabilities exactly.
-    from scripts.compare_partitioned_vs_pooled_rf_k40_nc4 import bundle_proba, load_bundle
-    from src.metrics import fourclass as fc
-    replay_rows = []
-    for horizon in HORIZONS:
-        base = run / "stage3" / f"h{horizon}"
-        manifest = json.loads((base / "run_manifest.json").read_text(encoding="utf-8"))
-        from src.utils.acceptance import validated_folds
-        fitted = [f["target_month"] for f in validated_folds(run, horizon) if f["status"] == "fitted"]
-        # round_trip: pandas' default fast float parser is not exact for 17-digit values.
-        saved = pd.read_csv(base / "predictions.csv.gz", float_precision="round_trip")
-        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")
-        for month in (fitted[0], fitted[-1]):
-            fold = base / "folds" / month
-            record = json.loads((fold / "fold.json").read_text(encoding="utf-8"))
-            models = sorted(r for r in record["outputs"] if r.startswith("models/"))
-            hashes_ok = all(sha256(fold / r) == record["outputs"][r] for r in models)
-            original = saved[saved.target_month == month].reset_index(drop=True)
-            test = snap[snap.target_month == mi(month)].set_index("area").loc[original["area"]]
-            bundles = {Path(r).name.removesuffix(".pkl.xz"): load_bundle(fold / r) for r in models}
-            X = test[bundles["pooled"]["features"]].to_numpy(dtype=float)
-            p_pooled = bundle_proba(bundles["pooled"], X)
-            p_part = p_pooled.copy()
-            for cid in sorted(original["cluster_id"].unique()):
-                rows = (original["cluster_id"] == cid).to_numpy()
-                key = f"local_{cid}"
-                if key in bundles:
-                    p_part[rows] = bundle_proba(bundles[key], X[rows])
-            # Prediction is single-threaded (fourclass.deterministic_proba), so replay
-            # must reproduce every probability bit for bit.
-            diff = max(float(np.abs(original[f"p_{arm}_{c}"].to_numpy() - p[:, k]).max())
-                       for arm, p in (("pooled", p_pooled), ("partitioned", p_part))
-                       for k, c in enumerate(fc.CLASS_LABELS))
-            same = hashes_ok and diff == 0.0
-            same = same and np.array_equal(fc.argmax_codes(p_pooled), original["y_pred_pooled_code"]) \
-                and np.array_equal(fc.argmax_codes(p_part), original["y_pred_partitioned_code"])
-            keys = pd.read_csv(fold / "training_keys.csv.gz", float_precision="round_trip")
-            cluster_of = {}
-            consensus = json.loads((run / "stage2" / "consensus.json").read_text(encoding="utf-8"))
-            if consensus["route"] == "learned_map":
-                cmap = pd.read_csv(run / "stage2" / consensus["cluster_map"], float_precision="round_trip")
-                cluster_of = dict(zip(cmap["FEWSNET_admin_code"], cmap["cluster_id"]))
-            key_cluster = keys["area"].map(cluster_of).fillna(-1).astype(int).to_numpy()
-            def digest(frame):
-                return hashlib.sha256(np.ascontiguousarray(
-                    frame[["area", "target_month"]].to_numpy(np.int64)).tobytes()).hexdigest()
-            identities = {}
-            for n, b in bundles.items():
-                subset = keys if n == "pooled" else keys[key_cluster == int(n.split("_")[1])]
-                identities[n] = (b["identity"]["train_keys_sha256"] == digest(subset)
-                                 and b["identity"]["rows"] == len(subset)
-                                 and b["identity"]["pool_train_keys_sha256"] == record["train_keys_sha256"])
-            same = same and all(identities.values())
-            replay_rows.append({"horizon": horizon, "month": month, "bundles": len(bundles),
-                                "rows": len(original), "max_abs_probability_diff": diff,
-                                "labels_identical": True if same else None, "passed": bool(same)})
-            check(results, f"saved-model replay stage3 h{horizon} {month}: {len(bundles)} loaded bundles reproduce "
-                           f"{len(original)} rows bit-identical (labels and 4 probabilities), hashes and "
-                           "per-estimator fit identities", same)
-    (out / "stage3_saved_model_replay.json").write_text(json.dumps(replay_rows, indent=2), encoding="utf-8")
-    # Stage 1: reload retained checkpoints and reproduce the saved held-out predictions.
-    from src.model.model_RF import RFmodel
-    from src.helper.helper import get_X_branch_id_by_group
-    retained = sorted((run / "stage1" / "retained").glob("fs*"))
-    features = json.loads(SCHEMA.read_text(encoding="utf-8"))["ordered_features"]
-    for folder in retained:
-        name = folder.name
-        scope, term = int(name[2]), name.split("_")[1]
-        horizon = {1: 4, 2: 8, 3: 12}[scope]
-        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")
-        test = snap[snap.target_month == mi(term)].sort_values("area")
-        s_branch = pd.read_pickle(folder / "space_partitions" / "s_branch.pkl")
-        routed = get_X_branch_id_by_group(test["area"].to_numpy(), s_branch)
-        model = RFmodel(str(folder / "checkpoints"), 100, num_class=4, n_jobs=1)
-        pred = np.zeros(len(test), dtype=int)
-        X = test[features].to_numpy(dtype=float)
-        for branch in np.unique(routed):
-            rows = routed == branch
-            model.load(branch)
-            pred[rows] = model.predict(X[rows])
-        saved = pd.read_csv(run / "stage1" / "folds" / name / "target_predictions.csv", float_precision="round_trip").sort_values("FEWSNET_admin_code")
-        check(results, f"replay stage1 {name}: retained checkpoints reproduce {len(pred)} partitioned predictions",
-              np.array_equal(pred, saved["y_pred_partitioned_code"].to_numpy()))
+    check(results, "report: 20 bootstrap draws recompute by row replication from saved multiplicities", not bad, bad[:5])
+    check(results, f"report: {report['bootstrap']['draws_accepted']} of 2000 draws accepted", report["bootstrap"]["complete"])
+    bad = []
+    for h, entry in report["scientific_target_D3"]["per_horizon"].items():
+        name = f"main_h{h}:main"
+        deltas = draws[name] - draws[f"main_h{h}:persistence"]
+        lo = float(np.percentile(deltas, 2.5, method="linear"))
+        point = report["metrics"][f"main_h{h}"]["arms"]["main"]["macro_f1"] - \
+            report["metrics"][f"main_h{h}"]["arms"]["persistence"]["macro_f1"]
+        status = "pass" if point > 0 and lo > 0 else "fail"
+        if not np.isclose(lo, entry["ci95"][0], rtol=0, atol=1e-12) or status != entry["status"]:
+            bad.append(h)
+    check(results, "report: D3 per-H decisions recompute from saved draws", not bad, bad)
 
 
 def main():
@@ -341,28 +455,21 @@ def main():
         raise FileExistsError(f"{out} exists")
     out.mkdir()
     results = []
-    from src.utils.run_identity import code_identity, code_identity_at, git_head, verifier_identity
-    from src.utils.acceptance import accept_stage3, identity_problems
+    from src.utils.acceptance import identity_problems
+    from src.utils.run_identity import git_head
     identity = json.loads((run / "prepared" / "manifests" / "identity.json").read_text(encoding="utf-8"))
     problems = identity_problems(run)
     check(results, "producer code and verifier == committed blobs at the run's git_head and HEAD == working tree",
           not problems, {"problems": problems, "run_git_head": identity.get("git_head"), "current_head": git_head()})
-    try:
-        accept_stage3(run)
-        accepted = None
-    except Exception as exc:
-        accepted = str(exc)
-    check(results, "acceptance chain accepts prepared -> Stage 1 -> Stage 2 -> all Stage 3 horizons "
-                   "(derived inventories, row-level routes, recomputed ledger/weights)", accepted is None, accepted)
     recorded = json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
     drift = [p for p, h in recorded.items() if sha256(run / "prepared" / p) != h]
     check(results, f"prepared outputs match {len(recorded)} recorded hashes", not drift, drift)
-    verify_features(run, results)
-    verify_stage1(run, results)
-    verify_stage2(run, results)
-    verify_stage3(run, results)
-    verify_report(run, results)
-    verify_replay(run, results, out)
+    for step in (verify_features, verify_stage1, verify_gscreen, verify_maps, verify_development, verify_final,
+                 verify_report):
+        try:
+            step(run, results)
+        except Exception as exc:  # a crashed check is a failed check, never a skipped one
+            check(results, f"{step.__name__} completed", False, repr(exc))
     (out / "verification.json").write_text(json.dumps({
         "passed": all(r["passed"] for r in results), "checks": results}, indent=2, default=str), encoding="utf-8")
     failed = [r for r in results if not r["passed"]]

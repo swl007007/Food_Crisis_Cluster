@@ -254,15 +254,26 @@ def save_fold(base: Path, result: dict, identity: dict, keep_boosters: bool) -> 
         for name, payload in result["boosters"].items():
             (base / "models" / f"{name}.ubj").write_bytes(payload)
     routes = result["predictions"]["route"].value_counts().to_dict()
-    return finish(base, "fold.json", {**identity, "routes": routes,
+    return finish(base, "fold.json", {**identity, "status": "fitted", "routes": routes,
                                       "rows": int(len(result["predictions"]))})
+
+
+def save_incomplete(base: Path, identity: dict) -> dict:
+    """An arm-fold the inherited all-labelled coverage gate blocks: recorded, never fitted
+    and never replaced by a smaller key set (plan section 6)."""
+    base.mkdir(parents=True, exist_ok=False)
+    return finish(base, "fold.json", {**identity, "status": "incomplete_coverage_gate"})
 
 
 def _fold_job(run: str, fold: dict, g: str, specs: list, out_dirs: dict, identities: dict, keep: bool) -> list:
     run = Path(run)
     todo = [s for s in specs if not (out_dirs[s["label"]] / "fold.json").exists()]
+    blocked = [s for s in todo if (identities[s["label"]].get("coverage") or {}).get("passed") is False]
+    for spec in blocked:
+        save_incomplete(out_dirs[spec["label"]], identities[spec["label"]])
+    todo = [s for s in todo if s not in blocked]
     if not todo:
-        return []
+        return [(fold["horizon"], fold["target_month"], s["label"], "incomplete_coverage_gate") for s in blocked]
     p, st = panel(run, fold["horizon"]), store(run)
     started = time.time()
     results = s3.run_fold(p, st, fold, g, todo, keep_boosters=keep)
@@ -320,8 +331,13 @@ def develop(run: Path, workers: int) -> None:
         print(json.dumps(done), flush=True)
 
 
-def dev_predictions(run: Path, horizon: int, target: str, label: str) -> pd.DataFrame:
+def dev_predictions(run: Path, horizon: int, target: str, label: str):
+    """Accepted predictions of one development arm-fold, or None if its coverage gate
+    made it incomplete (the scheme is then incomplete, never scored on fewer keys)."""
     base = run / "development" / "folds" / f"h{horizon}" / target / label
+    record = acc.accept_record(base, "fold.json")
+    if record.get("status") == "incomplete_coverage_gate":
+        return None
     acc.accept_record(base, "fold.json", ["predictions.csv.gz", "gate.json"])
     return read_csv(base / "predictions.csv.gz")
 
@@ -343,11 +359,16 @@ def select(run: Path) -> None:
         row = {"scheme": scheme["scheme"], "l_vector_id": scheme["l_vector_id"], "strategy": scheme["strategy"],
                **{f"L_h{h}": scheme["l_vector"][h] for h in plan.HORIZONS}}
         deltas, expert = {}, {}
+        complete = True
         for h in plan.HORIZONS:
             frames = []
             for f in (f for f in folds if f["horizon"] == h):
                 _, _, dirs, scheme_maps = dev_specs(run, f, xgb, paths, g_of)
                 frames.append(dev_predictions(run, h, f["target_month"], scheme_maps[scheme["scheme"]]))
+            if any(x is None for x in frames):
+                complete = False
+                row[f"incomplete_h{h}"] = sum(x is None for x in frames)
+                continue
             k = keyed(base, pd.concat(frames), h, f"{scheme['scheme']} h{h}")
             cohort = k[main_cohort(k, h)]
             f_s, f_p = exact(cohort, "y_pred_code"), exact(cohort, "persistence_code")
@@ -362,10 +383,14 @@ def select(run: Path) -> None:
                 f_e = exact(cohort, "expert_code")
                 expert[h] = f_s - f_e
                 row.update({f"expert_h{h}": float(f_e), f"delta_expert_h{h}": float(f_s - f_e)})
-        key = (min(deltas.values()), sum(deltas.values()) / 3, (expert[4] + expert[8]) / 2,
+        row["complete"] = complete
+        if not complete:  # a coverage-blocked scheme is reported, never selected
+            rows.append(((0,), row))
+            continue
+        key = (1, min(deltas.values()), sum(deltas.values()) / 3, (expert[4] + expert[8]) / 2,
                sum(v == "L1" for v in scheme["l_vector"].values()),
                -plan.STRATEGIES.index(scheme["strategy"]), -scheme["l_vector_id"])
-        row.update(rule_min_delta=float(key[0]), rule_mean_delta=float(key[1]), rule_mean_expert=float(key[2]),
+        row.update(rule_min_delta=float(key[1]), rule_mean_delta=float(key[2]), rule_mean_expert=float(key[3]),
                    rule_key=[str(x) for x in key])
         rows.append((key, row))
     rows.sort(key=lambda kr: kr[0], reverse=True)
@@ -373,11 +398,13 @@ def select(run: Path) -> None:
     table.insert(0, "rank", np.arange(1, len(table) + 1))
     table.to_csv(out / "selection_table.csv", index=False, float_format="%.17g")
     winner = rows[0][1]
+    if not winner["complete"]:
+        raise RuntimeError("every development scheme is incomplete under the coverage gate")
     scheme = next(s for s in plan.schemes() if s["scheme"] == winner["scheme"])
     finish(out, "selection.json", {
         "selected_scheme": scheme["scheme"], "l_vector": {str(h): v for h, v in scheme["l_vector"].items()},
         "strategy": scheme["strategy"], "g_selection": g_of, "g_selection_record": g_record,
-        "rule": ["max min_H(F1 - F1 persistence)", "max mean_H(F1 - F1 persistence)",
+        "rule": ["complete (coverage gate passed on every fold)", "max min_H(F1 - F1 persistence)", "max mean_H(F1 - F1 persistence)",
                  "max mean_{H4,H8}(F1 - F1 expert)", "more L1", "strict-only > loose-only > merged",
                  "lower L-vector number"],
         "cohort": "main: H4/H8 persistence+expert, H12 persistence; six development folds per H, counts pooled",

@@ -219,8 +219,30 @@ FOLD_FILES = ("predictions.csv.gz", "gate.json")
 def accept_fold(fold_dir: Path, expected: dict) -> dict:
     """One external fold of one arm: completion record (fold.json, written last), its
     identity fields equal ``expected`` and every output present with its hash."""
-    record = accept_record(fold_dir, "fold.json", FOLD_FILES)
+    record = accept_record(fold_dir, "fold.json")
+    if record.get("status") not in ("fitted", "incomplete_coverage_gate"):
+        raise AcceptanceError(f"{fold_dir}: unknown fold status {record.get('status')!r}")
+    if record["status"] == "fitted":  # a coverage-blocked fold legitimately has no predictions
+        accept_record(fold_dir, "fold.json", FOLD_FILES)
     bad = {k: (record.get(k), v) for k, v in expected.items() if record.get(k) != v}
     if bad:
         raise AcceptanceError(f"{fold_dir}: identity differs {bad}")
     return record
+
+
+# ------------------------------------------------------------------------------ identity
+
+def identity_problems(run: Path, current_code=None, current_verifier=None) -> list:
+    """Run code and verifier must both equal their committed blobs at the run's git_head
+    and at HEAD, and the working tree. Injected current values exist only for tests."""
+    identity = _json(Path(run) / "prepared" / "manifests" / "identity.json")
+    code = current_code if current_code is not None else rid.code_identity()
+    verifier = current_verifier if current_verifier is not None else rid.verifier_identity()
+    problems = []
+    if not (identity["code"] == code == rid.code_identity_at("HEAD") == rid.code_identity_at(identity["git_head"])):
+        problems.append("producer code differs between run, working tree, run git_head and HEAD")
+    if not (verifier == rid.verifier_identity_at(identity["git_head"]) == rid.verifier_identity_at("HEAD")):
+        problems.append("verifier differs between working tree, run git_head and HEAD")
+    if not identity.get("code_equals_git_head"):
+        problems.append("preparation did not record code == git_head")
+    return problems

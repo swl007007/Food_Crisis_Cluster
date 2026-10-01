@@ -727,6 +727,15 @@ def partition(model, X, y,
                                     'rows': [len(X0_train), len(X1_train), len(X0_val), len(X1_val)]})
         continue
 
+      # E2 needs the parent's COMPLETE validation keys: every validation row's area is
+      # a scan group, so it must fall in exactly one child. Fitting-only areas outside
+      # both groups stay on the parent (row branch, fitting pools and s_branch agree).
+      if not np.all(s0_val | s1_val):
+        raise RuntimeError(f'branch {branch_id!r}: validation rows outside both candidate children')
+      parent_kept = ~(s0_train | s1_train)
+      parent_kept_record = {'rows': int(parent_kept.sum()),
+                            'areas': int(np.unique(X_group[train_list][parent_kept]).size)}
+
       # Real-row support of each side and the path-round ceiling (plan section 3).
       # A side is fitted only if its fitting pool meets the floor, its validation pool
       # meets the floor and one whole local step fits under the path cap; otherwise
@@ -746,6 +755,7 @@ def partition(model, X, y,
       meta = tuple({'fit_support': fit_sup[k], 'fit_keys_sha256': keys_sha(X_group[ids[k]], X_month[ids[k]])}
                    for k in range(2))
       support_record = {'fit_support': fit_sup, 'val_support': val_sup, 'eligible': list(eligible),
+                        'parent_kept_fitting': parent_kept_record,
                         'fallback': fallback, 'parent_path_rounds': int(parent_rounds),
                         'local_rounds': local_rounds, 'path_round_cap': int(path_cap)}
       if not any(eligible):

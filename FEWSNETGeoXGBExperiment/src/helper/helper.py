@@ -109,13 +109,19 @@ def get_grid_by_group(list_group_id):
 def get_slist(X_set_group, s0_group, s1_group):
   '''
   get slist containing 0,1 assignments
-  '''
-  slist = np.zeros(X_set_group.shape[0])
-  for group_id in s1_group:
-    slist[X_set_group == group_id] = 1
 
-  s0_list = (slist==0) #keep 0,1 consistent with s0, s1
-  s1_list = (slist==1)
+  Explicit membership on both sides: a row whose group is in neither s0_group nor
+  s1_group (a fitting-only area without validation rows, so absent from the scan
+  groups) is in NEITHER child. It keeps the parent's row branch, is not used to fit
+  or support either child, and matches s_branch, which also routes it to the parent.
+  (The release defaulted such rows to child 0 for fitting while routing them to the
+  parent.)
+  '''
+  groups = np.asarray(X_set_group)
+  s0_list = np.isin(groups, np.asarray(s0_group))
+  s1_list = np.isin(groups, np.asarray(s1_group))
+  if np.any(s0_list & s1_list):
+    raise ValueError('a group is assigned to both children')
 
   return s0_list, s1_list
 
