@@ -34,6 +34,7 @@ from scripts import report_fourclass as report
 from scripts import prepare_fourclass as prep
 from scripts import run_stage2 as stage2
 from scripts import run_experiment as rexp
+from scripts import verify_fourclass as vf
 from scripts.step4_similarity_matrix import compute_plan_weights
 from scripts.step1_merge_results import MODEL_CONFIG, load_results_table
 from src.utils import run_identity as rid
@@ -792,6 +793,84 @@ class ConsensusPlumbing(unittest.TestCase):
                 self.assertAlmostEqual(fourclass.macro_f1(truth, preds['y_pred_code']),
                                        f1_score(truth, preds['y_pred_code'], labels=[0, 1, 2, 3], average='macro',
                                                 zero_division=0))
+
+
+class VerifierBoundaries(unittest.TestCase):
+    """Follow-up repairs: the verifier must fail on these boundaries, not self-certify."""
+
+    def test_branch_ids_keep_leading_zeros(self):
+        with tempfile.TemporaryDirectory() as t:
+            path = Path(t) / 'p.csv'
+            pd.DataFrame({'branch_id': ['00', '01', '10', '', 'root'], 'x': range(5)}).to_csv(path, index=False)
+            self.assertEqual(list(vf.read(path, ('branch_id',)).branch_id), ['00', '01', '10', '', 'root'])
+
+    def test_e2_rows_bound_to_actual_rows_and_sides(self):
+        X, y, groups, split, months, labeller, proposal = Stage1Partition().fixture()
+        model = PresetModel('.', labeller)
+        model.set_root(5)
+        (assigned, _, _), decisions = run_partition(model, X, y, groups, split, months, proposal=proposal)
+        e2 = pd.concat(trans.partition.e2_rows).reset_index(drop=True)
+        e2.insert(4, 'area', groups[e2.row_id]); e2.insert(5, 'target_month', [f'm{m}' for m in months[e2.row_id]])
+        c = {'partition': {'decisions': decisions}, 'local_config': 'L1',
+             'fits': {'fit_log': model.fit_log}}
+        t = {'val_pos': np.where(split == 1)[0], 'fit_pos': np.where(split == 0)[0], 'area': groups,
+             'month': months, 'month_label': np.array([f'm{m}' for m in months], dtype=object), 'y': y,
+             'branch': assigned.astype(str)}
+        with patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                patch.dict(plan.STAGE1_VAL_SUPPORT, FLOORS['val_support']):
+            self.assertEqual(vf.e2_problems(c, e2, t, Fraction(1, 100)), [])
+            bad_side = e2.copy(); bad_side.loc[bad_side.side == 1, 'side'] = 2
+            self.assertTrue(vf.e2_problems(c, bad_side, t, Fraction(1, 100)))
+            bad_truth = e2.copy(); bad_truth.loc[0, 'y_true'] = 3
+            self.assertTrue(vf.e2_problems(c, bad_truth, t, Fraction(1, 100)))
+            self.assertTrue(vf.e2_problems(c, e2, t, Fraction(1, 2)))  # wrong family threshold
+
+    def test_no_prior_route_needs_an_empty_expected_pool(self):
+        with tempfile.TemporaryDirectory() as t:
+            tmp = Path(t)
+            frame, paths, coords = ConsensusAndBoundaries().candidates(tmp)
+            one = frame.iloc[:1].assign(macro_f1=.4)  # a genuine single-candidate null pool
+            with redirect_stdout(StringIO()):
+                stage2.build_consensus(tmp / 'none', frame.iloc[:0], {}, coords, 'x')
+                stage2.build_consensus(tmp / 'one', one, paths, coords, 'x')
+            stage2.accept_consensus(tmp / 'none', frame.iloc[:0])
+            stage2.accept_consensus(tmp / 'one', one)
+            record = json.loads((tmp / 'one' / 'consensus.json').read_text()); record.pop('outputs')
+            record['route'] = 'no_prior_candidates'      # forged route, pool identity still matches
+            stage2._finish(tmp / 'one', record, 0)
+            with self.assertRaises(RuntimeError):
+                stage2.accept_consensus(tmp / 'one', one)
+
+    def test_gate_population_and_local_records_are_exact(self):
+        env = Stage3Engine(); env.setUp()
+        try:
+            prepared = env.root / 'prepared'; prepared.mkdir()
+            import shutil
+            shutil.copy2(env.root / 'snap.parquet', prepared / 'snapshot_h4.parquet')
+            cluster_of = {a: (0 if a < 60 else 1) for a in range(119)}
+            with redirect_stdout(StringIO()):
+                res = s3.run_fold(env.panel, env.store, env.fold, 'G1', env.specs(cluster_of))
+            fold_dir = env.root / 'fold'
+            rexp.save_fold(fold_dir, res['mapped'], {'phase': 'test'}, False)
+            ex = vf.Expected(env.root, 4)
+            problems = []
+            vf.verify_gate_dir(fold_dir, env.fold, cluster_of, ex, env.root, 'G1', problems)
+            self.assertEqual(problems, [])
+            pairs = res['mapped']['gate_pairs']
+            extra = pairs.iloc[:30].assign(validation_month='2099-01')
+            rexp.write_csv_gz(fold_dir / 'gate_pairs.csv.gz', pd.concat([pairs, extra]))
+            problems = []
+            vf.verify_gate_dir(fold_dir, env.fold, cluster_of, ex, env.root, 'G1', problems)
+            self.assertTrue(any('population' in p for p in problems))
+            rexp.write_csv_gz(fold_dir / 'gate_pairs.csv.gz', pairs)
+            gate = json.loads((fold_dir / 'gate.json').read_text()); gate['locals'] = {}
+            (fold_dir / 'gate.json').write_text(json.dumps(gate))
+            problems = []
+            vf.verify_gate_dir(fold_dir, env.fold, cluster_of, ex, env.root, 'G1', problems)
+            routed = (res['mapped']['predictions'].route == 'local_model').any()
+            self.assertEqual(any('local booster records' in p for p in problems), bool(routed))
+        finally:
+            env.tearDown()
 
 
 class CommittedCode(unittest.TestCase):

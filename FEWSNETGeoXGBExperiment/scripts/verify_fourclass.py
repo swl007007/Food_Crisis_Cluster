@@ -73,8 +73,10 @@ def check(results, name, ok, detail=None):
     print(("PASS " if ok else "FAIL ") + name + (f" :: {str(detail)[:400]}" if detail and not ok else ""), flush=True)
 
 
-def read(path):
-    return pd.read_csv(path, float_precision="round_trip", low_memory=False)
+def read(path, str_cols=()):
+    """Exact CSV read; ``str_cols`` keep their raw text (branch ids '00'/'01', root '')."""
+    return pd.read_csv(path, float_precision="round_trip", low_memory=False,
+                       converters={c: str for c in str_cols})
 
 
 def main_cohort(frame, h):
@@ -175,27 +177,81 @@ def keys_digest(areas, months):
     return hashlib.sha256(np.ascontiguousarray(keys).tobytes()).hexdigest()
 
 
-def e2_problems(c, e2, val_branch, val_keys, family_threshold):
-    """Recompute every fitted E2 decision from its keyed rows on the complete parent keys."""
+def path_rounds(decisions, branch, rounds):
+    """Appended rounds on the path to ``branch``, from the decision ancestry alone."""
+    total = 0
+    for i in range(len(branch)):
+        parent, side = branch[:i], int(branch[i])
+        d = next((d for d in decisions if d["branch_id"] == parent and d["outcome"] == "accepted"), None)
+        if d is not None and d["selected_children"][side]:
+            total += rounds
+    return total
+
+
+def support_of(y, area, month, rows):
+    counts = [int(np.sum(y[rows] == k)) for k in range(4)]
+    return {"rows": int(len(rows)), "areas": int(np.unique(area[rows]).size),
+            "dates": int(np.unique(month[rows]).size), "classes": int(sum(c > 0 for c in counts))}
+
+
+def e2_problems(c, e2, t, family_threshold):
+    """Recompute every fitted E2 decision from keyed rows bound to the ACTUAL validation
+    rows (row id, key, truth), with child eligibility recomputed from actual support."""
+    from src.experiment import plan
     problems = []
     decisions = c["partition"]["decisions"]
+    rounds = plan.L_CONFIGS[c["local_config"]]["rounds"]
+    fits = [e for e in c["fits"]["fit_log"] if e.get("kind") == "continuation"]
+    expected_fits = []
+    if not set(e2.side.unique()) <= {0, 1}:
+        problems.append(f"E2 sides outside {{0, 1}}: {sorted(set(e2.side.unique()) - {0, 1})}")
     for i, d in enumerate(decisions):
         if d["outcome"] not in ("accepted", "rejected_gate"):
+            if (e2.decision == i).any():
+                problems.append(f"decision {i}: E2 rows for an unfitted decision")
             continue
         rows = e2[e2.decision == i]
         b = d["branch_id"]
-        expected = {k for k, br in zip(val_keys, val_branch) if br.startswith(b)}
-        got = set(zip(rows.area, rows.target_month))
-        if got != expected or len(rows) != len(expected):
-            problems.append(f"decision {i} ({b!r}): E2 keys are not the complete parent validation keys")
+        rid = rows.row_id.to_numpy(np.int64)
+        expected = sorted(int(p) for p in t["val_pos"] if t["branch"][p].startswith(b))
+        if sorted(rid.tolist()) != expected or (rows.branch_id != b).any() or \
+                not (rows.area.to_numpy() == t["area"][rid]).all() or \
+                not (rows.target_month.to_numpy() == t["month_label"][rid]).all() or \
+                not (rows.y_true.to_numpy() == t["y"][rid]).all():
+            problems.append(f"decision {i} ({b!r}): E2 rows are not the actual complete parent validation rows")
             continue
-        s0, s1 = rows[rows.side == 0], rows[rows.side == 1]
-        truth = np.r_[s0.y_true, s1.y_true]
+        side_rows = {k: rows[rows.side == k] for k in (0, 1)}
+        if d["outcome"] == "accepted":
+            for k in (0, 1):
+                want = sorted(int(p) for p in expected if t["branch"][p].startswith(b + str(k)))
+                if sorted(side_rows[k].row_id.tolist()) != want:
+                    problems.append(f"decision {i} ({b!r}): side {k} rows differ from the final routing")
+        if rows.groupby("area").side.nunique().max() > 1:
+            problems.append(f"decision {i} ({b!r}): an area is on both sides")
+        within_cap = path_rounds(decisions, b, rounds) + rounds <= plan.PATH_ROUND_CAP
+        eligible = []
+        for k in (0, 1):
+            areas = set(side_rows[k].area)
+            fit_rows = np.array([p for p in t["fit_pos"] if t["branch"][p].startswith(b) and t["area"][p] in areas],
+                                dtype=np.int64)
+            fit_sup = support_of(t["y"], t["area"], t["month"], fit_rows)
+            val_sup = support_of(t["y"], t["area"], t["month"], side_rows[k].row_id.to_numpy(np.int64))
+            ok = bool(within_cap and all(fit_sup[f] >= v for f, v in plan.FIT_SUPPORT.items())
+                      and all(val_sup[f] >= v for f, v in plan.STAGE1_VAL_SUPPORT.items()))
+            eligible.append(ok)
+            if len(side_rows[k]) and set(side_rows[k].child_eligible) != {ok}:
+                problems.append(f"decision {i} ({b!r}): side {k} eligibility != recomputed support/path cap")
+            if ok:
+                expected_fits.append((b, keys_digest(t["area"][fit_rows], t["month"][fit_rows])))
+        if d.get("eligible") != eligible:
+            problems.append(f"decision {i} ({b!r}): recorded eligibility differs from recomputed")
+        s0, s1 = side_rows[0], side_rows[1]
+        truth = np.r_[t["y"][s0.row_id.to_numpy(np.int64)], t["y"][s1.row_id.to_numpy(np.int64)]]
         base = exact_macro(truth, np.r_[s0.y_parent, s1.y_parent])
         best, choice = base, (False, False)
         scores = {"parent_parent": base}
         for u0, u1 in ((True, False), (False, True), (True, True)):
-            if (u0 and not s0.child_eligible.all()) or (u1 and not s1.child_eligible.all()):
+            if (u0 and not eligible[0]) or (u1 and not eligible[1]):
                 continue
             score = exact_macro(truth, np.r_[s0.y_child if u0 else s0.y_parent, s1.y_child if u1 else s1.y_parent])
             scores[f"{'child' if u0 else 'parent'}_{'child' if u1 else 'parent'}"] = score
@@ -206,6 +262,9 @@ def e2_problems(c, e2, val_branch, val_keys, family_threshold):
                 or accepted != (d["outcome"] == "accepted")
                 or (accepted and d["selected_children"] != [bool(x) for x in choice])):
             problems.append(f"decision {i} ({b!r}): routes/gain/outcome do not recompute")
+    actual_fits = [(e["trained_under"], e.get("fit_keys_sha256")) for e in fits]
+    if actual_fits != expected_fits:
+        problems.append("child fit log differs from the recomputed eligible child fitting rows")
     return problems
 
 
@@ -230,8 +289,6 @@ def verify_stage1(run, results):
                 (h, entry["target_month"], entry["origin_month"], entry["ratio"], entry["split_seed"]) \
                 or mi(r["origin_month"]) != target - h or r["val_ratio"] != plan.SPLIT_RATIOS[entry["ratio"]]:
             identity.append(root)
-        if r["status"] != "completed":
-            continue
         train = stage1_training_rows(snaps[h], target, h)
         if train.target_month.max() > mi("2020-12") or train.target_month.min() < target - h - 59:
             windows.append(root)
@@ -240,19 +297,31 @@ def verify_stage1(run, results):
         fit, val = train[x_set == 0], train[x_set == 1]
         members = read(stage1 / "roots" / root / "fold_membership.csv.gz")
         inner = members[members.role != "heldout_target"]
+        labels = [f"{m // 12:04d}-{m % 12 + 1:02d}" for m in train.target_month]
         if (keys_digest(fit.area, fit.target_month) != r["fitting_keys_sha256"]
                 or keys_digest(val.area, val.target_month) != r["validation_keys_sha256"]
                 or list(inner.role) != list(np.where(x_set == 1, "validation", "fitting"))
-                or list(inner.area) != list(train.area)):
+                or list(inner.area) != list(train.area) or list(inner.target_month) != labels
+                or list(inner.class_code) != list(train.class_code)):
             split_bad.append(root)
+        insufficient = int(fit.class_code.nunique()) < 2
+        if insufficient != (r["status"] == "root_insufficient_support"):
+            identity.append(f"{root}: status {r['status']} vs recomputed root support")
+        if r["status"] != "completed":
+            continue
+        if r["root_fit"].get("fit_keys_sha256") != keys_digest(fit.area, fit.target_month) or \
+                r["root_fit"]["rows"] != len(fit):
+            identity.append(f"{root}: root booster not fitted on the recomputed fitting rows")
+        t = {"val_pos": np.where(x_set == 1)[0], "fit_pos": np.where(x_set == 0)[0],
+             "area": train.area.to_numpy(), "month": train.target_month.to_numpy(),
+             "month_label": np.array(labels, dtype=object), "y": train.class_code.to_numpy()}
         pooled = read(stage1 / "roots" / root / "root_target_predictions.csv")
         truth_t = snaps[h].loc[snaps[h].target_month == target].set_index("area").loc[pooled.FEWSNET_admin_code, "class_code"]
         if not (pooled.y_true_code.to_numpy() == truth_t.to_numpy()).all():
             rescored.append(f"{root}: target truth")
-        val_keys = list(zip(val.area, [f"{m // 12:04d}-{m % 12 + 1:02d}" for m in val.target_month]))
         for cand in r["candidates"]:
             c = json.loads((stage1 / "candidates" / cand / "candidate.json").read_text(encoding="utf-8"))
-            preds = read(stage1 / "candidates" / cand / "target_predictions.csv")
+            preds = read(stage1 / "candidates" / cand / "target_predictions.csv", ("branch_id",))
             if not (np.isclose(macro(preds.y_true_code, preds.y_pred_partitioned_code), c["scores"]["macro_f1"], rtol=0, atol=1e-12)
                     and np.isclose(macro(pooled.y_true_code, pooled.y_pred_pooled_code), c["scores"]["macro_f1_base"], rtol=0, atol=1e-12)
                     and (preds.y_pred_pooled_code.to_numpy() == pooled.y_pred_pooled_code.to_numpy()).all()
@@ -262,18 +331,19 @@ def verify_stage1(run, results):
             threshold = plan.THRESHOLD_FAMILIES[family]
             if Fraction(c["threshold"]) != threshold or c["threshold_family"] != family:
                 e2_bad.append(f"{cand}: threshold is not its family's")
-            branch = np.load(stage1 / "candidates" / cand / "X_branch_id.npy", allow_pickle=False)
-            e2 = read(stage1 / "candidates" / cand / "e2_predictions.csv.gz")
-            e2["branch_id"] = e2["branch_id"].fillna("").astype(str)
-            e2_bad += [f"{cand}: {p}" for p in e2_problems(c, e2, list(branch[x_set == 1]), val_keys, threshold)]
-    check(results, "stage1: every root's H/T/O/ratio/seed equals its scheduled identity", not identity, identity[:5])
+            t["branch"] = np.load(stage1 / "candidates" / cand / "X_branch_id.npy", allow_pickle=False).astype(str)
+            e2 = read(stage1 / "candidates" / cand / "e2_predictions.csv.gz", ("branch_id",))
+            e2_bad += [f"{cand}: {p}" for p in e2_problems(c, e2, t, threshold)]
+    check(results, "stage1: every root's H/T/O/ratio/seed equals its scheduled identity; root status and root "
+                   "fitting keys recompute", not identity, identity[:5])
     check(results, "stage1: training rows lie in [O-59,O) and <= 2020-12", not windows, windows[:5])
     check(results, "stage1: the within-area random split recomputes; fitting/validation key digests and "
                    "membership roles match", not split_bad, split_bad[:5])
     check(results, "stage1: E3 scores, truth and argmax recompute; pooled E3 = the candidate's own root",
           not rescored, rescored[:5])
-    check(results, "stage1: every fitted E2 decision recomputes from keyed parent/child predictions on the "
-                   "complete parent validation keys with its family threshold", not e2_bad, e2_bad[:5])
+    check(results, "stage1: every fitted E2 decision recomputes from keyed predictions bound to the actual complete "
+                   "parent validation rows and labels; eligibility from recomputed support/path cap; child fit keys "
+                   "match the fit log; family thresholds", not e2_bad, e2_bad[:5])
     replay_stage1(run, results, cands)
 
 
@@ -296,11 +366,11 @@ def replay_stage1(run, results, cands, per_h=2):
             n0 = root.num_boosted_rounds()
             prefix_bad = [f for f in sorted(ckpt.glob("*.ubj"))
                           if nx.prefix_identity(nx.from_raw(f.read_bytes()), n0)["sha256"] != root_sha]
-            preds = read(stage1 / "candidates" / name / "target_predictions.csv")
+            preds = read(stage1 / "candidates" / name / "target_predictions.csv", ("branch_id",))
             test = snap[snap.target_month == mi(c["candidate"].split("_")[1])].set_index("area").loc[preds.FEWSNET_admin_code]
             got = np.zeros((len(preds), 4))
-            for branch in preds.branch_id.astype(str).unique():
-                rows = (preds.branch_id.astype(str) == branch).to_numpy()
+            for branch in preds.branch_id.unique():
+                rows = (preds.branch_id == branch).to_numpy()
                 booster = nx.from_raw((ckpt / f"xgb_{branch}.ubj").read_bytes())
                 got[rows] = nx.proba(booster, test[features].to_numpy(float)[rows])
             want = preds.filter(like="p_partitioned_").to_numpy()
@@ -390,10 +460,17 @@ def verify_maps(run, results):
                    "against their rebuilt candidate pools; no candidate scored at/after O; no stray map",
           not bad and not stray, {"bad": bad[:5], "stray": stray[:5]})
     w_bad = []
+    run_geometry = sha256(run / "prepared" / "geometry" / "FEWSNET_admin_code_lat_lon.csv")
     for d in sorted((run / "maps").iterdir()):
         record = json.loads((d / "consensus.json").read_text(encoding="utf-8"))
         if record["route"] == "no_prior_candidates":
             continue
+        if record["route"] == "learned_map":
+            ledger = read(d / "candidate_ledger.csv")
+            want = acc.PINNED_COORDINATES_SHA256 if (ledger.source == "v7_rf_stage1").all() else run_geometry
+            if record.get("geometry", {}).get("sha256") != want or \
+                    sha256(d / "experiment" / "FEWSNET_admin_code_lat_lon.csv") != want:
+                w_bad.append(f"{d.name}: geometry provenance")
         w = read(d / "plan_weights.csv")
         f = np.clip(w["macro_f1"].to_numpy(), 1e-6, 1 - 1e-6)
         b = np.clip(w["macro_f1_base"].to_numpy(), 1e-6, 1 - 1e-6)
@@ -401,7 +478,8 @@ def verify_maps(run, results):
         if not np.allclose(expect, w["weight"], rtol=0, atol=1e-12) or \
                 (record["route"] == "null_consensus") != (expect.max() <= 0):
             w_bad.append(d.name)
-    check(results, "maps: E4 weights and routes recompute independently", not w_bad, w_bad[:5])
+    check(results, "maps: E4 weights and routes recompute independently; v7 maps use the pinned full "
+                   "coordinates, XGB maps the run geometry", not w_bad, w_bad[:5])
 
 
 # ---------------------------------------------------------------------------------
@@ -442,8 +520,10 @@ def verify_gate_dir(fold_dir, fold, cluster_of, ex, run, g, problems):
     if not (preds.cluster_id.to_numpy() == want_cluster).all():
         problems.append(f"{fold_dir}: cluster_id differs from the map")
     if not cluster_of:
-        if gate["regions"] or preds.route.str.contains("local").any():
-            problems.append(f"{fold_dir}: map-less arm has regions or local routes")
+        pairs_file = fold_dir / "gate_pairs.csv.gz"
+        if gate["regions"] or gate["locals"] or preds.route.str.contains("local").any() or \
+                (pairs_file.is_file() and len(read(pairs_file))):
+            problems.append(f"{fold_dir}: map-less arm has regions, locals, gate pairs or local routes")
         return 0
     clusters = sorted({cluster_of[int(a)] for a in test_areas if int(a) in cluster_of})
     if sorted(d["cluster_id"] for d in gate["regions"]) != clusters:
@@ -451,6 +531,17 @@ def verify_gate_dir(fold_dir, fold, cluster_of, ex, run, g, problems):
     pairs = read(fold_dir / "gate_pairs.csv.gz") if (fold_dir / "gate_pairs.csv.gz").is_file() else pd.DataFrame()
     store = run / "globals" / f"h{ex.h}" / g
     members = {c: {a for a, k in cluster_of.items() if k == c} for c in clusters}
+    # The WHOLE pair population must be exactly the planned dates x present clusters x
+    # their labelled areas before anything is rescored (no extra dates, clusters or keys).
+    expected_all = set()
+    for spec in fold["gate"]:
+        at = np.where(ex.month == mi(spec["validation_month"]))[0]
+        for c in clusters:
+            expected_all |= {(c, int(a), spec["validation_month"]) for a in ex.area[at] if int(a) in members[c]}
+    got_all = list(zip(pairs.cluster_id.astype(int), pairs.area.astype(int), pairs.validation_month)) if len(pairs) else []
+    if set(got_all) != expected_all or len(got_all) != len(expected_all):
+        problems.append(f"{fold_dir}: gate pair population differs from planned dates x clusters x keys")
+        return len(gate["regions"])
     for spec in fold["gate"]:
         u, v = mi(spec["validation_month"]), mi(spec["internal_origin"])
         if not (u < origin and v == u - ex.h):
@@ -500,6 +591,10 @@ def verify_gate_dir(fold_dir, fold, cluster_of, ex, run, g, problems):
     unmapped = preds.cluster_id == -1
     if not (preds.loc[unmapped, "route"] == "unmapped_area_global").all():
         problems.append(f"{fold_dir}: unmapped rows not on the global")
+    routed_local = sorted(int(c) for c in preds.loc[preds.route == "local_model", "cluster_id"].unique())
+    if sorted(int(c) for c in gate["locals"]) != routed_local or \
+            sorted(d["cluster_id"] for d in gate["regions"] if d["route"] == "local_model") != routed_local:
+        problems.append(f"{fold_dir}: local booster records differ from the clusters routed local")
     return len(gate["regions"])
 
 
@@ -620,8 +715,9 @@ def verify_final(run, results):
                 g_struct = nx.prefix_identity(gb)["sha256"]
                 X = ex.snap[ex.snap.target_month == mi(f["target_month"])].set_index("area").loc[p.area, features].to_numpy(float)
                 got = nx.proba(gb, X)
-                for c, rec in gate["locals"].items():
-                    rows = (p.cluster_id == int(c)).to_numpy()
+                for c in sorted(p.loc[p.route == "local_model", "cluster_id"].unique()):
+                    rec = gate["locals"][str(int(c))]
+                    rows = ((p.cluster_id == int(c)) & (p.route == "local_model")).to_numpy()
                     booster = nx.from_raw((d / "models" / f"local_{c}.ubj").read_bytes())
                     if nx.sha(booster) != rec["booster_sha256"]:
                         problems.append(f"{d}: local_{c} bytes differ from the record")
@@ -728,12 +824,12 @@ def verify_report(run, results):
         point = report["metrics"][cohort]["arms"]["main"]["macro_f1"] - report["metrics"][cohort]["arms"]["persistence"]["macro_f1"]
         entry = report["scientific_target_D3"]["per_horizon"][str(h)]
         status = "pass" if point > 0 and lo > 0 else "fail"
-        if not (np.isclose(lo, entry["ci95"][0], rtol=0, atol=1e-12) and np.isclose(hi, entry["ci95"][1], rtol=0, atol=1e-12)
+        if not (np.isclose(point, entry["delta"], rtol=0, atol=1e-12) and np.isclose(lo, entry["ci95"][0], rtol=0, atol=1e-12) and np.isclose(hi, entry["ci95"][1], rtol=0, atol=1e-12)
                 and status == entry["status"]):
             d3_bad.append(h)
     overall = "pass" if all(report["scientific_target_D3"]["per_horizon"][str(h)]["status"] == "pass" for h in HORIZONS) else "fail"
     check(results, "report: every saved draw statistic recomputes from the regenerated multiplicities", not stats_bad, stats_bad[:5])
-    check(results, "report: both CI endpoints and the D3 per-H and overall decisions recompute",
+    check(results, "report: D3 deltas, both CI endpoints and the per-H and overall decisions recompute",
           not d3_bad and overall == report["scientific_target_D3"]["overall"], d3_bad)
     sample = draws.sample(n=min(10, len(draws)), random_state=3)
     rep_bad = []

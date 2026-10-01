@@ -122,6 +122,7 @@ def build_consensus(out: Path, candidates: pd.DataFrame, paths: dict, geometry_c
     experiment = out / "experiment"
     experiment.mkdir()
     shutil.copy2(geometry_csv, experiment / "FEWSNET_admin_code_lat_lon.csv")
+    record["geometry"] = {"path": str(geometry_csv), "sha256": file_sha256(geometry_csv)}
     results = pd.DataFrame({"model": weights["name"], "year": weights["target_month"].str[:4],
                             "month": weights["target_month"].str[5:7],
                             "forecasting_scope": "fs" + weights["horizon"].astype(str),
@@ -193,6 +194,14 @@ def accept_consensus(out: Path, candidates: pd.DataFrame | None = None) -> dict:
     if candidates is not None and record["pool_identity"] != pool_identity(candidates.reset_index(drop=True)):
         raise RuntimeError(f"{out}: map pool differs from the expected candidate pool")
     ledger = pd.read_csv(out / "candidate_ledger.csv", float_precision="round_trip")
+    if (record["route"] == "no_prior_candidates") != ledger.empty or record.get("candidates") != len(ledger):
+        raise RuntimeError(f"{out}: route {record['route']} contradicts a ledger of {len(ledger)} candidates")
+    if candidates is not None:
+        want = candidates[LEDGER_COLUMNS].sort_values("name").reset_index(drop=True).astype(str)
+        got = ledger[LEDGER_COLUMNS].sort_values("name").reset_index(drop=True).astype(str) if len(ledger) else \
+            pd.DataFrame(columns=LEDGER_COLUMNS)
+        if len(want) != len(got) or not (want.to_numpy() == got.to_numpy()).all():
+            raise RuntimeError(f"{out}: persisted ledger differs from the expected candidate pool")
     if record["route"] != "no_prior_candidates":
         weights = compute_plan_weights(ledger)
         saved = pd.read_csv(out / "plan_weights.csv", float_precision="round_trip")

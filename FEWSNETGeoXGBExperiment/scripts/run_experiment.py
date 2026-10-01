@@ -202,21 +202,26 @@ def map_plan(run: Path) -> list:
             ident = pool_identity(sub)
             if ident not in seen:
                 seen.add(ident)
-                jobs.append((ident, sub, {n: xgb_paths[n] for n in sub["name"]}, f"{scheme['scheme']}@O{s3.ml(o)}"))
+                jobs.append((ident, sub, {n: xgb_paths[n] for n in sub["name"]}, f"{scheme['scheme']}@O{s3.ml(o)}",
+                             False, None))
     for o in origins:
         sub = v7_pool(v7, o)
         ident = pool_identity(sub)
         if ident not in seen:
             seen.add(ident)
-            jobs.append((ident, sub, {n: v7_paths[n] for n in sub["name"]}, f"v7@O{s3.ml(o)}"))
+            # v7 candidates name areas of the full universe: rebuild with v7's own committed
+            # geometry (byte-identical to the pinned full coordinates, checked)
+            jobs.append((ident, sub, {n: v7_paths[n] for n in sub["name"]}, f"v7@O{s3.ml(o)}",
+                         False, str(acc.v7_geometry())))
     return jobs
 
 
-def _build_map(run: str, ident: str, sub: pd.DataFrame, paths: dict, label: str, keep: bool = False) -> dict:
+def _build_map(run: str, ident: str, sub: pd.DataFrame, paths: dict, label: str, keep: bool = False,
+               geometry: str | None = None) -> dict:
     from scripts.run_stage2 import build_consensus
     run = Path(run)
-    record = build_consensus(run / "maps" / ident, sub, paths,
-                             run / "prepared" / "geometry" / "FEWSNET_admin_code_lat_lon.csv", label, keep)
+    geometry = Path(geometry) if geometry else run / "prepared" / "geometry" / "FEWSNET_admin_code_lat_lon.csv"
+    record = build_consensus(run / "maps" / ident, sub, paths, geometry, label, keep)
     return {"map": ident, "route": record["route"], "seconds": record.get("seconds"), "label": label,
             "candidates": record["candidates"], "positive": record.get("positive_weight_candidates")}
 

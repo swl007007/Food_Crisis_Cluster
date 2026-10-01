@@ -173,6 +173,16 @@ V7_RUN = Path(rid.PACKAGE).parent / "FEWSNETFourClassBaseline" / "runs" / "fourc
 #: committed v7 Stage 2 final map (the fixed old-map control in the final evaluation)
 V7_FINAL_MAP = V7_RUN / "stage2" / "experiment" / "knn_sparsification_results" / "cluster_mapping_k40_nc13_general.csv"
 V7_FINAL_MAP_SHA256 = "fc2c919f3db6a8a8a77e6c8e2a1a6d2fdc65ee4996eac20300523c985ea91b46"
+#: committed v7 geometry used to rebuild truncated v7 maps: must be byte-identical to the
+#: pinned full coordinate source (all 5,718 areas the v7 candidates can name).
+V7_GEOMETRY = V7_RUN / "prepared" / "geometry" / "FEWSNET_admin_code_lat_lon.csv"
+PINNED_COORDINATES_SHA256 = "a06be85849bb726a4505ed284bed14b100b61f998fb4586a6e14439aca8a4bcb"
+
+
+def v7_geometry() -> Path:
+    if rid.file_sha256(V7_GEOMETRY) != PINNED_COORDINATES_SHA256:
+        raise AcceptanceError("v7 geometry differs from the pinned full coordinate source")
+    return V7_GEOMETRY
 
 
 def v7_candidates() -> dict:
