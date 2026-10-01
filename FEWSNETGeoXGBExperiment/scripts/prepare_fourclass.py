@@ -559,7 +559,7 @@ def main() -> None:
         ledgers / "observations.csv", index=False)
     baselines = build_baselines(panel, observations)
     baselines.to_csv(ledgers / "baselines.csv", index=False)
-    build_baselines(panel, observations, {h: plan.DEV_TARGETS for h in HORIZONS}).to_csv(
+    build_baselines(panel, observations, {h: list(plan.DEV_TARGETS) for h in HORIZONS}).to_csv(
         ledgers / "dev_baselines.csv", index=False)
     schedule = build_schedule(observations)
     write_json(manifests / "schedule.json", schedule)
