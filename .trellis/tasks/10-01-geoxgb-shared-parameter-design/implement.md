@@ -1,5 +1,7 @@
 # GeoXGBoost implementation plan — v1.0
 
+**Current execution override: D27, section 7 below. Stage 1 overfitting remains unresolved.** D26 bounded diagnostics are complete; only the six-root time-block contrast is authorized next. Original full-pipeline checklists below are historical scope, not authorization to resume Stage 2/3 or close this task.
+
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
 ## 1. Entry and source boundary
@@ -14,7 +16,7 @@
 
 ## 2. Ordered changes, after authorization
 
-Main executor owns changes. Scouts may inspect and verify; do not delegate code changes by default. Before modifying a function/class/method, run GitNexus upstream impact and report callers/processes/risk; inspect the exact code to change. Run `detect_changes` before any commit. No new generic model registry, plugin framework, experiment database or parallel scheduler is needed.
+The bound Claude executor owns implementation and may dispatch native `trellis-implement` and `trellis-check` agents with the current task context; the supervisor coordinates planning and scoped verification. Before modifying a function/class/method, run GitNexus upstream impact and report callers/processes/risk; inspect the exact code to change. Run `detect_changes` before any commit; document existing index failures and use source tracing if unavailable. No new generic model registry, plugin framework, experiment database or parallel scheduler is needed.
 
 1. **Preparation and identity.** Reuse `scripts/prepare_fourclass.py`, the frozen feature builder, snapshot schema, keyed ledgers and completion protocol. Extend the label snapshot range from the actual outer/internal fitting schedule; preserve feature formulas and early NaNs. Parameterize the approved finite run table inside the fork, with explicit candidate family identities and development/final roles. Save resolved runtime versions including XGBoost and code/source/schema identities. Existing prepare requires producer/verifier code equal committed HEAD, so authoritative data runs follow a code commit.
 2. **Native booster adapter.** Replace the active RF fitting path in the fork with a small native-XGB implementation usable by both stages. Reuse fixed-four metrics. Dense float input, ±inf→NaN, fixed num_class=4, no RF imputer or pseudo-class rows. Fresh global fitting and immutable-parent continuation are separate operations, with fixed rounds and capacity accounting. Reuse checkpoint metadata; save native model plus feature order, fitting keys, parent identity and base-score/prefix evidence. Do not introduce an abstract backend hierarchy.
@@ -72,7 +74,17 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 ## 6. D26 amendment (2026-10-01): binary crisis endpoint, Stage 1 first
 
 - [x] Stop the fourclass batch (old Stage 1 dispatcher and minirun-2 progression) by verified PIDs; preserve all artifacts (19 completed roots, the 0xC0000409 crash scratch, 6 interrupted roots).
-- [ ] Add a crisis scorer (argmax → IPC≥3 collapse; exact crisis-positive F1; crisis scan masses) next to the fixed-four metrics; keep fixed-four as secondary in every record.
-- [ ] Stage 1: E1 crisis masses, E2 exact crisis gain on complete parent keys (families unchanged), E3 crisis F1 vs root, E4 weight input = crisis F1. Tests for each.
-- [ ] Re-select G from the saved 72 G predictions by development crisis F1 (no new fits).
-- [ ] Bounded representative Stage 1 subset on the full-geometry data; report E2-vs-E3 generalisation and per-class/binary confusion. Stop for user review before the full 648 candidates or any Stage 2/3.
+- [x] Add a crisis scorer (argmax → IPC≥3 collapse; exact crisis-positive F1; crisis scan masses) next to the fixed-four metrics; keep fixed-four as secondary in every record. Implemented at87513eb.
+- [x] Stage 1: E1 crisis masses, E2 exact crisis gain on complete parent keys (families unchanged), E3 crisis F1 vs root, E4 weight input = crisis F1. Tests for each; native D26 check reports43 tests passed, recorded at7d3f0ec.
+- [x] Re-select G from the saved 72 G predictions by development crisis F1 (no new fits): H4 G1/H8 G4/H12 G2.
+- [x] Bounded representative Stage 1 subset on the full-geometry data:12 roots/48 candidates completed. Keyed independent E2/E3 rescore recorded at8b1487f; this is not full checkpoint replay or648-candidate acceptance. User reviewed and authorized only D27 next.
+
+## 7. D27 implementation and bounded execution
+
+- [ ] Commit aligned PRD/design/evaluation-contract/experiment-plan/implement/context amendments before product edits. Keep audit run ed632775 and bound Claude session unchanged; no register/start reset.
+- [ ] Load task context in order: jsonl entries, prd.md, design.md, implement.md. Have native trellis-implement implement A2 with the smallest existing split/driver/identity/diagnostic changes. Preserve old random paths and saved D26 evidence.
+- [ ] Add explicit time-block mode: latest three global observed history months for common E1/E2, earlier history for fitting, no per-area reassignment. Root/candidate/completion identity and the expected list distinguish exactly six L1/gt0 candidates from old grids. Keep all fixed model/support/time contracts.
+- [ ] Add the meaningful split/identity/paired-diagnostic checks in A2; fix only relevant result/acceptance issues. Run native trellis-check covering D27, record findings and test evidence. Do not substitute a previous D26 check.
+- [ ] Commit the producer before preparing a fresh full-data/full-geometry run outside Dropbox. Reuse identity-checked G selection; do not repeat72fits or cross-expand the six-candidate budget. Record the actual CLI, source hashes, schedule, runtime and code identity.
+- [ ] Execute six roots, preserve all outputs/failures, and compare with six completed D26 r80/L1/gt0 controls. Independently recompute keyed E2/E3 scores; report support, root changes, incremental generalisation and coverage-aware partition diversity.
+- [ ] Update PROGRESS with separate implementation, experiment-completion and scientific-evidence statuses. Stage1 overfitting stays unresolved unless supported by evidence; improvement in this small comparison is not final scientific success. Return results for review; do not run full648, Stage2/3, final evaluation or audit-close yet.
