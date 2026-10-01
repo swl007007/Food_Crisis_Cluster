@@ -171,15 +171,26 @@ def partition(model, X, y,
   else:
     s_branch, max_size_needed = init_s_branch(n_groups = N_GROUPS)#grid_dim = GRID_DIM
 
-  # Train and save initial base model for the root branch (branch_id = '')
-  print("Training initial base model for root branch...")
+  # The root ('') is fitted ONCE by the caller (GeoRF.fit installs it). The release
+  # trained it a second time here; with continuation boosters a second root call
+  # would append rounds, so the root is only checked, never refitted.
   train_list = get_id_list(X_branch_id, X_set, '', set_id = 0)
   val_list = get_id_list(X_branch_id, X_set, '', set_id = 1)
-  X_train_base = X[train_list]
-  y_train_base = y[train_list]
-  model.train(X_train_base, y_train_base, branch_id='')
-  model.save('')
-  print(f"Initial base model trained with {len(y_train_base)} samples")
+  model.load('')
+  if int(model.fit_record.get('path_rounds_added', -1)) != 0:
+    raise RuntimeError('partition() needs the installed global root checkpoint')
+  root_fits = sum(1 for entry in model.fit_log if entry.get('trained_under') is None)
+  if root_fits != 1:
+    raise RuntimeError(f'root fitted {root_fits} times; exactly one root fit is allowed')
+  # Stage 1 design constants (experiment-plan sections 3/4), passed by GeoRF.fit.
+  X_month = paras.get('X_month')
+  threshold = paras.get('threshold')
+  fit_floor = paras.get('fit_support')
+  val_floor = paras.get('val_support')
+  path_cap = paras.get('path_round_cap')
+  if X_month is None or threshold is None or fit_floor is None or val_floor is None or path_cap is None:
+    raise ValueError('partition() requires X_month, threshold, fit_support, val_support, path_round_cap')
+  local_rounds = int(model.local_config['rounds'])
   
   # Generate baseline visualization for the root model (before any partitioning)
   if metrics_tracker is not None and correspondence_table_path:
@@ -716,17 +727,46 @@ def partition(model, X, y,
                                     'rows': [len(X0_train), len(X1_train), len(X0_val), len(X1_val)]})
         continue
 
+      # Real-row support of each side and the path-round ceiling (plan section 3).
+      # A side is fitted only if its fitting pool meets the floor, its validation pool
+      # meets the floor and one whole local step fits under the path cap; otherwise
+      # it offers only the parent route (its validation rows still count).
+      from src.model.native_xgb import keys_sha, meets, support
+      ids = get_branch_X_id(X_id, train_list, val_list, s0_train, s1_train, s0_val, s1_val)
+      fit_sup = [support(y[r], X_group[r], X_month[r]) for r in ids[:2]]
+      val_sup = [support(y[r], X_group[r], X_month[r]) for r in ids[2:]]
+      parent_rounds = model.path_rounds(branch_id)
+      within_cap = parent_rounds + local_rounds <= path_cap
+      eligible = tuple(bool(within_cap and meets(fit_sup[k], fit_floor) and meets(val_sup[k], val_floor))
+                       for k in range(2))
+      fallback = [None if eligible[k] else
+                  ('path_round_cap' if not within_cap else
+                   'fit_support' if not meets(fit_sup[k], fit_floor) else 'validation_support')
+                  for k in range(2)]
+      meta = tuple({'fit_support': fit_sup[k], 'fit_keys_sha256': keys_sha(X_group[ids[k]], X_month[ids[k]])}
+                   for k in range(2))
+      support_record = {'fit_support': fit_sup, 'val_support': val_sup, 'eligible': list(eligible),
+                        'fallback': fallback, 'parent_path_rounds': int(parent_rounds),
+                        'local_rounds': local_rounds, 'path_round_cap': int(path_cap)}
+      if not any(eligible):
+        print(f"No eligible child ({fallback}); keeping parent.")
+        partition.decisions.append({'branch_id': branch_id, 'depth': len(branch_id),
+                                    'outcome': 'rejected_no_eligible_child', **support_record,
+                                    'n_groups': [int(len(s0_group)), int(len(s1_group))]})
+        continue
+
       #train and eval hypothetical branches
       print("Training new branches...")#i and j splits are not used in train_and_eval_two_branch()
       y0_pred, y1_pred = train_and_eval_two_branch(model, X0_train, y0_train, X0_val,
-                                                  X1_train, y1_train, X1_val, branch_id)
+                                                  X1_train, y1_train, X1_val, branch_id,
+                                                  fit=eligible, meta=meta)
 
       if macro_mode:
         parent0 = base_eval_using_merged_branch_data(model, X0_val, branch_id)
         parent1 = base_eval_using_merged_branch_data(model, X1_val, branch_id)
         accepted, selected, predictions, base_f1, split_f1, scores = select_macro_children(
             y0_val, y1_val, parent0, parent1, y0_pred, y1_pred,
-            min_improvement=MIN_MACRO_F1_IMPROVEMENT_THRESHOLD,
+            min_improvement=threshold, eligible=eligible,
         )
         sig = int(accepted)
         if accepted:
@@ -748,6 +788,7 @@ def partition(model, X, y,
           'n_groups': [int(len(s0_group)), int(len(s1_group))],
           'rows_train': [int(len(y0_train)), int(len(y1_train))],
           'rows_val': [int(len(y0_val)), int(len(y1_val))],
+          'threshold': str(threshold), **support_record,
         })
         print(f"Macro-F1 performance gate: parent={float(base_f1):.6f}, candidate={float(split_f1):.6f}, accepted={bool(sig)}")
       else:

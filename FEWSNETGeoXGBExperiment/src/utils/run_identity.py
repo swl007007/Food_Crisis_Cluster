@@ -20,7 +20,8 @@ CODE_FILES = ("config.py", "config_visual.py", "feature-schema.json", "run_all.s
 #: separately (verifier identity) and excluded from the PRODUCER identity that binds
 #: runs; a later verifier fix therefore does not misattribute or invalidate a run.
 VERIFIER_FILES = ("scripts/verify_fourclass.py",)
-RUNTIME_PACKAGES = ("numpy", "pandas", "scikit-learn", "scipy", "geopandas", "shapely", "polars")
+RUNTIME_PACKAGES = ("numpy", "pandas", "scikit-learn", "scipy", "geopandas", "shapely", "polars",
+                    "xgboost")
 
 
 def file_sha256(path) -> str:
@@ -115,15 +116,9 @@ def verify_outputs(directory: Path, recorded: dict) -> list:
 #: list each of these, and each listed file must exist with its recorded hash.
 REQUIRED_PREPARED = ("manifests/sources.json", "manifests/runtime.json", "manifests/preflight.json",
                      "manifests/schedule.json", "manifests/features.json", "manifests/geometry.json",
-                     "ledgers/observations.csv", "ledgers/baselines.csv",
+                     "ledgers/observations.csv", "ledgers/baselines.csv", "ledgers/dev_baselines.csv",
                      "snapshot_h4.parquet", "snapshot_h8.parquet", "snapshot_h12.parquet",
                      "geometry/polygon_contiguity_info.pkl", "geometry/FEWSNET_admin_code_lat_lon.csv")
-REQUIRED_STAGE1_FOLD = ("candidate.json", "correspondence_table.csv", "target_predictions.csv",
-                        "heldout_scores.csv", "fold_membership.csv.gz", "s_branch.pkl",
-                        "branch_table.npy", "X_branch_id.npy", "command.json", "run.log")
-REQUIRED_STAGE3_FOLD = ("local_support.csv", "imputer_statistics.csv.gz", "training_keys.csv.gz",
-                        "models/pooled.pkl.xz")
-
 
 def check_inventory(base: Path, recorded: dict, required) -> list:
     """Problems if a required file is not recorded, or a recorded file is missing/changed."""

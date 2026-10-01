@@ -58,16 +58,21 @@ PINNED_SOURCES = {
 SHAPEFILE_SIDECARS = (".shx", ".dbf", ".prj", ".cpg")
 PINNED_RUNTIME = {"python": "3.12.10", "numpy": "2.2.6", "pandas": "2.2.3",
                   "scikit-learn": "1.6.1", "scipy": "1.15.2", "geopandas": "1.0.1",
-                  "shapely": "2.1.0", "polars": "1.27.1"}
+                  "shapely": "2.1.0", "polars": "1.27.1", "xgboost": "3.0.0"}
 
-HORIZONS = (4, 8, 12)
-SCOPE_OF = {4: 1, 8: 2, 12: 3}
-#: First label month any fold can use: Stage 1 T=2018-02, H=12 trains on [2014-03, 2017-02).
-SNAPSHOT_FIRST_MONTH = "2014-01"
+from src.experiment import plan  # noqa: E402
+
+HORIZONS = plan.HORIZONS
+SCOPE_OF = plan.SCOPE_OF
+#: Snapshot keys start with the first label month of the source (2010-01). The 59-month
+#: windows of the actual schedule reach back to 2010-03 (Stage 3 internal gate origins);
+#: build_schedule checks that every scheduled window lower bound is covered. Features of
+#: early keys keep the NaN that the frozen formulas produce before the 2010-01 scaffold.
+SNAPSHOT_FIRST_MONTH = "2010-01"
 STAGE1_TARGETS = ("2018-01", "2020-12")
-STAGE3_TARGETS = {4: ("2021-05", "2024-12"), 8: ("2021-09", "2024-12"), 12: ("2022-01", "2024-12")}
-TRAIN_WINDOW = 36  # inherited: labels in [O-35, O), i.e. 35 months excluding the origin
-PARTITION_INFO_CUTOFF = "2020-12"
+STAGE3_TARGETS = plan.FINAL_TARGETS
+TRAIN_WINDOW = plan.WINDOW + 1  # labels in [O-59, O), i.e. 59 months excluding the origin (D9)
+PARTITION_INFO_CUTOFF = plan.PARTITION_INFO_CUTOFF
 EXPERT_FIELD = {4: "fews_proj_near", 8: "fews_proj_med"}
 ADMIN_UNIVERSE = (0, 5717)
 
@@ -267,8 +272,8 @@ def preflight(panel: pd.DataFrame, fewsnet: pd.DataFrame, coords: pd.DataFrame,
     inf = {c: int(np.isinf(panel[c].to_numpy(dtype=float)).sum())
            for c in schema["static_sources"] + schema["dynamic_sources_at_origin"]}
     report["infinite_source_cells"] = {k: v for k, v in inf.items() if v}
-    report["infinite_policy"] = ("The release converts +/-inf to NaN before max_plus imputation "
-                                 "(preprocess.comp_impute); each estimator's imputer does the same.")
+    report["infinite_policy"] = ("Every XGBoost input converts +/-inf to NaN and passes NaN natively as "
+                                 "missing (D14); no imputer is fitted.")
     return report
 
 
@@ -304,13 +309,20 @@ def build_snapshot(scaffold, schema, observations, horizon) -> pd.DataFrame:
     return snapshot
 
 
-def build_baselines(panel: pd.DataFrame, observations: pd.DataFrame) -> pd.DataFrame:
-    """Stage 3 truth plus exact-origin persistence and calendar-aligned expert (D3, D5)."""
+def build_baselines(panel: pd.DataFrame, observations: pd.DataFrame, targets=None) -> pd.DataFrame:
+    """Truth plus exact-origin persistence and calendar-aligned expert (D3, D5).
+
+    ``targets`` maps horizon -> (first, last) target month; default = the final Stage 3
+    schedule. The development ledger uses the six development targets per horizon."""
     frames = []
     obs = observations.set_index(["area", "month"])
     panel = panel.assign(month=ff.month_index(panel["date"])).set_index(["FEWSNET_admin_code", "month"])
-    for horizon, (first, last) in STAGE3_TARGETS.items():
-        rows = observations[(observations["month"] >= mi(first)) & (observations["month"] <= mi(last))]
+    for horizon, months in (targets or {h: STAGE3_TARGETS[h] for h in HORIZONS}).items():
+        if isinstance(months, tuple):
+            first, last = months
+            rows = observations[(observations["month"] >= mi(first)) & (observations["month"] <= mi(last))]
+        else:
+            rows = observations[observations["month"].isin([mi(t) for t in months])]
         frame = rows[["area", "month", "country", "raw_phase", "class_code"]].rename(
             columns={"month": "target_month", "raw_phase": "truth_raw_phase", "class_code": "truth_code"})
         frame = frame.assign(horizon=horizon, origin_month=frame["target_month"] - horizon)
@@ -336,33 +348,65 @@ def build_baselines(panel: pd.DataFrame, observations: pd.DataFrame) -> pd.DataF
     return out
 
 
+def gate_dates(label_months, origin: int) -> list:
+    """The six most recent globally observed label months U < O (plan section 5)."""
+    earlier = sorted(m for m in label_months if m < origin)
+    return earlier[-plan.GATE_DATES:]
+
+
+def _fold(horizon, target, labelled, label_months, with_gate):
+    origin = target - horizon
+    entry = {"scope": SCOPE_OF[horizon], "horizon": horizon,
+             "target_month": ff.month_label([target])[0], "origin_month": ff.month_label([origin])[0],
+             "train_label_months": [ff.month_label([origin - plan.WINDOW])[0], ff.month_label([origin - 1])[0]],
+             "target_rows": int(labelled.get(target, 0)),
+             "status": "scheduled" if labelled.get(target, 0) else "skipped_empty_target"}
+    if with_gate:
+        gates = gate_dates(label_months, origin)
+        entry["gate"] = [{"validation_month": ff.month_label([u])[0],
+                          "internal_origin": ff.month_label([u - horizon])[0],
+                          "fit_label_months": [ff.month_label([u - horizon - plan.WINDOW])[0],
+                                               ff.month_label([u - horizon - 1])[0]]} for u in gates]
+    return entry
+
+
 def build_schedule(observations: pd.DataFrame) -> dict:
     labelled = observations.groupby("month").size()
-    schedule = {"stage1": [], "stage3": []}
+    label_months = sorted(int(m) for m in labelled.index)
+    schedule = {"stage1": [], "stage1_roots": [], "stage1_candidates": [], "development": [], "stage3": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
-            origin = target - horizon
-            schedule["stage1"].append({
-                "scope": SCOPE_OF[horizon], "horizon": horizon,
-                "target_month": ff.month_label([target])[0], "origin_month": ff.month_label([origin])[0],
-                "train_label_months": [ff.month_label([origin - (TRAIN_WINDOW - 1)])[0],
-                                       ff.month_label([origin - 1])[0]],
-                "target_rows": int(labelled.get(target, 0)),
-                "status": "scheduled" if labelled.get(target, 0) else "skipped_empty_target",
-            })
+            entry = _fold(horizon, target, labelled, label_months, with_gate=False)
+            label = entry["target_month"]
+            if entry["status"] == "scheduled" and label not in plan.STAGE1_TARGETS:
+                raise PreflightError(f"labelled 2018-2020 month {label} is not a frozen Stage 1 target")
+            if label in plan.STAGE1_TARGETS and entry["status"] != "scheduled":
+                raise PreflightError(f"frozen Stage 1 target {label} has no labels")
+            schedule["stage1"].append(entry)
+            if entry["status"] != "scheduled":
+                continue
+            for ratio in plan.SPLIT_RATIOS:
+                for seed in plan.SPLIT_SEEDS:
+                    schedule["stage1_roots"].append({"horizon": horizon, "target_month": label,
+                                                     "origin_month": entry["origin_month"],
+                                                     "ratio": ratio, "split_seed": seed})
+                    for local in plan.L_CONFIGS:
+                        for family in plan.THRESHOLD_FAMILIES:
+                            schedule["stage1_candidates"].append({
+                                "horizon": horizon, "target_month": label, "origin_month": entry["origin_month"],
+                                "ratio": ratio, "split_seed": seed, "local_config": local,
+                                "threshold_family": family})
+        for target in (mi(t) for t in plan.DEV_TARGETS):
+            entry = _fold(horizon, target, labelled, label_months, with_gate=True)
+            if entry["status"] != "scheduled":
+                raise PreflightError(f"development target {entry['target_month']} has no labels")
+            schedule["development"].append(entry)
         first, last = STAGE3_TARGETS[horizon]
         for target in range(mi(first), mi(last) + 1):
             origin = target - horizon
             if origin <= mi(PARTITION_INFO_CUTOFF):
                 raise PreflightError("a Stage 3 origin is not after the partition cutoff")
-            schedule["stage3"].append({
-                "scope": SCOPE_OF[horizon], "horizon": horizon,
-                "target_month": ff.month_label([target])[0], "origin_month": ff.month_label([origin])[0],
-                "train_label_months": [ff.month_label([origin - (TRAIN_WINDOW - 1)])[0],
-                                       ff.month_label([origin - 1])[0]],
-                "target_rows": int(labelled.get(target, 0)),
-                "status": "scheduled" if labelled.get(target, 0) else "skipped_empty_target",
-            })
+            schedule["stage3"].append(_fold(horizon, target, labelled, label_months, with_gate=True))
     for stage in ("stage1", "stage3"):
         rows = schedule[stage]
         schedule[f"{stage}_counts"] = {
@@ -372,8 +416,24 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                 str(h): min((r["target_month"] for r in rows if r["horizon"] == h and r["status"] == "scheduled"),
                             default=None) for h in HORIZONS},
         }
-    schedule["training_window_rule"] = ("labels in [O-35, O): 35 calendar months, origin excluded (D11); "
-                                        "inherited from train_start = O - (36 - 1), date < O")
+    schedule["stage1_counts"].update(roots=len(schedule["stage1_roots"]),
+                                     candidates=len(schedule["stage1_candidates"]))
+    if len(schedule["stage1_candidates"]) != 648 or len(schedule["development"]) != 18:
+        raise PreflightError("the frozen 648 candidate tasks / 18 development folds are not reproduced")
+    lower = []
+    for stage in ("stage1", "development", "stage3"):
+        for r in schedule[stage]:
+            if r["status"] == "scheduled":
+                lower.append(r["train_label_months"][0])
+                lower += [g["fit_label_months"][0] for g in r.get("gate", [])]
+    schedule["earliest_window_lower_bound"] = min(lower)
+    schedule["first_label_month"] = ff.month_label([label_months[0]])[0]
+    if mi(SNAPSHOT_FIRST_MONTH) > label_months[0]:
+        raise PreflightError("snapshot keys start after the first label month a window can reach")
+    schedule["training_window_rule"] = ("labels in [O-59, O): 59 calendar months, origin excluded (D9 revised); "
+                                        "applies to every global, parent, child and local fit at its own origin")
+    schedule["gate_rule"] = ("Stage 3 / development: the six most recent globally observed label months "
+                             "U < O; internal origin V = U - H; internal fits use [V-59, V)")
     return schedule
 
 
@@ -499,6 +559,8 @@ def main() -> None:
         ledgers / "observations.csv", index=False)
     baselines = build_baselines(panel, observations)
     baselines.to_csv(ledgers / "baselines.csv", index=False)
+    build_baselines(panel, observations, {h: plan.DEV_TARGETS for h in HORIZONS}).to_csv(
+        ledgers / "dev_baselines.csv", index=False)
     schedule = build_schedule(observations)
     write_json(manifests / "schedule.json", schedule)
 

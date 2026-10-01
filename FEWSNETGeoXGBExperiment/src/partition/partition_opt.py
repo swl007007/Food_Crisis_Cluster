@@ -851,18 +851,23 @@ def get_top_cells(g, flex = FLEX_OPTION, flex_ratio = FLEX_RATIO, flex_type = FL
 
   return s0, s1
 
-def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvement=0.01):
-    """Choose existing parent/child checkpoints by fixed-four macro F1 (D6, D7).
+def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvement=0.01,
+                          eligible=(True, True)):
+    """Choose existing parent/child checkpoints by fixed-four macro F1 (D6, D7, D12, D23).
 
     All four combinations are scored on the same complete parent validation rows,
     with counts aggregated before F1. Parent wins ties; acceptance requires a
-    strict gain above ``min_improvement``, decided in rational arithmetic.
+    strict gain above ``min_improvement`` (0 or .01 by threshold family), decided in
+    rational arithmetic. A side that is not ``eligible`` (support/path fallback) only
+    offers the parent route; its rows still count in every combination.
     """
     truth = np.concatenate((y0, y1))
     base = fourclass.macro_f1_exact(truth, np.concatenate((parent0, parent1)))
     best, choice, predictions = base, (False, False), (parent0, parent1)
     scores = {'parent_parent': base}
     for use0, use1 in ((True, False), (False, True), (True, True)):
+        if (use0 and not eligible[0]) or (use1 and not eligible[1]):
+            continue
         pred0 = child0 if use0 else parent0
         pred1 = child1 if use1 else parent1
         score = fourclass.macro_f1_exact(truth, np.concatenate((pred0, pred1)))

@@ -16,7 +16,7 @@ from config import (
 
 # Reuse temporal configuration from main config
 ACTIVE_LAGS = LAGS_MONTHS
-TRAIN_WINDOW_MONTHS = 36
+TRAIN_WINDOW_MONTHS = 60  # [O-59, O), task D9 revised
 ACTIVE_LAG = min(ACTIVE_LAGS) if ACTIVE_LAGS else 4
 
 # DESIRED_TERMS can be overridden by environment variable (comma-separated: "2021-01,2021-02,...")

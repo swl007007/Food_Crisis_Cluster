@@ -122,7 +122,8 @@ class GeoRF():
 	def fit(self, X, y, X_group, X_set = None, val_ratio = VAL_RATIO, print_to_file = True, 
 	        split = None,
 	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
-	        track_partition_metrics = False, correspondence_table_path = None, feature_names=None, VIS_DEBUG_MODE=True):#X_loc is unused
+	        track_partition_metrics = False, correspondence_table_path = None, feature_names=None, VIS_DEBUG_MODE=True,
+	        root=None, local_config=None, threshold=None, X_month=None):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -399,13 +400,18 @@ class GeoRF():
 			traceback.print_exc()
 			print("  Continuing with partitioning...")
 
-		#Train to stablize before starting the first data partitioning
-		if MODEL_CHOICE == 'RF':
-			#RF
-			self.model = RFmodel(self.dir_ckpt, self.n_trees_unit, max_depth = self.max_depth)#can add sample_weights_by_class
-			self.model.train(X[train_list_init], y[train_list_init], branch_id = '', sample_weights_by_class = self.sample_weights_by_class)
-
-		self.model.save('')#save root branch
+		#Install the ONE global root booster, already fitted by the caller on exactly
+		#the X_set == 0 rows (task D4: partition children continue it; no RF here).
+		from src.model.native_xgb import XGBmodel
+		from src.experiment.plan import FIT_SUPPORT, PATH_ROUND_CAP, STAGE1_VAL_SUPPORT
+		if root is None or local_config is None or threshold is None or X_month is None:
+			raise ValueError('GeoRF.fit needs root=(booster, record), local_config, threshold and X_month')
+		root_booster, root_record = root
+		if root_record.get('rows') != int(np.sum(X_set == 0)):
+			raise ValueError('the root booster was not fitted on exactly the X_set == 0 rows')
+		from os.path import abspath as _abspath  # fit() rebinds os locally later
+		self.model = XGBmodel(_abspath(self.dir_ckpt), local_config)
+		self.model.set_root(root_booster, root_record)
 
 		print("Time single: %f s" % (time.time() - start_time))
 		logger.info("Time single: %f s" % (time.time() - start_time))
@@ -428,7 +434,10 @@ class GeoRF():
 		                   track_partition_metrics = track_partition_metrics and VIS_DEBUG_MODE, 
 		                   correspondence_table_path = correspondence_table_path,
 		                   model_dir = self.model_dir,
-		                   VIS_DEBUG_MODE = VIS_DEBUG_MODE)#X_loc = X_loc is unused
+		                   VIS_DEBUG_MODE = VIS_DEBUG_MODE,
+		                   X_month = np.asarray(X_month), threshold = threshold,
+		                   fit_support = FIT_SUPPORT, val_support = STAGE1_VAL_SUPPORT,
+		                   path_round_cap = PATH_ROUND_CAP)#X_loc = X_loc is unused
 		
 		# Handle different return formats (with/without metrics tracker)
 		if track_partition_metrics and VIS_DEBUG_MODE:

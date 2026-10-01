@@ -68,7 +68,7 @@ LAGS_MONTHS = _validate_lag_schedule(LAGS_MONTHS)
 ACTIVE_LAGS = LAGS_MONTHS  # Alias for backward compatibility
 
 # Temporal train/test configuration
-TRAIN_WINDOW_MONTHS = 36  # Fixed 36-month rolling training window
+TRAIN_WINDOW_MONTHS = 60  # labels in [O-59, O): the fixed 59-month window (task D9 revised)
 ACTIVE_LAG = min(ACTIVE_LAGS) if ACTIVE_LAGS else 4  # Default active lag (months before test month)
 
 # Predict-only pipeline configuration (default-off; opt-in via the standalone
@@ -345,7 +345,7 @@ GOVERNING_METRIC = 'macro_f1'
 CRISIS_FOCUSED_OPTIMIZATION = False
 PARTITION_OPTIMIZATION_METRIC = 'macro_f1'
 CLASS_1_SIGNIFICANCE_TESTING = False
-MIN_MACRO_F1_IMPROVEMENT_THRESHOLD = 0.01  # strict gain required at every depth; parent wins ties
+MIN_MACRO_F1_IMPROVEMENT_THRESHOLD = None  # unused here: Stage 1 E2 uses the candidate threshold family (src/experiment/plan.py, D23)
 
 # GeoRF.fit's pre-partition CV diagnostic fits five extra forests and discards the
 # result; it assumes a binary positive class. Off for this package.
