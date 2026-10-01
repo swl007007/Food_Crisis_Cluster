@@ -122,5 +122,6 @@ memory/
 regional_ablation_results/*
 # Four-class package schema and Trellis task records are part of the contract.
 !FEWSNETFourClassBaseline/feature-schema.json
+!FEWSNETGeoXGBExperiment/feature-schema.json
 !.trellis/tasks/**/task.json
 !.trellis/tasks/**/controller_run_records.json
