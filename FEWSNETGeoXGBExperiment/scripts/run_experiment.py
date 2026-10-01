@@ -108,7 +108,38 @@ def keyed(base: pd.DataFrame, preds: pd.DataFrame, horizon: int, where: str) -> 
 
 
 def exact(frame: pd.DataFrame, column: str) -> Fraction:
+    """Primary exact score of the active endpoint (D26: crisis-positive F1)."""
+    return fourclass.endpoint_exact(frame["truth_code"].to_numpy(int), frame[column].to_numpy(float).astype(int))
+
+
+def exact_fourclass(frame: pd.DataFrame, column: str) -> Fraction:
     return fourclass.macro_f1_exact(frame["truth_code"].to_numpy(int), frame[column].to_numpy(float).astype(int))
+
+
+REUSED_PREPARED = ("snapshot_h4.parquet", "snapshot_h8.parquet", "snapshot_h12.parquet", "ledgers/dev_baselines.csv",
+                   "manifests/schedule.json")
+
+
+def reused_gscreen_predictions(run: Path, source: Path):
+    """The saved 72 development pooled predictions of an earlier run, reused without refit
+    (D26) only if every input they depend on is byte-identical: snapshots, development
+    truth/baselines and schedule (prepared output hashes), and the source G screen's own
+    recorded predictions hash; G configs are the frozen plan constants."""
+    import json as _json
+    mine = _json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
+    theirs = _json.loads((source / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
+    differ = [f for f in REUSED_PREPARED if mine.get(f) is None or mine.get(f) != theirs.get(f)]
+    if differ:
+        raise RuntimeError(f"cannot reuse {source} G predictions: prepared inputs differ {differ}")
+    record = _json.loads((source / "gscreen" / "selection.json").read_text(encoding="utf-8"))
+    sha = file_sha256(source / "gscreen" / "predictions.csv.gz")
+    if record["outputs"].get("predictions.csv.gz") != sha:
+        raise RuntimeError("source G predictions differ from their completion record")
+    preds = read_csv(source / "gscreen" / "predictions.csv.gz")
+    return preds, {"source_run": str(source), "source_selection_sha256": file_sha256(source / "gscreen" / "selection.json"),
+                   "source_predictions_sha256": sha, "source_code": record.get("code"),
+                   "matched_prepared_outputs": {f: mine[f] for f in REUSED_PREPARED},
+                   "rule": "no refit: same frozen G configs, byte-identical snapshots/dev truth/schedule"}
 
 
 def pool(executor_workers: int, fn, jobs):
@@ -135,14 +166,18 @@ def _gscreen_fold(run: str, fold: dict) -> pd.DataFrame:
     return pd.concat(frames, ignore_index=True)
 
 
-def gscreen(run: Path, workers: int) -> None:
+def gscreen(run: Path, workers: int, reuse: Path | None = None) -> None:
     prepared = acc.accept_prepared(run)
     out = run / "gscreen"
     if out.exists():
         raise FileExistsError(f"{out} exists")
     started = time.time()
     folds = dev_folds(run)
-    preds = pd.concat(pool(workers, _gscreen_fold, [(str(run), f) for f in folds]), ignore_index=True)
+    source = None
+    if reuse is not None:
+        preds, source = reused_gscreen_predictions(run, reuse)
+    else:
+        preds = pd.concat(pool(workers, _gscreen_fold, [(str(run), f) for f in folds]), ignore_index=True)
     base = dev_baselines(run)
     rows, selected = [], {}
     for h in plan.HORIZONS:
@@ -152,7 +187,9 @@ def gscreen(run: Path, workers: int) -> None:
                       h, f"gscreen h{h} {g}")
             cohort = k[main_cohort(k, h)]
             f1 = exact(cohort, "y_pred_code")
-            rows.append({"horizon": h, "g_config": g, "macro_f1": float(f1), "macro_f1_exact": str(f1),
+            f4 = exact_fourclass(cohort, "y_pred_code")
+            rows.append({"horizon": h, "g_config": g, "endpoint": plan.ENDPOINT, "score": float(f1),
+                         "score_exact": str(f1), "macro_f1_fourclass": float(f4), "macro_f1_fourclass_exact": str(f4),
                          "n_main_cohort": int(len(cohort)), "folds": int(k["target_month"].nunique())})
             rank = (f1, tuple(-x for x in plan.g_tiebreak_key(g)))
             if best is None or rank > best[0]:
@@ -162,10 +199,11 @@ def gscreen(run: Path, workers: int) -> None:
     pd.DataFrame(rows).to_csv(out / "scores.csv", index=False, float_format="%.17g")
     write_csv_gz(out / "predictions.csv.gz", preds)
     finish(out, "selection.json", {
-        "selected": selected, "prepared": prepared["outputs_sha256"],
-        "rule": ("per horizon: largest fixed-four macro-F1 over the six development folds on the main "
-                 "cohort (H4/H8 persistence+expert, H12 persistence), confusion counts pooled; exact "
-                 "ties -> fewer rounds, shallower trees, lower config number"),
+        "selected": selected, "prepared": prepared["outputs_sha256"], "endpoint": plan.ENDPOINT,
+        "reused_predictions": source,
+        "rule": (f"per horizon: largest {plan.ENDPOINT} (D26: crisis-positive F1, four-class argmax collapsed to "
+                 "IPC>=3) over the six development folds on the main cohort (H4/H8 persistence+expert, H12 "
+                 "persistence), counts pooled; exact ties -> fewer rounds, shallower trees, lower config number"),
         "bias_disclosure": ("G is chosen on the whole development period; later E3 scores, maps and "
                             "development scores are conditional on this choice (D24)"),
         "seconds": round(time.time() - started, 1)})
@@ -531,10 +569,15 @@ def main() -> None:
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("phase", choices=("gscreen", "maps", "develop", "select", "oldmap", "freeze", "final"))
     parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--reuse-gscreen-from", type=Path, default=None,
+                        help="gscreen only: reuse an earlier run's saved G predictions (identity-checked, no refit)")
     args = parser.parse_args()
     run = args.run_dir.resolve()
+    if args.phase != "gscreen" and not plan.DOWNSTREAM_ALIGNED:
+        raise SystemExit(f"{args.phase}: Stage 2/3 metric alignment to {plan.ENDPOINT} awaits review of the Stage 1 "
+                         "diagnostics (D26); not run")
     started = time.time()
-    {"gscreen": lambda: gscreen(run, args.workers), "maps": lambda: maps(run, args.workers),
+    {"gscreen": lambda: gscreen(run, args.workers, args.reuse_gscreen_from), "maps": lambda: maps(run, args.workers),
      "develop": lambda: develop(run, args.workers), "select": lambda: select(run),
      "oldmap": lambda: oldmap(run, args.workers), "freeze": lambda: freeze(run),
      "final": lambda: final(run, args.workers)}[args.phase]()

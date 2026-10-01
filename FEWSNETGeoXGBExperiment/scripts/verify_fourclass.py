@@ -68,6 +68,18 @@ def exact_macro(truth, pred):
     return total / 4
 
 
+def crisis_sk(truth, pred):
+    """Independent crisis-positive F1 (IPC>=3 = codes 2,3) via sklearn's binary F1."""
+    return float(f1_score((np.asarray(truth, int) >= 2).astype(int), (np.asarray(pred, int) >= 2).astype(int),
+                          pos_label=1, zero_division=0))
+
+
+def exact_crisis(truth, pred):
+    t, p = np.asarray(truth, int) >= 2, np.asarray(pred, int) >= 2
+    tp, fp, fn = int(np.sum(t & p)), int(np.sum(~t & p)), int(np.sum(t & ~p))
+    return Fraction(2 * tp, 2 * tp + fp + fn) if 2 * tp + fp + fn else Fraction(0)
+
+
 def check(results, name, ok, detail=None):
     results.append({"check": name, "passed": bool(ok), "detail": detail})
     print(("PASS " if ok else "FAIL ") + name + (f" :: {str(detail)[:400]}" if detail and not ok else ""), flush=True)
@@ -247,13 +259,13 @@ def e2_problems(c, e2, t, family_threshold):
             problems.append(f"decision {i} ({b!r}): recorded eligibility differs from recomputed")
         s0, s1 = side_rows[0], side_rows[1]
         truth = np.r_[t["y"][s0.row_id.to_numpy(np.int64)], t["y"][s1.row_id.to_numpy(np.int64)]]
-        base = exact_macro(truth, np.r_[s0.y_parent, s1.y_parent])
+        base = exact_crisis(truth, np.r_[s0.y_parent, s1.y_parent])
         best, choice = base, (False, False)
         scores = {"parent_parent": base}
         for u0, u1 in ((True, False), (False, True), (True, True)):
             if (u0 and not eligible[0]) or (u1 and not eligible[1]):
                 continue
-            score = exact_macro(truth, np.r_[s0.y_child if u0 else s0.y_parent, s1.y_child if u1 else s1.y_parent])
+            score = exact_crisis(truth, np.r_[s0.y_child if u0 else s0.y_parent, s1.y_child if u1 else s1.y_parent])
             scores[f"{'child' if u0 else 'parent'}_{'child' if u1 else 'parent'}"] = score
             if score > best:
                 best, choice = score, (u0, u1)
@@ -322,8 +334,10 @@ def verify_stage1(run, results):
         for cand in r["candidates"]:
             c = json.loads((stage1 / "candidates" / cand / "candidate.json").read_text(encoding="utf-8"))
             preds = read(stage1 / "candidates" / cand / "target_predictions.csv", ("branch_id",))
-            if not (np.isclose(macro(preds.y_true_code, preds.y_pred_partitioned_code), c["scores"]["macro_f1"], rtol=0, atol=1e-12)
-                    and np.isclose(macro(pooled.y_true_code, pooled.y_pred_pooled_code), c["scores"]["macro_f1_base"], rtol=0, atol=1e-12)
+            if not (c["scores"].get("endpoint") == "crisis_f1"
+                    and np.isclose(crisis_sk(preds.y_true_code, preds.y_pred_partitioned_code), c["scores"]["score"], rtol=0, atol=1e-12)
+                    and np.isclose(crisis_sk(pooled.y_true_code, pooled.y_pred_pooled_code), c["scores"]["score_base"], rtol=0, atol=1e-12)
+                    and np.isclose(macro(preds.y_true_code, preds.y_pred_partitioned_code), c["scores"]["macro_f1_fourclass"], rtol=0, atol=1e-12)
                     and (preds.y_pred_pooled_code.to_numpy() == pooled.y_pred_pooled_code.to_numpy()).all()
                     and (preds.y_pred_partitioned_code.to_numpy() == preds.filter(like="p_partitioned_").to_numpy().argmax(axis=1)).all()):
                 rescored.append(cand)
@@ -339,7 +353,8 @@ def verify_stage1(run, results):
     check(results, "stage1: training rows lie in [O-59,O) and <= 2020-12", not windows, windows[:5])
     check(results, "stage1: the within-area random split recomputes; fitting/validation key digests and "
                    "membership roles match", not split_bad, split_bad[:5])
-    check(results, "stage1: E3 scores, truth and argmax recompute; pooled E3 = the candidate's own root",
+    check(results, "stage1: E3 crisis F1 (and secondary fixed-four), truth and argmax recompute; pooled E3 = the "
+                   "candidate's own root",
           not rescored, rescored[:5])
     check(results, "stage1: every fitted E2 decision recomputes from keyed predictions bound to the actual complete "
                    "parent validation rows and labels; eligibility from recomputed support/path cap; child fit keys "
@@ -402,10 +417,10 @@ def verify_gscreen(run, results):
             if not (p.y_pred_code.to_numpy() == p.filter(like="p_").to_numpy().argmax(axis=1)).all():
                 bad.append((h, g, "argmax"))
             k = main_cohort(k, h)
-            scores[g] = (exact_macro(k.truth_code, k.y_pred_code), tuple(-x for x in plan.g_tiebreak_key(g)))
+            scores[g] = (exact_crisis(k.truth_code, k.y_pred_code), tuple(-x for x in plan.g_tiebreak_key(g)))
         if max(scores, key=scores.get) != sel["selected"][str(h)]:
             bad.append((h, "selection"))
-    check(results, "gscreen: every G scored on all development truth keys; selection recomputes", not bad, bad)
+    check(results, "gscreen: every G scored on all development truth keys; crisis-F1 selection recomputes", not bad, bad)
 
 
 def verify_maps(run, results):

@@ -151,3 +151,68 @@ def scan_masses(group_counts):
     Y = np.divide(exposure, scale, out=np.zeros(exposure.shape, dtype=float), where=total > 0)
     A = np.divide(2 * tp, scale, out=np.zeros(exposure.shape, dtype=float), where=total > 0)
     return Y, A
+
+
+# ------------------------------------------------------------------------------------
+# Binary crisis endpoint (task D26): four-class probabilities are kept; the fixed-axis
+# argmax is collapsed to crisis = IPC >= 3 (codes 2 and 3). Primary score = crisis-
+# positive F1 = 2TP/(2TP+FP+FN), 0 when undefined; fixed-four macro F1 stays secondary.
+# ------------------------------------------------------------------------------------
+
+CRISIS_MIN_CODE = 2
+
+
+def crisis(codes):
+    """0/1 crisis indicator (IPC >= 3) from fixed-axis class codes."""
+    return (as_codes(codes) >= CRISIS_MIN_CODE).astype(np.int64)
+
+
+def crisis_counts(y_true, y_pred):
+    t, p = crisis(y_true), crisis(y_pred)
+    if t.shape != p.shape:
+        raise ValueError("truth and prediction must be aligned")
+    return {"tp": int(np.sum(t & p)), "fp": int(np.sum((1 - t) & p)), "fn": int(np.sum(t & (1 - p))),
+            "tn": int(np.sum((1 - t) & (1 - p)))}
+
+
+def crisis_f1_exact(y_true, y_pred):
+    c = crisis_counts(y_true, y_pred)
+    denominator = 2 * c["tp"] + c["fp"] + c["fn"]
+    return Fraction(2 * c["tp"], denominator) if denominator else Fraction(0)
+
+
+def crisis_f1(y_true, y_pred):
+    return float(crisis_f1_exact(y_true, y_pred))
+
+
+def crisis_summary(y_true, y_pred):
+    c = crisis_counts(y_true, y_pred)
+    return {**c, "n": int(sum(c.values())), "f1": crisis_f1(y_true, y_pred),
+            "precision": c["tp"] / (c["tp"] + c["fp"]) if c["tp"] + c["fp"] else None,
+            "recall": c["tp"] / (c["tp"] + c["fn"]) if c["tp"] + c["fn"] else None}
+
+
+def crisis_scan_masses(y_true, y_pred, y_group):
+    """(groups, Y, A) with ONE crisis column: D_g = 2TP_g + FP_g + FN_g, Y = D_g / D,
+    A = 2TP_g / D (zero when D = 0) — the crisis analogue of scan_masses."""
+    t, p = crisis(y_true), crisis(y_pred)
+    groups, inverse = np.unique(np.asarray(y_group), return_inverse=True)
+    tp = np.bincount(inverse, weights=t & p, minlength=len(groups))
+    fp = np.bincount(inverse, weights=(1 - t) & p, minlength=len(groups))
+    fn = np.bincount(inverse, weights=t & (1 - p), minlength=len(groups))
+    exposure = 2 * tp + fp + fn
+    total = exposure.sum()
+    Y = (exposure / total if total > 0 else np.zeros_like(exposure)).reshape(-1, 1).astype(float)
+    A = (2 * tp / total if total > 0 else np.zeros_like(exposure)).reshape(-1, 1).astype(float)
+    return groups, Y, A
+
+
+def endpoint_exact(y_true, y_pred, endpoint=None):
+    """The primary exact score of the active endpoint (plan.ENDPOINT)."""
+    from src.experiment.plan import ENDPOINT
+    endpoint = endpoint or ENDPOINT
+    if endpoint == "crisis_f1":
+        return crisis_f1_exact(y_true, y_pred)
+    if endpoint == "macro_f1_fourclass":
+        return macro_f1_exact(y_true, y_pred)
+    raise ValueError(endpoint)

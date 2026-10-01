@@ -156,3 +156,5 @@ D24确认整套参数/支持、80-round路径上限、三seeds、648候选/24方
 **待审的下游对齐（尚未授权执行）。** 若继续：Stage 2 consensus 权重沿用 E4（crisis F1）；Stage 3 每区 gate 改为 crisis F1 精确增益 >0.01（其余支持资格不变）；开发24方案择优改为 crisis F1 相对 persistence/expert（persistence、expert 同样按 IPC≥3 折叠）；最终 D3 改为各 H 的 crisis F1 相对 persistence 点增益 >0 且国家块 bootstrap 95% 下界 >0，expert 为 H4/H8 报告目标；四分类结果作为次要报告。上述需在 Stage 1 结果审阅后另行确认。
 
 **被取代的执行。** 四分类口径的权威运行 `geoxgb-v1-20261001`（代码 268c17b；G3/G2/G2；Stage 1 完成19/162根、1根原生崩溃 0xC0000409、6根被停止）及 minirun-1/2 保留为证据，不作为二分类结果。
+
+**A1 有界 Stage 1 验证范围（用户 2026-10-01 指定）。** 完整22国数据与完整固定几何（权威 prepare，非子集 fixture）；从冻结648组合内取 2 个目标 {2018-02（最早）, 2020-10（最晚）} × 3 H × 2 比例 {r80, r50} × seed 42 = 12 个 root / 48 个候选（L1/L2 × gt0/gt001），G 为按开发期 crisis F1 重选的冻结配置（用已保存72个预测、源身份核验、不重拟合）。输出 `stage1_diagnostics/`：每候选 E2（最终分区 vs root，全部验证行）与 E3（目标月 vs root）的 crisis F1 与四分类增益、对应关系、逐类四分类与二分类混淆。完成后停止，待主审阅；不计作最终 648 结果的替代或扩充。

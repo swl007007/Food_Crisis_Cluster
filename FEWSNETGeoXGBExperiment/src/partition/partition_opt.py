@@ -124,7 +124,13 @@ def group_class_counts(y_true, y_pred, y_group):
   return groups, np.stack((tp, fp, fn), axis=1)
 
 
-def get_class_wise_stat(y_true, y_pred, y_group, mode = MODE, onehot = ONEHOT):
+def get_class_wise_stat(y_true, y_pred, y_group, mode = MODE, onehot = ONEHOT, endpoint = None):
+  # D26: with the binary crisis endpoint, E1 uses ONE crisis column (D_g = 2TP+FP+FN of
+  # crisis, Y = D_g/D, A = 2TP_g/D); the existing scan forms C = Y - A and B unchanged.
+  from src.experiment.plan import ENDPOINT
+  if mode == 'classification' and (endpoint or ENDPOINT) == 'crisis_f1':
+    groups, exposure, correct = fourclass.crisis_scan_masses(y_true, y_pred, y_group)
+    return groups, exposure, groups, correct
   # D8: four parent-normalized one-vs-rest columns, Y = D/(4 D_k), A = 2TP/(4 D_k).
   # The existing scan then forms C = Y - A and B from these floating masses.
   if mode == 'classification' and GOVERNING_METRIC == 'macro_f1':
@@ -852,7 +858,7 @@ def get_top_cells(g, flex = FLEX_OPTION, flex_ratio = FLEX_RATIO, flex_type = FL
   return s0, s1
 
 def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvement=0.01,
-                          eligible=(True, True)):
+                          eligible=(True, True), score=None):
     """Choose existing parent/child checkpoints by fixed-four macro F1 (D6, D7, D12, D23).
 
     All four combinations are scored on the same complete parent validation rows,
@@ -861,8 +867,9 @@ def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvem
     rational arithmetic. A side that is not ``eligible`` (support/path fallback) only
     offers the parent route; its rows still count in every combination.
     """
+    score = score or fourclass.macro_f1_exact  # D26 callers pass the crisis-F1 scorer
     truth = np.concatenate((y0, y1))
-    base = fourclass.macro_f1_exact(truth, np.concatenate((parent0, parent1)))
+    base = score(truth, np.concatenate((parent0, parent1)))
     best, choice, predictions = base, (False, False), (parent0, parent1)
     scores = {'parent_parent': base}
     for use0, use1 in ((True, False), (False, True), (True, True)):
@@ -870,10 +877,10 @@ def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvem
             continue
         pred0 = child0 if use0 else parent0
         pred1 = child1 if use1 else parent1
-        score = fourclass.macro_f1_exact(truth, np.concatenate((pred0, pred1)))
-        scores[f"{'child' if use0 else 'parent'}_{'child' if use1 else 'parent'}"] = score
-        if score > best:
-            best, choice, predictions = score, (use0, use1), (pred0, pred1)
+        value = score(truth, np.concatenate((pred0, pred1)))
+        scores[f"{'child' if use0 else 'parent'}_{'child' if use1 else 'parent'}"] = value
+        if value > best:
+            best, choice, predictions = value, (use0, use1), (pred0, pred1)
     accepted = best - base > Fraction(str(min_improvement))
     return accepted, choice, predictions, base, best, scores
 

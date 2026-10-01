@@ -28,8 +28,8 @@ from src.utils.run_identity import (SCHEMA_PATH as SCHEMA, code_identity,  # noq
 
 ROOT_FILES = ("root.json", "fold_membership.csv.gz", "root_target_predictions.csv", "command.json", "run.log")
 CANDIDATE_FILES = ("candidate.json", "correspondence_table.csv", "target_predictions.csv",
-                   "heldout_scores.csv", "e2_predictions.csv.gz", "s_branch.pkl", "branch_table.npy",
-                   "X_branch_id.npy")
+                   "heldout_scores.csv", "e2_predictions.csv.gz", "validation_predictions.csv.gz",
+                   "s_branch.pkl", "branch_table.npy", "X_branch_id.npy")
 
 
 def scheduled_roots(schedule: dict, g_of: dict) -> dict:

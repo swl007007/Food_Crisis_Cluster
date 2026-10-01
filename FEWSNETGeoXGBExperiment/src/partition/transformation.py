@@ -14,6 +14,7 @@ from config import *
 from src.helper.helper import *
 from src.model.train_branch import *
 from src.partition.partition_opt import *
+from src.metrics import fourclass
 from src.tests.sig_test import *
 
 from src.customize.customize import *
@@ -194,6 +195,7 @@ def partition(model, X, y,
   if X_month is None or threshold is None or fit_floor is None or val_floor is None or path_cap is None:
     raise ValueError('partition() requires X_month, threshold, fit_support, val_support, path_round_cap')
   local_rounds = int(model.local_config['rounds'])
+  from src.experiment.plan import ENDPOINT as ENDPOINT_NAME
   
   # Generate baseline visualization for the root model (before any partitioning)
   if metrics_tracker is not None and correspondence_table_path:
@@ -779,7 +781,7 @@ def partition(model, X, y,
         parent1 = base_eval_using_merged_branch_data(model, X1_val, branch_id)
         accepted, selected, predictions, base_f1, split_f1, scores = select_macro_children(
             y0_val, y1_val, parent0, parent1, y0_pred, y1_pred,
-            min_improvement=threshold, eligible=eligible,
+            min_improvement=threshold, eligible=eligible, score=fourclass.endpoint_exact,
         )
         sig = int(accepted)
         import pandas as _pd  # partition() rebinds pd locally further down
@@ -809,7 +811,7 @@ def partition(model, X, y,
           'n_groups': [int(len(s0_group)), int(len(s1_group))],
           'rows_train': [int(len(y0_train)), int(len(y1_train))],
           'rows_val': [int(len(y0_val)), int(len(y1_val))],
-          'threshold': str(threshold), **support_record,
+          'threshold': str(threshold), 'endpoint': ENDPOINT_NAME, **support_record,
         })
         print(f"Macro-F1 performance gate: parent={float(base_f1):.6f}, candidate={float(split_f1):.6f}, accepted={bool(sig)}")
       else:

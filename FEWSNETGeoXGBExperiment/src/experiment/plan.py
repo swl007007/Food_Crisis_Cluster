@@ -8,6 +8,12 @@ from __future__ import annotations
 from fractions import Fraction
 
 HORIZONS = (4, 8, 12)
+
+#: D26 (2026-10-01): native four-class probabilities, binary crisis evaluation
+#: (argmax collapsed to IPC >= 3); fixed-four macro F1 is secondary.
+ENDPOINT = "crisis_f1"
+#: D26: Stage 2/3 metric alignment awaits user review of the Stage 1 diagnostics.
+DOWNSTREAM_ALIGNED = False
 SCOPE_OF = {4: 1, 8: 2, 12: 3}
 N_CLASSES = 4
 

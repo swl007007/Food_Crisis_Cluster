@@ -118,7 +118,7 @@ class ScanStatistics(unittest.TestCase):
         truth = np.array([0, 0, 1, 1, 2])
         pred = np.array([0, 1, 1, 1, 0])
         groups = np.array([10, 10, 20, 20, 30])
-        gids, Y, _, A = opt.get_class_wise_stat(truth, pred, groups)
+        gids, Y, _, A = opt.get_class_wise_stat(truth, pred, groups, endpoint='macro_f1_fourclass')
         np.testing.assert_array_equal(gids, [10, 20, 30])
         # D per class: c0 = 2+1(FN)+1(FP) = 4; c1 = 4+1(FP) = 5; c2 = 1(FN); c3 = 0.
         np.testing.assert_allclose(Y[:, 0], np.array([3, 0, 1]) / 16)
@@ -823,7 +823,7 @@ class VerifierBoundaries(unittest.TestCase):
             self.assertTrue(vf.e2_problems(c, bad_side, t, Fraction(1, 100)))
             bad_truth = e2.copy(); bad_truth.loc[0, 'y_true'] = 3
             self.assertTrue(vf.e2_problems(c, bad_truth, t, Fraction(1, 100)))
-            self.assertTrue(vf.e2_problems(c, e2, t, Fraction(1, 2)))  # wrong family threshold
+            self.assertTrue(vf.e2_problems(c, e2, t, Fraction(2)))  # a threshold no gain can pass: outcome must flip
 
     def test_no_prior_route_needs_an_empty_expected_pool(self):
         with tempfile.TemporaryDirectory() as t:
@@ -871,6 +871,64 @@ class VerifierBoundaries(unittest.TestCase):
             self.assertEqual(any('local booster records' in p for p in problems), bool(routed))
         finally:
             env.tearDown()
+
+
+class CrisisEndpoint(unittest.TestCase):
+    """D26: four-class probabilities, binary crisis (IPC>=3) evaluation everywhere in Stage 1."""
+
+    def test_crisis_collapse_and_exact_f1(self):
+        truth, pred = np.array([0, 2, 3, 1]), np.array([2, 2, 0, 1])
+        np.testing.assert_array_equal(fourclass.crisis(truth), [0, 1, 1, 0])
+        self.assertEqual(fourclass.crisis_counts(truth, pred), {'tp': 1, 'fp': 1, 'fn': 1, 'tn': 1})
+        self.assertEqual(fourclass.crisis_f1_exact(truth, pred), Fraction(1, 2))
+        self.assertAlmostEqual(fourclass.crisis_f1(truth, pred),
+                               f1_score(truth >= 2, pred >= 2, pos_label=True, zero_division=0))
+        self.assertEqual(fourclass.crisis_f1_exact(np.zeros(3, int), np.zeros(3, int)), 0)  # undefined -> 0
+        self.assertEqual(plan.ENDPOINT, 'crisis_f1')
+        self.assertEqual(fourclass.endpoint_exact(truth, pred), Fraction(1, 2))
+
+    def test_crisis_scan_masses_single_column_and_scan(self):
+        truth = np.array([2, 2, 0, 3, 1, 0])
+        pred = np.array([2, 0, 2, 3, 1, 0])
+        groups = np.array([10, 10, 20, 20, 30, 30])
+        gids, Y, _, A = opt.get_class_wise_stat(truth, pred, groups)
+        np.testing.assert_array_equal(gids, [10, 20, 30])
+        # crisis TP/FP/FN per group: 10: 1/0/1, 20: 1/1/0, 30: 0/0/0 -> D = 3, 3, 0 (total 6)
+        np.testing.assert_allclose(Y[:, 0], [3 / 6, 3 / 6, 0])
+        np.testing.assert_allclose(A[:, 0], [2 / 6, 2 / 6, 0])
+        self.assertAlmostEqual(float((Y - A).sum()), 1 - float(fourclass.crisis_f1_exact(truth, pred)))
+        with redirect_stdout(StringIO()):
+            s0, s1, g, q = opt.scan(Y, A, 0, return_score=True)
+        self.assertTrue(np.isfinite(g).all() and np.isfinite(q).all())
+
+    def test_e2_crisis_gain_families(self):
+        e = np.array([], dtype=int)
+        truth = np.array([2, 2, 3, 0, 1, 0])
+        parent = np.array([2, 0, 0, 0, 1, 2])          # crisis tp1 fp1 fn2 -> 2/5
+        child = np.array([2, 3, 0, 0, 1, 2])           # tp2 fp1 fn1 -> 4/6
+        gain = Fraction(4, 6) - Fraction(2, 5)
+        for family, threshold in plan.THRESHOLD_FAMILIES.items():
+            accepted, _, _, base, best, _ = opt.select_macro_children(
+                truth, e, parent, e, child, e, min_improvement=threshold, score=fourclass.endpoint_exact)
+            self.assertEqual((base, best - base), (Fraction(2, 5), gain))
+            self.assertEqual(accepted, gain > threshold)
+        # a four-class change inside the crisis group is NOT a crisis gain: parent wins ties
+        recode = parent.copy(); recode[0] = 3
+        self.assertFalse(opt.select_macro_children(truth, e, parent, e, recode, e, min_improvement=Fraction(0),
+                                                   score=fourclass.endpoint_exact)[0])
+
+    def test_gscreen_reuse_requires_identical_inputs_and_downstream_is_blocked(self):
+        with tempfile.TemporaryDirectory() as t:
+            a, b = Path(t) / 'a', Path(t) / 'b'
+            for run, sha in ((a, 'x'), (b, 'y')):
+                (run / 'prepared' / 'manifests').mkdir(parents=True)
+                (run / 'prepared' / 'manifests' / 'outputs.json').write_text(json.dumps(
+                    {f: sha for f in rexp.REUSED_PREPARED}))
+            with self.assertRaises(RuntimeError):
+                rexp.reused_gscreen_predictions(a, b)
+        with patch.object(sys, 'argv', ['run_experiment.py', '--run-dir', '.', 'maps']), \
+                self.assertRaises(SystemExit):
+            rexp.main()
 
 
 class CommittedCode(unittest.TestCase):

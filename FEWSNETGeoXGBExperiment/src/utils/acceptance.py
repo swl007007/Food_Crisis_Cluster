@@ -85,12 +85,14 @@ def accept_g_selection(run: Path):
     expected = {str(h) for h in plan.HORIZONS}
     if set(record["selected"]) != expected or not set(record["selected"].values()) <= set(plan.G_CONFIGS):
         raise AcceptanceError("G selection does not name one frozen G per horizon")
-    scores = pd.read_csv(run / "gscreen" / "scores.csv", float_precision="round_trip", dtype={"macro_f1_exact": str})
+    scores = pd.read_csv(run / "gscreen" / "scores.csv", float_precision="round_trip", dtype={"score_exact": str})
+    if record.get("endpoint") != plan.ENDPOINT or set(scores["endpoint"]) != {plan.ENDPOINT}:
+        raise AcceptanceError(f"G selection was not scored on {plan.ENDPOINT}")
     if len(scores) != len(plan.G_CONFIGS) * len(plan.HORIZONS):
         raise AcceptanceError("G screening does not cover the 4 x 3 configurations")
     for h in plan.HORIZONS:
         rows = scores[scores["horizon"] == h]
-        best = max(rows.itertuples(), key=lambda r: (Fraction(r.macro_f1_exact),
+        best = max(rows.itertuples(), key=lambda r: (Fraction(r.score_exact),
                                                      tuple(-x for x in plan.g_tiebreak_key(r.g_config))))
         if best.g_config != record["selected"][str(h)]:
             raise AcceptanceError(f"h{h}: selected G differs from the declared selection rule")
@@ -139,7 +141,9 @@ def accept_stage1(run: Path) -> dict:
             entry = {**expected[cand], "name": cand, "status": record.get("status")}
             if record.get("status") == "completed":
                 c = _json(stage1 / "candidates" / cand / "candidate.json")
-                scores = [c["scores"]["macro_f1"], c["scores"]["macro_f1_base"]]
+                if c["scores"].get("endpoint") != plan.ENDPOINT:
+                    problems.append(f"{cand}: scored on {c['scores'].get('endpoint')!r}, not {plan.ENDPOINT}")
+                scores = [c["scores"]["score"], c["scores"]["score_base"]]
                 if not np.isfinite(scores).all():
                     problems.append(f"{cand}: non-finite held-out score")
                 if c["candidate"] != cand or c["local_config"] != entry["local_config"] \

@@ -95,6 +95,16 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
     proba_part = model.model.predict_proba_georf(Xtest, gtest, model.s_branch, X_branch_id=routed_test)
     y_part = fourclass.argmax_codes(proba_part)
     part_summary, pool_summary = fourclass.summary(ytest, y_part), fourclass.summary(ytest, y_pool)
+    part_crisis, pool_crisis = fourclass.crisis_summary(ytest, y_part), fourclass.crisis_summary(ytest, y_pool)
+    score = float(fourclass.endpoint_exact(ytest, y_part))
+    score_base = float(fourclass.endpoint_exact(ytest, y_pool))
+    # Generalisation evidence (D26): the final partition and the root on ALL of the
+    # candidate's validation rows (E2 population) next to the E3 target-month scores.
+    val = x_set == 1
+    branch_val = get_X_branch_id_by_group(gtrain[val], model.s_branch)
+    y_final_val = model.model.predict_georf(Xtrain[val], gtrain[val], model.s_branch, X_branch_id=branch_val)
+    model.model.load("")
+    y_root_val = model.model.predict(Xtrain[val])
 
     branch_str = np.where(saved_branch == "", "root", saved_branch.astype(str))
     corr = pd.DataFrame({"FEWSNET_admin_code": gtrain, "partition_id": branch_str}).drop_duplicates()
@@ -124,7 +134,13 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
     e2.insert(5, "target_month", month_label(mtrain[e2["row_id"].to_numpy(dtype=np.int64)]))
     with gzip.open(out / "e2_predictions.csv.gz", "wt", encoding="utf-8", newline="") as handle:
         e2.to_csv(handle, index=False)
-    pd.DataFrame([{"macro_f1": part_summary["macro_f1"], "macro_f1_base": pool_summary["macro_f1"],
+    validation = pd.DataFrame({"area": gtrain[val], "target_month": month_label(mtrain[val]),
+                               "y_true": ytrain[val], "y_root": y_root_val, "y_final": y_final_val,
+                               "branch_id": np.where(branch_val == "", "root", branch_val.astype(str))})
+    with gzip.open(out / "validation_predictions.csv.gz", "wt", encoding="utf-8", newline="") as handle:
+        validation.to_csv(handle, index=False)
+    pd.DataFrame([{"endpoint": plan.ENDPOINT, "score": score, "score_base": score_base,
+                   "macro_f1_fourclass": part_summary["macro_f1"], "macro_f1_fourclass_base": pool_summary["macro_f1"],
                    "n": len(ytest)}]).to_csv(out / "heldout_scores.csv", index=False, float_format="%.17g")
     for fname in ("s_branch.pkl", "branch_table.npy", "X_branch_id.npy"):
         shutil.copy2(model_dir / "space_partitions" / fname, out / fname)
@@ -144,15 +160,23 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
             "terminal_partitions": terminal, "n_terminal": len(terminal),
             "accepted_splits": sum(d.get("outcome") == "accepted" for d in model.partition_decisions),
             "decisions": model.partition_decisions,
-            "gate": (f"E2: strict fixed-four macro-F1 gain > {plan.THRESHOLD_FAMILIES[family]} over the "
+            "gate": (f"E2: strict {plan.ENDPOINT} gain > {plan.THRESHOLD_FAMILIES[family]} over the "
                      "current parent on its complete validation rows; parent wins ties"),
             "terminal_checkpoint_records": {b: last_save.get(b) for b in terminal},
             "correspondence_source": "space_partitions/X_branch_id.npy == s_branch routing (checked)",
         },
-        "scores": {"macro_f1": part_summary["macro_f1"], "macro_f1_base": pool_summary["macro_f1"],
+        "scores": {"endpoint": plan.ENDPOINT, "score": score, "score_base": score_base,
+                   "macro_f1_fourclass": part_summary["macro_f1"], "macro_f1_fourclass_base": pool_summary["macro_f1"],
                    "partitioned": part_summary, "pooled": pool_summary,
+                   "partitioned_crisis": part_crisis, "pooled_crisis": pool_crisis,
+                   "validation": {"n": int(val.sum()),
+                                  "final": {"crisis_f1": fourclass.crisis_f1(ytrain[val], y_final_val),
+                                            "macro_f1_fourclass": fourclass.macro_f1(ytrain[val], y_final_val)},
+                                  "root": {"crisis_f1": fourclass.crisis_f1(ytrain[val], y_root_val),
+                                           "macro_f1_fourclass": fourclass.macro_f1(ytrain[val], y_root_val)}},
                    "pooled_source": "the candidate's own global root booster (same G, same fitting rows)",
-                   "note": "E3 held-out target-month scores; NOT the E1/E2 validation scores"},
+                   "note": "score/score_base = E3 target-month crisis-positive F1 (D26 primary, also the E4 weight "
+                           "input); fixed-four macro F1 secondary; 'validation' = final vs root on all E2 rows"},
         "fits": {"fit_log": model.model.fit_log, "saved_log": model.model.saved_log,
                  "child_fits": sum(1 for e in model.model.fit_log if e.get("kind") == "continuation")},
         "checkpoints": {"dir": str(ckpt), "sha256": checkpoints},
