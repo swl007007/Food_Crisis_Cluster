@@ -20,3 +20,11 @@
 5. Replay/verify/report implementation completeness and scientific results separately; commit relevant evidence, audit close, verify accepted result.
 
 No product code fork or model training has run at this initial checkpoint. Executor must update this ledger at material milestones and retain failures/negative results.
+
+## 2026-10-01 — Audit start (executor)
+
+- Started from the bound Claude session itself: `trellis-audit --repo '/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster' start geoxgb-shared-parameter-design`.
+- Run id `ed632775e46b47598bcfc53ef088bf8e`, phase `active`, base_sha `5e2289d8914a86ce079c95149a13bca2b3610cbb` (= branch `geoxgb-shared-parameter-experiment` HEAD, planning commit).
+- Executor recorded by the controller: claude session `a53ea9d2-1aa3-44e8-8bc4-0dde99258a6c`, terminal `term_65ccaebe9009a8`; matches this process (`HERDR_PANE_ID=wN:p2`, `CLAUDE_CODE_SESSION_ID`). Controller `running=True`; it was the only active run at start.
+- task.json status after start: `in_progress`. Working tree before product edits: only task.json modified by the wrapper.
+- Implementation boundary: new sibling `FEWSNETGeoXGBExperiment/` forked from the 55 tracked files of `FEWSNETFourClassBaseline/` at 14c89bc; mother package, its runs and raw inputs are read-only. Root legacy GeoRF/GeoXGB code is not touched. Bulky Stage 1 scratch goes outside Dropbox.

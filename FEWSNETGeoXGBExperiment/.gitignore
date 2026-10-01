@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+work/
+result_GeoRF*/
+correspondence_table.csv
+feature_columns_debug.csv
+results_df_*.csv
+y_pred_test_*.csv
+
+# Keep tests visible despite the repository-wide test_* ignore rule.
+!tests/test_baseline.py
+
+# Keep generated runs local; previously committed evidence remains tracked.
+runs/

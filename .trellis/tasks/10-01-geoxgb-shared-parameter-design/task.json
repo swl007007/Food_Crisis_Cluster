@@ -3,7 +3,7 @@
   "name": "geoxgb-shared-parameter-design",
   "title": "GeoXGBoost shared-parameter forecasting design",
   "description": "Implement the approved isolated four-class GeoXGBoost shared-tree design, verify scientific contracts, and run the bounded development and frozen final experiment; D25 authorizes execution.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
