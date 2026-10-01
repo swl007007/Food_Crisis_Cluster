@@ -171,3 +171,9 @@ Scientific reading (development, bounded; not a final result): Stage 1 partition
 - Supervisor read-only feasibility for holding out the latest 3 label months of each Stage 1 root window as the E1/E2 validation block: across the six H × target pools, 12–15 earlier fitting dates and 61,424–73,887 fitting rows remain; the validation block has 15,677–15,999 rows with 2,192–3,169 crisis positives at root level. Local (child-side) eligibility under the frozen support floors is unproven.
 - Limits: this is not an independent A/B/C confirmation — E1 scan and E2 acceptance would still reuse the held-out block, and E3 remains the generalisation check.
 - Awaiting the user's choice; nothing implemented, no new experiment, audit not closed.
+
+### Crisis-positive support of accepted children (supervisor no-fit diagnosis, 48 candidate.json files) — descriptive
+
+- 333 accepted selected-child instances (not unique deployed models, not independent cases). Validation crisis positives per instance: <5: 1 instance / 1 candidate; <10: 5 / 4; <20: 15 / 10; <50: 46 / 13; median 374, min 3, max 4,980.
+- Among the 31 split candidates: the 10 with any accepted child having <20 validation crisis positives → 7 E3-negative, mean E3 −0.00374; the other 21 → 14 E3-negative, mean E3 −0.00526.
+- Reading: sparse crisis-positive support exists but does NOT explain the aggregate E2→E3 transfer failure; a positive-count floor should not be claimed as a fix. Confounded by family, L and depth; candidates are correlated. No producer edit, no training; the user's choice on Stage 1 remains pending.
