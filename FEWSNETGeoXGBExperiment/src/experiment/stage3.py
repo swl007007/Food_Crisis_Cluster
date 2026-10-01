@@ -122,7 +122,14 @@ class GlobalStore:
 def _atomic_write(path: Path, payload: bytes) -> None:
     tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     tmp.write_bytes(payload)
-    os.replace(tmp, path)
+    try:
+        os.replace(tmp, path)
+    except PermissionError:
+        # Windows refuses to replace a file another worker holds open. The fits are
+        # deterministic, so an existing destination must already carry these exact bytes.
+        tmp.unlink()
+        if not path.is_file() or path.read_bytes() != payload:
+            raise
 
 
 def fit_local(arm, global_booster, panel, rows, g, local):
@@ -282,8 +289,13 @@ def _run_arm(panel, store, spec, g, origin, test, g_booster, g_record, p_global,
     return result
 
 
-def unmapped_gate(cluster_of: dict, observations: pd.DataFrame) -> dict:
-    """Inherited coverage gate: unmapped share of ALL labelled panel rows <= 2%."""
+def unmapped_gate(cluster_of: dict, observations: pd.DataFrame, evaluated: pd.DataFrame | None = None) -> dict:
+    """Inherited coverage gate: unmapped share of ALL labelled panel rows <= 2%. The share
+    among the evaluated target keys is disclosed, never gated on."""
     pct = float(100 * (~observations["area"].isin(list(cluster_of))).mean())
-    return {"gate_population": "all labelled panel rows (release definition)",
-            "unmapped_pct_gate": pct, "threshold_pct": 2.0, "passed": pct <= 2.0}
+    record = {"gate_population": "all labelled panel rows (release definition)",
+              "unmapped_pct_gate": pct, "threshold_pct": 2.0, "passed": pct <= 2.0}
+    if evaluated is not None:
+        record["unmapped_pct_evaluated_targets_disclosed"] = float(
+            100 * (~evaluated["area"].isin(list(cluster_of))).mean())
+    return record

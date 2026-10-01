@@ -152,8 +152,11 @@ def partition(model, X, y,
   macro_mode = MODE == 'classification' and GOVERNING_METRIC == 'macro_f1'
   if not macro_mode:
     raise ValueError('This package supports only the fixed four-class macro-F1 objective.')
-  # Accepted-split ledger for the run record: one entry per evaluated candidate.
+  # Accepted-split ledger for the run record: one entry per evaluated candidate, plus
+  # the keyed E2 predictions (row id, side, truth, parent and child labels) of every
+  # decision that fitted a child, so all four routes can be re-scored independently.
   partition.decisions = []
+  partition.e2_rows = []
   if macro_mode:
     branch_table[0, 0] = 1  # Every descendant needs an accepted parent, even below min_depth.
   else:
@@ -779,6 +782,14 @@ def partition(model, X, y,
             min_improvement=threshold, eligible=eligible,
         )
         sig = int(accepted)
+        import pandas as _pd  # partition() rebinds pd locally further down
+        for side, rows_id, truth, parent_pred, child_pred in (
+            (0, ids[2], y0_val, parent0, y0_pred), (1, ids[3], y1_val, parent1, y1_pred)):
+          partition.e2_rows.append(_pd.DataFrame({
+            'decision': len(partition.decisions), 'branch_id': branch_id, 'side': side,
+            'row_id': np.asarray(rows_id, dtype=np.int64), 'y_true': np.asarray(truth, dtype=np.int64),
+            'y_parent': np.asarray(parent_pred, dtype=np.int64), 'y_child': np.asarray(child_pred, dtype=np.int64),
+            'child_eligible': bool(eligible[side])}))
         if accepted:
           for suffix, use_child in zip(('0', '1'), selected):
             if not use_child:

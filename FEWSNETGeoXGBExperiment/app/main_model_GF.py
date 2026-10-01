@@ -116,6 +116,14 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
     for k, label in enumerate(fourclass.CLASS_LABELS):
         preds[f"p_partitioned_{label}"] = proba_part[:, k]
     preds.to_csv(out / "target_predictions.csv", index=False, float_format="%.17g")
+    # Keyed E2 evidence: every scored parent validation row of every fitted decision.
+    e2 = (pd.concat(model.partition_e2_rows, ignore_index=True) if model.partition_e2_rows else
+          pd.DataFrame(columns=["decision", "branch_id", "side", "row_id", "y_true", "y_parent", "y_child",
+                                "child_eligible"]))
+    e2.insert(4, "area", gtrain[e2["row_id"].to_numpy(dtype=np.int64)])
+    e2.insert(5, "target_month", month_label(mtrain[e2["row_id"].to_numpy(dtype=np.int64)]))
+    with gzip.open(out / "e2_predictions.csv.gz", "wt", encoding="utf-8", newline="") as handle:
+        e2.to_csv(handle, index=False)
     pd.DataFrame([{"macro_f1": part_summary["macro_f1"], "macro_f1_base": pool_summary["macro_f1"],
                    "n": len(ytest)}]).to_csv(out / "heldout_scores.csv", index=False, float_format="%.17g")
     for fname in ("s_branch.pkl", "branch_table.npy", "X_branch_id.npy"):

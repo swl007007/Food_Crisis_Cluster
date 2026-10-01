@@ -56,6 +56,7 @@ CONTRASTS = (("main", "persistence"), ("main", "pooled"), ("main", "expert"), ("
 
 def final_predictions(run: Path) -> pd.DataFrame:
     """Every scheduled final fold of every arm, accepted, stacked per arm."""
+    acc.accept_prepared(run)  # schedule and baseline cohorts only through their recorded hashes
     frozen = acc.accept_record(run / "frozen", "frozen.json")
     frozen_sha = file_sha256(run / "frozen" / "frozen.json")
     frames, problems, incomplete = [], [], []
@@ -102,6 +103,7 @@ def v7_reference() -> pd.DataFrame:
 
 
 def load_keyed(run: Path) -> pd.DataFrame:
+    acc.accept_prepared(run)
     base = pd.read_csv(run / "prepared" / "ledgers" / "baselines.csv", float_precision="round_trip", low_memory=False)
     base["target_month"] = base["target_label"]
     preds = final_predictions(run)
@@ -122,6 +124,13 @@ def load_keyed(run: Path) -> pd.DataFrame:
         wide = merged.drop(columns=["_merge", f"y_true_{arm}"])
     v7 = v7_reference()
     wide = wide.merge(v7, on=KEY, how="left", validate="one_to_one")
+    v7_truth = []
+    for h in HORIZONS:
+        p = pd.read_csv(acc.V7_RUN / "stage3" / f"h{h}" / "predictions.csv.gz", float_precision="round_trip")
+        v7_truth.append(p[KEY + ["y_true_code"]])
+    check = wide.merge(pd.concat(v7_truth).rename(columns={"y_true_code": "v7_truth"}), on=KEY, how="left")
+    if wide["y_pred_v7_partitioned_rf"].isna().any() or not (check["v7_truth"] == check["truth_code"]).all():
+        raise RuntimeError("the committed v7 reference does not cover every truth key with the same truth")
     return wide
 
 

@@ -7,7 +7,7 @@ macro_f1_base, n_terminal and the accepted correspondence-table path. Missing or
 non-finite evidence is an error before this call; the routes are distinct:
 
 * ``no_prior_candidates`` - the schedule legitimately offers no candidate before O;
-* ``null_consensus``      - a complete pool whose D9 weights are all zero;
+* ``null_consensus``      - a complete pool whose E4 weights are all zero (inherited rule);
 * ``learned_map``         - release steps 3/4/5/6 (k40, sigma 5, recommended clusters,
                             seed 42) over the step-1 merge of these candidates.
 
@@ -116,7 +116,7 @@ def build_consensus(out: Path, candidates: pd.DataFrame, paths: dict, geometry_c
     record.update(positive_weight_candidates=positive, diagnostics=diagnostics(weights, paths))
     if positive == 0:
         record.update(route="null_consensus",
-                      note="complete candidate pool with only zero weights (D15): no graph is built")
+                      note="complete candidate pool with only zero weights (inherited null-consensus rule): no graph is built")
         return _finish(out, record, started)
 
     experiment = out / "experiment"

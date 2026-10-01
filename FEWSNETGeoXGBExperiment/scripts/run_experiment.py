@@ -45,7 +45,6 @@ from src.experiment import plan  # noqa: E402
 from src.experiment import stage3 as s3  # noqa: E402
 from src.feature.fourclass_features import load_schema  # noqa: E402
 from src.metrics import fourclass  # noqa: E402
-from src.model import native_xgb as nx  # noqa: E402
 from src.utils import acceptance as acc  # noqa: E402
 from src.utils.run_identity import (SCHEMA_PATH, code_identity, file_sha256, output_hashes,  # noqa: E402
                                     runtime_identity, write_json_atomic)
@@ -355,6 +354,8 @@ def select(run: Path) -> None:
     rows = []
     pooled = {h: pd.concat([dev_predictions(run, h, f["target_month"], "pooled") for f in folds
                             if f["horizon"] == h]) for h in plan.HORIZONS}
+    # scheme -> arm label of each fold, accepted once per fold (not once per scheme x fold)
+    fold_maps = {(f["horizon"], f["target_month"]): dev_specs(run, f, xgb, paths, g_of)[3] for f in folds}
     for scheme in plan.schemes():
         row = {"scheme": scheme["scheme"], "l_vector_id": scheme["l_vector_id"], "strategy": scheme["strategy"],
                **{f"L_h{h}": scheme["l_vector"][h] for h in plan.HORIZONS}}
@@ -363,7 +364,7 @@ def select(run: Path) -> None:
         for h in plan.HORIZONS:
             frames = []
             for f in (f for f in folds if f["horizon"] == h):
-                _, _, dirs, scheme_maps = dev_specs(run, f, xgb, paths, g_of)
+                scheme_maps = fold_maps[(h, f["target_month"])]
                 frames.append(dev_predictions(run, h, f["target_month"], scheme_maps[scheme["scheme"]]))
             if any(x is None for x in frames):
                 complete = False
@@ -481,8 +482,8 @@ FINAL_ARMS = ("pooled", "rfmap_independent", "rfmap_shared", "xgbmap_shared")
 
 def final(run: Path, workers: int) -> None:
     frozen = acc.accept_record(run / "frozen", "frozen.json")
-    xgb, paths = acc.candidate_frame(acc.accept_stage1(run))
-    sel = acc.accept_record(run / "development", "selection.json", ["selection_table.csv"])
+    acc.accept_stage1(run)  # the final phase runs only on an accepted Stage 1 and selection
+    acc.accept_record(run / "development", "selection.json", ["selection_table.csv"])
     if frozen["selection_record_sha256"] != file_sha256(run / "development" / "selection.json"):
         raise RuntimeError("frozen record does not bind the accepted selection")
     from scripts.run_stage2 import accept_consensus, cluster_map
@@ -491,8 +492,9 @@ def final(run: Path, workers: int) -> None:
     xgb_map = cluster_map(map_dir, record)
     rf_map = acc.v7_final_map()
     observations = read_csv(run / "prepared" / "ledgers" / "observations.csv")
-    coverage = {"xgbmap": s3.unmapped_gate(xgb_map, observations) if xgb_map else None,
-                "rfmap": s3.unmapped_gate(rf_map, observations)}
+    evaluated = read_csv(run / "prepared" / "ledgers" / "baselines.csv")[["area"]]
+    coverage = {"xgbmap": s3.unmapped_gate(xgb_map, observations, evaluated) if xgb_map else None,
+                "rfmap": s3.unmapped_gate(rf_map, observations, evaluated)}
     jobs = []
     for fold in acc.schedule(run)["stage3"]:
         if fold["status"] != "scheduled":

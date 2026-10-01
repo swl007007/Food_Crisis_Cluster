@@ -477,6 +477,7 @@ class GeoRF():
 		if terminal_check.get('n_collisions', 0):
 			raise ValueError(f"conflicting terminal assignments for one area: {terminal_check['collisions']}")
 		self.partition_decisions = list(getattr(partition, 'decisions', []))
+		self.partition_e2_rows = list(getattr(partition, 'e2_rows', []))
 
 		# VISUALIZATION FIX: Always render essential maps regardless of conditions
 		try:

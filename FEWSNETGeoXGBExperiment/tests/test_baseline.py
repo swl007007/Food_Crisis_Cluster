@@ -469,6 +469,9 @@ class Stage1Partition(unittest.TestCase):
         self.assertEqual(model.trained, [('', [0, 1]), ('', [2, 3])])
         self.assertEqual(assigned[4], '')
         self.assertEqual(decisions[0]['parent_kept_fitting'], {'rows': 1, 'areas': 1})
+        e2 = pd.concat(trans.partition.e2_rows)  # keyed E2 evidence = complete parent validation rows
+        self.assertEqual(sorted(e2['row_id']), [5, 6])
+        self.assertEqual(sorted(e2.loc[e2.side == 1, 'y_child']), [2])
         from src.helper.helper import get_X_branch_id_by_group
         routed = get_X_branch_id_by_group(groups, s_branch)
         np.testing.assert_array_equal(routed, assigned)   # row branch == spatial routing for every row
@@ -715,10 +718,13 @@ class ConsensusAndBoundaries(unittest.TestCase):
         self.assertEqual(sched['earliest_window_lower_bound'], '2010-03')  # 2019-02/H12 gate: V=2015-02
 
 
-class EndToEnd(unittest.TestCase):
+class ConsensusPlumbing(unittest.TestCase):
     def test_candidates_consensus_gated_fold_and_scores(self):
-        """Production chain on a synthetic panel: Stage 1 GeoRF.fit from one installed root
-        -> build_consensus -> gated Stage 3 fold -> keyed fixed-four scores."""
+        """Plumbing fixture on a synthetic panel: Stage 1 GeoRF.fit from one installed root
+        -> build_consensus -> gated Stage 3 fold -> keyed fixed-four scores. One candidate's
+        E3 score is SET above its base so that a learned map exists; this is not producer
+        evidence. The producer-created integration evidence is tests/integration_minirun.py
+        (the full production chain incl. report and verifier on a real-data area subset)."""
         import os
         from src.model.GeoRF import GeoRF
         from src.utils.split import group_aware_train_val_split

@@ -158,6 +158,10 @@ def runtime_identity() -> dict:
     for name in PINNED_RUNTIME:
         if name != "python":
             record[name] = version(name)
+    import xgboost
+    build = xgboost.build_info()
+    record["xgboost_build"] = {k: build[k] for k in sorted(build) if k != "libxgboost"}
+    record["xgboost_library_sha256"] = sha256(Path(build["libxgboost"]))
     drift = {k: (record[k], v) for k, v in PINNED_RUNTIME.items() if record[k] != v}
     record["matches_tested_environment"] = not drift
     if drift:
