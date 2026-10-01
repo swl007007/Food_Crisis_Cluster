@@ -123,3 +123,25 @@ Remaining 159 roots launched with `--workers 6` (completed roots skipped through
 - **Code 87513eb** (D26 Stage 1): `fourclass.crisis*` (collapse, exact crisis-positive F1, single-column crisis scan masses, `endpoint_exact`); E1 `get_class_wise_stat` crisis column; E2 `select_macro_children(score=endpoint_exact)` on complete parent keys, families unchanged; E3 `score/score_base` = crisis F1 (also the E4 weight input), fixed-four secondary; per-candidate `validation_predictions.csv.gz` (root vs final on all E2 rows); `gscreen --reuse-gscreen-from` (no refit; refuses unless snapshots/dev baselines/schedule hashes are identical and the source predictions match their record); Stage 2/3 phases refuse to run while `DOWNSTREAM_ALIGNED=False`; `scripts/stage1_diagnostics.py`. Tests 43/43 OK (new `CrisisEndpoint`).
 - **D26 run `geoxgb-d26-20261001`** (prepared at 87513eb, full 22-country data, full pinned geometry). G re-selected by development crisis F1 from `geoxgb-v1-20261001/gscreen/predictions.csv.gz` (identity-checked, 9 s, no refit): **H4 G1 .633937 (7102/11203), H8 G4 .539702 (3147/5831), H12 G2 .493830 (4522/9157)** — identical to the supervisor's independent rescoring. Persistence crisis F1 on the same development keys: .640985 / .542276 / .567719; expert .682002 / .609611 (supervisor figures).
 - Bounded Stage 1 launched (4 workers): 12 roots = {2018-02, 2020-10} × H{4,8,12} × {r80, r50} × seed 42 → 48 candidates; log `C:\Users\swl00\geoxgb_runs\d26-stage1-bounded.log`.
+
+### Verification debt logged for the next safe edit boundary (not result-affecting; supervisor scoped checks at 87513eb)
+
+- `reused_gscreen_predictions` should itself pin source G-config/schema/runtime provenance and require all six development targets per H × G (the current source was independently verified complete: 390,408 rows, 12 exact scores/counts/6 folds, producer 268c17b).
+- `acceptance.candidate_frame` carries crisis scores under the legacy ledger names `macro_f1`/`macro_f1_base`; rename/tag explicitly when downstream is aligned (Stage 2/3 currently blocked by `DOWNSTREAM_ALIGNED=False`).
+- A native trellis-check covering D26 is required after the bounded diagnostics (the earlier check covered 76eee51 only).
+- Time-block independent confirmation was raised with the user as a possible next overfit contrast; not adopted as a requirement.
+
+## 2026-10-01 — D26 bounded Stage 1 result (12 roots / 48 candidates, full data and geometry, code 87513eb)
+
+All 12 roots completed (117–185 s each, 4 workers); no native crash. `scripts/stage1_diagnostics.py` → `geoxgb-d26-20261001/stage1_diagnostics/` (completion hashes and code identity checked; recorded E3 recomputed). E2 = final partition vs root, crisis F1, on all of the candidate's validation rows; E3 = same on the held-out target month; table script `research/d26_stage1_bounded_table.py`.
+
+| family / L | n | split | mean terminals | mean child fits | mean E2 crisis | mean E3 crisis | E3 > 0 | E2>0 & E3<0 | mean E3 fixed-four |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| gt0 / L1 | 12 | 12 | 15.4 | 36.2 | +0.0269 | −0.0026 | 5 | 7 | −0.0009 |
+| gt0 / L2 | 12 | 12 | 5.8 | 9.5 | +0.0284 | −0.0051 | 4 | 8 | +0.0082 |
+| gt001 / L1 | 12 | 1 | 1.3 | 3.2 | +0.0018 | −0.0005 | 0 | 1 | −0.0001 |
+| gt001 / L2 | 12 | 6 | 2.8 | 4.7 | +0.0151 | −0.0041 | 1 | 5 | +0.0018 |
+
+By ratio: r50 E2 +0.0190 / E3 −0.0048 (13 of 17 splits E2>0 & E3<0); r80 +0.0171 / −0.0013 (8 of 14). By target: 2018-02 E3 +0.0002, 2020-10 E3 −0.0064 (14 E2>0 & E3<0). By H: 4 −0.0045, 8 +0.0014, 12 −0.0062. Overall: 31/48 candidates split, every split has E2>0, only 10/48 E3>0, 21/31 split candidates E2>0 & E3<0; Spearman(E2, E3 crisis) = −0.40; mean E2 +0.0181 vs E3 −0.0031 (crisis). Pooled target confusions: partitions do not improve crisis F1 over their roots (e.g. gt0/L1 0.5379 vs root 0.5397) but raise the rare-class F1 a little (four-class class-4 F1 0.264–0.273 vs root 0.256).
+
+Scientific reading (development, bounded; not a final result): Stage 1 partition gains on the within-area random validation rows do not transfer to the next held-out target month — the in-sample E2 improvement is consistently positive (adaptive reuse of the same validation rows for E1 scan and E2 acceptance), the out-of-time E3 change is ≈0 to negative and anti-correlated with E2. The strict gt001 family mostly keeps the root (little damage, little structure); gt0 builds deep partitions (L1 up to 21 terminals) that overfit. This is evidence for the overfitting concern, not yet a decision: no design change is made; independent temporal confirmation remains a proposed bounded comparison for the user. Stopped for review: no full 648, Stage 2 or Stage 3 launched.
