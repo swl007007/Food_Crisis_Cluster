@@ -2,9 +2,9 @@
 
 python -B tests/integration_minirun.py --out C:\\...\\geoxgb_runs\\minirun-<id> [--countries MW,TD,ML,SS]
 
-Builds a source root holding the pinned panel / FEWS NET / coordinates / shapefile rows
-of a few whole countries (every month of every selected area, so the panel stays a
-complete scaffold), runs the production preparation with the source pins re-pointed to
+Builds a source root holding the pinned panel / FEWS NET / coordinate rows of a few whole
+countries (every month of every selected area, so the panel stays a complete scaffold)
+and the unchanged full pinned shapefile, runs the production preparation with the source pins re-pointed to
 that subset (the only patched step), then every production phase through its CLI —
 gscreen, Stage 1 (all 162 roots), maps, develop, select, oldmap, freeze, final — and the
 report and the verifier. No score, label or record is fabricated anywhere: the chain is
@@ -33,7 +33,6 @@ def sha256(path: Path) -> str:
 
 
 def build_sources(source_root: Path, target: Path, countries) -> dict:
-    import geopandas as gpd
     target.mkdir(parents=True)
     panel_rel, fews_rel, coord_rel, shp_rel = (prep.PINNED_SOURCES[k][0] for k in ("panel", "fewsnet", "coordinates", "shapefile"))
     panel = pd.read_csv(source_root / panel_rel, low_memory=False)
@@ -44,10 +43,17 @@ def build_sources(source_root: Path, target: Path, countries) -> dict:
     fews[fews["admin_code"].isin(keep) | fews["admin_code"].isna()].to_csv(target / fews_rel, index=False)
     coords = pd.read_csv(source_root / coord_rel)
     coords[coords["FEWSNET_admin_code"].isin(keep)].to_csv(target / coord_rel, index=False)
-    shapes = gpd.read_file(source_root / shp_rel)
+    # The FULL pinned shapefile is copied unchanged (pin kept): the inherited
+    # build_geometry reads adjacency_utils' {admin_code: row index} mapping inverted, which
+    # is exact only when admin_code == row index — true for the full file, false for a
+    # row subset (minirun-1/2 limitation: 198 of 370 subset areas lost adjacency).
     (target / shp_rel).parent.mkdir(parents=True, exist_ok=True)
-    shapes[shapes["admin_code"].isin(keep)].to_file(target / shp_rel, encoding="utf-8")
+    for suffix in (".shp",) + prep.SHAPEFILE_SIDECARS:
+        src = (source_root / shp_rel).with_suffix(suffix)
+        (target / shp_rel).with_suffix(suffix).write_bytes(src.read_bytes())
     pins = {k: (rel, sha256(target / rel)) for k, (rel, _) in prep.PINNED_SOURCES.items()}
+    if pins["shapefile"][1] != prep.PINNED_SOURCES["shapefile"][1]:
+        raise RuntimeError("fixture shapefile is not the pinned full shapefile")
     return {"areas": len(keep), "countries": list(countries), "pins": pins}
 
 

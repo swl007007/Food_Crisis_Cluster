@@ -62,3 +62,56 @@ No product code fork or model training has run at this initial checkpoint. Execu
 - Fix (no narrowing, no weakened check): v7 pools are rebuilt with v7's own committed `prepared/geometry/FEWSNET_admin_code_lat_lon.csv`, accepted only if its SHA-256 equals the pinned full coordinate source `a06be858…` (verified byte-identical, 5,718 areas); XGB pools keep the run geometry; each learned map records its geometry hash and the verifier checks it per map.
 - Supervisor follow-up (e6881be) applied: (1) **actual verifier bug** — CSV branch ids `00/01/10/11` were read as numbers, so Stage 1 replay would have loaded `xgb_0` for `xgb_00`; reads now keep string ids incl. root `''` (minirun-1 artifacts confirmed the all-numeric case); (2) E2 rows bound to the actual rebuilt validation rows (row id, key, truth), sides restricted to {0,1}, eligibility from recomputed child support and ancestry-derived path rounds, child fit keys vs fit log, root support status and root fit keys recomputed for every root incl. skipped ones, membership month/class compared; (3) `accept_consensus`: `no_prior_candidates` iff the ledger/expected pool is empty, persisted ledger rows == expected pool; (4) gate pair population must equal planned dates × present clusters × labelled keys before rescoring (map-less arms: none); (5) local booster records == clusters routed local, replay by routes; (6) saved D3 deltas compared. Classification: (1) a verifier defect that would have failed/mis-checked replay, (2)–(6) evidence gaps; no produced number changes.
 - Tests: 39 OK (new `VerifierBoundaries`: leading-zero ids, E2 side/truth/threshold, forged no-prior route, extra future gate pairs, local-record/route mismatch). Each new boundary test fails against the e6881be verifier/`accept_consensus` (mutation check on a scratch package copy). The supervisor independently ran the drafted E2 check on 24 genuine minirun-1 candidates with no problems.
+
+## 2026-10-01 — Authoritative run `geoxgb-v1-20261001` (code 268c17b)
+
+- Run directory (outside Dropbox): `C:\Users\swl00\geoxgb_runs\geoxgb-v1-20261001`. Prepared at 268c17b: `identity.json` git_head 268c17b, `code_equals_git_head=true`; runtime Python 3.12.10 / numpy 2.2.6 / pandas 2.2.3 / xgboost 3.0.0 (library SHA-256 019fb46c…); schedule 162 roots / 648 candidates / 27 labelled Stage 1 targets / 30 labelled final folds; earliest window bound 2010-03. Started while minirun-2 (same code) was still running; if minirun-2 forces a code change, this run is superseded and kept as evidence.
+- **G screening (development only)**, 625 s, main-cohort macro-F1 over the six development folds (exact counts):
+
+| H | G1 | G2 | G3 | G4 | selected |
+|---|---:|---:|---:|---:|---|
+| 4 | 0.58489 | 0.58462 | **0.60561** | 0.59699 | G3 (depth 4, 200 rounds) |
+| 8 | 0.49403 | **0.49685** | 0.49162 | 0.49312 | G2 (depth 3, 400 rounds) |
+| 12 | 0.48388 | **0.49900** | 0.49210 | 0.49801 | G2 (depth 3, 400 rounds) |
+
+  Main cohorts n = 32,083 / 32,232 / 32,109. Selection is conditional on the whole development period (D24 disclosure).
+- Stage 1 timing sample launched sequentially (`--workers 1`): roots `h4_2018-02_G3_r80_s42`, `h8_2018-02_G2_r80_s42`, `h12_2018-02_G2_r80_s42` (each root also produces its L2 and gt0 candidates, all within the 648 budget); log `C:\Users\swl00\geoxgb_runs\v1-stage1-timing.log`.
+
+### Development-only diagnostic: selected pooled G vs persistence/expert (main cohort, six dev folds)
+
+Script `research/dev_pooled_class_diagnostic.py` (read-only, from `gscreen/predictions.csv.gz` + `dev_baselines.csv`). Supervisor independently recomputed the 12 G scores and the baselines (persistence .6543/.5818/.5812, expert .6700/.6185) on the same keys.
+
+| H | arm | macro-F1 | F1 classes 1/2/3/4或5 | 4或5 recall | 4或5 predicted share (truth 0.67%) |
+|---|---|---:|---|---:|---:|
+| 4 | pooled G3 | 0.6056 | .866/.685/.601/**.270** | .168 | 0.2% |
+| 4 | persistence | 0.6543 | .854/.656/.613/.494 | .486 | 0.6% |
+| 4 | expert | 0.6700 | .879/.692/.654/.455 | .537 | 0.9% |
+| 8 | pooled G2 | 0.4969 | .836/.622/.511/**.018** | .009 | 0.0% |
+| 8 | persistence | 0.5818 | .824/.578/.513/.413 | .393 | 0.6% |
+| 8 | expert | 0.6185 | .857/.648/.567/.402 | .519 | 1.0% |
+| 12 | pooled G2 | 0.4990 | .827/.655/.458/**.056** | .033 | 0.1% |
+| 12 | persistence | 0.5812 | .828/.596/.531/.370 | .374 | 0.7% |
+
+Reading: on classes 1–3 pooled XGB matches or beats persistence (where they disagree pooled is correct 53.5/49.9/49.7% vs persistence 38.7/39.6/42.2%). The macro-F1 deficit is essentially the rare class: (F1₄ persistence − F1₄ pooled)/4 = 0.056/0.099/0.079 vs total gaps 0.049/0.085/0.082. Unweighted softprob argmax almost never predicts 4或5 (214 of ~32k keys). Class/sample reweighting, thresholds and pseudo rows are excluded by the frozen design (D14, plan §2), so none is added; whether the shared local increments recover the rare class is what the 24 development schemes measure. Development evidence only; no final data used; no change to the frozen grid.
+
+### Stage 1 timing sample (sequential, `--workers 1`)
+
+| root | rows fit / val / target | root fit s | candidate search s (L1 gt0, L1 gt001, L2 gt0, L2 gt001) | total s |
+|---|---|---:|---|---:|
+| h4_2018-02_G3_r80_s42 | 65,195 / 20,077 / 5,364 | 12.7 | 104.2, 6.2, 43.7, 20.6 | 201.5 |
+| h8_2018-02_G2_r80_s42 | 69,546 / 20,075 / 5,364 | 7.6 | 72.9, 4.2, 26.9, 15.7 | 137.6 |
+| h12_2018-02_G2_r80_s42 | 69,384 / 19,876 / 5,364 | 11.4 | 73.7, 4.1, 34.2, 4.9 | 140.6 |
+
+Checkpoints for these 12 candidates: 343 MB (3–49 boosters each; gt0/L1 searches split deepest, up to 25 terminals). Projection for the remaining 159 roots: ~70–90 min with 6 workers, ~18.5 GB checkpoints (388 GB free) → within resources, full budget kept. E3 of the sample: gt001 candidates mostly root-only (n_terminal 1), gt0 splits more; E3 gains small/mixed (e.g. h4 L2 gt001 0.6225 vs root 0.6214; h12 L2 gt0 0.4593 vs 0.4390).
+Remaining 159 roots launched with `--workers 6` (completed roots skipped through their completion records); log `C:\Users\swl00\geoxgb_runs\v1-stage1.log`.
+
+### Integration-fixture geometry limitation (inherited mapping inversion; dormant in the full run)
+
+- `src/adjacency/adjacency_utils.py:68` returns `polygon_id_mapping = {admin_code: row_index}`; the inherited, byte-identical-to-mother `scripts/prepare_fourclass.py:build_geometry` reads it inverted (`code_to_adj`, and `id_mapping[adj_idx]`). The two inversions cancel exactly when `admin_code == row index`. Verified: the full pinned shapefile has `admin_code == row index` for all 5,718 rows and the authoritative run's cached mapping is the identity (0 mismatches; `geometry.json` 5,716/5,716 areas in shapefile) → **authoritative geometry unaffected; producer code not changed** (a change would rebind the run).
+- minirun-1/2 subset the shapefile rows (370 polygons) → only 172 areas (those with code < 370) found, 200 isolated; supervisor confirmed 198/370 mismatches in minirun-2's cached mapping, and its Stage 2 sample put all MW and ML areas as 1-NN outliers. Consequently the mini-runs' Stage 1 contiguity and Stage 2 geography are degenerate: they are producer/consumer plumbing evidence only, never scientific evidence about partition viability or overfitting.
+- Fixture remedy (tests only, outside the producer code identity): `tests/integration_minirun.py` now copies the full pinned shapefile unchanged (pin asserted) and subsets only panel / FEWS NET / coordinates, preserving the ID/index alignment of the authoritative input.
+
+### Supervisor read-only diagnostics recorded (not endpoints, no retuning)
+
+- Binary crisis (phase ≥3) rescoring of the selected pooled G on the development main cohort: argmax-collapse crisis F1 H4 .6281 vs persistence .6410 / expert .6820; H8 .5371 vs .5423 / .6096; H12 .4938 vs persistence .5677. P3+P4或5 ≥ .5 rule: .6195 / .5293 / .4740 (lower). Endpoint stays fixed-four macro-F1 (D2/D3).
+- Stage 1 E2-vs-E3 (mini-runs, degenerate geography, plumbing only): 319 candidates with final E2 improvement, 133 of them worse on E3 (~42%); mean E2 gain .00499 vs E3 gain .00028. Authoritative timing sample (12 candidates): mean E2 +.0133 / E3 −.0024 — too few for conclusions; the full 648-candidate E2/E3 comparison will be reported from the authoritative run.
