@@ -163,5 +163,11 @@ Scientific reading (development, bounded; not a final result): Stage 1 partition
 
 - Covered: all 48 candidates of `geoxgb-d26-20261001`; 1,463,620 E2 prediction rows and 258,984 E3 rows (repeated candidate evaluations, not unique samples). Exact-`Fraction` gains reproduce all four family/L means and the counts 31 E2-positive / 10 E3-positive / 21 E3-negative. All E3 admin keys, truth and root predictions match the root exports; partition codes equal the probability argmax. All 48 E2 key+truth sets exactly equal the membership validation rows, with no fitting-row overlap.
 - **Not covered:** a full checkpoint replay, or a `verify_fourclass.py` pass (which requires the complete 648-candidate Stage 1). This is bounded evidence verification only.
-- **Correction (temporal support):** the actual non-held-out membership of these 12 roots spans **15 / 17 / 18 distinct historical label months** (H4 / H8 / H12; per-area medians 15 / 17 / 18, some areas only 1). The earlier "≈14 label dates" came from the prior support inventory and is not exact for this run. Local temporal support remains sparse and serially correlated.
+- **Correction (temporal support, corrected again):** distinct historical label months in the non-held-out membership are NOT 15/17/18 by horizon. All 2020-10 roots have **15**; the 2018-02 roots have **17** (H4) and **18** (H8, H12). Some areas have only 1. The earlier "≈14 label dates" came from the prior support inventory and is not exact for this run. Local temporal support remains sparse and serially correlated.
 - No new experiment until the user's scientific review of Stage 1.
+
+### Proposed (NOT adopted, NOT implemented) minimal time-block comparison — feasibility only
+
+- Supervisor read-only feasibility for holding out the latest 3 label months of each Stage 1 root window as the E1/E2 validation block: across the six H × target pools, 12–15 earlier fitting dates and 61,424–73,887 fitting rows remain; the validation block has 15,677–15,999 rows with 2,192–3,169 crisis positives at root level. Local (child-side) eligibility under the frozen support floors is unproven.
+- Limits: this is not an independent A/B/C confirmation — E1 scan and E2 acceptance would still reuse the held-out block, and E3 remains the generalisation check.
+- Awaiting the user's choice; nothing implemented, no new experiment, audit not closed.
