@@ -1,0 +1,35 @@
+{
+  "id": "exogenous-transition-forecast-design",
+  "name": "exogenous-transition-forecast-design",
+  "title": "Exogenous food-crisis transition forecasting: scope and evaluation design",
+  "description": "Planning only: exclude phase-derived history from model fitting, define onset/transition evaluation and defensible country scope; reuse prior evidence; brainstorm then spec then grill.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "swl007007",
+  "assignee": "swl007007",
+  "createdAt": "2026-10-02",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "planning_stage": "brainstorm",
+    "supersedes": ".trellis/tasks/10-01-geoxgb-shared-parameter-design",
+    "execution_authorized": false,
+    "user_confirmed": [
+      "non-IPC covariate lags allowed",
+      "primary claim: regions without IPC history",
+      "universal superiority to expert/persistence not required"
+    ]
+  }
+}
