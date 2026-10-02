@@ -1,14 +1,16 @@
-# D52 / A26: independent binary-objective root diagnostic (PROPOSAL — pending user decision; not approved)
+# D52 / A26: independent binary-objective root diagnostic (approved by the user; diagnostic only)
 
-2026-10-02. Prepared by the executor at the supervisor's request under the user's delegated Stage 1 research authority. **This is a proposal only.** It is not approved, not in any executable manifest, and nothing is implemented, trained or scored until the user answers the gate question below and the supervisor then releases a run.
+2026-10-02. Prepared by the executor at the supervisor's request under the user's delegated Stage 1 research authority, first committed as a proposal pending the user's decision (`1108cc9`).
 
-## 0. Gate question for the user
+**User decision (2026-10-02):** the user answered "可以" to executing the committed proposal. This authorises one independent binary-objective diagnostic arm across the fixed 21 D34 roots. It is **not** adoption and does **not** change the four-class main model, endpoint, contract or final criterion. The design below is frozen as approved; real fits still wait for the planning commit, native implement/check, producer commit, supervisor code review and a separate supervisor run release. Stage 3 stays isolated.
+
+## 0. Gate question for the user (answered: 可以)
 
 D26 (`prd.md:137`) records the user's instruction "可以保留四分类概率但按照二分类评估" (keep the four-class probabilities, evaluate as binary), and fixes native four-class XGB probabilities (`multi:softprob`, `num_class=4`, fixed class axis) as the model. R11 (`prd.md:23`) and A11 (`prd.md:84`) keep a fixed four-class output axis.
 
 **Question:** do you permit one independent, diagnostic-only arm trained with a `binary:logistic` objective (target: original four-class code ≥ 2) across the fixed 21 D34 roots (one binary fit per root), alongside, and without changing, the four-class main contract?
-- **Yes:** the plan below is finalised for supervisor review, then native implement/check, producer commit and a single supervisor-released run.
-- **No:** D52 is dropped; nothing changes.
+- **Yes (the user's answer):** the plan below is frozen, then native implement/check, producer commit and a single supervisor-released run.
+- **No:** D52 would have been dropped (historical option).
 
 Either way the four-class package, schema, models, probabilities, endpoint (four-class argmax → code ≥ 2) and final criterion stay intact. Any later move to a binary main model would need its own separate approval.
 
@@ -22,7 +24,7 @@ Every root in D26–D51 is a four-class `multi:softprob` booster; `binary:logist
 - No prediction is made in advance about the direction of the crisis-call share.
 - Exposed, overlapping development folds; no significance tests or success thresholds.
 
-## 2. Frozen design (if approved)
+## 2. Frozen design (approved)
 
 - **Pairs:** the 21 D34 pairs, H ∈ {4, 8, 12} × T ∈ {2018-06, 2018-10, 2019-02, 2019-06, 2019-10, 2020-02, 2020-06}.
 - **Unchanged:** the full 162 features; all original FIT rows, order and labels (including missing-origin rows); W59; G = {4: G1, 8: G4, 12: G2} with rounds 200 / 400 / 400; seed and all other G parameters; unweighted; no margins; no local trees.
@@ -65,7 +67,7 @@ Every root in D26–D51 is a four-class `multi:softprob` booster; `binary:logist
 
 ## 5. Evidence and order
 
-- **Script (if approved):** one standalone task-research runner, `research/d52_binary_root.py`, reusing the D34 acceptance, D37 gate/rebuild/persistence and D46 scoring helpers where they apply. Exact bytes committed before the run; script git blob equal to HEAD.
+- **Script:** one standalone task-research runner, `research/d52_binary_root.py`, reusing the D34 acceptance, D37 gate/rebuild/persistence and D46 scoring helpers where they apply. Exact bytes committed before the run; script git blob equal to HEAD.
 - **External outputs** (frozen directory `C:\Users\swl00\geoxgb_runs\geoxgb-d52-binary-root-20261002`, must not pre-exist): binary UBJs and fit records (params, initial score, prediction shape), keyed binary p and original probabilities for FIT, C and E3, labels and hashes, gate/reload records, identity, log and artifact hashes, compact summary.
-- **Order:** user decision on §0 → (if yes) supervisor review of this plan → planning commit → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single run (≤ 21 fits) → factual report → independent supervisor check → stop.
+- **Order:** user decision on §0 (answered "可以") → planning commit → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single run (≤ 21 fits) → factual report → independent supervisor check → stop.
 - **Excluded:** ratio, capacity or threshold grids; final data, Stage 2/3, maps, adoption; no automatic D53.
