@@ -200,4 +200,4 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 ## 22. D42 old-vs-current map common refit (approved)
 
 - [x] Supervisor spec d42-map-transfer-plan.md; executor read-only review (schedule legality, 3-pair region-count recount, support/meets reuse, D35 global20 compatibility); four arms only.
-- [ ] Planning commit; native trellis-implement (`scripts/stage1_map_transfer.py` + focused tests in `tests/test_baseline.py`); native trellis-check; tests + producer commit; fresh run `C:\Users\swl00\geoxgb_runs\geoxgb-d42-map-transfer-20261002` (12 pairs, ≤175 regional L1 fits, zero root/G/global20 fits); factual docs; stop for supervisor independent check.
+- [x] Planning commit 3cd4bc7; native trellis-implement (~7.3 min, incl. supervisor stop-on-failed-gate fix) and native trellis-check (~4.7 min, no result-affecting finding); producer commit 65b0733 (106 tests OK, exit 0); run `C:\Users\swl00\geoxgb_runs\geoxgb-d42-map-transfer-20261002` (12/12 gates, 175 regional L1 fits, 133 s; region support/digests equal the supervisor input reference); factual docs; stopped for supervisor independent check.
