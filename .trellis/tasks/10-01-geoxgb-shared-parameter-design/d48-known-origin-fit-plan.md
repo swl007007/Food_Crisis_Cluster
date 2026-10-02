@@ -1,4 +1,4 @@
-# D48 / A22: known-origin FIT restriction contrast (approved)
+# D48 / A22: known-origin FIT restriction contrast (completed; not adopted; supervisor verification passed)
 
 2026-10-02. Supervisor decision under the user's delegated Stage 1 research authority. Approved after supervisor review with two wording corrections (row-selection basis, H12 extent); the planning commit precedes any code or fits. Same active task, executor, audit run and base.
 - **Endpoint:** the crisis-F1 endpoint is primary and unchanged.
@@ -98,3 +98,11 @@ It is not an identifiable test of missingness causality. D38 showed that exact-o
 - **Identity:** frozen runtime, script and package identity (git HEAD), and data hashes.
 - **Process:** native implement and native check (each under 10 minutes) → producer commit → independent supervisor recheck → supervisor run release → a single run into a fresh external directory.
 - **Afterwards:** stop after D48.
+
+## 7. Result (2026-10-02)
+
+- **Producer and run:** producer `2326483` (script blob `86264d86…`; selftest OK; 116 package tests OK). Run `C:\Users\swl00\geoxgb_runs\geoxgb-d48-known-origin-fit-20261002`: exit 0 in 185 s, exactly 21 known-origin fits, all gates passed, exact reloads, no S/C/E3 overlap. Executor factual record `9a1aa11`.
+- **Supervisor verification:** PASS (`research/d48_supervisor_check.py` / `_results.json`; 3,319 checks, 216 metric cells, 1,081,803 origin-known rows).
+- **Findings:** [research/d48-known-origin-fit-findings.md](research/d48-known-origin-fit-findings.md).
+- **Decision:** the known-origin FIT restriction is not adopted, and no further era/availability pool sequence follows. Origin-known E3 crisis F1 original / known / persistence: H4 .629050/.620930/.651697, H8 .533375/.519291/.555614, H12 .478355/.464853/.549808 — below both at every H, while FIT-known and C-known improve. Composition and reduced support are confounded; no causal claim about missing-origin rows.
+- **Stage 1** remains unresolved, and no D49 starts automatically; a finite checkpoint comes first.
