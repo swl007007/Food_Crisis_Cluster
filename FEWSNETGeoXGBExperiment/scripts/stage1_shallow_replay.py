@@ -123,12 +123,21 @@ def metrics(truth, pred) -> dict:
 
 # ---------------------------------------------------------------- data reconstruction
 
-def rebuild(run: Path, root: dict):
-    """Producer data of one rootconf root (main_model_GF.main semantics)."""
+def rebuild(run: Path, root: dict, max_month: int | None = None, with_fitting: bool = False):
+    """Producer data of one rootconf root (main_model_GF.main semantics).
+
+    Optional (D35; defaults keep the D33 behaviour unchanged): ``max_month`` reads only snapshot
+    rows with ``target_month <= max_month`` (month index) through a Parquet filter, keeping their
+    relative order; ``with_fitting`` also returns the fitting rows ("FIT") and the producer's
+    membership frame ("membership": area, target_month, role, class_code in producer order)."""
     horizon = int(root["horizon"])
     term = pd.Period(root["target_month"], freq="M")
     features = load_schema(SCHEMA)["ordered_features"]
-    snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")
+    if max_month is None:
+        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet")
+    else:
+        snap = pd.read_parquet(run / "prepared" / f"snapshot_h{horizon}.parquet",
+                               filters=[("target_month", "<=", int(max_month))])
     if not (snap["horizon"] == horizon).all() or list(snap.columns[-len(features):]) != features:
         raise GateError("snapshot horizon / feature order differs from the producer contract")
     snap = snap.sort_values(["area", "target_month"]).reset_index(drop=True)
@@ -153,7 +162,18 @@ def rebuild(run: Path, root: dict):
     conf[orig_val[confirmation_split(gtrain[orig_val], mtrain[orig_val], plan.CONFIRMATION_SEED) == 1]] = True
     s_rows = (x_set == 1) & ~conf
     keep = ~conf
-    return {
+    extra = {}
+    if with_fitting:
+        fit = x_set == 0
+        roles = np.where(conf, "confirmation", np.where(x_set == 1, "validation", "fitting"))
+        extra = {"FIT": (Xtrain[fit], ytrain[fit], gtrain[fit], mtrain[fit]),
+                 "membership": pd.DataFrame({
+                     "area": np.concatenate([gtrain, gtest]),
+                     "target_month": month_label(np.concatenate([mtrain, months[idx_test]])),
+                     "role": np.concatenate([roles, np.full(len(gtest), "heldout_target")]),
+                     "class_code": np.concatenate([ytrain, ytest])}),
+                 "window": (int(mtrain.min()), int(mtrain.max()), o_index)}
+    return {**extra,
         "S": (Xtrain[s_rows], ytrain[s_rows], gtrain[s_rows], month_label(mtrain[s_rows])),
         "C": (Xtrain[conf], ytrain[conf], gtrain[conf], month_label(mtrain[conf])),
         "E3": (Xtest, ytest, gtest, np.array([str(term)] * len(gtest))),

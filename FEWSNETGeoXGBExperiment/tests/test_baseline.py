@@ -2125,6 +2125,80 @@ class E1PairReporter(unittest.TestCase):
             self.assertNotIn('e4_weight', row)
             self.assertEqual(row['e1hard_root_scan_n_groups'] > 0, True)
 
+class GlobalIncrementControl(unittest.TestCase):
+    """D35/A10: fitting pool excludes S/C/target, held-out labels cannot move the +20 continuation."""
+
+    def _run(self, tmp, permute_held=False):
+        from scripts import stage1_shallow_replay as sr
+        features = ff.load_schema(sr.SCHEMA)['ordered_features']
+        rng = np.random.default_rng(0)
+        areas, months = np.arange(40), np.arange(2013 * 12, 2019 * 12)   # 2013-01 .. 2018-12
+        a, m = np.repeat(areas, len(months)), np.tile(months, len(areas))
+        snap = pd.DataFrame({'area': a, 'target_month': m, 'horizon': 4,
+                             'class_code': rng.integers(0, 4, len(a))})
+        snap = pd.concat([snap, pd.DataFrame(rng.normal(size=(len(a), len(features))), columns=features)], axis=1)
+        root = {'horizon': 4, 'target_month': '2018-06', 'ratio': 'r80', 'split_seed': 42}
+        run = Path(tmp) / 'run'
+        (run / 'prepared').mkdir(parents=True, exist_ok=True)
+        path = run / 'prepared' / 'snapshot_h4.parquet'
+        snap.to_parquet(path, index=False)
+        data = sr.rebuild(run, root, max_month=2018 * 12 + 7, with_fitting=True)
+        if permute_held:
+            held = set()
+            for part in ('S', 'C', 'E3'):
+                held |= self.gi.key_set(data[part][2], data[part][3])
+            keys = list(zip(snap['area'].tolist(), ff.month_label(snap['target_month'])))
+            mask = np.array([k in held for k in keys])
+            snap.loc[mask, 'class_code'] = (snap.loc[mask, 'class_code'] + 1) % 4
+            snap.to_parquet(path, index=False)
+            data = sr.rebuild(run, root, max_month=2018 * 12 + 7, with_fitting=True)
+        return data
+
+    def setUp(self):
+        from scripts import stage1_global_increment as gi
+        self.gi = gi
+
+    def test_fitting_pool_and_label_permutation_and_prefix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self._run(tmp)
+            Xf, yf, gf, mf = data['FIT']
+            fit = self.gi.key_set(gf, ff.month_label(mf))
+            for part in ('S', 'C', 'E3'):
+                self.assertTrue(len(data[part][1]) > 0)
+                self.assertFalse(fit & self.gi.key_set(data[part][2], data[part][3]), part)
+            lo, hi, o = data['window']
+            self.assertTrue(lo >= o - plan.WINDOW and hi < o)
+            self.assertTrue((data['membership']['target_month'] <= '2018-08').all())
+            root, _ = nx.fit_global(Xf, yf, SMALL_G['G1'])
+            child, rec = self.gi.fit_global_plus20(root, data)
+            self.assertEqual(rec['rounds_added'], 20)
+            self.assertEqual(child.num_boosted_rounds(), root.num_boosted_rounds() + 20)
+            self.assertEqual(rec['child_prefix_structure_sha256'], nx.prefix_identity(root)['sha256'])
+            self.assertEqual(rec['rows'], len(yf))
+        with tempfile.TemporaryDirectory() as tmp:
+            data2 = self._run(tmp, permute_held=True)
+            self.assertTrue((data2['FIT'][1] == yf).all())
+            self.assertFalse((data2['C'][1] == data['C'][1]).all())        # held-out labels did change
+            child2, _ = self.gi.fit_global_plus20(nx.from_raw(nx.raw(root)), data2)
+            self.assertEqual(nx.raw(child2), nx.raw(child))
+
+    def test_strata_scoring_with_empty_stratum(self):
+        frame = pd.DataFrame({'truth': [2, 0, 3, 1], 'y_root': [0, 0, 3, 1], 'y_global20': [2, 0, 3, 2],
+                              'y_hard_local': [2, 2, 3, 1], 'y_brier_local': [2, 0, 0, 1],
+                              'search_rows': [1, 2, 1, 3]})
+        frame['stratum'] = np.where(frame['search_rows'] > 0, 'search_rows>0', 'search_rows==0')
+        out = self.gi.score_part(frame)
+        self.assertEqual(out['strata']['search_rows==0'], {'n': 0, 'status': 'no_data'})
+        self.assertEqual(out['all']['n'], 4)
+        self.assertEqual(Fraction(out['all']['global20']['crisis_f1_exact']), Fraction(4, 5))
+        self.assertEqual(Fraction(out['all']['root']['crisis_f1_exact']), Fraction(2, 3))
+        self.assertEqual(Fraction(out['all']['global20_minus_root']['crisis_f1_delta_exact']), Fraction(2, 15))
+        agg = self.gi.aggregate({'a': {'scores': {p: out for p in ('S', 'C', 'E3')}}}, lambda r: True)
+        self.assertEqual(agg['C']['search_rows==0']['folds_with_data'], 0)
+        self.assertEqual(agg['C']['all']['pooled']['global20']['crisis_f1_exact'], '4/5')
+        self.assertAlmostEqual(agg['C']['all']['mean_fold_crisis_f1_delta']['global20_minus_root'], 2 / 15)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess
