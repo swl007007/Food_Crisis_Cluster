@@ -18,7 +18,7 @@
   - **Gates:** all 21 original-root replay gates passed before fitting.
   - **Model checks:** `base_score` `5E-1`, and rounds 200 (H4) / 400 (H8, H12).
   - **Reload:** exact on FIT, C and E3.
-  - **Weights (float32):** crisis 1.733–1.835, non-crisis about 0.917.
+  - **Weights (float32):** crisis 1.733–1.835, non-crisis 0.8665308–0.9172514 across the 21 roots.
   - **Post-hoc ranking:** preserved, with a largest map error of 2.2e-16 and no inversions.
 
 ## Verification
