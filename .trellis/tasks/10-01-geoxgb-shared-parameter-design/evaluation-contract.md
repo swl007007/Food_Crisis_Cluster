@@ -1,6 +1,6 @@
 # Evaluation 分层契约 v1.0
 
-**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7 Stage1分配证据导出已完成（c079b75）（d32-stage1-assignment-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8浅层截断重放已批准实现（d33-shallow-replay-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
 
 D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
 
@@ -174,3 +174,7 @@ E1/E2只消费逐区等量抽取的原S搜索行，比较对象仍为当前父�
 ## D32：空间证据不由预测回退推断
 
 E1–E4及全部评价键不变。区的空间支持只由实际搜索行数决定；root预测回退（无搜索、仅目标、仅C）不构成已学习区域成员。见[d32-stage1-assignment-plan.md](d32-stage1-assignment-plan.md)。
+
+## D33：事后机制诊断的解释边界
+
+root/depth1/full在S/C/E3上同键报告；S自适应复用仅描述，新S概率为重放所得；E3为已暴露开发目标描述；不选择、不新E4，不作泛化或因果分解结论。见[d33-shallow-replay-plan.md](d33-shallow-replay-plan.md)。
