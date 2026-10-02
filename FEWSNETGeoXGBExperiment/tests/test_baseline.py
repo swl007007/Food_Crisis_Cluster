@@ -2831,6 +2831,135 @@ def mt_route(areas, area_map, recs):
     return mt.route(areas, area_map, recs)
 
 
+class ClassWeightRoot(unittest.TestCase):
+    """D46/A20: gate before fit, FIT-label-only 2:1 class weights, post-hoc x2 control."""
+
+    def setUp(self):
+        from scripts import stage1_class_weight_root as cw
+        self.cw = cw
+
+    def test_failed_gate_prevents_any_fit(self):
+        cw = self.cw
+        failed = ({'root': 'r1', 'checks': {'E3_p_pooled': {'mismatches': 1, 'n': 4}}, 'passed': False},
+                  None, None, None)
+        passed = ({'root': 'r1', 'checks': {}, 'passed': True}, None, None, None)
+        cases = ((cw.GateError('membership mismatch'), 'G1'), (failed, 'G1'), (passed, 'G4'))  # last: H4 needs G1
+        for effect, g in cases:
+            with tempfile.TemporaryDirectory() as tmp:
+                stage, out = Path(tmp) / 'stage', Path(tmp) / 'out'
+                out.mkdir()
+                for name in ('r1', 'r2'):
+                    (stage / 'roots' / name).mkdir(parents=True)
+                    (stage / 'roots' / name / 'root.json').write_text(json.dumps(
+                        {'horizon': 4, 'g_config': g, 'target_month': '2018-06'}), encoding='utf-8')
+                roots = {'r1': {'horizon': 4}, 'r2': {'horizon': 4}}
+                cands = {f'{r}_{e}': {'root': r, 'e1': e} for r in roots for e in ('hard_f1', 'brier_crisis')}
+                kw = {'side_effect': effect} if isinstance(effect, Exception) else {'return_value': effect}
+                with patch.object(cw.rr, 'gate_root', **kw) as gate, \
+                        patch.object(cw.nx, 'fit_global') as fit, redirect_stdout(StringIO()):
+                    code, gates, per_root = cw.run_all(Path(tmp) / 'run', stage, out, roots, cands, 'rev', 0, None)
+                self.assertEqual(code, 2)
+                fit.assert_not_called()
+                self.assertEqual(gate.call_count, 1)                    # stopped before r2
+                self.assertEqual(per_root, {})
+                self.assertFalse((out / 'r1').exists())
+                failure = json.loads((out / 'failure.json').read_text(encoding='utf-8'))
+                self.assertEqual((failure['failed_root'], failure['not_attempted']), ('r1', ['r2']))
+                self.assertFalse(json.loads((out / 'gate.json').read_text(encoding='utf-8'))['passed'])
+
+    def test_weights_use_fit_labels_only_and_fit_checks(self):
+        cw = self.cw
+        w = cw.crisis_weights([0, 1, 2, 3, 3])
+        np.testing.assert_array_equal(w['w64'], np.array([1, 1, 2, 2, 2]) / 1.6)
+        helper = GlobalIncrementControl()
+        helper.setUp()
+        runs = []
+        with patch.dict(plan.G_CONFIGS, {'G1': SMALL_G['G1']}):
+            for permute in (False, True):
+                with tempfile.TemporaryDirectory() as tmp:
+                    data = helper._run(tmp, permute_held=permute)
+                b, rec, wt = cw.fit_weighted_root(data, 'G1')
+                cw.check_fit(b, rec, wt, 'G1', len(data['FIT'][1]))
+                runs.append((data, b, rec, wt))
+            (d1, b1, r1, w1), (d2, b2, r2, w2) = runs
+            self.assertFalse((d2['C'][1] == d1['C'][1]).all())          # held-out labels did change
+            for k in range(4):
+                np.testing.assert_array_equal(d1['FIT'][k], d2['FIT'][k])
+            self.assertEqual(w1['w32'].tobytes(), w2['w32'].tobytes())
+            self.assertEqual(nx.raw(b1), nx.raw(b2))
+            y = d1['FIT'][1]
+            self.assertAlmostEqual(w1['w64'].mean(), 1.0, places=14)
+            cv = w1['class_values_float32']
+            self.assertAlmostEqual(cv['crisis'] / cv['noncrisis'], 2.0, places=6)
+            np.testing.assert_array_equal(w1['w32'][y >= 2], np.float32(cv['crisis']))
+            self.assertEqual(r1['sample_weight']['sha256'], hashlib.sha256(w1['w32'].tobytes()).hexdigest())
+            for bad in ({**r1, 'base_score': '6E-1'}, {**r1, 'rounds_total': 7}):
+                with self.assertRaises(RuntimeError):
+                    cw.check_fit(b1, bad, w1, 'G1', len(y))
+            tampered = {**w1, 'w32': w1['w32'] * np.float32(1.5)}
+            with self.assertRaises(RuntimeError):
+                cw.check_fit(b1, r1, tampered, 'G1', len(y))
+        with self.assertRaises(cw.GateError):
+            cw.crisis_weights([0, 1, 1])
+
+    def test_posthoc2x_ratios_and_ranking(self):
+        cw = self.cw
+        rng = np.random.default_rng(2)
+        p = rng.dirichlet(np.ones(4), size=500).astype(np.float32).astype(np.float64)
+        p[:5] = p[5]                                                    # exact ties survive
+        q = cw.posthoc2x(p)
+        np.testing.assert_allclose(q[:, 0] / q[:, 1], p[:, 0] / p[:, 1], rtol=1e-12)
+        np.testing.assert_allclose(q[:, 2] / q[:, 3], p[:, 2] / p[:, 3], rtol=1e-12)
+        np.testing.assert_allclose(q.sum(axis=1), 1.0, atol=1e-15)
+        s = cw.crisis_score(p)
+        np.testing.assert_allclose(cw.crisis_score(q), 2 * s / (1 + s), rtol=0, atol=1e-15)
+        chk = cw.posthoc_rank_check(p, q)
+        self.assertTrue(chk['rank_preserved'])
+        self.assertLess(chk['max_abs_map_error'], 1e-15)
+        bad = q.copy()
+        bad[[10, 11]] = bad[[11, 10]]                                   # perturbed control: order broken
+        with self.assertRaises(cw.GateError):
+            cw.posthoc_rank_check(p, bad)
+        truth = rng.integers(0, 4, 500)
+        ro, rq = cw.ranking(truth, p), cw.ranking(truth, q)
+        self.assertAlmostEqual(ro['auc'], rq['auc'], places=12)
+        self.assertAlmostEqual(ro['ap'], rq['ap'], places=12)
+        self.assertFalse(cw.ranking(np.zeros(3, int), p[:3])['eligible'])
+
+    def test_score_part_aggregate_and_logloss_stop(self):
+        cw = self.cw
+        p = np.array([[.7, .1, .1, .1], [.1, .1, .7, .1], [.4, .1, .4, .1], [.1, .6, .2, .1]])
+        p = p.astype(np.float32).astype(np.float64)                    # native proba is float32-exact
+        frame = pd.DataFrame({'truth': [0, 2, 3, 1], 'persistence_code': [0.0, 2.0, np.nan, 2.0]})
+        pw = p[[1, 1, 2, 3]]
+        for arm, pr in (('original', p), ('weighted', pw), ('posthoc2x', cw.posthoc2x(p))):
+            frame[f'y_{arm}'] = fourclass.argmax_codes(pr)
+            for k, lab in enumerate(fourclass.CLASS_LABELS):
+                frame[f'p_{arm}_{lab}'] = pr[:, k]
+        out = cw.score_part(frame)
+        # original argmax [0,2,0,1] vs truth [0,2,3,1]: crisis tp1 fp0 fn1 -> 2/3
+        self.assertEqual(Fraction(out['all']['original']['crisis_f1_exact']), Fraction(2, 3))
+        self.assertAlmostEqual(out['all']['original']['logloss_fourclass'],
+                               -np.mean(np.log(p[[0, 1, 2, 3], [0, 2, 3, 1]])), places=14)
+        mp = out['matched_persistence']
+        self.assertEqual(mp['n'], 3)
+        self.assertNotIn('logloss_fourclass', mp['persistence'])
+        self.assertIn('crisis_brier', mp['persistence'])
+        agg = cw.aggregate({'a': {'scores': {pt: out for pt in cw.PARTS}},
+                            'b': {'scores': {pt: out for pt in cw.PARTS}}}, lambda r: True)
+        e3 = agg['E3']
+        self.assertEqual((e3['folds_with_data'], e3['rows']), (2, 8))
+        self.assertEqual(e3['pooled_all']['original']['crisis_f1_exact'], '2/3')
+        self.assertAlmostEqual(e3['pooled_all']['original']['logloss_fourclass'],
+                               out['all']['original']['logloss_fourclass'], places=14)
+        self.assertEqual(e3['ranking_mean_fold']['original']['eligible_folds'], 2)
+        self.assertIn('weighted_minus_persistence', e3['matched_persistence']['pooled'])
+        bad = p.copy()
+        bad[0] = [0.0, .5, .25, .25]
+        with self.assertRaises(cw.GateError):
+            cw.log_loss_fourclass([0, 2, 3, 1], bad)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess
