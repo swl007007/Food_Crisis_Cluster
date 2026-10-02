@@ -1,4 +1,4 @@
-# D44 / A18: zero-fit full-pool vs r80-FIT root diagnostic (approved)
+# D44 / A18: zero-fit full-pool vs r80-FIT root diagnostic (completed; not adopted; supervisor verification passed)
 
 2026-10-02. Supervisor decision under the user's delegated Stage 1 research authority. Approved after supervisor review with five corrections (fraction cause, schema identity, exact replay, persistence cohort, full producer SHAs); the planning commit precedes any code or results. Same active task, executor, audit run and base. **No new fits**, G selection, thresholds, seeds, partition maps, Stage 2/3, final-period reads, full 648 or audit close. No adoption or further fits are triggered automatically, whatever the result.
 
@@ -82,3 +82,27 @@ Persistence is undefined where the exact origin is absent. It is reported only o
 ## 7. Order
 
 Review this plan → align pointers and commit the planning (GitNexus attempt; known LadybugDB failure recorded) → write the external script → run it (30 replays, 0 fits) → supervisor independent check → persist the small evidence → supervisor synthesis. Stop afterwards; nothing is triggered automatically.
+
+## 8. Run, verification and decision (2026-10-02)
+
+**Pre-run review.** A native read-only check of the external script found no material issue. The supervisor found that `hist_phase_o00` was requested twice in the column selection; the duplicate was removed and checks added (it is in the features, no duplicate columns, E3 matrices exactly n × 162). The check's cheap minor items were also applied: uniqueness and month checks, `root.json` pair-field checks, the one-hot persistence-Brier label, and the G-screen predictions, D34 checkpoint and D34 runtime in the identity record.
+
+**Run.** `C:\Users\swl00\geoxgb_runs\d44_full_pool_root_diagnostic.py` (sha256 `f09fb6e7…`) on the frozen Windows Python 3.12.10 / numpy 2.2.6 / pandas 2.2.3 / XGBoost 3.0.0. Exit 0 in 11 s.
+- All 30 saved models (both arms × 15 pairs) were replayed with exact float32 equality to the saved probabilities after round-trip parsing, with labels equal. Zero fits.
+- All identity, key, pool and truth checks passed.
+- FIT/full-window fractions .7485–.7983. The full window has 15–45 extra rows from 3–4 areas per pair, none in E3.
+- Output: `C:\Users\swl00\geoxgb_runs\geoxgb-d44-full-pool-root-20261002`. Hashes: `summary.json` sha256 `2a8dafc680dff46c7921ac52ec35639a3a7de5f9438450d8d7f053f3780fb6bc`, `identity.json` `b49abc8c…`, `rows_E3.csv.gz` `9e9f612a…` (kept external).
+
+**Supervisor verification (PASS).**
+- The supervisor independently recomputed all 15 original-file comparisons on both cohorts, all fitting digests and pool counts, and per-pair/H/pooled/mean metrics, and raw-replayed 6 models (both arms at T2019-06 for each H): `research/d44_supervisor_check.py` → `research/d44_supervisor_results.json`.
+- A separate comparison reconciled all joined probabilities and every reported metric with no discrepancy: `research/d44_compare_checks.py` → `research/d44_comparison_results.json`.
+- The executor's script replayed all 30 models; the supervisor independently replayed 6 of them. Assertion counts are not independent statistical tests.
+- The initial supervisor script failed on a wrong checkpoint directory and stopped before writing results; it was corrected and rerun.
+- Findings: [research/d44-full-pool-root-findings.md](research/d44-full-pool-root-findings.md).
+
+**Supervisor decision.** Do not adopt a full-pool root replacement on the strength of D44.
+- Matched F1: r80-FIT .566612, full-pool .562348, persistence .592605.
+- On this 15-pair subset the H8 r80-FIT root exceeds persistence.
+- Full-pool improves 7/15 pairs on the matched cohort and 8/15 on all keys.
+- There is no causal overfitting claim and no ratio or seed grid.
+- Stage 1 remains unresolved.

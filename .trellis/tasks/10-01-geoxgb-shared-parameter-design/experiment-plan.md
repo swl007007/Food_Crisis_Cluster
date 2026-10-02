@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D26–D31已完成（D31不确定）；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11不采用；D38/A12不采用；D39诊断；D40不采用；D41不采用；D42不采用；D43不采用；D44/A18已批准（d44-full-pool-root-diagnostic-plan.md）。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
+**当前状态：D26–D31已完成（D31不确定）；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37–D44均不采用（D39仅诊断；见各计划，D44见d44-full-pool-root-diagnostic-plan.md）。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
 
 2026-10-01。以下v1.0为原D24/D25规划记录；末尾附录修订覆盖对应条款。
 
@@ -284,6 +284,6 @@ Stage 1 过拟合仍未解决。D26 的48候选平均 E2 crisis增益 +0.018052�
 
 ## A10–A12. D35、D37已完成；D38见[d38-persistence-margin-root-plan.md](d38-persistence-margin-root-plan.md)
 
-## A18. D44零拟合full-pool vs r80-FIT root诊断（已批准）
+## A18. D44零拟合full-pool vs r80-FIT root诊断（已完成，不采用）
 
 见[d44-full-pool-root-diagnostic-plan.md](d44-full-pool-root-diagnostic-plan.md)：15组共享H/T，重放30个保存模型，0拟合。
