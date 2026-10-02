@@ -1,6 +1,8 @@
 # D43 temporal map-learning options: design note (2026-10-02)
 
-**Status:** D43 is NOT approved and has NOT been run. This note is design discussion only: no spec, code, fits or production edits.
+**Superseded (2026-10-02):** the candidate question below was approved as [`../d43-temporal-map-refit-plan.md`](../d43-temporal-map-refit-plan.md) (all 21 D34 pairs, three production-equivalence searches first). Legacy D26/D27 reuse stays deferred.
+
+**Status at writing:** D43 is NOT approved and has NOT been run. This note is design discussion only: no spec, code, fits or production edits.
 
 ## Considered and deferred: refitting legacy D26/D27 maps
 
