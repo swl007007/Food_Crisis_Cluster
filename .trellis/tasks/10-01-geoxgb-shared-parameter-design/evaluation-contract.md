@@ -1,6 +1,6 @@
 # Evaluation 分层契约 v1.0
 
-**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（d42-map-transfer-plan.md）；D43/A17已完成，不采用（d43-temporal-map-refit-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（d42-map-transfer-plan.md）；D43/A17已完成，不采用（d43-temporal-map-refit-plan.md）；D44/A18已批准（d44-full-pool-root-diagnostic-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
 
 D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
 
@@ -214,3 +214,7 @@ E3同键四臂为主，C仅描述（旧地图可能见过当前C标签）；每�
 ## D43：时间块地图评分边界
 
 仅E3；四臂root/global20/random_map_refit/temporal_map_refit同键；C进入时间块池，不作确认评分；搜索root的E3预测仅描述且单列。见[d43-temporal-map-refit-plan.md](d43-temporal-map-refit-plan.md)。
+
+## D44：root对照评分边界
+
+E3全键与精确persistence可用同键队列；危机F1（四类argmax后code>=2）、四类macro-F1、float64危机Brier；逐组/逐H/15组汇总与逐组均值差分开；不作显著性/独立性或子集声明。见[d44-full-pool-root-diagnostic-plan.md](d44-full-pool-root-diagnostic-plan.md)。
