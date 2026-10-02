@@ -238,3 +238,11 @@ Scientific reading (development, bounded; not a final result): Stage 1 partition
 
   Means: local−root anchored −0.0004 (1 positive / 5 negative) vs chained −0.0014 (2 / 4); difference +0.0010, anchored better in 4/6 pairs. Mean E2 gain anchored +0.019 vs chained +0.029 (smaller in-sample optimism). Deployed correction after root ≤20 vs up to 80 rounds; partitions not uniformly simpler (10–17 vs 13–21 terminals); 0 identical partitions; positive E4 weights 1 vs 2.
   Reading: anchoring shrinks both the in-sample E2 gain and the out-of-time losses toward the root — it reduces the magnitude of overfitting damage but does not produce positive transfer (5/6 still E3 ≤ 0, all |effects| ≤ 0.012). **Stage 1 overfitting is NOT solved;** the local corrections still do not generalise beyond ≈0 on the target month. Returned for review; no full 648, Stage 2/3, final evaluation or close.
+
+### Final independent D28 verification (supervisor) and status
+
+- Raw CSV rescore: all six pairs have identical role/key/truth/root hard predictions/root target probabilities (529,590 membership rows, 107,183 validation, 32,373 target); the six root UBJ files are byte-identical to the controls'. E2 (adaptively reused validation) mean gain D28 +0.019190195247 vs D26 +0.029392822712; E3 mean local−root −0.000381670348 vs −0.001399276049; paired E3 difference +0.001017605701, 4/6 improve, only 1/6 beats its root.
+- Checkpoint audit: all 84 D28 and 98 D26 terminal UBJs loaded; rounds/SHA match records; actual local rounds 0/20 (D28) vs up to 80 (D26). Sample H4/2018-02 `xgb_00`: root prefix 800 trees and base score exact, 880 total trees, increment differs from parent `xgb_0`, path counter 40. Root-model area coverage unchanged, no all-root collapse; both sets 5 coverages, no same-coverage duplicate maps; positive E4 weights 1 vs 2.
+- Bounds: no full replay of validation predictions or checkpoint lineage; six related development candidates only.
+- Wording: E2 is adaptively reused validation (not fitting / in-sample performance). The numerical optimism gap (E2 vs E3) is smaller under D28; no causal solution to Stage 1 overfitting is shown.
+- **Status: D28 completed; awaiting scientific review.** No further experiment authorized; no Stage 2/3, full 648, final evaluation or audit close. Audit run ed632775 / bound session unchanged.

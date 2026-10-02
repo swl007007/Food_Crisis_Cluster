@@ -1,6 +1,6 @@
 # GeoXGBoost implementation plan — v1.0
 
-**Current execution override: D28, section 8 below; user accepted the final A3 six-root implementation/run plan. Stage 1 overfitting remains unresolved.** D26/D27 bounded experiments are complete. Original full-pipeline checklists below are historical scope, not authorization to resume Stage2/3 or close this task.
+**Current status: D28 (section 8) completed — awaiting scientific review. Stage 1 overfitting remains unresolved.** D26/D27/D28 bounded experiments are complete; no further experiment is authorized. Original full-pipeline checklists below are historical scope, not authorization to resume Stage 2/3, run the full 648 or close this task.
 
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
