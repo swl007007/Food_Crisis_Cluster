@@ -1,6 +1,6 @@
 # GeoXGBoost 技术设计 v1.0
 
-**当前覆盖修订：D26–D31已完成；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成（7b2bf6f）；D35/A10已完成（be5f485）；D36仅分析完成；D37/A11已完成，不采用（3b53989；d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，诊断候选、不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（65b0733；d42-map-transfer-plan.md）；D43/A17已完成，不采用（1be4e3b；d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已批准（d45-root-prefix-diagnostic-plan.md）。Stage1过拟合尚未解决。**
+**当前覆盖修订：D26–D31已完成；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成（7b2bf6f）；D35/A10已完成（be5f485）；D36仅分析完成；D37/A11已完成，不采用（3b53989；d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，诊断候选、不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（65b0733；d42-map-transfer-plan.md）；D43/A17已完成，不采用（1be4e3b；d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已完成，未采用策略（d45-root-prefix-diagnostic-plan.md）。Stage1过拟合尚未解决。**
 
 **首轮设计按D24采用，D25已授权开始执行；实际状态以审计start和task.json为准。** 本文记录架构/边界/证据；数值预算见experiment-plan.md，执行顺序见implement.md。
 母包按D1确认为 `FEWSNETFourClassBaseline/`，标签为 `1/2/3/4或5`；D4冻结共享树并只追加局部增量。v1.0为决策收敛整理，不改变已采用的实验方案。

@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D26–D31已完成（D31不确定）；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37–D44均不采用（D39仅诊断；见各计划）；D45/A19已批准（d45-root-prefix-diagnostic-plan.md）。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
+**当前状态：D45/A19已完成（仅诊断，未采用截断/早停策略；d45-root-prefix-diagnostic-plan.md）。D26–D44结果见各自计划。Stage1过拟合未解决；完整648、Stage2/3、最终评价与关闭均暂缓。**
 
 2026-10-01。以下v1.0为原D24/D25规划记录；末尾附录修订覆盖对应条款。
 
@@ -266,28 +266,6 @@ Stage 1 过拟合仍未解决。D26 的48候选平均 E2 crisis增益 +0.018052�
 
 见[d30-recent-search-plan.md](d30-recent-search-plan.md)：固定D29 fitting/root/C，E1/E2搜索S仅限最近六个真实validation月；六H/T、L1/gt0、D29对照，不用Stage3数据。
 
-## A6. D31逐区等量搜索对照（已完成）
+## A6–A19. 后续计划索引（权威正文与结果见各计划文件）
 
-见[d31-matched-search-plan.md](d31-matched-search-plan.md)：同D30六H/T，三seed共18候选，逐区等量S；对照D30/D29。
-
-## A7. D32 Stage1分配证据导出（已完成）
-
-见[d32-stage1-assignment-plan.md](d32-stage1-assignment-plan.md)：只新增`assignment_evidence.csv`。
-
-## A8. D33浅层截断重放（已完成）
-
-见[d33-shallow-replay-plan.md](d33-shallow-replay-plan.md)：root/depth1/full固定比较，predict-only。
-
-## A9. D34 E1配对对照（已运行）
-
-见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。
-
-## A10–A12. D35、D37已完成；D38见[d38-persistence-margin-root-plan.md](d38-persistence-margin-root-plan.md)
-
-## A18. D44零拟合full-pool vs r80-FIT root诊断（已完成，不采用）
-
-见[d44-full-pool-root-diagnostic-plan.md](d44-full-pool-root-diagnostic-plan.md)：15组共享H/T，重放30个保存模型，0拟合。
-
-## A19. D45保存root的boosting前缀学习曲线诊断（已批准）
-
-见[d45-root-prefix-diagnostic-plan.md](d45-root-prefix-diagnostic-plan.md)：21个D34 root，四分之一/一半/全部现有轮数，FIT/C/E3，0拟合。
+A6/D31 `d31-matched-search-plan.md`；A7/D32 `d32-stage1-assignment-plan.md`；A8/D33 `d33-shallow-replay-plan.md`；A9/D34 `d34-e1-brier-contrast-plan.md`；A10/D35 `d35-global-increment-control-plan.md`；A11/D37 `d37-recency-root-plan.md`；A12/D38 `d38-persistence-margin-root-plan.md`；A13/D39 `d39-probability-diagnostic-plan.md`；A14/D40 `d40-forward-decision-plan.md`；A15/D41 `d41-local-shrinkage-plan.md`；A16/D42 `d42-map-transfer-plan.md`；A17/D43 `d43-temporal-map-refit-plan.md`；A18/D44 `d44-full-pool-root-diagnostic-plan.md`；A19/D45 `d45-root-prefix-diagnostic-plan.md`。

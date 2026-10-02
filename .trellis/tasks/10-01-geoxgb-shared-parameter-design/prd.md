@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**当前：D45/A19保存root前缀学习曲线诊断已批准（d45-root-prefix-diagnostic-plan.md）；D44/A18零拟合full-pool vs r80-FIT root诊断已完成、不采用full-pool替换（核验通过；d44-full-pool-root-diagnostic-plan.md）；D43/A17时间块Brier地图学习、共同重拟合对照已完成、不采用（核验通过；时间切分/地图生成变体序列按预设停止；Stage1仍未解决；d43-temporal-map-refit-plan.md）；D42/A16旧/当前地图共同重拟合迁移对照已完成，两臂均不采用（175次区域L1，核验通过；d42-map-transfer-plan.md）；D41/A15冻结分区局部增量减半对照已完成，诊断候选、不采用（零拟合，核验通过；d41-local-shrinkage-plan.md）；D40/A14起点前决策规则可行性对照已完成、不采用（无新拟合，核验通过；d40-forward-decision-plan.md）；D39/A13概率诊断已完成（仅诊断，核验通过；d39-probability-diagnostic-plan.md）；D38/A12固定弱persistence margin root已完成，核验通过，保留为探索性root候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D37/A11时间加权root已完成且不采用（3b53989，核验通过；d37-recency-root-plan.md）；D36已完成（仅分析）；D35/A10已完成（be5f485，核验通过；Brier仅为探索性候选，D35后停止新训练；d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**当前：D45/A19保存root前缀学习曲线诊断已完成、未采用前缀/早停策略（核验通过；d45-root-prefix-diagnostic-plan.md）；D44/A18零拟合full-pool vs r80-FIT root诊断已完成、不采用full-pool替换（核验通过；d44-full-pool-root-diagnostic-plan.md）；D43/A17时间块Brier地图学习、共同重拟合对照已完成、不采用（核验通过；时间切分/地图生成变体序列按预设停止；Stage1仍未解决；d43-temporal-map-refit-plan.md）；D42/A16旧/当前地图共同重拟合迁移对照已完成，两臂均不采用（175次区域L1，核验通过；d42-map-transfer-plan.md）；D41/A15冻结分区局部增量减半对照已完成，诊断候选、不采用（零拟合，核验通过；d41-local-shrinkage-plan.md）；D40/A14起点前决策规则可行性对照已完成、不采用（无新拟合，核验通过；d40-forward-decision-plan.md）；D39/A13概率诊断已完成（仅诊断，核验通过；d39-probability-diagnostic-plan.md）；D38/A12固定弱persistence margin root已完成，核验通过，保留为探索性root候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D37/A11时间加权root已完成且不采用（3b53989，核验通过；d37-recency-root-plan.md）；D36已完成（仅分析）；D35/A10已完成（be5f485，核验通过；Brier仅为探索性候选，D35后停止新训练；d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 
@@ -232,6 +232,6 @@ D34的21个Brier候选，保存概率上的几何收缩`p_half∝sqrt(p_root·p_
 
 15组H4/H8/H12×2019-02…2020-06：v1保存的59个月窗口full-pool全局root与D34 r80-FIT root（实际FIT约75%）在完全相同E3键上比较，30个保存模型原始重放、0拟合；全键与persistence同键队列；不归因于样本量，不改模型或规格。结果：同键F1 r80-FIT .566612、full-pool .562348、persistence .592605；不采用full-pool替换，无比例/seed网格；Stage1仍未解决。见[d44-full-pool-root-diagnostic-plan.md](d44-full-pool-root-diagnostic-plan.md)与[research/d44-full-pool-root-findings.md](research/d44-full-pool-root-findings.md)。
 
-## D45：保存root的boosting前缀学习曲线诊断（已批准）
+## D45：保存root的boosting前缀学习曲线诊断（已完成，未采用策略）
 
-21个D34 root，在H4 50/100/200、H8/H12 100/200/400轮的同一拟合路径前缀上评估FIT（样本内）、C（窗口内插值）、E3（前向）；对数损失与危机Brier帮助解释容量，危机F1仍为科学目标；不选最佳轮数、无早停策略、0拟合。见[d45-root-prefix-diagnostic-plan.md](d45-root-prefix-diagnostic-plan.md)。
+21个D34 root，在H4 50/100/200、H8/H12 100/200/400轮的同一拟合路径前缀上评估FIT（样本内）、C（窗口内插值）、E3（前向）；对数损失与危机Brier帮助解释容量，危机F1仍为科学目标；不选最佳轮数、无早停策略、0拟合。结果：一半→全部时21组FIT/C两种损失均改善，E3概率质量常变差而H8/H12危机F1上升；各H所有前缀均低于同键persistence；不采用策略、无轮数网格；Stage1仍未解决。见[d45-root-prefix-diagnostic-plan.md](d45-root-prefix-diagnostic-plan.md)与[research/d45-root-prefix-findings.md](research/d45-root-prefix-findings.md)。

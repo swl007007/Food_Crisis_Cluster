@@ -1,4 +1,4 @@
-# D45 / A19: saved-root boosting-prefix learning-curve diagnostic (approved)
+# D45 / A19: saved-root boosting-prefix learning-curve diagnostic (completed; no prefix policy adopted; supervisor verification passed)
 
 2026-10-02. Supervisor decision under the user's delegated Stage 1 research authority. Approved after supervisor review with three corrections (equivalence wording, explicit targets, persistence metrics); the planning commit precedes any code or results. Same active task, executor, audit run and base.
 - **Zero fits:** no new or extra models, no training checkpoints, G/threshold/window/seed/ratio grids, best-round selection or early-stopping policy.
@@ -80,3 +80,25 @@ There is no pooling across horizons as if the rounds were equal, and no grand wi
 ## 7. Order
 
 Supervisor review → align pointers and commit the planning (GitNexus attempt; LadybugDB failure recorded) → external script → native read-only check → single run → supervisor verification → persist the small evidence → supervisor synthesis.
+
+## 8. Run, verification and decision (2026-10-02)
+
+**Pre-run review.** The native scoped read-only check found one material omission: the snapshot sha was computed but never compared with the D34 prepared record. Before the run, the executor added the outputs-manifest binding (`outputs.json` sha equals `identity.json` `outputs_sha256`) and a per-snapshot comparison with `outputs.json`; only the hash record is read, no ledger file. Minor hardening was also applied: the `src.*` import allowlist, `root.json` row and candidate checks, a decision-semantics note, and extra identity fields.
+
+**Run.** `C:\Users\swl00\geoxgb_runs\d45_root_prefix_diagnostic.py` (sha256 `59f2eac4bed9ed6099405a0568f87dd50089a98a5c55bfe394038d5ec5f0bfa4`) on the frozen Windows Python. Exit 0 in 48 s.
+- 21 roots, 63 prefix evaluations, 189 scored part predictions plus the replay gates. Zero fits.
+- Every full-root C/E3 replay was exact at float32, and `(0, T)` equalled the default full predict.
+- Output: `C:\Users\swl00\geoxgb_runs\geoxgb-d45-root-prefix-20261002`. Hashes: `summary.json` sha256 `2067978d533dd49843c6b3a5cddff0566967f74347bf30c4eddc4344ea341e57`, `identity.json` `ca6f63cc33d68cc7d9e60c6a70b63ada1f536bd565c0d2636afa112242528a61`. The 35.8 MB `rows_C_E3_prefix.csv.gz` (`8b8e59e5…`) stays external, and FIT probabilities were discarded after scoring.
+
+**Supervisor verification (PASS).**
+- `research/d45_supervisor_check.py` → `research/d45_supervisor_results.json`: independent `Booster[:r]` slicing for quarter and half and default full prediction, on every FIT/C/E3 row for all 21 roots. It reproduced all 189 role/prefix metric cells and the persistence-matched E3 subsets.
+- `research/d45_compare_checks.py` → `research/d45_comparison_results.json`: reconciled per-pair and per-H pooled/mean metrics, differences, support/prevalence and decisions, and raw-replayed every persisted C/E3 prefix probability (321,047 rows), with zero discrepancies. It is bound to the full summary sha above.
+- These are numerical checks, not statistical tests.
+- Findings: [research/d45-root-prefix-findings.md](research/d45-root-prefix-findings.md).
+
+**Supervisor decision.**
+- The diagnostic is complete. No prefix or early-stopping policy is adopted, and no further round grid follows.
+- From half to full, all 21 FIT/C pairs improve both proper losses. E3 probability quality often degrades, but H8/H12 crisis F1 increases.
+- H4's small benefit at half is insufficient against persistence, and every tested prefix stays below matched persistence at every H.
+- Role prevalences differ, so raw FIT–E3 gaps are not causal overfitting estimates.
+- Stage 1 remains unresolved.
