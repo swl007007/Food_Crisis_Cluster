@@ -1,6 +1,6 @@
 # GeoXGBoost 技术设计 v1.0
 
-**当前覆盖修订：D26–D29已完成；D30近期搜索六根已完成（5517fb4/f777ab0），待科学评审，结果见d30-recent-search-plan.md。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
+**当前覆盖修订：D26–D30已完成（D30 5517fb4/f777ab0，结果见d30-recent-search-plan.md）；D31逐区等量搜索对照已批准实现（d31-matched-search-plan.md）。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
 
 **首轮设计按D24采用，D25已授权开始执行；实际状态以审计start和task.json为准。** 本文记录架构/边界/证据；数值预算见experiment-plan.md，执行顺序见implement.md。
 母包按D1确认为 `FEWSNETFourClassBaseline/`，标签为 `1/2/3/4或5`；D4冻结共享树并只追加局部增量。v1.0为决策收敛整理，不改变已采用的实验方案。
@@ -241,3 +241,7 @@ C首轮只诊断，没有C门槛，不删图/剪枝/回退，不消费C得分计
 ## D30：搜索历史与拟合历史分开
 
 在D29 rootconf路径复用S/C拆分和冻结评价；从原validation日期预定最近六个观察月份，只允许其中原S进入搜索。更早S记unused_search_history，root及child仍使用原59个月fitting。C及unused监督信息不进入搜索支持/接纳/停止，保持原fitting地理覆盖。改动只表达明确的近期搜索模式，复用既有split/driver/compare。细节及日期表以d30-recent-search-plan.md为准。
+
+## D31：逐区等量搜索抽样（已批准实现）
+
+在D30路径上增加显式搜索抽样模式：重建D29 S/C后按A5日期得到逐区k_a，每候选新建`random.Random(search_seed)`，按数值区序对每区日期排序的原S键调用一次shuffle并取前k_a，其余为unused_search_history。search seed与split/confirmation seed分开记录于身份与root元数据；fitting/root/C/E3/几何不变，报告器扩展现有比较脚本并以固定producer接受D29/D30。精确规则、预检及报告项以[d31-matched-search-plan.md](d31-matched-search-plan.md)为准。
