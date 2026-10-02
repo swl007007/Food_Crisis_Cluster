@@ -1,4 +1,4 @@
-# D55 / A29: relative-coordinate root contrast (approved)
+# D55 / A29: relative-coordinate root contrast (approved; implemented with synthetic checks only; NOT run — task closed incomplete by user cancellation)
 
 2026-10-02. Planning authorised by the supervisor under the user's delegated Stage 1 research authority, as one distinct representation mechanism. This supersedes the D54 research stop only for this written contrast; adjacent grids, Stage 2/3, full 648, final evaluation and close stay stopped. Approved by the supervisor with six clarifications (open points resolved, decode-first tie example, exact screen arithmetic, origin source and D52 alignment, explicit probability metrics, encoded-booster labelling); the planning commit precedes any code, and no fit runs until a separate release. The D54 decision memo carries an addendum pointing to this specifically authorised exception. Same active task, executor, audit run and base.
 - **Unchanged:** the external fixed four-class probability axis, the primary endpoint (four-class argmax → code ≥ 2, crisis F1) and the final criterion. Diagnostic only; no adoption.

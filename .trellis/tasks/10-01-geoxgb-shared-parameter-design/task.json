@@ -3,7 +3,7 @@
   "name": "geoxgb-shared-parameter-design",
   "title": "GeoXGBoost shared-parameter forecasting design",
   "description": "Implement the approved isolated four-class GeoXGBoost shared-tree design, verify scientific contracts, and run the bounded development and frozen final experiment; D25 authorizes execution.",
-  "status": "in_progress",
+  "status": "incomplete",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -22,5 +22,14 @@
   "parent": null,
   "relatedFiles": [],
   "notes": "2026-10-01: D24 accepts the bounded first-round design and development-selection bias; after the final planning summary D25 explicitly authorizes starting implementation and the frozen finite experiment plan. Commit approved planning artifacts, bind the verified actual Claude executor, then audit-wrapper start before implementation. Numeric/scientific scope unchanged.",
-  "meta": {}
+  "meta": {
+    "completion_outcome": "incomplete",
+    "incomplete_reason": "user_cancelled: the user explicitly asked to close this Trellis task as incomplete; Stage 1 unresolved; D55 implemented with synthetic checks only, no real run",
+    "user_quote": "关掉这个trellis task标记为incomplete",
+    "superseded_by": ".trellis/tasks/10-02-exogenous-transition-forecast-design",
+    "stopped_at_sha": "097d98b1dda543fd481a57b3728dc3b41c175393",
+    "audit_run": "ed632775e46b47598bcfc53ef088bf8e (administratively closed, outcome incomplete, no audit job)",
+    "closure_note": "closure-note-incomplete.md"
+  },
+  "closedAt": "2026-10-02"
 }
