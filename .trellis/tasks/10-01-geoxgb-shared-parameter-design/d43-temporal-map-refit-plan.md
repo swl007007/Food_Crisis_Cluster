@@ -66,3 +66,64 @@ Wrong: compare tb3's stale-root predictions against D34 and call the difference 
 ## 6. Execution order
 
 Executor read-only review -> supervisor resolve issues -> align PRD/design/implement/evaluation/experiment-plan pointers and jsonl (respect 32768-byte injection limit), commit planning -> native implement -> native check/tests -> commit producer -> run exactly the above -> supervisor independently verify roles, same-root refits, model replay and keyed scores -> scientific synthesis. GitNexus impact/detect_changes required attempts; existing LadybugDB failure recorded with source tracing, no index repair. Preserve original audit/session; no close or Stage2/3 advancement.
+
+## 7. Run and factual results (2026-10-02; independent verification and synthesis by the supervisor)
+
+**Producer and run**
+- Native trellis-implement was stopped at its 10-minute bound; its partial work was adopted. The supervisor's contract fixes were already present: no hash-difference assertion, `legal_pool_membership.csv.gz` per pair, and the refit budget checked before any refit. The executor completed the matched-cohort Brier report via `_pool_block`. Native trellis-check (~2.6 min) found no result-affecting issue. GitNexus impact/detect_changes: LadybugDB read-only error, risk UNKNOWN.
+- Producer commit `1be4e3bb2c1e28216b5c395e0215e4576fdcac5b`; after the commit `tests/test_baseline.py` ran 110 tests OK, exit 0.
+- Run `C:\Users\swl00\geoxgb_runs\geoxgb-d43-temporal-map-refit-20261002` on the frozen Windows Python, under a `timeout 7000` wrapper; the user moved it to the background, with one live process verified. Exit 0, 926 s. Log `C:\Users\swl00\geoxgb_runs\d43-run.log` (sha256 `5cd0ac27…`).
+- **Artifact hashes:** `summary.json` `e6f0eca3…`, `gate.json` `aec0a8a8…`, `identity.json` `6105536…`, `completion.json` `147d2ca1…`.
+
+**Equivalence and budget**
+- All three equivalence searches passed (H4/H8/H12 2018-06): assignment evidence, all checkpoint shas and the frozen digest equal the saved D34 candidates. This is a three-case plumbing check, not a proof.
+- All 21 pairs passed. Budget used: 21 search roots, 24 searches, 490 child fits (limit 1,488), 306 common refits (limit 838).
+- dev_baselines: 15 checked, 6 not covered.
+
+**Maps**
+- Random maps: 166 named regions, all eligible.
+- Temporal maps: 140 named regions, all eligible. Per pair: 1, 1, 2, 2, 2, 4, 5, 6, 6, 7, 7, 8, 8, 9, 9, 9, 9, 10, 11, 12, 12. The random maps per pair: 3–12.
+- S_tb is 15,734–16,095 rows per pair (336,826 in total). By D34 role: fitting 76.16%, validation 11.78%, confirmation 12.06%.
+- Search-root age at O is 16 months for every pair (the last FIT_tb label is 12 months older than the last D34 FIT label; for example H4 2018-06 last FIT_tb label 2016-10 vs D34 2017-10).
+- Share of E3 rows routed to root: random .017928 (s-1 2,035 rows), temporal .007577 (s-1 860 rows).
+
+**E3, all keys (113,508 rows):** pooled crisis F1 / crisis Brier / four-class macro-F1
+
+| Arm | Crisis F1 | Crisis Brier | Macro-F1 |
+|---|---|---|---|
+| root | .550455 | .101890546 | .531864 |
+| global20 | .550674 | .101950387 | .531784 |
+| random_map_refit | .550919 | .101870102 | .528752 |
+| temporal_map_refit | .550304 | .103005187 | .528388 |
+
+Root and global20 reproduce D36.
+
+**Pooled deltas**
+- Temporal − random: F1 −.000615, Brier +.001135. Decisions: changed 2,356, corrected 953, spoiled 1,403, TP +251, FP +701.
+- Random − root: F1 +.000464, Brier −.0000204.
+- Temporal − root: F1 −.000151, Brier +.001115.
+
+**Fold-mean deltas**
+- Temporal − random: F1 +.000610, Brier +.001135, macro-F1 +.000857.
+- Random − root: F1 +.000513.
+- Temporal − root: F1 +.001123, Brier +.001111.
+- The sign of the F1 delta differs between the pooled and fold-mean results.
+
+**Persistence-matched (112,795 rows):** F1 / Brier
+
+| Arm | Crisis F1 | Crisis Brier |
+|---|---|---|
+| root | .551516 | .101884595 |
+| global20 | .551734 | .101944273 |
+| random | .551979 | .101864403 |
+| temporal | .551334 | .103006280 |
+| persistence | .586406 | .146407199 (one-hot) |
+
+**By horizon, pooled F1 (root / global20 / random / temporal):**
+- H4: .628357 / .628212 / .627861 / .624110
+- H8: .532228 / .532364 / .533740 / .533937
+- H12: .477156 / .477876 / .476931 / .485699
+
+Fold-mean temporal − random F1: H4 −.003635, H8 −.000663, H12 +.006129. The temporal arm's Brier is higher than the random arm's at every horizon.
+
+**Not done:** the executor did not run the supervisor's `d43_independent_check.py`. There is no adoption, Stage 2/3 or close. The scientific reading is left to the supervisor.
