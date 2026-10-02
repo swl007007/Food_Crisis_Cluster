@@ -200,6 +200,6 @@ Stage1过拟合机制诊断：六个冻结D29候选的root/depth1/full同行比�
 
 21个D34 root各在原fitting池上全局续训一次L1 20轮，对照root/hard/Brier；不新建root、G、E1/E2。见[d35-global-increment-control-plan.md](d35-global-increment-control-plan.md)。
 
-## D37：时间加权root对照（已批准）
+## D37：时间加权root对照（已完成，不采用）
 
-仅改样本时间权重（半衰期24个月，均值1，仅fitting），21个加权root vs 原root vs persistence（E3为主，C诊断）。见[d37-recency-root-plan.md](d37-recency-root-plan.md)。
+仅改样本时间权重（半衰期24个月，均值1，仅fitting），21个加权root vs 原root vs persistence（E3为主，C诊断）。见[d37-recency-root-plan.md](d37-recency-root-plan.md)。下一候选的设计讨论（非实施批准）见[research/d38-root-next-options.md](research/d38-root-next-options.md)。
