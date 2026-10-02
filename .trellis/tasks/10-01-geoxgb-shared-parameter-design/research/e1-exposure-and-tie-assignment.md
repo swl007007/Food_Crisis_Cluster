@@ -1,6 +1,6 @@
 # Root E1 crisis exposure and evidence-free side assignment (zero fit, 2026-10-01)
 
-**Scope:** saved D29 root predictions on S (`validation_predictions.csv.gz` `y_root`) and saved `s_branch.pkl`, plus original v1 root-decision rows for two unexposed H4 targets. No fits; this is not a fix.
+**Scope:** saved D29 root predictions on S (`validation_predictions.csv.gz` `y_root`) and saved `s_branch.pkl`, plus original v1 root-decision rows for two additional H4 targets outside the D29 six-case contrast (previously used in v1; G3 root and full validation, unlike D29). No fits; this is not a fix.
 
 ## 1. Exposure counts
 
@@ -17,7 +17,7 @@ The E1 crisis masses are `D_g = 2TP_g + FP_g + FN_g`, `Y = D_g/D`, `A = 2TP_g/D`
 | Total D | 1374–2185 |
 | Largest single-area share of D | ≤ 0.3% |
 
-**Unexposed targets** (v1 G3 roots, full r80 validation = S ∪ C, about 4 rows per area; root-decision `y_parent` in `e2_predictions.csv.gz`):
+**Additional targets outside the D29 six-case contrast, previously used in v1** (G3 roots rather than D29's G1, and the full r80 validation = S ∪ C rather than S, about 4 rows per area; root-decision `y_parent` in `e2_predictions.csv.gz`):
 
 | Target | Areas | Zero-exposure areas | One-event areas |
 |---|---|---|---|
@@ -38,7 +38,7 @@ Sparse exposure is therefore not specific to the six exposed cases. Under the pr
 - Only 7.5–15% of side-0 zero-mass areas lie below the median code.
 - Exposed areas on side 0: 254–491 of 844–1189.
 
-So most of the root split's membership follows index order rather than E1 evidence. This plausibly contributes to root-split instability, but it is not shown to cause the transfer failure.
+The source establishes that TN-only areas carry **zero E1 preference** before refinement, so their placement depends on the scan's tie order and the group-count balance. The observed final memberships **correlate** with admin-code order, but geographic and country ordering of codes and contiguity refinement confound the attribution. Without a permutation intervention, this does not show that most final membership follows ID rather than E1. It plausibly contributes to root-split instability; it is not shown to cause the transfer failure. The contrast motivation is unchanged.
 
 **Reproduction:** `python3 research/e1_exposure_tie.py <D29 stage1_rootconf dir>`.
 
