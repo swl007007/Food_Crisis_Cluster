@@ -116,30 +116,88 @@ def exact_fourclass(frame: pd.DataFrame, column: str) -> Fraction:
     return fourclass.macro_f1_exact(frame["truth_code"].to_numpy(int), frame[column].to_numpy(float).astype(int))
 
 
-REUSED_PREPARED = ("snapshot_h4.parquet", "snapshot_h8.parquet", "snapshot_h12.parquet", "ledgers/dev_baselines.csv",
-                   "manifests/schedule.json")
+REUSED_PREPARED = ("snapshot_h4.parquet", "snapshot_h8.parquet", "snapshot_h12.parquet", "ledgers/dev_baselines.csv")
+
+
+def dev_schedule_digest(schedule: dict) -> str:
+    """SHA-256 of the canonical JSON of the development section (all the G predictions use)."""
+    import hashlib
+    return hashlib.sha256(json.dumps(schedule["development"], sort_keys=True).encode()).hexdigest()
+
+
+def source_effective_params(source: Path) -> dict:
+    """The effective xgb.train parameters (XGB_BASE merged with each G) and rounds actually
+    used by the source run's G fits, read from its stored global-booster records
+    (globals/h{H}/{G}/O*.json). Every record of one G must agree; every H x G must exist."""
+    found = {}
+    for h in plan.HORIZONS:
+        for g in plan.G_CONFIGS:
+            records = sorted((source / "globals" / f"h{h}" / g).glob("O*.json"))
+            if not records:
+                raise RuntimeError(f"source run has no stored h{h} {g} global records")
+            for path in records:
+                rec = json.loads(path.read_text(encoding="utf-8"))
+                value = (json.dumps(rec["params"], sort_keys=True), int(rec["rounds_total"]))
+                if found.setdefault(g, value) != value:
+                    raise RuntimeError(f"source {g} global records disagree on parameters ({path.name})")
+    return found
 
 
 def reused_gscreen_predictions(run: Path, source: Path):
     """The saved 72 development pooled predictions of an earlier run, reused without refit
-    (D26) only if every input they depend on is byte-identical: snapshots, development
-    truth/baselines and schedule (prepared output hashes), and the source G screen's own
-    recorded predictions hash; G configs are the frozen plan constants."""
-    import json as _json
-    mine = _json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
-    theirs = _json.loads((source / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
+    (D26) only if every input they depend on is identical: snapshots and development
+    truth/baselines (prepared output hashes), the parsed development schedule (D27: other
+    schedule sections such as the tb3 lists may differ), the producing G configs, a
+    complete 6-target x H x G prediction set, and the source G screen's recorded
+    predictions hash."""
+    mine = json.loads((run / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
+    theirs = json.loads((source / "prepared" / "manifests" / "outputs.json").read_text(encoding="utf-8"))
     differ = [f for f in REUSED_PREPARED if mine.get(f) is None or mine.get(f) != theirs.get(f)]
     if differ:
         raise RuntimeError(f"cannot reuse {source} G predictions: prepared inputs differ {differ}")
-    record = _json.loads((source / "gscreen" / "selection.json").read_text(encoding="utf-8"))
+    sched_path = ("prepared", "manifests", "schedule.json")
+    my_sched = json.loads(run.joinpath(*sched_path).read_text(encoding="utf-8"))
+    their_sched = json.loads(source.joinpath(*sched_path).read_text(encoding="utf-8"))
+    if my_sched["development"] != their_sched["development"]:
+        raise RuntimeError(f"cannot reuse {source} G predictions: the development schedule differs")
+    if theirs.get("manifests/schedule.json") != file_sha256(source.joinpath(*sched_path)):
+        raise RuntimeError("the source schedule.json differs from its prepared record")
+    record = json.loads((source / "gscreen" / "selection.json").read_text(encoding="utf-8"))
+    source_identity = json.loads((source / "prepared" / "manifests" / "identity.json").read_text(encoding="utf-8"))
+    source_outputs = file_sha256(source / "prepared" / "manifests" / "outputs.json")
+    if source_identity.get("stage") != "prepare" or source_identity.get("outputs_sha256") != source_outputs \
+            or record.get("prepared") != source_outputs:
+        raise RuntimeError("source G screen is not bound to the source run's completed preparation")
+    if record.get("reused_predictions"):
+        raise RuntimeError("reuse only from the run that fitted the G predictions (it holds their global records)")
+    effective = source_effective_params(source)
+    want = {g: (json.dumps(plan.booster_params(c)[0], sort_keys=True), plan.booster_params(c)[1])
+            for g, c in plan.G_CONFIGS.items()}
+    if effective != want:
+        raise RuntimeError("source G predictions were fitted with other effective XGBoost parameters")
     sha = file_sha256(source / "gscreen" / "predictions.csv.gz")
     if record["outputs"].get("predictions.csv.gz") != sha:
         raise RuntimeError("source G predictions differ from their completion record")
     preds = read_csv(source / "gscreen" / "predictions.csv.gz")
+    for h in plan.HORIZONS:
+        want = {f["target_month"] for f in my_sched["development"] if f["horizon"] == h}
+        if len(want) != len(plan.DEV_TARGETS):
+            raise RuntimeError(f"h{h}: the development schedule does not list {len(plan.DEV_TARGETS)} targets")
+        for g in plan.G_CONFIGS:
+            have = set(preds.loc[(preds["horizon"] == h) & (preds["g_config"] == g), "target_month"].astype(str))
+            if have != want:
+                raise RuntimeError(f"source G predictions h{h} {g}: targets {sorted(have)} != {sorted(want)}")
+    if set(preds["g_config"]) != set(plan.G_CONFIGS) or set(preds["horizon"]) != set(plan.HORIZONS):
+        raise RuntimeError("source G predictions name configurations or horizons outside the plan")
     return preds, {"source_run": str(source), "source_selection_sha256": file_sha256(source / "gscreen" / "selection.json"),
                    "source_predictions_sha256": sha, "source_code": record.get("code"),
+                   "source_prepared_outputs_sha256": source_outputs,
+                   "effective_params_checked": "XGB_BASE + G_CONFIGS == params/rounds of every stored source "
+                                               "global record (h x G)",
                    "matched_prepared_outputs": {f: mine[f] for f in REUSED_PREPARED},
-                   "rule": "no refit: same frozen G configs, byte-identical snapshots/dev truth/schedule"}
+                   "matched_development_schedule_sha256": dev_schedule_digest(my_sched),
+                   "rule": ("no refit: same frozen G configs, byte-identical snapshots/dev truth, identical parsed "
+                            "development schedule, all 6 development targets per H x G")}
 
 
 def pool(executor_workers: int, fn, jobs):
@@ -200,6 +258,7 @@ def gscreen(run: Path, workers: int, reuse: Path | None = None) -> None:
     write_csv_gz(out / "predictions.csv.gz", preds)
     finish(out, "selection.json", {
         "selected": selected, "prepared": prepared["outputs_sha256"], "endpoint": plan.ENDPOINT,
+        "g_configs": plan.G_CONFIGS, "xgb_base": plan.XGB_BASE,
         "reused_predictions": source,
         "rule": (f"per horizon: largest {plan.ENDPOINT} (D26: crisis-positive F1, four-class argmax collapsed to "
                  "IPC>=3) over the six development folds on the main cohort (H4/H8 persistence+expert, H12 "

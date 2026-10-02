@@ -931,6 +931,239 @@ class CrisisEndpoint(unittest.TestCase):
             rexp.main()
 
 
+class TimeBlockContrast(unittest.TestCase):
+    """D27 (experiment-plan A2): tb3 time-block split, six-root schedule, G-prediction reuse."""
+
+    @staticmethod
+    def mgf():
+        from app import main_model_GF
+        return main_model_GF
+
+    @staticmethod
+    def pool():
+        # H4, T=2018-02, O=2017-10. Areas 1-3 every Feb/Jun/Oct 2015-02..2017-06; area 9 only
+        # in the last block month (validation-only); area 8 only early (fitting-only).
+        months = [m(f'{y}-{mo:02d}') for y in (2015, 2016, 2017) for mo in (2, 6, 10) if (y, mo) < (2017, 10)]
+        rows = [(a, mo) for a in (1, 2, 3) for mo in months] + [(9, m('2017-06')), (8, m('2015-06'))]
+        groups, mons = (np.array(c) for c in zip(*rows))
+        return groups, mons
+
+    def test_whole_months_strict_order_and_validation_only_area(self):
+        from src.utils.split import time_block_split
+        groups, months = self.pool()
+        res = time_block_split(groups, months, m('2017-10'), 3, ('2016-10', '2017-02', '2017-06'))
+        block = [m('2016-10'), m('2017-02'), m('2017-06')]
+        np.testing.assert_array_equal(res['X_set'], np.isin(months, block).astype(int))   # whole months, all areas
+        self.assertLess(months[res['X_set'] == 0].max(), months[res['X_set'] == 1].min())
+        self.assertTrue((res['X_set'][groups == 9] == 1).all())                             # never moved to fitting
+        self.assertNotIn(9, set(groups[res['X_set'] == 0]))
+        self.assertEqual((res['validation_only_groups'], res['fitting_only_groups']), (1, 1))
+        self.assertEqual(res['validation_months'], ['2016-10', '2017-02', '2017-06'])
+        x_set, ratio, record = self.mgf().stage1_split('tb3', groups, months, m('2017-10'), 42, 4, '2018-02')
+        np.testing.assert_array_equal(x_set, res['X_set'])
+        self.assertIsNone(ratio)
+        self.assertEqual((record['split_mode'], record['validation_months'][0], record['fitting_months'][-1]),
+                         ('tb3', '2016-10', '2016-06'))
+
+    def test_target_month_excluded_through_the_rolling_window(self):
+        from config import TRAIN_WINDOW_MONTHS
+        from src.customize.customize import train_test_split_rolling_window
+        labelled = [m(f'{y}-{mo:02d}') for y in range(2012, 2019) for mo in (2, 6, 10) if m(f'{y}-{mo:02d}') <= m('2018-02')]
+        areas = np.repeat(np.arange(6), len(labelled))
+        months = np.tile(labelled, 6)
+        dates = pd.to_datetime(pd.Series(ff.month_label(months)) + '-01')
+        X = np.zeros((len(months), 2))
+        split = train_test_split_rolling_window(X, np.zeros(len(months), int), X, areas, dates.dt.year.to_numpy(), dates,
+                                                test_month=pd.Period('2018-02', freq='M'), active_lag=4,
+                                                train_window_months=TRAIN_WINDOW_MONTHS, admin_codes=np.arange(len(months)))
+        mtrain, mtest = months[split[8]], months[split[9]]
+        self.assertEqual(set(mtest), {m('2018-02')})
+        x_set, _, record = self.mgf().stage1_split('tb3', areas[split[8]], mtrain, m('2017-10'), 42, 4, '2018-02')
+        self.assertNotIn(m('2018-02'), set(mtrain))
+        self.assertEqual(record['validation_months'], list(plan.TB3_VALIDATION_MONTHS[(4, '2018-02')]))
+        self.assertTrue(all(f < '2016-10' for f in record['fitting_months']))
+        from src.utils.split import time_block_split
+        with self.assertRaises(ValueError):          # a target-month row in the pool is refused
+            time_block_split(areas, months, m('2017-10'), 3)
+
+    def test_mismatch_and_incomplete_blocks_raise_without_random_fallback(self):
+        from src.utils.split import time_block_split
+        groups, months = self.pool()
+        with self.assertRaises(ValueError):
+            time_block_split(groups, months, m('2017-10'), 3, ('2016-06', '2016-10', '2017-02'))
+        few = np.isin(months, [m('2016-10'), m('2017-02'), m('2017-06')])
+        with self.assertRaises(ValueError):          # three months and no earlier fitting month
+            time_block_split(groups[few], months[few], m('2017-10'), 3)
+        with self.assertRaises(ValueError):
+            time_block_split(groups[:2], months[:2], m('2017-10'), 3)
+        mgf = self.mgf()
+        with self.assertRaises(ValueError):          # the computed block differs from the A2 table for H8
+            mgf.stage1_split('tb3', groups, months, m('2017-10'), 42, 8, '2018-02')
+        with self.assertRaises(ValueError):
+            mgf.stage1_split('tb3', groups, months, m('2017-10'), 43, 4, '2018-02')
+        with self.assertRaises(ValueError):
+            mgf.stage1_split('tb3', groups, months, m('2017-10'), 42, 4, '2019-02')
+
+    def test_random_split_is_unchanged(self):
+        from src.utils.split import group_aware_train_val_split
+        groups, months = self.pool()
+        for ratio, share in plan.SPLIT_RATIOS.items():
+            x_set, val_ratio, record = self.mgf().stage1_split(ratio, groups, months, m('2017-10'), 43, 4, '2018-02')
+            ref = group_aware_train_val_split(groups=groups, val_ratio=share, min_val_per_group=1, random_state=43,
+                                              skip_singleton_groups=True)
+            np.testing.assert_array_equal(x_set, ref['X_set'])
+            self.assertEqual(val_ratio, share)
+            self.assertEqual(set(record), {'rule', 'groups_with_validation', 'singleton_groups_train_only'})
+            self.assertEqual(record['singleton_groups_train_only'], 2)
+
+    def test_tb3_schedule_has_six_distinct_roots_and_candidates(self):
+        from scripts import run_stage1
+        obs = pd.DataFrame({'month': [m(t) for t in plan.STAGE1_TARGETS + ('2010-01', '2016-02', '2016-06',
+                                                                          '2016-10', '2017-02', '2017-06', '2017-10')]
+                                     + [m(f'{y}-{mo:02d}') for y in range(2021, 2025) for mo in (2, 6, 10)]})
+        sched = prep.build_schedule(obs)
+        self.assertEqual((sched['stage1_counts']['roots'], sched['stage1_counts']['candidates']), (162, 648))
+        self.assertEqual((sched['stage1_tb3_counts']['roots'], sched['stage1_tb3_counts']['candidates']), (6, 6))
+        g_of = {'4': 'G1', '8': 'G4', '12': 'G2'}
+        tb3 = run_stage1.scheduled_roots(sched, g_of, 'tb3')
+        tb3_c = run_stage1.scheduled_candidates(sched, g_of, 'tb3')
+        self.assertEqual(len(tb3), 6)
+        self.assertEqual(sorted(tb3_c), sorted(f'h{h}_{t}_{g_of[str(h)]}_L1_tb3_s42_gt0'
+                                               for h in plan.HORIZONS for t in plan.TB3_TARGETS))
+        self.assertFalse(set(tb3) & set(run_stage1.scheduled_roots(sched, g_of)))
+        self.assertFalse(set(tb3_c) & set(run_stage1.scheduled_candidates(sched, g_of)))
+        self.assertEqual({(e['horizon'], e['target_month']) for e in tb3.values()}, set(plan.TB3_VALIDATION_MONTHS))
+        self.assertEqual(self.mgf().root_candidates(4, '2018-02', 'G1', 'tb3', 42), ['h4_2018-02_G1_L1_tb3_s42_gt0'])
+        self.assertEqual(len(self.mgf().root_candidates(4, '2018-02', 'G1', 'r80', 42)), 4)
+
+    def test_time_block_partition_runs_with_validation_only_areas(self):
+        from src.utils.split import time_block_split
+        rng = np.random.default_rng(5)
+        groups = np.repeat(np.arange(40), 12)
+        months = np.tile(np.arange(100, 112), 40)
+        keep = ~((groups < 3) & (months < 109))          # areas 0-2 observed only in the block
+        groups, months = groups[keep], months[keep]
+        X = rng.normal(size=(len(groups), 4)); X[:, 3] = groups >= 20
+        y = ((X[:, 0] + 3 * X[:, 3] * X[:, 1]) > 0).astype(int) * 2
+        split = time_block_split(groups, months, 112, 3)['X_set']
+        self.assertTrue((split[groups < 3] == 1).all())
+        root, rec = nx.fit_global(X[split == 0], y[split == 0], SMALL_G['G1'])
+        with tempfile.TemporaryDirectory() as tmp:
+            model = nx.XGBmodel(tmp, plan.L_CONFIGS['L1'])
+            model.set_root(root, rec)
+            (assigned, _, s_branch), _ = run_partition(model, X, y, groups, split, months, threshold=Fraction(0))
+            for entry in model.fit_log[1:]:
+                self.assertLessEqual(entry['rows'], int((split == 0).sum()))
+            from src.helper.helper import get_X_branch_id_by_group
+            np.testing.assert_array_equal(get_X_branch_id_by_group(groups, s_branch), assigned)
+
+    def reuse_fixture(self, root, dev_targets=plan.DEV_TARGETS, params=None, extra=None, reused=None):
+        """A source/target run layout: preparation identity, schedule, G predictions and,
+        per H x G, a stored global record with its effective params/rounds."""
+        from src.utils.run_identity import file_sha256
+        dev = [{'horizon': h, 'target_month': t, 'origin_month': ff.month_label([m(t) - h])[0]}
+               for h in plan.HORIZONS for t in plan.DEV_TARGETS]
+        manifests = root / 'prepared' / 'manifests'
+        manifests.mkdir(parents=True)
+        (manifests / 'schedule.json').write_text(json.dumps({'development': dev, **(extra or {})}))
+        outputs = {f: 'same' for f in rexp.REUSED_PREPARED}
+        outputs['manifests/schedule.json'] = file_sha256(manifests / 'schedule.json')
+        (manifests / 'outputs.json').write_text(json.dumps(outputs))
+        prepared = file_sha256(manifests / 'outputs.json')
+        (manifests / 'identity.json').write_text(json.dumps({'stage': 'prepare', 'outputs_sha256': prepared}))
+        rows = [{'area': 1, 'target_month': t, 'horizon': h, 'g_config': g, 'y_pred_code': 0}
+                for h in plan.HORIZONS for t in dev_targets for g in plan.G_CONFIGS]
+        (root / 'gscreen').mkdir()
+        rexp.write_csv_gz(root / 'gscreen' / 'predictions.csv.gz', pd.DataFrame(rows))
+        (root / 'gscreen' / 'selection.json').write_text(json.dumps({
+            'prepared': prepared, 'code': {'sha256': 'c'}, 'reused_predictions': reused,
+            'outputs': {'predictions.csv.gz': file_sha256(root / 'gscreen' / 'predictions.csv.gz')}}))
+        for h in plan.HORIZONS:
+            for g, config in plan.G_CONFIGS.items():
+                p_, rounds = plan.booster_params(config)
+                p_ = {**p_, **((params or {}).get(g, {}))}
+                d = root / 'globals' / f'h{h}' / g
+                d.mkdir(parents=True)
+                (d / 'O2019-01.json').write_text(json.dumps({'params': p_, 'rounds_total': rounds}))
+
+    def test_gscreen_reuse_identity_guards(self):
+        def pair(t, **src_kwargs):
+            run, src = Path(t) / 'run', Path(t) / 'src'
+            self.reuse_fixture(run, extra={'stage1_tb3_roots': [1, 2]})     # tb3 lists may differ
+            self.reuse_fixture(src, **src_kwargs)
+            return run, src
+        with tempfile.TemporaryDirectory() as t:
+            run, src = pair(t)
+            preds, record = rexp.reused_gscreen_predictions(run, src)
+            self.assertEqual(len(preds), 3 * 4 * 6)
+            self.assertEqual(record['matched_development_schedule_sha256'],
+                             rexp.dev_schedule_digest(json.loads((run / 'prepared' / 'manifests' / 'schedule.json').read_text())))
+        with tempfile.TemporaryDirectory() as t:                            # changed development schedule
+            run, src = pair(t)
+            sched = json.loads((src / 'prepared' / 'manifests' / 'schedule.json').read_text())
+            sched['development'][0]['origin_month'] = '1999-01'
+            (src / 'prepared' / 'manifests' / 'schedule.json').write_text(json.dumps(sched))
+            with self.assertRaisesRegex(RuntimeError, 'development schedule differs'):
+                rexp.reused_gscreen_predictions(run, src)
+        with tempfile.TemporaryDirectory() as t:                            # one development target missing
+            run, src = pair(t, dev_targets=plan.DEV_TARGETS[:-1])
+            with self.assertRaisesRegex(RuntimeError, 'targets'):
+                rexp.reused_gscreen_predictions(run, src)
+        with tempfile.TemporaryDirectory() as t:                            # other effective XGB parameters
+            run, src = pair(t, params={'G2': {'nthread': 8}})
+            with self.assertRaisesRegex(RuntimeError, 'effective XGBoost parameters'):
+                rexp.reused_gscreen_predictions(run, src)
+        with tempfile.TemporaryDirectory() as t:                            # G screen not bound to its preparation
+            run, src = pair(t)
+            sel = json.loads((src / 'gscreen' / 'selection.json').read_text()); sel['prepared'] = 'other'
+            (src / 'gscreen' / 'selection.json').write_text(json.dumps(sel))
+            with self.assertRaisesRegex(RuntimeError, 'completed preparation'):
+                rexp.reused_gscreen_predictions(run, src)
+        with tempfile.TemporaryDirectory() as t:                            # a reuse of a reuse
+            run, src = pair(t, reused={'source_run': 'x'})
+            with self.assertRaisesRegex(RuntimeError, 'fitted the G predictions'):
+                rexp.reused_gscreen_predictions(run, src)
+
+    def test_compare_rebuilds_the_split_and_joins_by_key(self):
+        from scripts import stage1_tb3_compare as cmp
+        months = [m(x) for x in ('2016-02', '2016-06', '2016-10', '2017-02', '2017-06', '2017-10', '2018-02')]
+        snap = pd.DataFrame([(a, mo) for a in (1, 2, 3) for mo in months], columns=['area', 'target_month'])
+        roles = cmp.rederived_tb3_roles(snap, 4, '2018-02')
+        self.assertEqual(sorted(roles.loc[roles.role == 'validation', 'target_month'].unique()),
+                         ['2016-10', '2017-02', '2017-06'])
+        self.assertTrue((roles.target_month < '2017-10').all())       # O = 2017-10 and the target excluded
+        with tempfile.TemporaryDirectory() as t:
+            stage = Path(t)
+            (stage / 'roots' / 'r').mkdir(parents=True); (stage / 'candidates' / 'c').mkdir(parents=True)
+            members = pd.concat([roles, pd.DataFrame({'area': [1, 2, 3], 'target_month': '2018-02',
+                                                      'role': 'heldout_target'})])
+            rexp.write_csv_gz(stage / 'roots' / 'r' / 'fold_membership.csv.gz', members.assign(class_code=0))
+            self.assertEqual(cmp.split_problems(stage, 'r', snap, 4, '2018-02'), [])
+            flipped = members.copy(); flipped.loc[flipped.target_month == '2016-06', 'role'] = 'validation'
+            rexp.write_csv_gz(stage / 'roots' / 'r' / 'fold_membership.csv.gz', flipped.assign(class_code=0))
+            self.assertTrue(cmp.split_problems(stage, 'r', snap, 4, '2018-02'))
+            rexp.write_csv_gz(stage / 'roots' / 'r' / 'fold_membership.csv.gz', members.assign(class_code=[0] * (len(members) - 3) + [2, 0, 3]))
+            pd.DataFrame({'FEWSNET_admin_code': [1, 2, 3], 'y_true_code': [2, 0, 3], 'y_pred_pooled_code': [2, 0, 0]}).to_csv(
+                stage / 'roots' / 'r' / 'root_target_predictions.csv', index=False)
+            local = pd.DataFrame({'FEWSNET_admin_code': [3, 1, 2], 'y_true_code': [3, 2, 0],
+                                  'y_pred_pooled_code': [0, 2, 0], 'y_pred_partitioned_code': [3, 2, 0], 'branch_id': '0'})
+            local.to_csv(stage / 'candidates' / 'c' / 'target_predictions.csv', index=False)
+            keyed = cmp.keyed_target(stage, 'r', 'c', '2018-02')       # different row order, joined by key
+            self.assertEqual(dict(zip(keyed.area, keyed.y_local)), {1: 2, 2: 0, 3: 3})
+            local.assign(y_true_code=[3, 2, 1]).to_csv(stage / 'candidates' / 'c' / 'target_predictions.csv', index=False)
+            with self.assertRaises(cmp.CompareError):
+                cmp.keyed_target(stage, 'r', 'c', '2018-02')
+            local.iloc[:2].to_csv(stage / 'candidates' / 'c' / 'target_predictions.csv', index=False)
+            with self.assertRaises(cmp.CompareError):
+                cmp.keyed_target(stage, 'r', 'c', '2018-02')
+
+    def test_tb3_locks_the_d26_g_selection(self):
+        from scripts import run_stage1 as s1
+        s1.require_tb3_g({'4': 'G1', '8': 'G4', '12': 'G2'})
+        with self.assertRaises(SystemExit):
+            s1.require_tb3_g({'4': 'G3', '8': 'G2', '12': 'G2'})
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

@@ -11,6 +11,10 @@ python app/main_model_GF.py --data SNAPSHOT --geometry-dir DIR --schema SCHEMA \
     --forecasting_scope N --desired_terms YYYY-MM --g-config G1 --ratio r80 --split-seed 42 \
     --checkpoint-dir SCRATCH_DIR
 
+``--ratio tb3`` (D27, experiment-plan A2) replaces the within-area random split by the
+time block: the latest three observed label months of the root's pool are the common
+E1/E2 validation rows, all earlier rows are fitting; it runs only the L1/gt0 candidate.
+
 Run from a fresh working directory. Writes, in that directory:
   root.json, fold_membership.csv.gz, root_target_predictions.csv and, per candidate,
   <candidate>/{candidate.json, correspondence_table.csv, target_predictions.csv,
@@ -43,7 +47,7 @@ from src.metrics import fourclass
 from src.model import native_xgb as nx
 from src.model.GeoRF import GeoRF
 from src.utils.lag_schedules import forecasting_scope_to_lag
-from src.utils.split import group_aware_train_val_split
+from src.utils.split import group_aware_train_val_split, time_block_split
 
 PARTITION_INFO_CUTOFF = plan.PARTITION_INFO_CUTOFF
 
@@ -191,6 +195,47 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
     return record
 
 
+def stage1_split(mode, groups, months, origin_index, seed, horizon, target):
+    """(x_set, val_ratio, validation_split record) of one root.
+
+    r80/r50: the inherited within-area random split, unchanged. tb3 (D27): the time block
+    whose validation months must equal the frozen A2 table for (H, T)."""
+    if mode == plan.TIME_BLOCK:
+        if seed != plan.TB3_SEED:
+            raise ValueError(f"tb3 uses split seed {plan.TB3_SEED} only")
+        expected = plan.TB3_VALIDATION_MONTHS.get((horizon, target))
+        if expected is None:
+            raise ValueError(f"no frozen tb3 validation months for h{horizon} {target}")
+        result = time_block_split(groups, months, origin_index, plan.TIME_BLOCK_MONTHS, expected)
+        return np.asarray(result["X_set"], dtype=int), None, {
+            "split_mode": plan.TIME_BLOCK,
+            "rule": (f"D27 time block: the latest {plan.TIME_BLOCK_MONTHS} observed label months of the root's "
+                     "legal pool (after the target-month area restriction) are the common E1/E2 validation "
+                     "rows for every area; all earlier rows are fitting; no per-area reassignment, "
+                     "validation-only areas stay validation (src/utils/split.py time_block_split)"),
+            "validation_months": result["validation_months"], "fitting_months": result["fitting_months"],
+            "groups_with_validation": result["groups_with_validation"],
+            "validation_only_groups": result["validation_only_groups"],
+            "fitting_only_groups": result["fitting_only_groups"]}
+    val_ratio = plan.SPLIT_RATIOS[mode]
+    split_result = group_aware_train_val_split(
+        groups=groups, val_ratio=val_ratio, min_val_per_group=int(GROUP_SPLIT["min_val_per_group"]),
+        random_state=seed, skip_singleton_groups=bool(GROUP_SPLIT["skip_singleton_groups"]))
+    return np.asarray(split_result["X_set"], dtype=int), val_ratio, {
+        "rule": "within-area random: ceil(n*ratio) validation, >=1, keep >=1 fitting, "
+                "singletons fitting-only (src/utils/split.py)",
+        "groups_with_validation": int((split_result["coverage"]["val_count"] > 0).sum()),
+        "singleton_groups_train_only": int((split_result["coverage"]["total_count"] == 1).sum())}
+
+
+def root_candidates(horizon, target, g, mode, seed):
+    """The candidate names of one root: four for r80/r50, the single L1/gt0 for tb3."""
+    if mode == plan.TIME_BLOCK:
+        return [plan.candidate_name(horizon, target, g, plan.TB3_LOCAL, mode, seed, plan.TB3_FAMILY)]
+    return [plan.candidate_name(horizon, target, g, l, mode, seed, f)
+            for l in plan.L_CONFIGS for f in plan.THRESHOLD_FAMILIES]
+
+
 def nx_file_sha(path):
     from src.utils.run_identity import file_sha256
     return file_sha256(path)
@@ -204,7 +249,8 @@ def main():
     parser.add_argument("--forecasting_scope", type=int, choices=(1, 2, 3), required=True)
     parser.add_argument("--desired_terms", required=True, help="single target month YYYY-MM")
     parser.add_argument("--g-config", required=True, choices=sorted(plan.G_CONFIGS))
-    parser.add_argument("--ratio", required=True, choices=sorted(plan.SPLIT_RATIOS))
+    parser.add_argument("--ratio", required=True, choices=sorted(plan.SPLIT_RATIOS) + [plan.TIME_BLOCK],
+                        help="r80/r50 within-area random split, or tb3 (D27 time block)")
     parser.add_argument("--split-seed", type=int, required=True, choices=plan.SPLIT_SEEDS)
     parser.add_argument("--checkpoint-dir", required=True, help="scratch store for boosters (outside Dropbox)")
     args = parser.parse_args()
@@ -251,11 +297,8 @@ def main():
     if month_label([mtrain.max()])[0] > PARTITION_INFO_CUTOFF:
         raise ValueError("a Stage 1 training label is after the partition cutoff")
 
-    val_ratio = plan.SPLIT_RATIOS[args.ratio]
-    split_result = group_aware_train_val_split(
-        groups=gtrain, val_ratio=val_ratio, min_val_per_group=int(GROUP_SPLIT["min_val_per_group"]),
-        random_state=args.split_seed, skip_singleton_groups=bool(GROUP_SPLIT["skip_singleton_groups"]))
-    x_set = np.asarray(split_result["X_set"], dtype=int)
+    x_set, val_ratio, validation_split = stage1_split(args.ratio, gtrain, mtrain, o_index, args.split_seed,
+                                                      horizon, str(term))
     fit_rows = x_set == 0
     root_name = plan.root_name(horizon, str(term), args.g_config, args.ratio, args.split_seed)
 
@@ -283,10 +326,7 @@ def main():
         "root_support": root_support,
         "fitting_keys_sha256": nx.keys_sha(gtrain[fit_rows], mtrain[fit_rows]),
         "validation_keys_sha256": nx.keys_sha(gtrain[~fit_rows], mtrain[~fit_rows]),
-        "validation_split": {"rule": "within-area random: ceil(n*ratio) validation, >=1, keep >=1 fitting, "
-                                     "singletons fitting-only (src/utils/split.py)",
-                             "groups_with_validation": int((split_result["coverage"]["val_count"] > 0).sum()),
-                             "singleton_groups_train_only": int((split_result["coverage"]["total_count"] == 1).sum())},
+        "validation_split": validation_split,
         "inherited_restrictions": "training areas restricted to areas present in the target month",
         "config": {"MIN_DEPTH": MIN_DEPTH, "MAX_DEPTH": MAX_DEPTH, "CONTIGUITY": config.CONTIGUITY,
                    "REFINE_TIMES": config.REFINE_TIMES, "MIN_BRANCH_SAMPLE_SIZE": config.MIN_BRANCH_SAMPLE_SIZE,
@@ -295,8 +335,10 @@ def main():
                    "path_round_cap": plan.PATH_ROUND_CAP, "fit_support": plan.FIT_SUPPORT,
                    "val_support": plan.STAGE1_VAL_SUPPORT},
     }
-    candidates = [plan.candidate_name(horizon, str(term), args.g_config, l, args.ratio, args.split_seed, f)
-                  for l in plan.L_CONFIGS for f in plan.THRESHOLD_FAMILIES]
+    if args.ratio == plan.TIME_BLOCK:
+        base.update(split_mode=plan.TIME_BLOCK, validation_months=validation_split["validation_months"],
+                    fitting_months=validation_split["fitting_months"])
+    candidates = root_candidates(horizon, str(term), args.g_config, args.ratio, args.split_seed)
     if root_support["classes"] < 2:
         # Recorded, never a zero-weight candidate and never padded with fake labels.
         write_json("root.json", {**base, "status": "root_insufficient_support", "candidates": candidates,

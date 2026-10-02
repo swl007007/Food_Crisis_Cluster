@@ -46,6 +46,29 @@ PATH_ROUND_CAP = 80
 #: Stage 1 within-area random split: tag -> validation share (D20).
 SPLIT_RATIOS = {"r80": 0.20, "r50": 0.50}
 SPLIT_SEEDS = (42, 43, 44)
+#: D27 (experiment-plan A2): the time-block split identity. In the root's legal
+#: [O-59, O) pool, the latest TIME_BLOCK_MONTHS distinct observed label months are the
+#: common E1/E2 validation block (same months for every area); every earlier legal row
+#: is fitting. Not a random split and not an internal rolling-origin replay.
+TIME_BLOCK = "tb3"
+TIME_BLOCK_MONTHS = 3
+#: The bounded D27 contrast: 2 targets x 3 H, L1 + gt0 only, split/model seed 42.
+TB3_TARGETS = ("2018-02", "2020-10")
+TB3_LOCAL = "L1"
+TB3_FAMILY = "gt0"
+TB3_SEED = 42
+#: D27 locks the D26 development crisis-F1 G selection (no reselection for tb3).
+TB3_G = {"4": "G1", "8": "G4", "12": "G2"}
+#: A2 pre-checked validation months per (H, T); a computed block that differs is an
+#: identity/calendar error, never a reason to pick another block.
+TB3_VALIDATION_MONTHS = {
+    (4, "2018-02"): ("2016-10", "2017-02", "2017-06"),
+    (8, "2018-02"): ("2016-06", "2016-10", "2017-02"),
+    (12, "2018-02"): ("2016-02", "2016-06", "2016-10"),
+    (4, "2020-10"): ("2019-06", "2019-10", "2020-02"),
+    (8, "2020-10"): ("2019-02", "2019-06", "2019-10"),
+    (12, "2020-10"): ("2018-10", "2019-02", "2019-06"),
+}
 #: D23: two E2 acceptance families, strict gain above the threshold; parent wins ties.
 THRESHOLD_FAMILIES = {"gt0": Fraction(0), "gt001": Fraction(1, 100)}
 #: D13: Stage 3 local activation, strict gain above .01 on the pooled gate dates.

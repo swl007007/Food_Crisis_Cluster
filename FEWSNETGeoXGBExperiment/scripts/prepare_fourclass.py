@@ -377,7 +377,8 @@ def _fold(horizon, target, labelled, label_months, with_gate):
 def build_schedule(observations: pd.DataFrame) -> dict:
     labelled = observations.groupby("month").size()
     label_months = sorted(int(m) for m in labelled.index)
-    schedule = {"stage1": [], "stage1_roots": [], "stage1_candidates": [], "development": [], "stage3": []}
+    schedule = {"stage1": [], "stage1_roots": [], "stage1_candidates": [], "development": [], "stage3": [],
+                "stage1_tb3_roots": [], "stage1_tb3_candidates": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
             entry = _fold(horizon, target, labelled, label_months, with_gate=False)
@@ -400,6 +401,15 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                                 "horizon": horizon, "target_month": label, "origin_month": entry["origin_month"],
                                 "ratio": ratio, "split_seed": seed, "local_config": local,
                                 "threshold_family": family})
+            if label in plan.TB3_TARGETS:
+                # D27 (A2): separate six-root time-block contrast; the 648 lists are unchanged.
+                schedule["stage1_tb3_roots"].append({"horizon": horizon, "target_month": label,
+                                                     "origin_month": entry["origin_month"],
+                                                     "ratio": plan.TIME_BLOCK, "split_seed": plan.TB3_SEED})
+                schedule["stage1_tb3_candidates"].append({
+                    "horizon": horizon, "target_month": label, "origin_month": entry["origin_month"],
+                    "ratio": plan.TIME_BLOCK, "split_seed": plan.TB3_SEED, "local_config": plan.TB3_LOCAL,
+                    "threshold_family": plan.TB3_FAMILY})
         for target in (mi(t) for t in plan.DEV_TARGETS):
             entry = _fold(horizon, target, labelled, label_months, with_gate=True)
             if entry["status"] != "scheduled":
@@ -424,6 +434,14 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                                      candidates=len(schedule["stage1_candidates"]))
     if len(schedule["stage1_candidates"]) != 648 or len(schedule["development"]) != 18:
         raise PreflightError("the frozen 648 candidate tasks / 18 development folds are not reproduced")
+    tb3_expected = len(plan.TB3_TARGETS) * len(HORIZONS)
+    if len(schedule["stage1_tb3_roots"]) != tb3_expected or len(schedule["stage1_tb3_candidates"]) != tb3_expected \
+            or tb3_expected != 6:
+        raise PreflightError("the D27 time-block contrast must schedule exactly 6 roots / 6 candidates")
+    schedule["stage1_tb3_counts"] = {"roots": len(schedule["stage1_tb3_roots"]),
+                                     "candidates": len(schedule["stage1_tb3_candidates"]),
+                                     "rule": ("D27: latest 3 observed label months of each root pool = common "
+                                              "E1/E2 validation, earlier rows fitting; L1/gt0, seed 42 only")}
     lower = []
     for stage in ("stage1", "development", "stage3"):
         for r in schedule[stage]:
