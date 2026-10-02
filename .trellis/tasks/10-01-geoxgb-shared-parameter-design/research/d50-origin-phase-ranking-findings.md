@@ -51,7 +51,7 @@ Parentheses give valid folds out of 7.
 - **No policy or model is adopted; Stage 1 remains unresolved.**
 - The descriptive cells refute "no within-state ordering anywhere": within exact phase 2 (onset) the original mean-fold AUC is .655702 / .598012 / .605804 with > .5 on 7/7, 4/7 and 7/7 dates, and within exact phase 3 (relief) .736468 / .745844 / .728402 with > .5 on 7/7 at every H.
 - They do **not** identify causal feature contributions, prove transfer, justify routing by date, or solve overfitting. AUC above .5 is descriptive ranking beyond constant exact-phase information and can reflect other history, country or era features.
-- **H8 onset ranking is unstable** across dates. A strictly monotone scalar calibration of the same fixed scores cannot repair that, because it preserves ranks; this is a statement about rank preservation, not an F1 impossibility.
+- **H8 onset ranking is unstable** across dates. A strictly increasing scalar calibration of the same fixed scores cannot repair that, because it preserves ranks; this is a statement about rank preservation, not an F1 impossibility.
 - **Anchored phase 2 at H12** drops from .605804 to .573847 although the anchored arm had better aggregate crisis F1 earlier. That illustrates an aggregation/operating-point trade-off, not a uniform signal improvement.
 - Phase 1 and phase 4-or-5 results are reported in full; small-support cells are not claimed robust.
 - No D51 is specified or run. Conceptual next direction only: understand which within-state signal is stable and which is unstable before any further capacity or partition sweep.
