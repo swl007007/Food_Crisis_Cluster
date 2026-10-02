@@ -1,8 +1,8 @@
 {
   "id": "exogenous-transition-forecast-design",
   "name": "exogenous-transition-forecast-design",
-  "title": "Exogenous food-crisis transition forecasting: scope and evaluation design",
-  "description": "Planning only: exclude phase-derived history from model fitting, define onset/transition evaluation and defensible country scope; reuse prior evidence; brainstorm then spec then grill.",
+  "title": "Food-crisis fallback forecasting during FEWS NET interruptions",
+  "description": "Implement the approved fs1/fs2 interruption-fallback design: D7 data preflight, bounded A/B three-stage comparison, frozen historical and 2025 evaluation, transition and country supplements.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -23,16 +23,57 @@
   "relatedFiles": [],
   "notes": "",
   "meta": {
-    "planning_stage": "brainstorm",
+    "planning_stage": "approved",
     "supersedes": ".trellis/tasks/10-01-geoxgb-shared-parameter-design",
-    "execution_authorized": false,
+    "execution_authorized": true,
     "user_confirmed": [
-      "non-IPC covariate lags allowed",
-      "primary claim: regions without IPC history",
-      "universal superiority to expert/persistence not required",
-      "two primary studies: all-period forecasting and transition comparison with experts",
+      "primary objective: fallback forecasting during FEWS NET expert and recent persistence-input interruptions",
+      "October 2025 primary interruption target evaluation; June 2025 supplementary partial-interruption evaluation",
+      "non-IPC covariate lags and genuinely available older IPC predictors allowed; IPC source dates/ages explicit",
+      "approach useful expert/persistence performance; consistent or universal superiority not required",
+      "two studies: general fallback forecasting and transition comparison with experts",
+      "Study2: origin-non-crisis risk set including 0-to-0 and 0-to-1; actual-onset recall separate; recovery optional",
       "country metrics secondary/supplementary",
-      "Study1: all IPC labels of test regions withheld from all fitting, partition learning, tuning and selection; evaluator only"
-    ]
+      "retain three-stage architecture and previous results with their original evidence scope; verify compatibility before reuse for interruption forecasts",
+      "historical development simulations: one/two consecutive missing IPC publication cycles, with available covariates and older IPC plus normal-availability references",
+      "practical parity: crisis-positive F1(model) minus F1(matched persistence) >= -0.02; fs1/fs2 and availability scenarios reported separately; uncertainty retained without positive-lower-bound gate",
+      "Study2 shares Study1 model/recipe, decision rule and matching predictions; evaluation-cohort change only, no separate transition q/split or threshold optimisation",
+      "Study2 requires genuine exact-origin and target labels; missing origin excluded with coverage reported, still eligible for Study1; masked historical origin truth evaluator-only",
+      "FEWS NET Current Situation primary evaluation labels; June 2025 forecast/coverage-only if genuine truth unavailable, no accuracy scores without labels",
+      "2018-2020 development/Stage1 candidates/Stage2 selection; frozen-recipe 2021-2024 retrospective evaluation; 2025 final interruption cases",
+      "retain 59-month origin-relative fitting with genuinely available history; freeze recipe/maps, not every fitted parameter at 2020",
+      "bounded development comparison: normal training versus normal plus one/two-cycle IPC-interruption training scenarios; matched development evaluation and no inflated independent sample count",
+      "per horizon: normal-scenario parity first, then maximise mean F1 of one/two interruption scenarios; component results separate, ties normal training, no automatic winner if none qualifies",
+      "G1: simulated missed releases synchronised across all participating regions; actual 2025 uses verified country/product availability",
+      "B training: normal/one-cycle/two-cycle variants each get one third of original sample weight; total conserved, no weight-ratio search",
+      "primary crisis F1 from pooled equal-weight region/target TP/FP/FN within horizon/scenario/study/period; country/month F1 supplementary, matched comparator keys",
+      "country tables descriptive for all eligible countries with support/coverage; no new country-specific significance tests, overall uncertainty retained; 2025 single-date results do not establish temporal consistency",
+      "fix H4 G1 depth3/200 rounds, H8 G4 depth4/400 rounds and local L1 depth1/20 additional rounds for A/B; no capacity search",
+      "Stage3 local enablement: crisis F1 gain strictly >0.01 versus its fold-global on identical origin-legal historical gate keys plus genuine support, otherwise global fallback; distinct from final -0.02 persistence tolerance",
+      "availability: verified historical vintages preferred; otherwise disclosed retrospective reconstruction with documented release lags and conservative cutoffs; exclude features lacking defensible availability rules, no exact real-time replay claim",
+      "forecast cutoff: end of origin month, including internal origins; release eligibility required, H4/H8 nominal month offsets; origin-month fitting targets remain excluded",
+      "historical local gate: replay the same missed-cycle intensity at each internal origin, preserve outer exclusions and selected A/B strategy; fixed >0.01 gain, genuine support and global fallback; actual 2025 intensity follows verified availability",
+      "retain support floors on lawful original keys: local fit 500 rows/50 areas/6 dates/2 observed four-class categories; Stage1 child validation 100 rows/20 areas/3 dates; Stage3 gate 100 rows/20 areas/3 dates with eligible local fits on at least 3 validation dates; fallback preserves evaluation rows",
+      "G3: paired country-block crisis-F1 uncertainty from 2000 fixed draws/seed42 and 95% percentile intervals; undefined metrics NA, no redraw or zero substitution; CI requires defined points, at least two countries and all defined draw differences; no CI acceptance gate",
+      "Stage1 F/S/C/E3 roles: F fitting; S q-scan and split acceptance; C frozen-candidate diagnostic only with no filtering/retraining/gate; E3 future development target evaluation, distinct from C; original-key roles fixed before augmentation",
+      "Stage1 finite schedule: A/B x H4/H8 x 9 targets (2018-2020 Feb/Jun/Oct) x 3 availability scenarios x r80/r50 x split seeds42/43/44 = 648 candidates, 162 per strategy/horizon; L1/gt0 only, model/confirmation seed42; candidate count is not fit count or distinct-map count",
+      "Stage2 pooling: one general map each for A and B, pooling own H4/H8 and three availability scenarios, up to324 identities per final map; no strategy mixing or month/scenario-specific maps; common origin-legal development evidence and no post-selection mixed map",
+      "Stage2 weights: nonnegative clipped-logit E3 crisis-F1 gain versus own candidate root; no C/persistence weights or scenario rebalance; genuine NA ineligible with reasons, corrupt/missing evidence errors; distinct no-prior/no-scorable/all-zero global fallbacks, no forced weights",
+      "historical primary calendar: origins and latest two simulated missed cycles strictly after 2020-12 recipe/map freeze; common target months across scenarios per horizon, excluded early dates recorded; conditional starts H4 2021-10/H8 2022-02 require release evidence; no global-only workaround or earlier-map refit",
+      "A/B selection: 72 complete-pipeline development forecasting folds = two strategies x two horizons x three scenarios x six February/June/October2019-2020 targets; 2018 remains in Stage1 candidates, legal global-fallback folds retained; no selection by averaged candidate E3 scores",
+      "non-IPC alignment: fixed documented source/product monthly release lag and exact source month, residual native NaN; annual latest eligible published reference year with source date/year/age; no lag or missingness-policy search"
+    ],
+    "superseded_decisions": [
+      "primary never-labelled-region claim",
+      "mandatory exclusion of all test-region historical IPC labels from every fitting stage",
+      "blanket exclusion of all historical IPC predictors / past-IPC-free main claim",
+      "strict per-horizon persistence superiority and positive lower confidence bound as inherited mandatory success gate"
+    ],
+    "deferred_pre_fit": "design.md D7: source/release/admin/feature identities, exact legal schedules, frozen environment and N-based fit ceiling; final label values remain protected until frozen predictions",
+    "execution_approval": {
+      "date": "2026-10-02",
+      "user_message": "ok implement",
+      "scope": "Complete final planning summary and its PRD/design/evaluation-contract/implementation plan; D7 pre-fit and final-outcome isolation remain binding."
+    }
   }
 }

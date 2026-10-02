@@ -1,0 +1,105 @@
+# Interruption fallback forecasting — specification for final review
+
+Status: **approved for execution**, 2026-10-02. User approved the complete final planning summary with “ok implement”. Follow the recorded audit lifecycle before code changes and D7 data readiness before real fitting; protected final outcomes remain isolated. Scientific contracts below are unchanged.
+
+## D1. Forecast object and available information
+
+One forecast is identified by region, target month T, horizon H (4 or 8 months), origin O=T−H, and availability scenario. Keep source dates and release/vintage evidence separate from target/origin dates. Source-month alignment alone does not certify historical availability.
+
+Confirmed availability evidence policy: use verified historical vintages where available. Where archived vintages cannot be recovered, permit explicitly labelled retrospective reconstruction using source-documented publication lags and a prespecified conservative cutoff. Disclose revised/latest values; this is not verified real-time replay. Exclude/mask features at cutoffs for which no defensible release-lag rule can be established. Apply the same policy in development and final cases; freeze source-family rules before fitting. This approval does not establish any particular source's eligibility or publication lag.
+
+Confirmed forecast cutoff: end of origin month O. Admit only verified/reconstructed releases on or before that cutoff; an O-month aggregate first released in O+1 remains unavailable. Apply the same end-of-month convention at internal origin V, subject also to the outer information boundary. The 2025-10 fs1/fs2 cutoffs are 2025-06-30/2025-02-28; the 2025-06 fs1/fs2 cutoffs are 2025-02-28/2024-10-31. H4/H8 denote month-index offsets, not four/eight full months before the start of the target month. Exact source-release evidence remains a separate requirement.
+
+Confirmed covariate alignment/missingness policy: for monthly non-IPC sources, predeclare one documented conservative release lag per source/product family and align to the resulting exact source month O−L. Recompute existing lags/trailing aggregates relative to that declared source-month endpoint. Check actual availability evidence as well where it exists; if the selected observation is absent/ineligible, retain native NaN rather than searching backwards for any nonmissing value, interpolating or importing a future value. For annual indicators, use the latest reference year whose release is eligible at the cutoff under the declared source rule, retaining reference year/date and age in provenance; annual carry-forward is explicit and separate from monthly gap filling. Do not tune lags, impute unavailable annual releases or add a missingness-policy comparison using scores. A/B, local/global, all stages and reporting cases share this policy. Specific lag values, annual release calendars and eligible variables still require source evidence; unknown rules remain excluded under D1. Static predictors require fixed-source identity and valid semantics rather than automatic exemption based on a legacy static label. User confirmed this alignment policy.
+
+Allowed inputs: static and origin-available dynamic covariates and their lags, plus genuinely available older IPC and lawful derived features. Retain stale IPC at its true date/age; do not fabricate current observations. Rebuild all affected lag, rolling, change, interaction and missingness features after applying the information boundary. A hidden observation cannot survive through another feature or training label.
+
+For target 2025-10, fs1 originates in 2025-06 and fs2 in 2025-02. If last available IPC is 2024-10, its age at those origins is 8 and 4 months respectively. Both target gaps are 12 months. Covariates available in June cannot enter the February-origin forecast.
+
+## D2. Temporal and training contracts
+
+- 2018–2020 target periods: development, Stage1 candidate partitions and Stage2 consensus/configuration selection, using only information through 2020-12 and lawful earlier fitting history.
+- 2021–2024: frozen-recipe retrospective Stage3 evaluation; no tuning from these scores. Disclose earlier historical result exposure.
+- 2025-10: primary final interruption case. 2025-06: supplementary case, scored only if genuine labels can be verified.
+- Retain 59-month origin-relative fitting, [O−59,O), intersected with lawful release eligibility and masks. Freezing recipe/maps does not freeze fitted parameters at2020. G2 defines the date/mask algorithm; D7 pins its source-dependent dates before fitting.
+
+Confirmed historical-evaluation calendar refinement: retain the 2021–2024 retrospective reporting frame but restrict its primary matched scenario comparison, separately by horizon, to origins after the 2020-12 information freeze whose latest two simulated missed publication cycles also occur strictly after that freeze. Thus no simulated deletion overlaps information potentially used to learn either the frozen map or the selected recipe. Use the same eligible target-month set for normal/one-cycle/two-cycle primary reporting within a horizon, determined from the publication calendar before fitting/scoring; keep excluded months and reasons in coverage accounting. Do not silently repair an invalid early fold by global fallback, since recipe selection can retain the forbidden information. Do not rebuild an earlier final map or retune the recipe to recover those folds.
+
+Calendar-only illustration, not verified publication availability: if February/June/October releases are available by their respective month-ends, the first common-eligible origin is June 2021. H4's first genuine scheduled target is then October 2021 (10 target months through 2024-10); H8's is February 2022 (9 through 2024-10). Relative to existing plan.py:88 windows (H4 from2021-05, H8 from2021-09), this excludes the scheduled H4 June2021 and H8 October2021 cases from the primary matched scenario comparison. Both excluded cases originate in February2021, with two missed cycles October2020/February2021. Source release delays may move eligibility later; do not freeze these illustrative first dates without the release ledger. Actual 2025 cases still use verified availability. User adopted the calendar boundary; precise first eligible dates remain conditional on release evidence.
+
+Keep the four-class probability model and original class axis. Hard crisis prediction is four-class argmax collapsed at IPC>=3. Crisis probability is p(IPC3)+p(IPC4/5); it is used for probability diagnostics, not silently substituted for the hard classification rule.
+
+Two confirmed training strategies:
+
+A. Normal historical input availability.
+B. Normal plus one/two missed-publication-cycle input scenarios.
+
+Both use common lawful fitting targets, common feature semantics, matched held-out development evaluation and the same finite base-model candidate budget (budget details G4). Training augmentation does not invent supervised labels. Variants of a region/target sample remain in the same split; their total fitting weight is conserved. Augmented rows do not increase the count of independent regions, genuine label months or classes for support rules.
+
+Confirmed B fitting weights: normal, one-cycle interruption and two-cycle interruption each receive w/3 for an original sample of weight w; total weight remains w. A uses the normal sample at weight w. Do not search weight ratios. The two interruption variants together receive two thirds of fitting weight; this is a robustness design, not an estimate of outage frequency. Evaluation scenario ranking remains the separate rule in D4.
+
+Confirmed G1: each simulated missed release is masked synchronously across all participating regions. Apply the mask to pooled and local paths and every derived IPC input; hidden labels cannot re-enter through another region's fitting data. Actual 2025 availability follows verified country/product coverage and need not equal this synthetic service-wide pattern.
+
+Confirmed capacities (G4): retain previous D26 H4=G1 (depth 3, 200 rounds), H8=G4 (depth 4, 400 rounds) and L1 (depth 1, 20 additional rounds), model seed42. Hold other common parameters equal across A/B; no new depth/rounds/class-weight grid or automatic adoption of rejected later variants. These capacities are starting points, not asserted optimal under interruptions. Follow the previously approved D28/D29 shared-root mechanism: each new Stage1 child starts from the candidate root and appends one L1; current routing parent remains the split comparator/fallback, not the inherited local-tree prefix. Stage3 shared locals start from that fold's global and append one L1. No cumulative ancestor-local stack. G4/D7 define finite fitting bounds and required identities. See research/reuse-starting-point.md.
+
+## D3. Three-stage separation
+
+| Layer | Role and required boundary |
+|---|---|
+| Stage1 q-scan | Search candidate splits on S only; not C, the final target or Study2-only cohort. |
+| Stage1 split acceptance | Compare proposed child/parent routing on the complete designated parent S keys. Keep separate from q ranking and external performance. |
+| Stage1 confirmation diagnostic | Score C only after freezing the candidate map/models/routes; no filtering, retraining or acceptance gate. |
+| Stage1 candidate evaluation | E3 is the held-out development target month; preserve its distinction from C and its permissible consensus role, identities and temporal cutoffs. |
+| Stage2 | Produce consensus from eligible Stage1 evidence through 2020; preserve the three-stage architecture. No new consensus formula is authorised merely by this scope change. |
+| Stage3 local enablement | Require crisis F1(local) − F1(fold-global) > 0.01 on identical origin-legal historical gate keys, plus genuine sample support; otherwise use global fallback. |
+| Stage3 reporting | Frozen recipe/maps, origin-legal refits, saved keyed predictions, baseline comparisons and Study1/Study2 views. |
+
+Reuse compatible old artifacts with their original fitting and selection provenance. Changed input availability may require recomputing features, predictions or fitting; old performance is not relabelled as interruption performance. The old task remains incomplete. G4 records q/split, consensus-weight and local-enablement rules; the0.02 final tolerance does not change them. Global predictions are already required for local gating; retain them as a same-input pooled diagnostic in final reporting, without adding a new training arm.
+
+## D4. Selection and evidence
+
+For each H, on the six2019–2020 full-pipeline held-out development target predictions defined in G4:
+
+1. Retain strategies with normal-scenario crisis F1 minus matched ordinary-persistence F1 >= −0.02.
+2. Rank eligible strategies by the equal-weight mean of one-cycle and two-cycle interruption F1. Exact ties favour A.
+3. Report each interruption scenario and matched prolonged-lag persistence separately. A high mean does not establish parity in every component.
+4. If neither strategy qualifies, report the unmet criterion; no automatic winner or unbounded new search.
+
+Practical parity is descriptive: delta F1 >= −0.02. It is not a statistical equivalence claim. Report uncertainty, train/development gaps, temporal instability and pooled/local differences. No required positive confidence-interval lower bound and no requirement for every month/country/partition to beat persistence. Country results are supplementary and cannot select winning countries from final scores.
+
+Confirmed primary aggregation: within each horizon, scenario, study cohort and reporting period, pool equal-weight eligible region/target observations and calculate crisis F1 = 2TP/(2TP+FP+FN) from summed confusion counts. Apply the 0.02 screen and A/B ranking to these pooled values, not mean monthly/country F1. Countries with more eligible observations contribute more; this is neither country-balanced nor population-weighted. Model/baseline comparisons use identical keys and report coverage. Keep development, historical evaluation and 2025 case results separate; do not pool horizons/scenarios/studies. Country and month tables supplement this primary aggregation.
+
+## D5. Evaluation views and comparators
+
+Study1 evaluates all eligible targets. Study2 uses the same predictions/rule on exact-origin non-crisis observations, retaining both 0→0 and 0→1, and reports true-onset recall separately. Genuine origin and target labels are required for that transition view. Missing-origin rows remain eligible for Study1 if target labels exist; report Study2 exclusions. In simulations, masked origin truth is evaluator-only. No separate transition q/split optimisation or threshold selection.
+
+Use ordinary persistence where exact-origin IPC is actually available; otherwise use the last genuinely available observation as a prolonged-lag baseline with source date/age. Expert comparisons require matching keys, horizon and genuine issued forecast. October 2024 near/medium projections originally target February/June 2025; carrying them to October 2025 is a different stale-expert comparator, not a same-horizon expert. Its inclusion remains optional, not an assumed required experiment.
+
+Use FEWS NET Current Situation as primary evaluation labels. Forward-filled IPC, projected IPC and model predictions cannot become truth. If genuine June labels remain unavailable, provide June forecasts/coverage and mark accuracy unevaluable. Other IPC/CH sources require a separate comparability contract.
+
+Metadata probe found October CS records but does not certify usable labels, unique regions, administrative mapping, real-time vintages or complete outage coverage. See research/2025-outcome-metadata.md. Keep 2025 value columns and scores out of design/selection.
+
+Confirmed country reporting: descriptive supplements covering every country with eligible observations, with sample count, distinct regions, genuine target months, crisis/onset counts, computable metrics and matched-baseline differences. Countries without eligible observations remain visible in coverage/exclusion accounting. Do not select countries by favourable scores. No new country-specific significance tests or claims of consistent/significant national superiority in this scope; overall paired uncertainty remains required. Use historical 2021–2024 month-level results to describe stability; a single October 2025 cross-section cannot demonstrate temporal consistency.
+
+## D6. Minimal evidence to retain
+
+Reuse existing prediction, fitting-key and artifact manifests. Retain forecast identifiers, scenario/strategy, prediction probabilities/classes, route, IPC source date/age and availability policy. Save evaluator truth/cohort flags separately from prediction inputs. Preserve matched comparator coverage and exclusions. Record code/config/input identities, map provenance and selection tables. Reconcile report counts with keyed predictions; do not infer provenance from console logs alone. Do not introduce a new tracking service for this experiment.
+
+## G2–G4. Evaluation and search contracts
+
+Read [evaluation-contract.md](evaluation-contract.md) in full with this file. It contains the mandatory simulation/latest-six-date gate algorithm (G2), reporting/bootstrap rules (G3), and search/consensus/support/finite schedules (G4). The split prevents context truncation and changes no contract.
+
+## D7. Mandatory data check, environment and execution limits
+
+The remaining unknowns are source facts, not choices to infer from results. Resolve them after final execution approval, before any real fit. Record them in a task-local data-readiness record and the existing snapshot/config manifests; no new tracking framework is required:
+
+1. Source paths, byte hashes, canonical administrative keys/crosswalk and duplicate handling; genuine IPC CS versus forecasts/fills; actual country/product release-cycle identities and outage coverage. A filename/month is not proof of publication or truth. Identify final truth sources using metadata only; defer outcome-value validation/scoring until predictions and recipe are frozen. If final truth fails validation then report unevaluable, not substituted labels.
+2. Per source/product, fixed monthly lag or annual release rule, verified-vintage/reconstruction status, revisions and excluded variables; raw-to-derived lineage for rolling climate fields. Do not certify the normalized-v1 panel or its ambiguous global rolling from its sidecar alone. Retain raw files unchanged. Omit unverifiable features under D1; missing IPC calendar or ambiguous administrative mapping blocks dependent fitting. Source corrections that change scientific semantics require design review, not a hidden extra arm.
+3. Ordered feature schema shared by A/B, role/fold keys, outer/inner masks, expected candidate/forecast ledgers and exact latest-six-date gates. Preserve existing exact IPC lag features as missing when the dated label is unavailable; existing latest-observed-phase/age features carry lawful older observations. Do not fabricate current IPC or expert inputs. XGBoost retains native NaN, with no new SMOTE, median-imputation or synthetic-class path. Keep expert forecasts as comparators only.
+4. Exact code identity and frozen numerical environment. Starting checkout observed in planning: branch geoxgb-shared-parameter-experiment, HEAD d79e72e251c83c02389e284f001ed6e0acb2494b; execution must pin its new producer commit, not pretend that this planning observation is an audit baseline. Reuse Windows Python3.12.10 with numpy2.2.6, pandas2.2.3, scikit-learn1.6.1, scipy1.15.2, geopandas1.0.1, shapely2.1.0, polars1.27.1 and xgboost3.0.0 (`FEWSNETGeoXGBExperiment/README.md:87–88`). Verify the environment before fits; do not substitute a local Linux stack or silently upgrade packages. Use CPU hist, multi:softprob, four classes, one_output_per_tree and nthread4; keep the common G/L settings in plan.py. Preserve existing kNN k40, spatial sigma5, eigengap/connected-component handling and seed42 (`scripts/run_stage2.py:1–12`); k40 is not a40-region limit.
+
+Budget: at most648 Stage1 candidates and40,824 Stage1 model fits under the retained binary-tree ceiling. Development has72 forecasting folds. Historical final evaluation retains the scheduled February/June/October targets subject to D2, at most(10+9)×3=57 scenario/horizon folds under the illustrated calendar; delays or missing truth reduce coverage, never add an unplanned target grid. Actual2025 has at most4 target/horizon forecasting folds with verified availability, not another three-scenario sweep. Only the chosen strategy per horizon proceeds to those final folds. Each forecasting fold needs at most7 global fits and one local fit per eligible cluster at each of those up to7 origins. Thus total fits are bounded by40,824 + sum_over_at_most133_folds[7 + sum_over_at_most7_origins K_fit], where K_fit counts disjoint map clusters meeting the50-area local fitting floor. If N is the frozen maximum distinct mapped areas in any fitting pool, K_fit<=floor(N/50), giving the conservative bound40,824+931×(1+floor(N/50)). Compute and record N before launch. This is a count bound, not a runtime promise; lawful identical-cache reuse and support/no-map fallbacks reduce work.
+
+Run sequentially initially using immutable run IDs outside Dropbox-synced working trees; no duplicate capacity screens, grid expansion or discretionary seed retries. Reuse only when code/config/input/role/mask/parent identities match. Stop dependent work on key/identity/leakage errors, exceeded schedules or missing expected artifacts. No qualifying A/B strategy for a horizon ends its final-model release with an unmet-criterion report; do not pick a winner anyway. A legitimate root-only/null-consensus result may complete an experiment but does not prove partition benefit. Preserve negative evidence and old artifacts; rollback means abandon the new isolated run and retain the last pinned producer, never rewrite raw data or old results. Protected2025 outcomes remain unopened until frozen predictions;2021–2024 scores never retune the recipe. The supplied AGENTS audit lifecycle and final user approval remain separate from these computational gates.
+
+Code inspection found required alignment, not completed implementation: `src/model/native_xgb.py:175–205` accepts global sample weights, while `:211–223` continuation does not; `:259–265` counts supplied rows, so augmented support must be based on original keys. `src/experiment/stage3.py:151–171` still uses macro-F1 for local gating. The new contract requires crisis-F1 evaluation and the approved fitting weights through both global/local paths. Preserve immutable root prefixes and use original-key support counts. GitNexus query failed with the existing read-only shadow-page replay error; direct source inspection was used, no index repair or code edits.
