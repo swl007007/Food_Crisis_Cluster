@@ -137,3 +137,41 @@ def time_block_split(groups, months, origin: int, n_months: int, expected_months
             "validation_only_groups": int(sum(g not in fit_groups for g in val_groups.tolist())),
             "fitting_only_groups": int(len(fit_groups - set(val_groups.tolist())))}
 
+
+
+def confirmation_split(groups, months, seed: int = 42) -> np.ndarray:
+    """D29 / A4: label-blind split of the ORIGINAL validation rows into S (0) and C (1).
+
+    ``groups``/``months`` are the original validation rows only. A fresh
+    ``random.Random(seed)``; areas numeric ascending, months ascending within area.
+    Odd-count areas (ascending) are shuffled; the first floor(n_odd/2) give S the extra
+    row, the rest give C. Then for every area in ascending order its month indices are
+    shuffled with the same rng: the first floor(n/2)+extra rows are S, the rest C.
+    Returns 0/1 per input row (input order). Duplicate (area, month) keys are refused.
+    """
+    import random
+
+    groups = np.asarray(groups, dtype=np.int64)
+    months = np.asarray(months, dtype=np.int64)
+    if len(groups) != len(months):
+        raise ValueError("groups and months differ in length")
+    keys = pd.DataFrame({"g": groups, "m": months})
+    if keys.duplicated().any():
+        raise ValueError("duplicate (area, month) keys in the original validation rows")
+    rng = random.Random(seed)
+    by_area = {}
+    for idx in np.lexsort((months, groups)):          # area ascending, month ascending
+        by_area.setdefault(int(groups[idx]), []).append(int(idx))
+    areas = sorted(by_area)
+    odd = [a for a in areas if len(by_area[a]) % 2 == 1]
+    rng.shuffle(odd)
+    s_extra = {a: int(i < len(odd) // 2) for i, a in enumerate(odd)}
+    role = np.ones(len(groups), dtype=int)
+    for a in areas:
+        rows = by_area[a]
+        order = list(range(len(rows)))
+        rng.shuffle(order)
+        n_s = len(rows) // 2 + s_extra.get(a, 0)
+        for j in order[:n_s]:
+            role[rows[j]] = 0
+    return role

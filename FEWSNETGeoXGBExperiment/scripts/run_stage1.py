@@ -43,32 +43,40 @@ CANDIDATE_FILES = ("candidate.json", "correspondence_table.csv", "target_predict
 #: split mode -> (schedule lists, Stage 1 output directory under the run)
 SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
                plan.TIME_BLOCK: ("stage1_tb3_roots", "stage1_tb3_candidates", "stage1_tb3"),
-               plan.ROOTINC: ("stage1_rootinc_roots", "stage1_rootinc_candidates", "stage1_rootinc")}
+               plan.ROOTINC: ("stage1_rootinc_roots", "stage1_rootinc_candidates", "stage1_rootinc"),
+               plan.ROOTCONF: ("stage1_rootconf_roots", "stage1_rootconf_candidates", "stage1_rootconf")}
 #: modes that run under the D26-locked G (no reselection)
-LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC)
+LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF)
+#: D29/A4 only: the frozen-candidate confirmation predictions
+CONFIRMATION_FILES = ("confirmation_predictions.csv.gz",)
+NAMERS = {plan.ROOTINC: (plan.rootinc_root_name, plan.rootinc_candidate_name),
+          plan.ROOTCONF: (plan.rootconf_root_name, plan.rootconf_candidate_name)}
 
 
-def rootinc_entries(schedule: dict) -> list:
-    """The six prepared D28 roots (a preparation without them is refused)."""
-    rows = schedule.get("stage1_rootinc_roots")
+def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
+    """The six prepared D28 (rootinc) or D29 (rootconf) roots; a preparation without them is refused."""
+    rows = schedule.get(SPLIT_MODES[mode][0])
     if rows is None:
-        raise SystemExit("this preparation has no D28 rootinc schedule; prepare a fresh run")
+        raise SystemExit(f"this preparation has no {mode} schedule; prepare a fresh run")
     want = {(h, t) for h in plan.HORIZONS for t in plan.ROOTINC_TARGETS}
     got = [(r["horizon"], r["target_month"]) for r in rows]
     if len(rows) != 6 or sorted(got) != sorted(want) or any(
             (r.get("ratio"), r.get("split_seed"), r.get("increment_source")) !=
             (plan.ROOTINC_RATIO, plan.ROOTINC_SEED, "root") for r in rows):
-        raise SystemExit("the D28 rootinc schedule is not exactly H{4,8,12} x {2018-02, 2020-10}, r80/seed 42/root")
+        raise SystemExit(f"the {mode} schedule is not exactly H{{4,8,12}} x {{2018-02, 2020-10}}, r80/seed 42/root")
+    if mode == plan.ROOTCONF and any(r.get("confirmation_seed") != plan.CONFIRMATION_SEED for r in rows):
+        raise SystemExit("the rootconf schedule does not carry confirmation seed 42")
     return rows
 
 
 def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     """root name -> schedule entry with its selected G (the frozen 162, or the six tb3)."""
     out = {}
-    if mode == plan.ROOTINC:
-        for r in rootinc_entries(schedule):
+    if mode in NAMERS:
+        name_root = NAMERS[mode][0]
+        for r in rootinc_entries(schedule, mode):
             g = g_of[str(r["horizon"])]
-            out[plan.rootinc_root_name(r["horizon"], r["target_month"], g)] = {**r, "g_config": g}
+            out[name_root(r["horizon"], r["target_month"], g)] = {**r, "g_config": g}
         return out
     for r in schedule[SPLIT_MODES[mode][0]]:
         g = g_of[str(r["horizon"])]
@@ -78,12 +86,13 @@ def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
 
 def scheduled_candidates(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     out = {}
-    if mode == plan.ROOTINC:
-        for r in rootinc_entries(schedule):
+    if mode in NAMERS:
+        name_root, name_cand = NAMERS[mode]
+        for r in rootinc_entries(schedule, mode):
             g = g_of[str(r["horizon"])]
-            out[plan.rootinc_candidate_name(r["horizon"], r["target_month"], g)] = {
+            out[name_cand(r["horizon"], r["target_month"], g)] = {
                 **r, "g_config": g, "local_config": plan.ROOTINC_LOCAL, "threshold_family": plan.ROOTINC_FAMILY,
-                "root": plan.rootinc_root_name(r["horizon"], r["target_month"], g)}
+                "root": name_root(r["horizon"], r["target_month"], g)}
         return out
     for c in schedule[SPLIT_MODES[mode][1]]:
         g = g_of[str(c["horizon"])]
@@ -120,6 +129,9 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
                "--g-config", root["g_config"], "--ratio", root["ratio"], "--split-seed", str(root["split_seed"]),
                "--checkpoint-dir", str(ckpt),
                "--increment-source", root.get("increment_source", "parent")]
+    confirm = "confirmation_seed" in root
+    if confirm:
+        command.append("--confirmation-split")
     (work / "command.json").write_text(json.dumps({"command": command, "cwd": str(work)}, indent=2), encoding="utf-8")
     env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONHASHSEED="5")
     env.pop("PYTHONPATH", None)
@@ -140,7 +152,7 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
             if dest.exists():
                 raise FileExistsError(f"{cand}: candidate output exists")
             dest.mkdir(parents=True)
-            for fname in CANDIDATE_FILES:
+            for fname in CANDIDATE_FILES + (CONFIRMATION_FILES if confirm else ()):
                 shutil.copy2(work / cand / fname, dest / fname)
             outputs.update({f"candidates/{cand}/{rel}": sha for rel, sha in output_hashes(dest).items()})
             for rel, sha in json.loads((dest / "candidate.json").read_text(encoding="utf-8"))["checkpoints"]["sha256"].items():
@@ -160,7 +172,8 @@ def main() -> None:
     parser.add_argument("--only", default="", help="comma list of root names (timing sample)")
     parser.add_argument("--split-mode", choices=sorted(SPLIT_MODES), default="random",
                         help="random: the 648 r80/r50 schedule; tb3: the six D27 time-block roots; "
-                             "rootinc: the six D28 shared-root increment roots (r80/s42/L1/gt0)")
+                             "rootinc: the six D28 shared-root increment roots (r80/s42/L1/gt0); "
+                             "rootconf: the six D29 roots with the S/C confirmation split")
     args = parser.parse_args()
     run = args.run_dir.resolve()
     from src.utils.acceptance import accept_g_selection

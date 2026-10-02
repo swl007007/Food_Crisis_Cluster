@@ -139,6 +139,21 @@ def rootinc_candidate_name(h, target, g):
     return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{ROOTINC}_{ROOTINC_FAMILY}"
 
 
+#: D29 / experiment-plan A4: confirmation diagnostic. The D28 rootinc arm (r80, seed 42,
+#: root increments, L1/gt0, locked G) whose original validation is split label-blind
+#: into search S (E1/E2) and frozen-candidate confirmation C (diagnostic only).
+ROOTCONF = "rootconf"
+CONFIRMATION_SEED = 42
+
+
+def rootconf_root_name(h, target, g):
+    return f"{root_name(h, target, g, ROOTINC_RATIO, ROOTINC_SEED)}_{ROOTCONF}"
+
+
+def rootconf_candidate_name(h, target, g):
+    return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{ROOTCONF}_{ROOTINC_FAMILY}"
+
+
 def booster_params(config: dict) -> tuple[dict, int]:
     """(xgb.train params, rounds) for one G or L configuration."""
     params = dict(XGB_BASE)

@@ -379,7 +379,8 @@ def build_schedule(observations: pd.DataFrame) -> dict:
     label_months = sorted(int(m) for m in labelled.index)
     schedule = {"stage1": [], "stage1_roots": [], "stage1_candidates": [], "development": [], "stage3": [],
                 "stage1_tb3_roots": [], "stage1_tb3_candidates": [],
-                "stage1_rootinc_roots": [], "stage1_rootinc_candidates": []}
+                "stage1_rootinc_roots": [], "stage1_rootinc_candidates": [],
+                "stage1_rootconf_roots": [], "stage1_rootconf_candidates": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
             entry = _fold(horizon, target, labelled, label_months, with_gate=False)
@@ -418,6 +419,11 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                 schedule["stage1_rootinc_roots"].append(dict(common))
                 schedule["stage1_rootinc_candidates"].append({**common, "local_config": plan.ROOTINC_LOCAL,
                                                               "threshold_family": plan.ROOTINC_FAMILY})
+                # D29 (A4): the same six roots with the label-blind S/C confirmation split.
+                conf = {**common, "confirmation_seed": plan.CONFIRMATION_SEED}
+                schedule["stage1_rootconf_roots"].append(dict(conf))
+                schedule["stage1_rootconf_candidates"].append({**conf, "local_config": plan.ROOTINC_LOCAL,
+                                                               "threshold_family": plan.ROOTINC_FAMILY})
         for target in (mi(t) for t in plan.DEV_TARGETS):
             entry = _fold(horizon, target, labelled, label_months, with_gate=True)
             if entry["status"] != "scheduled":
@@ -454,6 +460,11 @@ def build_schedule(observations: pd.DataFrame) -> dict:
         raise PreflightError("the D28 shared-root contrast must schedule exactly 6 roots / 6 candidates")
     schedule["stage1_rootinc_counts"] = {"roots": 6, "candidates": 6,
                                          "rule": "D28/A3: r80, seed 42, L1, gt0; children continue the shared root once"}
+    if len(schedule["stage1_rootconf_roots"]) != 6 or len(schedule["stage1_rootconf_candidates"]) != 6:
+        raise PreflightError("the D29 confirmation contrast must schedule exactly 6 roots / 6 candidates")
+    schedule["stage1_rootconf_counts"] = {"roots": 6, "candidates": 6,
+                                          "rule": ("D29/A4: the D28 rootinc roots; original r80 validation split "
+                                                   "label-blind into search S and diagnostic confirmation C (seed 42)")}
     lower = []
     for stage in ("stage1", "development", "stage3"):
         for r in schedule[stage]:

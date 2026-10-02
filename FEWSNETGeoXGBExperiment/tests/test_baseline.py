@@ -1311,6 +1311,108 @@ class SharedRootIncrement(unittest.TestCase):
             s1.rootinc_entries({'stage1_rootinc_roots': []})
 
 
+class ConfirmationDiagnostic(unittest.TestCase):
+    """D29 (experiment-plan A4): label-blind S/C split, C isolation from the search, schedule."""
+
+    def test_deterministic_label_blind_split(self):
+        from src.utils.split import confirmation_split
+        # area 30: 3 rows (odd), area 7: 4 (even), area 100: 1 (singleton), area 2: 5 (odd); input unsorted
+        rows = [(30, 5), (7, 1), (100, 9), (2, 4), (30, 1), (7, 3), (2, 1), (7, 2), (2, 2), (30, 3), (7, 9),
+                (2, 3), (2, 9)]
+        g, mo = (np.array(c) for c in zip(*rows))
+        role = confirmation_split(g, mo, 42)
+        np.testing.assert_array_equal(role, confirmation_split(g, mo, 42))        # deterministic
+        perm = np.random.default_rng(0).permutation(len(g))                       # input order irrelevant
+        np.testing.assert_array_equal(confirmation_split(g[perm], mo[perm], 42), role[perm])
+        self.assertLessEqual(abs(int((role == 0).sum()) - int((role == 1).sum())), 1)
+        for a, n in ((30, 3), (7, 4), (100, 1), (2, 5)):
+            self.assertIn(int((role[g == a] == 0).sum()), {n // 2, n // 2 + 1})
+        self.assertEqual(int((role[g == 7] == 0).sum()), 2)                       # even area: exact half
+        odd = [a for a in (2, 30, 100)]
+        extra = sum(int((role[g == a] == 0).sum()) - (int((g == a).sum()) // 2) for a in odd)
+        self.assertEqual(extra, len(odd) // 2)                                    # floor(n_odd/2) S extras
+        self.assertEqual(len(confirmation_split(np.array([], int), np.array([], int))), 0)
+        with self.assertRaises(ValueError):
+            confirmation_split(np.array([1, 1]), np.array([3, 3]))
+
+    def test_split_partitions_original_validation_and_keeps_fitting(self):
+        from src.utils.split import confirmation_split, group_aware_train_val_split
+        groups = np.repeat(np.arange(25), np.arange(1, 26) % 7 + 1)
+        months = np.concatenate([np.arange(n) for n in np.arange(1, 26) % 7 + 1])
+        x_set = group_aware_train_val_split(groups, .2, 1, 42, True)['X_set']
+        val = np.flatnonzero(x_set == 1)
+        role = confirmation_split(groups[val], months[val], 42)
+        s, c = set(val[role == 0]), set(val[role == 1])
+        self.assertFalse(s & c)
+        self.assertEqual(s | c, set(val))
+        self.assertEqual(set(np.flatnonzero(x_set == 0)) & (s | c), set())
+        np.testing.assert_array_equal(group_aware_train_val_split(groups, .2, 1, 42, True)['X_set'], x_set)
+
+    def test_c_labels_cannot_change_the_frozen_candidate_and_every_c_key_is_predicted(self):
+        mgf = TimeBlockContrast.mgf()
+        from src.utils.split import confirmation_split, group_aware_train_val_split
+        rng = np.random.default_rng(11)
+        groups = np.repeat(np.arange(64), 30)
+        X = rng.normal(size=(len(groups), 5))
+        y = ((X[:, 0] * np.where(groups < 40, 1, -1)) > 0).astype(int) * 2   # sign flips in areas 40-63
+        months = np.tile(np.arange(400, 430), 64)
+        x_set = np.asarray(group_aware_train_val_split(groups, .5, 1, 42, True)['X_set'])
+        val = np.flatnonzero(x_set == 1)
+        conf = np.zeros(len(groups), bool)
+        conf[val[confirmation_split(groups[val], months[val], 42) == 1]] = True
+        conf[(groups == 63) & (x_set == 1)] = True     # area 63: every validation row in C (no S rows)
+        keep = ~conf
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        Xt, yt, gt = X[:64], y[:64], groups[::30]
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        data = (X[keep], y[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+        outs = []
+        for trial, yc in enumerate((y[conf], rng.permutation(y[conf]))):
+            with tempfile.TemporaryDirectory() as t, patch.object(trans, 'CONTIGUITY', False), \
+                    patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                    patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                    patch.dict(plan.STAGE1_VAL_SUPPORT, FLOORS['val_support']), \
+                    patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+                work, ck = Path(t) / 'w', Path(t) / 'ck'
+                work.mkdir()
+                rec = mgf.run_candidate('c', 'L1', 'gt0', root, data, work, ck, None, [f'f{i}' for i in range(5)],
+                                        increment_source='root',
+                                        confirmation=(X[conf], yc, groups[conf], months[conf]))
+                cp = pd.read_csv(work / 'c' / 'confirmation_predictions.csv.gz', converters={'branch_id': str})
+                self.assertEqual(len(cp), int(conf.sum()))
+                self.assertFalse(cp.duplicated(['area', 'target_month']).any())
+                self.assertEqual(set(zip(cp['area'], cp['target_month'])),
+                                 set(zip(groups[conf], ff.month_label(months[conf]))))
+                self.assertIn(63, set(cp['area']))
+                outs.append((rec['confirmation']['frozen_digest_before_scoring'], rec['checkpoints']['sha256'],
+                             (work / 'c' / 's_branch.pkl').read_bytes(),
+                             (work / 'c' / 'correspondence_table.csv').read_text(),
+                             rec['partition']['decisions']))
+                self.assertGreater(rec['partition']['accepted_splits'], 0, f"fixture must split {rec['partition']['decisions']} {rec['fits']['child_fits']}")
+        self.assertEqual(outs[0][:4], outs[1][:4])
+        self.assertEqual(json.dumps(outs[0][4], default=str), json.dumps(outs[1][4], default=str))
+
+    def test_six_rootconf_schedule_entries_with_distinct_names(self):
+        from scripts import run_stage1 as s1
+        obs = pd.DataFrame({'month': [m(t) for t in plan.STAGE1_TARGETS + ('2010-01', '2016-02', '2016-06',
+                                                                          '2016-10', '2017-02', '2017-06', '2017-10')]
+                                     + [m(f'{y}-{mo:02d}') for y in range(2021, 2025) for mo in (2, 6, 10)]})
+        sched = prep.build_schedule(obs)
+        self.assertEqual(sched['stage1_rootconf_counts']['roots'], 6)
+        roots = s1.scheduled_roots(sched, plan.TB3_G, plan.ROOTCONF)
+        cands = s1.scheduled_candidates(sched, plan.TB3_G, plan.ROOTCONF)
+        self.assertEqual((len(roots), len(cands)), (6, 6))
+        self.assertFalse(set(roots) & set(s1.scheduled_roots(sched, plan.TB3_G, plan.ROOTINC)))
+        self.assertFalse(set(cands) & set(s1.scheduled_candidates(sched, plan.TB3_G, plan.ROOTINC)))
+        for name, c in cands.items():
+            parts = name.split('_')
+            self.assertEqual((parts[3], parts[-1]), ('L1', 'gt0'))
+            self.assertEqual((c['ratio'], c['split_seed'], c['increment_source'], c['confirmation_seed']),
+                             ('r80', 42, 'root', 42))
+        with self.assertRaises(SystemExit):
+            s1.rootinc_entries({'stage1_rootinc_roots': sched['stage1_rootinc_roots']}, plan.ROOTCONF)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

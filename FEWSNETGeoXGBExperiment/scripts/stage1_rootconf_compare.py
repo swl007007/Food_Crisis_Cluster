@@ -1,0 +1,274 @@
+"""D29 / A4 keyed diagnostic: six rootconf candidates vs the six D28 rootinc candidates (never fits).
+
+python scripts/stage1_rootconf_compare.py --run-dir RUN --control-run D28_RUN [--control-code-rev 98adf48]
+
+Reuses the D27/D28 acceptance and keyed joins (scripts/stage1_tb3_compare.py,
+scripts/stage1_rootinc_compare.py). REQUIRES, per (H, T): identical fitting keys, the new
+S ∪ C == the D28 validation keys (S ∩ C empty), identical target keys/truth, identical
+root target predictions and root booster SHA-256, and S/C roles equal to
+confirmation_split re-derived on the D28 validation keys. Reports S / C / E3 root and local
+crisis F1 (four-class secondary), confusions, S and C support (also per frozen terminal branch:
+terminal_support.csv) and C routing; D28's saved
+validation predictions are rescored on the same S and C keys and labelled EXPOSED (the
+old search used all of them). Writes RUN/stage1_rootconf_compare/.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from fractions import Fraction
+from pathlib import Path
+
+import pandas as pd
+
+PACKAGE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PACKAGE))
+from scripts import stage1_tb3_compare as tc  # noqa: E402
+from scripts.stage1_rootinc_compare import crisis_counts, round_columns  # noqa: E402
+from scripts.run_stage1 import SPLIT_MODES, scheduled_candidates, scheduled_roots  # noqa: E402
+from src.experiment import plan  # noqa: E402
+from src.metrics import fourclass  # noqa: E402
+from src.utils import acceptance as acc  # noqa: E402
+from src.utils import run_identity as rid  # noqa: E402
+from src.utils.split import confirmation_split  # noqa: E402
+
+CompareError = tc.CompareError
+KEY = ["area", "target_month"]
+
+
+def accept_mode(run: Path, mode: str, code=None, code_rev=None):
+    """(roots, candidates, identity) of the six scheduled roots of ``mode`` in ``run``."""
+    prepared = acc.accept_prepared(run)
+    g_of, g_record = acc.accept_g_selection(run)
+    if dict(g_of) != plan.TB3_G:
+        raise CompareError(f"{mode} requires the locked G {plan.TB3_G}")
+    sched = acc.schedule(run)
+    roots, cands = scheduled_roots(sched, g_of, mode), scheduled_candidates(sched, g_of, mode)
+    if len(roots) != 6 or len(cands) != 6:
+        raise CompareError(f"the schedule does not give exactly six {mode} roots / candidates")
+    stage = run / SPLIT_MODES[mode][2]
+    present = {p.name for p in (stage / "roots").iterdir() if p.is_dir()} if (stage / "roots").is_dir() else set()
+    if present != set(roots):
+        raise CompareError(f"{mode} roots: missing {sorted(set(roots) - present)}, unexpected {sorted(present - set(roots))}")
+    cand_dirs = {p.name for p in (stage / "candidates").iterdir() if p.is_dir()} if (stage / "candidates").is_dir() else set()
+    if cand_dirs != set(cands):
+        raise CompareError(f"{mode} candidates: dirs {sorted(cand_dirs)} != scheduled {sorted(cands)}")
+    name_of = plan.rootconf_candidate_name if mode == plan.ROOTCONF else plan.rootinc_candidate_name
+    code = code or rid.code_identity()
+    runtime = None
+    for name, entry in roots.items():
+        want = sorted(c for c, e in cands.items() if e["root"] == name)
+        if want != [name_of(entry["horizon"], entry["target_month"], entry["g_config"])]:
+            raise CompareError(f"{name}: expected exactly its single L1/gt0 {mode} candidate, got {want}")
+        record = tc.accept_root_record(stage, name, want)
+        if list(record.get("candidates", [])) != want:
+            raise CompareError(f"{name}: completion lists {record.get('candidates')}, not exactly {want}")
+        if record.get("prepared") != prepared["outputs_sha256"] or record.get("g_selection") != g_record:
+            raise CompareError(f"{name}: produced on another preparation or G selection")
+        if record.get("code") != code:
+            raise CompareError(f"{name}: produced by other package code" + (f" than {code_rev}" if code_rev else ""))
+        runtime = record.get("runtime")
+        if runtime != rid.runtime_identity():
+            raise CompareError(f"{name}: produced by another runtime")
+        root = tc._json(stage / "roots" / name / "root.json")
+        if (root.get("increment_source"), root.get("ratio"), root.get("split_seed"), root.get("horizon"),
+                root.get("target_month"), root.get("g_config")) != \
+                ("root", plan.ROOTINC_RATIO, plan.ROOTINC_SEED, entry["horizon"], entry["target_month"], entry["g_config"]):
+            raise CompareError(f"{name}: root.json does not describe the scheduled r80/seed42 shared-root root")
+        if tc._json(stage / "candidates" / want[0] / "candidate.json").get("increment_source") != "root":
+            raise CompareError(f"{want[0]}: candidate is not a shared-root increment candidate")
+        if (mode == plan.ROOTCONF) != ("confirmation_split" in root):
+            raise CompareError(f"{name}: confirmation split presence does not match mode {mode}")
+        if mode == plan.ROOTCONF and not (stage / "candidates" / want[0] / "confirmation_predictions.csv.gz").is_file():
+            raise CompareError(f"{want[0]}: no confirmation predictions")
+    return roots, cands, {"run": str(run), "stage": stage, "prepared": prepared["outputs_sha256"],
+                          "g_selection": g_record, "g_of": g_of, "code": code, "code_rev": code_rev,
+                          "runtime": runtime}
+
+
+def same_roots(new_stage, new_root, old_stage, old_root, t_new, t_old) -> pd.DataFrame:
+    """Return the new membership after checking it against the D28 root it must reproduce."""
+    a = tc.read(new_stage / "roots" / new_root / "fold_membership.csv.gz")
+    b = tc.read(old_stage / "roots" / old_root / "fold_membership.csv.gz")
+    if a.duplicated(KEY).any():
+        raise CompareError(f"{new_root}: duplicate membership keys")
+    a_cmp = a.assign(role=a["role"].replace({"confirmation": "validation"}))   # S ∪ C == original validation
+    m = a_cmp.merge(b, on=KEY, how="outer", suffixes=("_new", "_old"), indicator=True, validate="one_to_one")
+    if (m["_merge"] != "both").any() or not (m["role_new"] == m["role_old"]).all() \
+            or not (m["class_code_new"] == m["class_code_old"]).all():
+        raise CompareError(f"{new_root}: fitting / S∪C / target membership differs from the D28 control")
+    # Re-derive S/C label-blind from the D28 validation keys (A4 section 2); order is numeric area/month.
+    ov = b[b["role"] == "validation"].reset_index(drop=True)
+    want_c = confirmation_split(ov["area"].to_numpy(int), pd.PeriodIndex(ov["target_month"], freq="M").asi8,
+                                plan.CONFIRMATION_SEED) == 1
+    got = ov[KEY].merge(a[KEY + ["role"]], on=KEY, how="left", validate="one_to_one")
+    if not ((got["role"] == "confirmation").to_numpy() == want_c).all():
+        raise CompareError(f"{new_root}: S/C roles differ from confirmation_split re-derived on the D28 validation keys")
+    j = t_new.merge(t_old, on=KEY, how="outer", suffixes=("_new", "_old"), indicator=True, validate="one_to_one")
+    if (j["_merge"] != "both").any() or not (j["y_true_new"] == j["y_true_old"]).all() \
+            or not (j["y_root_new"] == j["y_root_old"]).all():
+        raise CompareError(f"{new_root}: target keys/truth/root predictions differ from the control")
+    ra, rb = (tc._json(s / "roots" / r / "root.json")["root_booster_sha256"]
+              for s, r in ((new_stage, new_root), (old_stage, old_root)))
+    if ra != rb:
+        raise CompareError(f"{new_root}: root booster differs from the control ({ra} vs {rb})")
+    return a
+
+
+def keyed_confirmation(stage, cand, members) -> pd.DataFrame:
+    c = tc.read(stage / "candidates" / cand / "confirmation_predictions.csv.gz", ("branch_id",))
+    if c.duplicated(KEY).any():
+        raise CompareError(f"{cand}: duplicate confirmation keys")
+    cm = members[members["role"] == "confirmation"]
+    merged = c.merge(cm, on=KEY, how="outer", indicator=True, validate="one_to_one")
+    if (merged["_merge"] != "both").any() or not (merged["y_true"] == merged["class_code"]).all():
+        raise CompareError(f"{cand}: confirmation predictions do not cover exactly the C membership keys")
+    return merged.drop(columns=["_merge", "role", "class_code"])
+
+
+def terminal_support(frame, which) -> list:
+    """S or C support per frozen terminal branch: rows/areas/dates/class counts/crisis positives."""
+    out = []
+    for branch, g in frame.groupby("branch_id", sort=True):
+        y = g["y_true"].to_numpy()
+        out.append({"set": which, "branch_id": branch, "rows": int(len(g)), "areas": int(g["area"].nunique()),
+                    "dates": int(g["target_month"].nunique()),
+                    **{f"class_{k}": int((y == k).sum()) for k in range(plan.N_CLASSES)},
+                    "crisis_positives": int((y >= fourclass.CRISIS_MIN_CODE).sum())})
+    return out
+
+
+def scored(frame, pred, label) -> tuple[dict, dict]:
+    y, p = frame["y_true"].to_numpy(), frame[pred].to_numpy()
+    f = fourclass.crisis_f1_exact(y, p)
+    conf = fourclass.confusion(y, p)
+    return {f"{label}_crisis_f1": float(f), f"{label}_crisis_f1_exact": str(f),
+            f"{label}_fourclass": fourclass.macro_f1(y, p), **crisis_counts(conf, label)}, conf
+
+
+def pool_block(frame, prefix, root_col="y_root", local_col="y_final") -> tuple[dict, dict]:
+    r, cr = scored(frame, root_col, f"{prefix}_root")
+    loc, cl = scored(frame, local_col, f"{prefix}_local")
+    gain = Fraction(loc[f"{prefix}_local_crisis_f1_exact"]) - Fraction(r[f"{prefix}_root_crisis_f1_exact"])
+    return {**r, **loc, f"{prefix}_local_minus_root": float(gain), f"{prefix}_local_minus_root_exact": str(gain),
+            f"{prefix}_fourclass_local_minus_root": loc[f"{prefix}_local_fourclass"] - r[f"{prefix}_root_fourclass"]}, \
+        {f"{prefix}_root": cr, f"{prefix}_local": cl}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--run-dir", type=Path, required=True)
+    parser.add_argument("--control-run", type=Path, required=True, help="the D28 rootinc run")
+    parser.add_argument("--control-code-rev", default="98adf48", help="committed producer of the D28 controls")
+    args = parser.parse_args()
+    run, control = args.run_dir.resolve(), args.control_run.resolve()
+    out = run / "stage1_rootconf_compare"
+    rid.refuse_existing(out, "the rootconf comparison")
+    roots, cands, ident = accept_mode(run, plan.ROOTCONF)
+    croots, ccands, cident = accept_mode(control, plan.ROOTINC, rid.code_identity_at(args.control_code_rev),
+                                         args.control_code_rev)
+    if cident["g_of"] != ident["g_of"]:
+        raise CompareError("control G selection differs from this run's")
+    theirs = tc._json(control / "prepared" / "manifests" / "outputs.json")
+    mine = tc._json(run / "prepared" / "manifests" / "outputs.json")
+    differ = [f for f in tc.MATCHED_PREPARED if theirs.get(f) is None or theirs.get(f) != mine.get(f)]
+    if differ:
+        raise CompareError(f"control run was prepared from different data: {differ}")
+    stage, cstage = ident["stage"], cident["stage"]
+    ctl_of = {(e["horizon"], e["target_month"]): n for n, e in croots.items()}
+    rows, confusions, partitions, terminals = [], [], {}, []
+    for name, entry in sorted(roots.items(), key=lambda kv: (kv[1]["horizon"], kv[1]["target_month"])):
+        h, t = entry["horizon"], entry["target_month"]
+        cand = next(c for c, e in cands.items() if e["root"] == name)
+        croot = ctl_of[(h, t)]
+        ccand = next(c for c, e in ccands.items() if e["root"] == croot)
+        rb = tc._json(stage / "roots" / name / "root.json")["root_booster_sha256"]
+        new, t_new, c_new, p_new = tc.method_row(stage, name, cand, h, t, plan.ROOTCONF, rb)
+        old, t_old, c_old, p_old = tc.method_row(cstage, croot, ccand, h, t, plan.ROOTINC, rb)
+        members = same_roots(stage, name, cstage, croot, t_new, t_old)
+        s_keys = members[members["role"] == "validation"][KEY]
+        c_frame = keyed_confirmation(stage, cand, members)
+        s_frame, _ = tc.keyed_validation(stage, name, cand)
+        old_val, _ = tc.keyed_validation(cstage, croot, ccand)
+        # Same root booster -> identical root codes on every C key (consistency of the join).
+        chk = c_frame.merge(old_val, on=KEY, suffixes=("", "_d28"), validate="one_to_one")
+        if len(chk) != len(c_frame) or not (chk["y_root"] == chk["y_root_d28"]).all():
+            raise CompareError(f"{cand}: C root predictions differ from the D28 root on the same keys")
+        old_s = old_val.merge(s_keys, on=KEY, validate="one_to_one")
+        old_c = old_val.merge(c_frame[KEY], on=KEY, validate="one_to_one")
+        blocks, mats = {}, {}
+        for prefix, frame in (("S", s_frame), ("C", c_frame), ("d28_exposed_S", old_s), ("d28_exposed_C", old_c)):
+            b, mt = pool_block(frame, prefix)
+            blocks.update(b); mats.update(mt)
+        mats.update({k: v for k, v in c_new.items() if k.startswith("target_")})
+        cmem = members[members["role"] == "confirmation"]
+        smem = members[members["role"] == "validation"]
+        row = {"horizon": h, "target_month": t, "candidate": cand, "d28_candidate": ccand,
+               "e3_root_crisis_f1": new["e3_root_crisis_f1"], "e3_local_crisis_f1": new["e3_local_crisis_f1"],
+               "e3_local_minus_root": new["e3_local_minus_root"],
+               "e3_local_minus_root_exact": new["e3_local_minus_root_exact"],
+               "e3_fourclass_local_minus_root": new["e3_local_fourclass"] - new["e3_root_fourclass"],
+               **crisis_counts(c_new["target_root"], "e3_root"), **crisis_counts(c_new["target_local"], "e3_local"),
+               **blocks,
+               "delta_S_minus_delta_C": blocks["S_local_minus_root"] - blocks["C_local_minus_root"],
+               "delta_C_minus_delta_E3": blocks["C_local_minus_root"] - new["e3_local_minus_root"],
+               **tc.support(smem, "S"), **tc.support(cmem, "C"),
+               "C_rows_terminal_branch": int((c_frame["routing"] == "terminal_branch").sum()),
+               "C_rows_root_unassigned": int((c_frame["routing"] != "terminal_branch").sum()),
+               "C_rows_on_root_branch": int((c_frame["branch_id"] == "root").sum()),
+               "n_terminal": new["n_terminal"], "accepted_splits": new["accepted_splits"],
+               "distinct_terminal_boosters": new["distinct_terminal_boosters"],
+               **round_columns(stage, cand), "e4_weight": new["e4_weight"],
+               "d28_n_terminal": old["n_terminal"], "d28_e3_local_minus_root": old["e3_local_minus_root"],
+               "d28_e4_weight": old["e4_weight"], "identical_partition_to_d28": p_new == p_old}
+        rows.append(row)
+        for which, fr in (("S", s_frame), ("C", c_frame)):
+            terminals += [{"horizon": h, "target_month": t, "candidate": cand, **r} for r in terminal_support(fr, which)]
+        partitions[cand], partitions[ccand] = p_new, p_old
+        for which, mtx in mats.items():
+            confusions.append({"horizon": h, "target_month": t, "candidate": cand, "which": which,
+                               "exposed": which.startswith("d28_exposed"),
+                               "fourclass": [[int(x) for x in r] for r in mtx],
+                               "crisis_[[nn,nc],[cn,cc]]": tc.crisis_matrix(mtx)})
+    frame = pd.DataFrame(rows)
+
+    def dup(names):
+        by_cov, n = {}, 0
+        for x in names:
+            cov, labels = partitions[x]
+            seen = by_cov.setdefault(cov, set())
+            n += labels in seen
+            seen.add(labels)
+        return {"candidates": len(names), "coverages": len(by_cov), "same_coverage_duplicates": n}
+
+    summary = {
+        "contrast": "D29 (experiment-plan A4): rootconf search on S, frozen, then scored on C (diagnostic) and E3; "
+                    "D28 rootinc same roots as the control",
+        "this_run": {k: v for k, v in ident.items() if k not in ("g_of", "stage")}, "g_selected": ident["g_of"],
+        "control": {k: v for k, v in cident.items() if k not in ("g_of", "stage")},
+        "means": {k: float(frame[k].mean()) for k in ("S_local_minus_root", "C_local_minus_root", "e3_local_minus_root",
+                                                      "d28_exposed_S_local_minus_root", "d28_exposed_C_local_minus_root",
+                                                      "d28_e3_local_minus_root")},
+        "split_candidates": int((frame["n_terminal"] > 1).sum()),
+        "positive_e4_weights": int((frame["e4_weight"] > 0).sum()),
+        "partitions": {"rootconf": dup(list(frame["candidate"])), "d28": dup(list(frame["d28_candidate"]))},
+        "caveats": ["six related candidates, not six independent experiments; development evidence only",
+                    "C is isolated only from this new search; time/space correlation with S and fitting remains",
+                    "d28_exposed_* rescore D28 predictions whose search used ALL of S and C: not independent",
+                    "new S vs D28 full validation are not the same sample; ΔS−ΔC and ΔC−ΔE3 are descriptive only",
+                    "C has no gate: no pruning, root fallback or E4 use"],
+    }
+    out.mkdir(parents=True)
+    frame.to_csv(out / "candidates.csv", index=False, float_format="%.17g")
+    pd.DataFrame(terminals).to_csv(out / "terminal_support.csv", index=False)
+    rid.write_json_atomic(out / "summary.json", summary)
+    rid.write_json_atomic(out / "confusions.json", confusions)
+    rid.write_json_atomic(out / "completion.json", {
+        "stage": "stage1_rootconf_compare", "code": rid.code_identity(), "runtime": rid.runtime_identity(),
+        "outputs": {rel: sha for rel, sha in rid.output_hashes(out).items() if rel != "completion.json"}})
+    print(json.dumps({k: summary[k] for k in ("means", "split_candidates", "positive_e4_weights")}, indent=1))
+
+
+if __name__ == "__main__":
+    main()
