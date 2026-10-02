@@ -1,4 +1,4 @@
-# D40 / A14：仅利用起点前旧预测的决策规则对照
+# D40 / A14：仅利用起点前旧预测的决策规则对照（已完成；不采用；独立核验通过）
 
 2026-10-02监督方依据用户委托批准此零新增模型拟合的开发可行性检查。Claude已讨论候选规则与信息边界，下面冻结可执行契约；先提交本spec，再数值运行。不是D26终点替换或部署批准，无新模型、参数搜索、校准器、Stage2/3、最终期或close。
 
@@ -29,3 +29,10 @@ G和D38方案均在反复暴露的开发数据上决定，D24的回顾性选择�
 - 输出到独立外部D40分析目录：一个小脚本、阈值/source清单、逐行二分类policy结果、汇总JSON；输入只读。Claude独立核对严格U<O、source完整键及tau最优/tie、同键评分/回退。主线程保存综合后，结果与必要证据放task research，bulky逐行结果留外部并记录路径/hash。
 - 执行方审阅补充（不改变规则）：(1) binary policy只有危机正类混淆/F1，四类macro-F1对policy不适用、记N/A，不构造四类映射；(2) policy只与同一臂自身的原argmax比较（original对original、anchored对anchored）；(3) `s`与D39相同，由保存CSV值在float64中计算 `p3+p4或5`（同一加法顺序），source与当前行用同一函数，tau以float64精确比较。
 - 本轮结束停止扩展。任何真实终点改变、分区使用或新增历史校准拟合，另立契约后再执行；Stage1问题仍保留未解决状态。
+
+## 结果（2026-10-02；无模型拟合）
+
+见[research/d40-forward-decision-findings.md](research/d40-forward-decision-findings.md)。主脚本`research/d40_forward_decision.py`，汇总/阈值`research/d40_summary.json`、`research/d40_thresholds.json`；逐行policy结果留外部`C:\Users\swl00\geoxgb_runs\d40-forward-decision-20261002\policy_rows.csv.gz`（sha256 `ceaf8b56ef9e8c5b78f485dc6bb315439c12badabc0da3018b35d9187eda2abd`）。
+- 执行方独立核验`research/d40_executor_check.py/.json`：582项0不一致（全21根严格U<O来源/资格、12个阈值以不同扫描和精确Fraction tie重算、42个根×臂评分、两臂各15回退、Brier不变、21/6汇总、227016行逐行）；监督方另核227016个policy键唯一。
+- 6根启用、15根回退；12个tau均在.285–.409。启用6根同键：original .596973→.583611（3胜3负），anchored .598054→.603584（4胜2负）；该子集persistence .587843，anchored argmax在policy前已超过。全21含回退：original .551516→.548873，anchored .562155→.565785，persistence .586406。H4/H8 2020-06两臂均明显变差，H8 2020-02改善。
+- 监督方决定：不采用；全21仍低于persistence；这是决策规则可行性证据，不是分区过拟合的解决，也不是终点改变。
