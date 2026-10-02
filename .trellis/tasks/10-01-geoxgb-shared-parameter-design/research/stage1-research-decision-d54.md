@@ -16,3 +16,7 @@ Supervisor-authored decisions under the user's delegated Stage 1 research author
 - Stage 1 remains open. No claim is made that the expert or persistence final target has been met.
 - A restart needs a distinct falsifiable mechanism and a written, bounded contrast whose transfer criterion is set before any scoring.
 - The current exposed development outcomes (D26–D54) are diagnostic, not fresh confirmation.
+
+## Addendum (2026-10-02)
+
+The supervisor, under the user's delegated Stage 1 research authority, authorised one specifically written exception to decision 6: the D55/A29 relative-coordinate root contrast (`d55-relative-coordinate-root-plan.md`), with a transfer screen fixed before scoring. This exception covers only that contrast; all adjacent grids, full 648, Stage 2 formula, Stage 3, final evaluation and close remain stopped. D55 was chosen after exposed development results and is not fresh or independent confirmation. Decisions 1–5 above are unchanged.
