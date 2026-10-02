@@ -1,4 +1,4 @@
-# D54 / A28: zero-fit fixed-policy local-increment contrast (approved)
+# D54 / A28: zero-fit fixed-policy local-increment contrast (completed; no policy adopted; supervisor verification passed)
 
 2026-10-02. A separately bounded diagnostic under the user's delegated Stage 1 research authority. Approved by the supervisor with option (a) of §5 and four clarifications (selection disclosure, what the transform preserves, meaning of "gates", Brier normalisation); the planning commit precedes any code, and real rows are scored only after a separate supervisor release. Same active task, executor, audit run and base. After this result: an explicit stop and a research decision memo; no automatic next variant.
 - **Unchanged:** the primary crisis-F1 endpoint (four-class argmax → code ≥ 2), the four-class main contract and the final criterion.
@@ -49,3 +49,10 @@ D54 asks: **after the same fixed D38 transform is applied to both the saved root
 - **Script:** one standalone task-research runner, `research/d54_fixed_policy_local_contrast.py`, numpy/pandas/stdlib only; synthetic checks for the transform (including missing-origin neutrality and zero-increment identity), key-join failure, and reconciliation failure stopping the run. Exact bytes committed before the run; script git blob equal to HEAD.
 - **Output (frozen):** `C:\Users\swl00\geoxgb_runs\geoxgb-d54-fixed-policy-local-contrast-20261002`, no overwrite: compact summary, per-root confusions, change counts, identity and completion JSON.
 - **Order:** supervisor review → planning commit (GitNexus attempt) → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single zero-fit run → factual report → independent supervisor verification → explicit stop and research decision memo.
+
+## 7. Result and research decision (2026-10-02)
+
+- **Producer and run:** producer `6d5619b`; run `C:\Users\swl00\geoxgb_runs\geoxgb-d54-fixed-policy-local-contrast-20261002`, exit 0 in 6 s, zero fits; all gates passed; D41 and D38/D39 E3 reconciliations exact. Executor factual record `16ee1f4`.
+- **Supervisor verification:** PASS (`research/d54_supervisor_check.py` / `research/d54_supervisor_results.json`; 8,454 checks).
+- **Findings:** [research/d54-fixed-policy-local-contrast-findings.md](research/d54-fixed-policy-local-contrast-findings.md). **Decision memo:** [research/stage1-research-decision-d54.md](research/stage1-research-decision-d54.md).
+- **Decision:** no new prediction policy adopted. E3 matched pooled post root .5839738224 → post full .5846255194 vs persistence .5864055300 (mean-fold .5822054687 → .5831214943 vs .5861777298); H4 no decision changes, H8 negative, H12 positive but below persistence; normalised Brier slightly worse. Explicit research stop on adjacent current-recipe variants; no automatic D55. Stage 1 remains open.

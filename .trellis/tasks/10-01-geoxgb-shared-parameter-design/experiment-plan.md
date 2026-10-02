@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D54/A28零拟合固定策略局部增量对照已批准（d54-fixed-policy-local-contrast-plan.md）；D53已完成。D26–D53结果见各自计划。Stage1过拟合未解决；完整648、Stage2/3、最终评价与关闭均暂缓。**
+**当前状态：D54已完成、未采用策略；当前配方相邻变体研究停止（research/stage1-research-decision-d54.md）。D26–D54结果见各自计划。Stage1过拟合未解决；完整648、Stage2/3、最终评价与关闭均暂缓。**
 
 2026-10-01。以下v1.0为原D24/D25规划记录；末尾附录修订覆盖对应条款。
 
