@@ -282,4 +282,6 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 
 - [x] Executor scoping: D52 rows carry `truth_crisis`, `persistence_code`, `s_original`, `p_binary` for FIT/C/E3 (63 files listed in `d52_completion.json`).
 - [x] Supervisor review (approved; clarifications: only empty cells null, single-class cells keep metrics; identity within 1e-12 and raw-delta signs; no call shares; 315 role cells, month inventory × 5 groups, 168 contrast records on states 0–3; D52 completion byte check then 63 path/hash checks; output files fixed).
-- [ ] Planning commit; native implement (`research/d53_state_probability_transfer.py`); native check; producer commit; supervisor release; single zero-fit run; factual report; independent supervisor verification; stop.
+- [x] Planning commit 7f0e909; native implement (~2 min); native check (~1.3 min; supervisor-required `float_precision="round_trip"` row parser, input-check order, two extra selftest rejections); producer commit 192f0ce (418 lines, blob 7f85c1dc…, sha256 a118434e…); synthetic selftest OK at HEAD.
+- [x] Supervisor release; single zero-fit run `C:\Users\swl00\geoxgb_runs\geoxgb-d53-state-probability-transfer-20261002` (log `d53-run.log`, launch `sys.flags.optimize = 0`), exit 0 in 6 s: 315 role cells, 3,535 month cells (1,269 empty), 168 contrast records.
+- [ ] Factual report delivered; independent supervisor verification pending; stop.
