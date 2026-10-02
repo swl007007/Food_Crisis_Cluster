@@ -259,3 +259,7 @@ D34的21个Brier候选，保存概率上的几何收缩`p_half∝sqrt(p_root·p_
 ## D51：历史+日历78特征root消融（已完成，不采用）
 
 危机F1主要终点不变。21个D34 pair，原FIT行/顺序/标签（含缺失起点行）不变，仅把新root的矩阵按schema块投影为75个history_blocks+3个known_calendar（含target_year），共同移除静态28+动态41+遗留15=84个特征；G/轮数/colsample冻结（特征维度改变有效搜索，已披露）；对照全162原root与精确起点persistence；主要读E3匹配键危机F1（对原root与persistence），附全键、Brier/对数损失、AUC/AP与D50格内AUC；联合移除，不能归因于单一变量/块或因果过拟合机制；≤21次拟合，不采用、不外推分区可行性。见[d51-history-calendar-root-plan.md](d51-history-calendar-root-plan.md)。结果：匹配E3汇总危机F1原/h78/persistence为H4 .629050/.633073/.651697、H8 .533375/.557674/.555614、H12 .478355/.512267/.549808；H8汇总高于persistence +.002060但逐折均值低于persistence（.545162 vs .555568），仅3/7折胜原root；各H Brier/对数损失/AP与阶段3 AUC均变差，FIT/C F1下降；F1上升伴随危机预测占比上升；联合移除，不作变量归因，既不能得出“协变量都是噪声”也不能得出“仅历史即可解决”；不采用为默认，不自动开展特征子集序列；Stage1仍未解决，无D52。见[research/d51-history-calendar-root-findings.md](research/d51-history-calendar-root-findings.md)。
+
+## D52：独立二分类目标root诊断（提案，待用户决定；未批准）
+
+仅为提案：是否允许在不改变四分类主合同（D26/R11）的前提下，另做一个`binary:logistic`（原四分类码≥2）root诊断，供用户决定。四分类包、schema、模型、概率、终点与最终标准不变；未经用户明确同意与监督方放行，不实施、不训练、不评分。见[d52-binary-root-proposal.md](d52-binary-root-proposal.md)。

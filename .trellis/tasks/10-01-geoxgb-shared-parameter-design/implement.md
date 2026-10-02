@@ -268,3 +268,8 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] Supervisor release; single run `C:\Users\swl00\geoxgb_runs\geoxgb-d51-history-calendar-root-20261002` (log `d51-run.log`, launch `sys.flags.optimize = 0`), exit 0 in 166 s: 21 real fits (1,339,197 FIT rows), all gates and D49/D50 consistency passed, num_feature 78, rounds 200/400/400, base_score 5E-1, 0 reload mismatches; dev_baselines 15 checked / 6 not_covered.
 - [x] Factual report delivered (executor record `d58b242`).
 - [x] Supervisor verification PASS (`research/d51_supervisor_check.py` / `research/d51_supervisor_results.json`; 5,738 checks, 360 metric cells, 1,660,244 rows); synthesis: not adopted as default, preserved as a completed diagnostic, no feature-subset sequence; findings `research/d51-history-calendar-root-findings.md`; evidence persisted. No D52.
+
+## 32. D52 binary-objective root diagnostic (PROPOSAL — pending user decision; not approved)
+
+- [x] Executor read-only scoping and proposal draft (`d52-binary-root-proposal.md`); not in any executable manifest.
+- [ ] User decision on the gate question (independent binary diagnostic despite D26/R11). No implementation, training or scoring before an explicit yes and a supervisor release.
