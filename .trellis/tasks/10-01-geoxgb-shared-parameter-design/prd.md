@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**当前：D33/A8冻结D29浅层截断重放已完成（69f2cc3，待综合，d33-shallow-replay-plan.md）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**当前：D34/A9 E1硬F1对Brier配对对照（21根）已批准实现（d34-e1-brier-contrast-plan.md）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 
@@ -191,3 +191,7 @@ Expert 输入、基于 expert 的预测纠偏和融合已按 D6 排除；新增/
 ## D33：浅层截断重放（已完成）
 
 Stage1过拟合机制诊断：六个冻结D29候选的root/depth1/full同行比较，无新拟合、无选择。见[d33-shallow-replay-plan.md](d33-shallow-replay-plan.md)。
+
+## D34：E1硬F1对Brier配对对照（已批准实现）
+
+21根（7个剩余Stage1日期×H4/8/12）、42候选，仅E1质量不同；开发对照，非独立验证。见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。

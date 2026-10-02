@@ -1,6 +1,6 @@
 # Evaluation 分层契约 v1.0
 
-**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8浅层截断重放已完成（69f2cc3，d33-shallow-replay-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9 E1配对对照已批准实现（d34-e1-brier-contrast-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
 
 D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
 
@@ -178,3 +178,7 @@ E1–E4及全部评价键不变。区的空间支持只由实际搜索行数决�
 ## D33：事后机制诊断的解释边界
 
 root/depth1/full在S/C/E3上同键报告；S自适应复用仅描述，新S概率为重放所得；E3为已暴露开发目标描述；不选择、不新E4，不作泛化或因果分解结论。见[d33-shallow-replay-plan.md](d33-shallow-replay-plan.md)。
+
+## D34：E1变体只改搜索信号
+
+E2/C/E3仍为四类argmax折叠危机F1；C只诊断；可沿用分数字段但不生成E4权重/Stage2输入；逐H/目标、汇总混淆与折均值分开报告，不自动选择。见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。
