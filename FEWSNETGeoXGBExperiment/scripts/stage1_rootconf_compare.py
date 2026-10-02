@@ -1,6 +1,7 @@
 """D29 / A4 keyed diagnostic: six rootconf candidates vs the six D28 rootinc candidates (never fits).
 
 python scripts/stage1_rootconf_compare.py --run-dir RUN --control-run D28_RUN [--control-code-rev 98adf48]
+    [--code-rev PRODUCER_REV]
 
 Reuses the D27/D28 acceptance and keyed joins (scripts/stage1_tb3_compare.py,
 scripts/stage1_rootinc_compare.py). REQUIRES, per (H, T): identical fitting keys, the new
@@ -39,8 +40,25 @@ KEY = ["area", "target_month"]
 
 def accept_mode(run: Path, mode: str, code=None, code_rev=None):
     """(roots, candidates, identity) of the six scheduled roots of ``mode`` in ``run``."""
-    prepared = acc.accept_prepared(run)
-    g_of, g_record = acc.accept_g_selection(run)
+    if code_rev is None:   # this run: full current-code acceptance
+        prepared = acc.accept_prepared(run)
+        g_of, g_record = acc.accept_g_selection(run)
+    else:   # committed producer (tc.accept_control convention): record hashes and producer code
+        prepared = tc._json(run / "prepared" / "manifests" / "identity.json")
+        if rid.file_sha256(run / "prepared" / "manifests" / "outputs.json") != prepared["outputs_sha256"]:
+            raise CompareError(f"{run.name}: prepared outputs.json differs from its completion record")
+        recorded = tc._json(run / "prepared" / "manifests" / "outputs.json")
+        problems = rid.verify_outputs(run / "prepared", recorded) + \
+            rid.check_inventory(run / "prepared", recorded, rid.REQUIRED_PREPARED)
+        if problems or prepared.get("stage") != "prepare":
+            raise CompareError(f"{run.name}: prepared outputs do not match their record: {problems[:5]}")
+        if prepared.get("code") != code or prepared.get("runtime") != rid.runtime_identity():
+            raise CompareError(f"{run.name}: preparation was not produced by {code_rev} on this runtime")
+        selection = run / "gscreen" / "selection.json"
+        g_record, g_rec = rid.file_sha256(selection), tc._json(selection)
+        if g_rec.get("prepared") != prepared["outputs_sha256"]:
+            raise CompareError(f"{run.name}: G selection was made on another preparation")
+        g_of = g_rec["selected"]
     if dict(g_of) != plan.TB3_G:
         raise CompareError(f"{mode} requires the locked G {plan.TB3_G}")
     sched = acc.schedule(run)
@@ -161,11 +179,14 @@ def main() -> None:
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--control-run", type=Path, required=True, help="the D28 rootinc run")
     parser.add_argument("--control-code-rev", default="98adf48", help="committed producer of the D28 controls")
+    parser.add_argument("--code-rev", default=None,
+                        help="committed producer of this run when it differs from the current code (default: current)")
     args = parser.parse_args()
     run, control = args.run_dir.resolve(), args.control_run.resolve()
     out = run / "stage1_rootconf_compare"
     rid.refuse_existing(out, "the rootconf comparison")
-    roots, cands, ident = accept_mode(run, plan.ROOTCONF)
+    roots, cands, ident = accept_mode(run, plan.ROOTCONF, rid.code_identity_at(args.code_rev) if args.code_rev else None,
+                                      args.code_rev)
     croots, ccands, cident = accept_mode(control, plan.ROOTINC, rid.code_identity_at(args.control_code_rev),
                                          args.control_code_rev)
     if cident["g_of"] != ident["g_of"]:
