@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D26–D31已完成（D31不确定）；D32/A7为Stage1分配证据导出工程修复，已批准实现（d32-stage1-assignment-plan.md），取代D32 Stage2四图提案。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
+**当前状态：D26–D31已完成（D31不确定）；D32/A7 Stage1分配证据导出工程修复已完成（c079b75）（d32-stage1-assignment-plan.md），取代D32 Stage2四图提案。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
 
 2026-10-01。以下v1.0为原D24/D25规划记录；末尾附录修订覆盖对应条款。
 
@@ -270,6 +270,6 @@ Stage 1 过拟合仍未解决。D26 的48候选平均 E2 crisis增益 +0.018052�
 
 权威契约见[d31-matched-search-plan.md](d31-matched-search-plan.md)：同D30六H/T，三个搜索seed共18候选，逐区等于D30近期S行数、从全部原S日期抽取；主对照D30，参照D29。
 
-## A7. D32 Stage1分配证据导出（已批准实现）
+## A7. D32 Stage1分配证据导出（已完成）
 
 见[d32-stage1-assignment-plan.md](d32-stage1-assignment-plan.md)：不改搜索/拟合/路由/评分，只新增每候选`assignment_evidence.csv`。

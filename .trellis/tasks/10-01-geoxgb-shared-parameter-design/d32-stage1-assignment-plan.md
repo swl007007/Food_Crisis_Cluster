@@ -1,4 +1,4 @@
-# D32 / A7：Stage1分配证据导出（工程修复，监督方已批准实现）
+# D32 / A7：Stage1分配证据导出（工程修复，已完成）
 
 状态：用户指示“先回到一阶段，解决root的工程问题以后再探索怎么解决一阶段的过拟合问题；二阶段公式问题先保留”。本方案**取代**此前D32四图Stage2提案（推迟，不实现）。只做Stage1导出语义修复：不改搜索、拟合、路由、预测或任何评分；不是过拟合修复。审计run ed632775/base/session不变；无模型实验批次、Stage2/3、最终评价或close。
 
@@ -43,3 +43,10 @@ D30的root/global拟合角色完全不变。分支专属拟合池的变化是搜
 ## 6. 流程与停止
 
 规划提交→原绑定Claude native trellis-implement→native trellis-check→测试→代码提交→独立证据核对/文档。无模型实验批次、Stage2/3、最终评价或close。完成后回到Stage1过拟合研究（不再在同六个目标月上反复微调），由监督方主导新规格。
+
+## 7. 工程结果（2026-10-01）
+
+- 代码c079b75（规划85f074c）；测试77 OK，exit 0。native check与精确再检均无契约性问题；证据性：命名root副本分支仅纯函数测试，`x_set`假定为0/1（唯一生产者写0/1），接受路径不交叉核对`candidate.json`与`completion.json`中的SHA。
+- **实际旧/新重放**（同一合成生产夹具经真实`run_candidate`；旧=85f074c包代码经`git archive`导出，新=c079b75）：correspondence、target/heldout预测、X_branch_id、branch_table、s_branch逐字节一致；validation/e2/confirmation预测解压后一致（gzip头含时间戳）；全部checkpoint `.ubj/.json`逐字节一致；`candidate.json`与返回记录除新增`routing_export`/`assignment_evidence`、`timings`及临时checkpoint目录路径外完全一致；新代码只多出`assignment_evidence.csv`。这是该夹具上的实际重放，不是对所有数据的等价证明。
+- **保存D31推导**（非新producer执行）：用已提交纯函数`assignment_evidence()`对保存的D31 membership键与各候选`s_branch.pkl`推导：18候选状态计数、目标行与区数与监督方独立stdlib推导（`/tmp/d32_independent_saved_support.json`）全部一致；路由列等于保存的correspondence及target路由；`s-1`当且仅当零搜索行；全部无搜索区路由root。含有搜索未分裂root（2846/2857/2977区）与晚期H8/H12的141个仅目标区。
+- 数值过拟合未解决；Stage2消费端对齐推迟。

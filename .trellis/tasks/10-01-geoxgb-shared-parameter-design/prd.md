@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**当前：D32/A7 Stage1分配证据导出工程修复，已批准实现（d32-stage1-assignment-plan.md；取代D32 Stage2四图提案）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**当前：D32/A7 Stage1分配证据导出工程修复已完成（c079b75）（d32-stage1-assignment-plan.md；取代D32 Stage2四图提案）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 
@@ -184,6 +184,6 @@ Expert 输入、基于 expert 的预测纠偏和融合已按 D6 排除；新增/
 
 监督方决定保留原逐区计数匹配：同D29 fitting/root/C，每区搜索行数等于D30近期S，从该区全部原S日期label-blind抽取，三个搜索seed共18候选。重合度高、对比有限，未观察到差异即不确定；不设成功门槛、不自动选方案。D31后停止这六个目标月上的搜索窗口/门槛/C拆分变体，转向地图效用的下一步有界方案，在既有授权内交监督方科学评审，不自动进入Stage2/3。完整契约见[d31-matched-search-plan.md](d31-matched-search-plan.md)。
 
-## D32：Stage1分配证据导出（已批准实现）
+## D32：Stage1分配证据导出（已完成）
 
 用户要求先解决Stage1 root工程问题，Stage2公式问题保留。新增每候选空间证据导出，预测路由与评分不变；不声称修复过拟合。契约见[d32-stage1-assignment-plan.md](d32-stage1-assignment-plan.md)。
