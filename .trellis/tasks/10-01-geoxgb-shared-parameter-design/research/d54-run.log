@@ -1,0 +1,5 @@
+launch: python 3.12.10 sys.flags.optimize = 0
+command: /mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe .trellis/tasks/10-01-geoxgb-shared-parameter-design/research/d54_fixed_policy_local_contrast.py (default --source/--out)
+SELFTEST OK
+D54 complete: C:\Users\swl00\geoxgb_runs\geoxgb-d54-fixed-policy-local-contrast-20261002
+script exit 0 elapsed 6s
