@@ -53,6 +53,15 @@ SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
 LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE)
 #: D29/A4 only: the frozen-candidate confirmation predictions
 CONFIRMATION_FILES = ("confirmation_predictions.csv.gz",)
+#: D32/A7: required only when the candidate declares this assignment-evidence schema
+ASSIGNMENT_SCHEMA = "d32-v1"
+ASSIGNMENT_FILES = ("assignment_evidence.csv",)
+
+
+def candidate_files(candidate_record: dict, confirm: bool) -> tuple:
+    """Files to copy/hash for one candidate; assignment evidence only when declared."""
+    declared = (candidate_record.get("assignment_evidence") or {}).get("schema") == ASSIGNMENT_SCHEMA
+    return CANDIDATE_FILES + (CONFIRMATION_FILES if confirm else ()) + (ASSIGNMENT_FILES if declared else ())
 NAMERS = {plan.ROOTINC: (plan.rootinc_root_name, plan.rootinc_candidate_name),
           plan.ROOTCONF: (plan.rootconf_root_name, plan.rootconf_candidate_name),
           plan.RECENTSEARCH: (plan.recentsearch_root_name, plan.recentsearch_candidate_name),
@@ -183,7 +192,8 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
             if dest.exists():
                 raise FileExistsError(f"{cand}: candidate output exists")
             dest.mkdir(parents=True)
-            for fname in CANDIDATE_FILES + (CONFIRMATION_FILES if confirm else ()):
+            cand_record = json.loads((work / cand / "candidate.json").read_text(encoding="utf-8"))
+            for fname in candidate_files(cand_record, confirm):
                 shutil.copy2(work / cand / fname, dest / fname)
             outputs.update({f"candidates/{cand}/{rel}": sha for rel, sha in output_hashes(dest).items()})
             for rel, sha in json.loads((dest / "candidate.json").read_text(encoding="utf-8"))["checkpoints"]["sha256"].items():

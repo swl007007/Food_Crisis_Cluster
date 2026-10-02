@@ -74,6 +74,54 @@ def write_json(path, payload):
     Path(path).write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
 
 
+ASSIGNMENT_SCHEMA = "d32-v1"
+ASSIGNMENT_STATUSES = ("searched_assigned", "searched_root", "unsearched_fit_fallback",
+                       "target_only_fallback", "confirmation_only_fallback")
+
+
+def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch_booster=None,
+                        root_booster_sha=None) -> pd.DataFrame:
+    """D32/A7 Stage 1 spatial evidence, one row per area (pure; reads no labels or scores).
+
+    prediction_branch_id is the existing routing (s_branch, "" -> root); spatial support
+    comes only from actual search rows (x_set == 1): areas without any are "s-1"."""
+    gtrain, gtest = np.asarray(gtrain), np.asarray(gtest)
+    x_set = np.asarray(x_set)
+    conf_groups = np.asarray([] if conf_groups is None else conf_groups, dtype=gtrain.dtype)
+    universe = np.unique(np.concatenate([gtrain, gtest, conf_groups]))
+
+    def count(values):
+        u, n = np.unique(values, return_counts=True)
+        return dict(zip(u.tolist(), n.tolist()))
+
+    search, fitting = count(gtrain[x_set == 1]), count(gtrain[x_set == 0])
+    target, conf = count(gtest), count(conf_groups)
+    branch = get_X_branch_id_by_group(universe, s_branch)
+    branch = np.where(branch == "", "root", branch.astype(str))
+    rows = []
+    for area, b in zip(universe.tolist(), branch.tolist()):
+        n_s, n_f, n_t, n_c = search.get(area, 0), fitting.get(area, 0), target.get(area, 0), conf.get(area, 0)
+        if n_s >= 1:
+            status = "searched_root" if b == "root" else "searched_assigned"
+        elif n_f >= 1:
+            status = "unsearched_fit_fallback"
+        elif n_t >= 1:      # target-only relative to the search input (C rows, if any, still counted)
+            status = "target_only_fallback"
+        else:
+            status = "confirmation_only_fallback"
+        row = {"FEWSNET_admin_code": area, "prediction_branch_id": b,
+               "spatial_partition_id": b if n_s >= 1 else "s-1",
+               "search_rows": n_s, "fitting_rows": n_f, "target_rows": n_t, "confirmation_rows": n_c,
+               "assignment_status": status}
+        if branch_booster is not None and root_booster_sha is not None:
+            row["routed_booster_is_root"] = bool(b == "root" or branch_booster.get(b) == root_booster_sha)
+        rows.append(row)
+    frame = pd.DataFrame(rows).sort_values("FEWSNET_admin_code").reset_index(drop=True)
+    if frame["FEWSNET_admin_code"].duplicated().any():
+        raise RuntimeError("assignment evidence must have one row per area")
+    return frame
+
+
 def run_candidate(name, local, family, root, data, work, checkpoint_dir, contiguity_info, features,
                   increment_source="parent", confirmation=None):
     """One partition search from the shared root; returns the candidate record.
@@ -162,14 +210,31 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
         if frozen_digest(model_dir) != frozen:
             raise RuntimeError("the candidate changed during confirmation scoring")
 
+    # D32/A7: Stage 1 spatial evidence, written after the candidate is frozen (and C scored).
+    last_save = {}
+    for entry in model.model.saved_log:
+        last_save[entry["saved_as"]] = entry
+    branch_booster = {b: e.get("booster_sha256") for b, e in last_save.items()}
+    root_sha = (root[1].get("booster_sha256") if isinstance(root[1], dict) else None) \
+        or branch_booster.get("root")
+    evidence = assignment_evidence(gtrain, x_set, gtest, model.s_branch,
+                                   conf_groups=None if confirmation is None else confirmation[2],
+                                   branch_booster=branch_booster, root_booster_sha=root_sha)
+    evidence.to_csv(out / "assignment_evidence.csv", index=False)
+    by_status = evidence.groupby("assignment_status")
+    assignment_record = {
+        "schema": ASSIGNMENT_SCHEMA, "file": "assignment_evidence.csv",
+        "sha256": nx_file_sha(out / "assignment_evidence.csv"),
+        "contract": ("Stage1 spatial-evidence authority: spatial_partition_id is s-1 for areas with zero "
+                     "actual search rows; prediction_branch_id is routing only"),
+        "areas_by_status": {k: int(by_status.size().get(k, 0)) for k in ASSIGNMENT_STATUSES},
+        "target_rows_by_status": {k: int(by_status["target_rows"].sum().get(k, 0)) for k in ASSIGNMENT_STATUSES}}
+
     # Checkpoints (root copy + every saved child) move to the scratch store.
     ckpt = Path(checkpoint_dir) / name
     shutil.copytree(model_dir / "checkpoints", ckpt)
     checkpoints = {p.name: nx_file_sha(p) for p in sorted(ckpt.iterdir())}
     terminal = sorted(set(branch_str.tolist()))
-    last_save = {}
-    for entry in model.model.saved_log:
-        last_save[entry["saved_as"]] = entry
     record = {
         "candidate": name, "local_config": local, "threshold_family": family,
         "increment_source": increment_source,
@@ -201,6 +266,9 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
         **({"confirmation": {**confirmation_scores, "frozen_digest_before_scoring": frozen,
                              "role": "D29 diagnostic only: no gate, no pruning, no root fallback, not an E4 input"}}
            if confirmation is not None else {}),
+        "routing_export": {"file": "correspondence_table.csv",
+                           "contract": "prediction routing (compatibility); not proof of learned spatial assignment"},
+        "assignment_evidence": assignment_record,
         "timings": {"fit_seconds": round(fit_seconds, 2)},
     }
     write_json(out / "candidate.json", record)

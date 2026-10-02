@@ -1772,6 +1772,135 @@ class MatchedSearchReporter(unittest.TestCase):
         with self.assertRaises(rc.CompareError):
             rc.matched_row(bad, self.H, self.T, "new")
 
+class AssignmentEvidence(unittest.TestCase):
+    """D32/A7: Stage 1 assignment-evidence export (routing unchanged; spatial support = search rows)."""
+
+    def _run(self, conf_labels_permuted=False, val_support=None):
+        import hashlib
+        mgf = TimeBlockContrast.mgf()
+        rng, groups, X, y, months, x_set, conf = RecentSearchContrast()._fixture()
+        conf[(groups == 63) & (x_set == 1)] = True       # area 63: fitting rows, no search rows
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        # target rows: every fixture area plus area 999 (target only)
+        Xt = np.vstack([X[:64], X[:2]])
+        yt = np.concatenate([y[:64], y[:2]])
+        gt = np.concatenate([groups[::30], [999, 999]])
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        keep = ~conf
+        yc = rng.permutation(y[conf]) if conf_labels_permuted else y[conf]
+        data = (X[keep], y[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+        with tempfile.TemporaryDirectory() as t, patch.object(trans, 'CONTIGUITY', False), \
+                patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                patch.dict(plan.STAGE1_VAL_SUPPORT, val_support or FLOORS['val_support']), \
+                patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+            work, ck = Path(t) / 'w', Path(t) / 'ck'
+            work.mkdir()
+            rec = mgf.run_candidate('c', 'L1', 'gt0', root, data, work, ck, None, [f'f{i}' for i in range(5)],
+                                    increment_source='root',
+                                    confirmation=(X[conf], yc, groups[conf], months[conf]))
+            raw = (work / 'c' / 'assignment_evidence.csv').read_bytes()
+            ev = pd.read_csv(work / 'c' / 'assignment_evidence.csv',
+                             converters={'prediction_branch_id': str, 'spatial_partition_id': str})
+            corr = pd.read_csv(work / 'c' / 'correspondence_table.csv', converters={'partition_id': str})
+            ckpt_sha = dict(rec['checkpoints']['sha256'])
+        tr = (groups[keep], x_set[keep])
+        return mgf, rec, raw, hashlib.sha256(raw).hexdigest(), ev, corr, tr, gt, groups[conf], root, ckpt_sha
+
+    def _check_counts(self, ev, tr, gt, gc):
+        g, xs = tr
+        universe = sorted(set(g.tolist()) | set(gt.tolist()) | set(gc.tolist()))
+        self.assertEqual(ev['FEWSNET_admin_code'].tolist(), universe)             # 1:1 universe, sorted
+        for _, r in ev.iterrows():
+            a = r['FEWSNET_admin_code']
+            self.assertEqual(r['search_rows'], int(((g == a) & (xs == 1)).sum()))
+            self.assertEqual(r['fitting_rows'], int(((g == a) & (xs == 0)).sum()))
+            self.assertEqual(r['target_rows'], int((gt == a).sum()))
+            self.assertEqual(r['confirmation_rows'], int((gc == a).sum()))
+        self.assertTrue(((ev['spatial_partition_id'] == 's-1') == (ev['search_rows'] == 0)).all())
+        searched = ev['search_rows'] >= 1
+        self.assertTrue((ev.loc[searched, 'spatial_partition_id'] == ev.loc[searched, 'prediction_branch_id']).all())
+
+    def test_split_candidate_statuses_counts_and_contracts(self):
+        mgf, rec, raw, sha, ev, corr, tr, gt, gc, root, _ = self._run()
+        self.assertGreater(rec['partition']['accepted_splits'], 0)
+        self._check_counts(ev, tr, gt, gc)
+        st = dict(zip(ev['FEWSNET_admin_code'], ev['assignment_status']))
+        self.assertEqual(st[63], 'unsearched_fit_fallback')
+        r63 = ev.set_index('FEWSNET_admin_code').loc[63]
+        self.assertGreater(r63['fitting_rows'], 0)
+        self.assertGreater(r63['target_rows'], 0)
+        self.assertEqual(st[999], 'target_only_fallback')
+        self.assertEqual(ev.set_index('FEWSNET_admin_code').loc[999, 'prediction_branch_id'], 'root')
+        self.assertIn('searched_assigned', set(st.values()))
+        # routing column equals the unchanged correspondence export on every training area
+        lookup = dict(zip(corr['FEWSNET_admin_code'], corr['partition_id']))
+        for a, b in zip(ev['FEWSNET_admin_code'], ev['prediction_branch_id']):
+            if a in lookup:
+                self.assertEqual(lookup[a], b)
+        # candidate.json contracts
+        self.assertEqual(rec['routing_export']['file'], 'correspondence_table.csv')
+        ae = rec['assignment_evidence']
+        self.assertEqual((ae['schema'], ae['file'], ae['sha256']), ('d32-v1', 'assignment_evidence.csv', sha))
+        self.assertEqual(sum(ae['areas_by_status'].values()), len(ev))
+        self.assertEqual(ae['areas_by_status']['target_only_fallback'], 1)
+        self.assertEqual(sum(ae['target_rows_by_status'].values()), len(gt))
+        # routed_booster_is_root: derived from the saved log, root terminals true
+        last = {}
+        for e in rec['fits']['saved_log']:
+            last[e['saved_as']] = e['booster_sha256']
+        for _, r in ev.iterrows():
+            self.assertEqual(bool(r['routed_booster_is_root']),
+                             r['prediction_branch_id'] == 'root'
+                             or last.get(r['prediction_branch_id']) == root[1]['booster_sha256'])
+
+    def test_c_labels_leave_the_evidence_file_identical(self):
+        first = self._run()[2]
+        self.assertEqual(first, self._run(conf_labels_permuted=True)[2])
+
+    def test_unsplit_candidate_is_searched_root(self):
+        _, rec, _, _, ev, _, tr, gt, gc, _, _ = self._run(val_support={**FLOORS['val_support'], 'rows': 10 ** 6})
+        self.assertEqual(rec['partition']['accepted_splits'], 0)
+        self._check_counts(ev, tr, gt, gc)
+        st = set(ev.loc[ev['search_rows'] >= 1, 'assignment_status'])
+        self.assertEqual(st, {'searched_root'})
+        self.assertTrue(ev['routed_booster_is_root'].all())
+
+    def test_pure_function_confirmation_only_and_root_booster_copy(self):
+        mgf = TimeBlockContrast.mgf()
+        gtrain = np.array([1, 1, 2, 2, 3])
+        x_set = np.array([1, 0, 1, 0, 0])
+        gtest = np.array([1, 4, 6])
+        s_branch = pd.DataFrame({'0': [1.0], '1': [2.0]})          # columns = branch ids, values = groups
+        ev = mgf.assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=np.array([5, 5, 3, 6]),
+                                     branch_booster={'0': 'ROOT', '1': 'other'}, root_booster_sha='ROOT')
+        ev = ev.set_index('FEWSNET_admin_code')
+        self.assertEqual(ev.loc[5, 'assignment_status'], 'confirmation_only_fallback')
+        self.assertEqual(ev.loc[5, 'confirmation_rows'], 2)
+        self.assertEqual(ev.loc[3, 'assignment_status'], 'unsearched_fit_fallback')
+        self.assertEqual(ev.loc[4, 'assignment_status'], 'target_only_fallback')
+        # mixed C + target, no search/fit: target-only relative to the search input, C rows still counted
+        self.assertEqual(ev.loc[6, 'assignment_status'], 'target_only_fallback')
+        self.assertEqual((ev.loc[6, 'confirmation_rows'], ev.loc[6, 'target_rows'], ev.loc[6, 'spatial_partition_id']), (1, 1, 's-1'))
+        self.assertEqual(ev.loc[1, 'assignment_status'], 'searched_assigned')
+        self.assertTrue(ev.loc[1, 'routed_booster_is_root'])          # named branch with a root booster copy
+        self.assertFalse(ev.loc[2, 'routed_booster_is_root'])
+        self.assertEqual(ev.loc[1, 'spatial_partition_id'], '0')
+        self.assertEqual(ev.loc[3, 'spatial_partition_id'], 's-1')
+        no_flag = mgf.assignment_evidence(gtrain, x_set, gtest, s_branch)
+        self.assertNotIn('routed_booster_is_root', no_flag.columns)
+
+    def test_completion_chain_requires_evidence_only_when_declared(self):
+        from scripts import run_stage1 as s1
+        old = {'candidate': 'c', 'checkpoints': {'sha256': {}}}
+        self.assertNotIn('assignment_evidence.csv', s1.candidate_files(old, False))
+        self.assertNotIn('assignment_evidence.csv', s1.candidate_files(old, True))
+        self.assertEqual(s1.candidate_files(old, False), s1.CANDIDATE_FILES)
+        new = {**old, 'assignment_evidence': {'schema': 'd32-v1'}}
+        self.assertIn('assignment_evidence.csv', s1.candidate_files(new, True))
+        self.assertNotIn('assignment_evidence.csv', s1.CANDIDATE_FILES)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

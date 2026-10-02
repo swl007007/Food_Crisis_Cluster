@@ -19,7 +19,8 @@
 | `spatial_partition_id` | `search_rows ≥ 1`时等于`prediction_branch_id`；否则`s-1` |
 | `search_rows` / `fitting_rows` | 搜索输入中该区`x_set==1` / `x_set==0`行数 |
 | `target_rows` | 该区目标月行数 |
-| `assignment_status` | `searched_assigned`（有搜索、非root终端）；`searched_root`（有搜索、终端为root；现逻辑下仅当root未接受分裂）；`unsearched_fit_fallback`（无搜索、有fitting）；`target_only_fallback`（仅目标行）；`confirmation_only_fallback`（仅C行，预期0） |
+| `assignment_status` | `searched_assigned`（有搜索、非root终端）；`searched_root`（有搜索、终端为root；现逻辑下仅当root未接受分裂）；`unsearched_fit_fallback`（无搜索、有fitting）；`target_only_fallback`（无搜索/fitting、有目标行；相对搜索输入的仅目标，含同时有C行者）；`confirmation_only_fallback`（无搜索/fitting/目标、仅C行，预期0）。优先级：search→fitting→target→C |
+| `confirmation_rows` | 该区C行数（只计数，不影响空间支持） |
 | `routed_booster_is_root` | 描述字段：路由终端在现有saved_log末次记录的booster SHA是否等于root booster（root终端为真）。不作为掩码或支持判断；若无法可靠取得则不写此列，不另建注册表 |
 
 规则：有搜索的未分裂root保留空间`root`；有搜索、命名分支但用root booster副本者保留其空间分支；无搜索/仅目标/仅C的root回退空间记`s-1`。空间支持只由实际搜索行数决定，不用评分、标签、C结果或booster哈希推断。
