@@ -1,6 +1,6 @@
 # GeoXGBoost 技术设计 v1.0
 
-**当前覆盖修订：D26–D31已完成；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成（7b2bf6f）；D35/A10已完成（be5f485）；D36仅分析完成（research/d36-transfer-findings.md）（d34-e1-brier-contrast-plan.md）。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
+**当前覆盖修订：D26–D31已完成；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成（7b2bf6f）；D35/A10已完成（be5f485）；D36仅分析完成；D37/A11加权root已批准（d37-recency-root-plan.md）（d34-e1-brier-contrast-plan.md）。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
 
 **首轮设计按D24采用，D25已授权开始执行；实际状态以审计start和task.json为准。** 本文记录架构/边界/证据；数值预算见experiment-plan.md，执行顺序见implement.md。
 母包按D1确认为 `FEWSNETFourClassBaseline/`，标签为 `1/2/3/4或5`；D4冻结共享树并只追加局部增量。v1.0为决策收敛整理，不改变已采用的实验方案。
@@ -261,3 +261,7 @@ depth1用截断`s_branch`（`""`/`"0"`/`"1"`）与最终`xgb_0/xgb_1`，先过�
 ## D35：全局续训对照
 
 复用`native_xgb.continue_booster(root, X_fit, y_fit, L1)`；最小诊断脚本复用现有接受/重建/指标。见[d35-global-increment-control-plan.md](d35-global-increment-control-plan.md)。
+
+## D37：加权root
+
+`fit_global`增加默认`None`的可选sample_weight（无权重路径不变）；一个小诊断runner复用accept_mode/rebuild/指标。见[d37-recency-root-plan.md](d37-recency-root-plan.md)。
