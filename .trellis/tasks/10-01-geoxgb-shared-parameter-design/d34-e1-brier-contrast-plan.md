@@ -34,7 +34,7 @@ D26起E1用危机F1质量`D_g=2TP+FP+FN`：仅TN的区`c=b=0`（`partition_opt.p
 
 **运行：**
 - 生产7b2bf6f；运行`C:\Users\swl00\geoxgb_runs\geoxgb-d34-e1-brier-20261002`。
-- 21根全部完成（exit 0），每根67–134 s（含两候选），合计2016 CPU-s，3 workers约11分钟墙钟，在8–22分钟估计内。
+- 21根全部完成（exit 0），每根67–134 s（含两候选），各根耗时相加2016 s（逐根经过时间之和，非CPU秒；XGBoost为多线程），3 workers约11分钟墙钟，在8–22分钟估计内。
 - 报告：`stage1_rootconf_compare.py --mode e1pair --run-dir … --code-rev 7b2bf6f`，exit 0，13 s，输出`stage1_e1pair_compare/`。
 
 **旧hard路径重放：**
@@ -73,7 +73,7 @@ D26起E1用危机F1质量`D_g=2TP+FP+FN`：仅TN的区`c=b=0`（`partition_opt.p
 - 由≤2020快照重建完整的起点前59个月池与r80/S/C角色；真值与键相同；
 - 完成记录中的候选顺序、两个root UBJ哈希、root配对预测一致；
 - C/E3 argmax与D32分配证据一致；
-- hard root诊断独立复核（`/tmp/d34_independent_hard_scan_check.json`）：`c==0`对应无FP/FN，`g==0`对应仅TN；全部hard的distinct_g为6且穿过并列块，全部Brier root的c/g零为0、不穿过并列块。
+- root诊断（`/tmp/d34_independent_hard_scan_check.json`）：hard的c/g计数由S预测**独立重建**（`c==0`对应无FP/FN，`g==0`对应仅TN；全部hard的distinct_g为6且穿过并列块）；Brier的c/g零为0、不穿过并列块是对已保存诊断的**观察**，不是独立的概率重放。
 
 **监督方科学综合**：E3有很小的、值得关注的改善，时间外推仍未解决。
 - S−C乐观差：hard .010778，Brier .009274（更小）；
