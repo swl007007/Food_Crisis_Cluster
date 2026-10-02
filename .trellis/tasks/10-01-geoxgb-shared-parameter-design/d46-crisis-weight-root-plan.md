@@ -1,4 +1,4 @@
-# D46 / A20: 2×-crisis class-weighted root training contrast (approved)
+# D46 / A20: 2×-crisis class-weighted root training contrast (completed; not adopted; supervisor verification passed)
 
 2026-10-02. Supervisor design decision under the user's delegated Stage 1 research authority. Approved after supervisor review with one factual correction (D39 per-horizon calibration); the planning commit precedes any code or fits. The fixed crisis-F1 endpoint is retained unchanged. Same active task, executor, audit run and base. No Stage 2/3, final-period reads, full 648 or audit close.
 
@@ -81,3 +81,20 @@ D46 asks: does re-fitting the root under a fixed 2:1 crisis-class cost add value
 ## 7. Order
 
 Supervisor review → align pointers and commit the planning (GitNexus attempt; LadybugDB failure recorded) → native implement → native check → producer commit with test evidence → single run (at most 21 fits) → factual report → supervisor verification and synthesis.
+
+## 8. Run, verification and decision (2026-10-02)
+
+Producer `b8f8550c6455aac3c3bb2a0374ee4297a71d818f` (114 tests OK). The native check made the post-hoc ranking check fail closed (map error or inversion above 1e-12 stops the run) and corrected the degenerate-FIT wording, both at supervisor request.
+- **Run:** `C:\Users\swl00\geoxgb_runs\geoxgb-d46-class-weight-root-20261002`, exit 0, 280 s.
+- **Checks:** exactly 21 weighted fits; all gates passed; `base_score` 5E-1; exact reloads; post-hoc ranking preserved.
+- **Supervisor verification:** PASS (`research/d46_supervisor_check.py` / `_results.json`; 5,839 checks, 504 metric cells, 1,660,244 rows).
+- **Findings:** [research/d46-crisis-weight-root-findings.md](research/d46-crisis-weight-root-findings.md).
+
+**Decision:**
+- Fixed 2:1 weighting is not adopted, and no weight search or sequence follows.
+- Matched E3 F1, original / weighted / post-hoc / persistence:
+  - H4 .629050 / .622356 / .614925 / .651697
+  - H8 .533375 / .544705 / .541565 / .555614
+  - H12 .478355 / .514900 / .521261 / .549808
+- Within-root AUC/AP and unweighted Brier/log loss are worse for the weighted arm at every H.
+- Stage 1 remains unresolved; this is not universal proof that partitions fail; there is no automatic D47.
