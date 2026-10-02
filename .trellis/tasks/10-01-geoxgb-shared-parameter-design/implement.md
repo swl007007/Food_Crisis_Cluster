@@ -246,4 +246,6 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 
 - [x] Executor read-only scoping: no earlier oracle/best-cutoff computation (D39 left the persistence operating point untested; D40 learned thresholds from earlier months only); saved D38 E3 rows sufficient (float32 at `%.17g`; 713 missing-origin rows).
 - [x] Supervisor review (approved as written; clarifications: zero-denominator F1 = 0, predict-none tie winner without non-finite JSON, argmax recomputed from four probabilities).
-- [ ] Planning commit; native implement (`research/d49_ranking_headroom.py`, exact bytes committed before execution); native check; producer commit; supervisor release; single zero-fit run; factual report; supervisor independent check; stop after D49.
+- [x] Planning commit b284440; native implement (<2 min, 269 lines); native check (~1 min, no result-affecting finding, no edits; evidence-only notes accepted); producer commit 879c335 (blob 67a9867e…, sha256 0a9bd888…); selftest OK at HEAD.
+- [x] Supervisor release; single zero-fit run `C:\Users\swl00\geoxgb_runs\geoxgb-d49-ranking-headroom-20261002` (log `d49-run.log`), exit 0 in 4 s; 713 excluded; 7 folds per H; all budget points exact.
+- [ ] Factual report delivered; awaiting supervisor independent verification and synthesis; stop after D49.
