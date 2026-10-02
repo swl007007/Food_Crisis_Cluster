@@ -154,6 +154,29 @@ def rootconf_candidate_name(h, target, g):
     return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{ROOTCONF}_{ROOTINC_FAMILY}"
 
 
+#: D30 / experiment-plan A5: the D29 rootconf arm whose search S is restricted to the
+#: latest six observed months of the ORIGINAL validation (S u C); earlier S rows are
+#: unused_search_history. Fitting rows and C are unchanged.
+RECENTSEARCH = "recentsearch"
+RECENT_SEARCH_MONTHS = 6
+RECENT_SEARCH_DATES = {
+    (4, "2018-02"): ("2015-10", "2016-02", "2016-06", "2016-10", "2017-02", "2017-06"),
+    (4, "2020-10"): ("2018-06", "2018-10", "2019-02", "2019-06", "2019-10", "2020-02"),
+    (8, "2018-02"): ("2015-07", "2015-10", "2016-02", "2016-06", "2016-10", "2017-02"),
+    (8, "2020-10"): ("2018-02", "2018-06", "2018-10", "2019-02", "2019-06", "2019-10"),
+    (12, "2018-02"): ("2015-04", "2015-07", "2015-10", "2016-02", "2016-06", "2016-10"),
+    (12, "2020-10"): ("2017-10", "2018-02", "2018-06", "2018-10", "2019-02", "2019-06"),
+}
+
+
+def recentsearch_root_name(h, target, g):
+    return f"{root_name(h, target, g, ROOTINC_RATIO, ROOTINC_SEED)}_{RECENTSEARCH}"
+
+
+def recentsearch_candidate_name(h, target, g):
+    return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{RECENTSEARCH}_{ROOTINC_FAMILY}"
+
+
 def booster_params(config: dict) -> tuple[dict, int]:
     """(xgb.train params, rounds) for one G or L configuration."""
     params = dict(XGB_BASE)

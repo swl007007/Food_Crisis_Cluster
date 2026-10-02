@@ -44,17 +44,20 @@ CANDIDATE_FILES = ("candidate.json", "correspondence_table.csv", "target_predict
 SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
                plan.TIME_BLOCK: ("stage1_tb3_roots", "stage1_tb3_candidates", "stage1_tb3"),
                plan.ROOTINC: ("stage1_rootinc_roots", "stage1_rootinc_candidates", "stage1_rootinc"),
-               plan.ROOTCONF: ("stage1_rootconf_roots", "stage1_rootconf_candidates", "stage1_rootconf")}
+               plan.ROOTCONF: ("stage1_rootconf_roots", "stage1_rootconf_candidates", "stage1_rootconf"),
+               plan.RECENTSEARCH: ("stage1_recentsearch_roots", "stage1_recentsearch_candidates",
+                                   "stage1_recentsearch")}
 #: modes that run under the D26-locked G (no reselection)
-LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF)
+LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH)
 #: D29/A4 only: the frozen-candidate confirmation predictions
 CONFIRMATION_FILES = ("confirmation_predictions.csv.gz",)
 NAMERS = {plan.ROOTINC: (plan.rootinc_root_name, plan.rootinc_candidate_name),
-          plan.ROOTCONF: (plan.rootconf_root_name, plan.rootconf_candidate_name)}
+          plan.ROOTCONF: (plan.rootconf_root_name, plan.rootconf_candidate_name),
+          plan.RECENTSEARCH: (plan.recentsearch_root_name, plan.recentsearch_candidate_name)}
 
 
 def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
-    """The six prepared D28 (rootinc) or D29 (rootconf) roots; a preparation without them is refused."""
+    """The six prepared D28 (rootinc), D29 (rootconf) or D30 (recentsearch) roots; a preparation without them is refused."""
     rows = schedule.get(SPLIT_MODES[mode][0])
     if rows is None:
         raise SystemExit(f"this preparation has no {mode} schedule; prepare a fresh run")
@@ -64,8 +67,13 @@ def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
             (r.get("ratio"), r.get("split_seed"), r.get("increment_source")) !=
             (plan.ROOTINC_RATIO, plan.ROOTINC_SEED, "root") for r in rows):
         raise SystemExit(f"the {mode} schedule is not exactly H{{4,8,12}} x {{2018-02, 2020-10}}, r80/seed 42/root")
-    if mode == plan.ROOTCONF and any(r.get("confirmation_seed") != plan.CONFIRMATION_SEED for r in rows):
-        raise SystemExit("the rootconf schedule does not carry confirmation seed 42")
+    if mode in (plan.ROOTCONF, plan.RECENTSEARCH) and any(
+            r.get("confirmation_seed") != plan.CONFIRMATION_SEED for r in rows):
+        raise SystemExit(f"the {mode} schedule does not carry confirmation seed 42")
+    if mode == plan.RECENTSEARCH and any(r.get("recent_search_months") != plan.RECENT_SEARCH_MONTHS for r in rows):
+        raise SystemExit("the recentsearch schedule does not carry the six recent search months")
+    if mode != plan.RECENTSEARCH and any("recent_search_months" in r for r in rows):
+        raise SystemExit(f"the {mode} schedule carries a recent-search field")
     return rows
 
 
@@ -132,6 +140,8 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
     confirm = "confirmation_seed" in root
     if confirm:
         command.append("--confirmation-split")
+    if "recent_search_months" in root:
+        command.append("--recent-search")
     (work / "command.json").write_text(json.dumps({"command": command, "cwd": str(work)}, indent=2), encoding="utf-8")
     env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONHASHSEED="5")
     env.pop("PYTHONPATH", None)
@@ -173,7 +183,8 @@ def main() -> None:
     parser.add_argument("--split-mode", choices=sorted(SPLIT_MODES), default="random",
                         help="random: the 648 r80/r50 schedule; tb3: the six D27 time-block roots; "
                              "rootinc: the six D28 shared-root increment roots (r80/s42/L1/gt0); "
-                             "rootconf: the six D29 roots with the S/C confirmation split")
+                             "rootconf: the six D29 roots with the S/C confirmation split; "
+                             "recentsearch: the six D30 roots with S restricted to the latest six months")
     args = parser.parse_args()
     run = args.run_dir.resolve()
     from src.utils.acceptance import accept_g_selection

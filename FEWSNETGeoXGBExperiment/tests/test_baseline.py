@@ -1413,6 +1413,150 @@ class ConfirmationDiagnostic(unittest.TestCase):
             s1.rootinc_entries({'stage1_rootinc_roots': sched['stage1_rootinc_roots']}, plan.ROOTCONF)
 
 
+class RecentSearchContrast(unittest.TestCase):
+    """D30 (experiment-plan A5): search S limited to the latest six original-validation months."""
+
+    def test_recent_months_deterministic_and_incomplete_raises(self):
+        from src.utils.split import recent_search_months
+        months = np.array([9, 3, 3, 12, 15, 1, 20, 7, 20, 25, 7])
+        np.testing.assert_array_equal(recent_search_months(months), [7, 9, 12, 15, 20, 25])
+        np.testing.assert_array_equal(recent_search_months(months[::-1]), [7, 9, 12, 15, 20, 25])
+        with self.assertRaises(ValueError):
+            recent_search_months(np.array([1, 2, 3, 4, 5, 5]))
+
+    def _fixture(self):
+        from src.utils.split import confirmation_split, group_aware_train_val_split
+        rng = np.random.default_rng(11)
+        groups = np.repeat(np.arange(64), 30)
+        X = rng.normal(size=(len(groups), 5))
+        y = ((X[:, 0] * np.where(groups < 40, 1, -1)) > 0).astype(int) * 2
+        months = np.tile(np.arange(400, 430), 64)
+        x_set = np.asarray(group_aware_train_val_split(groups, .5, 1, 42, True)['X_set'])
+        val = np.flatnonzero(x_set == 1)
+        conf = np.zeros(len(groups), bool)
+        conf[val[confirmation_split(groups[val], months[val], 42) == 1]] = True
+        return rng, groups, X, y, months, x_set, conf
+
+    def _run(self, mgf, root, data, conf_data, val_support=None):
+        with tempfile.TemporaryDirectory() as t, patch.object(trans, 'CONTIGUITY', False), \
+                patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                patch.dict(plan.STAGE1_VAL_SUPPORT, val_support or FLOORS['val_support']), \
+                patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+            work, ck = Path(t) / 'w', Path(t) / 'ck'
+            work.mkdir()
+            rec = mgf.run_candidate('c', 'L1', 'gt0', root, data, work, ck, None, [f'f{i}' for i in range(5)],
+                                    increment_source='root', confirmation=conf_data)
+            return rec, ((rec['confirmation']['frozen_digest_before_scoring'], rec['checkpoints']['sha256'],
+                          (work / 'c' / 's_branch.pkl').read_bytes(),
+                          (work / 'c' / 'correspondence_table.csv').read_text(),
+                          json.dumps(rec['partition']['decisions'], default=str)))
+
+    def test_unused_and_c_labels_cannot_change_the_candidate(self):
+        mgf = TimeBlockContrast.mgf()
+        rng, groups, X, y, months, x_set, conf = self._fixture()
+        expected = tuple(ff.month_label(np.arange(424, 430)).tolist())
+        recent, unused = mgf.recent_search_roles(x_set, conf, months, expected)
+        np.testing.assert_array_equal(recent, np.arange(424, 430))
+        search = (x_set == 1) & ~conf & ~unused
+        s_orig = (x_set == 1) & ~conf
+        self.assertTrue(unused.any() and search.any())
+        self.assertFalse((search & unused).any())
+        np.testing.assert_array_equal(search | unused, s_orig)                  # S_recent u unused == S
+        self.assertFalse(((x_set == 0) & (unused | conf)).any())                # fitting untouched
+        with self.assertRaises(ValueError):
+            mgf.recent_search_roles(x_set, conf, months, expected[1:] + ('2099-01',))
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        Xt, yt, gt = X[:64], y[:64], groups[::30]
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        keep = ~conf & ~unused
+        outs = []
+        for y_unused, y_conf in ((y, y), (np.where(unused, rng.permutation(y), y), y),
+                                 (y, np.where(conf, rng.permutation(y), y))):
+            ys = np.where(unused, y_unused, np.where(conf, y_conf, y))
+            data = (X[keep], ys[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+            rec, out = self._run(mgf, root, data, (X[conf], ys[conf], groups[conf], months[conf]))
+            self.assertGreater(rec['partition']['accepted_splits'], 0)
+            outs.append(out)
+        self.assertEqual(outs[0], outs[1])
+        self.assertEqual(outs[0], outs[2])
+
+    def test_insufficient_recent_support_keeps_the_parent(self):
+        mgf = TimeBlockContrast.mgf()
+        rng, groups, X, y, months, x_set, conf = self._fixture()
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        Xt, yt, gt = X[:64], y[:64], groups[::30]
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        # only one recent date survives: below the 3-date validation floor on every side
+        unused = (x_set == 1) & ~conf & (months != 429)
+        keep = ~conf & ~unused
+        data = (X[keep], y[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+        rec, _ = self._run(mgf, root, data, (X[conf], y[conf], groups[conf], months[conf]),
+                           val_support={**FLOORS['val_support'], 'dates': 3})
+        self.assertEqual(rec['partition']['accepted_splits'], 0)
+        self.assertEqual(rec['fits']['child_fits'], 0)
+
+    def test_six_recentsearch_schedule_entries_with_distinct_names(self):
+        from scripts import run_stage1 as s1
+        obs = pd.DataFrame({'month': [m(t) for t in plan.STAGE1_TARGETS + ('2010-01', '2016-02', '2016-06',
+                                                                          '2016-10', '2017-02', '2017-06', '2017-10')]
+                                     + [m(f'{y}-{mo:02d}') for y in range(2021, 2025) for mo in (2, 6, 10)]})
+        sched = prep.build_schedule(obs)
+        self.assertEqual(sched['stage1_recentsearch_counts']['roots'], 6)
+        roots = s1.scheduled_roots(sched, plan.TB3_G, plan.RECENTSEARCH)
+        cands = s1.scheduled_candidates(sched, plan.TB3_G, plan.RECENTSEARCH)
+        self.assertEqual((len(roots), len(cands)), (6, 6))
+        for other in (plan.ROOTINC, plan.ROOTCONF):
+            self.assertFalse(set(roots) & set(s1.scheduled_roots(sched, plan.TB3_G, other)))
+            self.assertFalse(set(cands) & set(s1.scheduled_candidates(sched, plan.TB3_G, other)))
+        for name, c in cands.items():
+            self.assertTrue(name.endswith('_recentsearch_gt0'))
+            self.assertIn((c['horizon'], c['target_month']), plan.RECENT_SEARCH_DATES)
+            self.assertEqual((c['ratio'], c['split_seed'], c['increment_source'], c['confirmation_seed'],
+                              c['recent_search_months']), ('r80', 42, 'root', 42, 6))
+        with self.assertRaises(SystemExit):
+            s1.rootinc_entries({'stage1_rootconf_roots': sched['stage1_rootconf_roots']}, plan.RECENTSEARCH)
+
+
+    def test_compare_recent_membership_matches_d29_and_rejects_moved_rows(self):
+        """The D30 reporter accepts exactly D29 fitting/C/target with S split into S_recent +
+        unused by the A5 months, and refuses an unused row moved into C or a non-A5 calendar."""
+        from scripts import stage1_rootconf_compare as rc
+        h, t = 4, "2018-02"
+        recent = list(plan.RECENT_SEARCH_DATES[(h, t)])
+        older = ["2014-06", "2014-10", "2015-02", "2015-06"]
+        rows = []
+        for area in range(6):
+            for i, m in enumerate(older + recent):
+                k = (area + i) % 3   # every month has fitting, S and C rows across areas
+                role = ("fitting" if k == 0 else "confirmation" if k == 1 else "validation")
+                rows.append({"area": area, "target_month": m, "role": role, "class_code": (area + i) % 4})
+            rows.append({"area": area, "target_month": t, "role": "heldout_target", "class_code": area % 4})
+        old = pd.DataFrame(rows)
+        new = old.copy()
+        new.loc[(new["role"] == "validation") & ~new["target_month"].isin(recent), "role"] = "unused_search_history"
+        target = pd.DataFrame({"area": range(6), "target_month": t, "y_true": [a % 4 for a in range(6)],
+                               "y_root": [0, 1, 2, 3, 0, 1]})
+        with tempfile.TemporaryDirectory() as tmp:
+            def stage(name, members):
+                d = Path(tmp) / name / "roots" / "r"
+                d.mkdir(parents=True)
+                members.to_csv(d / "fold_membership.csv.gz", index=False)
+                (d / "root.json").write_text(json.dumps({"root_booster_sha256": "same"}), encoding="utf-8")
+                return Path(tmp) / name
+            new_stage, old_stage = stage("new", new), stage("old", old)
+            got = rc.same_roots_recent(new_stage, "r", old_stage, "r", target, target, h, t)
+            self.assertEqual(int((got["role"] == "unused_search_history").sum()),
+                             int(((old["role"] == "validation") & ~old["target_month"].isin(recent)).sum()))
+            moved = new.copy()
+            moved.loc[moved.index[moved["role"] == "unused_search_history"][0], "role"] = "confirmation"
+            moved.to_csv(new_stage / "roots" / "r" / "fold_membership.csv.gz", index=False)
+            with self.assertRaises(rc.CompareError):
+                rc.same_roots_recent(new_stage, "r", old_stage, "r", target, target, h, t)
+            new.to_csv(new_stage / "roots" / "r" / "fold_membership.csv.gz", index=False)
+            with self.assertRaises(rc.CompareError):
+                rc.same_roots_recent(new_stage, "r", old_stage, "r", target, target, 4, "2020-10")
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

@@ -380,7 +380,8 @@ def build_schedule(observations: pd.DataFrame) -> dict:
     schedule = {"stage1": [], "stage1_roots": [], "stage1_candidates": [], "development": [], "stage3": [],
                 "stage1_tb3_roots": [], "stage1_tb3_candidates": [],
                 "stage1_rootinc_roots": [], "stage1_rootinc_candidates": [],
-                "stage1_rootconf_roots": [], "stage1_rootconf_candidates": []}
+                "stage1_rootconf_roots": [], "stage1_rootconf_candidates": [],
+                "stage1_recentsearch_roots": [], "stage1_recentsearch_candidates": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
             entry = _fold(horizon, target, labelled, label_months, with_gate=False)
@@ -424,6 +425,11 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                 schedule["stage1_rootconf_roots"].append(dict(conf))
                 schedule["stage1_rootconf_candidates"].append({**conf, "local_config": plan.ROOTINC_LOCAL,
                                                                "threshold_family": plan.ROOTINC_FAMILY})
+                # D30 (A5): the same six roots; search S limited to the latest six validation months.
+                recent = {**conf, "recent_search_months": plan.RECENT_SEARCH_MONTHS}
+                schedule["stage1_recentsearch_roots"].append(dict(recent))
+                schedule["stage1_recentsearch_candidates"].append({**recent, "local_config": plan.ROOTINC_LOCAL,
+                                                                   "threshold_family": plan.ROOTINC_FAMILY})
         for target in (mi(t) for t in plan.DEV_TARGETS):
             entry = _fold(horizon, target, labelled, label_months, with_gate=True)
             if entry["status"] != "scheduled":
@@ -465,6 +471,12 @@ def build_schedule(observations: pd.DataFrame) -> dict:
     schedule["stage1_rootconf_counts"] = {"roots": 6, "candidates": 6,
                                           "rule": ("D29/A4: the D28 rootinc roots; original r80 validation split "
                                                    "label-blind into search S and diagnostic confirmation C (seed 42)")}
+    if len(schedule["stage1_recentsearch_roots"]) != 6 or len(schedule["stage1_recentsearch_candidates"]) != 6:
+        raise PreflightError("the D30 recent-search contrast must schedule exactly 6 roots / 6 candidates")
+    schedule["stage1_recentsearch_counts"] = {"roots": 6, "candidates": 6,
+                                              "rule": ("D30/A5: the D29 rootconf roots; search S restricted to the "
+                                                       "latest six observed months of the original validation; "
+                                                       "fitting and C unchanged")}
     lower = []
     for stage in ("stage1", "development", "stage3"):
         for r in schedule[stage]:

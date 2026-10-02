@@ -47,7 +47,8 @@ from src.metrics import fourclass
 from src.model import native_xgb as nx
 from src.model.GeoRF import GeoRF
 from src.utils.lag_schedules import forecasting_scope_to_lag
-from src.utils.split import confirmation_split, group_aware_train_val_split, time_block_split
+from src.utils.split import (confirmation_split, group_aware_train_val_split, recent_search_months,
+                             time_block_split)
 
 PARTITION_INFO_CUTOFF = plan.PARTITION_INFO_CUTOFF
 
@@ -223,6 +224,17 @@ def frozen_digest(model_dir) -> str:
     return digest.hexdigest()
 
 
+def recent_search_roles(x_set, conf_rows, mtrain, expected):
+    """D30/A5: (recent month indexes, unused_search_history mask). Recent = the latest six
+    observed months of the ORIGINAL validation (x_set==1, S and C alike; dates only);
+    a calendar differing from the frozen ``expected`` labels is an identity error."""
+    recent = recent_search_months(mtrain[x_set == 1], plan.RECENT_SEARCH_MONTHS)
+    if month_label(recent).tolist() != list(expected):
+        raise ValueError(f"recent search months {month_label(recent).tolist()} differ from the frozen "
+                         f"A5 plan {list(expected)}")
+    return recent, (x_set == 1) & ~conf_rows & ~np.isin(mtrain, recent)
+
+
 def score_confirmation(model, root_booster, confirmation, lookup, out):
     """Predict every C row with the frozen candidate (predict-only routing; areas without
     a learned route use the existing root fallback) and the root; write the keyed file."""
@@ -310,7 +322,12 @@ def main():
     parser.add_argument("--confirmation-split", action="store_true",
                         help="D29/A4 rootconf: split the original r80 validation label-blind into search S "
                              "and frozen-candidate confirmation C (root increments only)")
+    parser.add_argument("--recent-search", action="store_true",
+                        help="D30/A5 recentsearch: restrict search S to the latest six observed months of the "
+                             "original validation; earlier S rows are unused (requires --confirmation-split)")
     args = parser.parse_args()
+    if args.recent_search and not args.confirmation_split:
+        raise ValueError("--recent-search runs only with --confirmation-split (A5)")
     if args.confirmation_split and args.increment_source != "root":
         raise ValueError("--confirmation-split runs only with --increment-source root (A4)")
     if args.increment_source == "root" and (args.ratio != plan.ROOTINC_RATIO or args.split_seed != plan.ROOTINC_SEED
@@ -364,7 +381,9 @@ def main():
     x_set, val_ratio, validation_split = stage1_split(args.ratio, gtrain, mtrain, o_index, args.split_seed,
                                                       horizon, str(term))
     fit_rows = x_set == 0
-    if args.confirmation_split:
+    if args.recent_search:
+        root_name = plan.recentsearch_root_name(horizon, str(term), args.g_config)
+    elif args.confirmation_split:
         root_name = plan.rootconf_root_name(horizon, str(term), args.g_config)
     elif args.increment_source == "root":
         root_name = plan.rootinc_root_name(horizon, str(term), args.g_config)
@@ -375,7 +394,17 @@ def main():
     if args.confirmation_split:
         orig_val = np.flatnonzero(x_set == 1)
         conf_rows[orig_val[confirmation_split(gtrain[orig_val], mtrain[orig_val], plan.CONFIRMATION_SEED) == 1]] = True
-    roles = np.where(conf_rows, "confirmation", np.where(x_set == 1, "validation", "fitting"))
+    # D30/A5: S restricted to the latest six observed months of the ORIGINAL validation
+    # (S u C, dates only); earlier S rows are unused_search_history (neither fit nor C).
+    unused_rows = np.zeros(len(x_set), dtype=bool)
+    recent = None
+    if args.recent_search:
+        recent, unused_rows = recent_search_roles(x_set, conf_rows, mtrain,
+                                                  plan.RECENT_SEARCH_DATES[(horizon, str(term))])
+    search_rows = (x_set == 1) & ~conf_rows & ~unused_rows
+    roles = np.where(conf_rows, "confirmation",
+                     np.where(unused_rows, "unused_search_history",
+                              np.where(x_set == 1, "validation", "fitting")))
 
     membership = pd.DataFrame({
         "area": np.concatenate([gtrain, gtest]),
@@ -413,6 +442,16 @@ def main():
             "class_counts": {"search_S": class_counts(ytrain[(x_set == 1) & ~conf_rows]),
                              "confirmation_C": class_counts(ytrain[conf_rows])}}}
            if args.confirmation_split else {}),
+        **({"recent_search": {
+            "rule": ("D30/A5: search S = original S rows in the latest six observed months of the original "
+                     "validation (S u C); earlier S rows are unused_search_history (not fitted, not C)"),
+            "months": month_label(recent).tolist() if recent is not None else None,
+            "rows": {"search_recent": int(search_rows.sum()), "unused_search_history": int(unused_rows.sum())},
+            "keys_sha256": {"search_recent": nx.keys_sha(gtrain[search_rows], mtrain[search_rows]),
+                            "unused_search_history": nx.keys_sha(gtrain[unused_rows], mtrain[unused_rows])},
+            "class_counts": {"search_recent": class_counts(ytrain[search_rows]),
+                             "unused_search_history": class_counts(ytrain[unused_rows])}}}
+           if args.recent_search else {}),
         "inherited_restrictions": "training areas restricted to areas present in the target month",
         "config": {"MIN_DEPTH": MIN_DEPTH, "MAX_DEPTH": MAX_DEPTH, "CONTIGUITY": config.CONTIGUITY,
                    "REFINE_TIMES": config.REFINE_TIMES, "MIN_BRANCH_SAMPLE_SIZE": config.MIN_BRANCH_SAMPLE_SIZE,
@@ -424,7 +463,10 @@ def main():
     if args.ratio == plan.TIME_BLOCK:
         base.update(split_mode=plan.TIME_BLOCK, validation_months=validation_split["validation_months"],
                     fitting_months=validation_split["fitting_months"])
-    if args.confirmation_split:
+    if args.recent_search:
+        candidates = [plan.recentsearch_candidate_name(horizon, str(term), args.g_config)]
+        explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
+    elif args.confirmation_split:
         candidates = [plan.rootconf_candidate_name(horizon, str(term), args.g_config)]
         explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
     elif args.increment_source == "root":
@@ -456,7 +498,7 @@ def main():
     if args.confirmation_split:
         # C rows leave the search data entirely; fitting rows and S are untouched.
         confirmation = (Xtrain[conf_rows], ytrain[conf_rows], gtrain[conf_rows], mtrain[conf_rows])
-        keep = ~conf_rows
+        keep = ~conf_rows & ~unused_rows   # D30: unused search history also leaves the search
         Xtrain, ytrain, gtrain, mtrain, x_set = Xtrain[keep], ytrain[keep], gtrain[keep], mtrain[keep], x_set[keep]
     data = (Xtrain, ytrain, gtrain, mtrain, x_set, Xtest, ytest, gtest, y_pool)
     records = {}

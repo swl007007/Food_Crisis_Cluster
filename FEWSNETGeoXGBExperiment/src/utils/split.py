@@ -138,6 +138,14 @@ def time_block_split(groups, months, origin: int, n_months: int, expected_months
             "fitting_only_groups": int(len(fit_groups - set(val_groups.tolist())))}
 
 
+def recent_search_months(val_months, n: int = 6) -> np.ndarray:
+    """D30 / A5: the latest ``n`` distinct OBSERVED month indexes of the full ORIGINAL
+    validation (S u C), ascending. Depends on dates only; raises if fewer than ``n``."""
+    distinct = np.unique(np.asarray(val_months, dtype=np.int64))
+    if distinct.size < n:
+        raise ValueError(f"incomplete recent search: {distinct.size} observed validation months, need {n}")
+    return distinct[-n:]
+
 
 def confirmation_split(groups, months, seed: int = 42) -> np.ndarray:
     """D29 / A4: label-blind split of the ORIGINAL validation rows into S (0) and C (1).
