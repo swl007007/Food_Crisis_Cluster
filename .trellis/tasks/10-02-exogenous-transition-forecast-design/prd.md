@@ -10,6 +10,15 @@ Explore forecasting for regions without IPC history, emphasizing non-crisis → 
 
 The user requested closure of `10-01-geoxgb-shared-parameter-design` as **incomplete**. Preserve its experiments/code/checks as evidence; its scientific target was not attained. D55 producer `097d98b` exists with synthetic checks, but real fitting was never released. New feature, endpoint, country and acceptance choices require their own spec.
 
+## Confirmed two-study structure (technical design not frozen)
+
+The user confirmed two studies: first predict all periods without historical IPC inputs, then compare transition prediction with experts. Country-level metrics are secondary supplementary results, not a third primary study or a country-selection success target. Separation:
+
+- **Study 1 — IPC-history-free general forecasting:** evaluate all eligible target periods, including stable and changing outcomes. All-period coverage does not mean training on future labels. Clarify whether the claim is missing IPC inputs or genuinely unseen labelled regions. General accuracy, crisis detection and probability quality can establish usefulness without universal expert/persistence dominance. Persistence is an information-advantaged retrospective reference when evaluator-only origin IPC exists, not an available deployment baseline for truly no-history areas.
+- **Study 2 — transition warning versus expert:** prioritize onset, retain non-onsets for false-alarm assessment, and report actual-event recall separately. Expert comparisons require the same keys, forecast horizon and issuance-information boundary; no H12 expert proxy. Country-level results are supplementary heterogeneity analyses. Universal superiority is not required.
+
+Start by considering the same frozen covariate-only model for both studies to separate scientific questions from architecture changes. Whether Study 2 instead learns transition-focused q/splits is an unresolved design choice: it would be a separately selected model, not merely a new slice of Study 1 scores. Shared infrastructure is possible; each study needs its own estimand and verifiable conclusions. No child implementation tasks or experiments are opened yet.
+
 ## Repository facts
 
 - Ordered schema: 162 columns = 75 IPC-history + 28 static + 41 dynamic-at-origin + 15 lagged/aggregated covariates + 3 calendar (`FEWSNETGeoXGBExperiment/feature-schema.json`).
@@ -41,23 +50,23 @@ Proposed joint report: risk-set evaluation primary, true-onset recall diagnostic
 
 Stage 1 q-scan, split acceptance, development selection, local enablement and Stage 3 reporting require separate population/metric contracts. Historical validation labels may define internal event diagnostics; current held-out target outcomes must not enter fitting/search/routing. A new population changes q normalization/support and empty/single-class behavior; no automatic formula reuse.
 
-## Brainstorm: country scope
+## Confirmed country reporting role
 
-Recommendation, unconfirmed: discover countries with pre-final development evidence, freeze eligibility/selection, then confirm on untouched final data. Report all eligible discovery countries, including failures. Define “consistent,” event/date support, multiplicity control and paired uncertainty before scoring. Within-country claims require temporal/spatial dependence handling; an across-country bootstrap cannot simply be reused for one country. No country selected and no final-country scores inspected.
+Country-level metrics supplement both main studies; selecting winning countries is not the primary objective. Report all countries meeting prospectively defined support criteria, including weaker or negative results. Define event/date support, uncertainty and any multiplicity control before making country-specific significance claims. Within-country uncertainty requires temporal/spatial dependence handling, not an across-country bootstrap. No country is selected using final scores. Any later restriction to particular countries requires a separate development/confirmation decision.
 
 ## Open decisions, in order
 
 1. Main cold-start validation: whole-region label exclusion versus only removing IPC input features.
 2. Primary estimand: actual transitions only, origin non-crisis risk set, or primary risk-set evaluation plus true-event recall?
-3. Cold-start validation: whether evaluation regions contribute NO IPC labels to any fitting, partition/consensus learning, tuning or selection; origin-label access for evaluator only. Covariate lags are allowed (confirmed).
+3. Relationship between studies: shared frozen predictor versus separately learned transition-focused q/splits; evaluator-only origin-label access. Covariate lags are allowed (confirmed).
 4. Binary versus four-class target/rule and whether partition/consensus remains the starting architecture.
-5. Country discovery/confirmation, horizons, split, support and useful-performance criteria (no universal baseline superiority requirement).
+5. Horizons, split, support and useful-performance criteria; supplementary country reporting and uncertainty (no universal baseline superiority requirement).
 6. Reuse versus refits/recomputed candidates, finite budget and stop rule.
 
 ## Planning acceptance
 
 - [ ] Brainstorm resolves scientific estimand and claim boundaries.
 - [ ] Written spec defines every fit/predict feature exclusion, evaluator-only metadata, evaluation layers and support/fallback rules.
-- [ ] Country discovery and final information isolation explicit.
+- [ ] Supplementary country reporting and final information isolation explicit.
 - [ ] Grill stress-tests spec one decision at a time before execution approval.
 - [ ] Old incomplete closure and reusable evidence linked without calling old phase-dependent scores new-model evidence.

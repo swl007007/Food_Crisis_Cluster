@@ -29,7 +29,9 @@
     "user_confirmed": [
       "non-IPC covariate lags allowed",
       "primary claim: regions without IPC history",
-      "universal superiority to expert/persistence not required"
+      "universal superiority to expert/persistence not required",
+      "two primary studies: all-period forecasting and transition comparison with experts",
+      "country metrics secondary/supplementary"
     ]
   }
 }
