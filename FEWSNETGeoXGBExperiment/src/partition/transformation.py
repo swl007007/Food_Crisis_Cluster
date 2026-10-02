@@ -110,6 +110,33 @@ def generate_branch_visualization_correspondence(X, X_group, X_branch_id, branch
 
   return partition_data
 
+E1_VARIANTS = ('hard_f1', 'brier_crisis')
+
+
+def scan_tie_diagnostics(g, s0, s1, c, e1):
+  '''D34 descriptive scan diagnostics from the exact floats, before contiguity refinement.
+
+  The tie block is every group whose g equals the g of the last s0 group in sorted
+  order (min g over s0); the cut crosses it when an s1 group has that same g.'''
+  g = np.asarray(g, dtype=float).reshape(-1)
+  s0 = np.asarray(s0, dtype=int).reshape(-1)
+  s1 = np.asarray(s1, dtype=int).reshape(-1)
+  c = np.asarray(c, dtype=float).reshape(len(g), -1)
+  out = {'e1': e1, 'n_groups': int(len(g)), 'c_zero_groups': int(np.sum(np.all(c == 0, axis=1))),
+         'g_zero_groups': int(np.sum(g == 0)), 'distinct_g': int(len(np.unique(g))),
+         'pre_refinement_s0_groups': int(s0.size), 'pre_refinement_s1_groups': int(s1.size)}
+  if s0.size and s1.size:
+    cut = g[s0].min()
+    block = g == cut
+    in0 = int(np.sum(g[s0] == cut))
+    in1 = int(np.sum(g[s1] == cut))
+    out.update(boundary_tie_block=int(np.sum(block)), cut_crosses_tie_block=bool(in1 > 0),
+               tie_block_in_s0=in0, tie_block_in_s1=in1)
+  else:
+    out.update(boundary_tie_block=0, cut_crosses_tie_block=False, tie_block_in_s0=0, tie_block_in_s1=0)
+  return out
+
+
 def partition(model, X, y,
                      X_group , X_set, X_id, X_branch_id,
                      #group_loc = None,
@@ -195,6 +222,11 @@ def partition(model, X, y,
   if X_month is None or threshold is None or fit_floor is None or val_floor is None or path_cap is None:
     raise ValueError('partition() requires X_month, threshold, fit_support, val_support, path_round_cap')
   local_rounds = int(model.local_config['rounds'])
+  # D34/A9: the E1 search signal; hard_f1 (default) is the unchanged D26 crisis-F1 mass.
+  e1 = paras.get('e1', 'hard_f1') or 'hard_f1'
+  if e1 not in E1_VARIANTS:
+    raise ValueError(f'unknown E1 variant {e1!r}; expected one of {E1_VARIANTS}')
+  partition.scan_diagnostics = {}
   from src.experiment.plan import ENDPOINT as ENDPOINT_NAME
   
   # Generate baseline visualization for the root model (before any partitioning)
@@ -308,6 +340,11 @@ def partition(model, X, y,
 
       #change model: evaluation function
       y_pred_before = base_eval_using_merged_branch_data(model, X_val, branch_id)
+      if e1 == 'brier_crisis':
+        # current parent's four-class probabilities on this branch's S rows (model is
+        # still loaded at branch_id); y_pred_before stays the hard prediction elsewhere.
+        p_parent = model.predict(X_val, prob=True)
+        p_crisis = p_parent[:, 2] + p_parent[:, 3]
       del X_val
 
       #get s list
@@ -316,9 +353,14 @@ def partition(model, X, y,
       #need to make results returned by groupby have the same order
       #change stat: get stats function
 
-      (y_val_gid, y_val_value,
-       true_pred_gid, true_pred_value) = get_class_wise_stat(y_val, y_pred_before,
-                                                             X_group[val_list])
+      if e1 == 'brier_crisis':
+        y_val_gid, y_val_value, true_pred_value = fourclass.brier_crisis_scan_masses(
+            y_val, p_crisis, X_group[val_list])
+        true_pred_gid = y_val_gid
+      else:
+        (y_val_gid, y_val_value,
+         true_pred_gid, true_pred_value) = get_class_wise_stat(y_val, y_pred_before,
+                                                               X_group[val_list])
                                                             #  X_loc[np.ix_(val_list[0], GRID_COLS)])#X_val_grid
 
       y_val_gid = np.asarray(y_val_gid)
@@ -355,6 +397,9 @@ def partition(model, X, y,
       # s1_prev = s1
       s0_before_contiguity = s0.copy()
       s1_before_contiguity = s1.copy()
+      if RETURN_SCAN_SCORE:
+        c_mass, _ = get_c_b(y_val_value, true_pred_value)
+        partition.scan_diagnostics[branch_id] = scan_tie_diagnostics(gscore, s0, s1, c_mass, e1)
       s0_group_before_contiguity = get_s_list_group_ids(s0_before_contiguity, y_val_gid)
       s1_group_before_contiguity = get_s_list_group_ids(s1_before_contiguity, y_val_gid)
       
@@ -664,6 +709,9 @@ def partition(model, X, y,
 
       s0_group = get_s_list_group_ids(s0, y_val_gid)
       s1_group = get_s_list_group_ids(s1, y_val_gid)
+      if branch_id in partition.scan_diagnostics:
+        partition.scan_diagnostics[branch_id].update(
+            post_refinement_s0_groups=int(np.size(s0_group)), post_refinement_s1_groups=int(np.size(s1_group)))
       # if VIS_DEBUG_MODE, save the final s0_group and s1_group after contiguity refinement
       if VIS_DEBUG_MODE:
         print(f"INFO: VIS_DEBUG_MODE=True, attempting to write final_partitions CSV for round {i} branch {branch_id}")
@@ -1129,6 +1177,12 @@ def partition(model, X, y,
 
       else:
         print("= Branch %s not split" % (branch_id) )
+
+  # D34: attach the descriptive scan diagnostics (no gate) to the branch's decision(s).
+  for decision in partition.decisions:
+    diag = partition.scan_diagnostics.get(decision.get('branch_id'))
+    if diag is not None:
+      decision['scan_diagnostics'] = dict(diag)
 
   # Save and return metrics if tracking was enabled
   if metrics_tracker is not None:

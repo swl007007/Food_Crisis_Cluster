@@ -207,6 +207,22 @@ def crisis_scan_masses(y_true, y_pred, y_group):
     return groups, Y, A
 
 
+def brier_crisis_scan_masses(y_true, p_crisis, y_group):
+    """D34/A9 (groups, Y, A) with ONE crisis column from the crisis Brier loss:
+    z = 1[code >= 2], p = clip(p_crisis, 0, 1), l = (p - z)^2, N = rows,
+    Y_g = n_g / N, A_g = (n_g - sum l_g) / N; groups in np.unique order (as crisis_scan_masses)."""
+    z = (np.asarray(y_true) >= 2).astype(float)
+    p = np.clip(np.asarray(p_crisis, dtype=float), 0.0, 1.0)
+    loss = (p - z) ** 2
+    groups, inverse = np.unique(np.asarray(y_group), return_inverse=True)
+    n = float(len(z))
+    count = np.bincount(inverse, minlength=len(groups)).astype(float)
+    lsum = np.bincount(inverse, weights=loss, minlength=len(groups))
+    if n <= 0:
+        return groups, np.zeros((len(groups), 1)), np.zeros((len(groups), 1))
+    return groups, (count / n).reshape(-1, 1), ((count - lsum) / n).reshape(-1, 1)
+
+
 def endpoint_exact(y_true, y_pred, endpoint=None):
     """The primary exact score of the active endpoint (plan.ENDPOINT)."""
     from src.experiment.plan import ENDPOINT

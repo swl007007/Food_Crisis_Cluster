@@ -192,6 +192,24 @@ def matchedsize_candidate_name(h, target, g, seed):
     return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{MATCHEDSIZE}_m{seed}_{ROOTINC_FAMILY}"
 
 
+#: D34 / experiment-plan A9: paired E1 contrast. 21 roots (H4/8/12 x seven remaining
+#: Stage 1 dates) under the D29 procedure; each root fitted once and shared by two
+#: candidates whose E1 search signal is hard crisis F1 or the crisis Brier loss.
+E1PAIR = "e1pair"
+E1PAIR_TARGETS = ("2018-06", "2018-10", "2019-02", "2019-06", "2019-10", "2020-02", "2020-06")
+E1PAIR_VARIANTS = (("e1hard", "hard_f1"), ("e1brier", "brier_crisis"))
+
+
+def e1pair_root_name(h, target, g):
+    return f"{root_name(h, target, g, ROOTINC_RATIO, ROOTINC_SEED)}_{E1PAIR}"
+
+
+def e1pair_candidate_names(h, target, g):
+    """[(candidate name, E1 variant)] for the two candidates sharing one e1pair root."""
+    return [(f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{token}_{ROOTINC_FAMILY}", e1)
+            for token, e1 in E1PAIR_VARIANTS]
+
+
 def booster_params(config: dict) -> tuple[dict, int]:
     """(xgb.train params, rounds) for one G or L configuration."""
     params = dict(XGB_BASE)

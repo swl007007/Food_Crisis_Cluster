@@ -382,7 +382,8 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                 "stage1_rootinc_roots": [], "stage1_rootinc_candidates": [],
                 "stage1_rootconf_roots": [], "stage1_rootconf_candidates": [],
                 "stage1_recentsearch_roots": [], "stage1_recentsearch_candidates": [],
-                "stage1_matchedsize_roots": [], "stage1_matchedsize_candidates": []}
+                "stage1_matchedsize_roots": [], "stage1_matchedsize_candidates": [],
+                "stage1_e1pair_roots": [], "stage1_e1pair_candidates": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
             entry = _fold(horizon, target, labelled, label_months, with_gate=False)
@@ -437,6 +438,15 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                     schedule["stage1_matchedsize_roots"].append(dict(matched))
                     schedule["stage1_matchedsize_candidates"].append({**matched, "local_config": plan.ROOTINC_LOCAL,
                                                                       "threshold_family": plan.ROOTINC_FAMILY})
+            if label in plan.E1PAIR_TARGETS:
+                # D34 (A9): D29 procedure, one root shared by the hard-F1 and Brier E1 candidates.
+                pair = {"horizon": horizon, "target_month": label, "origin_month": entry["origin_month"],
+                        "ratio": plan.ROOTINC_RATIO, "split_seed": plan.ROOTINC_SEED, "increment_source": "root",
+                        "confirmation_seed": plan.CONFIRMATION_SEED, "e1_pair": True}
+                schedule["stage1_e1pair_roots"].append(dict(pair))
+                for _token, e1 in plan.E1PAIR_VARIANTS:
+                    schedule["stage1_e1pair_candidates"].append({**pair, "local_config": plan.ROOTINC_LOCAL,
+                                                                 "threshold_family": plan.ROOTINC_FAMILY, "e1": e1})
         for target in (mi(t) for t in plan.DEV_TARGETS):
             entry = _fold(horizon, target, labelled, label_months, with_gate=True)
             if entry["status"] != "scheduled":
@@ -490,6 +500,11 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                                              "rule": ("D31/A6: the D30 roots x search seeds 101/102/103; per area "
                                                       "the D30 recent-S row count drawn label-blind from all "
                                                       "original S dates; fitting and C unchanged")}
+    if len(schedule["stage1_e1pair_roots"]) != 21 or len(schedule["stage1_e1pair_candidates"]) != 42:
+        raise PreflightError("the D34 E1 paired contrast must schedule exactly 21 roots / 42 candidates")
+    schedule["stage1_e1pair_counts"] = {"roots": 21, "candidates": 42,
+                                        "rule": ("D34/A9: D29 procedure at H4/8/12 x seven remaining Stage 1 dates; "
+                                                 "each root fitted once, shared by E1 hard_f1 and brier_crisis")}
     lower = []
     for stage in ("stage1", "development", "stage3"):
         for r in schedule[stage]:

@@ -1945,6 +1945,186 @@ class ShallowReplay(unittest.TestCase):
         self.assertGreater(self.sr.exact_mismatches(a, a[:1]), 0)
 
 
+class E1BrierContrast(unittest.TestCase):
+    """D34 (experiment-plan A9): E1 hard crisis F1 vs crisis Brier loss, one shared root."""
+
+    def test_brier_masses_formula(self):
+        rng = np.random.default_rng(3)
+        y = rng.integers(0, 4, 200)
+        p = rng.uniform(-.2, 1.2, 200)
+        g = rng.integers(10, 25, 200)
+        groups, Y, A = fourclass.brier_crisis_scan_masses(y, p, g)
+        np.testing.assert_array_equal(groups, np.unique(g))
+        self.assertEqual((Y.shape, A.shape), ((len(groups), 1), (len(groups), 1)))
+        z = (y >= 2).astype(float)
+        loss = (np.clip(p, 0, 1) - z) ** 2
+        for k, grp in enumerate(groups):
+            self.assertAlmostEqual(Y[k, 0], np.sum(g == grp) / 200)
+            self.assertAlmostEqual(A[k, 0], (np.sum(g == grp) - loss[g == grp].sum()) / 200)
+        self.assertTrue(np.all(Y >= A) and np.all(Y - A >= 0))
+        self.assertAlmostEqual(Y.sum(), 1.0)
+        self.assertAlmostEqual((Y - A).sum(), loss.sum() / 200)
+        _, Y0, A0 = fourclass.brier_crisis_scan_masses(y, (y >= 2).astype(float), g)
+        self.assertEqual(np.sum(Y0 - A0), 0.0)                 # perfect -> zero error mass
+
+    def test_scan_tie_diagnostics(self):
+        g = np.array([3., 1., 1., 1., 0., 0., 2.])
+        c = np.array([[1.], [0.], [.5], [0.], [0.], [0.], [1.]])
+        s0, s1 = np.array([0, 6, 1]), np.array([2, 3, 4, 5])
+        d = trans.scan_tie_diagnostics(g, s0, s1, c, 'hard_f1')
+        self.assertEqual((d['n_groups'], d['c_zero_groups'], d['g_zero_groups'], d['distinct_g']), (7, 4, 2, 4))
+        self.assertEqual((d['boundary_tie_block'], d['cut_crosses_tie_block'], d['tie_block_in_s0'],
+                          d['tie_block_in_s1']), (3, True, 1, 2))
+        self.assertEqual((d['pre_refinement_s0_groups'], d['pre_refinement_s1_groups']), (3, 4))
+        d = trans.scan_tie_diagnostics(g, np.array([0, 6]), np.array([1, 2, 3, 4, 5]), c, 'brier_crisis')
+        self.assertEqual((d['boundary_tie_block'], d['cut_crosses_tie_block'], d['e1']), (1, False, 'brier_crisis'))
+
+    def _setup(self, conf_perm=False):
+        rng, groups, X, y, months, x_set, conf = RecentSearchContrast()._fixture()
+        if conf_perm:
+            y = np.where(conf, np.random.default_rng(5).permutation(y), y)
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        Xt, yt, gt = X[:64], y[:64], groups[::30]
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        keep = ~conf
+        data = (X[keep], y[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+        return root, data, (X[conf], y[conf], groups[conf], months[conf])
+
+    def _run(self, root, data, conf_data, **kw):
+        mgf = TimeBlockContrast.mgf()
+        with tempfile.TemporaryDirectory() as t, patch.object(trans, 'CONTIGUITY', False), \
+                patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                patch.dict(plan.STAGE1_VAL_SUPPORT, FLOORS['val_support']), \
+                patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+            work, ck = Path(t) / 'w', Path(t) / 'ck'
+            work.mkdir()
+            rec = mgf.run_candidate('c', 'L1', 'gt0', root, data, work, ck, None, [f'f{i}' for i in range(5)],
+                                    increment_source='root', confirmation=conf_data, **kw)
+            return rec, (rec['confirmation']['frozen_digest_before_scoring'], rec['checkpoints']['sha256'],
+                         (work / 'c' / 's_branch.pkl').read_bytes(),
+                         (work / 'c' / 'correspondence_table.csv').read_text(),
+                         json.dumps(rec['partition']['decisions'], default=str))
+
+    def test_hard_default_identical_and_brier_isolated_from_c(self):
+        root, data, conf_data = self._setup()
+        rec_d, key_d = self._run(root, data, conf_data)
+        rec_h, key_h = self._run(root, data, conf_data, e1='hard_f1')
+        self.assertEqual(key_d, key_h)                          # new-code-only evidence
+        self.assertEqual((rec_d['e1'], rec_h['e1']), ('hard_f1', 'hard_f1'))
+        rec_b, key_b = self._run(root, data, conf_data, e1='brier_crisis')
+        self.assertEqual(rec_b['e1'], 'brier_crisis')
+        diags = [d['scan_diagnostics'] for d in rec_b['partition']['decisions'] if 'scan_diagnostics' in d]
+        self.assertTrue(diags and all(d['e1'] == 'brier_crisis' for d in diags))
+        self.assertTrue(all('post_refinement_s0_groups' in d for d in diags
+                            if d['pre_refinement_s0_groups'] and d['pre_refinement_s1_groups']))
+        root_p, data_p, conf_p = self._setup(conf_perm=True)
+        _, key_bp = self._run(root, data, conf_p, e1='brier_crisis')
+        self.assertEqual(key_b, key_bp)
+
+    def test_brier_zero_loss_records_no_candidate(self):
+        root, data, conf_data = self._setup()
+
+        original = fourclass.brier_crisis_scan_masses
+
+        def perfect(y_true, p, grp):
+            groups, Y, _ = original(y_true, p, grp)
+            return groups, Y, Y.copy()
+        with patch.object(trans.fourclass, 'brier_crisis_scan_masses', side_effect=perfect):
+            rec, _ = self._run(root, data, conf_data, e1='brier_crisis')
+        outcomes = [d['outcome'] for d in rec['partition']['decisions']]
+        self.assertEqual(outcomes, ['no_candidate_zero_error_mass'])
+        self.assertEqual(rec['partition']['n_terminal'], 1)
+
+    def test_twentyone_e1pair_roots_with_42_distinct_names(self):
+        from scripts import run_stage1 as s1
+        obs = pd.DataFrame({'month': [m(t) for t in plan.STAGE1_TARGETS + ('2010-01', '2016-02', '2016-06',
+                                                                          '2016-10', '2017-02', '2017-06', '2017-10')]
+                                     + [m(f'{y}-{mo:02d}') for y in range(2021, 2025) for mo in (2, 6, 10)]})
+        sched = prep.build_schedule(obs)
+        self.assertEqual(sched['stage1_e1pair_counts'], {**sched['stage1_e1pair_counts'], 'roots': 21, 'candidates': 42})
+        roots = s1.scheduled_roots(sched, plan.TB3_G, plan.E1PAIR)
+        cands = s1.scheduled_candidates(sched, plan.TB3_G, plan.E1PAIR)
+        self.assertEqual((len(roots), len(cands)), (21, 42))
+        for other in (plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE):
+            self.assertFalse(set(roots) & set(s1.scheduled_roots(sched, plan.TB3_G, other)))
+            self.assertFalse(set(cands) & set(s1.scheduled_candidates(sched, plan.TB3_G, other)))
+        self.assertEqual(sorted({(c['horizon'], c['target_month']) for c in cands.values()}),
+                         sorted((h, t) for h in plan.HORIZONS for t in plan.E1PAIR_TARGETS))
+        per_root = {}
+        for name, c in cands.items():
+            parts = name.split('_')
+            self.assertEqual((parts[3], parts[-1]), ('L1', 'gt0'))
+            self.assertTrue(name.endswith({'hard_f1': '_e1hard_gt0', 'brier_crisis': '_e1brier_gt0'}[c['e1']]))
+            self.assertIn(c['root'], roots)
+            self.assertTrue(c['root'].endswith('_r80_s42_e1pair'))
+            per_root.setdefault(c['root'], set()).add(c['e1'])
+            self.assertEqual((c['ratio'], c['split_seed'], c['increment_source'], c['confirmation_seed']),
+                             ('r80', 42, 'root', 42))
+        self.assertTrue(all(v == {'hard_f1', 'brier_crisis'} for v in per_root.values()))
+        self.assertFalse(any(r['recent_search_months'] if 'recent_search_months' in r else 0
+                             for r in roots.values()))
+        with self.assertRaises(SystemExit):
+            s1.scheduled_roots({'stage1_e1pair_roots': sched['stage1_e1pair_roots'][:20]}, plan.TB3_G, plan.E1PAIR)
+
+
+class E1PairReporter(unittest.TestCase):
+    """D34 reporter on a REAL paired fixture: both E1 variants through run_candidate on one shared
+    root, root files as main() writes them, then the canonical-order completion check,
+    load_e1pair (file reads) and e1pair_row."""
+
+    def test_real_pair_through_loader_and_row(self):
+        from scripts import stage1_rootconf_compare as rc
+        from src.feature.fourclass_features import month_label
+        mgf = TimeBlockContrast.mgf()
+        rng, groups, X, y, months, x_set, conf = RecentSearchContrast()._fixture()
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        first = np.unique(groups, return_index=True)[1]
+        Xt, yt, gt = X[first], y[first], groups[first]            # one target row per area (unique keys)
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        keep = ~conf
+        data = (X[keep], y[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+        h, t, g = 4, "2018-06", "G1"
+        root_name = plan.e1pair_root_name(h, t, g)
+        pairs = plan.e1pair_candidate_names(h, t, g)
+        with tempfile.TemporaryDirectory() as tmp, patch.object(trans, 'CONTIGUITY', False), \
+                patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), patch.dict(plan.STAGE1_VAL_SUPPORT, FLOORS['val_support']), \
+                patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+            stage = Path(tmp) / 'stage1_e1pair'
+            (stage / 'candidates').mkdir(parents=True)
+            for cand, e1 in pairs:
+                mgf.run_candidate(cand, 'L1', 'gt0', root, data, stage / 'candidates', stage / 'checkpoints', None,
+                                  [f'f{i}' for i in range(5)], increment_source='root',
+                                  confirmation=(X[conf], y[conf], groups[conf], months[conf]), e1=e1)
+            rdir = stage / 'roots' / root_name
+            rdir.mkdir(parents=True)
+            (rdir / 'root.json').write_text(json.dumps({'root_booster_sha256': root[1]['booster_sha256']}), encoding='utf-8')
+            role = np.where(conf, 'confirmation', np.where(x_set == 1, 'validation', 'fitting'))
+            pd.concat([pd.DataFrame({'area': groups, 'target_month': month_label(months), 'role': role, 'class_code': y}),
+                       pd.DataFrame({'area': gt, 'target_month': t, 'role': 'heldout_target', 'class_code': yt})]
+                      ).to_csv(rdir / 'fold_membership.csv.gz', index=False)
+            pd.DataFrame({'FEWSNET_admin_code': gt, 'y_true_code': yt, 'y_pred_pooled_code': y_pool}).to_csv(
+                rdir / 'root_target_predictions.csv', index=False)
+            entry = {'horizon': h, 'target_month': t, 'g_config': g}
+            expected = rc.expected_candidates(plan.E1PAIR, entry)
+            self.assertEqual(expected, [n for n, _ in pairs])                     # hard first, then Brier
+            rc.check_completion_candidates(root_name, [n for n, _ in pairs], expected)
+            with self.assertRaises(rc.CompareError):                              # alphabetical order is not producer order
+                rc.check_completion_candidates(root_name, sorted(expected), expected)
+            loaded = rc.load_e1pair(stage, root_name, {e1: n for n, e1 in pairs}, h, t)
+            row, mats, diag = rc.e1pair_row(loaded, h, t)
+            tp = {e1: pd.read_csv(stage / 'candidates' / n / 'target_predictions.csv') for n, e1 in pairs}
+            f = lambda d: fourclass.crisis_f1_exact(d['y_true_code'].to_numpy(), d['y_pred_partitioned_code'].to_numpy())   # noqa: E731
+            self.assertAlmostEqual(row['e3_brier_minus_hard'], float(f(tp['brier_crisis']) - f(tp['hard_f1'])), places=12)
+            for tok in ('e1hard', 'e1brier'):
+                pools = diag[tok]['assigned_pools']
+                self.assertEqual(sum(v['fitting_rows'] for v in pools.values()), int((x_set[keep] == 0).sum()))
+                self.assertIn(f'{tok}_assigned_fitting_rows_min', row)
+                self.assertIn(f'{tok}_checkpoint_training_rows_max', row)
+            self.assertNotIn('e4_weight', row)
+            self.assertEqual(row['e1hard_root_scan_n_groups'] > 0, True)
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

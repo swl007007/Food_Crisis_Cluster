@@ -48,9 +48,10 @@ SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
                plan.RECENTSEARCH: ("stage1_recentsearch_roots", "stage1_recentsearch_candidates",
                                    "stage1_recentsearch"),
                plan.MATCHEDSIZE: ("stage1_matchedsize_roots", "stage1_matchedsize_candidates",
-                                  "stage1_matchedsize")}
+                                  "stage1_matchedsize"),
+               plan.E1PAIR: ("stage1_e1pair_roots", "stage1_e1pair_candidates", "stage1_e1pair")}
 #: modes that run under the D26-locked G (no reselection)
-LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE)
+LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE, plan.E1PAIR)
 #: D29/A4 only: the frozen-candidate confirmation predictions
 CONFIRMATION_FILES = ("confirmation_predictions.csv.gz",)
 #: D32/A7: required only when the candidate declares this assignment-evidence schema
@@ -69,6 +70,23 @@ NAMERS = {plan.ROOTINC: (plan.rootinc_root_name, plan.rootinc_candidate_name),
                              lambda h, t, g, seed: plan.matchedsize_candidate_name(h, t, g, seed))}
 #: schedule entries per fixed-root mode (D31 = six H/T x three search seeds)
 EXPECTED_ENTRIES = {plan.ROOTINC: 6, plan.ROOTCONF: 6, plan.RECENTSEARCH: 6, plan.MATCHEDSIZE: 18}
+#: D34/A9: 21 roots, each shared by two E1 candidates (42)
+E1PAIR_ROOTS, E1PAIR_CANDIDATES = 21, 42
+
+
+def e1pair_entries(schedule: dict) -> list:
+    """The 21 prepared D34 roots (H4/8/12 x seven dates, D29 procedure); otherwise refused."""
+    rows = schedule.get("stage1_e1pair_roots")
+    if rows is None:
+        raise SystemExit("this preparation has no e1pair schedule; prepare a fresh run")
+    want = sorted((h, t) for h in plan.HORIZONS for t in plan.E1PAIR_TARGETS)
+    got = sorted((r["horizon"], r["target_month"]) for r in rows)
+    if len(rows) != E1PAIR_ROOTS or got != want or any(
+            (r.get("ratio"), r.get("split_seed"), r.get("increment_source"), r.get("confirmation_seed"),
+             r.get("e1_pair")) != (plan.ROOTINC_RATIO, plan.ROOTINC_SEED, "root", plan.CONFIRMATION_SEED, True)
+            or "recent_search_months" in r or "matched_size_seed" in r for r in rows):
+        raise SystemExit("the e1pair schedule is not exactly H{4,8,12} x seven dates, r80/seed 42/root/C seed 42")
+    return rows
 
 
 def _names(mode: str, r: dict, g: str) -> tuple:
@@ -109,6 +127,11 @@ def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
 def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     """root name -> schedule entry with its selected G (the frozen 162, or the six tb3)."""
     out = {}
+    if mode == plan.E1PAIR:
+        for r in e1pair_entries(schedule):
+            g = g_of[str(r["horizon"])]
+            out[plan.e1pair_root_name(r["horizon"], r["target_month"], g)] = {**r, "g_config": g}
+        return out
     if mode in NAMERS:
         for r in rootinc_entries(schedule, mode):
             g = g_of[str(r["horizon"])]
@@ -122,6 +145,16 @@ def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
 
 def scheduled_candidates(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     out = {}
+    if mode == plan.E1PAIR:
+        for r in e1pair_entries(schedule):
+            g = g_of[str(r["horizon"])]
+            for cand_n, e1 in plan.e1pair_candidate_names(r["horizon"], r["target_month"], g):
+                out[cand_n] = {**r, "g_config": g, "local_config": plan.ROOTINC_LOCAL,
+                               "threshold_family": plan.ROOTINC_FAMILY, "e1": e1,
+                               "root": plan.e1pair_root_name(r["horizon"], r["target_month"], g)}
+        if len(out) != E1PAIR_CANDIDATES:
+            raise SystemExit("the e1pair schedule does not give 42 distinct candidates")
+        return out
     if mode in NAMERS:
         for r in rootinc_entries(schedule, mode):
             g = g_of[str(r["horizon"])]
@@ -168,6 +201,8 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
     confirm = "confirmation_seed" in root
     if confirm:
         command.append("--confirmation-split")
+    if root.get("e1_pair"):
+        command.append("--e1-pair")
     if "matched_size_seed" in root:
         command += ["--matched-size-seed", str(root["matched_size_seed"])]
     elif "recent_search_months" in root:

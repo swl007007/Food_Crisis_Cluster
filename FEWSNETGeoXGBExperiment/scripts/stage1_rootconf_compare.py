@@ -7,6 +7,8 @@ python scripts/stage1_rootconf_compare.py --mode recentsearch --run-dir RUN --co
 python scripts/stage1_rootconf_compare.py --mode matchedsize --run-dir RUN --control-run D30_RUN
     --reference-run D29_RUN [--control-code-rev 5517fb4] [--reference-code-rev ab1ac83] [--code-rev PRODUCER_REV]
     (D31 / A6; D30 compared on complete C and E3 only; writes RUN/stage1_matchedsize_compare/)
+python scripts/stage1_rootconf_compare.py --mode e1pair --run-dir RUN [--code-rev PRODUCER_REV]
+    (D34 / A9; in-run hard_f1 vs brier_crisis on the 21 shared roots; writes RUN/stage1_e1pair_compare/)
 
 Reuses the D27/D28 acceptance and keyed joins (scripts/stage1_tb3_compare.py,
 scripts/stage1_rootinc_compare.py). REQUIRES, per (H, T): identical fitting keys, the new
@@ -26,6 +28,7 @@ import sys
 from fractions import Fraction
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 PACKAGE = Path(__file__).resolve().parents[1]
@@ -42,14 +45,29 @@ from src.utils.split import confirmation_split, matched_size_sample  # noqa: E40
 CompareError = tc.CompareError
 KEY = ["area", "target_month"]
 #: modes with a frozen-candidate confirmation set C
-CONF_MODES = (plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE)
+CONF_MODES = (plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE, plan.E1PAIR)
 #: new mode -> (control mode, default control producer, column prefix of the control)
 CONTROLS = {plan.ROOTCONF: (plan.ROOTINC, "98adf48", "d28"), plan.RECENTSEARCH: (plan.ROOTCONF, "ab1ac83", "d29"),
             plan.MATCHEDSIZE: (plan.RECENTSEARCH, "5517fb4", "d30")}
 #: D31/A6: the D29 rootconf reference of the matched-size contrast
 MATCHED_REFERENCE = (plan.ROOTCONF, "ab1ac83")
 #: scheduled roots per mode (D31: six H/T x three search seeds)
-EXPECTED_ROOTS = {plan.MATCHEDSIZE: 18}
+EXPECTED_ROOTS = {plan.MATCHEDSIZE: 18, plan.E1PAIR: 21}
+#: scheduled candidates per mode when it differs from the root count (D34: two E1 variants per root)
+EXPECTED_CANDIDATES = {plan.E1PAIR: 42}
+
+
+def expected_candidates(mode: str, entry: dict) -> list:
+    """Scheduled candidate names of one root in the producer's canonical order (D34: hard_f1, brier_crisis)."""
+    if mode == plan.E1PAIR:
+        return [n for n, _ in plan.e1pair_candidate_names(entry["horizon"], entry["target_month"], entry["g_config"])]
+    return [_names(mode, entry, entry["g_config"])[1]]
+
+
+def check_completion_candidates(name: str, listed, expected: list) -> None:
+    """The completion record lists exactly the expected candidates, in canonical order, no duplicates."""
+    if list(listed) != list(expected):
+        raise CompareError(f"{name}: completion lists {list(listed)}, not exactly {list(expected)} in producer order")
 
 
 def accept_mode(run: Path, mode: str, code=None, code_rev=None):
@@ -78,8 +96,9 @@ def accept_mode(run: Path, mode: str, code=None, code_rev=None):
     sched = acc.schedule(run)
     roots, cands = scheduled_roots(sched, g_of, mode), scheduled_candidates(sched, g_of, mode)
     n_expected = EXPECTED_ROOTS.get(mode, 6)
-    if len(roots) != n_expected or len(cands) != n_expected:
-        raise CompareError(f"the schedule does not give exactly {n_expected} {mode} roots / candidates")
+    n_cands = EXPECTED_CANDIDATES.get(mode, n_expected)
+    if len(roots) != n_expected or len(cands) != n_cands:
+        raise CompareError(f"the schedule does not give exactly {n_expected} {mode} roots / {n_cands} candidates")
     stage = run / SPLIT_MODES[mode][2]
     present = {p.name for p in (stage / "roots").iterdir() if p.is_dir()} if (stage / "roots").is_dir() else set()
     if present != set(roots):
@@ -91,11 +110,11 @@ def accept_mode(run: Path, mode: str, code=None, code_rev=None):
     runtime = None
     for name, entry in roots.items():
         want = sorted(c for c, e in cands.items() if e["root"] == name)
-        if want != [_names(mode, entry, entry["g_config"])[1]]:
-            raise CompareError(f"{name}: expected exactly its single L1/gt0 {mode} candidate, got {want}")
-        record = tc.accept_root_record(stage, name, want)
-        if list(record.get("candidates", [])) != want:
-            raise CompareError(f"{name}: completion lists {record.get('candidates')}, not exactly {want}")
+        expected = expected_candidates(mode, entry)          # canonical producer order
+        if want != sorted(expected) or len(set(expected)) != len(expected):
+            raise CompareError(f"{name}: expected exactly {expected} for {mode}, got {want}")
+        record = tc.accept_root_record(stage, name, expected)
+        check_completion_candidates(name, record.get("candidates", []), expected)
         if record.get("prepared") != prepared["outputs_sha256"] or record.get("g_selection") != g_record:
             raise CompareError(f"{name}: produced on another preparation or G selection")
         if record.get("code") != code:
@@ -108,14 +127,19 @@ def accept_mode(run: Path, mode: str, code=None, code_rev=None):
                 root.get("target_month"), root.get("g_config")) != \
                 ("root", plan.ROOTINC_RATIO, plan.ROOTINC_SEED, entry["horizon"], entry["target_month"], entry["g_config"]):
             raise CompareError(f"{name}: root.json does not describe the scheduled r80/seed42 shared-root root")
-        if tc._json(stage / "candidates" / want[0] / "candidate.json").get("increment_source") != "root":
-            raise CompareError(f"{want[0]}: candidate is not a shared-root increment candidate")
+        for c in expected:
+            cj = tc._json(stage / "candidates" / c / "candidate.json")
+            if cj.get("increment_source") != "root":
+                raise CompareError(f"{c}: candidate is not a shared-root increment candidate")
+            if mode == plan.E1PAIR and cj.get("e1") != cands[c]["e1"]:
+                raise CompareError(f"{c}: candidate.json e1 {cj.get('e1')!r} differs from the schedule")
         if (mode in CONF_MODES) != ("confirmation_split" in root) or \
                 (mode == plan.RECENTSEARCH) != ("recent_search" in root) or \
                 (mode == plan.MATCHEDSIZE) != ("matched_size" in root):
             raise CompareError(f"{name}: confirmation split / recent search presence does not match mode {mode}")
-        if mode in CONF_MODES and not (stage / "candidates" / want[0] / "confirmation_predictions.csv.gz").is_file():
-            raise CompareError(f"{want[0]}: no confirmation predictions")
+        for c in expected:
+            if mode in CONF_MODES and not (stage / "candidates" / c / "confirmation_predictions.csv.gz").is_file():
+                raise CompareError(f"{c}: no confirmation predictions")
     return roots, cands, {"run": str(run), "stage": stage, "prepared": prepared["outputs_sha256"],
                           "g_selection": g_record, "g_of": g_of, "code": code, "code_rev": code_rev,
                           "runtime": runtime}
@@ -466,22 +490,183 @@ def matched_summary(frame, partitions, ident, cident, dup) -> dict:
     }
 
 
+# ------------------------------------------------------------------ D34 / A9 e1pair (in-run hard vs Brier)
+
+E1_TOKENS = dict((e1, tok) for tok, e1 in plan.E1PAIR_VARIANTS)      # hard_f1 -> e1hard, brier_crisis -> e1brier
+
+
+def load_e1pair(stage, name, pair: dict, h, t) -> dict:
+    """File reads for one D34 root: ``pair`` maps e1 variant -> candidate name."""
+    rb = tc._json(stage / "roots" / name / "root.json")["root_booster_sha256"]
+    out = {"root_booster": rb}
+    for e1, cand in pair.items():
+        row, target, conf, part = tc.method_row(stage, name, cand, h, t, e1, rb)
+        s_frame, members = tc.keyed_validation(stage, name, cand)
+        cj = tc._json(stage / "candidates" / cand / "candidate.json")
+        last = {e["saved_as"]: e for e in cj["fits"]["saved_log"]}
+        out[e1] = {"candidate": cand, "row": row, "target": target, "conf": conf, "partition": part,
+                   "S": s_frame, "C": keyed_confirmation(stage, cand, members), "record": cj,
+                   "branch_booster": {b: (last.get(b) or {}).get("booster_sha256") or (rb if b == "root" else None)
+                                      for b in cj["partition"]["terminal_partitions"]},
+                   "checkpoint_training_rows": [int((last.get(b) or {}).get("rows") or 0)
+                                                for b in cj["partition"]["terminal_partitions"]],
+                   "assigned": assigned_pools(tc.read(stage / "candidates" / cand / "assignment_evidence.csv",
+                                                      ("prediction_branch_id", "spatial_partition_id"))),
+                   "rounds": round_columns(stage, cand)}
+    return out
+
+
+def assigned_pools(evidence: pd.DataFrame) -> dict:
+    """Per spatial terminal: assigned fitting rows and areas (D32 evidence; s-1 = no search rows)."""
+    g = evidence.groupby("spatial_partition_id").agg(fitting_rows=("fitting_rows", "sum"), areas=("FEWSNET_admin_code", "size"))
+    spatial = g.drop(index=[i for i in ("s-1",) if i in g.index])
+    summary = {"assigned_terminals": int(len(spatial)),
+               "assigned_fitting_rows_min": int(spatial["fitting_rows"].min()) if len(spatial) else None,
+               "assigned_fitting_rows_max": int(spatial["fitting_rows"].max()) if len(spatial) else None,
+               "assigned_areas_min": int(spatial["areas"].min()) if len(spatial) else None,
+               "assigned_areas_max": int(spatial["areas"].max()) if len(spatial) else None,
+               "unsearched_s1_areas": int(g.loc["s-1", "areas"]) if "s-1" in g.index else 0,
+               "unsearched_s1_fitting_rows": int(g.loc["s-1", "fitting_rows"]) if "s-1" in g.index else 0}
+    return {"by_terminal": {k: {"fitting_rows": int(v.fitting_rows), "areas": int(v.areas)} for k, v in g.iterrows()},
+            "summary": summary}
+
+
+def e1pair_row(data: dict, h, t) -> tuple:
+    """Pure D34 row: same-root identity checks, S/C/E3 root vs hard vs Brier, diagnostics, structure."""
+    hard, brier = data["hard_f1"], data["brier_crisis"]
+    for part, cols in (("target", ["y_true", "y_root"]), ("S", ["y_true", "y_root"]), ("C", ["y_true", "y_root"])):
+        a, b = hard[part].sort_values(KEY).reset_index(drop=True), brier[part].sort_values(KEY).reset_index(drop=True)
+        if not (a[KEY].equals(b[KEY]) and all((a[c].to_numpy() == b[c].to_numpy()).all() for c in cols)):
+            raise CompareError(f"h{h} {t}: {part} keys/truth/root predictions differ between the paired candidates")
+    blocks, mats = {}, {}
+    for part in ("S", "C"):
+        for e1, d in (("hard_f1", hard), ("brier_crisis", brier)):
+            b, mt = pool_block(d[part], f"{part}_{E1_TOKENS[e1]}")
+            blocks.update(b); mats.update(mt)
+        blocks[f"{part}_brier_minus_hard"] = float(Fraction(blocks[f"{part}_e1brier_local_crisis_f1_exact"])
+                                                   - Fraction(blocks[f"{part}_e1hard_local_crisis_f1_exact"]))
+    e3 = lambda d, k: Fraction(d["row"][k])   # noqa: E731  (d = candidate dict)
+    row = {"horizon": h, "target_month": t, "hard_candidate": hard["candidate"], "brier_candidate": brier["candidate"],
+           "e3_root_crisis_f1": hard["row"]["e3_root_crisis_f1"],
+           **crisis_counts(hard["conf"]["target_root"], "e3_root")}
+    for e1, d in (("hard_f1", hard), ("brier_crisis", brier)):
+        tok = E1_TOKENS[e1]
+        r, rec = d["row"], d["record"]
+        root_dec = [x for x in rec["partition"]["decisions"] if (x.get("branch_id") or "") == ""]
+        diag = (root_dec[0].get("scan_diagnostics") if root_dec else None) or {}
+        pools, ck = d["assigned"], d["checkpoint_training_rows"]
+        row.update({f"e3_{tok}_local_crisis_f1": r["e3_local_crisis_f1"],
+                    f"e3_{tok}_local_minus_root": r["e3_local_minus_root"],
+                    f"e3_{tok}_local_minus_root_exact": r["e3_local_minus_root_exact"],
+                    f"e3_{tok}_fourclass_local_minus_root": r["e3_local_fourclass"] - r["e3_root_fourclass"],
+                    **crisis_counts(d["conf"]["target_local"], f"e3_{tok}_local"),
+                    f"{tok}_n_terminal": r["n_terminal"], f"{tok}_unsplit": int(r["n_terminal"] == 1),
+                    f"{tok}_accepted_splits": r["accepted_splits"],
+                    f"{tok}_distinct_terminal_boosters": r["distinct_terminal_boosters"],
+                    f"{tok}_decisions": len(rec["partition"]["decisions"]),
+                    f"{tok}_root_outcome": root_dec[0].get("outcome") if root_dec else None,
+                    f"{tok}_root_parent_kept_fitting_areas": (root_dec[0].get("parent_kept_fitting") or {}).get("areas") if root_dec else None,
+                    **{f"{tok}_{k}": v for k, v in pools["summary"].items()},
+                    f"{tok}_checkpoint_training_rows_min": min(ck) if ck else None,   # booster fit rows (retained-root = global)
+                    f"{tok}_checkpoint_training_rows_max": max(ck) if ck else None,
+                    **{f"{tok}_root_scan_{k}": v for k, v in diag.items() if k != "e1"},
+                    **{f"{tok}_{k}": v for k, v in root_booster_rows(d["C"], d["branch_booster"], data["root_booster"]).items()},
+                    **{f"{tok}_d32_{k}": v for k, v in ((rec.get("assignment_evidence") or {}).get("areas_by_status") or {}).items()},
+                    **{f"{tok}_{k}": v for k, v in d["rounds"].items()}})
+        mats[f"target_{tok}_local"] = d["conf"]["target_local"]
+    mats["target_root"] = hard["conf"]["target_root"]
+    row["e3_brier_minus_hard"] = float(e3(brier, "e3_local_crisis_f1_exact") - e3(hard, "e3_local_crisis_f1_exact"))
+    row.update(blocks)
+    row["identical_partition"] = hard["partition"] == brier["partition"]
+    diagnostics = {E1_TOKENS[e1]: {"scan": [x.get("scan_diagnostics") for x in d["record"]["partition"]["decisions"]
+                                            if x.get("scan_diagnostics")],
+                                   "assigned_pools": d["assigned"]["by_terminal"]}
+                   for e1, d in (("hard_f1", hard), ("brier_crisis", brier))}
+    return row, mats, diagnostics
+
+
+def e1pair_summary(frame, confusions) -> dict:
+    """Per-H, per-target and pooled descriptions; mean-fold deltas kept separate from pooled confusion."""
+    deltas = ["e3_e1hard_local_minus_root", "e3_e1brier_local_minus_root", "e3_brier_minus_hard",
+              "C_e1hard_local_minus_root", "C_e1brier_local_minus_root", "C_brier_minus_hard",
+              "S_e1hard_local_minus_root", "S_e1brier_local_minus_root", "S_brier_minus_hard"]
+    desc = lambda g: {k: {"mean": float(g[k].mean()), "positive": int((g[k] > 0).sum()),   # noqa: E731
+                          "negative": int((g[k] < 0).sum()), "zero": int((g[k] == 0).sum())} for k in deltas}
+    pooled = {}
+    for which in sorted({c["which"] for c in confusions}):
+        m = np.sum([np.asarray(c["fourclass"]) for c in confusions if c["which"] == which], axis=0)
+        tp, fp, fn = int(m[2:, 2:].sum()), int(m[:2, 2:].sum()), int(m[2:, :2].sum())
+        pooled[which] = {"fourclass": m.astype(int).tolist(), "crisis_tp_fp_fn": [tp, fp, fn],
+                         "crisis_f1": 2 * tp / (2 * tp + fp + fn) if (2 * tp + fp + fn) else None}
+    return {"mean_fold_all": desc(frame),
+            "by_horizon": {str(h): desc(g) for h, g in frame.groupby("horizon")},
+            "by_target": {t: desc(g) for t, g in frame.groupby("target_month")},
+            "pooled_confusion": pooled,
+            "unsplit": {"e1hard": int(frame["e1hard_unsplit"].sum()), "e1brier": int(frame["e1brier_unsplit"].sum())},
+            "identical_partitions": int(frame["identical_partition"].sum())}
+
+
+def e1pair_main(args) -> None:
+    run = args.run_dir.resolve()
+    out = run / f"stage1_{plan.E1PAIR}_compare"
+    rid.refuse_existing(out, "the e1pair comparison")
+    roots, cands, ident = accept_mode(run, plan.E1PAIR, rid.code_identity_at(args.code_rev) if args.code_rev else None,
+                                      args.code_rev)
+    stage = ident["stage"]
+    rows, confusions, diagnostics = [], [], {}
+    for name, entry in sorted(roots.items(), key=lambda kv: (kv[1]["horizon"], kv[1]["target_month"])):
+        h, t = entry["horizon"], entry["target_month"]
+        pair = {e["e1"]: c for c, e in cands.items() if e["root"] == name}
+        row, mats, diag = e1pair_row(load_e1pair(stage, name, pair, h, t), h, t)
+        rows.append(row)
+        diagnostics[name] = diag
+        for which, mtx in mats.items():
+            confusions.append({"horizon": h, "target_month": t, "root": name, "which": which,
+                               "fourclass": [[int(x) for x in r] for r in mtx],
+                               "crisis_[[nn,nc],[cn,cc]]": tc.crisis_matrix(mtx)})
+    frame = pd.DataFrame(rows)
+    summary = {
+        "contrast": "D34 (A9): 21 frozen roots, one root fit each shared by hard_f1 and brier_crisis E1 (42 candidates); "
+                    "E2/C/E3 argmax crisis F1; development contrast, not independent validation",
+        "this_run": {k: v for k, v in ident.items() if k not in ("g_of", "stage")}, "g_selected": ident["g_of"],
+        **e1pair_summary(frame, confusions),
+        "caveats": ["21 related roots on dates previously used by v1/v7 RF/G selection; development evidence only",
+                    "scan diagnostics are descriptive; Brier does not guarantee distinct or nonzero scores and a "
+                    "nonzero g is not independent evidence",
+                    "S is adaptively reused; C was used by no search but is correlated with S/fitting; E3 descriptive",
+                    "no E4 weights, no maps for Stage2, no selection of a family"]}
+    out.mkdir(parents=True)
+    frame.to_csv(out / "candidates.csv", index=False, float_format="%.17g")
+    rid.write_json_atomic(out / "summary.json", summary)
+    rid.write_json_atomic(out / "confusions.json", confusions)
+    rid.write_json_atomic(out / "scan_diagnostics.json", diagnostics)
+    rid.write_json_atomic(out / "completion.json", {
+        "stage": "stage1_e1pair_compare", "code": rid.code_identity(), "runtime": rid.runtime_identity(),
+        "outputs": {rel: sha for rel, sha in rid.output_hashes(out).items() if rel != "completion.json"}})
+    print(json.dumps({k: summary[k] for k in ("mean_fold_all", "unsplit")}, indent=1))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run-dir", type=Path, required=True)
-    parser.add_argument("--mode", choices=sorted(CONTROLS), default=plan.ROOTCONF,
+    parser.add_argument("--mode", choices=sorted(CONTROLS) + [plan.E1PAIR], default=plan.ROOTCONF,
                         help="rootconf (D29 vs D28 rootinc), recentsearch (D30 vs D29 rootconf) or "
                              "matchedsize (D31 vs D30 recentsearch, D29 reference)")
     parser.add_argument("--reference-run", type=Path, default=None, help="matchedsize only: the D29 rootconf run")
     parser.add_argument("--reference-code-rev", default=MATCHED_REFERENCE[1],
                         help="matchedsize only: committed producer of the D29 reference (default ab1ac83)")
-    parser.add_argument("--control-run", type=Path, required=True, help="the D28 rootinc / D29 rootconf run")
+    parser.add_argument("--control-run", type=Path, default=None,
+                        help="the D28 rootinc / D29 rootconf / D30 run (not used by e1pair: hard_f1 is the in-run pair)")
     parser.add_argument("--control-code-rev", default=None,
                         help="committed producer of the controls (default: 98adf48 for rootconf, ab1ac83 for recentsearch)")
     parser.add_argument("--code-rev", default=None,
                         help="committed producer of this run when it differs from the current code (default: current)")
     args = parser.parse_args()
     mode = args.mode
+    if mode == plan.E1PAIR:
+        return e1pair_main(args)
+    if args.control_run is None:
+        raise CompareError(f"{mode} needs --control-run")
     cmode, default_rev, cpre = CONTROLS[mode]
     control_rev = args.control_code_rev or default_rev
     run, control = args.run_dir.resolve(), args.control_run.resolve()

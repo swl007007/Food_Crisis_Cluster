@@ -123,7 +123,7 @@ def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch
 
 
 def run_candidate(name, local, family, root, data, work, checkpoint_dir, contiguity_info, features,
-                  increment_source="parent", confirmation=None):
+                  increment_source="parent", confirmation=None, e1="hard_f1"):
     """One partition search from the shared root; returns the candidate record.
 
     ``confirmation`` (D29/A4 only) = (X, y, groups, months) of the C rows. They are never
@@ -142,7 +142,7 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
                   feature_names=features, print_to_file=True, track_partition_metrics=False,
                   VIS_DEBUG_MODE=False, root=root, local_config=plan.L_CONFIGS[local],
                   threshold=plan.THRESHOLD_FAMILIES[family], X_month=mtrain,
-                  increment_source=increment_source)
+                  increment_source=increment_source, e1=e1)
         fit_seconds = time.time() - fit_started
         model_dir = Path(model.model_dir).resolve()
     finally:
@@ -238,6 +238,7 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
     record = {
         "candidate": name, "local_config": local, "threshold_family": family,
         "increment_source": increment_source,
+        "e1": e1,
         "threshold": str(plan.THRESHOLD_FAMILIES[family]),
         "partition": {
             "terminal_partitions": terminal, "n_terminal": len(terminal),
@@ -405,6 +406,8 @@ def main():
     parser.add_argument("--confirmation-split", action="store_true",
                         help="D29/A4 rootconf: split the original r80 validation label-blind into search S "
                              "and frozen-candidate confirmation C (root increments only)")
+    parser.add_argument("--e1-pair", action="store_true",
+                        help="D34/A9 e1pair: one D29 root shared by an E1 hard-F1 and an E1 crisis-Brier candidate")
     parser.add_argument("--recent-search", action="store_true",
                         help="D30/A5 recentsearch: restrict search S to the latest six observed months of the "
                              "original validation; earlier S rows are unused (requires --confirmation-split)")
@@ -413,6 +416,8 @@ def main():
                              "S dates with this search seed (101/102/103; requires --confirmation-split)")
     args = parser.parse_args()
     matched = args.matched_size_seed is not None
+    if args.e1_pair and (not args.confirmation_split or args.recent_search or matched):
+        raise ValueError("--e1-pair runs only with --confirmation-split, without recent/matched search (A9)")
     if matched and not args.confirmation_split:
         raise ValueError("--matched-size-seed runs only with --confirmation-split (A6)")
     if matched and args.recent_search:
@@ -424,7 +429,8 @@ def main():
     if args.confirmation_split and args.increment_source != "root":
         raise ValueError("--confirmation-split runs only with --increment-source root (A4)")
     if args.increment_source == "root" and (args.ratio != plan.ROOTINC_RATIO or args.split_seed != plan.ROOTINC_SEED
-                                            or args.desired_terms not in plan.ROOTINC_TARGETS
+                                            or args.desired_terms not in (plan.E1PAIR_TARGETS if args.e1_pair
+                                                                          else plan.ROOTINC_TARGETS)
                                             or args.g_config != plan.TB3_G[str(forecasting_scope_to_lag(args.forecasting_scope, LAGS_MONTHS))]):
         raise ValueError(f"root increments run only {plan.ROOTINC_RATIO}/seed {plan.ROOTINC_SEED} at "
                          f"{plan.ROOTINC_TARGETS} with the locked G {plan.TB3_G} (A3)")
@@ -478,6 +484,8 @@ def main():
         root_name = plan.matchedsize_root_name(horizon, str(term), args.g_config, args.matched_size_seed)
     elif args.recent_search:
         root_name = plan.recentsearch_root_name(horizon, str(term), args.g_config)
+    elif args.e1_pair:
+        root_name = plan.e1pair_root_name(horizon, str(term), args.g_config)
     elif args.confirmation_split:
         root_name = plan.rootconf_root_name(horizon, str(term), args.g_config)
     elif args.increment_source == "root":
@@ -588,6 +596,11 @@ def main():
     elif args.recent_search:
         candidates = [plan.recentsearch_candidate_name(horizon, str(term), args.g_config)]
         explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
+    elif args.e1_pair:
+        pairs = plan.e1pair_candidate_names(horizon, str(term), args.g_config)
+        candidates = [n for n, _ in pairs]
+        explicit = {n: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY) for n in candidates}
+        e1_of = dict(pairs)
     elif args.confirmation_split:
         candidates = [plan.rootconf_candidate_name(horizon, str(term), args.g_config)]
         explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
@@ -628,7 +641,8 @@ def main():
         local, family = explicit.get(name, (name.split("_")[3], name.split("_")[-1]))
         records[name] = run_candidate(name, local, family, (booster, record), data, work,
                                       args.checkpoint_dir, contiguity_info, features,
-                                      increment_source=args.increment_source, confirmation=confirmation)
+                                      increment_source=args.increment_source, confirmation=confirmation,
+                                      e1=(e1_of[name] if args.e1_pair else "hard_f1"))
     write_json("root.json", {**base, "status": "completed", "candidates": candidates,
                              "root_fit": record, "root_booster_sha256": record["booster_sha256"],
                              "module_locations": module_locations(),
