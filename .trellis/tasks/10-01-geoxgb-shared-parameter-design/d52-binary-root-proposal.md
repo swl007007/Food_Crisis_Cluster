@@ -1,4 +1,4 @@
-# D52 / A26: independent binary-objective root diagnostic (approved by the user; diagnostic only)
+# D52 / A26: independent binary-objective root diagnostic (completed; not adopted; supervisor verification passed)
 
 2026-10-02. Prepared by the executor at the supervisor's request under the user's delegated Stage 1 research authority, first committed as a proposal pending the user's decision (`1108cc9`).
 
@@ -71,3 +71,11 @@ Every root in D26–D51 is a four-class `multi:softprob` booster; `binary:logist
 - **External outputs** (frozen directory `C:\Users\swl00\geoxgb_runs\geoxgb-d52-binary-root-20261002`, must not pre-exist): binary UBJs and fit records (params, initial score, prediction shape), keyed binary p and original probabilities for FIT, C and E3, labels and hashes, gate/reload records, identity, log and artifact hashes, compact summary.
 - **Order:** user decision on §0 (answered "可以") → planning commit → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single run (≤ 21 fits) → factual report → independent supervisor check → stop.
 - **Excluded:** ratio, capacity or threshold grids; final data, Stage 2/3, maps, adoption; no automatic D53.
+
+## 6. Result (2026-10-02)
+
+- **Producer and run:** producer `39acbaf` (two-pass gate order after the supervisor source review). Run `C:\Users\swl00\geoxgb_runs\geoxgb-d52-binary-root-20261002`: exit 0 in 161 s, assertions on; pass 1 gated all 21 roots before any fit; exactly 21 binary fits with the approved parameter diff, `base_score` 5E-1, 162 features, exact reloads. Executor factual record `171d328`.
+- **Supervisor verification:** PASS (`research/d52_supervisor_check.py` / `research/d52_supervisor_results.json`; 9,111 checks, 504 metric cells, 1,660,244 rows).
+- **Findings:** [research/d52-binary-root-findings.md](research/d52-binary-root-findings.md).
+- **Decision:** the binary root is not adopted. Matched E3 crisis F1 binary / mass / argmax / persistence: H4 .601942/.611056/.629050/.651697, H8 .516022/.518645/.533375/.555614, H12 .465093/.470746/.478355/.549808; below both original rules and persistence at every H, pooled and mean-fold. Other metrics mixed (H4 Brier/log loss/AUC/AP slightly better; H8 Brier/log loss worse, AUC slightly lower, AP slightly higher; H12 all worse). Binary FIT/C F1 are higher while E3 falls, so the historical-to-forward gap widens. No pure objective attribution; not proof the partition idea is impossible. The four-class main contract is unchanged.
+- **Stage 1** remains unresolved; no D53 and no binary tuning grid.
