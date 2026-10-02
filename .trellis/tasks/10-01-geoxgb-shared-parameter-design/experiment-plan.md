@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D46/A20已完成，2:1危机加权不采用（d46-crisis-weight-root-plan.md）。D26–D45结果见各自计划。Stage1过拟合未解决；下一步需监督方另立规格；完整648、Stage2/3、最终评价与关闭均暂缓。**
+**当前状态：D47/A21深度1（stump）root对照已批准（d47-stump-root-plan.md）；D46已完成、不采用。D26–D46结果见各自计划。Stage1过拟合未解决；完整648、Stage2/3、最终评价与关闭均暂缓。**
 
 2026-10-01。以下v1.0为原D24/D25规划记录；末尾附录修订覆盖对应条款。
 
@@ -266,6 +266,6 @@ Stage 1 过拟合仍未解决。D26 的48候选平均 E2 crisis增益 +0.018052�
 
 见[d30-recent-search-plan.md](d30-recent-search-plan.md)：固定D29 fitting/root/C，E1/E2搜索S仅限最近六个真实validation月；六H/T、L1/gt0、D29对照，不用Stage3数据。
 
-## A6–A20. 后续计划索引（权威正文与结果见各计划文件）
+## A6–A21. 后续计划索引（权威正文与结果见各计划文件）
 
-A6/D31 `d31-matched-search-plan.md`；A7/D32 `d32-stage1-assignment-plan.md`；A8/D33 `d33-shallow-replay-plan.md`；A9/D34 `d34-e1-brier-contrast-plan.md`；A10/D35 `d35-global-increment-control-plan.md`；A11/D37 `d37-recency-root-plan.md`；A12/D38 `d38-persistence-margin-root-plan.md`；A13/D39 `d39-probability-diagnostic-plan.md`；A14/D40 `d40-forward-decision-plan.md`；A15/D41 `d41-local-shrinkage-plan.md`；A16/D42 `d42-map-transfer-plan.md`；A17/D43 `d43-temporal-map-refit-plan.md`；A18/D44 `d44-full-pool-root-diagnostic-plan.md`；A19/D45 `d45-root-prefix-diagnostic-plan.md`；A20/D46 `d46-crisis-weight-root-plan.md`。
+A6/D31 `d31-matched-search-plan.md`；A7/D32 `d32-stage1-assignment-plan.md`；A8/D33 `d33-shallow-replay-plan.md`；A9/D34 `d34-e1-brier-contrast-plan.md`；A10/D35 `d35-global-increment-control-plan.md`；A11/D37 `d37-recency-root-plan.md`；A12/D38 `d38-persistence-margin-root-plan.md`；A13/D39 `d39-probability-diagnostic-plan.md`；A14/D40 `d40-forward-decision-plan.md`；A15/D41 `d41-local-shrinkage-plan.md`；A16/D42 `d42-map-transfer-plan.md`；A17/D43 `d43-temporal-map-refit-plan.md`；A18/D44 `d44-full-pool-root-diagnostic-plan.md`；A19/D45 `d45-root-prefix-diagnostic-plan.md`；A20/D46 `d46-crisis-weight-root-plan.md`；A21/D47 `d47-stump-root-plan.md`。
