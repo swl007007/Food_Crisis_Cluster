@@ -1,6 +1,6 @@
 # GeoXGBoost 技术设计 v1.0
 
-**当前覆盖修订：D26/D27/D28有界实验已完成；D29确认集仅诊断六根已完成（ab1ac83/ef49d26），待科学评审。Stage 1过拟合尚未解决。** 以下v1.0的父增量继承、四分类主指标及完整流程执行文字以对应修订为准，不授权运行Stage2/3。
+**当前覆盖修订：D26–D29已完成；D30近期搜索对照已授权，完整契约见d30-recent-search-plan.md。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
 
 **首轮设计按D24采用，D25已授权开始执行；实际状态以审计start和task.json为准。** 本文记录架构/边界/证据；数值预算见experiment-plan.md，执行顺序见implement.md。
 母包按D1确认为 `FEWSNETFourClassBaseline/`，标签为 `1/2/3/4或5`；D4冻结共享树并只追加局部增量。v1.0为决策收敛整理，不改变已采用的实验方案。
@@ -237,3 +237,7 @@ D26 已观察到 31 个分裂候选全部改善 E2，但其中21个 E3 退化；
 搜索入口只能获得fitting/S的监督信息；C不得参与scan、局部支持资格、E2、停止、重试或参数/路由选择。整个候选的map、booster和路由冻结后，以既有predict-only路由分别给C和E3目标行出预测，不在评价前合并S/C重训。C中没有搜索支持的区域沿用既有area fallback，全部评价键保留，不用C标签补分支。原完整几何、fitting区域、NaN/特征契约不变。
 
 C首轮只诊断，没有C门槛，不删图/剪枝/回退，不消费C得分计算E4；E4仍由E3得分生成。记录现有候选产物的冻结身份与C逐键预测即可，不新建通用gate/完整性框架。A4固定分割、六根预算、D28同root主对照及解释限制；原parent/tb3/rootinc臂保持可复现。
+
+## D30：搜索历史与拟合历史分开
+
+在D29 rootconf路径复用S/C拆分和冻结评价；从原validation日期预定最近六个观察月份，只允许其中原S进入搜索。更早S记unused_search_history，root及child仍使用原59个月fitting。C及unused监督信息不进入搜索支持/接纳/停止，保持原fitting地理覆盖。改动只表达明确的近期搜索模式，复用既有split/driver/compare。细节及日期表以d30-recent-search-plan.md为准。

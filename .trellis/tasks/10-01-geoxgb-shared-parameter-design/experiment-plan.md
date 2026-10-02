@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D26/D27/D28有界实验已完成；D29确认诊断六根已完成，待评审（结果见d29-confirmation-plan.md）。Stage1过拟合仍未解决。** A1/A2/A3保留既有结果；本轮不恢复完整648、Stage2/3、最终评价或关闭。
+**当前状态：D26–D29已完成；D30/A5近期搜索六根已授权，契约见d30-recent-search-plan.md。Stage1过拟合仍未解决，本轮不恢复完整648、Stage2/3、最终评价或关闭。**
 
 2026-10-01。当前执行范围以末尾A4为准；以下v1.0是原D24/D25规划记录，后续修订覆盖对应条款，不自动恢复完整流程。需求和决策记录见prd.md。
 
@@ -261,3 +261,7 @@ Stage 1 过拟合仍未解决。D26 的48候选平均 E2 crisis增益 +0.018052�
 ## A4. D29：冻结候选后的确认诊断（已完成，待评审）
 
 具体六根契约已拆至 [d29-confirmation-plan.md](d29-confirmation-plan.md)，该文件是A4的权威正文，并单独列入implement/check上下文。拆分仅为避免Trellis单文件32768字节注入截断，内容不变。用户已采用诊断范围并授权开发数据安排；执行边界仍为六根、C只诊断、Stage3隔离。
+
+## A5. D30近期搜索六根对照（开发研究已授权）
+
+权威契约独立保存为[d30-recent-search-plan.md](d30-recent-search-plan.md)，避免自动上下文截断。固定D29 fitting/root/C，只将E1/E2搜索S限制至最近六个真实validation月份；原六H/T组合、L1/gt0、六根预算、D29对照，不使用Stage3数据。

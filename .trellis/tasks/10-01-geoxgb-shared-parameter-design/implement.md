@@ -1,6 +1,6 @@
 # GeoXGBoost implementation plan — v1.0
 
-**Current status: D28 completed; D29 diagnostic-only confirmation and development execution authorized, proceed with A4 six-root scope (§9). Stage 1 overfitting remains unresolved.** Original full-pipeline checklists below are historical scope, not authorization to resume Stage 2/3, run the full 648 or close this task.
+**Current status: D29 completed; D30 recent-search six-root experiment authorized (§10, d30-recent-search-plan.md). Stage1 overfitting unresolved; no Stage2/3/full648/final/close in this run.**
 
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
@@ -110,3 +110,13 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] Commit producer (ab1ac83; 62 tests OK, exit 0) and pass required checks before authoritative preparation. Prepare fresh six-root run; reuse original v1 G screen, not reuse-of-reuse; no extra G fits. Run exactly A4 six candidates with frozen environment and full geography (geoxgb-d29-confirm-20261001, G from v1 G1/G4/G2, six roots completed, exit 0).
 - [x] Verify D28-matched fitting/root/target identity (reporter ef49d26 exit 0; supervisor independent stdlib rescore passed), independently rescore S/C/E3, report support/confusions/structure/E4 without C selection. Record actual commands, producer, failures and evidence.
 - [x] Update PRD/spec/PROGRESS with implementation/run/science statuses; stop for review (overfitting NOT solved). No full648, Stage2/3, final evaluation, audit close or claim that overfitting is solved.
+
+## 10. D30 recent-search contrast (authorized)
+
+- [x] User authorized recommended development research; record exact six-root contract in d30-recent-search-plan.md, preserve Stage3 boundary.
+- [ ] Commit planning; preserve original Claude/audit binding.
+- [ ] Native trellis-implement: reuse D29 mode and confirmation split; unchanged fitting/C, recent-six S only, explicit unused history and independent identity. Preserve old modes.
+- [ ] Production-path unused/C-label invariance, deterministic recent dates and support fallback tests; native trellis-check on final diff.
+- [ ] Commit producer/pass checks, fresh prepare/G reuse, six roots only; no72 G refits.
+- [ ] D29-keyed root/roles/target comparison, S_recent/C whole/C recent/C older/E3 scores, support/structure/E4 and independent rescore.
+- [ ] Update all task docs and PROGRESS with results; no Stage2/3/full648/final/close or claim of solved overfitting without evidence.
