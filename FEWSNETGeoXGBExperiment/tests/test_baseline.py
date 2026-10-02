@@ -2960,6 +2960,66 @@ class ClassWeightRoot(unittest.TestCase):
             cw.log_loss_fourclass([0, 2, 3, 1], bad)
 
 
+class StumpRoot(unittest.TestCase):
+    """D47/A21: gate before fit; copied depth-1 config; saved trees are stumps."""
+
+    def setUp(self):
+        from scripts import stage1_stump_root as st
+        self.st = st
+
+    def test_failed_gate_prevents_any_fit(self):
+        st = self.st
+        failed = ({'root': 'r1', 'checks': {'E3_p_pooled': {'mismatches': 1, 'n': 4}}, 'passed': False},
+                  None, None, None)
+        with tempfile.TemporaryDirectory() as tmp:
+            stage, out = Path(tmp) / 'stage', Path(tmp) / 'out'
+            out.mkdir()
+            for name in ('r1', 'r2'):
+                (stage / 'roots' / name).mkdir(parents=True)
+                (stage / 'roots' / name / 'root.json').write_text(json.dumps(
+                    {'horizon': 4, 'g_config': 'G1', 'target_month': '2018-06'}), encoding='utf-8')
+            roots = {'r1': {'horizon': 4}, 'r2': {'horizon': 4}}
+            cands = {f'{r}_{e}': {'root': r, 'e1': e} for r in roots for e in ('hard_f1', 'brier_crisis')}
+            with patch.object(st.rr, 'gate_root', return_value=failed) as gate, \
+                    patch.object(st.nx, 'fit_global') as fit, redirect_stdout(StringIO()):
+                code, gates, per_root = st.run_all(Path(tmp) / 'run', stage, out, roots, cands, 'rev', 0, None)
+            self.assertEqual(code, 2)
+            fit.assert_not_called()
+            self.assertEqual(gate.call_count, 1)                        # stopped before r2
+            self.assertEqual(per_root, {})
+            self.assertFalse((out / 'r1').exists())
+            failure = json.loads((out / 'failure.json').read_text(encoding='utf-8'))
+            self.assertEqual((failure['failed_root'], failure['not_attempted']), ('r1', ['r2']))
+
+    def test_config_copy_and_depth_checks(self):
+        st = self.st
+        before = (json.dumps(plan.G_CONFIGS, sort_keys=True), json.dumps(plan.XGB_BASE, sort_keys=True))
+        snap = st.plan_defaults()
+        for h, g in st.G_BY_H.items():
+            c = st.stump_config(g)
+            self.assertEqual(c['max_depth'], 1)
+            self.assertEqual({k: v for k, v in c.items() if k != 'max_depth'},
+                             {k: v for k, v in plan.G_CONFIGS[g].items() if k != 'max_depth'})
+            self.assertGreater(plan.G_CONFIGS[g]['max_depth'], 1)
+        self.assertEqual((json.dumps(plan.G_CONFIGS, sort_keys=True), json.dumps(plan.XGB_BASE, sort_keys=True)),
+                         before)
+        st.check_defaults(snap)
+        small = {**plan.G_CONFIGS['G1'], 'rounds': 6}                  # local copy; plan untouched
+        X, y = synthetic(n=600, p=6, seed=3)
+        stump, rec = nx.fit_global(X, y, dict(small, max_depth=1))
+        s = st.check_fit(stump, rec, small, len(y))
+        self.assertEqual((s['trees'], s['trees_depth_gt_1']), (24, 0))
+        self.assertLessEqual(s['max_depth'], 1)
+        self.assertEqual(s['split_nodes_total'] + s['trees'], s['leaf_nodes_total'])
+        deep, deep_rec = nx.fit_global(X, y, small)
+        self.assertGreater(st.tree_structure(deep)['max_depth'], 1)
+        with self.assertRaisesRegex(st.GateError, 'depth > 1'):        # only the tree depth is wrong here
+            st.check_fit(deep, rec, small, len(y))
+        with self.assertRaises(st.GateError):
+            st.check_fit(deep, deep_rec, small, len(y))
+        self.assertEqual(st.plan_defaults(), snap)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess
