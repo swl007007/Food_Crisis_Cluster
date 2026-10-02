@@ -1,4 +1,4 @@
-# D47 / A21: depth-1 (stump) root contrast (approved)
+# D47 / A21: depth-1 (stump) root contrast (completed; not adopted; supervisor verification passed)
 
 2026-10-02. Supervisor selection under the user's delegated Stage 1 research authority. Approved after supervisor review with one wording correction (regularisers held at existing fixed values, not tuned); the planning commit precedes any code or fits. Same active task, executor, audit run and base.
 - **Endpoint:** the crisis-F1 endpoint is the PRIMARY scientific endpoint and is unchanged.
@@ -78,3 +78,11 @@ Only the stump fit and its depth checks are new, and there is no second copy of 
 ## 6. Order
 
 Supervisor review → align pointers and commit the planning (GitNexus attempt; LadybugDB failure recorded) → native implement → native check → producer commit → supervisor release → single run → factual report → supervisor verification and synthesis.
+
+## 7. Result (2026-10-02)
+
+- **Producer and run:** producer `5f6eb4307c1bded78c89ff27ab76d04431a5995d` (116 tests OK). Run `C:\Users\swl00\geoxgb_runs\geoxgb-d47-stump-root-20261002`: exit 0 in 189 s, exactly 21 stump fits, all gates passed, every tree depth 1, exact reloads.
+- **Supervisor verification:** PASS (`research/d47_supervisor_check.py` / `_results.json`, 172,573 checks).
+- **Findings:** [research/d47-stump-root-findings.md](research/d47-stump-root-findings.md).
+- **Decision:** the fixed-round depth-1 replacement is not adopted. On E3 it is below both the original and persistence at every H, and the depth/round sequence stops.
+- **Stage 1** remains unresolved, and no D48 starts automatically.
