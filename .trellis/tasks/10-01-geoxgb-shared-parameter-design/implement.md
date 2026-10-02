@@ -159,3 +159,7 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] Commit planning (adff5a5); same run/executor; no new roots/G/E1/E2, no Stage2/3/close.
 - [x] Native trellis-implement (~4.3 min): one diagnostic script (accept D34 at pinned 7b2bf6f, rebuild fitting/S/C/E3 with ≤2020-12 filter, root replay gate, 21 `continue_booster(root, X_fit, y_fit, L1)` fits, saved UBJ + continuation records, same-key S/C/E3 probabilities/hard predictions, per-H/T table root/global+20/hard/Brier, search_rows strata); small tests (fitting excludes S/C/target; holdout-label invariance; prefix preserved +20 rounds; strata scoring).
 - [x] Native trellis-check (no result-affecting finding); producer commit be5f485 (88 tests OK); run (21/21 gates passed, 80 s); factual docs. Independent check and synthesis left to the supervisor.
+
+## 16. D36 transfer diagnostic (analysis only, completed)
+
+- [x] Supervisor analysis (`research/d36_transfer_diagnostic.py`, outputs in `C:\Users\swl00\geoxgb_runs\d36-transfer-diagnostic-20261002\`), executor independent read-only verification (`research/d36_executor_*`), findings `research/d36-transfer-findings.md`. No fits, no production changes, no 2021+ data.
