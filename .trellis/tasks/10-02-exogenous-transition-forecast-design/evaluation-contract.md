@@ -73,4 +73,3 @@ Pin code, input and reused-artifact identities under D7. New architecture varian
 ### G4 confirmed local-enablement decision and implementation findings
 
 Confirmed: Stage3 shared local models require strictly more than +0.01 crisis-positive F1 over their own fold-global model on the predeclared origin-legal historical gate rows, plus the confirmed genuine-support floors above. Otherwise use the global prediction. Compare identical routed keys, retaining global fallback on dates whose local fit lacks support. A gain exactly equal to0.01 does not enable the local model. This local-versus-global threshold is distinct from the approved final-model-versus-persistence tolerance of−0.02. No tuning of the local threshold from final results. Stage1 retains its own q/search and parent-comparison semantics; it does not inherit the final−0.02 tolerance. G2's latest-six-date algorithm determines exact gate rows from the D7 source ledger.
-
