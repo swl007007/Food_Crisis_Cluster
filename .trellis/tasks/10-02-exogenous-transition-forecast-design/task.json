@@ -31,7 +31,8 @@
       "primary claim: regions without IPC history",
       "universal superiority to expert/persistence not required",
       "two primary studies: all-period forecasting and transition comparison with experts",
-      "country metrics secondary/supplementary"
+      "country metrics secondary/supplementary",
+      "Study1: all IPC labels of test regions withheld from all fitting, partition learning, tuning and selection; evaluator only"
     ]
   }
 }

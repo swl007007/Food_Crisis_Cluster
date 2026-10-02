@@ -9,3 +9,5 @@ Schema inspected: 75 phase-history columns, 87 other candidate columns. Country 
 User suggested two studies: all-period forecasting without IPC history, then transition evaluation versus expert. Recorded as proposed structure, not frozen architecture; shared versus transition-specific q/split learning remains unresolved.
 
 User confirmed the two-study structure; country-level metrics are secondary supplementary results, not primary country selection. Technical validation scope remains to discuss.
+
+Confirmed Study1 no-history region validation: test regions contribute no IPC labels to any fitting, partition/consensus learning, tuning or selection; labels evaluator-only. No later rolling-fold admission within this evaluation. Exact spatial units/split still open. Next decision: Study2 evaluation population and false-alarm accounting.

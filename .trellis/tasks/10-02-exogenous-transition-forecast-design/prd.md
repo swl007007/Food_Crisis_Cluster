@@ -14,8 +14,8 @@ The user requested closure of `10-01-geoxgb-shared-parameter-design` as **incomp
 
 The user confirmed two studies: first predict all periods without historical IPC inputs, then compare transition prediction with experts. Country-level metrics are secondary supplementary results, not a third primary study or a country-selection success target. Separation:
 
-- **Study 1 — IPC-history-free general forecasting:** evaluate all eligible target periods, including stable and changing outcomes. All-period coverage does not mean training on future labels. Clarify whether the claim is missing IPC inputs or genuinely unseen labelled regions. General accuracy, crisis detection and probability quality can establish usefulness without universal expert/persistence dominance. Persistence is an information-advantaged retrospective reference when evaluator-only origin IPC exists, not an available deployment baseline for truly no-history areas.
-- **Study 2 — transition warning versus expert:** prioritize onset, retain non-onsets for false-alarm assessment, and report actual-event recall separately. Expert comparisons require the same keys, forecast horizon and issuance-information boundary; no H12 expert proxy. Country-level results are supplementary heterogeneity analyses. Universal superiority is not required.
+- **Study 1 — IPC-history-free general forecasting:** evaluate all eligible target periods, including stable and changing outcomes. All-period coverage does not mean training on future labels. Confirmed: withhold every IPC label from each test region from all training, partition learning and tuning; use its labels only for final evaluation. General accuracy, crisis detection and probability quality can establish usefulness without universal expert/persistence dominance. Persistence is an information-advantaged retrospective reference when evaluator-only origin IPC exists, not an available deployment baseline for truly no-history areas.
+- **Study 2 — transition warning versus expert:** onset is the priority; retaining non-onsets for false-alarm assessment and separately reporting actual-event recall is the recommended, still-unconfirmed evaluation design. Expert comparisons require the same keys, forecast horizon and issuance-information boundary; no H12 expert proxy. Country-level results are supplementary heterogeneity analyses. Universal superiority is not required.
 
 Start by considering the same frozen covariate-only model for both studies to separate scientific questions from architecture changes. Whether Study 2 instead learns transition-focused q/splits is an unresolved design choice: it would be a separately selected model, not merely a new slice of Study 1 scores. Shared infrastructure is possible; each study needs its own estimand and verifiable conclusions. No child implementation tasks or experiments are opened yet.
 
@@ -32,9 +32,9 @@ Confirmed direction: retain non-IPC covariate lags and remove phase-history pred
 
 This supports “past IPC is not required as a prediction input.” It does not establish causal exogeneity: prices/conflict may be endogenous. Prefer “covariate-only” or “past-IPC-free” pending causal justification. If origin phase defines q/split evaluation populations, disclose its use in partition learning despite its exclusion from inference inputs.
 
-## Brainstorm: cold-start claim
+## Confirmed Study 1: no-history region validation
 
-Removing IPC input columns does not alone test a region with no IPC training history: its earlier outcome labels could still influence learned parameters or partitions. Recommended main test, not yet selected: hold out whole administrative regions from all supervised fitting, partition learning, tuning and selection; retain lawful origin-time covariates. Keep withheld IPC observations accessible only to the independent retrospective evaluator. This simulates no-history deployment; genuinely never-labelled regions cannot provide observed accuracy estimates. It need not mean leaving out whole countries, which tests a harder cross-country claim. Spatial grouping/buffers and time isolation need a written design.
+Removing IPC input columns does not alone test a region with no IPC training history: its earlier outcome labels could still influence learned parameters or partitions. User confirmed the main test: hold out test regions and exclude ALL of their IPC labels from supervised fitting, partition/consensus learning, tuning and selection; retain lawful origin-time covariates. This exclusion applies across all historical dates and all fitting stages, not only to the current target month. A test region’s later-revealed labels must not enter subsequent fits within this same no-history evaluation. Keep withheld IPC observations accessible only to the independent retrospective evaluator. This simulates no-history deployment; genuinely never-labelled regions cannot provide observed accuracy estimates. It need not mean leaving out whole countries, which tests a harder cross-country claim. Spatial grouping/buffers and time isolation need a written design.
 
 A secondary same-region, no-IPC-input temporal benchmark can help attribute representation versus transfer difficulty; it is not automatically authorised as an extra experiment. If true no-history deployment makes origin IPC unknown, transition cohorts are retrospective evaluator strata, not an operational routing requirement.
 
@@ -56,12 +56,11 @@ Country-level metrics supplement both main studies; selecting winning countries 
 
 ## Open decisions, in order
 
-1. Main cold-start validation: whole-region label exclusion versus only removing IPC input features.
-2. Primary estimand: actual transitions only, origin non-crisis risk set, or primary risk-set evaluation plus true-event recall?
-3. Relationship between studies: shared frozen predictor versus separately learned transition-focused q/splits; evaluator-only origin-label access. Covariate lags are allowed (confirmed).
-4. Binary versus four-class target/rule and whether partition/consensus remains the starting architecture.
-5. Horizons, split, support and useful-performance criteria; supplementary country reporting and uncertainty (no universal baseline superiority requirement).
-6. Reuse versus refits/recomputed candidates, finite budget and stop rule.
+1. Study 2 primary estimand: actual transitions only, origin non-crisis risk set, or primary risk-set evaluation plus true-event recall?
+2. Relationship between studies: shared frozen predictor versus separately learned transition-focused q/splits; evaluator-only origin-label access. Covariate lags are allowed (confirmed).
+3. Binary versus four-class target/rule and whether partition/consensus remains the starting architecture.
+4. Test-region unit/allocation, spatial separation, horizons, temporal split, support and useful-performance criteria; supplementary country reporting and uncertainty (no universal baseline superiority requirement).
+5. Reuse versus refits/recomputed candidates, finite budget and stop rule.
 
 ## Planning acceptance
 
