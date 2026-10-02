@@ -35,7 +35,7 @@ These are numerical checks, not statistical tests.
 | 12 | 2 (IPC 3) | .3773 / .3745 / .3803 | .3774 / .3706 / .3771 | .5692 / .5001 / .5231 |
 | 12 | 3 (IPC 4-or-5) | .8301 / .7632 / .7824 | .7864 / .7339 / .7496 | .8838 / .7739 / .8154 |
 
-Code 0 (IPC 1) rates are .015–.038 in every role, with all E3 − FIT shifts below .013 in absolute value. Code 3 (IPC 4-or-5) E3 cells hold only 19–123 rows per root.
+Code 0 (IPC 1) role means over the 7 roots are .015–.038 in every role and H, and the mean E3 − FIT shifts are below .013 in absolute value (individual root cells can differ). Code 3 (IPC 4-or-5) E3 cells hold only 19–123 rows per root.
 
 **E3 − FIT contrasts — Δ rate / Δ original mean / Δ original bias (roots up / down):**
 
@@ -45,7 +45,7 @@ Code 0 (IPC 1) rates are .015–.038 in every role, with all E3 − FIT shifts b
 | 8 | +.0252 (3/4) / +.0239 / −.0013 (2/5) | +.1158 (5/2) / +.1396 (7/0) / +.0239 (3/4) | −.0390 (3/4) / +.0107 / +.0497 (4/3) |
 | 12 | +.0805 (6/1) / +.0258 (7/0) / −.0547 (2/5) | +.1919 (7/0) / +.1256 (7/0) / −.0663 (1/6) | +.0538 (6/1) / +.0107 / −.0431 (1/6) |
 
-E3 − C contrasts are close to E3 − FIT, because C levels sit near FIT levels (for example H12 code 2 (IPC 3): +.1919 / +.1295 / −.0624). Binary-score bias contrasts are in `d53_contrasts.csv` and `d53_summary.json`.
+E3 − C contrasts are reported separately in `d53_contrasts.csv` and `d53_summary.json`; for example H12 code 2 (IPC 3) E3 − C is +.1919 / +.1295 / −.0624. They can differ materially from E3 − FIT in the rare code 3 (IPC 4-or-5) state, where C and FIT levels differ: H12 rate +.0974 (E3 − C) vs +.0538 (E3 − FIT), from FIT .8301 vs C .7864; H8 rate −.0193 vs −.0390. Binary-score bias contrasts are in the same files.
 
 **Temporal variation (descriptive, all months and roots):**
 - Within each root's FIT window, label-month rates vary widely. Code 1 (IPC 2): per-root monthly minima about .02–.09 and maxima about .23–.41. Code 2 (IPC 3): minima about .07–.41 and maxima about .51–.83.
