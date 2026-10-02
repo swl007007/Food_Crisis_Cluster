@@ -2280,6 +2280,163 @@ class RecencyRoot(unittest.TestCase):
         self.assertAlmostEqual(out['all']['original']['crisis_brier'], np.mean((0.5 - np.array([1, 0, 1, 0])) ** 2))
 
 
+class PersistenceMarginRoot(unittest.TestCase):
+    """D38/A12: optional fit_global/proba base margin, marker guards, margin formula, controls."""
+
+    def setUp(self):
+        from scripts import stage1_persistence_margin_root as pm
+        self.pm = pm
+        rng = np.random.default_rng(5)
+        self.X = rng.normal(size=(160, 5))
+        self.y = np.tile(np.arange(4), 40)
+        self.phase = np.tile([1.0, 2.0, 3.0, 4.0, 5.0, np.nan, 3.0, 1.0], 20)
+
+    def test_default_record_and_bytes_unchanged(self):
+        g, rec = nx.fit_global(self.X, self.y, SMALL_G['G1'])
+        self.assertEqual(set(rec), {"kind", "rounds_total", "rounds_added", "params", "resolved_config",
+                                    "base_score", "rows", "class_counts", "structure_sha256", "booster_sha256"})
+        params, rounds = nx.booster_params(SMALL_G['G1'])
+        ref = xgb.train(params, xgb.DMatrix(nx.clean(self.X), label=self.y, missing=np.nan, nthread=4),
+                        num_boost_round=rounds)
+        self.assertEqual(nx.raw(g), nx.raw(ref))
+        self.assertFalse(nx.is_margin_marked(g))
+
+    def test_margin_formula_axis_float32_missing(self):
+        m = self.pm.persistence_margin(self.phase)
+        self.assertEqual(m.dtype, np.float32)
+        self.assertEqual(m.shape, (len(self.phase), 4))
+        miss = np.isnan(self.phase)
+        self.assertTrue((m[miss] == np.float32(0.5)).all())
+        q = self.pm.persistence_prior(self.phase)
+        np.testing.assert_array_equal(q[miss], 0.25)
+        for phase, code in ((1.0, 0), (2.0, 1), (3.0, 2), (4.0, 3), (5.0, 3)):
+            row = np.flatnonzero(self.phase == phase)[0]
+            expect_q = np.full(4, 0.125)
+            expect_q[code] = 0.625
+            np.testing.assert_allclose(q[row], expect_q, rtol=0, atol=1e-15)
+            lq = np.log(expect_q)
+            np.testing.assert_array_equal(m[row], (0.5 + lq - lq.mean()).astype(np.float32))
+            self.assertEqual(int(np.argmax(m[row])), code)
+        np.testing.assert_allclose(m.astype(float).mean(axis=1), 0.5, atol=1e-6)
+        with self.assertRaises(self.pm.GateError):
+            self.pm.persistence_margin([1.0, 6.0])
+        with self.assertRaises(self.pm.GateError):
+            self.pm.persistence_margin([0.0])
+
+    def test_marker_hash_reload_and_guards(self):
+        m = self.pm.persistence_margin(self.phase)
+        g, rec = nx.fit_global(self.X, self.y, SMALL_G['G1'], base_margin=m)
+        self.assertEqual(g.attr(nx.MARGIN_ATTR), nx.MARGIN_MARKER)
+        self.assertEqual(rec['booster_sha256'], nx.sha(g))   # marker was written before hashing
+        self.assertEqual(rec['base_margin']['dtype'], 'float32')
+        self.assertEqual(rec['base_margin']['sha256'], hashlib.sha256(m.tobytes()).hexdigest())
+        self.assertEqual(rec['base_margin']['n'], len(self.y))
+        p = nx.proba(g, self.X, base_margin=m)
+        g2 = nx.from_raw(nx.raw(g))
+        self.assertEqual(g2.attr(nx.MARGIN_ATTR), nx.MARGIN_MARKER)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'a.ubj'
+            path.write_bytes(nx.raw(g))
+            g3 = nx.from_raw(path.read_bytes())
+            self.assertEqual(g3.attr(nx.MARGIN_ATTR), nx.MARGIN_MARKER)
+            np.testing.assert_array_equal(nx.proba(g3, self.X, base_margin=m), p)
+        with self.assertRaises(ValueError):
+            nx.proba(g, self.X)                                   # marked without margin
+        unmarked, _ = nx.fit_global(self.X, self.y, SMALL_G['G1'])
+        with self.assertRaises(ValueError):
+            nx.proba(unmarked, self.X, base_margin=m)             # unmarked with margin
+        with self.assertRaises(ValueError):
+            nx.continue_booster(g, self.X, self.y, plan.L_CONFIGS['L1'])
+        for bad in (m[:-1], m.T, np.c_[m[:, :3]], np.where(np.arange(4) == 0, np.nan, m)):
+            with self.assertRaises(ValueError):
+                nx.fit_global(self.X, self.y, SMALL_G['G1'], base_margin=bad)
+            with self.assertRaises(ValueError):
+                nx.proba(g, self.X, base_margin=bad)
+
+    def test_neutral_margin_training_equivalence(self):
+        neutral = np.full((len(self.y), 4), 0.5, dtype=np.float32)
+        gm, recm = nx.fit_global(self.X, self.y, SMALL_G['G1'], base_margin=neutral)
+        g, rec = nx.fit_global(self.X, self.y, SMALL_G['G1'])
+        self.assertEqual(nx.prefix_identity(gm)['sha256'], nx.prefix_identity(g)['sha256'])
+        self.assertEqual(recm['structure_sha256'], rec['structure_sha256'])
+        self.assertEqual(recm['base_score'], rec['base_score'])
+        np.testing.assert_array_equal(nx.proba(gm, self.X, base_margin=neutral), nx.proba(g, self.X))
+        self.assertNotEqual(nx.raw(gm), nx.raw(g))               # only the marker attribute differs
+
+    def test_raw_margin_offset_and_transpose_detected(self):
+        g, _ = nx.fit_global(self.X, self.y, SMALL_G['G1'])
+        m = self.pm.persistence_margin(self.phase)
+        dm = nx.dmatrix(self.X)
+        dm.set_base_margin(m)
+        diff = g.predict(dm, output_margin=True) - g.predict(nx.dmatrix(self.X), output_margin=True)
+        np.testing.assert_allclose(diff, m.astype(float) - 0.5, atol=1e-5)
+        wrong = np.ascontiguousarray(m.T).reshape(len(self.y), 4)   # column-major read of the same values
+        dmw = nx.dmatrix(self.X)
+        dmw.set_base_margin(wrong)
+        diffw = g.predict(dmw, output_margin=True) - g.predict(nx.dmatrix(self.X), output_margin=True)
+        self.assertFalse(np.allclose(diffw, m.astype(float) - 0.5, atol=1e-5))
+
+    def test_posthoc_and_prior_only(self):
+        rng = np.random.default_rng(1)
+        p = rng.dirichlet(np.ones(4), size=len(self.phase)).astype(np.float32).astype(np.float64)
+        post = self.pm.posthoc(p, self.phase)
+        miss = np.isnan(self.phase)
+        np.testing.assert_array_equal(post[miss], p[miss])
+        q = self.pm.persistence_prior(self.phase)
+        pq = p[~miss] * q[~miss]
+        np.testing.assert_allclose(post[~miss], pq / pq.sum(axis=1, keepdims=True), rtol=0, atol=1e-15)
+        np.testing.assert_allclose(post.sum(axis=1), 1.0, atol=1e-12)
+        y_prior = np.argmax(q, axis=1)
+        self.assertTrue((y_prior[miss] == 0).all())
+        np.testing.assert_array_equal(y_prior[~miss], self.pm.rr.persistence_codes(self.phase)[~miss])
+
+    def test_heldout_labels_do_not_move_margin_or_fit(self):
+        from scripts import stage1_shallow_replay as sr
+        col = ff.load_schema(sr.SCHEMA)['ordered_features'].index('hist_phase_o00')
+        helper = GlobalIncrementControl()
+        helper.setUp()
+
+        def fit(permute):
+            with tempfile.TemporaryDirectory() as tmp:
+                data = helper._run(tmp, permute_held=permute)
+            X = data['FIT'][0]
+            X[:, col] = np.where(data['FIT'][2] % 7 == 0, np.nan, data['FIT'][2] % 5 + 1)
+            b, rec, m = self.pm.fit_anchored_root(data, 'G1', col)
+            return data, b, rec, m
+
+        d1, b1, r1, m1 = fit(False)
+        d2, b2, r2, m2 = fit(True)
+        self.assertFalse((d2['C'][1] == d1['C'][1]).all())
+        np.testing.assert_array_equal(d1['FIT'][0], d2['FIT'][0])
+        np.testing.assert_array_equal(m1, m2)
+        self.assertEqual(r1['base_margin']['sha256'], r2['base_margin']['sha256'])
+        self.assertEqual(nx.raw(b1), nx.raw(b2))
+        self.assertEqual(r1['rows'], len(d1['FIT'][1]))
+
+    def test_score_frame_models_and_persistence(self):
+        phase = np.array([3.0, 3.0, np.nan, 1.0])
+        frame = pd.DataFrame({'truth': [2, 0, 3, 1], 'persistence_code': self.pm.rr.persistence_codes(phase),
+                              'y_original': [0, 0, 3, 1], 'y_anchored': [2, 0, 3, 2],
+                              'y_prior_only': [2, 2, 0, 0], 'y_posthoc': [2, 2, 3, 1]})
+        for mdl in self.pm.MODELS:
+            for k, lab in enumerate(fourclass.CLASS_LABELS):
+                frame[f'p_{mdl}_{lab}'] = 0.25
+        out = self.pm.score_frame(frame)
+        mp = out['matched_persistence']
+        self.assertEqual(mp['n'], 3)
+        self.assertTrue(mp['prior_only_argmax_equals_persistence'])
+        self.assertEqual(Fraction(mp['persistence']['crisis_f1_exact']), Fraction(2, 3))
+        # one-hot persistence Brier on matched keys: crisis preds [1,1,0] vs truth [1,0,0] -> 1/3
+        self.assertAlmostEqual(mp['persistence']['crisis_brier'], 1 / 3)
+        dep = out['departure_from_persistence']['anchored']
+        # matched anchored crisis [1,0,1] vs persistence [1,1,0], truth [1,0,0]: row1 model right, row3 persistence
+        self.assertEqual((dep['disagree'], dep['model_right'], dep['persistence_right']), (2, 1, 1))
+        self.assertEqual(out['transition_groups_post_hoc']['anchored']['missing']['n'], 1)
+        agg = self.pm.aggregate({'r': {'scores': {'C': out, 'E3': out}}}, lambda r: True)
+        self.assertEqual(agg['E3']['folds_with_data'], 1)
+        self.assertIn('anchored_minus_posthoc', agg['E3']['pooled_all'])
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

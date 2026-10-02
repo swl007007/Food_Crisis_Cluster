@@ -11,7 +11,10 @@ tree_info, base score) and that they reproduce the parent's margins exactly. Eve
 record stores the booster's resolved ``save_config()``.
 
 Input contract (D14): dense float matrices, +/-inf -> NaN, NaN passed to XGBoost as
-missing; no imputer, no pseudo rows, no sample or class weights.
+missing; no imputer, no pseudo rows, no sample or class weights. Optional diagnostic inputs
+default to None (unchanged path): D37 row ``sample_weight`` and D38 per-row (n, 4) float32
+``base_margin``; a margin-trained booster carries the ``MARGIN_ATTR`` marker, ``proba`` then
+requires the same per-row margin, and ``continue_booster`` refuses it as a parent.
 """
 from __future__ import annotations
 
@@ -55,6 +58,35 @@ def check_sample_weight(sample_weight, n: int) -> np.ndarray:
     if not np.all(np.isfinite(w32)) or not np.all(w32 > 0):
         raise ValueError("sample_weight not representable as positive finite float32")
     return w32
+
+
+#: D38: persistent booster attribute set by ``fit_global`` when a per-row base margin is used.
+MARGIN_ATTR = "geoxgb_base_margin"
+MARGIN_MARKER = "d38-persistence-lambda0.5-v1"
+
+
+def check_base_margin(base_margin, n: int) -> np.ndarray:
+    """D38: validated (n, 4) finite float32 per-row margin on the fixed class axis."""
+    m = np.asarray(base_margin, dtype=np.float64)
+    if m.shape != (n, N_CLASSES):
+        raise ValueError(f"base_margin shape {m.shape} != ({n}, {N_CLASSES})")
+    if not np.all(np.isfinite(m)):
+        raise ValueError("base_margin must be finite")
+    m32 = np.ascontiguousarray(m.astype(np.float32))
+    if not np.all(np.isfinite(m32)):
+        raise ValueError("base_margin not representable as finite float32")
+    return m32
+
+
+def margin_record(m32: np.ndarray) -> dict:
+    return {"dtype": str(m32.dtype), "shape": list(m32.shape),
+            "sha256": hashlib.sha256(np.ascontiguousarray(m32).tobytes()).hexdigest(),
+            "n": int(m32.shape[0]), "min": float(m32.min()), "max": float(m32.max()),
+            "marker": {MARGIN_ATTR: MARGIN_MARKER}}
+
+
+def is_margin_marked(booster: xgb.Booster) -> bool:
+    return booster.attr(MARGIN_ATTR) is not None
 
 
 def weight_record(w32: np.ndarray) -> dict:
@@ -120,30 +152,47 @@ def prefix_identity(booster: xgb.Booster, rounds: int | None = None) -> dict:
     return {"rounds": rounds, "trees": n_trees, "sha256": digest}
 
 
-def proba(booster: xgb.Booster, X) -> np.ndarray:
-    """(n, 4) probabilities on the fixed class axis."""
+def proba(booster: xgb.Booster, X, base_margin=None) -> np.ndarray:
+    """(n, 4) probabilities on the fixed class axis.
+
+    D38: a margin-marked booster requires its per-row ``base_margin``; an unmarked booster refuses one."""
+    marked = is_margin_marked(booster)
+    if marked and base_margin is None:
+        raise ValueError("booster was trained with a per-row base margin; base_margin is required")
+    if not marked and base_margin is not None:
+        raise ValueError("base_margin given for a booster trained without one")
     if len(X) == 0:
         return np.zeros((0, N_CLASSES))
-    out = booster.predict(dmatrix(X))
+    dm = dmatrix(X)
+    if marked:
+        dm.set_base_margin(check_base_margin(base_margin, len(X)))
+    out = booster.predict(dm)
     if out.ndim != 2 or out.shape[1] != N_CLASSES:
         raise RuntimeError(f"booster returned shape {out.shape}, not (n, 4)")
     return out.astype(np.float64)
 
 
-def fit_global(X, y, config: dict, sample_weight=None) -> tuple[xgb.Booster, dict]:
+def fit_global(X, y, config: dict, sample_weight=None, base_margin=None) -> tuple[xgb.Booster, dict]:
     """Fresh fixed-four booster on real rows only.
 
     ``sample_weight`` (D37, default None = unchanged behaviour and record): validated row weights,
-    passed to XGBoost as float32 and recorded in a ``sample_weight`` block."""
+    passed to XGBoost as float32 and recorded in a ``sample_weight`` block.
+    ``base_margin`` (D38, default None = unchanged): validated (n, 4) float32 per-row margin; the
+    booster gets the ``MARGIN_ATTR`` marker before hashing and the record a ``base_margin`` block."""
     params, rounds = booster_params(config)
     y = np.asarray(y, dtype=np.int64)
     if len(y) == 0:
         raise ValueError("empty fitting pool")
     w32 = None if sample_weight is None else check_sample_weight(sample_weight, len(y))
+    m32 = None if base_margin is None else check_base_margin(base_margin, len(y))
     dm = dmatrix(X, y)
     if w32 is not None:
         dm.set_weight(w32)
+    if m32 is not None:
+        dm.set_base_margin(m32)
     booster = xgb.train(params, dm, num_boost_round=rounds)
+    if m32 is not None:
+        booster.set_attr(**{MARGIN_ATTR: MARGIN_MARKER})   # before any hash / structure digest
     if booster.num_boosted_rounds() != rounds or num_class(booster) != N_CLASSES:
         raise RuntimeError("fresh booster has the wrong rounds or class axis")
     record = {"kind": "fresh", "rounds_total": rounds, "rounds_added": rounds,
@@ -154,11 +203,15 @@ def fit_global(X, y, config: dict, sample_weight=None) -> tuple[xgb.Booster, dic
               "booster_sha256": sha(booster)}
     if w32 is not None:
         record["sample_weight"] = weight_record(w32)
+    if m32 is not None:
+        record["base_margin"] = margin_record(m32)
     return booster, record
 
 
 def continue_booster(parent: xgb.Booster, X, y, config: dict) -> tuple[xgb.Booster, dict]:
     """Append ``config['rounds']`` rounds to an immutable parent (default process_type)."""
+    if is_margin_marked(parent):
+        raise ValueError("continuation of a per-row base-margin booster is not supported (D38)")
     params, rounds = booster_params(config)
     if "process_type" in params or "updater" in params or "base_score" in params:
         raise ValueError("continuation must not refresh/update trees or override base_score")
