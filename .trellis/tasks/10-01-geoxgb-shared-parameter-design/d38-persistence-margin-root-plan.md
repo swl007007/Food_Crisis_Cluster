@@ -42,3 +42,31 @@ D37 固定24个月时间权重未改善 E3，不采用。D38 前置零新增 XGB
 - 事前解释规则：若只有F1上升而危机Brier变差，只报告决策折衷，不以此认定过拟合减轻或概率预测能力改善，不直接推广到分区。与prior-only相比必须存在学习带来的收益；未超过persistence仍是未达目标。单一F1或Brier改善都不是Stage3成功。
 - prior-only在已知起点键的危机F1与persistence相同，故不是另一个独立F1门槛；二者概率损失的不同仍独立报告。
 - 本轮结束后停止新训练，由监督方综合；不自动扩展margin强度、局部树、Stage2/3或最终期。Stage1过拟合仍需其自身证据，root改善不等于分区问题解决。
+
+## 5. 运行与事实结果（2026-10-02；独立核验与科学综合由监督方负责）
+
+**生产与运行：**
+- 生产提交2d4fe4e3dac5bff68327c5a426d72f41c300c212；提交后`tests/test_baseline.py` 100项OK，exit 0。native implement约5.9分钟，native check约4.3分钟，无影响结果的发现；实际旧/新默认路径重放字节一致（booster sha256 `940d83dd…`，证据`C:\Users\swl00\geoxgb_runs\d38-fitglobal-replay-evidence\`）。GitNexus impact/detect_changes均为LadybugDB只读错误，风险UNKNOWN，调用者按源码追踪，全部走默认路径。
+- 运行`C:\Users\swl00\geoxgb_runs\geoxgb-d38-persistence-margin-root-20261002`（`stage1_persistence_margin_root.py --d34-run …geoxgb-d34-e1-brier-20261002 --out … --producer-rev 7b2bf6f`，冻结Windows Python），exit 0，244 s；21/21预拟合门通过，恰好21次anchored拟合，21个UBJ均带标记`d38-persistence-lambda0.5-v1`；dev_baselines 15折核对/6折未覆盖，0不一致（日志`C:\Users\swl00\geoxgb_runs\d38-run.log`）。
+- fitting起点可用率：H4 .361–.802，H8 .240–.670，H12 .856–.874；E3每根≥.974。
+
+**E3全键汇总（113508行；TP/FP/FN，危机F1，四类macro-F1，行加权危机Brier由保存行推导）：**
+- 原root 9767/5029/10924，.550455，.531864，.101891
+- anchored 10398/5973/10293，.561114，.545089，.101314
+- prior-only 11707/7614/8984，.585174，.587866，.136422
+- post-hoc 11517/7305/9174，.582947，.583836，.115894
+
+**persistence同键（112795行）危机F1/Brier：**原.551516/.101885；anchored .562155/.101291；prior-only .586406/.135704；post-hoc .583974/.115976；persistence .586406（one-hot Brier .146407）。post-hoc与监督方预先计算的固定控制一致。
+
+**逐折（21根）：**
+- anchored−原 危机F1均值+.012553（12正/9负），Brier均值−.000578；anchored−post-hoc −.023213（7正/14负）。
+- 按H anchored−原 F1：H4 +.007235、H8 −.005522、H12 +.035946；逐折均值Brier原→anchored：H4 .090806→.089900、H8 .110826→.109448、H12 .104161→.104710。
+
+**事后组（E3同键，相对原root）：**
+- anchored：00 FP −338（纠正530/破坏192）；01 TP −213；10 FP +1282；11 TP +844。
+- post-hoc：00 FP −1469；01 TP −647；10 FP +3745；11 TP +2397。
+- 与persistence不一致的行：原9103（模型对4871），anchored 6426（3376），post-hoc 845（479）。
+
+**C（诊断）：**汇总F1原.669541→anchored .668291；行加权Brier .047914→.048049。
+
+**未做：**执行方未运行监督方`d38_independent_check.py`；无局部margin拟合、λ搜索、Stage2/3或close；科学解读待监督方综合。
