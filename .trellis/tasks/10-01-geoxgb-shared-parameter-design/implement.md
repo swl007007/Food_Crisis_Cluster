@@ -1,6 +1,6 @@
 # GeoXGBoost implementation plan — v1.0
 
-**Current execution override: D27, section 7 below. Stage 1 overfitting remains unresolved.** D26 bounded diagnostics are complete; only the six-root time-block contrast is authorized next. Original full-pipeline checklists below are historical scope, not authorization to resume Stage 2/3 or close this task.
+**Current execution override: D28, section 8 below; user accepted the final A3 six-root implementation/run plan. Stage 1 overfitting remains unresolved.** D26/D27 bounded experiments are complete. Original full-pipeline checklists below are historical scope, not authorization to resume Stage2/3 or close this task.
 
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
@@ -88,3 +88,13 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] Commit the producer (3dab25b) before preparing a fresh full-data/full-geometry run outside Dropbox (geoxgb-d27-tb3-20261001; G reused from geoxgb-v1-20261001: G1/G4/G2). Reuse identity-checked G selection; do not repeat72fits or cross-expand the six-candidate budget. Record the actual CLI, source hashes, schedule, runtime and code identity.
 - [x] Execute six roots (all completed), preserve all outputs/failures, and compare with six completed D26 r80/L1/gt0 controls (stage1_tb3_compare, exit 0). Independently recompute keyed E2/E3 scores; report support, root changes, incremental generalisation and coverage-aware partition diversity.
 - [x] Update PROGRESS with separate implementation, experiment-completion and scientific-evidence statuses (overfitting NOT solved; returned for review). Stage1 overfitting stays unresolved unless supported by evidence; improvement in this small comparison is not final scientific success. Return results for review; do not run full648, Stage2/3, final evaluation or audit-close yet.
+
+## 8. D28 Plan B (A3 implementation and six-root execution approved)
+
+- [x] Present the concrete A3 plan and record subsequent user approval (“接受”) before product edits/training.
+- [ ] Commit approved planning, preserve current audit binding/base/run; no task reset.
+- [ ] Load current jsonl, PRD, design and implement context; dispatch bounded native trellis-implement. Trace adapter/train_branch/transformation/identity consumers before editing, preserve parent mode and old outputs; document existing GitNexus fallback if still unavailable.
+- [ ] Add root-anchored child fitting, keeping current-parent E1/E2 and fallback. Record sharing source separately from routing parent, actual local rounds separately from inherited search-budget rounds. Retain original search-opportunity ceiling and support checks.
+- [ ] Add focused second-level continuation/fallback/search-budget regressions, six-candidate identity and keyed comparisons; native trellis-check covers final changed logic. Avoid an unrelated verifier rewrite.
+- [ ] Commit producer, prepare fresh full-data run, reuse approved G selection and execute only six r80/L1/gt0 root-mode candidates. Compare with existing D26 controls; verify matching fitting keys/root predictions before mechanism interpretation.
+- [ ] Update docs/PROGRESS with bounded implementation, run and science results separately. No claim of solved overfitting from E2/tests/zero partitions; no Stage2/3/full648/final/close without subsequent decision.
