@@ -1,0 +1,1094 @@
+{
+  "h12_2018-06_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2018-06",
+    "search_months": [
+      "2016-06",
+      "2016-10",
+      "2017-02"
+    ],
+    "latest_temporal_fit": "2016-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12195,
+      "validation": 1688,
+      "confirmation": 1851
+    },
+    "temporal_fit": {
+      "rows": 73887,
+      "areas": 5159,
+      "dates": 15,
+      "classes": {
+        "2": 5380,
+        "1": 19597,
+        "3": 441,
+        "0": 48469
+      },
+      "ordered_key_sha256": "a397503a0b3d8824ad970584486af7287929a777384b8aa2dc5ea41b68744919"
+    },
+    "temporal_search": {
+      "rows": 15734,
+      "areas": 5361,
+      "dates": 3,
+      "classes": {
+        "2": 2053,
+        "1": 4362,
+        "3": 210,
+        "0": 9109
+      },
+      "ordered_key_sha256": "bb8dad926d1291cda33844f74b7c65e337b325a2e3d1ae8ebc748b22be4fe107"
+    },
+    "forecast_fit": {
+      "rows": 69546,
+      "areas": 5361,
+      "dates": 18,
+      "classes": {
+        "1": 18556,
+        "2": 5776,
+        "3": 498,
+        "0": 44716
+      },
+      "ordered_key_sha256": "b7c87a57c1a92adefdb07abd8faec75c5fa2ae6a1d6bcc2dc683478c8711479a"
+    },
+    "source_sha256": "1679b926de80ed42d11ab4e88f267c49bc8fba29643cb57441bd4c04fadfc9ab"
+  },
+  "h12_2018-10_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2018-10",
+    "search_months": [
+      "2016-10",
+      "2017-02",
+      "2017-06"
+    ],
+    "latest_temporal_fit": "2016-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12120,
+      "confirmation": 1937,
+      "validation": 1880
+    },
+    "temporal_fit": {
+      "rows": 69341,
+      "areas": 5160,
+      "dates": 14,
+      "classes": {
+        "1": 18328,
+        "2": 5235,
+        "3": 502,
+        "0": 45276
+      },
+      "ordered_key_sha256": "453c6258f31ae39129be0be3dbe9c75060da8011908fd2be15c2f24c1536ebb4"
+    },
+    "temporal_search": {
+      "rows": 15937,
+      "areas": 5363,
+      "dates": 3,
+      "classes": {
+        "1": 4642,
+        "2": 2194,
+        "3": 257,
+        "0": 8844
+      },
+      "ordered_key_sha256": "0197522aa18d9fb19478f84f898b0e30c70a602817d3bc2f230db7b2c3571b61"
+    },
+    "forecast_fit": {
+      "rows": 65199,
+      "areas": 5364,
+      "dates": 17,
+      "classes": {
+        "1": 17500,
+        "2": 5706,
+        "3": 586,
+        "0": 41407
+      },
+      "ordered_key_sha256": "28c6b821467501b2650922415c77b5e8d6c885662669a43107a5328c79272e1d"
+    },
+    "source_sha256": "59fab68255184d5a57666a29f6978695887abf3a89295e12bb183186ba369997"
+  },
+  "h12_2019-02_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2019-02",
+    "search_months": [
+      "2017-02",
+      "2017-06",
+      "2017-10"
+    ],
+    "latest_temporal_fit": "2016-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12116,
+      "confirmation": 1911,
+      "validation": 1915
+    },
+    "temporal_fit": {
+      "rows": 69844,
+      "areas": 5360,
+      "dates": 14,
+      "classes": {
+        "1": 18407,
+        "2": 5496,
+        "3": 581,
+        "0": 45360
+      },
+      "ordered_key_sha256": "909730273ed12ece4a6a6bd296fef890f7937cf674f4c97b7c7ffe4b80b4b4f5"
+    },
+    "temporal_search": {
+      "rows": 15942,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "2": 2342,
+        "1": 4877,
+        "3": 261,
+        "0": 8462
+      },
+      "ordered_key_sha256": "a6091e6fdfde967587ade4bfdd2391beb28e9f0f068782d3b67413cc2d49b71a"
+    },
+    "forecast_fit": {
+      "rows": 65545,
+      "areas": 5365,
+      "dates": 17,
+      "classes": {
+        "1": 17738,
+        "2": 6016,
+        "0": 41145,
+        "3": 646
+      },
+      "ordered_key_sha256": "df97de20252265ca7db8f9e24ad0e5b0501844bcf776ce7a219d557e5df948c8"
+    },
+    "source_sha256": "22e6cc2771d267d66e4ea319d46dd6a5e2ca62726453980cb20d163e9f3e60a3"
+  },
+  "h12_2019-06_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2019-06",
+    "search_months": [
+      "2017-06",
+      "2017-10",
+      "2018-02"
+    ],
+    "latest_temporal_fit": "2017-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12270,
+      "confirmation": 1924,
+      "validation": 1896
+    },
+    "temporal_fit": {
+      "rows": 70204,
+      "areas": 5362,
+      "dates": 14,
+      "classes": {
+        "1": 18826,
+        "2": 5816,
+        "3": 636,
+        "0": 44926
+      },
+      "ordered_key_sha256": "f8e05bc9207fe31b468024854612cb35f2a8d2508755b410e337576d6302b11d"
+    },
+    "temporal_search": {
+      "rows": 16090,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "1": 4897,
+        "2": 2210,
+        "3": 245,
+        "0": 8738
+      },
+      "ordered_key_sha256": "5fe4cfc04ddfeb1f9ee0dc9c76d20dfdc828d40efc99a64efe279a6e0acb1e3f"
+    },
+    "forecast_fit": {
+      "rows": 65908,
+      "areas": 5365,
+      "dates": 17,
+      "classes": {
+        "1": 18100,
+        "2": 6104,
+        "3": 658,
+        "0": 41046
+      },
+      "ordered_key_sha256": "ab8b870a21aa4edf598f1666204f3dfb19ece3814a40d3b3499b084db4a8b136"
+    },
+    "source_sha256": "7c6a81763c566bd9258964883a0bdf464c68a9f6f32b4c6b0a7fe3f230c73c71"
+  },
+  "h12_2019-10_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2019-10",
+    "search_months": [
+      "2017-10",
+      "2018-02",
+      "2018-06"
+    ],
+    "latest_temporal_fit": "2017-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12005,
+      "validation": 2001,
+      "confirmation": 2086
+    },
+    "temporal_fit": {
+      "rows": 65854,
+      "areas": 5364,
+      "dates": 13,
+      "classes": {
+        "1": 17441,
+        "2": 6229,
+        "3": 759,
+        "0": 41425
+      },
+      "ordered_key_sha256": "b083ca94e971a9789bf1cf2da972d8c86a92306dddde6e88733b8495369c2fb9"
+    },
+    "temporal_search": {
+      "rows": 16092,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "1": 5236,
+        "2": 2033,
+        "3": 141,
+        "0": 8682
+      },
+      "ordered_key_sha256": "6b08d0afd458f1a6a23191e931cb840356e5594e8fec5182bcfb606ee27d118b"
+    },
+    "forecast_fit": {
+      "rows": 61361,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "2": 6216,
+        "1": 16995,
+        "3": 678,
+        "0": 37472
+      },
+      "ordered_key_sha256": "c983c90a9891ead983ea9a6ade2c9dce09221be6b087e4d5c757441f4eaf8b52"
+    },
+    "source_sha256": "d4b19759e8d12da0ad4719f788e2df821b3c4d18a2e3f6fec730870fa94a5b3d"
+  },
+  "h12_2020-02_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2020-02",
+    "search_months": [
+      "2018-02",
+      "2018-06",
+      "2018-10"
+    ],
+    "latest_temporal_fit": "2017-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12074,
+      "validation": 1986,
+      "confirmation": 2033
+    },
+    "temporal_fit": {
+      "rows": 66362,
+      "areas": 5365,
+      "dates": 13,
+      "classes": {
+        "2": 6704,
+        "1": 17985,
+        "3": 840,
+        "0": 40833
+      },
+      "ordered_key_sha256": "439d3155c2b427e3b1978c3635081a21a2dc03b9dd00379ae00627d42fda8161"
+    },
+    "temporal_search": {
+      "rows": 16093,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2316,
+        "1": 5224,
+        "3": 91,
+        "0": 8462
+      },
+      "ordered_key_sha256": "0fdc23870abf0378e0cb387955b423f3a6c81d6506869cd182bb9e030ae3fae7"
+    },
+    "forecast_fit": {
+      "rows": 61868,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "1": 17504,
+        "2": 6760,
+        "0": 36893,
+        "3": 711
+      },
+      "ordered_key_sha256": "4fe2ef4647209e5f795b399e6d7268d046255b891d9eb523f3a310bee10cd3da"
+    },
+    "source_sha256": "9b07fee7ba82ce385558973b3b07fbd7905c0faa86b347a022a2cbdfc95fe21d"
+  },
+  "h12_2020-06_G2_r80_s42_e1pair": {
+    "horizon": 12,
+    "target": "2020-06",
+    "search_months": [
+      "2018-06",
+      "2018-10",
+      "2019-02"
+    ],
+    "latest_temporal_fit": "2018-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12079,
+      "confirmation": 2046,
+      "validation": 1969
+    },
+    "temporal_fit": {
+      "rows": 66870,
+      "areas": 5365,
+      "dates": 13,
+      "classes": {
+        "2": 7194,
+        "1": 18144,
+        "3": 868,
+        "0": 40664
+      },
+      "ordered_key_sha256": "7ffd87ead90993fe864f0685fb1bfddfbe8057e2877824d43cdf823c35817761"
+    },
+    "temporal_search": {
+      "rows": 16094,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2469,
+        "1": 5025,
+        "3": 108,
+        "0": 8492
+      },
+      "ordered_key_sha256": "bd7ad143c61cedd43f029424bdc3edf336aba3e3b0601f5a63d4b94b6bc4b3a1"
+    },
+    "forecast_fit": {
+      "rows": 62374,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "1": 17453,
+        "2": 7289,
+        "3": 761,
+        "0": 36871
+      },
+      "ordered_key_sha256": "6b90065328fd884265a98db79c2713d7c5bb2506b15c1944c596efbf055f93fa"
+    },
+    "source_sha256": "6f560bbaa13aa9686240db441f2af79a359236e643fff8131aee077edc18c3a7"
+  },
+  "h4_2018-06_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2018-06",
+    "search_months": [
+      "2017-02",
+      "2017-06",
+      "2017-10"
+    ],
+    "latest_temporal_fit": "2016-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12112,
+      "confirmation": 1914,
+      "validation": 1916
+    },
+    "temporal_fit": {
+      "rows": 69838,
+      "areas": 5359,
+      "dates": 14,
+      "classes": {
+        "1": 18402,
+        "2": 5495,
+        "3": 581,
+        "0": 45360
+      },
+      "ordered_key_sha256": "3bbc0dc72d338b1e7354b00b9364ce41c05bcff3c207b9546caa82b836dd36e1"
+    },
+    "temporal_search": {
+      "rows": 15942,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "2": 2342,
+        "1": 4877,
+        "3": 261,
+        "0": 8462
+      },
+      "ordered_key_sha256": "a6091e6fdfde967587ade4bfdd2391beb28e9f0f068782d3b67413cc2d49b71a"
+    },
+    "forecast_fit": {
+      "rows": 65541,
+      "areas": 5364,
+      "dates": 17,
+      "classes": {
+        "1": 17737,
+        "2": 6012,
+        "0": 41146,
+        "3": 646
+      },
+      "ordered_key_sha256": "0efcb8f8951c3ec032f13b90e43d0661a2fdd7adfdc3d94c9b2defb1290c2916"
+    },
+    "source_sha256": "4e81bbaaeb83de082765d4afa4bbc2e7ccd8675c1000a9006cd8f1af247e51c2"
+  },
+  "h4_2018-10_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2018-10",
+    "search_months": [
+      "2017-06",
+      "2017-10",
+      "2018-02"
+    ],
+    "latest_temporal_fit": "2017-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12270,
+      "confirmation": 1924,
+      "validation": 1896
+    },
+    "temporal_fit": {
+      "rows": 70204,
+      "areas": 5362,
+      "dates": 14,
+      "classes": {
+        "1": 18826,
+        "2": 5816,
+        "3": 636,
+        "0": 44926
+      },
+      "ordered_key_sha256": "f8e05bc9207fe31b468024854612cb35f2a8d2508755b410e337576d6302b11d"
+    },
+    "temporal_search": {
+      "rows": 16090,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "1": 4897,
+        "2": 2210,
+        "3": 245,
+        "0": 8738
+      },
+      "ordered_key_sha256": "5fe4cfc04ddfeb1f9ee0dc9c76d20dfdc828d40efc99a64efe279a6e0acb1e3f"
+    },
+    "forecast_fit": {
+      "rows": 65908,
+      "areas": 5365,
+      "dates": 17,
+      "classes": {
+        "1": 18100,
+        "2": 6104,
+        "3": 658,
+        "0": 41046
+      },
+      "ordered_key_sha256": "ab8b870a21aa4edf598f1666204f3dfb19ece3814a40d3b3499b084db4a8b136"
+    },
+    "source_sha256": "cf60d5870c424c8e1adb64cb8c4de11fbe8b53a494d8a85b4583bdf82d327001"
+  },
+  "h4_2019-02_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2019-02",
+    "search_months": [
+      "2017-10",
+      "2018-02",
+      "2018-06"
+    ],
+    "latest_temporal_fit": "2017-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12005,
+      "validation": 2001,
+      "confirmation": 2086
+    },
+    "temporal_fit": {
+      "rows": 65854,
+      "areas": 5364,
+      "dates": 13,
+      "classes": {
+        "1": 17441,
+        "2": 6229,
+        "3": 759,
+        "0": 41425
+      },
+      "ordered_key_sha256": "b083ca94e971a9789bf1cf2da972d8c86a92306dddde6e88733b8495369c2fb9"
+    },
+    "temporal_search": {
+      "rows": 16092,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "1": 5236,
+        "2": 2033,
+        "3": 141,
+        "0": 8682
+      },
+      "ordered_key_sha256": "6b08d0afd458f1a6a23191e931cb840356e5594e8fec5182bcfb606ee27d118b"
+    },
+    "forecast_fit": {
+      "rows": 61361,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "2": 6216,
+        "1": 16995,
+        "3": 678,
+        "0": 37472
+      },
+      "ordered_key_sha256": "c983c90a9891ead983ea9a6ade2c9dce09221be6b087e4d5c757441f4eaf8b52"
+    },
+    "source_sha256": "03a9e286068699d061a74e9b75eca17dfdbbb8e05e855a475f0050115ce3abd6"
+  },
+  "h4_2019-06_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2019-06",
+    "search_months": [
+      "2018-02",
+      "2018-06",
+      "2018-10"
+    ],
+    "latest_temporal_fit": "2017-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12074,
+      "validation": 1986,
+      "confirmation": 2033
+    },
+    "temporal_fit": {
+      "rows": 66362,
+      "areas": 5365,
+      "dates": 13,
+      "classes": {
+        "2": 6704,
+        "1": 17985,
+        "3": 840,
+        "0": 40833
+      },
+      "ordered_key_sha256": "439d3155c2b427e3b1978c3635081a21a2dc03b9dd00379ae00627d42fda8161"
+    },
+    "temporal_search": {
+      "rows": 16093,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2316,
+        "1": 5224,
+        "3": 91,
+        "0": 8462
+      },
+      "ordered_key_sha256": "0fdc23870abf0378e0cb387955b423f3a6c81d6506869cd182bb9e030ae3fae7"
+    },
+    "forecast_fit": {
+      "rows": 61868,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "1": 17504,
+        "2": 6760,
+        "0": 36893,
+        "3": 711
+      },
+      "ordered_key_sha256": "4fe2ef4647209e5f795b399e6d7268d046255b891d9eb523f3a310bee10cd3da"
+    },
+    "source_sha256": "3f29ef53308acb6db71e353fb09782921a54cb448bae88e6278c90fd5e051b5d"
+  },
+  "h4_2019-10_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2019-10",
+    "search_months": [
+      "2018-06",
+      "2018-10",
+      "2019-02"
+    ],
+    "latest_temporal_fit": "2018-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12079,
+      "confirmation": 2046,
+      "validation": 1969
+    },
+    "temporal_fit": {
+      "rows": 66870,
+      "areas": 5365,
+      "dates": 13,
+      "classes": {
+        "2": 7194,
+        "1": 18144,
+        "3": 868,
+        "0": 40664
+      },
+      "ordered_key_sha256": "7ffd87ead90993fe864f0685fb1bfddfbe8057e2877824d43cdf823c35817761"
+    },
+    "temporal_search": {
+      "rows": 16094,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2469,
+        "1": 5025,
+        "3": 108,
+        "0": 8492
+      },
+      "ordered_key_sha256": "bd7ad143c61cedd43f029424bdc3edf336aba3e3b0601f5a63d4b94b6bc4b3a1"
+    },
+    "forecast_fit": {
+      "rows": 62374,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "1": 17453,
+        "2": 7289,
+        "3": 761,
+        "0": 36871
+      },
+      "ordered_key_sha256": "6b90065328fd884265a98db79c2713d7c5bb2506b15c1944c596efbf055f93fa"
+    },
+    "source_sha256": "e9107a248303586237816424f78a9b44837c3c262dbb89b84c724d0bd2e4c82e"
+  },
+  "h4_2020-02_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2020-02",
+    "search_months": [
+      "2018-10",
+      "2019-02",
+      "2019-06"
+    ],
+    "latest_temporal_fit": "2018-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12813,
+      "confirmation": 1644,
+      "validation": 1638
+    },
+    "temporal_fit": {
+      "rows": 62372,
+      "areas": 5365,
+      "dates": 12,
+      "classes": {
+        "1": 17908,
+        "2": 7273,
+        "0": 36328,
+        "3": 863
+      },
+      "ordered_key_sha256": "0b0211d7feb6a8a4376d54ffc0723cfe0bdcfc122f68b177c805d985d745fc7c"
+    },
+    "temporal_search": {
+      "rows": 16095,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2840,
+        "1": 5017,
+        "3": 135,
+        "0": 8103
+      },
+      "ordered_key_sha256": "be0d8f762c6af6a66a3acdb06adc7d6827a6c3f645eaac3f76c5fbf06ec22c22"
+    },
+    "forecast_fit": {
+      "rows": 62578,
+      "areas": 5365,
+      "dates": 15,
+      "classes": {
+        "1": 18369,
+        "2": 8016,
+        "0": 35377,
+        "3": 816
+      },
+      "ordered_key_sha256": "4b374633a258a478e461ef83c86e9ed5abb0e8d180066bb6157d5700a07d99a4"
+    },
+    "source_sha256": "641ca95cd1da7d4e448df2a2dfe16e27b4a976c307964257730554da70a5588c"
+  },
+  "h4_2020-06_G1_r80_s42_e1pair": {
+    "horizon": 4,
+    "target": "2020-06",
+    "search_months": [
+      "2019-02",
+      "2019-06",
+      "2019-10"
+    ],
+    "latest_temporal_fit": "2018-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12846,
+      "confirmation": 1608,
+      "validation": 1641
+    },
+    "temporal_fit": {
+      "rows": 62731,
+      "areas": 5365,
+      "dates": 12,
+      "classes": {
+        "1": 18315,
+        "2": 7914,
+        "0": 35606,
+        "3": 896
+      },
+      "ordered_key_sha256": "91627e0398f50df7f1c600a14a6278d7cfb49bd5858df7ada5fa0fb88df4fd5e"
+    },
+    "temporal_search": {
+      "rows": 16095,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 3248,
+        "1": 5008,
+        "3": 132,
+        "0": 7707
+      },
+      "ordered_key_sha256": "cabdbcb5e38bcc8c1c43dd9e0545d5299ffac6fdca92e0c01ca5a2ec8d497413"
+    },
+    "forecast_fit": {
+      "rows": 62937,
+      "areas": 5365,
+      "dates": 15,
+      "classes": {
+        "2": 8877,
+        "1": 18611,
+        "0": 34632,
+        "3": 817
+      },
+      "ordered_key_sha256": "7d5f173bcf7547db012f8a4315300615413e0efd57af98236e01dbc6ed9c6eff"
+    },
+    "source_sha256": "b2467a85b1eb418e4f2b9d464fed8dbe55ca8ba4027b225c14e136c16dc05592"
+  },
+  "h8_2018-06_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2018-06",
+    "search_months": [
+      "2016-10",
+      "2017-02",
+      "2017-06"
+    ],
+    "latest_temporal_fit": "2016-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12120,
+      "confirmation": 1929,
+      "validation": 1888
+    },
+    "temporal_fit": {
+      "rows": 69335,
+      "areas": 5159,
+      "dates": 14,
+      "classes": {
+        "1": 18323,
+        "2": 5234,
+        "3": 502,
+        "0": 45276
+      },
+      "ordered_key_sha256": "886a35f7ec5713cea29231265dfbdad8cbe453b4297c6f14d30f08898e40fed9"
+    },
+    "temporal_search": {
+      "rows": 15937,
+      "areas": 5363,
+      "dates": 3,
+      "classes": {
+        "1": 4642,
+        "2": 2194,
+        "3": 257,
+        "0": 8844
+      },
+      "ordered_key_sha256": "0197522aa18d9fb19478f84f898b0e30c70a602817d3bc2f230db7b2c3571b61"
+    },
+    "forecast_fit": {
+      "rows": 65195,
+      "areas": 5363,
+      "dates": 17,
+      "classes": {
+        "1": 17492,
+        "2": 5699,
+        "3": 588,
+        "0": 41416
+      },
+      "ordered_key_sha256": "2e16209a68fac1e54c828ca1c17092bc82ee36e8dcd0963aaded8d0770629b46"
+    },
+    "source_sha256": "87e709485b1216fdb036dc99a2b7b911f4b5251abc9425605539ff70b9da18e8"
+  },
+  "h8_2018-10_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2018-10",
+    "search_months": [
+      "2017-02",
+      "2017-06",
+      "2017-10"
+    ],
+    "latest_temporal_fit": "2016-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12116,
+      "confirmation": 1911,
+      "validation": 1915
+    },
+    "temporal_fit": {
+      "rows": 69844,
+      "areas": 5360,
+      "dates": 14,
+      "classes": {
+        "1": 18407,
+        "2": 5496,
+        "3": 581,
+        "0": 45360
+      },
+      "ordered_key_sha256": "909730273ed12ece4a6a6bd296fef890f7937cf674f4c97b7c7ffe4b80b4b4f5"
+    },
+    "temporal_search": {
+      "rows": 15942,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "2": 2342,
+        "1": 4877,
+        "3": 261,
+        "0": 8462
+      },
+      "ordered_key_sha256": "a6091e6fdfde967587ade4bfdd2391beb28e9f0f068782d3b67413cc2d49b71a"
+    },
+    "forecast_fit": {
+      "rows": 65545,
+      "areas": 5365,
+      "dates": 17,
+      "classes": {
+        "1": 17738,
+        "2": 6016,
+        "0": 41145,
+        "3": 646
+      },
+      "ordered_key_sha256": "df97de20252265ca7db8f9e24ad0e5b0501844bcf776ce7a219d557e5df948c8"
+    },
+    "source_sha256": "dfb3f3568d550949bed6e7c81c1e1c4cb60cafaed968fe0511cd2448a7e77eaf"
+  },
+  "h8_2019-02_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2019-02",
+    "search_months": [
+      "2017-06",
+      "2017-10",
+      "2018-02"
+    ],
+    "latest_temporal_fit": "2017-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12270,
+      "confirmation": 1924,
+      "validation": 1896
+    },
+    "temporal_fit": {
+      "rows": 70204,
+      "areas": 5362,
+      "dates": 14,
+      "classes": {
+        "1": 18826,
+        "2": 5816,
+        "3": 636,
+        "0": 44926
+      },
+      "ordered_key_sha256": "f8e05bc9207fe31b468024854612cb35f2a8d2508755b410e337576d6302b11d"
+    },
+    "temporal_search": {
+      "rows": 16090,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "1": 4897,
+        "2": 2210,
+        "3": 245,
+        "0": 8738
+      },
+      "ordered_key_sha256": "5fe4cfc04ddfeb1f9ee0dc9c76d20dfdc828d40efc99a64efe279a6e0acb1e3f"
+    },
+    "forecast_fit": {
+      "rows": 65908,
+      "areas": 5365,
+      "dates": 17,
+      "classes": {
+        "1": 18100,
+        "2": 6104,
+        "3": 658,
+        "0": 41046
+      },
+      "ordered_key_sha256": "ab8b870a21aa4edf598f1666204f3dfb19ece3814a40d3b3499b084db4a8b136"
+    },
+    "source_sha256": "074f7f5063dbb9bf1252cae71521ca8251c9af6a4cdfbf69d6e927eb379cc6b0"
+  },
+  "h8_2019-06_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2019-06",
+    "search_months": [
+      "2017-10",
+      "2018-02",
+      "2018-06"
+    ],
+    "latest_temporal_fit": "2017-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12005,
+      "validation": 2001,
+      "confirmation": 2086
+    },
+    "temporal_fit": {
+      "rows": 65854,
+      "areas": 5364,
+      "dates": 13,
+      "classes": {
+        "1": 17441,
+        "2": 6229,
+        "3": 759,
+        "0": 41425
+      },
+      "ordered_key_sha256": "b083ca94e971a9789bf1cf2da972d8c86a92306dddde6e88733b8495369c2fb9"
+    },
+    "temporal_search": {
+      "rows": 16092,
+      "areas": 5364,
+      "dates": 3,
+      "classes": {
+        "1": 5236,
+        "2": 2033,
+        "3": 141,
+        "0": 8682
+      },
+      "ordered_key_sha256": "6b08d0afd458f1a6a23191e931cb840356e5594e8fec5182bcfb606ee27d118b"
+    },
+    "forecast_fit": {
+      "rows": 61361,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "2": 6216,
+        "1": 16995,
+        "3": 678,
+        "0": 37472
+      },
+      "ordered_key_sha256": "c983c90a9891ead983ea9a6ade2c9dce09221be6b087e4d5c757441f4eaf8b52"
+    },
+    "source_sha256": "8a752245a93a53280a67b75d0db0289973d8cc3ad737c5548615bd20fb8333ce"
+  },
+  "h8_2019-10_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2019-10",
+    "search_months": [
+      "2018-02",
+      "2018-06",
+      "2018-10"
+    ],
+    "latest_temporal_fit": "2017-10",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12074,
+      "validation": 1986,
+      "confirmation": 2033
+    },
+    "temporal_fit": {
+      "rows": 66362,
+      "areas": 5365,
+      "dates": 13,
+      "classes": {
+        "2": 6704,
+        "1": 17985,
+        "3": 840,
+        "0": 40833
+      },
+      "ordered_key_sha256": "439d3155c2b427e3b1978c3635081a21a2dc03b9dd00379ae00627d42fda8161"
+    },
+    "temporal_search": {
+      "rows": 16093,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2316,
+        "1": 5224,
+        "3": 91,
+        "0": 8462
+      },
+      "ordered_key_sha256": "0fdc23870abf0378e0cb387955b423f3a6c81d6506869cd182bb9e030ae3fae7"
+    },
+    "forecast_fit": {
+      "rows": 61868,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "1": 17504,
+        "2": 6760,
+        "0": 36893,
+        "3": 711
+      },
+      "ordered_key_sha256": "4fe2ef4647209e5f795b399e6d7268d046255b891d9eb523f3a310bee10cd3da"
+    },
+    "source_sha256": "f495f49a2b731a3b8dcb76557e8d7eda6fd19d5e1c3f635d753ab42fc5c2a9d4"
+  },
+  "h8_2020-02_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2020-02",
+    "search_months": [
+      "2018-06",
+      "2018-10",
+      "2019-02"
+    ],
+    "latest_temporal_fit": "2018-02",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12079,
+      "confirmation": 2046,
+      "validation": 1969
+    },
+    "temporal_fit": {
+      "rows": 66870,
+      "areas": 5365,
+      "dates": 13,
+      "classes": {
+        "2": 7194,
+        "1": 18144,
+        "3": 868,
+        "0": 40664
+      },
+      "ordered_key_sha256": "7ffd87ead90993fe864f0685fb1bfddfbe8057e2877824d43cdf823c35817761"
+    },
+    "temporal_search": {
+      "rows": 16094,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2469,
+        "1": 5025,
+        "3": 108,
+        "0": 8492
+      },
+      "ordered_key_sha256": "bd7ad143c61cedd43f029424bdc3edf336aba3e3b0601f5a63d4b94b6bc4b3a1"
+    },
+    "forecast_fit": {
+      "rows": 62374,
+      "areas": 5365,
+      "dates": 16,
+      "classes": {
+        "1": 17453,
+        "2": 7289,
+        "3": 761,
+        "0": 36871
+      },
+      "ordered_key_sha256": "6b90065328fd884265a98db79c2713d7c5bb2506b15c1944c596efbf055f93fa"
+    },
+    "source_sha256": "fc303396c24b146bc3057ea398d04270c1ac3abb7a3b9a7c2ce4e322f43ce071"
+  },
+  "h8_2020-06_G4_r80_s42_e1pair": {
+    "horizon": 8,
+    "target": "2020-06",
+    "search_months": [
+      "2018-10",
+      "2019-02",
+      "2019-06"
+    ],
+    "latest_temporal_fit": "2018-06",
+    "search_overlap_with_D34_roles": {
+      "fitting": 12813,
+      "confirmation": 1644,
+      "validation": 1638
+    },
+    "temporal_fit": {
+      "rows": 62372,
+      "areas": 5365,
+      "dates": 12,
+      "classes": {
+        "1": 17908,
+        "2": 7273,
+        "0": 36328,
+        "3": 863
+      },
+      "ordered_key_sha256": "0b0211d7feb6a8a4376d54ffc0723cfe0bdcfc122f68b177c805d985d745fc7c"
+    },
+    "temporal_search": {
+      "rows": 16095,
+      "areas": 5365,
+      "dates": 3,
+      "classes": {
+        "2": 2840,
+        "1": 5017,
+        "3": 135,
+        "0": 8103
+      },
+      "ordered_key_sha256": "be0d8f762c6af6a66a3acdb06adc7d6827a6c3f645eaac3f76c5fbf06ec22c22"
+    },
+    "forecast_fit": {
+      "rows": 62578,
+      "areas": 5365,
+      "dates": 15,
+      "classes": {
+        "1": 18369,
+        "2": 8016,
+        "0": 35377,
+        "3": 816
+      },
+      "ordered_key_sha256": "4b374633a258a478e461ef83c86e9ed5abb0e8d180066bb6157d5700a07d99a4"
+    },
+    "source_sha256": "60462113bc083e9fe2de3cfdadf678f441f7c1f61f7e98d94515b37ef9cf217a"
+  }
+}

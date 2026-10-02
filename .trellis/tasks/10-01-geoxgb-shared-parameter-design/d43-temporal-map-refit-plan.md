@@ -1,4 +1,4 @@
-# D43 / A17: temporal Brier map learning under common forecasting
+# D43 / A17: temporal Brier map learning under common forecasting (completed; not adopted; supervisor independent check passed)
 
 2026-10-02. Supervisor decision under the user's delegated Stage1 research authority. Design selected; executor review and committed aligned planning required before implementation or fitting. Supersedes the discussion-only status of `research/d43-temporal-map-options.md`; legacy D26/D27 hard-F1 map reuse remains deferred. Same active task, executor, audit run and base. No Stage2/3, full648, final evaluation or close.
 
@@ -126,4 +126,20 @@ Root and global20 reproduce D36.
 
 Fold-mean temporal − random F1: H4 −.003635, H8 −.000663, H12 +.006129. The temporal arm's Brier is higher than the random arm's at every horizon.
 
-**Not done:** the executor did not run the supervisor's `d43_independent_check.py`. There is no adoption, Stage 2/3 or close. The scientific reading is left to the supervisor.
+**Not done:** no adoption, Stage 2/3 or close.
+
+**Supervisor independent check (PASS):** `research/d43_independent_check.py` → `research/d43_independent_results.json`. No production runner imports and no fits.
+- 5,761 checks, zero issues.
+- All 306 regional models, 113,508 keyed E3 rows and 454,032 probability rows across the four arms.
+- The search algorithm itself was not reimplemented.
+- A separate byte comparison of the three equivalence cases (`research/d43_equivalence_independent.json`) found the assignment, correspondence, target and score files identical, and all 77 UBJs equal.
+- Input reference: `research/d43_input_reference.json`.
+- Findings: [research/d43-temporal-map-findings.md](research/d43-temporal-map-findings.md).
+
+**Supervisor decision:**
+- D43 is not adopted, and the time-split/map-generation variant sequence stops as predeclared.
+- The H12 descriptive F1 increase is retained as research evidence, without selecting H-specific map families after the fact.
+- No temporal arm exceeds matched persistence.
+- There is no causal attribution to chronology alone and no significance claim.
+- Stage 1 remains unresolved, and further local complexity is not currently supported by the evidence.
+- Root-first is a research focus for the next planning, not a change to the final primary model or the spec.

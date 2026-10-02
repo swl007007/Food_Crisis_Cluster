@@ -1,0 +1,17 @@
+[
+  {
+    "horizon": 4,
+    "byte_equal_artifacts": 4,
+    "all_ubj_equal": 31
+  },
+  {
+    "horizon": 8,
+    "byte_equal_artifacts": 4,
+    "all_ubj_equal": 27
+  },
+  {
+    "horizon": 12,
+    "byte_equal_artifacts": 4,
+    "all_ubj_equal": 19
+  }
+]
