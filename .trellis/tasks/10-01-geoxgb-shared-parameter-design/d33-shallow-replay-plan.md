@@ -37,7 +37,7 @@ S/C/E3各自对root、depth1、full：四类混淆、危机TP/FP/FN、危机F1�
 - 重放：`stage1_shallow_replay.py --d29-run …geoxgb-d29-confirm-20261001 --out C:\Users\swl00\geoxgb_runs\geoxgb-d33-shallow-replay-20261001 --producer-rev ab1ac83`，exit 0，30 s，replay_commit 69f2cc3。
 - 完整树门槛：六候选各23项检查全部0不一致（键、真值、S/C/E3硬预测与路由、C/E3 root与full概率round-trip精确相等、booster SHA、fitting键）。
 - 执行方独立stdlib重算：144项全部一致（含full−root与D29历史比较的精确分数）。
-- 4/6候选depth1的`1`侧为root决策保留的root副本（H4/H8/H12 2020-10、H8 2018-02），这些候选的depth1只有一半区域是局部模型。
+- 4/6候选depth1的`1`侧为root决策保留的root副本（H4/H8/H12 2020-10、H8 2018-02），这些候选的depth1两侧中仅一侧使用局部模型（区域数不等分）：局部的`0`侧E3覆盖2181/5364（H8 2018-02）、2294/5427（H4 2020-10）、2296/5427（H8 2020-10）、2264/5427（H12 2020-10），约40.7–42.3%；另一侧与未分配区使用root。
 
 | H | T | E3 root / depth1 / full | E3 depth1−root | E3 full−depth1 | C depth1−root | C full−depth1 | S depth1−root | S full−depth1 |
 |---|---|---|---|---|---|---|---|---|
