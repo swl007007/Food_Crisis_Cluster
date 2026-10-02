@@ -8,6 +8,7 @@ time boundaries) with hand-checkable fixtures.
 from contextlib import redirect_stdout
 from fractions import Fraction
 from io import StringIO
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -2197,6 +2198,86 @@ class GlobalIncrementControl(unittest.TestCase):
         self.assertEqual(agg['C']['search_rows==0']['folds_with_data'], 0)
         self.assertEqual(agg['C']['all']['pooled']['global20']['crisis_f1_exact'], '4/5')
         self.assertAlmostEqual(agg['C']['all']['mean_fold_crisis_f1_delta']['global20_minus_root'], 2 / 15)
+
+
+class RecencyRoot(unittest.TestCase):
+    """D37/A11: optional fit_global weights, fitting-only mean-1 recency weights, persistence scoring."""
+
+    def setUp(self):
+        from scripts import stage1_recency_root as rr
+        self.rr = rr
+        rng = np.random.default_rng(3)
+        self.X = rng.normal(size=(120, 5))
+        self.y = np.tile(np.arange(4), 30)
+
+    def test_default_path_unchanged_and_invalid_weights(self):
+        import xgboost as xgb
+        g, rec = nx.fit_global(self.X, self.y, SMALL_G['G1'])
+        self.assertEqual(set(rec), {"kind", "rounds_total", "rounds_added", "params", "resolved_config",
+                                    "base_score", "rows", "class_counts", "structure_sha256", "booster_sha256"})
+        params, rounds = nx.booster_params(SMALL_G['G1'])
+        ref = xgb.train(params, xgb.DMatrix(nx.clean(self.X), label=self.y, missing=np.nan, nthread=4),
+                        num_boost_round=rounds)
+        self.assertEqual(nx.raw(g), nx.raw(ref))
+        for bad in (np.ones(5), np.r_[np.ones(119), np.nan], np.r_[np.ones(119), 0.0], np.r_[np.ones(119), -1.0],
+                    np.r_[np.ones(119), np.inf]):
+            with self.assertRaises(ValueError):
+                nx.fit_global(self.X, self.y, SMALL_G['G1'], sample_weight=bad)
+        w = np.linspace(0.5, 1.5, 120)
+        gw, recw = nx.fit_global(self.X, self.y, SMALL_G['G1'], sample_weight=w)
+        self.assertEqual(recw['sample_weight']['dtype'], 'float32')
+        self.assertNotEqual(nx.raw(gw), nx.raw(g))
+
+    def test_weight_formula(self):
+        o = 2018 * 12 + 1
+        months = np.array([o - 1, o - 25, o - 49, o - 59, o - 1])
+        w = self.rr.recency_weights(months, o)
+        u = 2.0 ** (-((o - 1) - months) / 24.0)
+        np.testing.assert_array_equal(w['w64'], u / u.mean())
+        self.assertAlmostEqual(w['w64'].mean(), 1.0, places=14)
+        self.assertAlmostEqual(w['w64'][0] / w['w64'][1], 2.0, places=12)
+        self.assertEqual(w['w32'].dtype, np.float32)
+        self.assertEqual(w['record']['sha256'], hashlib.sha256(w['w64'].astype(np.float32).tobytes()).hexdigest())
+        self.assertAlmostEqual(w['record']['kish_ess'], w['w32'].astype(float).sum() ** 2 / np.sum(w['w32'].astype(float) ** 2), places=12)
+        for bad in (np.array([o]), np.array([o - 60])):
+            with self.assertRaises(self.rr.GateError):
+                self.rr.recency_weights(bad, o)
+
+    def test_heldout_labels_do_not_move_weights_or_booster(self):
+        helper = GlobalIncrementControl()
+        helper.setUp()
+        with tempfile.TemporaryDirectory() as tmp:
+            data = helper._run(tmp)
+            b1, r1, w1 = self.rr.fit_weighted_root(data, 'G1')
+        with tempfile.TemporaryDirectory() as tmp:
+            data2 = helper._run(tmp, permute_held=True)
+            self.assertFalse((data2['C'][1] == data['C'][1]).all())
+            b2, r2, w2 = self.rr.fit_weighted_root(data2, 'G1')
+        np.testing.assert_array_equal(w1['w32'], w2['w32'])
+        self.assertEqual(r1['rows'], len(data['FIT'][1]))
+        self.assertEqual(r1['sample_weight']['sha256'], r2['sample_weight']['sha256'])
+        self.assertEqual(nx.raw(b1), nx.raw(b2))
+
+    def test_persistence_missing_and_matched_scoring(self):
+        pers = self.rr.persistence_codes([1, 3, 5, np.nan, 4])
+        np.testing.assert_array_equal(pers[[0, 1, 2, 4]], [0, 2, 3, 3])
+        self.assertTrue(np.isnan(pers[3]))
+        frame = pd.DataFrame({'truth': [2, 0, 3, 1], 'y_original': [0, 0, 3, 1], 'y_weighted': [2, 0, 3, 2],
+                              'persistence_code': [2.0, 2.0, np.nan, 0.0]})
+        for m in ('original', 'weighted'):
+            for k, lab in enumerate(fourclass.CLASS_LABELS):
+                frame[f'p_{m}_{lab}'] = 0.25
+        out = self.rr.score_frame(frame)
+        self.assertEqual(out['matched_persistence']['n'], 3)
+        self.assertAlmostEqual(out['matched_persistence']['coverage'], 0.75)
+        # matched keys rows 0,1,3: persistence crisis preds [1,1,0] vs truth [1,0,0] -> tp1 fp1 fn0 -> 2/3
+        self.assertEqual(Fraction(out['matched_persistence']['persistence']['crisis_f1_exact']), Fraction(2, 3))
+        self.assertEqual(Fraction(out['matched_persistence']['weighted']['crisis_f1_exact']), Fraction(2, 3))
+        self.assertEqual(Fraction(out['all']['weighted']['crisis_f1_exact']), Fraction(4, 5))
+        self.assertEqual(out['transition_groups_post_hoc']['missing']['n'], 1)
+        self.assertEqual(out['transition_groups_post_hoc']['11']['corrected'], 1)
+        self.assertEqual(out['transition_groups_post_hoc']['00']['fp_change'], 1)
+        self.assertAlmostEqual(out['all']['original']['crisis_brier'], np.mean((0.5 - np.array([1, 0, 1, 0])) ** 2))
 
 
 class CommittedCode(unittest.TestCase):

@@ -44,6 +44,26 @@ def dmatrix(X, y=None) -> xgb.DMatrix:
     return xgb.DMatrix(clean(X), label=y, missing=np.nan, nthread=4)
 
 
+def check_sample_weight(sample_weight, n: int) -> np.ndarray:
+    """D37: validated float32 row weights (length n, all finite, all > 0)."""
+    w = np.asarray(sample_weight, dtype=np.float64)
+    if w.ndim != 1 or len(w) != n:
+        raise ValueError(f"sample_weight length {w.shape} != {n} fitting rows")
+    if not np.all(np.isfinite(w)) or not np.all(w > 0):
+        raise ValueError("sample_weight must be finite and > 0")
+    w32 = w.astype(np.float32)
+    if not np.all(np.isfinite(w32)) or not np.all(w32 > 0):
+        raise ValueError("sample_weight not representable as positive finite float32")
+    return w32
+
+
+def weight_record(w32: np.ndarray) -> dict:
+    w = w32.astype(np.float64)
+    return {"dtype": str(w32.dtype), "sha256": hashlib.sha256(np.ascontiguousarray(w32).tobytes()).hexdigest(),
+            "n": int(len(w)), "sum": float(w.sum()), "min": float(w.min()), "max": float(w.max()),
+            "kish_ess": float(w.sum() ** 2 / np.sum(w ** 2))}
+
+
 def raw(booster: xgb.Booster) -> bytes:
     return bytes(booster.save_raw("ubj"))
 
@@ -110,21 +130,31 @@ def proba(booster: xgb.Booster, X) -> np.ndarray:
     return out.astype(np.float64)
 
 
-def fit_global(X, y, config: dict) -> tuple[xgb.Booster, dict]:
-    """Fresh fixed-four booster on real rows only."""
+def fit_global(X, y, config: dict, sample_weight=None) -> tuple[xgb.Booster, dict]:
+    """Fresh fixed-four booster on real rows only.
+
+    ``sample_weight`` (D37, default None = unchanged behaviour and record): validated row weights,
+    passed to XGBoost as float32 and recorded in a ``sample_weight`` block."""
     params, rounds = booster_params(config)
     y = np.asarray(y, dtype=np.int64)
     if len(y) == 0:
         raise ValueError("empty fitting pool")
-    booster = xgb.train(params, dmatrix(X, y), num_boost_round=rounds)
+    w32 = None if sample_weight is None else check_sample_weight(sample_weight, len(y))
+    dm = dmatrix(X, y)
+    if w32 is not None:
+        dm.set_weight(w32)
+    booster = xgb.train(params, dm, num_boost_round=rounds)
     if booster.num_boosted_rounds() != rounds or num_class(booster) != N_CLASSES:
         raise RuntimeError("fresh booster has the wrong rounds or class axis")
-    return booster, {"kind": "fresh", "rounds_total": rounds, "rounds_added": rounds,
-                     "params": params, "resolved_config": resolved_config(booster),
-                     "base_score": base_score(booster), "rows": int(len(y)),
-                     "class_counts": [int(np.sum(y == k)) for k in range(N_CLASSES)],
-                     "structure_sha256": prefix_identity(booster)["sha256"],
-                     "booster_sha256": sha(booster)}
+    record = {"kind": "fresh", "rounds_total": rounds, "rounds_added": rounds,
+              "params": params, "resolved_config": resolved_config(booster),
+              "base_score": base_score(booster), "rows": int(len(y)),
+              "class_counts": [int(np.sum(y == k)) for k in range(N_CLASSES)],
+              "structure_sha256": prefix_identity(booster)["sha256"],
+              "booster_sha256": sha(booster)}
+    if w32 is not None:
+        record["sample_weight"] = weight_record(w32)
+    return booster, record
 
 
 def continue_booster(parent: xgb.Booster, X, y, config: dict) -> tuple[xgb.Booster, dict]:
