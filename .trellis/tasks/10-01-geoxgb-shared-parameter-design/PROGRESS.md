@@ -220,3 +220,21 @@ Scientific reading (development, bounded; not a final result): Stage 1 partition
 - **Native trellis-check of the D28 diff (report-only):** no result-affecting issue; all six areas conform; 58 tests, only the expected untracked-file count failure. Findings (b): `path_rounds_added` means the single increment in root mode but the running total in parent mode (behaviour unaffected; comparison reads `path_selection_rounds`); stale XGBmodel docstring and "tb3" wording in the G-lock message (both fixed before commit).
 - **Producer committed 98adf48;** full suite after commit: exit code 0, `Ran 58 tests … OK`.
 - **Fresh run `C:\Users\swl00\geoxgb_runs\geoxgb-d28-rootinc-20261001`:** `prepare_fourclass.py --run-dir …` exit 0 (git_head 98adf48, code_equals_git_head true; 6 rootinc roots; 648 unchanged); `run_experiment.py --run-dir … gscreen --reuse-gscreen-from C:\Users\swl00\geoxgb_runs\geoxgb-v1-20261001` exit 0, 8 s, G1/G4/G2 (lock); six roots launched `run_stage1.py --run-dir … --split-mode rootinc --workers 3` (log `C:\Users\swl00\geoxgb_runs\d28-stage1-rootinc.log`). Next: `stage1_rootinc_compare.py --run-dir … --control-run C:\Users\swl00\geoxgb_runs\geoxgb-d26-20261001`.
+
+### D28 results (run `geoxgb-d28-rootinc-20261001`, producer 98adf48) — statuses kept separate
+
+- **Implementation:** complete for A3 (root mode, separated actual/search rounds, exact six-root schedule, keyed comparison); native trellis-check no result-affecting issue; 58 tests OK at 98adf48.
+- **Experiment completion:** six roots completed (50–94 s; `d28-stage1-rootinc.log` exit 0). `python3.12.exe -B scripts/stage1_rootinc_compare.py --run-dir C:\Users\swl00\geoxgb_runs\geoxgb-d28-rootinc-20261001 --control-run C:\Users\swl00\geoxgb_runs\geoxgb-d26-20261001` exit 0: identical fitting/validation/target membership, target truth, root predictions and root booster SHA-256 vs the six D26 r80/L1/gt0 controls; outputs `stage1_rootinc_compare/{candidates,pairs}.csv, summary.json, confusions.json, completion.json`; table `research/d28_rootinc_compare_table.py`.
+- **Scientific evidence (bounded development; six related candidates; same roots, so differences are the local mechanism only):**
+
+| H | T | root crisis F1 | local−root anchored / chained | diff | local FP change (anchored − chained) | E2 gain anchored / chained | terminals | deployed rounds after root (max) |
+|---|---|---:|---|---:|---:|---|---|---|
+| 4 | 2018-02 | 0.6682 | −0.0043 / +0.0075 | −0.0118 | −39 | +0.0136 / +0.0328 | 10 / 19 | 20 / 80 |
+| 4 | 2020-10 | 0.6039 | −0.0017 / −0.0082 | +0.0065 | +7 | +0.0142 / +0.0195 | 12 / 14 | 20 / 80 |
+| 8 | 2018-02 | 0.4782 | −0.0012 / −0.0028 | +0.0016 | −10 | +0.0158 / +0.0201 | 16 / 13 | 20 / 80 |
+| 8 | 2020-10 | 0.4991 | −0.0011 / −0.0009 | −0.0002 | +7 | +0.0146 / +0.0192 | 16 / 14 | 20 / 80 |
+| 12 | 2018-02 | 0.4423 | +0.0111 / +0.0054 | +0.0058 | +3 | +0.0287 / +0.0365 | 17 / 21 | 20 / 80 |
+| 12 | 2020-10 | 0.5411 | −0.0051 / −0.0094 | +0.0043 | +3 | +0.0282 / +0.0482 | 13 / 17 | 20 / 80 |
+
+  Means: local−root anchored −0.0004 (1 positive / 5 negative) vs chained −0.0014 (2 / 4); difference +0.0010, anchored better in 4/6 pairs. Mean E2 gain anchored +0.019 vs chained +0.029 (smaller in-sample optimism). Deployed correction after root ≤20 vs up to 80 rounds; partitions not uniformly simpler (10–17 vs 13–21 terminals); 0 identical partitions; positive E4 weights 1 vs 2.
+  Reading: anchoring shrinks both the in-sample E2 gain and the out-of-time losses toward the root — it reduces the magnitude of overfitting damage but does not produce positive transfer (5/6 still E3 ≤ 0, all |effects| ≤ 0.012). **Stage 1 overfitting is NOT solved;** the local corrections still do not generalise beyond ≈0 on the target month. Returned for review; no full 648, Stage 2/3, final evaluation or close.
