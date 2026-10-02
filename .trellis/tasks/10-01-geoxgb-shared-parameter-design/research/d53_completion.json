@@ -1,0 +1,10 @@
+{
+  "outputs": {
+    "contrasts.csv": "a716ab2245ddaee6a2d0f3639df7bb34889fab42e164dee4467794d61da2b5b0",
+    "identity.json": "7062093b5ad97d8850a869a992a8206d734b1c3f629dd9a6906ff3e41389beca",
+    "month_cells.csv": "4cd776b8826d5a2c2040b47509300183b1d85dccc9ab845e489b602a0b2b3480",
+    "role_cells.csv": "6b8e7f3cba4aa27fa469a86d9a97f2ee89fcc25c76e76800ff5d5444e2fffe8a",
+    "summary.json": "47157b4edd8616a311a648183de62e50d0be4138fabab68244053da879caf75a"
+  },
+  "status": "complete"
+}

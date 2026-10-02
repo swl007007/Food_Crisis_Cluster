@@ -1,4 +1,4 @@
-# D53 / A27: zero-fit exact-origin-state probability-level transfer (approved)
+# D53 / A27: zero-fit exact-origin-state probability-level transfer (completed; supervisor verification passed; no policy adopted)
 
 2026-10-02. A separately bounded diagnostic under the user's delegated Stage 1 research authority; not an automatic continuation of D52's fits. Approved by the supervisor with four clarifications (single-class cells, numerical identity tolerance, cell inventory and contrast scope, input-record and output-file specification); the planning commit precedes any code, and real rows are scored only after a separate supervisor release. Same active task, executor, audit run and base.
 - **Unchanged:** the primary crisis-F1 endpoint, the four-class main contract and the final criterion.
@@ -41,3 +41,11 @@ D38 already scored a FIT-only add-one 4×4 transition prior (not repeated). D39 
 
 - **Script:** one minimal standalone runner, `research/d53_state_probability_transfer.py`, numpy/pandas/stdlib only, no package imports or new dependencies. Exact bytes committed before the run; script git blob equal to HEAD.
 - **Order:** supervisor review → planning commit (GitNexus attempt) → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single zero-fit run → factual report → independent supervisor verification → stop. No automatic D54.
+
+## 6. Result (2026-10-02)
+
+- **Producer and run:** producer `192f0ce`; run `C:\Users\swl00\geoxgb_runs\geoxgb-d53-state-probability-transfer-20261002`, exit 0 in 6 s, zero fits; 315 role cells, 3,535 month cells, 168 contrasts. Executor factual record `d0015fd`.
+- **Supervisor verification:** PASS (`research/d53_supervisor_check.py` / `research/d53_supervisor_results.json`; 66,451 checks over 1,660,244 rows).
+- **Findings:** [research/d53-state-probability-transfer-findings.md](research/d53-state-probability-transfer-findings.md).
+- **Synthesis:** diagnostic complete; no policy or model adopted. Level shifts differ by H and state code: H12 code 2 (IPC 3) rate +.1919 with original mean +.1256 (bias −.0663); H12 code 1 (IPC 2) underprediction grows; H8 code 2 (IPC 3) slight E3 overprediction; H4 code 2 (IPC 3) tracks fairly closely. No uniform level-collapse diagnosis or single offset fix; a near-correct group mean does not establish individual calibration, ranking or F1; composition changes prevent causal drift or pure-overfitting claims.
+- **Stage 1** remains unresolved; next policy choice not made; no automatic D54.
