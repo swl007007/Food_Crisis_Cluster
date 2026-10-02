@@ -381,7 +381,8 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                 "stage1_tb3_roots": [], "stage1_tb3_candidates": [],
                 "stage1_rootinc_roots": [], "stage1_rootinc_candidates": [],
                 "stage1_rootconf_roots": [], "stage1_rootconf_candidates": [],
-                "stage1_recentsearch_roots": [], "stage1_recentsearch_candidates": []}
+                "stage1_recentsearch_roots": [], "stage1_recentsearch_candidates": [],
+                "stage1_matchedsize_roots": [], "stage1_matchedsize_candidates": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
             entry = _fold(horizon, target, labelled, label_months, with_gate=False)
@@ -430,6 +431,12 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                 schedule["stage1_recentsearch_roots"].append(dict(recent))
                 schedule["stage1_recentsearch_candidates"].append({**recent, "local_config": plan.ROOTINC_LOCAL,
                                                                    "threshold_family": plan.ROOTINC_FAMILY})
+                # D31 (A6): the same six roots x three search seeds; per-area matched-size search.
+                for search_seed in plan.MATCHED_SEEDS:
+                    matched = {**recent, "matched_size_seed": search_seed}
+                    schedule["stage1_matchedsize_roots"].append(dict(matched))
+                    schedule["stage1_matchedsize_candidates"].append({**matched, "local_config": plan.ROOTINC_LOCAL,
+                                                                      "threshold_family": plan.ROOTINC_FAMILY})
         for target in (mi(t) for t in plan.DEV_TARGETS):
             entry = _fold(horizon, target, labelled, label_months, with_gate=True)
             if entry["status"] != "scheduled":
@@ -477,6 +484,12 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                                               "rule": ("D30/A5: the D29 rootconf roots; search S restricted to the "
                                                        "latest six observed months of the original validation; "
                                                        "fitting and C unchanged")}
+    if len(schedule["stage1_matchedsize_roots"]) != 18 or len(schedule["stage1_matchedsize_candidates"]) != 18:
+        raise PreflightError("the D31 matched-size control must schedule exactly 18 roots / 18 candidates")
+    schedule["stage1_matchedsize_counts"] = {"roots": 18, "candidates": 18,
+                                             "rule": ("D31/A6: the D30 roots x search seeds 101/102/103; per area "
+                                                      "the D30 recent-S row count drawn label-blind from all "
+                                                      "original S dates; fitting and C unchanged")}
     lower = []
     for stage in ("stage1", "development", "stage3"):
         for r in schedule[stage]:

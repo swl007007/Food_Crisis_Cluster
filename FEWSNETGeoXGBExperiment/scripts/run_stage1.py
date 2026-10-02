@@ -46,14 +46,28 @@ SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
                plan.ROOTINC: ("stage1_rootinc_roots", "stage1_rootinc_candidates", "stage1_rootinc"),
                plan.ROOTCONF: ("stage1_rootconf_roots", "stage1_rootconf_candidates", "stage1_rootconf"),
                plan.RECENTSEARCH: ("stage1_recentsearch_roots", "stage1_recentsearch_candidates",
-                                   "stage1_recentsearch")}
+                                   "stage1_recentsearch"),
+               plan.MATCHEDSIZE: ("stage1_matchedsize_roots", "stage1_matchedsize_candidates",
+                                  "stage1_matchedsize")}
 #: modes that run under the D26-locked G (no reselection)
-LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH)
+LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE)
 #: D29/A4 only: the frozen-candidate confirmation predictions
 CONFIRMATION_FILES = ("confirmation_predictions.csv.gz",)
 NAMERS = {plan.ROOTINC: (plan.rootinc_root_name, plan.rootinc_candidate_name),
           plan.ROOTCONF: (plan.rootconf_root_name, plan.rootconf_candidate_name),
-          plan.RECENTSEARCH: (plan.recentsearch_root_name, plan.recentsearch_candidate_name)}
+          plan.RECENTSEARCH: (plan.recentsearch_root_name, plan.recentsearch_candidate_name),
+          plan.MATCHEDSIZE: (lambda h, t, g, seed: plan.matchedsize_root_name(h, t, g, seed),
+                             lambda h, t, g, seed: plan.matchedsize_candidate_name(h, t, g, seed))}
+#: schedule entries per fixed-root mode (D31 = six H/T x three search seeds)
+EXPECTED_ENTRIES = {plan.ROOTINC: 6, plan.ROOTCONF: 6, plan.RECENTSEARCH: 6, plan.MATCHEDSIZE: 18}
+
+
+def _names(mode: str, r: dict, g: str) -> tuple:
+    """(root name, candidate name) of a fixed-root schedule entry."""
+    name_root, name_cand = NAMERS[mode]
+    extra = (r["matched_size_seed"],) if mode == plan.MATCHEDSIZE else ()
+    return (name_root(r["horizon"], r["target_month"], g, *extra),
+            name_cand(r["horizon"], r["target_month"], g, *extra))
 
 
 def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
@@ -61,19 +75,25 @@ def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
     rows = schedule.get(SPLIT_MODES[mode][0])
     if rows is None:
         raise SystemExit(f"this preparation has no {mode} schedule; prepare a fresh run")
-    want = {(h, t) for h in plan.HORIZONS for t in plan.ROOTINC_TARGETS}
-    got = [(r["horizon"], r["target_month"]) for r in rows]
-    if len(rows) != 6 or sorted(got) != sorted(want) or any(
+    seeds = plan.MATCHED_SEEDS if mode == plan.MATCHEDSIZE else (None,)
+    want = [(h, t, s) for h in plan.HORIZONS for t in plan.ROOTINC_TARGETS for s in seeds]
+    got = [(r["horizon"], r["target_month"], r.get("matched_size_seed")) for r in rows]
+    if len(rows) != EXPECTED_ENTRIES[mode] or sorted(got) != sorted(want) or any(
             (r.get("ratio"), r.get("split_seed"), r.get("increment_source")) !=
             (plan.ROOTINC_RATIO, plan.ROOTINC_SEED, "root") for r in rows):
-        raise SystemExit(f"the {mode} schedule is not exactly H{{4,8,12}} x {{2018-02, 2020-10}}, r80/seed 42/root")
-    if mode in (plan.ROOTCONF, plan.RECENTSEARCH) and any(
+        raise SystemExit(f"the {mode} schedule is not exactly H{{4,8,12}} x {{2018-02, 2020-10}}"
+                         f"{' x search seeds ' + str(plan.MATCHED_SEEDS) if mode == plan.MATCHEDSIZE else ''}, "
+                         "r80/seed 42/root")
+    if mode in (plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE) and any(
             r.get("confirmation_seed") != plan.CONFIRMATION_SEED for r in rows):
         raise SystemExit(f"the {mode} schedule does not carry confirmation seed 42")
-    if mode == plan.RECENTSEARCH and any(r.get("recent_search_months") != plan.RECENT_SEARCH_MONTHS for r in rows):
-        raise SystemExit("the recentsearch schedule does not carry the six recent search months")
-    if mode != plan.RECENTSEARCH and any("recent_search_months" in r for r in rows):
+    if mode in (plan.RECENTSEARCH, plan.MATCHEDSIZE) and any(
+            r.get("recent_search_months") != plan.RECENT_SEARCH_MONTHS for r in rows):
+        raise SystemExit(f"the {mode} schedule does not carry the six recent search months")
+    if mode not in (plan.RECENTSEARCH, plan.MATCHEDSIZE) and any("recent_search_months" in r for r in rows):
         raise SystemExit(f"the {mode} schedule carries a recent-search field")
+    if mode != plan.MATCHEDSIZE and any("matched_size_seed" in r for r in rows):
+        raise SystemExit(f"the {mode} schedule carries a matched-size seed")
     return rows
 
 
@@ -81,10 +101,9 @@ def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     """root name -> schedule entry with its selected G (the frozen 162, or the six tb3)."""
     out = {}
     if mode in NAMERS:
-        name_root = NAMERS[mode][0]
         for r in rootinc_entries(schedule, mode):
             g = g_of[str(r["horizon"])]
-            out[name_root(r["horizon"], r["target_month"], g)] = {**r, "g_config": g}
+            out[_names(mode, r, g)[0]] = {**r, "g_config": g}
         return out
     for r in schedule[SPLIT_MODES[mode][0]]:
         g = g_of[str(r["horizon"])]
@@ -95,12 +114,12 @@ def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
 def scheduled_candidates(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     out = {}
     if mode in NAMERS:
-        name_root, name_cand = NAMERS[mode]
         for r in rootinc_entries(schedule, mode):
             g = g_of[str(r["horizon"])]
-            out[name_cand(r["horizon"], r["target_month"], g)] = {
+            root_n, cand_n = _names(mode, r, g)
+            out[cand_n] = {
                 **r, "g_config": g, "local_config": plan.ROOTINC_LOCAL, "threshold_family": plan.ROOTINC_FAMILY,
-                "root": name_root(r["horizon"], r["target_month"], g)}
+                "root": root_n}
         return out
     for c in schedule[SPLIT_MODES[mode][1]]:
         g = g_of[str(c["horizon"])]
@@ -140,7 +159,9 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
     confirm = "confirmation_seed" in root
     if confirm:
         command.append("--confirmation-split")
-    if "recent_search_months" in root:
+    if "matched_size_seed" in root:
+        command += ["--matched-size-seed", str(root["matched_size_seed"])]
+    elif "recent_search_months" in root:
         command.append("--recent-search")
     (work / "command.json").write_text(json.dumps({"command": command, "cwd": str(work)}, indent=2), encoding="utf-8")
     env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONHASHSEED="5")
@@ -184,7 +205,9 @@ def main() -> None:
                         help="random: the 648 r80/r50 schedule; tb3: the six D27 time-block roots; "
                              "rootinc: the six D28 shared-root increment roots (r80/s42/L1/gt0); "
                              "rootconf: the six D29 roots with the S/C confirmation split; "
-                             "recentsearch: the six D30 roots with S restricted to the latest six months")
+                             "recentsearch: the six D30 roots with S restricted to the latest six months; "
+                             "matchedsize: the 18 D31 roots (six H/T x search seeds 101/102/103) with a "
+                             "per-area matched-size search drawn from all original S dates")
     args = parser.parse_args()
     run = args.run_dir.resolve()
     from src.utils.acceptance import accept_g_selection

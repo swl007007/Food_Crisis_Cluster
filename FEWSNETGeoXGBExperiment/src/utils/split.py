@@ -147,6 +147,42 @@ def recent_search_months(val_months, n: int = 6) -> np.ndarray:
     return distinct[-n:]
 
 
+def matched_size_sample(groups, months, k_by_area, seed: int) -> np.ndarray:
+    """D31 / A6: label-blind per-area matched-size draw over the ORIGINAL S rows.
+
+    ``groups``/``months`` are the original S rows only; ``k_by_area`` maps area -> the
+    D30 recent-S row count k_a (missing = 0). A fresh ``random.Random(seed)``; every area
+    present is visited in ascending numeric order, its row positions sorted by month
+    ascending, and ``rng.shuffle`` is called ONCE on that list whatever k_a is (CPython
+    consumes no random numbers for lists shorter than 2); the first k_a are selected.
+    Returns a bool mask in input order. Duplicate (area, month) keys, k_a above the
+    area's row count, or k_a for an absent area are refused. Labels are never read.
+    """
+    import random
+    groups = np.asarray(groups, dtype=np.int64)
+    months = np.asarray(months, dtype=np.int64)
+    if groups.shape != months.shape:
+        raise ValueError("groups and months must be aligned")
+    keys = set(zip(groups.tolist(), months.tolist()))
+    if len(keys) != groups.size:
+        raise ValueError("duplicate (area, month) keys in the original S rows")
+    present = set(np.unique(groups).tolist())
+    extra = {int(a) for a, k in k_by_area.items() if int(k) > 0 and int(a) not in present}
+    if extra:
+        raise ValueError(f"matched counts for areas without original S rows: {sorted(extra)[:5]}")
+    rng = random.Random(seed)
+    selected = np.zeros(groups.size, dtype=bool)
+    for area in sorted(present):
+        pos = np.flatnonzero(groups == area)
+        rows = [int(p) for p in pos[np.argsort(months[pos], kind="stable")]]
+        k = int(k_by_area.get(area, 0))
+        if k < 0 or k > len(rows):
+            raise ValueError(f"area {area}: matched count {k} outside 0..{len(rows)}")
+        rng.shuffle(rows)
+        selected[rows[:k]] = True
+    return selected
+
+
 def confirmation_split(groups, months, seed: int = 42) -> np.ndarray:
     """D29 / A4: label-blind split of the ORIGINAL validation rows into S (0) and C (1).
 

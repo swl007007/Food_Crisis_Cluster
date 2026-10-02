@@ -4,6 +4,9 @@ python scripts/stage1_rootconf_compare.py --run-dir RUN --control-run D28_RUN [-
     [--code-rev PRODUCER_REV]
 python scripts/stage1_rootconf_compare.py --mode recentsearch --run-dir RUN --control-run D29_RUN
     [--control-code-rev ab1ac83] [--code-rev PRODUCER_REV]      (D30 / A5; writes RUN/stage1_recentsearch_compare/)
+python scripts/stage1_rootconf_compare.py --mode matchedsize --run-dir RUN --control-run D30_RUN
+    --reference-run D29_RUN [--control-code-rev 5517fb4] [--reference-code-rev ab1ac83] [--code-rev PRODUCER_REV]
+    (D31 / A6; D30 compared on complete C and E3 only; writes RUN/stage1_matchedsize_compare/)
 
 Reuses the D27/D28 acceptance and keyed joins (scripts/stage1_tb3_compare.py,
 scripts/stage1_rootinc_compare.py). REQUIRES, per (H, T): identical fitting keys, the new
@@ -29,19 +32,24 @@ PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
 from scripts import stage1_tb3_compare as tc  # noqa: E402
 from scripts.stage1_rootinc_compare import crisis_counts, round_columns  # noqa: E402
-from scripts.run_stage1 import NAMERS, SPLIT_MODES, scheduled_candidates, scheduled_roots  # noqa: E402
+from scripts.run_stage1 import SPLIT_MODES, _names, scheduled_candidates, scheduled_roots  # noqa: E402
 from src.experiment import plan  # noqa: E402
 from src.metrics import fourclass  # noqa: E402
 from src.utils import acceptance as acc  # noqa: E402
 from src.utils import run_identity as rid  # noqa: E402
-from src.utils.split import confirmation_split  # noqa: E402
+from src.utils.split import confirmation_split, matched_size_sample  # noqa: E402
 
 CompareError = tc.CompareError
 KEY = ["area", "target_month"]
 #: modes with a frozen-candidate confirmation set C
-CONF_MODES = (plan.ROOTCONF, plan.RECENTSEARCH)
+CONF_MODES = (plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE)
 #: new mode -> (control mode, default control producer, column prefix of the control)
-CONTROLS = {plan.ROOTCONF: (plan.ROOTINC, "98adf48", "d28"), plan.RECENTSEARCH: (plan.ROOTCONF, "ab1ac83", "d29")}
+CONTROLS = {plan.ROOTCONF: (plan.ROOTINC, "98adf48", "d28"), plan.RECENTSEARCH: (plan.ROOTCONF, "ab1ac83", "d29"),
+            plan.MATCHEDSIZE: (plan.RECENTSEARCH, "5517fb4", "d30")}
+#: D31/A6: the D29 rootconf reference of the matched-size contrast
+MATCHED_REFERENCE = (plan.ROOTCONF, "ab1ac83")
+#: scheduled roots per mode (D31: six H/T x three search seeds)
+EXPECTED_ROOTS = {plan.MATCHEDSIZE: 18}
 
 
 def accept_mode(run: Path, mode: str, code=None, code_rev=None):
@@ -69,8 +77,9 @@ def accept_mode(run: Path, mode: str, code=None, code_rev=None):
         raise CompareError(f"{mode} requires the locked G {plan.TB3_G}")
     sched = acc.schedule(run)
     roots, cands = scheduled_roots(sched, g_of, mode), scheduled_candidates(sched, g_of, mode)
-    if len(roots) != 6 or len(cands) != 6:
-        raise CompareError(f"the schedule does not give exactly six {mode} roots / candidates")
+    n_expected = EXPECTED_ROOTS.get(mode, 6)
+    if len(roots) != n_expected or len(cands) != n_expected:
+        raise CompareError(f"the schedule does not give exactly {n_expected} {mode} roots / candidates")
     stage = run / SPLIT_MODES[mode][2]
     present = {p.name for p in (stage / "roots").iterdir() if p.is_dir()} if (stage / "roots").is_dir() else set()
     if present != set(roots):
@@ -78,12 +87,11 @@ def accept_mode(run: Path, mode: str, code=None, code_rev=None):
     cand_dirs = {p.name for p in (stage / "candidates").iterdir() if p.is_dir()} if (stage / "candidates").is_dir() else set()
     if cand_dirs != set(cands):
         raise CompareError(f"{mode} candidates: dirs {sorted(cand_dirs)} != scheduled {sorted(cands)}")
-    name_of = NAMERS[mode][1]
     code = code or rid.code_identity()
     runtime = None
     for name, entry in roots.items():
         want = sorted(c for c, e in cands.items() if e["root"] == name)
-        if want != [name_of(entry["horizon"], entry["target_month"], entry["g_config"])]:
+        if want != [_names(mode, entry, entry["g_config"])[1]]:
             raise CompareError(f"{name}: expected exactly its single L1/gt0 {mode} candidate, got {want}")
         record = tc.accept_root_record(stage, name, want)
         if list(record.get("candidates", [])) != want:
@@ -103,7 +111,8 @@ def accept_mode(run: Path, mode: str, code=None, code_rev=None):
         if tc._json(stage / "candidates" / want[0] / "candidate.json").get("increment_source") != "root":
             raise CompareError(f"{want[0]}: candidate is not a shared-root increment candidate")
         if (mode in CONF_MODES) != ("confirmation_split" in root) or \
-                (mode == plan.RECENTSEARCH) != ("recent_search" in root):
+                (mode == plan.RECENTSEARCH) != ("recent_search" in root) or \
+                (mode == plan.MATCHEDSIZE) != ("matched_size" in root):
             raise CompareError(f"{name}: confirmation split / recent search presence does not match mode {mode}")
         if mode in CONF_MODES and not (stage / "candidates" / want[0] / "confirmation_predictions.csv.gz").is_file():
             raise CompareError(f"{want[0]}: no confirmation predictions")
@@ -162,6 +171,147 @@ def same_roots_recent(new_stage, new_root, old_stage, old_root, t_new, t_old, h,
         raise CompareError(f"{new_root}: fitting / C / S_recent+unused / target membership differs from the D29 control")
     same_target_and_root(new_stage, new_root, old_stage, old_root, t_new, t_old)
     return a
+
+
+def matched_roles(d29_members: pd.DataFrame, h, t, seed) -> pd.DataFrame:
+    """D31/A6: re-derive the expected roles from the D29 membership: k_a from the A5 recent
+    months on original S (dates only), the per-area draw ``matched_size_sample`` (numeric
+    area order, date-sorted keys, one shuffle per area), the rest of S unused."""
+    b = d29_members
+    months = sorted(b.loc[b["role"].isin(["validation", "confirmation"]), "target_month"].unique())[-plan.RECENT_SEARCH_MONTHS:]
+    if tuple(months) != tuple(plan.RECENT_SEARCH_DATES[(h, t)]):
+        raise CompareError(f"h{h} {t}: D29 original validation gives recent months {months}, not the A5 table")
+    s = b[b["role"] == "validation"]
+    k = s[s["target_month"].isin(months)].groupby("area").size()
+    drawn = matched_size_sample(s["area"].to_numpy(int), pd.PeriodIndex(s["target_month"], freq="M").asi8,
+                                {int(a): int(n) for a, n in k.items()}, seed)
+    role = b["role"].copy()
+    role.loc[s.index[~drawn]] = "unused_search_history"
+    return b.assign(role=role)
+
+
+def same_roots_matched(new_members, d29_members, d30_members, h, t, seed, name) -> None:
+    """New membership == D29 except S -> drawn sample + unused (re-drawn independently);
+    per-area sample counts == the D30 recent-S counts; C/fitting/target identical to D30."""
+    if new_members.duplicated(KEY).any():
+        raise CompareError(f"{name}: duplicate membership keys")
+    m = new_members.merge(matched_roles(d29_members, h, t, seed), on=KEY, how="outer", suffixes=("_new", "_old"),
+                          indicator=True, validate="one_to_one")
+    if (m["_merge"] != "both").any() or not (m["role_new"] == m["role_old"]).all() \
+            or not (m["class_code_new"] == m["class_code_old"]).all():
+        raise CompareError(f"{name}: membership differs from the A6 draw re-derived on the D29 keys")
+    per_area = lambda mem: mem[mem["role"] == "validation"].groupby("area").size()   # noqa: E731
+    if not per_area(new_members).equals(per_area(d30_members)):
+        raise CompareError(f"{name}: per-area search counts differ from the D30 recent-S counts")
+    fixed = lambda mem: mem[~mem["role"].isin(["validation", "unused_search_history"])].sort_values(KEY).reset_index(drop=True)   # noqa: E731
+    if not fixed(new_members).equals(fixed(d30_members)):
+        raise CompareError(f"{name}: fitting / C / target membership differs from D30")
+
+
+def load_matched(stage, name, cand, d30, d29, h, t) -> dict:
+    """Read every input of one matched row (``d30``/``d29`` = (stage, root, candidate))."""
+    rb = tc._json(stage / "roots" / name / "root.json")["root_booster_sha256"]
+    out = {"seed": int(tc._json(stage / "roots" / name / "root.json")["matched_size"]["search_seed"])}
+    for key, (st, rt, cd, mode) in (("new", (stage, name, cand, plan.MATCHEDSIZE)),
+                                    ("d30", (*d30, plan.RECENTSEARCH)), ("d29", (*d29, plan.ROOTCONF))):
+        row, target, conf, part = tc.method_row(st, rt, cd, h, t, mode, rb)
+        members = tc.read(st / "roots" / rt / "fold_membership.csv.gz")
+        out[key] = {"row": row, "target": target, "conf": conf, "partition": part, "members": members,
+                    "confirmation": keyed_confirmation(st, cd, members)}
+        if key != "d30":
+            out[key]["validation"] = tc.keyed_validation(st, rt, cd)[0]
+    for key, (st, rt, _cd) in (("d30", d30), ("d29", d29)):
+        same_target_and_root(stage, name, st, rt, out["new"]["target"], out[key]["target"])
+    c = tc._json(stage / "candidates" / cand / "candidate.json")
+    last_save = {e["saved_as"]: e for e in c["fits"]["saved_log"]}
+    out["new"]["rounds"] = round_columns(stage, cand)
+    out["new"]["root_booster"] = rb
+    out["new"]["branch_booster"] = {b: (last_save.get(b) or {}).get("booster_sha256") or (rb if b == "root" else None)
+                                    for b in c["partition"]["terminal_partitions"]}
+    return out
+
+
+def matched_row(data: dict, h, t, cand) -> tuple:
+    """Pure D31 row: joins, identity checks and scores on loaded frames (no file access).
+
+    Primary D30 comparisons on complete C and E3 only (D30 saved no predictions for its
+    unused older S); own search-sample scores are descriptive; D29 rescored on the sample
+    keys is labelled exposed."""
+    new, d30, d29 = data["new"], data["d30"], data["d29"]
+    same_roots_matched(new["members"], d29["members"], d30["members"], h, t, data["seed"], cand)
+    s_frame = new["validation"]
+    d29_s = d29["validation"].merge(s_frame[KEY], on=KEY, validate="one_to_one")
+    if len(d29_s) != len(s_frame) or not (d29_s.sort_values(KEY)["y_root"].to_numpy()
+                                          == s_frame.sort_values(KEY)["y_root"].to_numpy()).all():
+        raise CompareError(f"{cand}: search-sample keys/root predictions differ from D29 on the same keys")
+    c_new = new["confirmation"]
+    for key in ("d30", "d29"):
+        chk = c_new.merge(data[key]["confirmation"], on=KEY, how="outer", suffixes=("", "_o"), indicator=True,
+                          validate="one_to_one")
+        if (chk["_merge"] != "both").any() or not (chk["y_root"] == chk["y_root_o"]).all() \
+                or not (chk["y_true"] == chk["y_true_o"]).all():
+            raise CompareError(f"{cand}: C keys/truth/root predictions differ from {key}")
+    recent = list(plan.RECENT_SEARCH_DATES[(h, t)])
+    strata = lambda c, p: ((p, c), (f"{p}_recent6", c[c["target_month"].isin(recent)]),   # noqa: E731
+                           (f"{p}_older", c[~c["target_month"].isin(recent)]))
+    blocks, mats = {}, {}
+    for prefix, frame in (("S_sample", s_frame), ("d29_exposed_S_sample", d29_s), *strata(c_new, "C"),
+                          *strata(d30["confirmation"], "d30_C"), *strata(d29["confirmation"], "d29_C")):
+        b, mt = pool_block(frame, prefix)
+        blocks.update(b); mats.update(mt)
+    mats.update({k: v for k, v in new["conf"].items() if k.startswith("target_")})
+    mats["d30_target_local"], mats["d29_target_local"] = d30["conf"]["target_local"], d29["conf"]["target_local"]
+    e3 = lambda r: Fraction(r["e3_local_minus_root_exact"])   # noqa: E731
+    nr, members = new["row"], new["members"]
+    role = lambda r: members[members["role"] == r]   # noqa: E731
+    sample = role("validation")
+    row = {"horizon": h, "target_month": t, "search_seed": data["seed"], "candidate": cand,
+           "d30_candidate": d30["row"]["candidate"], "d29_candidate": d29["row"]["candidate"],
+           "e3_root_crisis_f1": nr["e3_root_crisis_f1"], "e3_local_crisis_f1": nr["e3_local_crisis_f1"],
+           "e3_local_minus_root": nr["e3_local_minus_root"], "e3_local_minus_root_exact": nr["e3_local_minus_root_exact"],
+           "e3_fourclass_local_minus_root": nr["e3_local_fourclass"] - nr["e3_root_fourclass"],
+           **crisis_counts(new["conf"]["target_root"], "e3_root"), **crisis_counts(new["conf"]["target_local"], "e3_local"),
+           "d30_e3_local_minus_root": d30["row"]["e3_local_minus_root"],
+           "d29_e3_local_minus_root": d29["row"]["e3_local_minus_root"],
+           "e3_minus_d30_e3": float(e3(nr) - e3(d30["row"])), "e3_minus_d29_e3": float(e3(nr) - e3(d29["row"])),
+           **blocks,
+           **{f"{k}_minus_d30": blocks[f"{k}_local_minus_root"] - blocks[f"d30_{k}_local_minus_root"]
+              for k in ("C", "C_recent6", "C_older")},
+           **{f"{k}_minus_d29": blocks[f"{k}_local_minus_root"] - blocks[f"d29_{k}_local_minus_root"]
+              for k in ("C", "C_recent6", "C_older")},
+           **tc.support(sample, "S_sample"), **tc.support(role("unused_search_history"), "unused"),
+           **tc.support(role("confirmation"), "C"),
+           "S_sample_recent_share": float(sample["target_month"].isin(recent).mean()),
+           "S_sample_recent_rows": int(sample["target_month"].isin(recent).sum()),
+           "C_rows_root_unassigned": int((c_new["routing"] != "terminal_branch").sum()),
+           "C_rows_on_root_branch_name": int((c_new["branch_id"] == "root").sum()),   # literal branch name only
+           **root_booster_rows(c_new, new["branch_booster"], new["root_booster"]),
+           "unsplit": int(nr["n_terminal"] == 1),
+           **new["rounds"],
+           "n_terminal": nr["n_terminal"], "accepted_splits": nr["accepted_splits"],
+           "distinct_terminal_boosters": nr["distinct_terminal_boosters"], "e4_weight": nr["e4_weight"],
+           "d30_n_terminal": d30["row"]["n_terminal"], "d30_unsplit": int(d30["row"]["n_terminal"] == 1),
+           "d30_e4_weight": d30["row"]["e4_weight"],
+           "identical_partition_to_d30": new["partition"] == d30["partition"]}
+    terminals = [{"horizon": h, "target_month": t, "search_seed": data["seed"], "candidate": cand, **r}
+                 for which, fr in (("S_sample", s_frame), *strata(c_new, "C")) for r in terminal_support(fr, which)]
+    return row, mats, terminals
+
+
+def root_booster_rows(c_frame, branch_booster: dict, root_booster: str) -> dict:
+    """C rows actually predicted by the root booster: routed to a terminal whose saved booster
+    is the root booster (incl. inherited parent copies), or not routed to a terminal."""
+    booster = c_frame["branch_id"].map(branch_booster)
+    on_root = (c_frame["routing"] != "terminal_branch") | (booster == root_booster)
+    return {"C_rows_root_booster": int(on_root.sum()), "C_rows_booster_unresolved": int(booster.isna().sum())}
+
+
+def ari_common(a, b):
+    """Adjusted Rand index of two canonical partitions on their common area coverage."""
+    from sklearn.metrics import adjusted_rand_score
+    da, db = dict(zip(*a)), dict(zip(*b))
+    common = sorted(set(da) & set(db))
+    return float(adjusted_rand_score([da[x] for x in common], [db[x] for x in common])), len(common)
 
 
 def keyed_confirmation(stage, cand, members) -> pd.DataFrame:
@@ -264,11 +414,67 @@ def recent_row(stage, name, cand, cstage, croot, ccand, h, t):
     return row, mats, terminals, p_new, p_old
 
 
+def matched_summary(frame, partitions, ident, cident, dup) -> dict:
+    """D31 descriptive summary: per seed and per seed pair, all-root and split-only means,
+    fallback (unsplit) counts, date support, and ARI between seeds and vs D30. No gates."""
+    keys = ("e3_local_minus_root", "e3_minus_d30_e3", "C_local_minus_root", "C_recent6_local_minus_root",
+            "C_older_local_minus_root", "C_minus_d30", "C_recent6_minus_d30", "C_older_minus_d30",
+            "S_sample_local_minus_root", "d29_exposed_S_sample_local_minus_root")
+    means = lambda g: {k: float(g[k].mean()) for k in keys} if len(g) else None   # noqa: E731
+    seeds = sorted(frame["search_seed"].unique())
+    d30 = frame.drop_duplicates(["horizon", "target_month"])
+    per_seed = {}
+    for seed in seeds:
+        g = frame[frame["search_seed"] == seed]
+        per_seed[str(seed)] = {"all_roots": means(g), "split_only": means(g[g["unsplit"] == 0]),
+                               "unsplit_roots": int(g["unsplit"].sum()), "positive_e3": int((g["e3_local_minus_root"] > 0).sum()),
+                               "positive_e4_weights": int((g["e4_weight"] > 0).sum()),
+                               "mean_sample_recent_share": float(g["S_sample_recent_share"].mean()),
+                               "sample_dates": [int(x) for x in g["S_sample_dates"]],
+                               "partitions": dup(list(g["candidate"]))}
+    pairs = {}
+    for i, a in enumerate(seeds):
+        for b in seeds[i + 1:]:
+            ga = frame[frame["search_seed"] == a].set_index(["horizon", "target_month"]).sort_index()
+            gb = frame[frame["search_seed"] == b].set_index(["horizon", "target_month"]).sort_index()
+            ari = [dict(zip(("ari", "common_areas"), ari_common(partitions[x], partitions[y])))
+                   for x, y in zip(ga["candidate"], gb["candidate"])]
+            pairs[f"{a}-{b}"] = {"mean_e3_difference": float((ga["e3_local_minus_root"] - gb["e3_local_minus_root"]).mean()),
+                                 "mean_C_difference": float((ga["C_local_minus_root"] - gb["C_local_minus_root"]).mean()),
+                                 "ari_per_root": ari}
+    ari_d30 = {str(seed): [dict(zip(("ari", "common_areas"), ari_common(partitions[r["candidate"]], partitions[r["d30_candidate"]])))
+                           for _, r in frame[frame["search_seed"] == seed].sort_values(["horizon", "target_month"]).iterrows()]
+               for seed in seeds}
+    return {
+        "contrast": "D31 (A6): per-area matched search counts (= D30 recent-six S) drawn label-blind from all original S "
+                    "dates, three search seeds; same D29 fitting/root/C; frozen, then scored on full C (diagnostic) and "
+                    "E3; D30 recentsearch primary control (C/E3 only), D29 rootconf reference",
+        "this_run": {k: v for k, v in ident.items() if k not in ("g_of", "stage")}, "g_selected": ident["g_of"],
+        "control": {k: v for k, v in cident.items() if k not in ("g_of", "stage")},
+        "per_seed": per_seed, "seed_pairs": pairs, "ari_vs_d30_per_root": ari_d30,
+        "d30_reference": {"all_roots_mean_e3": float(d30["d30_e3_local_minus_root"].mean()),
+                          "split_only_mean_e3": float(d30.loc[d30["d30_unsplit"] == 0, "d30_e3_local_minus_root"].mean()),
+                          "unsplit_roots": int(d30["d30_unsplit"].sum()),
+                          "mean_C": float(d30["d30_C_local_minus_root"].mean())},
+        "caveats": ["18 related candidates (six repeatedly exposed targets x three search seeds); development evidence only",
+                    "per-area counts force 34-57% of D30's recent rows into every draw (expected overlap 67-79%): limited "
+                    "contrast; no observed difference is inconclusive, not attribution to size or fallback",
+                    "no D30 search-score comparison: D30 saved predictions only for its S_recent",
+                    "search-sample scores are adaptively reused (descriptive); d29_exposed_* used those rows in D29's search",
+                    "C was used by no search but is time/space correlated with S and fitting; not an untouched test",
+                    "ARI is descriptive only; no gates, hypothesis tests or automatic recipe selection"],
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--mode", choices=sorted(CONTROLS), default=plan.ROOTCONF,
-                        help="rootconf (D29 vs D28 rootinc) or recentsearch (D30 vs D29 rootconf)")
+                        help="rootconf (D29 vs D28 rootinc), recentsearch (D30 vs D29 rootconf) or "
+                             "matchedsize (D31 vs D30 recentsearch, D29 reference)")
+    parser.add_argument("--reference-run", type=Path, default=None, help="matchedsize only: the D29 rootconf run")
+    parser.add_argument("--reference-code-rev", default=MATCHED_REFERENCE[1],
+                        help="matchedsize only: committed producer of the D29 reference (default ab1ac83)")
     parser.add_argument("--control-run", type=Path, required=True, help="the D28 rootinc / D29 rootconf run")
     parser.add_argument("--control-code-rev", default=None,
                         help="committed producer of the controls (default: 98adf48 for rootconf, ab1ac83 for recentsearch)")
@@ -294,11 +500,42 @@ def main() -> None:
     stage, cstage = ident["stage"], cident["stage"]
     ctl_of = {(e["horizon"], e["target_month"]): n for n, e in croots.items()}
     rows, confusions, partitions, terminals = [], [], {}, []
+    if mode == plan.MATCHEDSIZE:
+        if args.reference_run is None:
+            raise CompareError("matchedsize needs --reference-run (the D29 rootconf run)")
+        reference = args.reference_run.resolve()
+        rroots, rcands, rident = accept_mode(reference, MATCHED_REFERENCE[0], rid.code_identity_at(args.reference_code_rev),
+                                             args.reference_code_rev)
+        if rident["g_of"] != ident["g_of"]:
+            raise CompareError("reference G selection differs from this run's")
+        ref_of = {(e["horizon"], e["target_month"]): n for n, e in rroots.items()}
+        for name, entry in sorted(roots.items(), key=lambda kv: (kv[1]["horizon"], kv[1]["target_month"],
+                                                                 kv[1]["matched_size_seed"])):
+            h, t = entry["horizon"], entry["target_month"]
+            cand = next(c for c, e in cands.items() if e["root"] == name)
+            croot, rroot = ctl_of[(h, t)], ref_of[(h, t)]
+            d30 = (cstage, croot, next(c for c, e in ccands.items() if e["root"] == croot))
+            d29 = (rident["stage"], rroot, next(c for c, e in rcands.items() if e["root"] == rroot))
+            data = load_matched(stage, name, cand, d30, d29, h, t)
+            if data["seed"] != entry["matched_size_seed"]:
+                raise CompareError(f"{name}: root.json search seed differs from the schedule")
+            row, mats, terms = matched_row(data, h, t, cand)
+            rows.append(row)
+            terminals += terms
+            partitions[cand], partitions[d30[2]] = data["new"]["partition"], data["d30"]["partition"]
+            for which, mtx in mats.items():
+                confusions.append({"horizon": h, "target_month": t, "search_seed": data["seed"], "candidate": cand,
+                                   "which": which, "exposed": which.startswith("d29_exposed"),
+                                   "fourclass": [[int(x) for x in r] for r in mtx],
+                                   "crisis_[[nn,nc],[cn,cc]]": tc.crisis_matrix(mtx)})
+        cident["reference"] = {k: v for k, v in rident.items() if k not in ("g_of", "stage")}
     for name, entry in sorted(roots.items(), key=lambda kv: (kv[1]["horizon"], kv[1]["target_month"])):
         h, t = entry["horizon"], entry["target_month"]
         cand = next(c for c, e in cands.items() if e["root"] == name)
         croot = ctl_of[(h, t)]
         ccand = next(c for c, e in ccands.items() if e["root"] == croot)
+        if mode == plan.MATCHEDSIZE:
+            break
         if mode == plan.RECENTSEARCH:
             row, mats, terms, p_new, p_old = recent_row(stage, name, cand, cstage, croot, ccand, h, t)
             rows.append(row)
@@ -369,7 +606,9 @@ def main() -> None:
             seen.add(labels)
         return {"candidates": len(names), "coverages": len(by_cov), "same_coverage_duplicates": n}
 
-    if mode == plan.RECENTSEARCH:
+    if mode == plan.MATCHEDSIZE:
+        summary = matched_summary(frame, partitions, ident, cident, dup)
+    elif mode == plan.RECENTSEARCH:
         mean_keys = ("S_recent_local_minus_root", "d29_exposed_S_recent_local_minus_root", "C_local_minus_root",
                      "C_recent6_local_minus_root", "C_older_local_minus_root", "d29_C_local_minus_root",
                      "d29_C_recent6_local_minus_root", "d29_C_older_local_minus_root",
@@ -417,7 +656,8 @@ def main() -> None:
     rid.write_json_atomic(out / "completion.json", {
         "stage": f"stage1_{mode}_compare", "code": rid.code_identity(), "runtime": rid.runtime_identity(),
         "outputs": {rel: sha for rel, sha in rid.output_hashes(out).items() if rel != "completion.json"}})
-    print(json.dumps({k: summary[k] for k in ("means", "split_candidates", "positive_e4_weights")}, indent=1))
+    shown = ("per_seed", "d30_reference") if mode == plan.MATCHEDSIZE else ("means", "split_candidates", "positive_e4_weights")
+    print(json.dumps({k: summary[k] for k in shown}, indent=1))
 
 
 if __name__ == "__main__":

@@ -1557,6 +1557,221 @@ class RecentSearchContrast(unittest.TestCase):
             with self.assertRaises(rc.CompareError):
                 rc.same_roots_recent(new_stage, "r", old_stage, "r", target, target, 4, "2020-10")
 
+class MatchedSearchControl(unittest.TestCase):
+    """D31 (experiment-plan A6): per-area matched-size search drawn from all original S dates."""
+
+    @staticmethod
+    def _reference(groups, months, k_by_area, seed):
+        import random
+        rng = random.Random(seed)
+        out = set()
+        for area in sorted(set(groups.tolist())):
+            rows = sorted(((int(mo), i) for i, (g, mo) in enumerate(zip(groups, months)) if g == area))
+            keys = [(area, mo) for mo, _ in rows]
+            rng.shuffle(keys)                       # consumed for every area, k_a = 0 included
+            out.update(keys[:k_by_area.get(area, 0)])
+        return out
+
+    def test_sampler_deterministic_order_free_exact_counts(self):
+        from src.utils.split import matched_size_sample
+        rng = np.random.default_rng(3)
+        groups, months = [], []
+        for area in range(40):
+            n = int(rng.integers(1, 5))
+            groups += [area * 7] * n
+            months += sorted(rng.choice(np.arange(100, 130), n, replace=False).tolist())
+        groups, months = np.array(groups), np.array(months)
+        n_a = dict(zip(*np.unique(groups, return_counts=True)))
+        k = {int(a): int(rng.integers(0, n + 1)) for a, n in n_a.items()}
+        k[0] = 0
+        k[7] = n_a[7]
+        self.assertTrue(any(0 < k[a] < n_a[a] for a in n_a))            # genuine sampling choices
+        sel = matched_size_sample(groups, months, k, 101)
+        np.testing.assert_array_equal(sel, matched_size_sample(groups, months, k, 101))
+        for a in n_a:
+            self.assertEqual(int(sel[groups == a].sum()), k[a])
+        got = set(zip(groups[sel].tolist(), months[sel].tolist()))
+        self.assertEqual(got, self._reference(groups, months, k, 101))
+        perm = rng.permutation(len(groups))
+        sel_p = matched_size_sample(groups[perm], months[perm], k, 101)
+        self.assertEqual(set(zip(groups[perm][sel_p].tolist(), months[perm][sel_p].tolist())), got)
+        draws = {frozenset(zip(groups[m].tolist(), months[m].tolist()))
+                 for m in (matched_size_sample(groups, months, k, s) for s in plan.MATCHED_SEEDS)}
+        self.assertEqual(len(draws), 3)
+        with self.assertRaises(ValueError):
+            matched_size_sample(groups, months, {**k, 7: n_a[7] + 1}, 101)
+        with self.assertRaises(ValueError):
+            matched_size_sample(np.r_[groups, groups[:1]], np.r_[months, months[:1]], k, 101)
+
+    def test_unused_and_c_labels_cannot_change_the_candidate(self):
+        mgf = TimeBlockContrast.mgf()
+        rs = RecentSearchContrast()
+        rng, groups, X, y, months, x_set, conf = rs._fixture()
+        expected = tuple(ff.month_label(np.arange(424, 430)).tolist())
+        recent, d30_unused = mgf.recent_search_roles(x_set, conf, months, expected)
+        _, sampled = mgf.matched_search_roles(x_set, conf, groups, months, expected, 102)
+        s_orig = (x_set == 1) & ~conf
+        unused = s_orig & ~sampled
+        self.assertFalse((sampled & ~s_orig).any())
+        np.testing.assert_array_equal(sampled | unused, s_orig)                 # sample u unused == S
+        recent_s = s_orig & ~d30_unused
+        for a in np.unique(groups[s_orig]):
+            self.assertEqual(int((sampled & (groups == a)).sum()), int((recent_s & (groups == a)).sum()))
+        self.assertFalse(np.array_equal(sampled, recent_s))                     # earlier S dates are drawn
+        self.assertFalse(((x_set == 0) & (unused | conf | sampled)).any())      # fitting untouched
+        root = nx.fit_global(X[x_set == 0], y[x_set == 0], SMALL_G['G1'])
+        Xt, yt, gt = X[:64], y[:64], groups[::30]
+        y_pool = fourclass.argmax_codes(nx.proba(root[0], Xt))
+        keep = ~conf & ~unused
+        outs = []
+        for y_unused, y_conf in ((y, y), (np.where(unused, rng.permutation(y), y), y),
+                                 (y, np.where(conf, rng.permutation(y), y))):
+            ys = np.where(unused, y_unused, np.where(conf, y_conf, y))
+            data = (X[keep], ys[keep], groups[keep], months[keep], x_set[keep], Xt, yt, gt, y_pool)
+            rec, out = rs._run(mgf, root, data, (X[conf], ys[conf], groups[conf], months[conf]))
+            self.assertGreater(rec['partition']['accepted_splits'], 0)
+            outs.append(out)
+        self.assertEqual(outs[0], outs[1])
+        self.assertEqual(outs[0], outs[2])
+
+    def test_eighteen_matchedsize_schedule_entries_with_distinct_names(self):
+        from scripts import run_stage1 as s1
+        obs = pd.DataFrame({'month': [m(t) for t in plan.STAGE1_TARGETS + ('2010-01', '2016-02', '2016-06',
+                                                                          '2016-10', '2017-02', '2017-06', '2017-10')]
+                                     + [m(f'{y}-{mo:02d}') for y in range(2021, 2025) for mo in (2, 6, 10)]})
+        sched = prep.build_schedule(obs)
+        self.assertEqual(sched['stage1_matchedsize_counts']['roots'], 18)
+        self.assertEqual(len(sched['stage1_recentsearch_roots']), 6)
+        roots = s1.scheduled_roots(sched, plan.TB3_G, plan.MATCHEDSIZE)
+        cands = s1.scheduled_candidates(sched, plan.TB3_G, plan.MATCHEDSIZE)
+        self.assertEqual((len(roots), len(cands)), (18, 18))
+        for other in (plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH):
+            self.assertFalse(set(roots) & set(s1.scheduled_roots(sched, plan.TB3_G, other)))
+            self.assertFalse(set(cands) & set(s1.scheduled_candidates(sched, plan.TB3_G, other)))
+        for name, c in cands.items():
+            parts = name.split('_')
+            self.assertEqual((parts[3], parts[-1]), ('L1', 'gt0'))
+            self.assertTrue(name.endswith(f"_matchedsize_m{c['matched_size_seed']}_gt0"))
+            self.assertIn(c['matched_size_seed'], plan.MATCHED_SEEDS)
+            self.assertEqual(c['root'], f"{plan.root_name(c['horizon'], c['target_month'], c['g_config'], 'r80', 42)}"
+                                        f"_matchedsize_m{c['matched_size_seed']}")
+            self.assertEqual((c['ratio'], c['split_seed'], c['increment_source'], c['confirmation_seed'],
+                              c['recent_search_months']), ('r80', 42, 'root', 42, 6))
+        with self.assertRaises(SystemExit):
+            s1.rootinc_entries({'stage1_matchedsize_roots': sched['stage1_recentsearch_roots']}, plan.MATCHEDSIZE)
+        with self.assertRaises(SystemExit):
+            s1.rootinc_entries({'stage1_recentsearch_roots': sched['stage1_matchedsize_roots'][:6]},
+                               plan.RECENTSEARCH)
+
+
+class MatchedSearchReporter(unittest.TestCase):
+    """D31 (A6) reporter: membership re-derivation and the pure row function, end to end
+    on fixture frames (the D30 crash sat in row assembly, untested before)."""
+
+    H, T, SEED = 4, "2018-02", 101
+
+    def _memberships(self):
+        from app import main_model_GF
+        recent = list(plan.RECENT_SEARCH_DATES[(self.H, self.T)])
+        months = ["2014-06", "2014-10", "2015-02", "2015-06"] + recent
+        rows = []
+        for area in range(10):
+            for i, m in enumerate(months):
+                k = (area + i) % 3
+                rows.append({"area": area, "target_month": m, "class_code": (area * 3 + i) % 4,
+                             "role": "fitting" if k == 0 else "confirmation" if k == 1 else "validation"})
+            rows.append({"area": area, "target_month": self.T, "role": "heldout_target", "class_code": area % 4})
+        d29 = pd.DataFrame(rows)
+        d30 = d29.copy()
+        d30.loc[(d30["role"] == "validation") & ~d30["target_month"].isin(recent), "role"] = "unused_search_history"
+        # D31 roles through the PRODUCER helper (independent of the reporter's re-derivation)
+        tr = d29[d29["role"] != "heldout_target"].reset_index(drop=True)
+        idx = pd.PeriodIndex(tr["target_month"], freq="M")
+        mtrain = (idx.year * 12 + idx.month - 1).to_numpy(np.int64)
+        x_set = tr["role"].isin(["validation", "confirmation"]).to_numpy().astype(int)
+        conf = (tr["role"] == "confirmation").to_numpy()
+        _, sampled = main_model_GF.matched_search_roles(x_set, conf, tr["area"].to_numpy(np.int64), mtrain,
+                                                        plan.RECENT_SEARCH_DATES[(self.H, self.T)], self.SEED)
+        role = tr["role"].where(~((tr["role"] == "validation") & ~sampled), "unused_search_history")
+        new = pd.concat([tr.assign(role=role), d29[d29["role"] == "heldout_target"]], ignore_index=True)
+        return d29, d30, new
+
+    def test_membership_rederivation_accepts_producer_draw_and_rejects_changes(self):
+        from scripts import stage1_rootconf_compare as rc
+        d29, d30, new = self._memberships()
+        s = new[new["role"].isin(["validation", "unused_search_history"])]
+        self.assertTrue(0 < (s["role"] == "validation").sum() < len(s))
+        rc.same_roots_matched(new, d29, d30, self.H, self.T, self.SEED, "fixture")
+        with self.assertRaises(rc.CompareError):     # another search seed draws other rows
+            rc.same_roots_matched(new, d29, d30, self.H, self.T, 103, "fixture")
+        moved = new.copy()
+        i = moved.index[moved["role"] == "validation"][0]
+        j = moved.index[(moved["role"] == "unused_search_history") & (moved["area"] == moved.at[i, "area"])]
+        moved.loc[i, "role"] = "unused_search_history"
+        if len(j):
+            moved.loc[j[0], "role"] = "validation"     # same per-area count, different rows
+        with self.assertRaises(rc.CompareError):
+            rc.same_roots_matched(moved, d29, d30, self.H, self.T, self.SEED, "fixture")
+
+    def test_matched_row_end_to_end_on_fixture_frames(self):
+        from scripts import stage1_rootconf_compare as rc
+        d29, d30, new = self._memberships()
+        rng = np.random.default_rng(0)
+
+        def preds(members, role):
+            f = members[members["role"] == role][["area", "target_month", "class_code"]].rename(
+                columns={"class_code": "y_true"}).reset_index(drop=True)
+            f["y_root"] = (f["y_true"] + (f.index % 3 == 0)) % 4
+            f["y_final"] = np.where(rng.random(len(f)) < 0.7, f["y_true"], f["y_root"])
+            f["branch_id"] = np.where(f["area"] % 2 == 0, "1", "root")
+            f["routing"] = "terminal_branch"
+            return f
+
+        conf_new = preds(new, "confirmation")
+        target = pd.DataFrame({"area": range(10), "target_month": self.T, "y_true": [a % 4 for a in range(10)],
+                               "y_root": [0, 1, 2, 3, 0, 1, 2, 3, 0, 1], "y_local": [0, 1, 2, 2, 0, 1, 3, 3, 0, 1]})
+        mat = fourclass.confusion(target["y_true"], target["y_root"])
+
+        def run(members, e3, name, confirmation, validation=None):
+            row = {"candidate": name, "e3_root_crisis_f1": 0.5, "e3_local_crisis_f1": 0.5 + float(e3),
+                   "e3_local_minus_root": float(e3), "e3_local_minus_root_exact": str(e3), "e3_root_fourclass": 0.4,
+                   "e3_local_fourclass": 0.41, "n_terminal": 3, "accepted_splits": 2,
+                   "distinct_terminal_boosters": 3, "e4_weight": 0.0}
+            out = {"row": row, "target": target, "conf": {"target_root": mat, "target_local": mat},
+                   "partition": ((0, 1, 2), (0, 1, 1)), "members": members, "confirmation": confirmation}
+            if validation is not None:
+                out["validation"] = validation
+            return out
+
+        c_old = conf_new.assign(y_final=conf_new["y_root"])       # D30/D29 local == root on C
+        data = {"seed": self.SEED,
+                "new": dict(run(new, Fraction(1, 50), "new", conf_new, preds(new, "validation")),
+                            rounds={"deployed_rounds_after_root_max": 20, "search_budget_rounds_max": 80},
+                            root_booster="R", branch_booster={"1": "R", "root": "R"}),
+                "d30": run(d30, Fraction(-1, 100), "d30", c_old),
+                "d29": run(d29, Fraction(-1, 40), "d29", c_old, preds(d29, "validation"))}
+        # D29 S predictions must carry the same root codes on the sample keys
+        data["new"]["validation"] = data["new"]["validation"].drop(columns="y_root").merge(
+            data["d29"]["validation"][["area", "target_month", "y_root"]], on=["area", "target_month"])
+        row, mats, terms = rc.matched_row(data, self.H, self.T, "new")
+        gain = (fourclass.crisis_f1_exact(conf_new["y_true"], conf_new["y_final"])
+                - fourclass.crisis_f1_exact(conf_new["y_true"], conf_new["y_root"]))
+        self.assertAlmostEqual(row["C_local_minus_root"], float(gain), places=12)
+        self.assertEqual(row["d30_C_local_minus_root"], 0.0)
+        self.assertAlmostEqual(row["C_minus_d30"], float(gain), places=12)
+        self.assertAlmostEqual(row["e3_minus_d30_e3"], 0.03, places=12)
+        self.assertEqual(row["S_sample_rows"], int((new["role"] == "validation").sum()))
+        self.assertIn("d30_target_local", mats)
+        self.assertEqual((row["deployed_rounds_after_root_max"], row["search_budget_rounds_max"]), (20, 80))
+        self.assertEqual(row["C_rows_root_booster"], len(conf_new))     # branch "1" inherited the root booster
+        self.assertEqual(row["C_rows_on_root_branch_name"], int((conf_new["branch_id"] == "root").sum()))
+        self.assertLess(row["C_rows_on_root_branch_name"], row["C_rows_root_booster"])
+        self.assertEqual({t["set"] for t in terms}, {"S_sample", "C", "C_recent6", "C_older"})
+        self.assertEqual(sum(t["rows"] for t in terms if t["set"] == "C"), len(conf_new))
+        bad = dict(data, d30=dict(data["d30"], confirmation=c_old.assign(y_true=(c_old["y_true"] + 1) % 4)))
+        with self.assertRaises(rc.CompareError):
+            rc.matched_row(bad, self.H, self.T, "new")
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

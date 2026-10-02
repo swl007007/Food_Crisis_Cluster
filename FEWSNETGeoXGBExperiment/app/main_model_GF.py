@@ -47,7 +47,7 @@ from src.metrics import fourclass
 from src.model import native_xgb as nx
 from src.model.GeoRF import GeoRF
 from src.utils.lag_schedules import forecasting_scope_to_lag
-from src.utils.split import (confirmation_split, group_aware_train_val_split, recent_search_months,
+from src.utils.split import (confirmation_split, group_aware_train_val_split, matched_size_sample, recent_search_months,
                              time_block_split)
 
 PARTITION_INFO_CUTOFF = plan.PARTITION_INFO_CUTOFF
@@ -235,6 +235,21 @@ def recent_search_roles(x_set, conf_rows, mtrain, expected):
     return recent, (x_set == 1) & ~conf_rows & ~np.isin(mtrain, recent)
 
 
+def matched_search_roles(x_set, conf_rows, gtrain, mtrain, expected, seed):
+    """D31/A6: (recent month indexes, sampled search mask). k_a = per-area count of the D30
+    recent-S rows (A5 months, dates only); the sample is drawn label-blind from ALL the
+    area's original S rows (``matched_size_sample``); the rest of S is unused history."""
+    recent, d30_unused = recent_search_roles(x_set, conf_rows, mtrain, expected)
+    s_orig = (x_set == 1) & ~conf_rows
+    recent_s = s_orig & ~d30_unused
+    areas, counts = np.unique(gtrain[recent_s], return_counts=True)
+    k_by_area = {int(a): int(c) for a, c in zip(areas, counts)}
+    pos = np.flatnonzero(s_orig)
+    sampled = np.zeros(len(x_set), dtype=bool)
+    sampled[pos[matched_size_sample(gtrain[pos], mtrain[pos], k_by_area, seed)]] = True
+    return recent, sampled
+
+
 def score_confirmation(model, root_booster, confirmation, lookup, out):
     """Predict every C row with the frozen candidate (predict-only routing; areas without
     a learned route use the existing root fallback) and the root; write the keyed file."""
@@ -325,7 +340,17 @@ def main():
     parser.add_argument("--recent-search", action="store_true",
                         help="D30/A5 recentsearch: restrict search S to the latest six observed months of the "
                              "original validation; earlier S rows are unused (requires --confirmation-split)")
+    parser.add_argument("--matched-size-seed", type=int, default=None,
+                        help="D31/A6 matchedsize: per-area matched-size search drawn label-blind from all original "
+                             "S dates with this search seed (101/102/103; requires --confirmation-split)")
     args = parser.parse_args()
+    matched = args.matched_size_seed is not None
+    if matched and not args.confirmation_split:
+        raise ValueError("--matched-size-seed runs only with --confirmation-split (A6)")
+    if matched and args.recent_search:
+        raise ValueError("--matched-size-seed and --recent-search are mutually exclusive (A6)")
+    if matched and args.matched_size_seed not in plan.MATCHED_SEEDS:
+        raise ValueError(f"--matched-size-seed must be one of {plan.MATCHED_SEEDS} (A6)")
     if args.recent_search and not args.confirmation_split:
         raise ValueError("--recent-search runs only with --confirmation-split (A5)")
     if args.confirmation_split and args.increment_source != "root":
@@ -381,7 +406,9 @@ def main():
     x_set, val_ratio, validation_split = stage1_split(args.ratio, gtrain, mtrain, o_index, args.split_seed,
                                                       horizon, str(term))
     fit_rows = x_set == 0
-    if args.recent_search:
+    if matched:
+        root_name = plan.matchedsize_root_name(horizon, str(term), args.g_config, args.matched_size_seed)
+    elif args.recent_search:
         root_name = plan.recentsearch_root_name(horizon, str(term), args.g_config)
     elif args.confirmation_split:
         root_name = plan.rootconf_root_name(horizon, str(term), args.g_config)
@@ -401,6 +428,11 @@ def main():
     if args.recent_search:
         recent, unused_rows = recent_search_roles(x_set, conf_rows, mtrain,
                                                   plan.RECENT_SEARCH_DATES[(horizon, str(term))])
+    if matched:
+        recent, sampled_rows = matched_search_roles(x_set, conf_rows, gtrain, mtrain,
+                                                    plan.RECENT_SEARCH_DATES[(horizon, str(term))],
+                                                    args.matched_size_seed)
+        unused_rows = (x_set == 1) & ~conf_rows & ~sampled_rows
     search_rows = (x_set == 1) & ~conf_rows & ~unused_rows
     roles = np.where(conf_rows, "confirmation",
                      np.where(unused_rows, "unused_search_history",
@@ -452,6 +484,25 @@ def main():
             "class_counts": {"search_recent": class_counts(ytrain[search_rows]),
                              "unused_search_history": class_counts(ytrain[unused_rows])}}}
            if args.recent_search else {}),
+        **({"matched_size": {
+            "rule": ("D31/A6: per area k_a = its D30 recent-S row count (original S rows in the latest six "
+                     "observed months of the original validation, dates only); fresh random.Random(search_seed); "
+                     "every area with original S rows in ascending numeric order, its S rows sorted by month "
+                     "ascending, rng.shuffle called once whatever k_a, first k_a = search sample, rest "
+                     "unused_search_history (src/utils/split.py matched_size_sample); labels never read"),
+            "search_seed": args.matched_size_seed, "split_seed": args.split_seed,
+            "confirmation_seed": plan.CONFIRMATION_SEED,
+            "recent_months": month_label(recent).tolist() if recent is not None else None,
+            "rows": {"search_sample": int(search_rows.sum()), "unused_search_history": int(unused_rows.sum())},
+            "keys_sha256": {"search_sample": nx.keys_sha(gtrain[search_rows], mtrain[search_rows]),
+                            "unused_search_history": nx.keys_sha(gtrain[unused_rows], mtrain[unused_rows])},
+            "class_counts": {"search_sample": class_counts(ytrain[search_rows]),
+                             "unused_search_history": class_counts(ytrain[unused_rows])},
+            "sample_recent_share": (float(np.isin(mtrain[search_rows], recent).mean())
+                                    if search_rows.any() else None),
+            "sample_areas": int(np.unique(gtrain[search_rows]).size),
+            "sample_dates": int(np.unique(mtrain[search_rows]).size)}}
+           if matched else {}),
         "inherited_restrictions": "training areas restricted to areas present in the target month",
         "config": {"MIN_DEPTH": MIN_DEPTH, "MAX_DEPTH": MAX_DEPTH, "CONTIGUITY": config.CONTIGUITY,
                    "REFINE_TIMES": config.REFINE_TIMES, "MIN_BRANCH_SAMPLE_SIZE": config.MIN_BRANCH_SAMPLE_SIZE,
@@ -463,7 +514,10 @@ def main():
     if args.ratio == plan.TIME_BLOCK:
         base.update(split_mode=plan.TIME_BLOCK, validation_months=validation_split["validation_months"],
                     fitting_months=validation_split["fitting_months"])
-    if args.recent_search:
+    if matched:
+        candidates = [plan.matchedsize_candidate_name(horizon, str(term), args.g_config, args.matched_size_seed)]
+        explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
+    elif args.recent_search:
         candidates = [plan.recentsearch_candidate_name(horizon, str(term), args.g_config)]
         explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
     elif args.confirmation_split:

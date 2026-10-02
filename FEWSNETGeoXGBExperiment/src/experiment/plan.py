@@ -177,6 +177,21 @@ def recentsearch_candidate_name(h, target, g):
     return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{RECENTSEARCH}_{ROOTINC_FAMILY}"
 
 
+#: D31 / experiment-plan A6: per-area matched-size search control of D30. Each area keeps
+#: exactly its D30 recent-S row count, drawn label-blind from ALL its original S dates
+#: with search seed 101/102/103 (split seed 42 and confirmation seed 42 unchanged).
+MATCHEDSIZE = "matchedsize"
+MATCHED_SEEDS = (101, 102, 103)
+
+
+def matchedsize_root_name(h, target, g, seed):
+    return f"{root_name(h, target, g, ROOTINC_RATIO, ROOTINC_SEED)}_{MATCHEDSIZE}_m{seed}"
+
+
+def matchedsize_candidate_name(h, target, g, seed):
+    return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{MATCHEDSIZE}_m{seed}_{ROOTINC_FAMILY}"
+
+
 def booster_params(config: dict) -> tuple[dict, int]:
     """(xgb.train params, rounds) for one G or L configuration."""
     params = dict(XGB_BASE)
