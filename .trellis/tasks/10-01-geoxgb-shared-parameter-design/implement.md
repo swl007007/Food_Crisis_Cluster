@@ -264,4 +264,6 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 
 - [x] Executor read-only scoping: no feature-block ablation in D26–D50; schema blocks define the arm exactly (history 75 + calendar 3; removed static 28 + dynamic 41 + legacy 15); `nx.fit_global` is positional (no feature names); `hist_phase_o00` is full-schema index 87.
 - [x] Supervisor review (approved; edits: equal_nan projection equality with dtype/order preserved; coverage-metadata limitation; D49/D50 original-arm consistency with matched n/excluded and the 21-root inventory; synthetic fits outside the real-fit budget).
-- [ ] Planning commit; native implement (`research/d51_history_calendar_root.py`); native check; producer commit; supervisor release; single run (≤21 real fits); factual report; independent supervisor check; stop.
+- [x] Planning commit 99ac473; native implement (~3.1 min, 636 lines); native check (~1.4 min, no result-affecting finding, no edits; evidence-only notes accepted); producer commit edffb0d (blob 5bd89e38…, sha256 dd10560c…); synthetic selftest OK at HEAD.
+- [x] Supervisor release; single run `C:\Users\swl00\geoxgb_runs\geoxgb-d51-history-calendar-root-20261002` (log `d51-run.log`, launch `sys.flags.optimize = 0`), exit 0 in 166 s: 21 real fits (1,339,197 FIT rows), all gates and D49/D50 consistency passed, num_feature 78, rounds 200/400/400, base_score 5E-1, 0 reload mismatches; dev_baselines 15 checked / 6 not_covered.
+- [ ] Factual report delivered; awaiting independent supervisor check and synthesis; stop.
