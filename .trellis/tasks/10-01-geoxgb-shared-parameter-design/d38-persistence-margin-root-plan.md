@@ -1,4 +1,4 @@
-# D38 / A12：固定弱 persistence 初始 margin 的 root 对照
+# D38 / A12：固定弱 persistence 初始 margin 的 root 对照（已完成；保留为探索性root候选，不采用为默认；监督方独立核验通过）
 
 状态：2026-10-02监督方批准本轮有限实现与运行。用户已委托一阶段探索与设计；Claude已完整交叉审阅，未发现影响结果的设计缺陷，以下记录采纳的最小补强。必须先提交本spec/上下文，再实现。原任务、审计 run ed632775、base 与 Claude 执行会话保持。无 Stage2/3、完整648、最终期评分或 close。
 
@@ -77,4 +77,11 @@ D37 固定24个月时间权重未改善 E3，不采用。D38 前置零新增 XGB
 - 透明记录：核验脚本首次失败是监督方自身的XGBoost缓存误用（先无margin预测，再改同一DMatrix的base_margin后再次预测，XGBoost沿用缓存预测）；改用新DMatrix即通过。生产`nx.proba`每次新建DMatrix，非产出结果问题，无需修复产品。
 - 执行方精确比对监督方预先计算的固定控制（`d38_fixed_controls.json`）与本次运行E3行：21根×原/prior-only/post-hoc共63项，计数、精确F1、Brier全部相等；整体全键/同键/按H计数与F1相等，Brier差≤2.8e-17（求和顺序）。
 - 证据保存在`research/d38_independent_check.py`、`research/d38_independent_results.json`、`research/d38_fixed_controls.py`、`research/d38_fixed_controls.json`、`research/d38_fixed_controls_match.py`、`research/d38_fixed_controls_match.json`（原件在`C:\Users\swl00\geoxgb_runs\`；JSON换行已规范化）。
-- 训练已停止；科学综合待监督方。
+- 训练在21次拟合后停止。
+
+**监督方科学综合：保留为探索性root候选；不采用为默认，不推广到分区。**
+- 同键（112795行）危机F1/Brier：anchored .5621551444336255/.10129091073792508；原 .5515156651693647/.10188459488788995；persistence .586405529953917（one-hot Brier .14640719890066048）；post-hoc .5839738223879462/.11597613484375989。
+- anchored相对原root汇总F1与Brier均小幅改善，因此不只是与post-hoc相同的损害概率的偏移；但不支配post-hoc（F1较低、Brier较好），且各H汇总F1均未达persistence。不能仅因post-hoc F1较高就称训练时参数化无价值；指标折衷仍在。
+- 异质性（全键汇总）：H4 F1 .628357→.633401、Brier .0908343→.0899439；H8 .532228→.526894、.1107544→.1093830；H12 .477156→.513143、.1040830→.1046160。逐根F1改善12/21，Brier改善14/21。
+- E3事后组折衷：anchored失去危机发生TP 213、缓解组增加FP 1282，同时持续危机TP +844、稳定非危机FP −338。
+- root开发集改善不等于Stage1分区过拟合已解决。无新拟合、Stage2/3、局部margin路径或close。
