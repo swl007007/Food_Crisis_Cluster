@@ -1,6 +1,6 @@
 # Evaluation 分层契约 v1.0
 
-**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已批准（d41-local-shrinkage-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
 
 D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
 
@@ -202,3 +202,7 @@ E3同键为主，原root/anchored/prior-only/post-hoc控制与相同非缺失键
 ## D40：起点前决策规则评分边界
 
 阈值只来自U<O的同H同臂旧E3；当前truth不进入阈值函数；policy只报危机F1/混淆，与同臂argmax同键比较；6折汇总只描述该子集。见[d40-forward-decision-plan.md](d40-forward-decision-plan.md)。
+
+## D41：局部收缩评分边界
+
+C/E3同键root/full/half，危机Brier为首要连续诊断，原argmax危机F1照报；固定路由分层（真实局部/零增量）；C为窗口内插值，不作过拟合证据。见[d41-local-shrinkage-plan.md](d41-local-shrinkage-plan.md)。
