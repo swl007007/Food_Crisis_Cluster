@@ -1,6 +1,6 @@
 # GeoXGBoost 技术设计 v1.0
 
-**当前覆盖修订：D26–D29已完成；D30近期搜索对照已授权，完整契约见d30-recent-search-plan.md。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
+**当前覆盖修订：D26–D29已完成；D30近期搜索六根已完成（5517fb4/f777ab0），待科学评审，结果见d30-recent-search-plan.md。只改变搜索S的历史范围，Stage1过拟合尚未解决。**
 
 **首轮设计按D24采用，D25已授权开始执行；实际状态以审计start和task.json为准。** 本文记录架构/边界/证据；数值预算见experiment-plan.md，执行顺序见implement.md。
 母包按D1确认为 `FEWSNETFourClassBaseline/`，标签为 `1/2/3/4或5`；D4冻结共享树并只追加局部增量。v1.0为决策收敛整理，不改变已采用的实验方案。

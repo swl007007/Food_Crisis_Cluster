@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**D29已完成；D30近期搜索六根研究已授权，按d30-recent-search-plan.md推进。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**D29已完成；D30近期搜索六根已完成（生产5517fb4，报告f777ab0），待科学评审，结果见d30-recent-search-plan.md。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 

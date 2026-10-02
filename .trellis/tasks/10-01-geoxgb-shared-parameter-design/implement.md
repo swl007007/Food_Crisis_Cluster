@@ -114,9 +114,9 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 ## 10. D30 recent-search contrast (authorized)
 
 - [x] User authorized recommended development research; record exact six-root contract in d30-recent-search-plan.md, preserve Stage3 boundary.
-- [ ] Commit planning; preserve original Claude/audit binding.
-- [ ] Native trellis-implement: reuse D29 mode and confirmation split; unchanged fitting/C, recent-six S only, explicit unused history and independent identity. Preserve old modes.
-- [ ] Production-path unused/C-label invariance, deterministic recent dates and support fallback tests; native trellis-check on final diff.
-- [ ] Commit producer/pass checks, fresh prepare/G reuse, six roots only; no72 G refits.
-- [ ] D29-keyed root/roles/target comparison, S_recent/C whole/C recent/C older/E3 scores, support/structure/E4 and independent rescore.
-- [ ] Update all task docs and PROGRESS with results; no Stage2/3/full648/final/close or claim of solved overfitting without evidence.
+- [x] Commit planning (01b993b); preserve original Claude/audit binding.
+- [x] Native trellis-implement (producer ~3 min; reporter taken over by executor): reuse D29 mode and confirmation split; unchanged fitting/C, recent-six S only, explicit unused history and independent identity. Preserve old modes.
+- [x] Production-path unused/C-label invariance, deterministic recent dates and support fallback tests; native trellis-check on final diff (no result-affecting finding; f777ab0 scoped check).
+- [x] Commit producer (5517fb4; 67 tests OK)/pass checks, fresh prepare/G reuse (geoxgb-d30-recent-search-20261001, G1/G4/G2), six roots only (all completed); no72 G refits.
+- [x] D29-keyed root/roles/target comparison (reporter f777ab0 exit 0; real-data replay byte-identical; supervisor independent rescore passed), S_recent/C whole/C recent/C older/E3 scores, support/structure/E4 and independent rescore.
+- [x] Update all task docs and PROGRESS with results (overfitting NOT solved); no Stage2/3/full648/final/close or claim of solved overfitting without evidence.
