@@ -208,7 +208,7 @@ def recent_row(stage, name, cand, cstage, croot, ccand, h, t):
     """D30/A5 row: new recentsearch candidate vs the D29 rootconf candidate on identical keys."""
     rb = tc._json(stage / "roots" / name / "root.json")["root_booster_sha256"]
     new, t_new, c_new, p_new = tc.method_row(stage, name, cand, h, t, plan.RECENTSEARCH, rb)
-    old, t_old, c_old, p_old = tc.method_row(cstage, croot, ccand, h, t, plan.ROOTCONF, rb)
+    old, t_old, conf_old, p_old = tc.method_row(cstage, croot, ccand, h, t, plan.ROOTCONF, rb)
     members = same_roots_recent(stage, name, cstage, croot, t_new, t_old, h, t)
     cmembers = tc.read(cstage / "roots" / croot / "fold_membership.csv.gz")
     s_frame, _ = tc.keyed_validation(stage, name, cand)                   # S_recent
@@ -232,7 +232,7 @@ def recent_row(stage, name, cand, cstage, croot, ccand, h, t):
         b, mt = pool_block(frame, prefix)
         blocks.update(b); mats.update(mt)
     mats.update({k: v for k, v in c_new.items() if k.startswith("target_")})
-    mats["d29_target_local"] = c_old["target_local"]   # same root, so only D29's local E3 confusion is new
+    mats["d29_target_local"] = conf_old["target_local"]   # same root, so only D29's local E3 confusion is new
     role = lambda r: members[members["role"] == r]   # noqa: E731
     row = {"horizon": h, "target_month": t, "candidate": cand, "d29_candidate": ccand,
            "recent_months": ",".join(recent),
