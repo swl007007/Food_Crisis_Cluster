@@ -1,4 +1,4 @@
-# D50 / A24: zero-fit exact-origin-phase ranking diagnostic (approved)
+# D50 / A24: zero-fit exact-origin-phase ranking diagnostic (completed; no policy adopted; supervisor verification passed)
 
 2026-10-02. Supervisor selection under the user's delegated Stage 1 research authority, after D49. Approved after supervisor review with two edits (sklearn-only producer AUC; per-H date and per-root count gates); the planning commit precedes any code, and real scoring waits for a separate supervisor release. Same active task, executor, audit run and base.
 - **Endpoint:** the primary crisis-F1 endpoint (four-class argmax → code ≥ 2) and the final criterion are unchanged.
@@ -47,3 +47,11 @@ D39 reported within-stratum ranking only for the binary origin split (crisis vs 
 - **Script:** one standalone task-research script, `research/d50_origin_phase_ranking.py`. It uses installed numpy/pandas and `sklearn.metrics.roc_auc_score`, with no framework or package changes. Its exact bytes are committed before execution, and the script git blob must equal HEAD at run time. No fit or model APIs.
 - **Outputs (external):** under `C:\Users\swl00\geoxgb_runs\geoxgb-d50-origin-phase-ranking-20261002\`: a compact `summary.json` (per root, per cell and per H) and `identity.json` (script blob and sha, input hashes, runtime).
 - **Order:** supervisor review → align pointers and commit the planning (GitNexus attempt) → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single zero-fit run (after a separate supervisor release) → factual report → independent supervisor pair-count verification → evidence and synthesis → stop. No D51 automatically.
+
+## 5. Result (2026-10-02)
+
+- **Producer and run:** producer `386b25a` (blob `5611ced8…`; selftest OK). Run `C:\Users\swl00\geoxgb_runs\geoxgb-d50-origin-phase-ranking-20261002`: exit 0, assertions on, zero fits, 112,795 known / 713 excluded; phase 4-or-5 null (`no_negative`) on 3/7 dates per H. Executor factual record `7c398c3`.
+- **Supervisor verification:** PASS (`research/d50_supervisor_verify.py` / `research/d50_supervisor_verification.json`; 1,016 checks, 35,537,568 direct pair comparisons, exact integer numerators).
+- **Findings:** [research/d50-origin-phase-ranking-findings.md](research/d50-origin-phase-ranking-findings.md).
+- **Decision:** no policy or model adopted. Original within-phase-2 mean-fold AUC .655702 / .598012 / .605804 (> .5 on 7/7, 4/7, 7/7 dates); phase 3 .736468 / .745844 / .728402 (7/7 at every H). This refutes "no within-state ordering anywhere" but identifies no causal feature contribution, transfer, date routing or overfitting solution; H8 onset ranking is unstable, and a monotone calibration of the same scores cannot repair a rank instability. Small phase 1 and phase 4-or-5 supports are disclosed, not claimed robust.
+- **Stage 1** remains unresolved; no D51.

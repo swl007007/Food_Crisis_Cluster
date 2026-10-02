@@ -1,0 +1,4 @@
+launch: python 3.12.10 sys.flags.optimize = 0
+SELFTEST OK
+D50 done: C:\Users\swl00\geoxgb_runs\geoxgb-d50-origin-phase-ranking-20261002
+script exit 0
