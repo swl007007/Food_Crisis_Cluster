@@ -41,3 +41,15 @@ Sparse exposure is therefore not specific to the six exposed cases. Under the pr
 So most of the root split's membership follows index order rather than E1 evidence. This plausibly contributes to root-split instability, but it is not shown to cause the transfer failure.
 
 **Reproduction:** `python3 research/e1_exposure_tie.py <D29 stage1_rootconf dir>`.
+
+## 3. Source references and status (supervisor addition)
+
+- `partition_opt.py` `get_c_b` (213–218) gives `c = b = 0` for TN-only areas.
+- `scan` (989–991) then gives `g = 0` for every finite `q`.
+- `get_top_cells` / `optimize_size` (835–858 / 243–270) use `np.argsort` and an `n_group` flex near one half (`FLEX_RATIO=.1`). The 77–83% zero-mass area set therefore crosses the split boundary, and tied zero-score assignments can depend on tie order before geographic refinement.
+
+**Status:** a source-derived, aggregate-supported mechanism hypothesis, more specific than "small sample size"; not a proven causal attribution.
+
+**Constraints for any next contrast:**
+- Do not change the tie rule or flex settings in the same experiment as a soft-loss (e.g. Brier) E1 alternative.
+- Zero S rows (D32 `s-1`) and zero F1 mass (TN-only with S rows) remain distinct conditions.
