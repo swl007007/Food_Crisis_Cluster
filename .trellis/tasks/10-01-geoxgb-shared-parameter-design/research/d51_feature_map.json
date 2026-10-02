@@ -1,0 +1,566 @@
+{
+  "selected_names": [
+    "target_year",
+    "target_month_sin",
+    "target_month_cos",
+    "hist_phase_o00",
+    "hist_crisis_o00",
+    "hist_phase_o04",
+    "hist_crisis_o04",
+    "hist_phase_o08",
+    "hist_crisis_o08",
+    "hist_phase_o12",
+    "hist_crisis_o12",
+    "hist_delta_o00_o04",
+    "hist_direction_o00_o04",
+    "hist_delta_o04_o08",
+    "hist_direction_o04_o08",
+    "hist_delta_o08_o12",
+    "hist_direction_o08_o12",
+    "hist_delta_o00_o12",
+    "hist_direction_o00_o12",
+    "hist_w12_frac1",
+    "hist_w12_frac2",
+    "hist_w12_frac3",
+    "hist_w12_frac4or5",
+    "hist_w12_min_phase",
+    "hist_w12_max_phase",
+    "hist_w12_up_rate",
+    "hist_w12_down_rate",
+    "hist_w12_n_obs",
+    "hist_w12_n_pairs",
+    "hist_w12_span_months",
+    "hist_w12_latest_age",
+    "hist_w24_frac1",
+    "hist_w24_frac2",
+    "hist_w24_frac3",
+    "hist_w24_frac4or5",
+    "hist_w24_min_phase",
+    "hist_w24_max_phase",
+    "hist_w24_up_rate",
+    "hist_w24_down_rate",
+    "hist_w24_n_obs",
+    "hist_w24_n_pairs",
+    "hist_w24_span_months",
+    "hist_w24_latest_age",
+    "hist_w36_frac1",
+    "hist_w36_frac2",
+    "hist_w36_frac3",
+    "hist_w36_frac4or5",
+    "hist_w36_min_phase",
+    "hist_w36_max_phase",
+    "hist_w36_up_rate",
+    "hist_w36_down_rate",
+    "hist_w36_n_obs",
+    "hist_w36_n_pairs",
+    "hist_w36_span_months",
+    "hist_w36_latest_age",
+    "hist_latest_observed_phase",
+    "hist_latest_observed_age",
+    "hist_no_history",
+    "hist_crisis_age",
+    "hist_crisis_absent",
+    "hist_phase4or5_age",
+    "hist_phase4or5_absent",
+    "hist_change_age",
+    "hist_change_absent",
+    "hist_run_n",
+    "hist_run_span",
+    "hist_origin_phase1_x_w12_up_rate",
+    "hist_origin_phase1_x_w12_down_rate",
+    "hist_origin_phase1_x_w12_frac4or5",
+    "hist_origin_phase2_x_w12_up_rate",
+    "hist_origin_phase2_x_w12_down_rate",
+    "hist_origin_phase2_x_w12_frac4or5",
+    "hist_origin_phase3_x_w12_up_rate",
+    "hist_origin_phase3_x_w12_down_rate",
+    "hist_origin_phase3_x_w12_frac4or5",
+    "hist_origin_phase4_x_w12_up_rate",
+    "hist_origin_phase4_x_w12_down_rate",
+    "hist_origin_phase4_x_w12_frac4or5"
+  ],
+  "selected_index": [
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127,
+    128,
+    129,
+    130,
+    131,
+    132,
+    133,
+    134,
+    135,
+    136,
+    137,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151,
+    152,
+    153,
+    154,
+    155,
+    156,
+    157,
+    158,
+    159,
+    160,
+    161
+  ],
+  "index_map": {
+    "target_year": {
+      "full": 84,
+      "projected": 0
+    },
+    "target_month_sin": {
+      "full": 85,
+      "projected": 1
+    },
+    "target_month_cos": {
+      "full": 86,
+      "projected": 2
+    },
+    "hist_phase_o00": {
+      "full": 87,
+      "projected": 3
+    },
+    "hist_crisis_o00": {
+      "full": 88,
+      "projected": 4
+    },
+    "hist_phase_o04": {
+      "full": 89,
+      "projected": 5
+    },
+    "hist_crisis_o04": {
+      "full": 90,
+      "projected": 6
+    },
+    "hist_phase_o08": {
+      "full": 91,
+      "projected": 7
+    },
+    "hist_crisis_o08": {
+      "full": 92,
+      "projected": 8
+    },
+    "hist_phase_o12": {
+      "full": 93,
+      "projected": 9
+    },
+    "hist_crisis_o12": {
+      "full": 94,
+      "projected": 10
+    },
+    "hist_delta_o00_o04": {
+      "full": 95,
+      "projected": 11
+    },
+    "hist_direction_o00_o04": {
+      "full": 96,
+      "projected": 12
+    },
+    "hist_delta_o04_o08": {
+      "full": 97,
+      "projected": 13
+    },
+    "hist_direction_o04_o08": {
+      "full": 98,
+      "projected": 14
+    },
+    "hist_delta_o08_o12": {
+      "full": 99,
+      "projected": 15
+    },
+    "hist_direction_o08_o12": {
+      "full": 100,
+      "projected": 16
+    },
+    "hist_delta_o00_o12": {
+      "full": 101,
+      "projected": 17
+    },
+    "hist_direction_o00_o12": {
+      "full": 102,
+      "projected": 18
+    },
+    "hist_w12_frac1": {
+      "full": 103,
+      "projected": 19
+    },
+    "hist_w12_frac2": {
+      "full": 104,
+      "projected": 20
+    },
+    "hist_w12_frac3": {
+      "full": 105,
+      "projected": 21
+    },
+    "hist_w12_frac4or5": {
+      "full": 106,
+      "projected": 22
+    },
+    "hist_w12_min_phase": {
+      "full": 107,
+      "projected": 23
+    },
+    "hist_w12_max_phase": {
+      "full": 108,
+      "projected": 24
+    },
+    "hist_w12_up_rate": {
+      "full": 109,
+      "projected": 25
+    },
+    "hist_w12_down_rate": {
+      "full": 110,
+      "projected": 26
+    },
+    "hist_w12_n_obs": {
+      "full": 111,
+      "projected": 27
+    },
+    "hist_w12_n_pairs": {
+      "full": 112,
+      "projected": 28
+    },
+    "hist_w12_span_months": {
+      "full": 113,
+      "projected": 29
+    },
+    "hist_w12_latest_age": {
+      "full": 114,
+      "projected": 30
+    },
+    "hist_w24_frac1": {
+      "full": 115,
+      "projected": 31
+    },
+    "hist_w24_frac2": {
+      "full": 116,
+      "projected": 32
+    },
+    "hist_w24_frac3": {
+      "full": 117,
+      "projected": 33
+    },
+    "hist_w24_frac4or5": {
+      "full": 118,
+      "projected": 34
+    },
+    "hist_w24_min_phase": {
+      "full": 119,
+      "projected": 35
+    },
+    "hist_w24_max_phase": {
+      "full": 120,
+      "projected": 36
+    },
+    "hist_w24_up_rate": {
+      "full": 121,
+      "projected": 37
+    },
+    "hist_w24_down_rate": {
+      "full": 122,
+      "projected": 38
+    },
+    "hist_w24_n_obs": {
+      "full": 123,
+      "projected": 39
+    },
+    "hist_w24_n_pairs": {
+      "full": 124,
+      "projected": 40
+    },
+    "hist_w24_span_months": {
+      "full": 125,
+      "projected": 41
+    },
+    "hist_w24_latest_age": {
+      "full": 126,
+      "projected": 42
+    },
+    "hist_w36_frac1": {
+      "full": 127,
+      "projected": 43
+    },
+    "hist_w36_frac2": {
+      "full": 128,
+      "projected": 44
+    },
+    "hist_w36_frac3": {
+      "full": 129,
+      "projected": 45
+    },
+    "hist_w36_frac4or5": {
+      "full": 130,
+      "projected": 46
+    },
+    "hist_w36_min_phase": {
+      "full": 131,
+      "projected": 47
+    },
+    "hist_w36_max_phase": {
+      "full": 132,
+      "projected": 48
+    },
+    "hist_w36_up_rate": {
+      "full": 133,
+      "projected": 49
+    },
+    "hist_w36_down_rate": {
+      "full": 134,
+      "projected": 50
+    },
+    "hist_w36_n_obs": {
+      "full": 135,
+      "projected": 51
+    },
+    "hist_w36_n_pairs": {
+      "full": 136,
+      "projected": 52
+    },
+    "hist_w36_span_months": {
+      "full": 137,
+      "projected": 53
+    },
+    "hist_w36_latest_age": {
+      "full": 138,
+      "projected": 54
+    },
+    "hist_latest_observed_phase": {
+      "full": 139,
+      "projected": 55
+    },
+    "hist_latest_observed_age": {
+      "full": 140,
+      "projected": 56
+    },
+    "hist_no_history": {
+      "full": 141,
+      "projected": 57
+    },
+    "hist_crisis_age": {
+      "full": 142,
+      "projected": 58
+    },
+    "hist_crisis_absent": {
+      "full": 143,
+      "projected": 59
+    },
+    "hist_phase4or5_age": {
+      "full": 144,
+      "projected": 60
+    },
+    "hist_phase4or5_absent": {
+      "full": 145,
+      "projected": 61
+    },
+    "hist_change_age": {
+      "full": 146,
+      "projected": 62
+    },
+    "hist_change_absent": {
+      "full": 147,
+      "projected": 63
+    },
+    "hist_run_n": {
+      "full": 148,
+      "projected": 64
+    },
+    "hist_run_span": {
+      "full": 149,
+      "projected": 65
+    },
+    "hist_origin_phase1_x_w12_up_rate": {
+      "full": 150,
+      "projected": 66
+    },
+    "hist_origin_phase1_x_w12_down_rate": {
+      "full": 151,
+      "projected": 67
+    },
+    "hist_origin_phase1_x_w12_frac4or5": {
+      "full": 152,
+      "projected": 68
+    },
+    "hist_origin_phase2_x_w12_up_rate": {
+      "full": 153,
+      "projected": 69
+    },
+    "hist_origin_phase2_x_w12_down_rate": {
+      "full": 154,
+      "projected": 70
+    },
+    "hist_origin_phase2_x_w12_frac4or5": {
+      "full": 155,
+      "projected": 71
+    },
+    "hist_origin_phase3_x_w12_up_rate": {
+      "full": 156,
+      "projected": 72
+    },
+    "hist_origin_phase3_x_w12_down_rate": {
+      "full": 157,
+      "projected": 73
+    },
+    "hist_origin_phase3_x_w12_frac4or5": {
+      "full": 158,
+      "projected": 74
+    },
+    "hist_origin_phase4_x_w12_up_rate": {
+      "full": 159,
+      "projected": 75
+    },
+    "hist_origin_phase4_x_w12_down_rate": {
+      "full": 160,
+      "projected": 76
+    },
+    "hist_origin_phase4_x_w12_frac4or5": {
+      "full": 161,
+      "projected": 77
+    }
+  },
+  "removed_names": [
+    "lat",
+    "lon",
+    "AEZ_10000",
+    "AEZ_12000",
+    "AEZ_15000",
+    "AEZ_17000",
+    "AEZ_19000",
+    "AEZ_25000",
+    "AEZ_31000",
+    "AEZ_32000",
+    "AEZ_33000",
+    "AEZ_34000",
+    "AEZ_36000",
+    "AEZ_38000",
+    "AEZ_4000",
+    "AEZ_40000",
+    "AEZ_43000",
+    "AEZ_7000",
+    "AEZ_9000",
+    "distance_to_river",
+    "elevation",
+    "sg_cec_5-15cm",
+    "sg_cfvo_5-15cm",
+    "sg_nitrogen_5-15cm",
+    "sg_phh2o_5-15cm",
+    "sg_soc_5-15cm",
+    "ruggedness",
+    "slope",
+    "distance_to_nearest_acled",
+    "event_count_battles",
+    "event_count_explosions",
+    "event_count_violence",
+    "sum_fatalities_battles",
+    "sum_fatalities_explosions",
+    "sum_fatalities_violence",
+    "event_count_battles_w5",
+    "event_count_explosions_w5",
+    "event_count_violence_w5",
+    "sum_fatalities_battles_w5",
+    "sum_fatalities_explosions_w5",
+    "sum_fatalities_violence_w5",
+    "event_count_battles_w10",
+    "event_count_explosions_w10",
+    "event_count_violence_w10",
+    "sum_fatalities_battles_w10",
+    "sum_fatalities_explosions_w10",
+    "sum_fatalities_violence_w10",
+    "crop",
+    "range",
+    "nightlight",
+    "nightlight_sd",
+    "EVI",
+    "market_distance",
+    "FAO_price",
+    "Rainf_f_tavg_mean",
+    "Tair_f_tavg_mean",
+    "gpp_mean",
+    "market_access",
+    "CPI",
+    "GDP",
+    "CC",
+    "gini",
+    "WFP_Price",
+    "WFP_Price_std",
+    "pop",
+    "Food_CPI",
+    "Food_food_inflation",
+    "Tair_zscore",
+    "Rainf_zscore",
+    "WFP_Price_m4",
+    "WFP_Price_m12",
+    "nightlight_m12",
+    "EVI_l1",
+    "EVI_l2",
+    "EVI_l3",
+    "EVI_l4",
+    "EVI_l5",
+    "EVI_l6",
+    "EVI_l7",
+    "EVI_l8",
+    "EVI_l9",
+    "EVI_l10",
+    "EVI_l11",
+    "EVI_l12"
+  ],
+  "removed_count": 84,
+  "phase_full_index": 87,
+  "phase_projected_index": 3,
+  "schema_sha256": "51b6f8b21b76a78510522c34e2d1f2a648b7aec768bbcac3dd2318669fa13349"
+}

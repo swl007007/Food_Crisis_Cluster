@@ -1,6 +1,6 @@
 # GeoXGBoost 技术设计 v1.0
 
-**当前覆盖修订：D51/A25历史+日历78特征root消融已批准（d51-history-calendar-root-plan.md）；D50/A24精确起点阶段排序诊断已完成，不采用策略（386b25a；d50-origin-phase-ranking-plan.md）；D49/A23零拟合排序余量诊断已完成，不采用策略（879c335；d49-ranking-headroom-plan.md）；D26–D31已完成；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成（7b2bf6f）；D35/A10已完成（be5f485）；D36仅分析完成；D37/A11已完成，不采用（3b53989；d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，诊断候选、不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（65b0733；d42-map-transfer-plan.md）；D43/A17已完成，不采用（1be4e3b；d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已完成，未采用策略（d45-root-prefix-diagnostic-plan.md）；D46/A20已完成，不采用（b8f8550；d46-crisis-weight-root-plan.md）；D47/A21已完成，不采用（5f6eb43；d47-stump-root-plan.md）；D48/A22已完成，不采用（2326483；d48-known-origin-fit-plan.md）。Stage1过拟合尚未解决。**
+**当前覆盖修订：D51/A25历史+日历78特征root消融已完成，不采用（edffb0d；d51-history-calendar-root-plan.md）；D50/A24精确起点阶段排序诊断已完成，不采用策略（386b25a；d50-origin-phase-ranking-plan.md）；D49/A23零拟合排序余量诊断已完成，不采用策略（879c335；d49-ranking-headroom-plan.md）；D26–D31已完成；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成（7b2bf6f）；D35/A10已完成（be5f485）；D36仅分析完成；D37/A11已完成，不采用（3b53989；d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，诊断候选、不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（65b0733；d42-map-transfer-plan.md）；D43/A17已完成，不采用（1be4e3b；d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已完成，未采用策略（d45-root-prefix-diagnostic-plan.md）；D46/A20已完成，不采用（b8f8550；d46-crisis-weight-root-plan.md）；D47/A21已完成，不采用（5f6eb43；d47-stump-root-plan.md）；D48/A22已完成，不采用（2326483；d48-known-origin-fit-plan.md）。Stage1过拟合尚未解决。**
 
 **首轮设计按D24采用，D25已授权开始执行；实际状态以审计start和task.json为准。** 本文记录架构/边界/证据；数值预算见experiment-plan.md，执行顺序见implement.md。
 母包按D1确认为 `FEWSNETFourClassBaseline/`，标签为 `1/2/3/4或5`；D4冻结共享树并只追加局部增量。v1.0为决策收敛整理，不改变已采用的实验方案。
@@ -306,6 +306,6 @@ depth1用截断`s_branch`（`""`/`"0"`/`"1"`）与最终`xgb_0/xgb_1`，先过�
 
 一个独立任务研究脚本 `research/d50_origin_phase_ranking.py`（执行前提交确切字节）：沿用D49输入哈希绑定与分数；生产脚本仅用sklearn `roc_auc_score`（精确一致对计数由监督方独立核验）；四概率重算argmax对保存标签；每H恰7个日期、逐root n/排除数对D49；合成并列（全并列=.5）/空格/单类与一个小型暴力自检；格内混淆加总对D49；无框架或包改动、无拟合API。见[d50-origin-phase-ranking-plan.md](d50-origin-phase-ranking-plan.md)。
 
-## D51：历史+日历78特征root（已批准）
+## D51：历史+日历78特征root（已完成，不采用）
 
 一个任务研究runner `research/d51_history_calendar_root.py`（运行前提交确切字节）：先用全162矩阵/检查点做D34 acceptance与D37 gate_root；按schema组导出78个列索引（保持全局顺序），仅投影新模型矩阵（equal_nan精确相等、dtype与行序保持）；persistence始终读全矩阵第87列；`nx.fit_global`无权重/无margin，记录特征数78；UBJ精确重载；原臂与D49/D50一致性门。见[d51-history-calendar-root-plan.md](d51-history-calendar-root-plan.md)。

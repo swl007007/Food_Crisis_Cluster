@@ -1,4 +1,4 @@
-# D51 / A25: history + calendar (78-feature) root ablation (approved)
+# D51 / A25: history + calendar (78-feature) root ablation (completed; not adopted; supervisor verification passed)
 
 2026-10-02. Supervisor selection under the user's delegated Stage 1 research authority, after D50. Approved after supervisor review with two precision edits (projection equality wording; coverage-metadata limitation); the planning commit precedes any code, and real fits wait for a reviewed, committed producer and a separate supervisor release. Same active task, executor, audit run and base.
 - **Endpoint:** the primary crisis-F1 endpoint (four-class argmax → code ≥ 2) and the final criterion are unchanged.
@@ -66,3 +66,11 @@ D50 found within-exact-phase ordering throughout phase 3 and weak, date-unstable
 - **Script:** one task-research runner, `research/d51_history_calendar_root.py`, borrowing minimal existing helpers (D34 acceptance, D37 gate/rebuild/persistence, D46 scoring, `nx.fit_global`). Its exact bytes are committed before the run, and the script git blob must equal HEAD.
 - **External outputs** under `C:\Users\swl00\geoxgb_runs\geoxgb-d51-history-calendar-root-20261002\`: saved four-class probabilities, truth and argmax with keys for FIT, C and E3 (both arms); the fresh UBJs and fit records; the selected feature names, index map and schema hash; fitting keys, labels and config; source gate and reload records; compact summary and identity JSON.
 - **Order:** supervisor review → align pointers and commit the planning (GitNexus attempt) → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single run (at most 21 fits) → factual report → independent supervisor check → stop.
+
+## 6. Result (2026-10-02)
+
+- **Producer and run:** producer `edffb0d` (blob `5bd89e38…`; synthetic selftest OK). Run `C:\Users\swl00\geoxgb_runs\geoxgb-d51-history-calendar-root-20261002`: exit 0 in 166 s, assertions on, exactly 21 fits on all original FIT rows, `num_feature` 78, all gates and D49/D50 consistency passed, exact reloads. Executor factual record `d58b242`.
+- **Supervisor verification:** PASS (`research/d51_supervisor_check.py` / `research/d51_supervisor_results.json`; 5,738 checks, 360 metric cells, 1,660,244 rows; schema-name column selection and raw replay of both UBJs).
+- **Findings:** [research/d51-history-calendar-root-findings.md](research/d51-history-calendar-root-findings.md).
+- **Decision:** not adopted as a default; preserved as a completed diagnostic; no automatic feature-subset sequence. Matched E3 pooled F1 original / h78 / persistence H4 .629050/.633073/.651697, H8 .533375/.557674/.555614, H12 .478355/.512267/.549808; at H8 h78 is +.002060 above persistence pooled but below it mean-fold (.545162 vs .555568) and beats the original on only 3/7 folds. Brier, log loss, AP and phase 3 AUC are worse at every H; FIT/C F1 lower; the F1 gain comes with a higher crisis-call share. Joint removal; no variable attribution; neither "covariates are all noise" nor "history-only solves it" follows.
+- **Stage 1** remains unresolved; no D52.
