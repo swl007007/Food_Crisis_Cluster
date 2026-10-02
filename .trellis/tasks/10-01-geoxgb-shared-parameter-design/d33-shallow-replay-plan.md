@@ -17,7 +17,7 @@ D29从root到完整树在E3上纠正116、破坏134个root结果（`research/d29
 
 ## 3. 重建与强制门槛
 
-- 用最小独立脚本，按现有准备/`main`语义重建S/C/E3特征（同快照、schema、r80 split seed 42、confirmation seed 42、keep掩码、键）；数据构造使用固定producer ab1ac83的代码（如经`git archive`导出），冻结Windows Python 3.12.10/固定包；不做通用重构。
+- 用最小独立脚本，按现有准备/`main`语义重建S/C/E3特征（同快照、schema、r80 split seed 42、confirmation seed 42、keep掩码、键）；数据构造使用固定producer ab1ac83的代码（如经`git archive`导出），冻结Windows Python 3.12.10/固定包；不做通用重构。**澄清（监督方认可的比例方案）**：重放从已提交的当前包导入重建helper，前提是每个重建依赖与ab1ac83源码等价（逐文件/AST证明见`research/d33-source-equivalence.md`），并且真实数据完整树门槛精确通过；不导入归档helper，也不建运行时完整性框架。
 - **先做完整树重放门槛**：root与full在C与E3上的概率（凡已保存）与原值一致；全部已保存S/C/E3硬预测与路由（branch_id）一致。S文件只有硬标签，不承诺S概率相等。任一不一致即停止解释、报告差异。
 
 **证据保存（批准附加）**：逐键保存S/C/E3行（area、日期、H、真值、root/depth1/full硬预测与概率、路由）；新S概率为重放所得，不是历史保存证据。用现有helper记录冻结输入/checkpoint/源producer身份、重放脚本提交与运行时。精确相等检查用round-trip浮点解析，不静默放宽容差；完整树门槛必须先于浅层解释。核验`"0"`/`"1"`末次保存属于root决策并保留其保留父选择。原D29产物只读；不产生新E4或可供Stage2使用的地图。

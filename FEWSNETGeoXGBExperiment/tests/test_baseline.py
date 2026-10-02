@@ -1901,6 +1901,50 @@ class AssignmentEvidence(unittest.TestCase):
         self.assertNotIn('assignment_evidence.csv', s1.CANDIDATE_FILES)
 
 
+class ShallowReplay(unittest.TestCase):
+    """D33/A8: depth-1 truncated routing, root-decision save order, exact gate comparator."""
+
+    def setUp(self):
+        from scripts import stage1_shallow_replay as sr
+        self.sr = sr
+
+    def test_truncated_routing(self):
+        s_branch = pd.DataFrame({'': [1, 2, 3, 4, 5, 6], '0': [1, 2, 3, np.nan, np.nan, np.nan],
+                                 '1': [4, 5, np.nan, np.nan, np.nan, np.nan],
+                                 '00': [1, 2, np.nan, np.nan, np.nan, np.nan], '10': [4, np.nan, np.nan, np.nan,
+                                                                                      np.nan, np.nan]})
+        routes = self.sr.depth1_routes(np.array([1, 2, 3, 4, 5, 6, 9]), s_branch)
+        self.assertEqual(routes.tolist(), ['0', '0', '0', '1', '1', '', ''])
+        full = self.sr.get_X_branch_id_by_group(np.array([1, 4]), s_branch)
+        self.assertEqual(full.tolist(), ['00', '10'])
+
+    def test_root_decision_save_order(self):
+        decisions = [{'branch_id': '', 'outcome': 'accepted', 'selected_children': [True, False]}]
+        log = [{'saved_as': 'root', 'booster_sha256': 'R'}, {'saved_as': '0', 'booster_sha256': 'A'},
+               {'saved_as': '1', 'booster_sha256': 'R'}, {'saved_as': '00', 'booster_sha256': 'B'}]
+        out = self.sr.check_root_decision(log, decisions, 'R')
+        self.assertEqual(out['sha'], {'0': 'A', '1': 'R'})
+        self.assertEqual(out['root_copy_sides'], ['1'])
+        with self.assertRaises(self.sr.GateError):
+            self.sr.check_root_decision(log + [{'saved_as': '1', 'booster_sha256': 'C'}], decisions, 'R')
+        with self.assertRaises(self.sr.GateError):
+            self.sr.check_root_decision(log, [{'branch_id': '', 'outcome': 'rejected_gate'}], 'R')
+        with self.assertRaises(self.sr.GateError):      # root copy on side 1 but the decision kept both locals
+            self.sr.check_root_decision(log, [{'branch_id': '', 'outcome': 'accepted',
+                                                'selected_children': [True, True]}], 'R')
+        self.assertEqual(self.sr.row_equal(np.array([[0.1, 0.2], [0.3, 0.4]]),
+                                           np.array([[0.1, 0.2], [0.3, np.nextafter(0.4, 1)]])).tolist(), [True, False])
+
+    def test_gate_comparator_exact(self):
+        a = np.array([[0.1, 0.2], [0.3, 0.4]])
+        self.assertEqual(self.sr.exact_mismatches(a, a.copy()), 0)
+        b = a.copy()
+        b[0, 1] = np.nextafter(b[0, 1], 1.0)
+        self.assertEqual(self.sr.exact_mismatches(a, b), 1)
+        self.assertEqual(self.sr.exact_mismatches(np.array([np.nan]), np.array([np.nan])), 1)
+        self.assertGreater(self.sr.exact_mismatches(a, a[:1]), 0)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess
