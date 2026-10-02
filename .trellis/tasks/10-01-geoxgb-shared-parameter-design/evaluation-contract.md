@@ -1,6 +1,6 @@
 # Evaluation 分层契约 v1.0
 
-**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9 E1配对对照已运行（7b2bf6f），待综合（d34-e1-brier-contrast-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+**当前适用修订：D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10全局+20对照已批准（d35-global-increment-control-plan.md）（d34-e1-brier-contrast-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
 
 D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
 
@@ -182,3 +182,7 @@ root/depth1/full在S/C/E3上同键报告；S自适应复用仅描述，新S概�
 ## D34：E1变体只改搜索信号
 
 E2/C/E3仍为四类argmax折叠危机F1；C只诊断；可沿用分数字段但不生成E4权重/Stage2输入；逐H/目标、汇总混淆与折均值分开报告，不自动选择。见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。
+
+## D35：容量对照的评分边界
+
+C/E3全体同键为主，S仅描述；另报`search_rows>0`/`==0`两层；不作分区因果归因。见[d35-global-increment-control-plan.md](d35-global-increment-control-plan.md)。

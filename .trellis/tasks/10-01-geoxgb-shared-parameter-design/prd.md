@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**当前：D34/A9 E1硬F1对Brier配对对照（21根）已运行（7b2bf6f），待监督方核验与综合（d34-e1-brier-contrast-plan.md）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**当前：D35/A10同池全局+20轮容量对照已批准实现（d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 
@@ -195,3 +195,7 @@ Stage1过拟合机制诊断：六个冻结D29候选的root/depth1/full同行比�
 ## D34：E1硬F1对Brier配对对照（已运行）
 
 21根（7个剩余Stage1日期×H4/8/12）、42候选，仅E1质量不同；开发对照，非独立验证。见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。
+
+## D35：全局+20轮容量对照（已批准）
+
+21个D34 root各在原fitting池上全局续训一次L1 20轮，对照root/hard/Brier；不新建root、G、E1/E2。见[d35-global-increment-control-plan.md](d35-global-increment-control-plan.md)。
