@@ -2616,6 +2616,221 @@ class MapTransfer(unittest.TestCase):
         self.assertEqual(agg['E3']['routing']['current_map_refit']['root_share'], 0.5)
 
 
+class TemporalMapRefit(unittest.TestCase):
+    """D43/A17: search-month table, pool/role reconstruction, temporal search + common refit isolation."""
+
+    MONTHS = ('2017-11', '2017-12', '2018-01')        # last three pool months of the D35 fixture (H4, 2018-06)
+
+    def setUp(self):
+        from scripts import stage1_temporal_map_refit as tm
+        self.tm = tm
+
+    def _data(self, tmp):
+        return GlobalIncrementControl()._run(tmp)
+
+    def test_date_table_and_pool_reconstruction(self):
+        tm = self.tm
+        self.assertEqual(sorted(tm.SEARCH_MONTHS), sorted(tm.SCHEDULE))
+        self.assertEqual(len(tm.SCHEDULE), 21)
+        for (h, t), months in tm.SEARCH_MONTHS.items():
+            idx = [prep.mi(x) for x in months]
+            self.assertEqual(idx, sorted(set(idx)))
+            self.assertLess(idx[-1], prep.mi(t) - h)
+        with tempfile.TemporaryDirectory() as tmp:
+            data = self._data(tmp)
+        self.assertEqual(tm.check_search_months(data['membership'], self.MONTHS), list(self.MONTHS))
+        with self.assertRaises(tm.GateError):
+            tm.check_search_months(data['membership'], ('2017-10', '2017-11', '2017-12'))
+        pool = tm.reconstruct_pool(data)
+        mem = data['membership'][data['membership']['role'] != 'heldout_target']
+        np.testing.assert_array_equal(pool['g'], mem['area'].to_numpy())
+        self.assertEqual(ff.month_label(pool['m']).tolist(), mem['target_month'].tolist())
+        self.assertEqual(pool['role'].tolist(), mem['role'].tolist())
+        for role, part in (('fitting', 'FIT'), ('validation', 'S'), ('confirmation', 'C')):
+            np.testing.assert_array_equal(pool['X'][pool['role'] == role], data[part][0])
+        split = tm.temporal_split(pool, self.MONTHS)
+        np.testing.assert_array_equal(split['X_set'], np.isin(pool['m'], [prep.mi(x) for x in self.MONTHS]).astype(int))
+        with self.assertRaises(tm.GateError):
+            tm.temporal_split(pool, ('2017-10', '2017-11', '2017-12'))
+        frame = tm.pool_membership_frame(pool, split['X_set'], data['E3'][2], '2018-06')
+        self.assertEqual(frame['area'].tolist(), mem['area'].tolist() + data['E3'][2].tolist())
+        self.assertEqual(frame['d34_role'].tolist(), mem['role'].tolist() + ['heldout_target'] * len(data['E3'][2]))
+        self.assertEqual(frame['temporal_role'].tolist()[:len(mem)],
+                         np.where(np.isin(mem['target_month'], self.MONTHS), 'S_tb', 'FIT_tb').tolist())
+        self.assertTrue((frame['temporal_role'].iloc[len(mem):] == 'excluded_E3').all())
+        bad = dict(data)
+        Xs, ys, gs, ms = data['S']
+        bad['S'] = (Xs[::-1], ys[::-1], gs[::-1], ms[::-1])        # moved rows -> keys out of membership order
+        with self.assertRaises(tm.GateError):
+            tm.reconstruct_pool(bad)
+
+    def _searches(self, data, mutate_e3=False):
+        tm = self.tm
+        from app import main_model_GF as mgf
+        pool = tm.reconstruct_pool(data)
+        Xt, yt, gt, _ = data['E3']
+        if mutate_e3:
+            yt = (yt + 1) % 4
+        f = pool['role'] == 'fitting'
+        current = nx.fit_global(pool['X'][f], pool['y'][f], SMALL_G['G1'])
+        x_tb = np.asarray(tm.temporal_split(pool, self.MONTHS)['X_set'], dtype=int)
+        s_root = tm.fit_search_root(pool, x_tb, SMALL_G['G1'])
+        features = ff.load_schema(SCHEMA)['ordered_features']
+        out = {'current': current, 'search_root': s_root, 'pool': pool}
+        with tempfile.TemporaryDirectory() as t, patch.object(trans, 'CONTIGUITY', False), \
+                patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                patch.dict(plan.STAGE1_VAL_SUPPORT, FLOORS['val_support']), \
+                patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+            t = Path(t)
+            data_p, conf = tm.production_inputs(pool, (Xt, yt, gt), current[0])
+            (t / 'rand' / 'candidates').mkdir(parents=True)
+            rec_r = tm.run_search('rnd', current, data_p, t / 'rand' / 'candidates', t / 'rand' / 'ck', None, features,
+                                  confirmation=conf)
+            data_t = (pool['X'], pool['y'], pool['g'], pool['m'], x_tb, Xt, yt, gt,
+                      fourclass.argmax_codes(nx.proba(s_root[0], Xt)))
+            (t / 'temp' / 'candidates').mkdir(parents=True)
+            rec_t = tm.run_search('tmp', s_root, data_t, t / 'temp' / 'candidates', t / 'temp' / 'ck', None, features)
+            self.assertEqual((rec_r['e1'], rec_t['e1'], rec_t['increment_source']), ('brier_crisis',) * 2 + ('root',))
+            maps = {'random': mt_load(t / 'rand', 'rnd'), 'temporal': mt_load(t / 'temp', 'tmp')}
+            for k, d in (('random', t / 'rand'), ('temporal', t / 'temp')):
+                out[f'{k}_files'] = ((d / 'candidates' / ('rnd' if k == 'random' else 'tmp') / 'assignment_evidence.csv')
+                                     .read_bytes(), (rec_r if k == 'random' else rec_t)['checkpoints']['sha256'])
+            with patch.dict(plan.FIT_SUPPORT, MapTransfer.FLOOR):
+                out['arms'] = {k: tm.common_arm(current[0], data['FIT'], maps[k][0]) for k in maps}
+            out['maps'] = maps
+            if not mutate_e3:                                 # kept as the 'saved' run for the comparator
+                import shutil
+                shutil.copytree(t / 'rand', Path(self._keep.name) / 'rand')
+        return out
+
+    def test_search_and_common_refit_isolated_from_e3_and_from_search_root(self):
+        tm = self.tm
+        self._keep = tempfile.TemporaryDirectory()
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                data = self._data(tmp)
+            a = self._searches(data)
+            b = self._searches(data, mutate_e3=True)
+            self.assertEqual(a['random_files'], b['random_files'])
+            self.assertEqual(a['temporal_files'], b['temporal_files'])
+            for k in ('random', 'temporal'):
+                self.assertEqual({r: nx.raw(m) for r, m in a['arms'][k][0].items()},
+                                 {r: nx.raw(m) for r, m in b['arms'][k][0].items()})
+            fit_keys = set(zip(data['FIT'][2].tolist(), data['FIT'][3].tolist()))
+            cur_sha, search_sha = nx.sha(a['current'][0]), nx.sha(a['search_root'][0])
+            self.assertNotEqual(cur_sha, search_sha)
+            self.assertNotEqual(a['search_root'][1]['fit_keys_sha256'], nx.keys_sha(data['FIT'][2], data['FIT'][3]))
+            n_models = 0
+            for k in ('random', 'temporal'):
+                models, recs = a['arms'][k]
+                for region, rec in recs.items():
+                    rows = [x for x, s in zip(zip(data['FIT'][2].tolist(), data['FIT'][3].tolist()),
+                                              mt_ids(data['FIT'][2], a['maps'][k][0])) if s == region]
+                    self.assertTrue(set(rows) <= fit_keys)
+                    self.assertEqual(rec['support']['rows'], len(rows))
+                    if region in models:
+                        n_models += 1
+                        self.assertEqual(rec['continuation']['parent_sha256'], cur_sha)
+                        self.assertEqual(rec['continuation']['child_prefix_structure_sha256'],
+                                         nx.prefix_identity(a['current'][0])['sha256'])
+            self.assertGreater(n_models, 0)
+            # production comparator: a saved run vs a replay with mutated E3 truth -> map/UBJ equal, E3 differs
+            saved = Path(self._keep.name) / 'rand'
+            with tempfile.TemporaryDirectory() as tmp, patch.object(trans, 'CONTIGUITY', False), \
+                    patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                    patch.dict(plan.FIT_SUPPORT, FLOORS['fit_support']), \
+                    patch.dict(plan.STAGE1_VAL_SUPPORT, FLOORS['val_support']), \
+                    patch.object(TimeBlockContrast.mgf(), 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+                pool = a['pool']
+                Xt, yt, gt, _ = data['E3']
+                for mutate, expect in ((False, True), (True, False)):
+                    d = Path(tmp) / str(mutate)
+                    (d / 'candidates').mkdir(parents=True)
+                    data_p, conf = tm.production_inputs(pool, (Xt, (yt + 1) % 4 if mutate else yt, gt), a['current'][0])
+                    tm.run_search('rnd', a['current'], data_p, d / 'candidates', d / 'ck', None,
+                                  ff.load_schema(SCHEMA)['ordered_features'], confirmation=conf)
+                    res = tm.compare_production(saved / 'candidates' / 'rnd', saved / 'ck' / 'rnd',
+                                                d / 'candidates' / 'rnd', d / 'ck' / 'rnd')
+                    self.assertEqual(res['passed'], expect)
+                    self.assertEqual((res['checks']['assignment_evidence_bytes'], res['checks']['routed_ubj_bytes'],
+                                      res['checks']['decisions']), (0, 0, 0))
+                    self.assertEqual(res['checks']['target_predictions.csv'], int(mutate))
+        finally:
+            self._keep.cleanup()
+
+    def test_fallbacks_and_foreign_root_refused(self):
+        tm = self.tm
+        X, y, g, mm = MapTransfer()._fit_pool()
+        area_map = {**{a: 'root' for a in range(40)}, **{a: '1' for a in range(40, 45)},
+                    **{a: 's-1' for a in range(45, 50)}}          # unsplit searched root + small region + s-1
+        root, _ = nx.fit_global(X, y, SMALL_G['G1'])
+        with patch.dict(plan.FIT_SUPPORT, MapTransfer.FLOOR):
+            models, recs = tm.common_arm(root, (X, y, g, mm), area_map)
+        self.assertEqual(set(models), {'root'})
+        self.assertFalse(recs['1']['eligible'])
+        sid, reason = mt_route(np.array([3, 41, 47, 99]), area_map, recs)
+        self.assertEqual(reason.tolist(), ['region', 'insufficient_support', 's-1', 'missing'])
+        other, _ = nx.fit_global(X[::2], y[::2], SMALL_G['G1'])
+        real = tm.mt.common_refit
+        with patch.dict(plan.FIT_SUPPORT, MapTransfer.FLOOR), \
+                patch.object(tm.mt, 'common_refit', side_effect=lambda r, fit, am: real(other, fit, am)):
+            with self.assertRaises(RuntimeError):
+                tm.common_arm(root, (X, y, g, mm), area_map)
+
+    def test_failed_first_unit_stops_later_units(self):
+        import pickle
+        tm = self.tm
+        names = {plan.e1pair_root_name(h, t, plan.TB3_G[str(h)]) for h, t in tm.SCHEDULE}
+        for fail_equiv in (True, False):
+            with tempfile.TemporaryDirectory() as tmp:
+                tmp = Path(tmp)
+                run, d35, out = tmp / 'd34', tmp / 'd35', tmp / 'out'
+                (run / 'prepared' / 'ledgers').mkdir(parents=True)
+                (run / 'prepared' / 'geometry').mkdir(parents=True)
+                (run / 'prepared' / 'ledgers' / 'dev_baselines.csv').write_text('horizon,target_label\n', encoding='utf-8')
+                (run / 'prepared' / 'geometry' / 'polygon_contiguity_info.pkl').write_bytes(pickle.dumps(None))
+                d35.mkdir()
+                (d35 / 'identity.json').write_text(json.dumps({'stage': 'd35_global_increment', 'producer_rev': '7b2bf6f',
+                                                               'script_commit': 'be5f4854e5'}), encoding='utf-8')
+                argv = ['x', '--d34-run', str(run), '--d35-run', str(d35), '--out', str(out)]
+                eq = {'side_effect': tm.GateError('replay mismatch')} if fail_equiv else \
+                    {'return_value': {'passed': True, 'checks': {}}}
+                with patch.object(sys, 'argv', argv), \
+                        patch.object(tm.rid, 'code_identity_at', return_value={'sha256': 'x'}), \
+                        patch.object(tm.rid, 'code_identity', return_value={'sha256': 'x'}), \
+                        patch.object(tm.rid, 'file_sha256', return_value='0' * 64), \
+                        patch.object(tm, 'accept_mode', return_value=({n: {} for n in names}, {},
+                                                                      {'stage': str(tmp / 'stage')})), \
+                        patch.object(tm, 'run_equivalence', **eq) as re_, \
+                        patch.object(tm, 'run_pair', side_effect=tm.GateError('gate')) as rp, \
+                        redirect_stdout(StringIO()):
+                    code = tm.main()
+                self.assertEqual(code, 2)
+                self.assertEqual((re_.call_count, rp.call_count), (1, 0) if fail_equiv else (3, 1))
+                gate = json.loads((out / 'gate.json').read_text(encoding='utf-8'))
+                self.assertFalse(gate['passed'])
+                self.assertEqual(gate['budget']['search_roots'], 0)
+                self.assertEqual(list(gate['pairs'])[-1], gate['stopped_at'])
+                self.assertTrue((out / 'identity.json').is_file())
+                self.assertFalse((out / 'summary.json').exists() or (out / 'completion.json').exists())
+
+
+def mt_load(stage, cand):
+    from scripts import stage1_map_transfer as mt
+    return mt.load_map(stage, cand)
+
+
+def mt_ids(areas, area_map):
+    from scripts import stage1_map_transfer as mt
+    return mt.region_ids(areas, area_map)
+
+
+def mt_route(areas, area_map, recs):
+    from scripts import stage1_map_transfer as mt
+    return mt.route(areas, area_map, recs)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess
