@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**当前：D38/A12固定弱persistence margin root已完成，核验通过，保留为探索性root候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D37/A11时间加权root已完成且不采用（3b53989，核验通过；d37-recency-root-plan.md）；D36已完成（仅分析）；D35/A10已完成（be5f485，核验通过；Brier仅为探索性候选，D35后停止新训练；d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**当前：D39/A13概率诊断已完成（仅诊断，核验通过；d39-probability-diagnostic-plan.md）；D38/A12固定弱persistence margin root已完成，核验通过，保留为探索性root候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D37/A11时间加权root已完成且不采用（3b53989，核验通过；d37-recency-root-plan.md）；D36已完成（仅分析）；D35/A10已完成（be5f485，核验通过；Brier仅为探索性候选，D35后停止新训练；d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 
@@ -207,3 +207,7 @@ Stage1过拟合机制诊断：六个冻结D29候选的root/depth1/full同行比�
 ## D38：固定弱persistence初始margin的root对照（已完成；探索性候选，不采用为默认）
 
 仅把四类均匀初始改为固定λ=.5的精确起点persistence margin（缺失起点=原默认.5），21个anchored root vs 原root vs 固定prior-only vs 无拟合post-hoc控制 vs persistence（E3为主，C诊断）；不训练局部模型。零拟合前置检查见[research/d38-prior-support-findings.md](research/d38-prior-support-findings.md)。见[d38-persistence-margin-root-plan.md](d38-persistence-margin-root-plan.md)。
+
+## D39：现存概率的排序、校准与决策诊断（已完成，仅诊断）
+
+仅用D38已核验E3行，无拟合/阈值搜索/校准器。排序信号存在；固定mass>=.5劣于argmax；按H校准方向不同。见[d39-probability-diagnostic-plan.md](d39-probability-diagnostic-plan.md)与[research/d39-probability-findings.md](research/d39-probability-findings.md)。
