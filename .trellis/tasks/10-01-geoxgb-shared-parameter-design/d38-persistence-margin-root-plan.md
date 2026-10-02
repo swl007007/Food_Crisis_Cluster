@@ -69,4 +69,12 @@ D37 固定24个月时间权重未改善 E3，不采用。D38 前置零新增 XGB
 
 **C（诊断）：**汇总F1原.669541→anchored .668291；行加权Brier .047914→.048049。
 
-**未做：**执行方未运行监督方`d38_independent_check.py`；无局部margin拟合、λ搜索、Stage2/3或close；科学解读待监督方综合。
+**未做：**无局部margin拟合、λ搜索、Stage2/3或close；科学解读待监督方综合。
+
+**监督方独立核验（通过）**：无生产导入、无重拟合。
+- 21根，336项混淆/精确F1与Brier检查；每个模型（原/anchored/prior-only/post-hoc）321047个C/E3概率行。
+- 实际拟合float32 margin/hash、键、标签、G、轮数、标记、模型hash、原始XGB概率重放与偏离计数全部通过。
+- 透明记录：核验脚本首次失败是监督方自身的XGBoost缓存误用（先无margin预测，再改同一DMatrix的base_margin后再次预测，XGBoost沿用缓存预测）；改用新DMatrix即通过。生产`nx.proba`每次新建DMatrix，非产出结果问题，无需修复产品。
+- 执行方精确比对监督方预先计算的固定控制（`d38_fixed_controls.json`）与本次运行E3行：21根×原/prior-only/post-hoc共63项，计数、精确F1、Brier全部相等；整体全键/同键/按H计数与F1相等，Brier差≤2.8e-17（求和顺序）。
+- 证据保存在`research/d38_independent_check.py`、`research/d38_independent_results.json`、`research/d38_fixed_controls.py`、`research/d38_fixed_controls.json`、`research/d38_fixed_controls_match.py`、`research/d38_fixed_controls_match.json`（原件在`C:\Users\swl00\geoxgb_runs\`；JSON换行已规范化）。
+- 训练已停止；科学综合待监督方。

@@ -1,0 +1,130 @@
+{
+  "roots": 21,
+  "confusion_score_checks": 336,
+  "probability_rows_per_model": 321047,
+  "no_refits_no_production_imports": true,
+  "aggregate": {
+    "C": {
+      "original": {
+        "f1": 0.6695407311420668,
+        "brier": 0.047913907709811736
+      },
+      "anchored": {
+        "f1": 0.6682908638906153,
+        "brier": 0.048049389298047966
+      },
+      "prior_only": {
+        "f1": 0.4205630970336853,
+        "brier": 0.17026860011853193
+      },
+      "posthoc": {
+        "f1": 0.5900020955086265,
+        "brier": 0.059779147982435714
+      }
+    },
+    "E3": {
+      "original": {
+        "f1": 0.5504550962324232,
+        "brier": 0.10189054595144784
+      },
+      "anchored": {
+        "f1": 0.5611138092925368,
+        "brier": 0.10131429317726183
+      },
+      "prior_only": {
+        "f1": 0.5851744476657003,
+        "brier": 0.1364215517848962
+      },
+      "posthoc": {
+        "f1": 0.5829473844051325,
+        "brier": 0.11589356996140618
+      }
+    }
+  },
+  "details": [
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "42b9817f67a7df5c7617755feee5bbfe5ff6c22ba3ad7d7e7bdbc0b20ac45f9a"
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "e2027389cba8de2220453fc97cb57755b3c589b768c05e9ee02ae3cd3854d408"
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "688083730c8bdd286f6d019b05df1a23222d31fe1320f8e7630fedcad5c56924"
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "9893658a9ad017b5b3c6fa10f212d26448f180ebd3dc06beb118ec4c567465c6"
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "93941cecf5fb0dd57533f38144cdee846c4d971093697b9c38b8333a2a460912"
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "d80599be4a533668da6cfe6bd0af9df2ab1df81d0fd5d77a29efed3294eb77d4"
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "fit_margin_sha256": "0f9b6de6d7a7ff796a14e326b37a527994c39279c255a579283926632a345874"
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "3573e9080526ff505a647dd40c04441a336704b12a13aba1ce3ec0981c159dd3"
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "f5370f300bf55e1122d2c167a8f837b82b629bea278e5eb1a7cfb73556a26b60"
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "b2f8b23169a44149db49d4c5818b7ee0acb798229e78f48b95f40f59c7b3a956"
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "6b04c1b1d0c56f04a49f58f1b6312b94a2edb27a5e667e7826ba8c3dff7f9be4"
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "068034b160d5d847e73bf058e4074c4bbff16fbbf8dce029969aeb4245752bea"
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "1448f63072bebe7c44e4fb582354508249300a6271509b906ca2696824c54b66"
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "fit_margin_sha256": "8612d23e40b6d5f6ab8d4f97bd927f4fe1a2d143f247862dd4658d6ef678951e"
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "0d18df700236aefbca7f14ea0f84ba395c454bf9f72ecd3dbbddf97b2f9b27e6"
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "2197d3e411e4d29ea8a0abf4599d702c888de4f5af6836717dbf00ffbb48f319"
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "0b4c74cc0e49d9689ac2d7c377b868a634a2948d2eb829119128c4cea5b3623b"
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "78c2ac4440a403bff6eb2f02d904ea18793cbe173b0b475697ca302617abcc65"
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "10316491ac38f5a94926b72636631ea00c2ad873427a8dccbb97bb360ff05628"
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "5f57846b02e01b57d85b22169c6c2953cdc701d92132bf18fd9d538a379bf789"
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "fit_margin_sha256": "a0a8c4eccb203263f1e13ece2a89a148c1b4b550e370ebd0b07bb72ed2664e77"
+    }
+  ]
+}
