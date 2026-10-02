@@ -1,6 +1,6 @@
 # GeoXGBoost implementation plan — v1.0
 
-**Current status: D28 (section 8) completed — awaiting scientific review. Stage 1 overfitting remains unresolved.** D26/D27/D28 bounded experiments are complete; no further experiment is authorized. Original full-pipeline checklists below are historical scope, not authorization to resume Stage 2/3, run the full 648 or close this task.
+**Current status: D28 completed; D29 diagnostic-only confirmation and development execution authorized, proceed with A4 six-root scope (§9). Stage 1 overfitting remains unresolved.** Original full-pipeline checklists below are historical scope, not authorization to resume Stage 2/3, run the full 648 or close this task.
 
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
@@ -98,3 +98,15 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] Add focused second-level continuation/fallback/search-budget regressions (incl. production-path non-root fallback and exhausted budget; native check: no result-affecting issue; 58 tests OK), six-candidate identity and keyed comparisons; native trellis-check covers final changed logic. Avoid an unrelated verifier rewrite.
 - [x] Commit producer (98adf48), prepare fresh full-data run (geoxgb-d28-rootinc-20261001; G from geoxgb-v1-20261001), reuse approved G selection and execute only six r80/L1/gt0 root-mode candidates. Compare with existing D26 controls; verify matching fitting keys/root predictions before mechanism interpretation.
 - [x] Update docs/PROGRESS with bounded implementation, run and science results separately (overfitting NOT solved; returned for review). No claim of solved overfitting from E2/tests/zero partitions; no Stage2/3/full648/final/close without subsequent decision.
+
+## 9. D29 confirmation diagnostic (A4 implementation/run authorized)
+
+- [x] Record adopted scope: freeze the full candidate before diagnostic-only C; no C-driven gate, pruning, fallback or candidate deletion. Read-only call-flow/support research completed.
+- [x] User adopted diagnostic-only confirmation and explicitly delegated non-Stage3 data handling ("没问题stage3以外的数据怎么搞都行"); proceed with A4 six roots, no repeated data-split approval questions.
+- [ ] Commit approved planning. Preserve original audit run/executor/base, no new register/start or task reset.
+- [ ] Bound Claude dispatches native trellis-implement with current context. Reuse split, root-mode driver, prediction and comparison paths; add explicit S/C roles and separate candidate/run identity. Preserve original fitting keys and all legacy modes.
+- [ ] Isolate C supervision from all search/model decisions; freeze existing map/checkpoints/routes before C scoring. No new generic gate framework. Keep parent comparison/fallback, L1 capacity and search counter unchanged.
+- [ ] Meaningful tests: deterministic label-blind S/C partition with balanced odd groups/singletons; original fitting keys and S∪C identity; production-path C label mutation cannot affect map/model/routes; complete C fallback keys; comparison distinguishes old exposed-C from new isolated-C. Native trellis-check covers current diff.
+- [ ] Commit producer and pass required checks before authoritative preparation. Prepare fresh six-root run; reuse original v1 G screen, not reuse-of-reuse; no extra G fits. Run exactly A4 six candidates with frozen environment and full geography.
+- [ ] Verify D28-matched fitting/root/target identity, independently rescore S/C/E3, report support/confusions/structure/E4 without C selection. Record actual commands, producer, failures and evidence.
+- [ ] Update PRD/spec/PROGRESS with implementation/run/science statuses; stop for review. No full648, Stage2/3, final evaluation, audit close or claim that overfitting is solved.

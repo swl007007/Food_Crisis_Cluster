@@ -246,3 +246,10 @@ Scientific reading (development, bounded; not a final result): Stage 1 partition
 - Bounds: no full replay of validation predictions or checkpoint lineage; six related development candidates only.
 - Wording: E2 is adaptively reused validation (not fitting / in-sample performance). The numerical optimism gap (E2 vs E3) is smaller under D28; no causal solution to Stage 1 overfitting is shown.
 - **Status: D28 completed; awaiting scientific review.** No further experiment authorized; no Stage 2/3, full 648, final evaluation or audit close. Audit run ed632775 / bound session unchanged.
+
+## D29 planning and execution authorization
+
+- User adopted confirmation C as diagnostic-only, then delegated non-Stage3 data handling: “没问题stage3以外的数据怎么搞都行”. Proceed with the bounded six-root A4 plan; do not ask again about development split/reuse. No Stage3 information in development choices; no downstream/full648/final/close in this run.
+- Read-only call-flow research confirms E2 decisions feed later E1; simply splitting E1/E2 does not remove recursive reuse. Support probe on old maps: 79/80 nonempty terminals meet old floors in both halves, 26 confirmation terminals have <20 crisis cases (diagnostic, not new threshold). This does not certify future maps or retroactively make old validation untouched.
+- PRD/design/evaluation/implementation/context updated. Authoritative A4 is `d29-confirmation-plan.md`, separated from experiment-plan to avoid 32768-byte automatic-injection truncation. Task context validation passes without warnings; git diff --check passes. Product code/experiments not yet changed for D29.
+- Pre-commit GitNexus detect_changes attempted: same LadybugDB “Couldn't replay shadow pages under read-only mode” failure; use explicit documentation diff and source tracing, do not rebuild infrastructure. Original audit run ed632775 / Claude a53ea9d2 / wN:p2 remains bound.
