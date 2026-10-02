@@ -255,4 +255,6 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 
 - [x] Executor read-only scoping: D39 already holds per-root binary-origin AUC/confusions (`per_root[*]["by_origin_crisis"]`, raw-mass score); no exact-phase AUC exists anywhere; one H4 root has origin-phase counts 2,926 / 1,497 / 886 / 56.
 - [x] Supervisor review (approved; edits: sklearn-only producer AUC with pair counts left to the verifier; 7 dates per H and per-root n/excluded equal D49; argmax recomputed from four probabilities).
-- [ ] Planning commit; native implement (`research/d50_origin_phase_ranking.py`, exact bytes committed before execution); native check; producer commit; supervisor release; single zero-fit run; factual report; supervisor pair-count verification; stop (no automatic D51).
+- [x] Planning commit 7cd246d; native implement (~1.2 min); native check (~1.1 min, no result-affecting finding; evidence-only edits accepted by supervisor: pre-output roots-per-H and one-target-month gates, confusion() selftest); producer commit 386b25a (218 lines, blob 5611ced8…, sha256 3eb010db…); selftest OK at HEAD.
+- [x] Supervisor release; single zero-fit run `C:\Users\swl00\geoxgb_runs\geoxgb-d50-origin-phase-ranking-20261002` (log `d50-run.log`, launch `sys.flags.optimize = 0`), exit 0; 112,795 known / 713 excluded; 9 phase-4-or-5 cells per arm null (`no_negative`), no other nulls.
+- [ ] Factual report delivered; awaiting supervisor pair-count verification and synthesis; stop (no automatic D51).
