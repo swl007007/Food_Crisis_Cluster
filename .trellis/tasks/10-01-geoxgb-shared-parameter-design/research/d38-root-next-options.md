@@ -1,5 +1,7 @@
 # D38 root next options: design note (2026-10-02)
 
+**Superseded (2026-10-02):** the zero-fit diagnostic (`d38-prior-support-findings.md`) showed the empirical prior is not a persistence anchor; the approved D38 is the fixed weak persistence margin in `../d38-persistence-margin-root-plan.md`. The rare-support and era-domination concerns below were assumptions, not findings, for the H4/H8 known-origin subsets.
+
 **Status:** design discussion only. This is NOT implementation or training approval. No fits were run for this note. A new D38 spec and review are required before any training; nothing expands automatically.
 
 ## Starting evidence (D36/D37, E3 matched persistence keys)
