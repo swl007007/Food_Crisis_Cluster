@@ -1,0 +1,233 @@
+[
+  {
+    "root": "h12_2018-06_G2_r80_s42_e1pair",
+    "rows": 69546,
+    "dates": 18,
+    "ess": 56614.08720814025,
+    "ess_ratio": 0.8140523855885349,
+    "min_weight": 0.4164728380794649,
+    "max_weight": 2.0391402125652593,
+    "crisis_fraction": 0.09021367152675927,
+    "weighted_crisis_fraction": 0.10535995282913503
+  },
+  {
+    "root": "h12_2018-10_G2_r80_s42_e1pair",
+    "rows": 65199,
+    "dates": 17,
+    "ess": 53532.77298778627,
+    "ess_ratio": 0.8210673934843521,
+    "min_weight": 0.43204281911889025,
+    "max_weight": 1.996647344933238,
+    "crisis_fraction": 0.09650454761576098,
+    "weighted_crisis_fraction": 0.11736427685480547
+  },
+  {
+    "root": "h12_2019-02_G2_r80_s42_e1pair",
+    "rows": 65545,
+    "dates": 17,
+    "ess": 53305.92972083223,
+    "ess_ratio": 0.8132722514430122,
+    "min_weight": 0.4247196665421692,
+    "max_weight": 2.020318597334123,
+    "crisis_fraction": 0.10164009459150203,
+    "weighted_crisis_fraction": 0.12015023243975526
+  },
+  {
+    "root": "h12_2019-06_G2_r80_s42_e1pair",
+    "rows": 65908,
+    "dates": 17,
+    "ess": 53123.2043997514,
+    "ess_ratio": 0.8060205801989349,
+    "min_weight": 0.41655807463093686,
+    "max_weight": 2.0395575489766524,
+    "crisis_fraction": 0.10259756023547977,
+    "weighted_crisis_fraction": 0.12179913359363685
+  },
+  {
+    "root": "h12_2019-10_G2_r80_s42_e1pair",
+    "rows": 61361,
+    "dates": 16,
+    "ess": 50028.938382563174,
+    "ess_ratio": 0.8153214318958814,
+    "min_weight": 0.4301021976759266,
+    "max_weight": 1.9876789360622933,
+    "crisis_fraction": 0.11235149361972588,
+    "weighted_crisis_fraction": 0.12825768255764228
+  },
+  {
+    "root": "h12_2020-02_G2_r80_s42_e1pair",
+    "rows": 61868,
+    "dates": 16,
+    "ess": 50096.182596123355,
+    "ess_ratio": 0.8097268797459649,
+    "min_weight": 0.4207626064497685,
+    "max_weight": 2.001495541268618,
+    "crisis_fraction": 0.12075709575224672,
+    "weighted_crisis_fraction": 0.1353648861236022
+  },
+  {
+    "root": "h12_2020-06_G2_r80_s42_e1pair",
+    "rows": 62374,
+    "dates": 16,
+    "ess": 50193.89919838109,
+    "ess_ratio": 0.8047247121938803,
+    "min_weight": 0.41168816850189727,
+    "max_weight": 2.015713445565405,
+    "crisis_fraction": 0.12906018533363262,
+    "weighted_crisis_fraction": 0.1432963732719261
+  },
+  {
+    "root": "h4_2018-06_G1_r80_s42_e1pair",
+    "rows": 65541,
+    "dates": 17,
+    "ess": 53301.77644134356,
+    "ess_ratio": 0.8132585166741972,
+    "min_weight": 0.42477304048055736,
+    "max_weight": 2.0205724880032707,
+    "crisis_fraction": 0.10158526723730184,
+    "weighted_crisis_fraction": 0.12011477294989023
+  },
+  {
+    "root": "h4_2018-10_G1_r80_s42_e1pair",
+    "rows": 65908,
+    "dates": 17,
+    "ess": 53123.2043997514,
+    "ess_ratio": 0.8060205801989349,
+    "min_weight": 0.41655807463093686,
+    "max_weight": 2.0395575489766524,
+    "crisis_fraction": 0.10259756023547977,
+    "weighted_crisis_fraction": 0.12179913359363685
+  },
+  {
+    "root": "h4_2019-02_G1_r80_s42_e1pair",
+    "rows": 61361,
+    "dates": 16,
+    "ess": 50028.938382563174,
+    "ess_ratio": 0.8153214318958814,
+    "min_weight": 0.4301021976759266,
+    "max_weight": 1.9876789360622933,
+    "crisis_fraction": 0.11235149361972588,
+    "weighted_crisis_fraction": 0.12825768255764228
+  },
+  {
+    "root": "h4_2019-06_G1_r80_s42_e1pair",
+    "rows": 61868,
+    "dates": 16,
+    "ess": 50096.182596123355,
+    "ess_ratio": 0.8097268797459649,
+    "min_weight": 0.4207626064497685,
+    "max_weight": 2.001495541268618,
+    "crisis_fraction": 0.12075709575224672,
+    "weighted_crisis_fraction": 0.1353648861236022
+  },
+  {
+    "root": "h4_2019-10_G1_r80_s42_e1pair",
+    "rows": 62374,
+    "dates": 16,
+    "ess": 50193.89919838109,
+    "ess_ratio": 0.8047247121938803,
+    "min_weight": 0.41168816850189727,
+    "max_weight": 2.015713445565405,
+    "crisis_fraction": 0.12906018533363262,
+    "weighted_crisis_fraction": 0.1432963732719261
+  },
+  {
+    "root": "h4_2020-02_G1_r80_s42_e1pair",
+    "rows": 62578,
+    "dates": 15,
+    "ess": 51089.384752367354,
+    "ess_ratio": 0.8164112747669685,
+    "min_weight": 0.4234138464837755,
+    "max_weight": 1.9567693177123704,
+    "crisis_fraction": 0.1411358624436703,
+    "weighted_crisis_fraction": 0.15464796905883163
+  },
+  {
+    "root": "h4_2020-06_G1_r80_s42_e1pair",
+    "rows": 62937,
+    "dates": 15,
+    "ess": 51216.18218497003,
+    "ess_ratio": 0.8137690418191211,
+    "min_weight": 0.41284305358765544,
+    "max_weight": 1.963823586823558,
+    "crisis_fraction": 0.1540270429159318,
+    "weighted_crisis_fraction": 0.16885142055394928
+  },
+  {
+    "root": "h8_2018-06_G4_r80_s42_e1pair",
+    "rows": 65195,
+    "dates": 17,
+    "ess": 53528.75391322074,
+    "ess_ratio": 0.8210561226048123,
+    "min_weight": 0.4320190596925535,
+    "max_weight": 1.9965375428640608,
+    "crisis_fraction": 0.09643377559628806,
+    "weighted_crisis_fraction": 0.11718513167530206
+  },
+  {
+    "root": "h8_2018-10_G4_r80_s42_e1pair",
+    "rows": 65545,
+    "dates": 17,
+    "ess": 53305.92972083223,
+    "ess_ratio": 0.8132722514430122,
+    "min_weight": 0.4247196665421692,
+    "max_weight": 2.020318597334123,
+    "crisis_fraction": 0.10164009459150203,
+    "weighted_crisis_fraction": 0.12015023243975526
+  },
+  {
+    "root": "h8_2019-02_G4_r80_s42_e1pair",
+    "rows": 65908,
+    "dates": 17,
+    "ess": 53123.2043997514,
+    "ess_ratio": 0.8060205801989349,
+    "min_weight": 0.41655807463093686,
+    "max_weight": 2.0395575489766524,
+    "crisis_fraction": 0.10259756023547977,
+    "weighted_crisis_fraction": 0.12179913359363685
+  },
+  {
+    "root": "h8_2019-06_G4_r80_s42_e1pair",
+    "rows": 61361,
+    "dates": 16,
+    "ess": 50028.938382563174,
+    "ess_ratio": 0.8153214318958814,
+    "min_weight": 0.4301021976759266,
+    "max_weight": 1.9876789360622933,
+    "crisis_fraction": 0.11235149361972588,
+    "weighted_crisis_fraction": 0.12825768255764228
+  },
+  {
+    "root": "h8_2019-10_G4_r80_s42_e1pair",
+    "rows": 61868,
+    "dates": 16,
+    "ess": 50096.182596123355,
+    "ess_ratio": 0.8097268797459649,
+    "min_weight": 0.4207626064497685,
+    "max_weight": 2.001495541268618,
+    "crisis_fraction": 0.12075709575224672,
+    "weighted_crisis_fraction": 0.1353648861236022
+  },
+  {
+    "root": "h8_2020-02_G4_r80_s42_e1pair",
+    "rows": 62374,
+    "dates": 16,
+    "ess": 50193.89919838109,
+    "ess_ratio": 0.8047247121938803,
+    "min_weight": 0.41168816850189727,
+    "max_weight": 2.015713445565405,
+    "crisis_fraction": 0.12906018533363262,
+    "weighted_crisis_fraction": 0.1432963732719261
+  },
+  {
+    "root": "h8_2020-06_G4_r80_s42_e1pair",
+    "rows": 62578,
+    "dates": 15,
+    "ess": 51089.384752367354,
+    "ess_ratio": 0.8164112747669685,
+    "min_weight": 0.4234138464837755,
+    "max_weight": 1.9567693177123704,
+    "crisis_fraction": 0.1411358624436703,
+    "weighted_crisis_fraction": 0.15464796905883163
+  }
+]

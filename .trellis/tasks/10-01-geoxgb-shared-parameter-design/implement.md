@@ -164,9 +164,10 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 
 - [x] Supervisor analysis (`research/d36_transfer_diagnostic.py`, outputs in `C:\Users\swl00\geoxgb_runs\d36-transfer-diagnostic-20261002\`), executor independent read-only verification (`research/d36_executor_*`), findings `research/d36-transfer-findings.md`. No fits, no production changes, no 2021+ data.
 
-## 17. D37 recency-weighted root control (run; awaiting supervisor check)
+## 17. D37 recency-weighted root control (completed; not adopted)
 
 - [x] Supervisor standalone spec d37-recency-root-plan.md; executor review (one guard gap raised for supervisor decision: rebuilt fitting-feature equivalence).
 - [x] Commit planning (cd30c7c, f412956); same run/executor; no new run/close.
 - [x] Native trellis-implement (~5.8 min) + supervisor finishing notes: optional `sample_weight=None` on `native_xgb.fit_global` (default path unchanged, weights validated and recorded), one small diagnostic runner (pinned D34 acceptance, rebuild ≤2020-12 with fitting, original-root replay gate, 21 weighted fresh roots, frozen UBJ reload, same-key E3/C rows, persistence-matched and transition-group reports, identities); tests incl. actual old/new default-path fixture replay.
 - [x] Native trellis-check (no result-affecting finding); actual old/new default-path replay identical; producer commit 3b53989 (92 tests OK); run 21/21 gates, 174 s; factual docs; stopped for supervisor independent verification.
+- [x] Supervisor independent check PASS (evidence in research/d37_*); decision: do not adopt the 24-month recency root.

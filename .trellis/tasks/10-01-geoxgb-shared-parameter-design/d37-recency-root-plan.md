@@ -1,4 +1,4 @@
-# D37 / A11：固定时间权重的root对照（已运行，待监督方独立核验与综合）
+# D37 / A11：固定时间权重的root对照（已完成；不采用；监督方独立核验通过）
 
 监督方依据用户委托的一阶段探索权限批准本轮。沿用任务及审计run ed632775/base/原Claude会话。D36已完成：C收益不能代表未来转移；D34的局部E3增益远小于root对persistence的差距。先检验root的时间权重，不改分区。无Stage2/3、full648、最终评价或close。
 
@@ -72,3 +72,18 @@
 **C（诊断）：**逐折均值差−.007795；汇总F1 .669541 → .662453；汇总Brier .047913908 → .048613557。
 
 **未做：**执行方未运行监督方的`d37_independent_check.py`；无E4、Stage2/3或close；科学解读待监督方综合。
+
+**监督方独立核验（通过）**：冻结Windows Python，未导入生产代码，未重新拟合。
+- 21根，210项混淆/精确F1检查。
+- 每个模型321047个C/E3概率行。
+- 权重float64/实际float32/哈希、fitting键、G、轮数、模型哈希、原始XGB重放全部通过。
+- 默认路径旧/新UBJ与记录独立相等；归档的旧`native_xgb.py`等于git f412956。
+- 证据保存在`research/d37_independent_check.py`、`research/d37_independent_results.json`、`research/d37_fitting_matrix_check.json`、`research/d37_weight_support.json`（原件在`C:\Users\swl00\geoxgb_runs\`）。
+
+**监督方科学决定：不采用24个月时间加权root。**
+- E3全键汇总F1 .550455→.548952，逐折均值差−.001361（10正/11负）。
+- persistence同键：原.551516、加权.549990、persistence .586406。
+- E3 Brier .101890546→.104238011。
+- H4变差，H8/H12小幅改善。
+- 净变化+149 TP、+491 FP（稳定非危机00 +267 FP，缓解10 +224 FP）。
+- 这不是过拟合已解决。
