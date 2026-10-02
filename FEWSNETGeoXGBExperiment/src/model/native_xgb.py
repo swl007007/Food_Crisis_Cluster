@@ -191,10 +191,17 @@ def keys_sha(areas, months) -> str:
     return hashlib.sha256(np.ascontiguousarray(keys).tobytes()).hexdigest()
 
 
+#: Stage 1 child increment sources: ``parent`` (D4, accumulate ancestor increments) or
+#: ``root`` (D28 / experiment-plan A3, one L increment on the shared root per child).
+INCREMENT_SOURCES = ("parent", "root")
+
+
 class XGBmodel:
     """Stage 1 checkpoint store with the RFmodel interface used by partition().
 
-    ``load(b)`` makes branch ``b`` current; ``train`` then CONTINUES the current booster
+    ``load(b)`` makes branch ``b`` current; ``train`` then CONTINUES the current booster (parent
+    mode) or the installed ROOT once (root mode, D28; ``path_rounds_added`` is then that single
+    increment, while ``path_selection_rounds`` carries the search budget)
     (it never fits from scratch: the root is installed once with ``set_root``), and
     ``save(c)`` stores the current booster as branch ``c``. A parent copied to a child
     (``load(parent); save(child)``) therefore carries the parent's exact bytes.
@@ -204,7 +211,11 @@ class XGBmodel:
     type = "static"
     mode = "classification"
 
-    def __init__(self, path, local_config: dict, num_class=N_CLASSES):
+    def __init__(self, path, local_config: dict, num_class=N_CLASSES, increment_source="parent"):
+        if increment_source not in INCREMENT_SOURCES:
+            raise ValueError(f"increment_source must be one of {INCREMENT_SOURCES}")
+        self.increment_source = increment_source
+        self._root = None  # (booster bytes, record) of the installed root, for root mode
         self.path = str(path)
         self.local_config = dict(local_config)
         self.num_class = num_class
@@ -219,7 +230,12 @@ class XGBmodel:
 
     def set_root(self, booster: xgb.Booster, record: dict) -> None:
         self.booster = booster
-        self.fit_record = {**record, "trained_under": None, "path_rounds_added": 0}
+        self.fit_record = {**record, "trained_under": None, "path_rounds_added": 0,
+                           "increment_source": self.increment_source}
+        if self.increment_source == "root":
+            self.fit_record.update(path_selection_rounds=0, actual_local_rounds=0,
+                                   shared_source=sha(booster), routing_parent=None)
+            self._root = (raw(booster), dict(self.fit_record))
         self.fit_log.append(dict(self.fit_record, saved_as=None))
         self.save("")
 
@@ -229,6 +245,22 @@ class XGBmodel:
         parent = self.fit_record
         if parent.get("loaded_as") != (branch_id or ""):
             raise RuntimeError(f"train under {branch_id!r} but loaded {parent.get('loaded_as')!r}")
+        if self.increment_source == "root":
+            # D28 / A3: every new child continues the SHARED ROOT once; the current parent
+            # stays the E1/E2 comparison and the fallback, but its increment is not inherited.
+            root_payload, root_record = self._root
+            child, record = continue_booster(from_raw(root_payload), X, y, self.local_config)
+            self.booster = child
+            self.fit_record = {**record, "trained_under": branch_id or "",
+                               "path_rounds_added": record["rounds_added"],
+                               "increment_source": "root", "shared_source": root_record["shared_source"],
+                               "routing_parent": {"branch_id": branch_id or "",
+                                                  "booster_sha256": parent.get("booster_sha256")},
+                               "actual_local_rounds": record["rounds_added"],
+                               "path_selection_rounds": int(parent["path_selection_rounds"]) + record["rounds_added"],
+                               **(meta or {})}
+            self.fit_log.append(dict(self.fit_record))
+            return
         child, record = continue_booster(self.booster, X, y, self.local_config)
         self.booster = child
         self.fit_record = {**record, "trained_under": branch_id or "",
@@ -265,6 +297,9 @@ class XGBmodel:
 
     def path_rounds(self, branch_id) -> int:
         self.load(branch_id)
+        if self.increment_source == "root":
+            # Search-opportunity budget (A3): not the booster's actual 0/20 local rounds.
+            return int(self.fit_record["path_selection_rounds"])
         return int(self.fit_record["path_rounds_added"])
 
     def predict_georf(self, X, X_group, s_branch, X_branch_id=None):

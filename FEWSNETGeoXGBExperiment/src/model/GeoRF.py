@@ -123,7 +123,7 @@ class GeoRF():
 	        split = None,
 	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
 	        track_partition_metrics = False, correspondence_table_path = None, feature_names=None, VIS_DEBUG_MODE=True,
-	        root=None, local_config=None, threshold=None, X_month=None):#X_loc is unused
+	        root=None, local_config=None, threshold=None, X_month=None, increment_source='parent'):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -410,7 +410,7 @@ class GeoRF():
 		if root_record.get('rows') != int(np.sum(X_set == 0)):
 			raise ValueError('the root booster was not fitted on exactly the X_set == 0 rows')
 		from os.path import abspath as _abspath  # fit() rebinds os locally later
-		self.model = XGBmodel(_abspath(self.dir_ckpt), local_config)
+		self.model = XGBmodel(_abspath(self.dir_ckpt), local_config, increment_source=increment_source)
 		self.model.set_root(root_booster, root_record)
 
 		print("Time single: %f s" % (time.time() - start_time))

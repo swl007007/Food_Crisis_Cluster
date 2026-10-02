@@ -378,7 +378,8 @@ def build_schedule(observations: pd.DataFrame) -> dict:
     labelled = observations.groupby("month").size()
     label_months = sorted(int(m) for m in labelled.index)
     schedule = {"stage1": [], "stage1_roots": [], "stage1_candidates": [], "development": [], "stage3": [],
-                "stage1_tb3_roots": [], "stage1_tb3_candidates": []}
+                "stage1_tb3_roots": [], "stage1_tb3_candidates": [],
+                "stage1_rootinc_roots": [], "stage1_rootinc_candidates": []}
     for horizon in HORIZONS:
         for target in range(mi(STAGE1_TARGETS[0]), mi(STAGE1_TARGETS[1]) + 1):
             entry = _fold(horizon, target, labelled, label_months, with_gate=False)
@@ -410,6 +411,13 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                     "horizon": horizon, "target_month": label, "origin_month": entry["origin_month"],
                     "ratio": plan.TIME_BLOCK, "split_seed": plan.TB3_SEED, "local_config": plan.TB3_LOCAL,
                     "threshold_family": plan.TB3_FAMILY})
+            if label in plan.ROOTINC_TARGETS:
+                # D28 (A3): six shared-root increment roots; the 648 and tb3 lists are unchanged.
+                common = {"horizon": horizon, "target_month": label, "origin_month": entry["origin_month"],
+                          "ratio": plan.ROOTINC_RATIO, "split_seed": plan.ROOTINC_SEED, "increment_source": "root"}
+                schedule["stage1_rootinc_roots"].append(dict(common))
+                schedule["stage1_rootinc_candidates"].append({**common, "local_config": plan.ROOTINC_LOCAL,
+                                                              "threshold_family": plan.ROOTINC_FAMILY})
         for target in (mi(t) for t in plan.DEV_TARGETS):
             entry = _fold(horizon, target, labelled, label_months, with_gate=True)
             if entry["status"] != "scheduled":
@@ -442,6 +450,10 @@ def build_schedule(observations: pd.DataFrame) -> dict:
                                      "candidates": len(schedule["stage1_tb3_candidates"]),
                                      "rule": ("D27: latest 3 observed label months of each root pool = common "
                                               "E1/E2 validation, earlier rows fitting; L1/gt0, seed 42 only")}
+    if len(schedule["stage1_rootinc_roots"]) != 6 or len(schedule["stage1_rootinc_candidates"]) != 6:
+        raise PreflightError("the D28 shared-root contrast must schedule exactly 6 roots / 6 candidates")
+    schedule["stage1_rootinc_counts"] = {"roots": 6, "candidates": 6,
+                                         "rule": "D28/A3: r80, seed 42, L1, gt0; children continue the shared root once"}
     lower = []
     for stage in ("stage1", "development", "stage3"):
         for r in schedule[stage]:

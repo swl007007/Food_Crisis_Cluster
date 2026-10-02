@@ -73,7 +73,8 @@ def write_json(path, payload):
     Path(path).write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
 
 
-def run_candidate(name, local, family, root, data, work, checkpoint_dir, contiguity_info, features):
+def run_candidate(name, local, family, root, data, work, checkpoint_dir, contiguity_info, features,
+                  increment_source="parent"):
     """One partition search from the shared root; returns the candidate record."""
     Xtrain, ytrain, gtrain, mtrain, x_set, Xtest, ytest, gtest, y_pool = data
     cand_work = work / "georf" / name
@@ -87,7 +88,8 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
                   contiguity_type="polygon", polygon_contiguity_info=contiguity_info,
                   feature_names=features, print_to_file=True, track_partition_metrics=False,
                   VIS_DEBUG_MODE=False, root=root, local_config=plan.L_CONFIGS[local],
-                  threshold=plan.THRESHOLD_FAMILIES[family], X_month=mtrain)
+                  threshold=plan.THRESHOLD_FAMILIES[family], X_month=mtrain,
+                  increment_source=increment_source)
         fit_seconds = time.time() - fit_started
         model_dir = Path(model.model_dir).resolve()
     finally:
@@ -159,6 +161,7 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
         last_save[entry["saved_as"]] = entry
     record = {
         "candidate": name, "local_config": local, "threshold_family": family,
+        "increment_source": increment_source,
         "threshold": str(plan.THRESHOLD_FAMILIES[family]),
         "partition": {
             "terminal_partitions": terminal, "n_terminal": len(terminal),
@@ -253,7 +256,15 @@ def main():
                         help="r80/r50 within-area random split, or tb3 (D27 time block)")
     parser.add_argument("--split-seed", type=int, required=True, choices=plan.SPLIT_SEEDS)
     parser.add_argument("--checkpoint-dir", required=True, help="scratch store for boosters (outside Dropbox)")
+    parser.add_argument("--increment-source", choices=nx.INCREMENT_SOURCES, default="parent",
+                        help="parent: children continue the current parent (D4); root: D28/A3 shared-root "
+                             "single L1 increment, r80/seed 42/L1/gt0 only")
     args = parser.parse_args()
+    if args.increment_source == "root" and (args.ratio != plan.ROOTINC_RATIO or args.split_seed != plan.ROOTINC_SEED
+                                            or args.desired_terms not in plan.ROOTINC_TARGETS
+                                            or args.g_config != plan.TB3_G[str(forecasting_scope_to_lag(args.forecasting_scope, LAGS_MONTHS))]):
+        raise ValueError(f"root increments run only {plan.ROOTINC_RATIO}/seed {plan.ROOTINC_SEED} at "
+                         f"{plan.ROOTINC_TARGETS} with the locked G {plan.TB3_G} (A3)")
     started = time.time()
     work = Path.cwd()
 
@@ -300,7 +311,8 @@ def main():
     x_set, val_ratio, validation_split = stage1_split(args.ratio, gtrain, mtrain, o_index, args.split_seed,
                                                       horizon, str(term))
     fit_rows = x_set == 0
-    root_name = plan.root_name(horizon, str(term), args.g_config, args.ratio, args.split_seed)
+    root_name = (plan.rootinc_root_name(horizon, str(term), args.g_config) if args.increment_source == "root"
+                 else plan.root_name(horizon, str(term), args.g_config, args.ratio, args.split_seed))
 
     membership = pd.DataFrame({
         "area": np.concatenate([gtrain, gtest]),
@@ -316,7 +328,7 @@ def main():
     base = {
         "root": root_name, "scope": args.forecasting_scope, "horizon": horizon, "target_month": str(term),
         "origin_month": str(origin), "g_config": args.g_config, "ratio": args.ratio,
-        "val_ratio": val_ratio, "split_seed": args.split_seed, "model_seed": plan.XGB_BASE["seed"],
+        "val_ratio": val_ratio, "split_seed": args.split_seed, "increment_source": args.increment_source, "model_seed": plan.XGB_BASE["seed"],
         "train_label_months": [month_label([window[0]])[0], month_label([window[1] - 1])[0]],
         "train_label_months_observed": sorted(set(month_label(mtrain).tolist())),
         "rows": {"fitting": int(fit_rows.sum()), "validation": int((~fit_rows).sum()),
@@ -338,7 +350,12 @@ def main():
     if args.ratio == plan.TIME_BLOCK:
         base.update(split_mode=plan.TIME_BLOCK, validation_months=validation_split["validation_months"],
                     fitting_months=validation_split["fitting_months"])
-    candidates = root_candidates(horizon, str(term), args.g_config, args.ratio, args.split_seed)
+    if args.increment_source == "root":
+        candidates = [plan.rootinc_candidate_name(horizon, str(term), args.g_config)]
+        explicit = {candidates[0]: (plan.ROOTINC_LOCAL, plan.ROOTINC_FAMILY)}
+    else:
+        candidates = root_candidates(horizon, str(term), args.g_config, args.ratio, args.split_seed)
+        explicit = {}
     if root_support["classes"] < 2:
         # Recorded, never a zero-weight candidate and never padded with fake labels.
         write_json("root.json", {**base, "status": "root_insufficient_support", "candidates": candidates,
@@ -361,9 +378,10 @@ def main():
     data = (Xtrain, ytrain, gtrain, mtrain, x_set, Xtest, ytest, gtest, y_pool)
     records = {}
     for name in candidates:
-        local, family = name.split("_")[3], name.split("_")[-1]
+        local, family = explicit.get(name, (name.split("_")[3], name.split("_")[-1]))
         records[name] = run_candidate(name, local, family, (booster, record), data, work,
-                                      args.checkpoint_dir, contiguity_info, features)
+                                      args.checkpoint_dir, contiguity_info, features,
+                                      increment_source=args.increment_source)
     write_json("root.json", {**base, "status": "completed", "candidates": candidates,
                              "root_fit": record, "root_booster_sha256": record["booster_sha256"],
                              "module_locations": module_locations(),

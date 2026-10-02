@@ -422,7 +422,8 @@ FLOORS = dict(fit_support={'rows': 1, 'areas': 1, 'dates': 1, 'classes': 1},
               val_support={'rows': 1, 'areas': 1, 'dates': 1})
 
 
-def run_partition(model, X, y, groups, split, months, threshold=Fraction(1, 100), proposal=None, cap=80, **floors):
+def run_partition(model, X, y, groups, split, months, threshold=Fraction(1, 100), proposal=None, cap=80,
+                  max_depth=2, **floors):
     kwargs = {**FLOORS, **floors}
     patches = [patch.object(trans, 'CONTIGUITY', False),
                patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1))]
@@ -433,7 +434,7 @@ def run_partition(model, X, y, groups, split, months, threshold=Fraction(1, 100)
             p.start()
         try:
             out = trans.partition(model, X, y, groups, split, np.arange(len(X)), np.full(len(X), '', dtype='<U8'),
-                                  min_depth=1, max_depth=2, contiguity_type='polygon', model_dir=tmp,
+                                  min_depth=1, max_depth=max_depth, contiguity_type='polygon', model_dir=tmp,
                                   VIS_DEBUG_MODE=False, X_month=months, threshold=threshold,
                                   path_round_cap=cap, **kwargs)
         finally:
@@ -1162,6 +1163,152 @@ class TimeBlockContrast(unittest.TestCase):
         s1.require_tb3_g({'4': 'G1', '8': 'G4', '12': 'G2'})
         with self.assertRaises(SystemExit):
             s1.require_tb3_g({'4': 'G3', '8': 'G2', '12': 'G2'})
+
+
+class SharedRootIncrement(unittest.TestCase):
+    """D28 / experiment-plan A3: children continue the shared root once."""
+
+    def _model(self, tmp, X, y):
+        g, grec = nx.fit_global(X, y, SMALL_G['G1'])
+        model = nx.XGBmodel(tmp, plan.L_CONFIGS['L1'], increment_source='root')
+        model.set_root(g, grec)
+        return model, g, grec
+
+    def test_second_level_child_starts_from_root_and_search_budget_accumulates(self):
+        X, y = synthetic()
+        with tempfile.TemporaryDirectory() as tmp:
+            model, g, grec = self._model(tmp, X, y)
+            n0 = g.num_boosted_rounds()
+            model.load('')
+            model.train(X[:600], y[:600], '')
+            model.save('0')
+            first = dict(model.fit_record)
+            self.assertEqual((first['actual_local_rounds'], first['path_selection_rounds']), (20, 20))
+            parent_bytes = model._store['0'][0]
+            model.load('0')
+            model.train(X[:300], y[:300], '0')
+            model.save('00')
+            child = model.fit_record
+            self.assertEqual(model.booster.num_boosted_rounds(), n0 + 20)       # root + 20, not parent + 20
+            self.assertEqual(child['parent_sha256'], grec['booster_sha256'])
+            self.assertEqual(child['child_prefix_structure_sha256'], grec['structure_sha256'])
+            self.assertEqual(child['shared_source'], grec['booster_sha256'])
+            self.assertEqual(child['routing_parent']['branch_id'], '0')
+            self.assertEqual(child['routing_parent']['booster_sha256'], first['booster_sha256'])
+            self.assertEqual((child['actual_local_rounds'], child['path_selection_rounds']), (20, 40))
+            self.assertEqual(model._store['0'][0], parent_bytes)                 # current parent unchanged
+            self.assertEqual(model.path_rounds('00'), 40)
+            # parent-route copy keeps the parent's booster, predictions and search count
+            model.load('0'); model.save('01')
+            self.assertEqual(model._store['01'][0], parent_bytes)
+            self.assertEqual(model.path_rounds('01'), 20)
+            model.load('01'); p01 = model.predict(X)
+            model.load('0'); np.testing.assert_array_equal(p01, model.predict(X))
+
+    def test_search_cap_uses_selection_rounds_not_actual_rounds(self):
+        X, y = synthetic()
+        with tempfile.TemporaryDirectory() as tmp:
+            model, _, _ = self._model(tmp, X, y)
+            model.load('')
+            model.train(X[:600], y[:600], '')
+            model.fit_record['path_selection_rounds'] = 80       # deep accepted chain
+            model.save('0101')
+            self.assertEqual(model.path_rounds('0101'), 80)
+            self.assertEqual(model.fit_record['actual_local_rounds'], 20)
+            self.assertFalse(model.path_rounds('0101') + 20 <= plan.PATH_ROUND_CAP)
+
+    def test_real_partition_in_root_mode(self):
+        rng = np.random.default_rng(3)
+        groups = np.repeat(np.arange(40), 30)
+        X = rng.normal(size=(len(groups), 4)); X[:, 3] = groups >= 20
+        y = ((X[:, 0] + 3 * X[:, 3] * X[:, 1]) > 0).astype(int) * 2
+        months = np.tile(np.arange(30), 40)
+        from src.utils.split import group_aware_train_val_split
+        split = group_aware_train_val_split(groups, .5, 1, 42, True)['X_set']
+        root, rec = nx.fit_global(X[split == 0], y[split == 0], SMALL_G['G1'])
+        with tempfile.TemporaryDirectory() as tmp:
+            model = nx.XGBmodel(tmp, plan.L_CONFIGS['L1'], increment_source='root')
+            model.set_root(root, rec)
+            _, decisions = run_partition(model, X, y, groups, split, months, threshold=Fraction(0))
+            fits = model.fit_log[1:]
+            self.assertTrue(fits)
+            for entry in fits:
+                self.assertEqual(entry['parent_sha256'], rec['booster_sha256'])   # always the shared root
+                self.assertEqual(entry['rounds_total'], root.num_boosted_rounds() + 20)
+                self.assertEqual(entry['actual_local_rounds'], 20)
+                self.assertLessEqual(entry['path_selection_rounds'], plan.PATH_ROUND_CAP)
+            self.assertTrue(decisions)
+
+    def test_parent_mode_is_default_and_unchanged(self):
+        self.assertEqual(nx.XGBmodel('.', plan.L_CONFIGS['L1']).increment_source, 'parent')
+        with self.assertRaises(ValueError):
+            nx.XGBmodel('.', plan.L_CONFIGS['L1'], increment_source='other')
+
+    def production_root_mode(self, cap):
+        rng = np.random.default_rng(11)
+        groups = np.repeat(np.arange(64), 30)
+        X = rng.normal(size=(len(groups), 5)); X[:, 3] = (groups % 8) >= 4; X[:, 4] = groups >= 32
+        y = ((X[:, 0] + 3 * X[:, 3] * X[:, 1] - 3 * X[:, 4] * X[:, 2]) > 0).astype(int) * 2
+        months = np.tile(np.arange(30), 64)
+        from src.utils.split import group_aware_train_val_split
+        split = group_aware_train_val_split(groups, .5, 1, 42, True)['X_set']
+        root, rec = nx.fit_global(X[split == 0], y[split == 0], SMALL_G['G1'])
+        tmp = tempfile.mkdtemp()
+        model = nx.XGBmodel(tmp, plan.L_CONFIGS['L1'], increment_source='root')
+        model.set_root(root, rec)
+        (assigned, _, s_branch), decisions = run_partition(model, X, y, groups, split, months,
+                                                           threshold=Fraction(0), cap=cap, max_depth=3)
+        return model, decisions, rec
+
+    def test_production_non_root_parent_fallback_and_exhausted_budget(self):
+        model, decisions, rec = self.production_root_mode(cap=80)
+        seen_fallback = 0
+        for d in decisions:
+            if d['outcome'] != 'accepted' or len(d['branch_id']) < 1:
+                continue
+            b = d['branch_id']                           # a NON-root parent
+            for side, used in zip('01', d['selected_children']):
+                model.load(b + side)
+                child_bytes, child_rec = nx.raw(model.booster), dict(model.fit_record)
+                if used:                                 # fresh child: root + exactly 20 rounds
+                    self.assertEqual(model.booster.num_boosted_rounds(), 6 + 20)
+                    self.assertEqual(child_rec['actual_local_rounds'], 20)
+                    continue
+                model.load(b)                            # parent-route fallback copies the parent
+                self.assertEqual(child_bytes, nx.raw(model.booster))
+                self.assertEqual(child_rec['path_selection_rounds'], model.fit_record['path_selection_rounds'])
+                seen_fallback += 1
+        self.assertGreater(seen_fallback, 0, 'fixture must exercise a non-root parent-route fallback')
+        model, decisions, _ = self.production_root_mode(cap=20)
+        capped = [d for d in decisions if 'path_round_cap' in (d.get('fallback') or [])]
+        self.assertTrue(capped, 'fixture must exercise an exhausted search budget')
+        for d in capped:                                 # blocked although the parent model has only 20 rounds
+            model.load(d['branch_id'])
+            self.assertEqual(model.fit_record['path_selection_rounds'], 20)
+            self.assertLessEqual(model.booster.num_boosted_rounds(), 6 + 20)
+
+    def test_six_rootinc_schedule_entries_with_distinct_names(self):
+        from scripts import run_stage1 as s1
+        obs = pd.DataFrame({'month': [m(t) for t in plan.STAGE1_TARGETS + ('2010-01', '2016-02', '2016-06',
+                                                                          '2016-10', '2017-02', '2017-06', '2017-10')]
+                                     + [m(f'{y}-{mo:02d}') for y in range(2021, 2025) for mo in (2, 6, 10)]})
+        sched = prep.build_schedule(obs)                      # the production schedule builder
+        self.assertEqual(sched['stage1_rootinc_counts']['roots'], 6)
+        self.assertEqual(len(sched['stage1_candidates']), 648)
+        with self.assertRaises(SystemExit):                   # a preparation without the D28 lists is refused
+            s1.rootinc_entries({'stage1_roots': sched['stage1_roots']})
+        roots = s1.scheduled_roots(sched, plan.TB3_G, plan.ROOTINC)
+        cands = s1.scheduled_candidates(sched, plan.TB3_G, plan.ROOTINC)
+        self.assertEqual((len(roots), len(cands)), (6, 6))
+        old = {plan.root_name(h, t, g, r, sd) for h in plan.HORIZONS for t in plan.STAGE1_TARGETS
+               for g in plan.G_CONFIGS for r in list(plan.SPLIT_RATIOS) + [plan.TIME_BLOCK] for sd in plan.SPLIT_SEEDS}
+        self.assertFalse(set(roots) & old)
+        for name, c in cands.items():
+            parts = name.split('_')
+            self.assertEqual((parts[3], parts[-1]), ('L1', 'gt0'))
+            self.assertEqual((c['ratio'], c['split_seed'], c['increment_source']), ('r80', 42, 'root'))
+        with self.assertRaises(SystemExit):
+            s1.rootinc_entries({'stage1_rootinc_roots': []})
 
 
 class CommittedCode(unittest.TestCase):

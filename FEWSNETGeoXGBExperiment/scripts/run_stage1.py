@@ -3,6 +3,9 @@
 python scripts/run_stage1.py --run-dir RUN [--workers 6] [--only h4_2018-02_G2_r80_s42,...]
 python scripts/run_stage1.py --run-dir RUN --split-mode tb3 [--workers 6]
 
+``--split-mode rootinc`` (D28, experiment-plan A3) runs the six r80/seed42/L1/gt0 roots at
+the tb3 targets with ``--increment-source root`` into ``RUN/stage1_rootinc/``.
+
 ``--split-mode tb3`` (D27, experiment-plan A2) runs exactly the six scheduled
 ``stage1_tb3_roots`` (one L1/gt0 candidate each) into ``RUN/stage1_tb3/`` with the same
 layout and completion record; the random-split 648 schedule stays in ``RUN/stage1/``.
@@ -39,12 +42,34 @@ CANDIDATE_FILES = ("candidate.json", "correspondence_table.csv", "target_predict
 
 #: split mode -> (schedule lists, Stage 1 output directory under the run)
 SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
-               plan.TIME_BLOCK: ("stage1_tb3_roots", "stage1_tb3_candidates", "stage1_tb3")}
+               plan.TIME_BLOCK: ("stage1_tb3_roots", "stage1_tb3_candidates", "stage1_tb3"),
+               plan.ROOTINC: ("stage1_rootinc_roots", "stage1_rootinc_candidates", "stage1_rootinc")}
+#: modes that run under the D26-locked G (no reselection)
+LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC)
+
+
+def rootinc_entries(schedule: dict) -> list:
+    """The six prepared D28 roots (a preparation without them is refused)."""
+    rows = schedule.get("stage1_rootinc_roots")
+    if rows is None:
+        raise SystemExit("this preparation has no D28 rootinc schedule; prepare a fresh run")
+    want = {(h, t) for h in plan.HORIZONS for t in plan.ROOTINC_TARGETS}
+    got = [(r["horizon"], r["target_month"]) for r in rows]
+    if len(rows) != 6 or sorted(got) != sorted(want) or any(
+            (r.get("ratio"), r.get("split_seed"), r.get("increment_source")) !=
+            (plan.ROOTINC_RATIO, plan.ROOTINC_SEED, "root") for r in rows):
+        raise SystemExit("the D28 rootinc schedule is not exactly H{4,8,12} x {2018-02, 2020-10}, r80/seed 42/root")
+    return rows
 
 
 def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     """root name -> schedule entry with its selected G (the frozen 162, or the six tb3)."""
     out = {}
+    if mode == plan.ROOTINC:
+        for r in rootinc_entries(schedule):
+            g = g_of[str(r["horizon"])]
+            out[plan.rootinc_root_name(r["horizon"], r["target_month"], g)] = {**r, "g_config": g}
+        return out
     for r in schedule[SPLIT_MODES[mode][0]]:
         g = g_of[str(r["horizon"])]
         out[plan.root_name(r["horizon"], r["target_month"], g, r["ratio"], r["split_seed"])] = {**r, "g_config": g}
@@ -53,6 +78,13 @@ def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
 
 def scheduled_candidates(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     out = {}
+    if mode == plan.ROOTINC:
+        for r in rootinc_entries(schedule):
+            g = g_of[str(r["horizon"])]
+            out[plan.rootinc_candidate_name(r["horizon"], r["target_month"], g)] = {
+                **r, "g_config": g, "local_config": plan.ROOTINC_LOCAL, "threshold_family": plan.ROOTINC_FAMILY,
+                "root": plan.rootinc_root_name(r["horizon"], r["target_month"], g)}
+        return out
     for c in schedule[SPLIT_MODES[mode][1]]:
         g = g_of[str(c["horizon"])]
         name = plan.candidate_name(c["horizon"], c["target_month"], g, c["local_config"], c["ratio"],
@@ -65,7 +97,7 @@ def scheduled_candidates(schedule: dict, g_of: dict, mode: str = "random") -> di
 def require_tb3_g(g_of: dict) -> None:
     """D27 locks the D26 development crisis-F1 G selection; tb3 never reselects G."""
     if dict(g_of) != plan.TB3_G:
-        raise SystemExit(f"tb3 requires the locked D26 G selection {plan.TB3_G}, got {dict(g_of)}")
+        raise SystemExit(f"tb3/rootinc require the locked D26 G selection {plan.TB3_G}, got {dict(g_of)}")
 
 
 def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: dict, g_record: str,
@@ -86,7 +118,8 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
                "--geometry-dir", str(prepared / "geometry"), "--schema", str(SCHEMA),
                "--forecasting_scope", str(plan.SCOPE_OF[root["horizon"]]), "--desired_terms", root["target_month"],
                "--g-config", root["g_config"], "--ratio", root["ratio"], "--split-seed", str(root["split_seed"]),
-               "--checkpoint-dir", str(ckpt)]
+               "--checkpoint-dir", str(ckpt),
+               "--increment-source", root.get("increment_source", "parent")]
     (work / "command.json").write_text(json.dumps({"command": command, "cwd": str(work)}, indent=2), encoding="utf-8")
     env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONHASHSEED="5")
     env.pop("PYTHONPATH", None)
@@ -126,13 +159,14 @@ def main() -> None:
     parser.add_argument("--workers", type=int, default=6)
     parser.add_argument("--only", default="", help="comma list of root names (timing sample)")
     parser.add_argument("--split-mode", choices=sorted(SPLIT_MODES), default="random",
-                        help="random: the 648 r80/r50 schedule; tb3: the six D27 time-block roots")
+                        help="random: the 648 r80/r50 schedule; tb3: the six D27 time-block roots; "
+                             "rootinc: the six D28 shared-root increment roots (r80/s42/L1/gt0)")
     args = parser.parse_args()
     run = args.run_dir.resolve()
     from src.utils.acceptance import accept_g_selection
     prepared_identity = require_prepared(run)
     g_of, g_record = accept_g_selection(run)
-    if args.split_mode == plan.TIME_BLOCK:
+    if args.split_mode in LOCKED_G_MODES:
         require_tb3_g(g_of)
     schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))
     roots = scheduled_roots(schedule, g_of, args.split_mode)

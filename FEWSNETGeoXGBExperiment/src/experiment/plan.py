@@ -120,6 +120,25 @@ def root_name(h, target, g, ratio, seed):
     return f"h{h}_{target}_{g}_{ratio}_s{seed}"
 
 
+#: D28 / experiment-plan A3: shared-root increments. Six r80/seed42/L1/gt0 roots at the
+#: tb3 targets with the D26-locked G (TB3_G). The ROOTINC token sits between the seed and
+#: the family so candidate positions 3 (L) and -1 (family) parse as before.
+ROOTINC = "rootinc"
+ROOTINC_RATIO = "r80"
+ROOTINC_TARGETS = TB3_TARGETS
+ROOTINC_LOCAL = "L1"
+ROOTINC_FAMILY = "gt0"
+ROOTINC_SEED = 42
+
+
+def rootinc_root_name(h, target, g):
+    return f"{root_name(h, target, g, ROOTINC_RATIO, ROOTINC_SEED)}_{ROOTINC}"
+
+
+def rootinc_candidate_name(h, target, g):
+    return f"h{h}_{target}_{g}_{ROOTINC_LOCAL}_{ROOTINC_RATIO}_s{ROOTINC_SEED}_{ROOTINC}_{ROOTINC_FAMILY}"
+
+
 def booster_params(config: dict) -> tuple[dict, int]:
     """(xgb.train params, rounds) for one G or L configuration."""
     params = dict(XGB_BASE)
