@@ -1,6 +1,6 @@
 # GeoXGBoost implementation plan — v1.0
 
-**Current status: D30 recent-search six-root experiment completed (§10, d30-recent-search-plan.md; producer 5517fb4, reporter f777ab0); D31 per-area matched-search control supervisor-reviewed and approved for implementation/run (§11, d31-matched-search-plan.md). Stage1 overfitting unresolved; no Stage2/3/full648/final/close in this run.**
+**Current status: D30 recent-search six-root experiment completed (§10, d30-recent-search-plan.md; producer 5517fb4, reporter f777ab0); D31 per-area matched-search control completed (§11, d31-matched-search-plan.md; producer/reporter 75e04ce); inconclusive, awaiting research synthesis. Stage1 overfitting unresolved; no Stage2/3/full648/final/close in this run.**
 
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
@@ -121,12 +121,12 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] D29-keyed root/roles/target comparison (reporter f777ab0 exit 0; real-data replay byte-identical; supervisor independent rescore passed), S_recent/C whole/C recent/C older/E3 scores, support/structure/E4 and independent rescore.
 - [x] Update all task docs and PROGRESS with results (overfitting NOT solved); no Stage2/3/full648/final/close or claim of solved overfitting without evidence.
 
-## 11. D31 per-area matched-search control (approved for implementation/run)
+## 11. D31 per-area matched-search control (completed)
 
 - [x] Supervisor decision: keep the original per-area-count matched control (not area-blind); record exact A6 contract and key-only feasibility in d31-matched-search-plan.md.
 - [x] Supervisor review with corrections (D30 search-score coverage, supervisor-led review boundary, supporting probe). Commit planning; preserve original Claude/audit binding (no register/start/reset).
-- [ ] Native trellis-implement: matched-size sampler (exact RNG rule, k_a from A5 dates incl. zero), `--matched-size-seed` on the D30 path, 18 roots/candidates with search seed separate from split seed; reporter `--mode matchedsize` in the existing comparison (pinned D30 5517fb4 / D29 ab1ac83). Preserve old modes.
-- [ ] Tests: deterministic order-independent exact per-area sampler, seeds differ; production-path unused/C-label invariance; reporter acceptance/rejection; one fixture test driving the reporter row function end to end. Native trellis-check on the final diff.
-- [ ] Commit producer and pass tests; fresh prepare, original v1 G reuse (no refits), exactly 18 candidates.
-- [ ] Keyed comparison vs D30/D29 with real-data reporter replay and independent rescore; per seed/pair, all-root and split-only means, fallback contributions, date support, ARI descriptive only.
-- [ ] Update docs/PROGRESS; stop. Then synthesize D26–D31 for a bounded map-utility proposal for supervisor scientific review (no automatic Stage2/3; no further search-window/threshold/C-split variants on these six targets).
+- [x] Native trellis-implement (producer ~3 min; reporter by executor after the child returned): matched-size sampler (exact RNG rule, k_a from A5 dates incl. zero), `--matched-size-seed` on the D30 path, 18 roots/candidates with search seed separate from split seed; reporter `--mode matchedsize` in the existing comparison (pinned D30 5517fb4 / D29 ab1ac83). Preserve old modes.
+- [x] Tests (72 OK): deterministic order-independent exact per-area sampler, seeds differ; production-path unused/C-label invariance; reporter acceptance/rejection; one fixture test driving the reporter row function end to end. Native trellis-check on the final diff (no result-affecting finding).
+- [x] Commit producer (75e04ce) and pass tests; fresh prepare (geoxgb-d31-matched-search-20261001), original v1 G reuse (no refits), exactly 18 candidates (all completed).
+- [x] Keyed comparison vs D30/D29 (exit 0) with real-data reporter replay (3 modes byte-identical) and supervisor independent rescore (passed); per seed/pair, all-root and split-only means, fallback contributions, date support, ARI descriptive only.
+- [x] Update docs/PROGRESS; stop (inconclusive; overfitting NOT solved). Then synthesize D26–D31 for a bounded map-utility proposal for supervisor scientific review (no automatic Stage2/3; no further search-window/threshold/C-split variants on these six targets).
