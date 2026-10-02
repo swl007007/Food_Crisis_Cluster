@@ -2437,6 +2437,185 @@ class PersistenceMarginRoot(unittest.TestCase):
         self.assertIn('anchored_minus_posthoc', agg['E3']['pooled_all'])
 
 
+class MapTransfer(unittest.TestCase):
+    """D42/A16: U < O schedule, D32 map parsing, common refit pools/routes, label invariance, save/reload."""
+
+    FLOOR = {'rows': 40, 'areas': 10, 'dates': 3, 'classes': 2}
+
+    def setUp(self):
+        from scripts import stage1_map_transfer as mt
+        self.mt = mt
+
+    def test_schedule_rule_gives_the_twelve_spec_pairs(self):
+        got = self.mt.schedule()
+        self.assertEqual(got, [(h, t, u) for h, t, u, _, _ in self.mt.SPEC_PAIRS])
+        self.assertEqual(len(got), 12)
+        self.assertEqual(sum(o + c for *_, o, c in self.mt.SPEC_PAIRS), self.mt.MAX_FITS)
+        self.assertNotIn('2018-06', [t for _, t, _ in got])          # no U < O for the earliest targets
+        for h, t, u in got:
+            o = self.mt._mi(t) - h
+            self.assertLess(self.mt._mi(u), o)
+            self.assertFalse(any(self.mt._mi(u) < self.mt._mi(x) < o for x in plan.E1PAIR_TARGETS))
+        self.assertEqual(self.mt.check_schedule(), got)
+
+    def _evidence(self, tmp, rows):
+        path = Path(tmp) / 'assignment_evidence.csv'
+        pd.DataFrame(rows, columns=['FEWSNET_admin_code', 'prediction_branch_id', 'spatial_partition_id',
+                                    'search_rows']).to_csv(path, index=False)
+        return path
+
+    def test_parse_map_leading_zeros_and_guards(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self._evidence(tmp, [[5, '01', '01', 2], [7, '0', '0', 1], [9, 'root', 's-1', 0],
+                                        [11, 'root', 'root', 1]])
+            area_map = self.mt.parse_map(path, rid.file_sha256(path))
+            self.assertEqual(area_map, {5: '01', 7: '0', 9: 's-1', 11: 'root'})
+            with self.assertRaises(self.mt.GateError):
+                self.mt.parse_map(path, '0' * 64)
+            bad = self._evidence(tmp, [[5, '01', 's-1', 2]])
+            with self.assertRaises(self.mt.GateError):
+                self.mt.parse_map(bad)
+            bad = self._evidence(tmp, [[5, '01', '01', 0]])
+            with self.assertRaises(self.mt.GateError):
+                self.mt.parse_map(bad)
+            bad = self._evidence(tmp, [[5, '01', '01', 1], [5, '0', '0', 1]])
+            with self.assertRaises(self.mt.GateError):
+                self.mt.parse_map(bad)
+
+    def _fit_pool(self):
+        rng = np.random.default_rng(11)
+        areas, months = np.arange(50), np.arange(2015 * 12, 2015 * 12 + 8)
+        g, mm = np.repeat(areas, len(months)), np.tile(months, len(areas))
+        order = rng.permutation(len(g))                       # non-sorted original order
+        g, mm = g[order], mm[order]
+        X = rng.normal(size=(len(g), 6))
+        y = np.digitize(X[:, 0], [-0.6, 0.3, 1.2]).astype(np.int64)
+        return X, y, g, mm
+
+    def test_common_refit_pools_routes_and_save_reload(self):
+        X, y, g, mm = self._fit_pool()
+        area_map = {**{a: '01' for a in range(20)}, **{a: 'root' for a in range(20, 40)},
+                    **{a: '1' for a in range(40, 45)}, **{a: 's-1' for a in range(45, 48)}, 70: '01'}
+        root, _ = nx.fit_global(X, y, SMALL_G['G1'])
+        before = nx.raw(root)
+        models, recs = self.mt.common_refit(root, (X, y, g, mm), area_map, floor=self.FLOOR)
+        self.assertEqual(nx.raw(root), before)
+        self.assertEqual(set(models), {'01', 'root'})               # named root-copy region refitted too
+        self.assertFalse(recs['1']['eligible'])
+        self.assertEqual(recs['1']['support']['areas'], 5)
+        self.assertEqual(recs['1']['support']['rows'], 40)
+        for region in ('01', 'root'):
+            mask = np.array([area_map.get(int(a)) == region for a in g])
+            self.assertEqual(recs[region]['fitting_keys_sha256'], nx.keys_sha(g[mask], mm[mask]))
+            self.assertEqual(recs[region]['continuation']['rows'], int(mask.sum()))
+            self.assertEqual(recs[region]['continuation']['rounds_added'], 20)
+            self.assertEqual(recs[region]['continuation']['child_prefix_structure_sha256'],
+                             nx.prefix_identity(root)['sha256'])
+            ref, _ = nx.continue_booster(root, X[mask], y[mask], plan.L_CONFIGS['L1'])
+            self.assertEqual(nx.raw(models[region]), nx.raw(ref))
+        self.assertEqual(recs['01']['member_areas'], list(range(20)) + [70])
+        self.assertEqual(recs['01']['member_areas_with_fitting_rows'], 20)
+        eval_areas = np.array([70, 3, 25, 41, 46, 49, 99])
+        sid, reason = self.mt.route(eval_areas, area_map, recs)
+        self.assertEqual(reason.tolist(), ['region', 'region', 'region', 'insufficient_support', 's-1',
+                                           'missing', 'missing'])
+        self.assertEqual(sid.tolist()[:3], ['01', '01', 'root'])
+        Xe = np.random.default_rng(2).normal(size=(len(eval_areas), 6))
+        p_root = nx.proba(root, Xe)
+        p = self.mt.arm_proba(Xe, sid, reason, p_root, models)
+        np.testing.assert_array_equal(p[3:], p_root[3:])
+        np.testing.assert_array_equal(p[:2], nx.proba(models['01'], Xe[:2]))
+        np.testing.assert_array_equal(p[2:3], nx.proba(models['root'], Xe[2:3]))
+        with tempfile.TemporaryDirectory() as tmp:
+            frozen = self.mt.save_arm(Path(tmp) / 'arm', models, recs, {'candidate': 'x'}, 'sha')
+            self.assertEqual(set(frozen), {'01', 'root'})
+            self.assertTrue((Path(tmp) / 'arm' / 'region_1.json').is_file())
+            self.assertFalse((Path(tmp) / 'arm' / 'region_1.ubj').exists())
+            np.testing.assert_array_equal(self.mt.arm_proba(Xe, sid, reason, p_root, frozen), p)
+
+    def test_heldout_labels_do_not_move_pools_boosters_or_routes(self):
+        helper = GlobalIncrementControl()
+        helper.setUp()
+        area_map = {**{a: '0' for a in range(18)}, **{a: '1' for a in range(18, 36)}, 36: 's-1', 37: 's-1'}
+
+        def refit(permute):
+            with tempfile.TemporaryDirectory() as tmp:
+                data = helper._run(tmp, permute_held=permute)
+            root, _ = nx.fit_global(data['FIT'][0], data['FIT'][1], SMALL_G['G1'])
+            with patch.dict(plan.FIT_SUPPORT, self.FLOOR):
+                models, recs = self.mt.common_refit(root, data['FIT'], area_map)
+            routes = {p: self.mt.route(data[p][2], area_map, recs) for p in ('C', 'E3')}
+            return data, models, recs, routes
+
+        d1, m1, r1, rt1 = refit(False)
+        d2, m2, r2, rt2 = refit(True)
+        self.assertFalse((d2['C'][1] == d1['C'][1]).all())
+        self.assertEqual(set(m1), {'0', '1'})
+        self.assertEqual({k: nx.raw(v) for k, v in m1.items()}, {k: nx.raw(v) for k, v in m2.items()})
+        self.assertEqual({k: v['fitting_keys_sha256'] for k, v in r1.items()},
+                         {k: v['fitting_keys_sha256'] for k, v in r2.items()})
+        for p in ('C', 'E3'):
+            for a, b in zip(rt1[p], rt2[p]):
+                self.assertEqual(a.tolist(), b.tolist())
+        self.assertEqual({r for r in rt1['E3'][1].tolist()}, {'region', 's-1', 'missing'})   # all 40 areas in E3
+
+    def test_failed_first_pair_gate_stops_before_second_pair(self):
+        mt = self.mt
+        names = {plan.e1pair_root_name(h, x, plan.TB3_G[str(h)]) for h, t, u in mt.schedule() for x in (t, u)}
+        cands = {f'c_{r}': {'root': r, 'e1': 'brier_crisis'} for r in names}
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            run, d35, out = tmp / 'd34', tmp / 'd35', tmp / 'out'
+            (run / 'prepared' / 'ledgers').mkdir(parents=True)
+            (run / 'prepared' / 'ledgers' / 'dev_baselines.csv').write_text('horizon,target_label\n', encoding='utf-8')
+            d35.mkdir()
+            (d35 / 'identity.json').write_text(json.dumps({'stage': 'd35_global_increment',
+                                                           'producer_rev': '7b2bf6f'}), encoding='utf-8')
+            (d35 / 'completion.json').write_text('{}', encoding='utf-8')
+            argv = ['stage1_map_transfer.py', '--d34-run', str(run), '--d35-run', str(d35), '--out', str(out)]
+            with patch.object(sys, 'argv', argv), \
+                    patch.object(mt.rid, 'code_identity_at', return_value={'sha256': 'x'}), \
+                    patch.object(mt.rid, 'code_identity', return_value={'sha256': 'x'}), \
+                    patch.object(mt.rid, 'file_sha256', return_value='0' * 64), \
+                    patch.object(mt, 'accept_mode', return_value=({n: {} for n in names}, cands,
+                                                                  {'stage': str(tmp / 'stage')})), \
+                    patch.object(mt, 'run_pair', side_effect=mt.GateError('replay mismatch')) as rp, \
+                    redirect_stdout(StringIO()):
+                code = mt.main()
+            self.assertEqual(code, 2)
+            self.assertEqual(rp.call_count, 1)
+            gate = json.loads((out / 'gate.json').read_text(encoding='utf-8'))
+            self.assertFalse(gate['passed'])
+            self.assertEqual(gate['fits'], 0)
+            self.assertEqual(list(gate['pairs']), [gate['stopped_at']])
+            self.assertTrue((out / 'identity.json').is_file())
+            self.assertFalse((out / 'summary.json').exists())
+
+    def test_score_frame_and_aggregate(self):
+        frame = pd.DataFrame({'truth': [2, 0, 3, 1], 'persistence_code': [2.0, 2.0, np.nan, 0.0],
+                              'y_root': [0, 0, 3, 1], 'y_global20': [2, 0, 3, 2], 'y_current_map_refit': [2, 0, 3, 1],
+                              'y_old_map_refit': [0, 2, 3, 1],
+                              'route_current': ['region', 's-1', 'region', 'missing'],
+                              'route_old': ['region', 'region', 'insufficient_support', 'missing']})
+        for arm in self.mt.ARMS:
+            for lab in fourclass.CLASS_LABELS:
+                frame[f'p_{arm}_{lab}'] = 0.25
+        out = self.mt.score_frame(frame)
+        self.assertEqual(Fraction(out['all']['current_map_refit']['crisis_f1_exact']), Fraction(1))
+        self.assertEqual(Fraction(out['all']['current_map_refit_minus_root']['crisis_f1_delta_exact']),
+                         Fraction(1, 3))
+        self.assertEqual(out['matched_persistence']['n'], 3)
+        self.assertEqual(out['both_covered_supplementary']['n'], 1)
+        self.assertEqual(out['routing']['current_map_refit']['by_reason'],
+                         {'region': 2, 's-1': 1, 'missing': 1, 'insufficient_support': 0})
+        self.assertEqual(out['routing']['old_map_refit']['root_share'], 0.5)
+        self.assertEqual(out['transition_groups_post_hoc']['current_map_refit']['11']['corrected'], 1)
+        agg = self.mt.aggregate({'r': {'horizon': 4, 'scores': {'C': out, 'E3': out}}}, lambda r: True)
+        self.assertEqual(agg['E3']['pooled_all']['old_map_refit_minus_current_map_refit']['crisis_f1_delta_exact'],
+                         str(Fraction(1, 2) - 1))
+        self.assertEqual(agg['E3']['routing']['current_map_refit']['root_share'], 0.5)
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess
