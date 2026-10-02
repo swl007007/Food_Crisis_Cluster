@@ -4,7 +4,7 @@
 - **Change:** each of the 21 D34 roots is re-fitted on the 75 schema `history_blocks` features plus the 3 `known_calendar` features (including `target_year`), 78 columns in global schema order. Removed jointly: static 28 + dynamic 41 + legacy 15 = 84.
 - **Unchanged:** all original FIT rows, order and labels (including missing-origin rows), W59, the four-class objective, G (H4 G1 / H8 G4 / H12 G2), rounds 200 / 400 / 400, seed 42, colsample and other parameters; unweighted; no margins or local trees.
 - **Arms:** the saved full-162 original root, the fresh 78-feature root (h78), and exact-origin persistence.
-- **What it is not:** a joint removal that mixes information and feature-search effects (frozen colsample on fewer columns), so no variable, block or causal attribution.
+- **Interpretation limit:** this is a joint removal that mixes information and feature-search effects (frozen colsample on fewer columns), so no variable, block or causal attribution.
 
 ## Producer, tests and run (executor factual record, `d58b242`)
 
