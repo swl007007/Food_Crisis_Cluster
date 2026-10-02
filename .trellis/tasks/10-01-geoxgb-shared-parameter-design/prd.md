@@ -140,6 +140,8 @@ Expert 输入、基于 expert 的预测纠偏和融合已按 D6 排除；新增/
 
 ## 收敛与交付状态
 
+**D27 执行状态（2026-10-01）：** 实现完成（3dab25b，native check 无影响结果问题，52 测试通过）；六根运行完成；科学证据：tb3 根因移出最近三个月显著变差（root crisis F1 平均 −0.056），local 增量的迁移在 5/6 对略好但 1 对大幅失败，未显示可靠改善——Stage 1 过拟合仍未解决，待审阅。
+
 **当前验收补充 A17 / D27：** 六个预定时间块候选必须有完整身份、实际 fitting/validation 键和同键 E3 root/local 预测，并与既有六个 r80/L1/gt0 对照比较；记录支持与结构多样性，报告根模型本身变化。E2 上升、训练完成、Trellis check 通过均不能作为“Stage 1 过拟合已解决”的证据。D27 至多提供有限开发对照证据；最终 persistence/expert 目标未完成。
 
 设计范围、科学验收及首轮预算已收敛，最终规划已呈现并获D25执行授权。design.md、evaluation-contract.md、experiment-plan.md、implement.md和真实上下文清单构成冻结规划包。
