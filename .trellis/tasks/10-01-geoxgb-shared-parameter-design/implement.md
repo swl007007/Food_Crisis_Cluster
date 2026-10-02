@@ -1,6 +1,6 @@
 # GeoXGBoost implementation plan — v1.0
 
-**Current status: D30 recent-search six-root experiment completed (§10, d30-recent-search-plan.md; producer 5517fb4, reporter f777ab0); D31 per-area matched-search control completed and inconclusive (§11). D32/A7 Stage1 assignment-evidence export completed (c079b75); D33/A8 completed (69f2cc3); D34/A9 completed (7b2bf6f; check passed); D35/A10 global +20 capacity control approved (§15, d35-global-increment-control-plan.md) (§14, d34-e1-brier-contrast-plan.md) (§13, d33-shallow-replay-plan.md) (§12, d32-stage1-assignment-plan.md); supersedes the D32 Stage2 four-map proposal. Stage1 overfitting unresolved; no Stage2/3/full648/final/close in this run.**
+**Current status: D30 recent-search six-root experiment completed (§10, d30-recent-search-plan.md; producer 5517fb4, reporter f777ab0); D31 per-area matched-search control completed and inconclusive (§11). D32/A7 Stage1 assignment-evidence export completed (c079b75); D33/A8 completed (69f2cc3); D34/A9 completed (7b2bf6f; check passed); D35/A10 global +20 capacity control run (be5f485; §15), awaiting supervisor check/synthesis (§14, d34-e1-brier-contrast-plan.md) (§13, d33-shallow-replay-plan.md) (§12, d32-stage1-assignment-plan.md); supersedes the D32 Stage2 four-map proposal. Stage1 overfitting unresolved; no Stage2/3/full648/final/close in this run.**
 
 2026-10-01. D24 accepts the bounded design; D25 explicitly authorizes execution after the final planning summary. Implement, verify and run the finite experiment-plan budget, after committing the frozen planning package and starting through the bound Claude executor's audit wrapper. No numerical or scope change is introduced by D25.
 
@@ -146,16 +146,16 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 - [x] Native trellis-implement (~3.5 min) + executor fixes (labels, retained parent, identity, guards): minimal isolated replay script (data construction via ab1ac83 producer semantics, frozen runtime), truncated-s_branch routing, verify "0"/"1" last saves belong to the root decision, mandatory full-tree gate first (round-trip exact equality; C/E3 probabilities where saved; all saved S/C/E3 hard predictions and routes), per-key S/C/E3 rows + identities (inputs, checkpoints, producer, script commit, runtime), per-H/T reports per d33-shallow-replay-plan.md §4; minimal routing tests. No fits, grid, selection, E4 or Stage2-consumable maps.
 - [x] Native trellis-check + re-check (no result-affecting finding); source-equivalence note; code commit 69f2cc3; six predict-only cases (gate 6×23 checks, 0 mismatches); executor independent recomputation 144/144; docs; stopped for supervisor synthesis.
 
-## 14. D34 E1 hard-F1 vs Brier paired contrast (run; awaiting supervisor verification/synthesis)
+## 14. D34 E1 hard-F1 vs Brier paired contrast (completed; supervisor check passed)
 
 - [x] Supervisor decision A9; exact spec drafted in d34-e1-brier-contrast-plan.md (21 roots fitted once each, shared by hard_f1 and brier_crisis = 42 candidates; v1 G-screen reuse, no new G-screen fits).
 - [x] Supervisor review (legacy replay invariance wording; operational final isolation). Commit planning; preserve audit run/base/session.
 - [x] Native trellis-implement (producer ~4.3 min; reporter by executor with supervisor-found blocker fixes): 21-root paired mode in run_stage1/prepare, E1 variant through GeoRF.fit → partition, current-parent probabilities for Brier masses, scan diagnostics (zero c/g, distinct g, boundary tie block, side sizes), paired reporter mode; tests: legacy hard-path old/new replay, C-label invariance for both variants, pure Brier mass formula, tie-statistics on synthetic g, identity/completion.
 - [x] Native trellis-check (no result-affecting finding); code commit 7b2bf6f; legacy hard-path old/new replay (retained evidence; supervisor spot check passed); fresh run (21/21 roots, ~11 min wall); e1pair report (exit 0); docs. Supervisor independent check and synthesis pending.
 
-## 15. D35 global +20 capacity control (approved)
+## 15. D35 global +20 capacity control (run)
 
 - [x] Supervisor decision and standalone spec d35-global-increment-control-plan.md; executor review: no result-affecting contradiction (clarified Parquet ≤2020-12 filter for the rebuild; empty S no-search stratum).
-- [ ] Commit planning; same run/executor; no new roots/G/E1/E2, no Stage2/3/close.
-- [ ] Native trellis-implement: one diagnostic script (accept D34 at pinned 7b2bf6f, rebuild fitting/S/C/E3 with ≤2020-12 filter, root replay gate, 21 `continue_booster(root, X_fit, y_fit, L1)` fits, saved UBJ + continuation records, same-key S/C/E3 probabilities/hard predictions, per-H/T table root/global+20/hard/Brier, search_rows strata); small tests (fitting excludes S/C/target; holdout-label invariance; prefix preserved +20 rounds; strata scoring).
-- [ ] Native trellis-check; producer commit + tests; run on frozen Python; factual docs; leave independent check and synthesis to the supervisor.
+- [x] Commit planning (adff5a5); same run/executor; no new roots/G/E1/E2, no Stage2/3/close.
+- [x] Native trellis-implement (~4.3 min): one diagnostic script (accept D34 at pinned 7b2bf6f, rebuild fitting/S/C/E3 with ≤2020-12 filter, root replay gate, 21 `continue_booster(root, X_fit, y_fit, L1)` fits, saved UBJ + continuation records, same-key S/C/E3 probabilities/hard predictions, per-H/T table root/global+20/hard/Brier, search_rows strata); small tests (fitting excludes S/C/target; holdout-label invariance; prefix preserved +20 rounds; strata scoring).
+- [x] Native trellis-check (no result-affecting finding); producer commit be5f485 (88 tests OK); run (21/21 gates passed, 80 s); factual docs. Independent check and synthesis left to the supervisor.

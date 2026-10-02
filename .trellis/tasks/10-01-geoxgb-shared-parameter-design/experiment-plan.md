@@ -1,6 +1,6 @@
 # GeoXGBoost：首轮有限探索方案 v1.0
 
-**当前状态：D26–D31已完成（D31不确定）；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10全局+20对照已批准（d35-global-increment-control-plan.md）（d34-e1-brier-contrast-plan.md）。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
+**当前状态：D26–D31已完成（D31不确定）；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已运行（be5f485）（d34-e1-brier-contrast-plan.md）。Stage1过拟合未解决；不运行完整648、Stage2/3、最终评价或关闭。**
 
 2026-10-01。以下v1.0为原D24/D25规划记录；末尾附录修订覆盖对应条款。
 
@@ -282,6 +282,6 @@ Stage 1 过拟合仍未解决。D26 的48候选平均 E2 crisis增益 +0.018052�
 
 见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。
 
-## A10. D35全局+20对照
+## A10. D35全局+20对照（已运行）
 
 见[d35-global-increment-control-plan.md](d35-global-increment-control-plan.md)。
