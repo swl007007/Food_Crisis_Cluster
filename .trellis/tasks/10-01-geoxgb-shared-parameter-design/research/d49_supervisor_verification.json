@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "checks": 950,
+  "source_rows": 113508,
+  "matched_rows": 112795,
+  "excluded": 713,
+  "frontier_endpoints": 225241,
+  "producer_head": "879c33538b6f8e2031c15a92256df7e5b851b316",
+  "verifier_sha256": "a7205484fe92d5c3ee10d17bc3fcfe27ef9a614ad08e0a92e0fcdaa2881878ff",
+  "method": "independent positive/negative sorted-score searchsorted per unique cutoff; no producer imports; zero fits",
+  "artifacts": {
+    "summary.json": "f10bec781c14e08f1c50e9734efb0ca76b8da189f1a36bdd03de03d062f4b5ef",
+    "identity.json": "407c2ff8fbc4bd885cc37feac18e34fa4802e004d5d9c4e7a54e7795d4f37363",
+    "frontier.csv.gz": "db0035848e2602c6b38b7b923f8521ac4950dc333486be1ada7340e6db07ae6e"
+  },
+  "by_horizon_mean_fold": {
+    "4": {
+      "n_folds": 7,
+      "persistence_f1": 0.6552546019124209,
+      "arms": {
+        "original": {
+          "argmax_f1": 0.6266083331219622,
+          "hindsight_max_f1": 0.6671355070699841,
+          "gap_optimum_minus_persistence": 0.011880905157563062,
+          "gap_optimum_minus_argmax": 0.04052717394802193,
+          "gap_argmax_minus_persistence": -0.02864626879045887,
+          "folds_optimum_gt_persistence": 6,
+          "folds_dominating_persistence": 3,
+          "budget_exact": 7,
+          "budget_bracket": 0,
+          "mean_budget_tp_minus_persistence_tp_exact": -19.428571428571427
+        },
+        "anchored": {
+          "argmax_f1": 0.6337520537355957,
+          "hindsight_max_f1": 0.6720491978410167,
+          "gap_optimum_minus_persistence": 0.016794595928595685,
+          "gap_optimum_minus_argmax": 0.03829714410542099,
+          "gap_argmax_minus_persistence": -0.021502548176825304,
+          "folds_optimum_gt_persistence": 5,
+          "folds_dominating_persistence": 4,
+          "budget_exact": 7,
+          "budget_bracket": 0,
+          "mean_budget_tp_minus_persistence_tp_exact": -10.0
+        }
+      }
+    },
+    "8": {
+      "n_folds": 7,
+      "persistence_f1": 0.5555679092094884,
+      "arms": {
+        "original": {
+          "argmax_f1": 0.5340305919064058,
+          "hindsight_max_f1": 0.587541582265109,
+          "gap_optimum_minus_persistence": 0.03197367305562061,
+          "gap_optimum_minus_argmax": 0.053510990358703256,
+          "gap_argmax_minus_persistence": -0.02153731730308264,
+          "folds_optimum_gt_persistence": 5,
+          "folds_dominating_persistence": 3,
+          "budget_exact": 7,
+          "budget_bracket": 0,
+          "mean_budget_tp_minus_persistence_tp_exact": -1.5714285714285714
+        },
+        "anchored": {
+          "argmax_f1": 0.5285126717163132,
+          "hindsight_max_f1": 0.5991424866470437,
+          "gap_optimum_minus_persistence": 0.04357457743755518,
+          "gap_optimum_minus_argmax": 0.07062981493073024,
+          "gap_argmax_minus_persistence": -0.02705523749317505,
+          "folds_optimum_gt_persistence": 5,
+          "folds_dominating_persistence": 3,
+          "budget_exact": 7,
+          "budget_bracket": 0,
+          "mean_budget_tp_minus_persistence_tp_exact": 7.428571428571429
+        }
+      }
+    },
+    "12": {
+      "n_folds": 7,
+      "persistence_f1": 0.5477106782504761,
+      "arms": {
+        "original": {
+          "argmax_f1": 0.47904284564154026,
+          "hindsight_max_f1": 0.5654590523216675,
+          "gap_optimum_minus_persistence": 0.017748374071191262,
+          "gap_optimum_minus_argmax": 0.08641620668012713,
+          "gap_argmax_minus_persistence": -0.06866783260893587,
+          "folds_optimum_gt_persistence": 3,
+          "folds_dominating_persistence": 1,
+          "budget_exact": 7,
+          "budget_bracket": 0,
+          "mean_budget_tp_minus_persistence_tp_exact": -21.0
+        },
+        "anchored": {
+          "argmax_f1": 0.5150102759384912,
+          "hindsight_max_f1": 0.5812329569063647,
+          "gap_optimum_minus_persistence": 0.033522278655888534,
+          "gap_optimum_minus_argmax": 0.06622268096787344,
+          "gap_argmax_minus_persistence": -0.0327004023119849,
+          "folds_optimum_gt_persistence": 4,
+          "folds_dominating_persistence": 1,
+          "budget_exact": 7,
+          "budget_bracket": 0,
+          "mean_budget_tp_minus_persistence_tp_exact": -8.571428571428571
+        }
+      }
+    }
+  },
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3"
+  }
+}

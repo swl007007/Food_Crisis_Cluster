@@ -54,7 +54,7 @@
 ## Reading (supervisor decision)
 
 **Not adopted.**
-- All 21 roots remain below persistence, under either arm, with or without the policy.
+- The all-21 aggregate remains below persistence, under either arm, with or without the policy. (This is the aggregate over all 21 roots, not a statement that each root is below persistence; clarified 2026-10-02 during D49.)
 - The anchored arm's eligible-subset argmax already beat persistence before the policy.
 - The changes are unstable: H4 and H8 2020-06 worsen materially in both arms, while H8 2020-02 improves.
 - This is decision-policy feasibility evidence only, not a resolution of partition overfitting, and not an endpoint change.

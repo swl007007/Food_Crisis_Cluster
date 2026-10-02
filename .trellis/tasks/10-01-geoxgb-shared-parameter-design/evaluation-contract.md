@@ -1,6 +1,6 @@
 # Evaluation 分层契约 v1.0
 
-**当前适用修订：D49/A23已批准（d49-ranking-headroom-plan.md）；D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（d42-map-transfer-plan.md）；D43/A17已完成，不采用（d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已完成，未采用策略（d45-root-prefix-diagnostic-plan.md）；D46/A20已完成，不采用（d46-crisis-weight-root-plan.md）；D47/A21已完成，不采用（d47-stump-root-plan.md）；D48/A22已完成，不采用（d48-known-origin-fit-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+**当前适用修订：D49/A23已完成，不采用策略（d49-ranking-headroom-plan.md）；D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（d42-map-transfer-plan.md）；D43/A17已完成，不采用（d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已完成，未采用策略（d45-root-prefix-diagnostic-plan.md）；D46/A20已完成，不采用（d46-crisis-weight-root-plan.md）；D47/A21已完成，不采用（d47-stump-root-plan.md）；D48/A22已完成，不采用（d48-known-origin-fit-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
 
 D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
 
@@ -235,6 +235,6 @@ FIT/C/E3分别报告（FIT样本内、C窗口内插值、E3前向）；四类对
 
 仅在起点已知的FIT（样本内）、C（窗口内插值）、E3（前向）键上比较；缺失起点E3只报排除计数，不外推、不与原全键分数比较；危机F1为主要终点；无显著性检验或采用规则。原root的AUC/AP因队列不同（仅起点已知键）而与D46/D47全键值不同，已披露。见[d48-known-origin-fit-plan.md](d48-known-origin-fit-plan.md)。
 
-## D49：排序余量评分边界（已批准）
+## D49：排序余量评分边界（已完成）
 
-仅起点已知E3键；事后最优使用E3真值，只是确定性标量阈值族内的事后包络；k_p不使用目标结局值确定，但仍在反复暴露的队列上评估；四类argmax一般不在该族内，最优不一定≥argmax；两臂都已含persistence信息；仅逐root与逐H逐折均值，无汇总oracle、无显著性或采用规则。见[d49-ranking-headroom-plan.md](d49-ranking-headroom-plan.md)。
+仅起点已知E3键；事后最优使用E3真值，只是确定性标量阈值族内的事后包络；k_p不使用目标结局值确定，但仍在反复暴露的队列上评估；四类argmax一般不在该族内，最优不一定≥argmax；两臂都已含persistence信息；仅逐root与逐H逐折均值，无汇总oracle、无显著性或采用规则。见[d49-ranking-headroom-plan.md](d49-ranking-headroom-plan.md)。D49逐折均值persistence F1（.655255/.555568/.547711）与D46–D48汇总值（.651697/.555614/.549808）仅因聚合方式不同；不发布汇总oracle。

@@ -1,0 +1,2582 @@
+{
+ "plan": "d49-ranking-headroom-plan.md",
+ "script_sha256": "0a9bd888a97440c324b526811c91f01753bd03d567e49f1ca84cfa1731e8e5d6",
+ "score": "s=(p2+p3)/(p0+p1+p2+p3), float64; family predict crisis iff s>=c",
+ "excluded_missing_origin_total": 713,
+ "per_root": {
+  "h12_2018-06_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2018-06",
+   "excluded_missing_origin": 2,
+   "n": 5362,
+   "positives": 737,
+   "persistence": {
+    "tp": 424,
+    "fp": 595,
+    "fn": 313,
+    "tn": 4030,
+    "f1_exact": "212/439",
+    "f1": 0.48291571753986334
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 259,
+      "fp": 237,
+      "fn": 478,
+      "tn": 4388,
+      "f1_exact": "518/1233",
+      "f1": 0.42011354420113545
+     },
+     "n_endpoints": 5363,
+     "optimum": {
+      "f1_exact": "325/718",
+      "f1": 0.45264623955431754,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.3552881188745516,
+       "cutoff_hex": "0x1.6bd0a60ce4eccp-2",
+       "calls": 699,
+       "tp": 325,
+       "fp": 374,
+       "fn": 412,
+       "f1_exact": "325/718",
+       "f1": 0.45264623955431754
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1019,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.28570222428931946,
+       "cutoff_hex": "0x1.248f1fb6de4b4p-2",
+       "calls": 1019,
+       "tp": 362,
+       "fp": 657,
+       "fn": 375,
+       "f1_exact": "181/439",
+       "f1": 0.4123006833712984
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 315,
+      "fp": 297,
+      "fn": 422,
+      "tn": 4328,
+      "f1_exact": "630/1349",
+      "f1": 0.4670126019273536
+     },
+     "n_endpoints": 5363,
+     "optimum": {
+      "f1_exact": "128/273",
+      "f1": 0.46886446886446886,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.4506025905664769,
+       "cutoff_hex": "0x1.cd6ac3f7e7516p-2",
+       "calls": 628,
+       "tp": 320,
+       "fp": 308,
+       "fn": 417,
+       "f1_exact": "128/273",
+       "f1": 0.46886446886446886
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1019,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.2973736976382491,
+       "cutoff_hex": "0x1.3082bb082fff5p-2",
+       "calls": 1019,
+       "tp": 375,
+       "fp": 644,
+       "fn": 362,
+       "f1_exact": "375/878",
+       "f1": 0.4271070615034169
+      }
+     }
+    }
+   }
+  },
+  "h12_2018-10_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2018-10",
+   "excluded_missing_origin": 1,
+   "n": 5364,
+   "positives": 896,
+   "persistence": {
+    "tp": 369,
+    "fp": 295,
+    "fn": 527,
+    "tn": 4173,
+    "f1_exact": "123/260",
+    "f1": 0.47307692307692306
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 367,
+      "fp": 132,
+      "fn": 529,
+      "tn": 4336,
+      "f1_exact": "734/1395",
+      "f1": 0.5261648745519714
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "712/1311",
+      "f1": 0.5430968726163234,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.49430994295738423,
+       "cutoff_hex": "0x1.fa2c62bc5bbdbp-2",
+       "calls": 415,
+       "tp": 356,
+       "fp": 59,
+       "fn": 540,
+       "f1_exact": "712/1311",
+       "f1": 0.5430968726163234
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 260,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.4531115794082692,
+       "cutoff_hex": "0x1.cffc7b5bfd5c8p-2",
+       "calls": 466,
+       "tp": 369,
+       "fp": 97,
+       "fn": 527,
+       "f1_exact": "123/227",
+       "f1": 0.5418502202643172
+      }
+     },
+     "budget": {
+      "k_p": 664,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.32554106648156544,
+       "cutoff_hex": "0x1.4d5aa3282c530p-2",
+       "calls": 664,
+       "tp": 420,
+       "fp": 244,
+       "fn": 476,
+       "f1_exact": "7/13",
+       "f1": 0.5384615384615384
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 376,
+      "fp": 171,
+      "fn": 520,
+      "tn": 4297,
+      "f1_exact": "752/1443",
+      "f1": 0.5211365211365211
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "167/318",
+      "f1": 0.5251572327044025,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.6187140373981443,
+       "cutoff_hex": "0x1.3cc8161866fd4p-1",
+       "calls": 376,
+       "tp": 334,
+       "fp": 42,
+       "fn": 562,
+       "f1_exact": "167/318",
+       "f1": 0.5251572327044025
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 134,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.45785315011517236,
+       "cutoff_hex": "0x1.d4d774c876028p-2",
+       "calls": 556,
+       "tp": 369,
+       "fp": 187,
+       "fn": 527,
+       "f1_exact": "123/242",
+       "f1": 0.5082644628099173
+      }
+     },
+     "budget": {
+      "k_p": 664,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.41846673429000975,
+       "cutoff_hex": "0x1.ac828b28f5431p-2",
+       "calls": 664,
+       "tp": 390,
+       "fp": 274,
+       "fn": 506,
+       "f1_exact": "1/2",
+       "f1": 0.5
+      }
+     }
+    }
+   }
+  },
+  "h12_2019-02_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2019-02",
+   "excluded_missing_origin": 1,
+   "n": 5364,
+   "positives": 941,
+   "persistence": {
+    "tp": 495,
+    "fp": 277,
+    "fn": 446,
+    "tn": 4146,
+    "f1_exact": "330/571",
+    "f1": 0.5779334500875657
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 339,
+      "fp": 41,
+      "fn": 602,
+      "tn": 4382,
+      "f1_exact": "678/1321",
+      "f1": 0.5132475397426193
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "395/729",
+      "f1": 0.541838134430727,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.3948050475643025,
+       "cutoff_hex": "0x1.9447c63e566dfp-2",
+       "calls": 517,
+       "tp": 395,
+       "fp": 122,
+       "fn": 546,
+       "f1_exact": "395/729",
+       "f1": 0.541838134430727
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 772,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3225144325225507,
+       "cutoff_hex": "0x1.4a413930b07d9p-2",
+       "calls": 772,
+       "tp": 455,
+       "fp": 317,
+       "fn": 486,
+       "f1_exact": "910/1713",
+       "f1": 0.5312317571511967
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 394,
+      "fp": 156,
+      "fn": 547,
+      "tn": 4267,
+      "f1_exact": "788/1491",
+      "f1": 0.528504359490275
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "104/181",
+      "f1": 0.574585635359116,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.27639754408658274,
+       "cutoff_hex": "0x1.1b07f5322fb59p-2",
+       "calls": 869,
+       "tp": 520,
+       "fp": 349,
+       "fn": 421,
+       "f1_exact": "104/181",
+       "f1": 0.574585635359116
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 772,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3194912684643386,
+       "cutoff_hex": "0x1.4728b815a5c6ap-2",
+       "calls": 772,
+       "tp": 482,
+       "fp": 290,
+       "fn": 459,
+       "f1_exact": "964/1713",
+       "f1": 0.5627553998832457
+      }
+     }
+    }
+   }
+  },
+  "h12_2019-06_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2019-06",
+   "excluded_missing_origin": 1,
+   "n": 5364,
+   "positives": 1135,
+   "persistence": {
+    "tp": 497,
+    "fp": 241,
+    "fn": 638,
+    "tn": 3988,
+    "f1_exact": "994/1873",
+    "f1": 0.5306994127068874
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 268,
+      "fp": 47,
+      "fn": 867,
+      "tn": 4182,
+      "f1_exact": "268/725",
+      "f1": 0.3696551724137931
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "103/168",
+      "f1": 0.6130952380952381,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.14648628890967946,
+       "cutoff_hex": "0x1.2c0100e16f93ap-3",
+       "calls": 1553,
+       "tp": 824,
+       "fp": 729,
+       "fn": 311,
+       "f1_exact": "103/168",
+       "f1": 0.6130952380952381
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 738,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.2891168715084186,
+       "cutoff_hex": "0x1.280e40cf66e76p-2",
+       "calls": 738,
+       "tp": 486,
+       "fp": 252,
+       "fn": 649,
+       "f1_exact": "972/1873",
+       "f1": 0.5189535504538174
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 333,
+      "fp": 101,
+      "fn": 802,
+      "tn": 4128,
+      "f1_exact": "222/523",
+      "f1": 0.42447418738049714
+     },
+     "n_endpoints": 5364,
+     "optimum": {
+      "f1_exact": "1676/2697",
+      "f1": 0.621431219873934,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.12627396435057112,
+       "cutoff_hex": "0x1.029bec99c699bp-3",
+       "calls": 1562,
+       "tp": 838,
+       "fp": 724,
+       "fn": 297,
+       "f1_exact": "1676/2697",
+       "f1": 0.621431219873934
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 738,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.2946621845552463,
+       "cutoff_hex": "0x1.2dbbec78217bep-2",
+       "calls": 738,
+       "tp": 492,
+       "fp": 246,
+       "fn": 643,
+       "f1_exact": "984/1873",
+       "f1": 0.5253603844100374
+      }
+     }
+    }
+   }
+  },
+  "h12_2019-10_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2019-10",
+   "excluded_missing_origin": 0,
+   "n": 5365,
+   "positives": 1302,
+   "persistence": {
+    "tp": 596,
+    "fp": 301,
+    "fn": 706,
+    "tn": 3762,
+    "f1_exact": "1192/2199",
+    "f1": 0.5420645748067303
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 339,
+      "fp": 59,
+      "fn": 963,
+      "tn": 4004,
+      "f1_exact": "339/850",
+      "f1": 0.3988235294117647
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "2314/3727",
+      "f1": 0.620874698148645,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.06762377581688205,
+       "cutoff_hex": "0x1.14fcab190c77fp-4",
+       "calls": 2425,
+       "tp": 1157,
+       "fp": 1268,
+       "fn": 145,
+       "f1_exact": "2314/3727",
+       "f1": 0.620874698148645
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 897,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.28094330304513027,
+       "cutoff_hex": "0x1.1faf99ea6fab4p-2",
+       "calls": 897,
+       "tp": 579,
+       "fp": 318,
+       "fn": 723,
+       "f1_exact": "386/733",
+       "f1": 0.5266030013642565
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 462,
+      "fp": 229,
+      "fn": 840,
+      "tn": 3834,
+      "f1_exact": "924/1993",
+      "f1": 0.46362267937782237
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1790/2761",
+      "f1": 0.6483158275986961,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.1720481387898347,
+       "cutoff_hex": "0x1.605ac64b85237p-3",
+       "calls": 1459,
+       "tp": 895,
+       "fp": 564,
+       "fn": 407,
+       "f1_exact": "1790/2761",
+       "f1": 0.6483158275986961
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 897,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3125870174278881,
+       "cutoff_hex": "0x1.4016cfa40720ep-2",
+       "calls": 897,
+       "tp": 593,
+       "fp": 304,
+       "fn": 709,
+       "f1_exact": "1186/2199",
+       "f1": 0.5393360618462938
+      }
+     }
+    }
+   }
+  },
+  "h12_2020-02_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2020-02",
+   "excluded_missing_origin": 141,
+   "n": 5365,
+   "positives": 900,
+   "persistence": {
+    "tp": 599,
+    "fp": 343,
+    "fn": 301,
+    "tn": 4122,
+    "f1_exact": "599/921",
+    "f1": 0.6503800217155266
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 448,
+      "fp": 131,
+      "fn": 452,
+      "tn": 4334,
+      "f1_exact": "896/1479",
+      "f1": 0.605814739688979
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1050/1637",
+      "f1": 0.6414172266340867,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.35367022274777915,
+       "cutoff_hex": "0x1.6a2886e1153eap-2",
+       "calls": 737,
+       "tp": 525,
+       "fp": 212,
+       "fn": 375,
+       "f1_exact": "1050/1637",
+       "f1": 0.6414172266340867
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 942,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.2875828647048558,
+       "cutoff_hex": "0x1.267c1f5b307c1p-2",
+       "calls": 942,
+       "tp": 571,
+       "fp": 371,
+       "fn": 329,
+       "f1_exact": "571/921",
+       "f1": 0.6199782844733985
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 489,
+      "fp": 162,
+      "fn": 411,
+      "tn": 4303,
+      "f1_exact": "326/517",
+      "f1": 0.6305609284332688
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1134/1745",
+      "f1": 0.6498567335243552,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.335069015622139,
+       "cutoff_hex": "0x1.571c550000000p-2",
+       "calls": 845,
+       "tp": 567,
+       "fp": 278,
+       "fn": 333,
+       "f1_exact": "1134/1745",
+       "f1": 0.6498567335243552
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 942,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.29946217462821173,
+       "cutoff_hex": "0x1.32a63659ab393p-2",
+       "calls": 942,
+       "tp": 593,
+       "fp": 349,
+       "fn": 307,
+       "f1_exact": "593/921",
+       "f1": 0.6438653637350705
+      }
+     }
+    }
+   }
+  },
+  "h12_2020-06_G2_r80_s42_e1pair": {
+   "horizon": 12,
+   "target_month": "2020-06",
+   "excluded_missing_origin": 141,
+   "n": 5365,
+   "positives": 951,
+   "persistence": {
+    "tp": 602,
+    "fp": 534,
+    "fn": 349,
+    "tn": 3880,
+    "f1_exact": "1204/2087",
+    "f1": 0.5769046478198371
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 400,
+      "fp": 189,
+      "fn": 551,
+      "tn": 4225,
+      "f1_exact": "40/77",
+      "f1": 0.5194805194805194
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "946/1735",
+      "f1": 0.5452449567723343,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.3981909256900233,
+       "cutoff_hex": "0x1.97bf5cad9c477p-2",
+       "calls": 784,
+       "tp": 473,
+       "fp": 311,
+       "fn": 478,
+       "f1_exact": "946/1735",
+       "f1": 0.5452449567723343
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1136,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.32095160139645923,
+       "cutoff_hex": "0x1.48a7895e62f07p-2",
+       "calls": 1136,
+       "tp": 562,
+       "fp": 574,
+       "fn": 389,
+       "f1_exact": "1124/2087",
+       "f1": 0.5385721130809775
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 488,
+      "fp": 274,
+      "fn": 463,
+      "tn": 4140,
+      "f1_exact": "976/1713",
+      "f1": 0.5697606538237011
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "83/143",
+      "f1": 0.5804195804195804,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.373526989898618,
+       "cutoff_hex": "0x1.7e7ddbf726cbcp-2",
+       "calls": 1051,
+       "tp": 581,
+       "fp": 470,
+       "fn": 370,
+       "f1_exact": "83/143",
+       "f1": 0.5804195804195804
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1136,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.35397514033299043,
+       "cutoff_hex": "0x1.6a78758d4f0ebp-2",
+       "calls": 1136,
+       "tp": 597,
+       "fp": 539,
+       "fn": 354,
+       "f1_exact": "1194/2087",
+       "f1": 0.5721130809774796
+      }
+     }
+    }
+   }
+  },
+  "h4_2018-06_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2018-06",
+   "excluded_missing_origin": 0,
+   "n": 5364,
+   "positives": 738,
+   "persistence": {
+    "tp": 540,
+    "fp": 232,
+    "fn": 198,
+    "tn": 4394,
+    "f1_exact": "108/151",
+    "f1": 0.7152317880794702
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 499,
+      "fp": 355,
+      "fn": 239,
+      "tn": 4271,
+      "f1_exact": "499/796",
+      "f1": 0.6268844221105527
+     },
+     "n_endpoints": 5341,
+     "optimum": {
+      "f1_exact": "183/289",
+      "f1": 0.6332179930795848,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.3830207100853802,
+       "cutoff_hex": "0x1.883694be07954p-2",
+       "calls": 996,
+       "tp": 549,
+       "fp": 447,
+       "fn": 189,
+       "f1_exact": "183/289",
+       "f1": 0.6332179930795848
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 772,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.4829036459152364,
+       "cutoff_hex": "0x1.ee7e4b194ce82p-2",
+       "calls": 772,
+       "tp": 422,
+       "fp": 350,
+       "fn": 316,
+       "f1_exact": "422/755",
+       "f1": 0.5589403973509933
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 522,
+      "fp": 351,
+      "fn": 216,
+      "tn": 4275,
+      "f1_exact": "116/179",
+      "f1": 0.6480446927374302
+     },
+     "n_endpoints": 5342,
+     "optimum": {
+      "f1_exact": "1074/1643",
+      "f1": 0.6536822884966524,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.36210791155254207,
+       "cutoff_hex": "0x1.72cc6a96f6d04p-2",
+       "calls": 905,
+       "tp": 537,
+       "fp": 368,
+       "fn": 201,
+       "f1_exact": "1074/1643",
+       "f1": 0.6536822884966524
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 772,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.5106068364880725,
+       "cutoff_hex": "0x1.056e425fa91bep-1",
+       "calls": 772,
+       "tp": 457,
+       "fp": 315,
+       "fn": 281,
+       "f1_exact": "457/755",
+       "f1": 0.6052980132450331
+      }
+     }
+    }
+   }
+  },
+  "h4_2018-10_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2018-10",
+   "excluded_missing_origin": 1,
+   "n": 5364,
+   "positives": 896,
+   "persistence": {
+    "tp": 511,
+    "fp": 227,
+    "fn": 385,
+    "tn": 4241,
+    "f1_exact": "511/817",
+    "f1": 0.6254589963280294
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 342,
+      "fp": 23,
+      "fn": 554,
+      "tn": 4445,
+      "f1_exact": "684/1261",
+      "f1": 0.542426645519429
+     },
+     "n_endpoints": 5343,
+     "optimum": {
+      "f1_exact": "1280/1931",
+      "f1": 0.6628689798032108,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.15763703390230782,
+       "cutoff_hex": "0x1.42d73489fda7ep-3",
+       "calls": 1035,
+       "tp": 640,
+       "fp": 395,
+       "fn": 256,
+       "f1_exact": "1280/1931",
+       "f1": 0.6628689798032108
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 738,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.22738097365335913,
+       "cutoff_hex": "0x1.d1ad1dac972c6p-3",
+       "calls": 738,
+       "tp": 501,
+       "fp": 237,
+       "fn": 395,
+       "f1_exact": "501/817",
+       "f1": 0.6132190942472461
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 387,
+      "fp": 95,
+      "fn": 509,
+      "tn": 4373,
+      "f1_exact": "387/689",
+      "f1": 0.5616835994194485
+     },
+     "n_endpoints": 5354,
+     "optimum": {
+      "f1_exact": "658/995",
+      "f1": 0.6613065326633166,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.13116985161714909,
+       "cutoff_hex": "0x1.0ca2c77755a9fp-3",
+       "calls": 1094,
+       "tp": 658,
+       "fp": 436,
+       "fn": 238,
+       "f1_exact": "658/995",
+       "f1": 0.6613065326633166
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 18,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.2653613254719676,
+       "cutoff_hex": "0x1.0fbae11a19eb9p-2",
+       "calls": 729,
+       "tp": 511,
+       "fp": 218,
+       "fn": 385,
+       "f1_exact": "1022/1625",
+       "f1": 0.6289230769230769
+      }
+     },
+     "budget": {
+      "k_p": 738,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.25509341720176165,
+       "cutoff_hex": "0x1.0537357139ce1p-2",
+       "calls": 738,
+       "tp": 515,
+       "fp": 223,
+       "fn": 381,
+       "f1_exact": "515/817",
+       "f1": 0.6303549571603427
+      }
+     }
+    }
+   }
+  },
+  "h4_2019-02_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2019-02",
+   "excluded_missing_origin": 0,
+   "n": 5365,
+   "positives": 942,
+   "persistence": {
+    "tp": 721,
+    "fp": 176,
+    "fn": 221,
+    "tn": 4247,
+    "f1_exact": "1442/1839",
+    "f1": 0.7841218053289831
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 712,
+      "fp": 152,
+      "fn": 230,
+      "tn": 4271,
+      "f1_exact": "712/903",
+      "f1": 0.7884828349944629
+     },
+     "n_endpoints": 5332,
+     "optimum": {
+      "f1_exact": "45/56",
+      "f1": 0.8035714285714286,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.43551839773895146,
+       "cutoff_hex": "0x1.bdf888ec61665p-2",
+       "calls": 850,
+       "tp": 720,
+       "fp": 130,
+       "fn": 222,
+       "f1_exact": "45/56",
+       "f1": 0.8035714285714286
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 47,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.4310500522475904,
+       "cutoff_hex": "0x1.b9652f555eb64p-2",
+       "calls": 857,
+       "tp": 721,
+       "fp": 136,
+       "fn": 221,
+       "f1_exact": "206/257",
+       "f1": 0.8015564202334631
+      }
+     },
+     "budget": {
+      "k_p": 897,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3837857145816753,
+       "cutoff_hex": "0x1.88ff1f53337e2p-2",
+       "calls": 897,
+       "tp": 724,
+       "fp": 173,
+       "fn": 218,
+       "f1_exact": "1448/1839",
+       "f1": 0.7873844480696031
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 725,
+      "fp": 176,
+      "fn": 217,
+      "tn": 4247,
+      "f1_exact": "1450/1843",
+      "f1": 0.7867607162235486
+     },
+     "n_endpoints": 5356,
+     "optimum": {
+      "f1_exact": "1464/1829",
+      "f1": 0.8004373974849645,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.4646253427864327,
+       "cutoff_hex": "0x1.dbc6bef0a45edp-2",
+       "calls": 887,
+       "tp": 732,
+       "fp": 155,
+       "fn": 210,
+       "f1_exact": "1464/1829",
+       "f1": 0.8004373974849645
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 45,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.4988208245793515,
+       "cutoff_hex": "0x1.fecae2e0873ccp-2",
+       "calls": 867,
+       "tp": 721,
+       "fp": 146,
+       "fn": 221,
+       "f1_exact": "1442/1809",
+       "f1": 0.7971254836926479
+      }
+     },
+     "budget": {
+      "k_p": 897,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.4497941116273456,
+       "cutoff_hex": "0x1.cc96d3dd7dc54p-2",
+       "calls": 897,
+       "tp": 732,
+       "fp": 165,
+       "fn": 210,
+       "f1_exact": "488/613",
+       "f1": 0.7960848287112561
+      }
+     }
+    }
+   }
+  },
+  "h4_2019-06_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2019-06",
+   "excluded_missing_origin": 0,
+   "n": 5365,
+   "positives": 1136,
+   "persistence": {
+    "tp": 604,
+    "fp": 338,
+    "fn": 532,
+    "tn": 3891,
+    "f1_exact": "604/1039",
+    "f1": 0.5813282001924928
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 579,
+      "fp": 251,
+      "fn": 557,
+      "tn": 3978,
+      "f1_exact": "579/983",
+      "f1": 0.5890132248219736
+     },
+     "n_endpoints": 5337,
+     "optimum": {
+      "f1_exact": "864/1337",
+      "f1": 0.6462228870605834,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.14200562654506496,
+       "cutoff_hex": "0x1.22d3d88edf523p-3",
+       "calls": 1538,
+       "tp": 864,
+       "fp": 674,
+       "fn": 272,
+       "f1_exact": "864/1337",
+       "f1": 0.6462228870605834
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 18,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.39485673424921247,
+       "cutoff_hex": "0x1.945552e0d2ab1p-2",
+       "calls": 931,
+       "tp": 604,
+       "fp": 327,
+       "fn": 532,
+       "f1_exact": "1208/2067",
+       "f1": 0.5844218674407353
+      }
+     },
+     "budget": {
+      "k_p": 942,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.33227002002390055,
+       "cutoff_hex": "0x1.543e9795c6927p-2",
+       "calls": 942,
+       "tp": 607,
+       "fp": 335,
+       "fn": 529,
+       "f1_exact": "607/1039",
+       "f1": 0.5842155919153031
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 603,
+      "fp": 328,
+      "fn": 533,
+      "tn": 3901,
+      "f1_exact": "402/689",
+      "f1": 0.5834542815674891
+     },
+     "n_endpoints": 5352,
+     "optimum": {
+      "f1_exact": "864/1325",
+      "f1": 0.6520754716981132,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.14809332399962474,
+       "cutoff_hex": "0x1.2f4b8d7aacb01p-3",
+       "calls": 1514,
+       "tp": 864,
+       "fp": 650,
+       "fn": 272,
+       "f1_exact": "864/1325",
+       "f1": 0.6520754716981132
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 16,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.47217816160917925,
+       "cutoff_hex": "0x1.e382ac07fcc06p-2",
+       "calls": 929,
+       "tp": 604,
+       "fp": 325,
+       "fn": 532,
+       "f1_exact": "1208/2065",
+       "f1": 0.5849878934624697
+      }
+     },
+     "budget": {
+      "k_p": 942,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.33762298798224644,
+       "cutoff_hex": "0x1.59b9d72f0bd3ap-2",
+       "calls": 942,
+       "tp": 606,
+       "fp": 336,
+       "fn": 530,
+       "f1_exact": "606/1039",
+       "f1": 0.5832531280076997
+      }
+     }
+    }
+   }
+  },
+  "h4_2019-10_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2019-10",
+   "excluded_missing_origin": 0,
+   "n": 5365,
+   "positives": 1302,
+   "persistence": {
+    "tp": 843,
+    "fp": 293,
+    "fn": 459,
+    "tn": 3770,
+    "f1_exact": "843/1219",
+    "f1": 0.6915504511894995
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 667,
+      "fp": 205,
+      "fn": 635,
+      "tn": 3858,
+      "f1_exact": "667/1087",
+      "f1": 0.6136154553817847
+     },
+     "n_endpoints": 5340,
+     "optimum": {
+      "f1_exact": "922/1329",
+      "f1": 0.6937547027840482,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.21082933743543694,
+       "cutoff_hex": "0x1.afc74aaa94953p-3",
+       "calls": 1356,
+       "tp": 922,
+       "fp": 434,
+       "fn": 380,
+       "f1_exact": "922/1329",
+       "f1": 0.6937547027840482
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1136,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.30161357546794687,
+       "cutoff_hex": "0x1.34da306aa8682p-2",
+       "calls": 1136,
+       "tp": 827,
+       "fp": 309,
+       "fn": 475,
+       "f1_exact": "827/1219",
+       "f1": 0.6784249384741592
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 780,
+      "fp": 265,
+      "fn": 522,
+      "tn": 3798,
+      "f1_exact": "1560/2347",
+      "f1": 0.6646783127396677
+     },
+     "n_endpoints": 5356,
+     "optimum": {
+      "f1_exact": "1892/2743",
+      "f1": 0.6897557418884434,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.17874485691382222,
+       "cutoff_hex": "0x1.6e11c8962f3d3p-3",
+       "calls": 1441,
+       "tp": 946,
+       "fp": 495,
+       "fn": 356,
+       "f1_exact": "1892/2743",
+       "f1": 0.6897557418884434
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1136,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.31840205215144474,
+       "cutoff_hex": "0x1.460b3003e103fp-2",
+       "calls": 1136,
+       "tp": 839,
+       "fp": 297,
+       "fn": 463,
+       "f1_exact": "839/1219",
+       "f1": 0.6882690730106645
+      }
+     }
+    }
+   }
+  },
+  "h4_2020-02_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2020-02",
+   "excluded_missing_origin": 141,
+   "n": 5365,
+   "positives": 900,
+   "persistence": {
+    "tp": 606,
+    "fp": 696,
+    "fn": 294,
+    "tn": 3769,
+    "f1_exact": "202/367",
+    "f1": 0.5504087193460491
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 532,
+      "fp": 461,
+      "fn": 368,
+      "tn": 4004,
+      "f1_exact": "1064/1893",
+      "f1": 0.5620707871104068
+     },
+     "n_endpoints": 5320,
+     "optimum": {
+      "f1_exact": "1072/1857",
+      "f1": 0.5772751750134626,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.4912005007386413,
+       "cutoff_hex": "0x1.f6fd4399ce1e8p-2",
+       "calls": 957,
+       "tp": 536,
+       "fp": 421,
+       "fn": 364,
+       "f1_exact": "1072/1857",
+       "f1": 0.5772751750134626
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1302,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3817254212755773,
+       "cutoff_hex": "0x1.86e30761b8c1ep-2",
+       "calls": 1302,
+       "tp": 602,
+       "fp": 700,
+       "fn": 298,
+       "f1_exact": "602/1101",
+       "f1": 0.5467756584922797
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 586,
+      "fp": 690,
+      "fn": 314,
+      "tn": 3775,
+      "f1_exact": "293/544",
+      "f1": 0.5386029411764706
+     },
+     "n_endpoints": 5344,
+     "optimum": {
+      "f1_exact": "766/1327",
+      "f1": 0.5772418990203466,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.19572729554040158,
+       "cutoff_hex": "0x1.90d978ea3e91cp-3",
+       "calls": 1754,
+       "tp": 766,
+       "fp": 988,
+       "fn": 134,
+       "f1_exact": "766/1327",
+       "f1": 0.5772418990203466
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 15,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.42791550686194657,
+       "cutoff_hex": "0x1.b62f7b8db17bep-2",
+       "calls": 1297,
+       "tp": 606,
+       "fp": 691,
+       "fn": 294,
+       "f1_exact": "1212/2197",
+       "f1": 0.5516613563950842
+      }
+     },
+     "budget": {
+      "k_p": 1302,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.42439150968339856,
+       "cutoff_hex": "0x1.b293b01b293b0p-2",
+       "calls": 1302,
+       "tp": 610,
+       "fp": 692,
+       "fn": 290,
+       "f1_exact": "610/1101",
+       "f1": 0.5540417801998183
+      }
+     }
+    }
+   }
+  },
+  "h4_2020-06_G1_r80_s42_e1pair": {
+   "horizon": 4,
+   "target_month": "2020-06",
+   "excluded_missing_origin": 0,
+   "n": 5506,
+   "positives": 967,
+   "persistence": {
+    "tp": 601,
+    "fp": 314,
+    "fn": 366,
+    "tn": 4225,
+    "f1_exact": "601/941",
+    "f1": 0.638682252922423
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 610,
+      "fp": 261,
+      "fn": 357,
+      "tn": 4278,
+      "f1_exact": "610/919",
+      "f1": 0.6637649619151251
+     },
+     "n_endpoints": 5435,
+     "optimum": {
+      "f1_exact": "559/856",
+      "f1": 0.6530373831775701,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.535394319811313,
+       "cutoff_hex": "0x1.121f344c1b85bp-1",
+       "calls": 745,
+       "tp": 559,
+       "fp": 186,
+       "fn": 408,
+       "f1_exact": "559/856",
+       "f1": 0.6530373831775701
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 32,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.47501364339783714,
+       "cutoff_hex": "0x1.e669f9fe30a84p-2",
+       "calls": 897,
+       "tp": 601,
+       "fp": 296,
+       "fn": 366,
+       "f1_exact": "601/932",
+       "f1": 0.6448497854077253
+      }
+     },
+     "budget": {
+      "k_p": 915,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.47172148560791644,
+       "cutoff_hex": "0x1.e30af50606b15p-2",
+       "calls": 915,
+       "tp": 607,
+       "fp": 308,
+       "fn": 360,
+       "f1_exact": "607/941",
+       "f1": 0.6450584484590861
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 623,
+      "fp": 318,
+      "fn": 344,
+      "tn": 4221,
+      "f1_exact": "623/954",
+      "f1": 0.6530398322851153
+     },
+     "n_endpoints": 5460,
+     "optimum": {
+      "f1_exact": "562/839",
+      "f1": 0.6698450536352801,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.5682664434820488,
+       "cutoff_hex": "0x1.22f3d1bc56da0p-1",
+       "calls": 711,
+       "tp": 562,
+       "fp": 149,
+       "fn": 405,
+       "f1_exact": "562/839",
+       "f1": 0.6698450536352801
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 915,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.47877563960546954,
+       "cutoff_hex": "0x1.ea442948e86bep-2",
+       "calls": 915,
+       "tp": 597,
+       "fp": 318,
+       "fn": 370,
+       "f1_exact": "597/941",
+       "f1": 0.6344314558979809
+      }
+     }
+    }
+   }
+  },
+  "h8_2018-06_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2018-06",
+   "excluded_missing_origin": 0,
+   "n": 5364,
+   "positives": 738,
+   "persistence": {
+    "tp": 365,
+    "fp": 299,
+    "fn": 373,
+    "tn": 4327,
+    "f1_exact": "365/701",
+    "f1": 0.5206847360912982
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 408,
+      "fp": 778,
+      "fn": 330,
+      "tn": 3848,
+      "f1_exact": "204/481",
+      "f1": 0.42411642411642414
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "512/1073",
+      "f1": 0.4771668219944082,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.816149176920975,
+       "cutoff_hex": "0x1.a1de4e0f10d90p-1",
+       "calls": 335,
+       "tp": 256,
+       "fp": 79,
+       "fn": 482,
+       "f1_exact": "512/1073",
+       "f1": 0.4771668219944082
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 664,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.653954015793493,
+       "cutoff_hex": "0x1.4ed30f8dd782dp-1",
+       "calls": 664,
+       "tp": 312,
+       "fp": 352,
+       "fn": 426,
+       "f1_exact": "312/701",
+       "f1": 0.4450784593437946
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 436,
+      "fp": 820,
+      "fn": 302,
+      "tn": 3806,
+      "f1_exact": "436/997",
+      "f1": 0.4373119358074223
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "494/1029",
+      "f1": 0.4800777453838678,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.8849169793242342,
+       "cutoff_hex": "0x1.c513d69bbed1cp-1",
+       "calls": 291,
+       "tp": 247,
+       "fp": 44,
+       "fn": 491,
+       "f1_exact": "494/1029",
+       "f1": 0.4800777453838678
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 664,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.677492184441384,
+       "cutoff_hex": "0x1.5ae0416ef1541p-1",
+       "calls": 664,
+       "tp": 305,
+       "fp": 359,
+       "fn": 433,
+       "f1_exact": "305/701",
+       "f1": 0.43509272467902993
+      }
+     }
+    }
+   }
+  },
+  "h8_2018-10_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2018-10",
+   "excluded_missing_origin": 1,
+   "n": 5364,
+   "positives": 896,
+   "persistence": {
+    "tp": 491,
+    "fp": 281,
+    "fn": 405,
+    "tn": 4187,
+    "f1_exact": "491/834",
+    "f1": 0.5887290167865707
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 341,
+      "fp": 123,
+      "fn": 555,
+      "tn": 4345,
+      "f1_exact": "341/680",
+      "f1": 0.5014705882352941
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "385/761",
+      "f1": 0.5059132720105125,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.3964053990564756,
+       "cutoff_hex": "0x1.95eb4c039f1f1p-2",
+       "calls": 626,
+       "tp": 385,
+       "fp": 241,
+       "fn": 511,
+       "f1_exact": "385/761",
+       "f1": 0.5059132720105125
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 772,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.31887744415589797,
+       "cutoff_hex": "0x1.4687cf08539b9p-2",
+       "calls": 772,
+       "tp": 409,
+       "fp": 363,
+       "fn": 487,
+       "f1_exact": "409/834",
+       "f1": 0.4904076738609113
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 357,
+      "fp": 159,
+      "fn": 539,
+      "tn": 4309,
+      "f1_exact": "357/706",
+      "f1": 0.5056657223796034
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "396/779",
+      "f1": 0.5083440308087291,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.34245778112456676,
+       "cutoff_hex": "0x1.5ead40a8c3517p-2",
+       "calls": 662,
+       "tp": 396,
+       "fp": 266,
+       "fn": 500,
+       "f1_exact": "396/779",
+       "f1": 0.5083440308087291
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 772,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.2793866244106182,
+       "cutoff_hex": "0x1.1e1786fb223e3p-2",
+       "calls": 772,
+       "tp": 408,
+       "fp": 364,
+       "fn": 488,
+       "f1_exact": "68/139",
+       "f1": 0.4892086330935252
+      }
+     }
+    }
+   }
+  },
+  "h8_2019-02_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2019-02",
+   "excluded_missing_origin": 1,
+   "n": 5364,
+   "positives": 941,
+   "persistence": {
+    "tp": 494,
+    "fp": 244,
+    "fn": 447,
+    "tn": 4179,
+    "f1_exact": "988/1679",
+    "f1": 0.5884455032757594
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 414,
+      "fp": 64,
+      "fn": 527,
+      "tn": 4359,
+      "f1_exact": "276/473",
+      "f1": 0.5835095137420718
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "1066/1711",
+      "f1": 0.6230274693161894,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.309471908029598,
+       "cutoff_hex": "0x1.3ce6343012458p-2",
+       "calls": 770,
+       "tp": 533,
+       "fp": 237,
+       "fn": 408,
+       "f1_exact": "1066/1711",
+       "f1": 0.6230274693161894
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 116,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.35044653374981216,
+       "cutoff_hex": "0x1.66db74c5ceda0p-2",
+       "calls": 663,
+       "tp": 494,
+       "fp": 169,
+       "fn": 447,
+       "f1_exact": "247/401",
+       "f1": 0.6159600997506235
+      }
+     },
+     "budget": {
+      "k_p": 738,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.318423496235905,
+       "cutoff_hex": "0x1.4610cf1a71dc1p-2",
+       "calls": 738,
+       "tp": 520,
+       "fp": 218,
+       "fn": 421,
+       "f1_exact": "1040/1679",
+       "f1": 0.6194163192376414
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 382,
+      "fp": 78,
+      "fn": 559,
+      "tn": 4345,
+      "f1_exact": "764/1401",
+      "f1": 0.5453247680228408
+     },
+     "n_endpoints": 5365,
+     "optimum": {
+      "f1_exact": "416/623",
+      "f1": 0.6677367576243981,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.2842181036835719,
+       "cutoff_hex": "0x1.230a12110220ep-2",
+       "calls": 928,
+       "tp": 624,
+       "fp": 304,
+       "fn": 317,
+       "f1_exact": "416/623",
+       "f1": 0.6677367576243981
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 192,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.36922498204954884,
+       "cutoff_hex": "0x1.7a161d1b13749p-2",
+       "calls": 637,
+       "tp": 494,
+       "fp": 143,
+       "fn": 447,
+       "f1_exact": "494/789",
+       "f1": 0.6261089987325729
+      }
+     },
+     "budget": {
+      "k_p": 738,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3313745028134701,
+       "cutoff_hex": "0x1.5353d6713f9adp-2",
+       "calls": 738,
+       "tp": 543,
+       "fp": 195,
+       "fn": 398,
+       "f1_exact": "1086/1679",
+       "f1": 0.646813579511614
+      }
+     }
+    }
+   }
+  },
+  "h8_2019-06_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2019-06",
+   "excluded_missing_origin": 0,
+   "n": 5365,
+   "positives": 1136,
+   "persistence": {
+    "tp": 595,
+    "fp": 302,
+    "fn": 541,
+    "tn": 3927,
+    "f1_exact": "1190/2033",
+    "f1": 0.5853418593212002
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 491,
+      "fp": 224,
+      "fn": 645,
+      "tn": 4005,
+      "f1_exact": "982/1851",
+      "f1": 0.5305240410588871
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "116/187",
+      "f1": 0.6203208556149733,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.2629372008900352,
+       "cutoff_hex": "0x1.0d3f68dae5defp-2",
+       "calls": 1295,
+       "tp": 754,
+       "fp": 541,
+       "fn": 382,
+       "f1_exact": "116/187",
+       "f1": 0.6203208556149733
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 897,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3740490600466728,
+       "cutoff_hex": "0x1.7f06b78000000p-2",
+       "calls": 897,
+       "tp": 585,
+       "fp": 312,
+       "fn": 551,
+       "f1_exact": "1170/2033",
+       "f1": 0.5755041810132808
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 564,
+      "fp": 203,
+      "fn": 572,
+      "tn": 4026,
+      "f1_exact": "1128/1903",
+      "f1": 0.5927482921702575
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1496/2311",
+      "f1": 0.6473388143660753,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.3092063370063193,
+       "cutoff_hex": "0x1.3ca09604a1e3ep-2",
+       "calls": 1175,
+       "tp": 748,
+       "fp": 427,
+       "fn": 388,
+       "f1_exact": "1496/2311",
+       "f1": 0.6473388143660753
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 118,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.4047064603777665,
+       "cutoff_hex": "0x1.9e6b5ecf35af6p-2",
+       "calls": 826,
+       "tp": 595,
+       "fp": 231,
+       "fn": 541,
+       "f1_exact": "595/981",
+       "f1": 0.6065239551478083
+      }
+     },
+     "budget": {
+      "k_p": 897,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3852328870245193,
+       "cutoff_hex": "0x1.8a7a7d6c74b56p-2",
+       "calls": 897,
+       "tp": 628,
+       "fp": 269,
+       "fn": 508,
+       "f1_exact": "1256/2033",
+       "f1": 0.617806197737334
+      }
+     }
+    }
+   }
+  },
+  "h8_2019-10_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2019-10",
+   "excluded_missing_origin": 0,
+   "n": 5365,
+   "positives": 1302,
+   "persistence": {
+    "tp": 615,
+    "fp": 327,
+    "fn": 687,
+    "tn": 3736,
+    "f1_exact": "205/374",
+    "f1": 0.5481283422459893
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 523,
+      "fp": 317,
+      "fn": 779,
+      "tn": 3746,
+      "f1_exact": "523/1071",
+      "f1": 0.488328664799253
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1087/1713",
+      "f1": 0.634559252772913,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.08244653905995207,
+       "cutoff_hex": "0x1.51b3764ee4e33p-4",
+       "calls": 2124,
+       "tp": 1087,
+       "fp": 1037,
+       "fn": 215,
+       "f1_exact": "1087/1713",
+       "f1": 0.634559252772913
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 942,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.37697009647210605,
+       "cutoff_hex": "0x1.820472efabaf3p-2",
+       "calls": 942,
+       "tp": 561,
+       "fp": 381,
+       "fn": 741,
+       "f1_exact": "1/2",
+       "f1": 0.5
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 482,
+      "fp": 261,
+      "fn": 820,
+      "tn": 3802,
+      "f1_exact": "964/2045",
+      "f1": 0.4713936430317848
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1111/1740",
+      "f1": 0.6385057471264368,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.0802777298994711,
+       "cutoff_hex": "0x1.48d14d083edf6p-4",
+       "calls": 2178,
+       "tp": 1111,
+       "fp": 1067,
+       "fn": 191,
+       "f1_exact": "1111/1740",
+       "f1": 0.6385057471264368
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 942,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3433932987304644,
+       "cutoff_hex": "0x1.5fa27e2eda034p-2",
+       "calls": 942,
+       "tp": 572,
+       "fp": 370,
+       "fn": 730,
+       "f1_exact": "26/51",
+       "f1": 0.5098039215686274
+      }
+     }
+    }
+   }
+  },
+  "h8_2020-02_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2020-02",
+   "excluded_missing_origin": 141,
+   "n": 5365,
+   "positives": 900,
+   "persistence": {
+    "tp": 492,
+    "fp": 644,
+    "fn": 408,
+    "tn": 3821,
+    "f1_exact": "246/509",
+    "f1": 0.48330058939096265
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 529,
+      "fp": 289,
+      "fn": 371,
+      "tn": 4176,
+      "f1_exact": "529/859",
+      "f1": 0.6158323632130385
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "53/82",
+      "f1": 0.6463414634146342,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.43658977143638344,
+       "cutoff_hex": "0x1.bf116398597aap-2",
+       "calls": 904,
+       "tp": 583,
+       "fp": 321,
+       "fn": 317,
+       "f1_exact": "53/82",
+       "f1": 0.6463414634146342
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 626,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.5234783198064934,
+       "cutoff_hex": "0x1.0c0559af77c42p-1",
+       "calls": 724,
+       "tp": 492,
+       "fp": 232,
+       "fn": 408,
+       "f1_exact": "123/203",
+       "f1": 0.6059113300492611
+      }
+     },
+     "budget": {
+      "k_p": 1136,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.3282011348397138,
+       "cutoff_hex": "0x1.5013f552962d4p-2",
+       "calls": 1136,
+       "tp": 644,
+       "fp": 492,
+       "fn": 256,
+       "f1_exact": "322/509",
+       "f1": 0.6326129666011788
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 455,
+      "fp": 283,
+      "fn": 445,
+      "tn": 4182,
+      "f1_exact": "5/9",
+      "f1": 0.5555555555555556
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "669/1045",
+      "f1": 0.6401913875598086,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.29207554367353494,
+       "cutoff_hex": "0x1.2b15d9f02831cp-2",
+       "calls": 1190,
+       "tp": 669,
+       "fp": 521,
+       "fn": 231,
+       "f1_exact": "669/1045",
+       "f1": 0.6401913875598086
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 566,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.4536394755823269,
+       "cutoff_hex": "0x1.d086dddf33e6bp-2",
+       "calls": 785,
+       "tp": 492,
+       "fp": 293,
+       "fn": 408,
+       "f1_exact": "984/1685",
+       "f1": 0.5839762611275965
+      }
+     },
+     "budget": {
+      "k_p": 1136,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.317870952143396,
+       "cutoff_hex": "0x1.457ff67f3791cp-2",
+       "calls": 1136,
+       "tp": 650,
+       "fp": 486,
+       "fn": 250,
+       "f1_exact": "325/509",
+       "f1": 0.6385068762278978
+      }
+     }
+    }
+   }
+  },
+  "h8_2020-06_G4_r80_s42_e1pair": {
+   "horizon": 8,
+   "target_month": "2020-06",
+   "excluded_missing_origin": 141,
+   "n": 5365,
+   "positives": 951,
+   "persistence": {
+    "tp": 647,
+    "fp": 655,
+    "fn": 304,
+    "tn": 3759,
+    "f1_exact": "1294/2253",
+    "f1": 0.5743453173546382
+   },
+   "arms": {
+    "original": {
+     "argmax": {
+      "tp": 694,
+      "fp": 690,
+      "fn": 257,
+      "tn": 3724,
+      "f1_exact": "1388/2335",
+      "f1": 0.5944325481798716
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1042/1721",
+      "f1": 0.6054619407321324,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.6675408495229735,
+       "cutoff_hex": "0x1.55c7ea0ae3f50p-1",
+       "calls": 770,
+       "tp": 521,
+       "fp": 249,
+       "fn": 430,
+       "f1_exact": "1042/1721",
+       "f1": 0.6054619407321324
+      }
+     },
+     "dominance": {
+      "dominates": true,
+      "count": 42,
+      "witness": {
+       "kind": "cutoff",
+       "cutoff": 0.5019647894771999,
+       "cutoff_hex": "0x1.0101876518a06p-1",
+       "calls": 1272,
+       "tp": 647,
+       "fp": 625,
+       "fn": 304,
+       "f1_exact": "1294/2223",
+       "f1": 0.5820962663067927
+      }
+     },
+     "budget": {
+      "k_p": 1302,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.49325911252383287,
+       "cutoff_hex": "0x1.f918eab2f9b2dp-2",
+       "calls": 1302,
+       "tp": 657,
+       "fp": 645,
+       "fn": 294,
+       "f1_exact": "438/751",
+       "f1": 0.5832223701731025
+      }
+     }
+    },
+    "anchored": {
+     "argmax": {
+      "tp": 633,
+      "fp": 556,
+      "fn": 318,
+      "tn": 3858,
+      "f1_exact": "633/1070",
+      "f1": 0.591588785046729
+     },
+     "n_endpoints": 5366,
+     "optimum": {
+      "f1_exact": "1130/1847",
+      "f1": 0.6118029236599891,
+      "n_optimal": 1,
+      "winner": {
+       "kind": "cutoff",
+       "cutoff": 0.5757092979231101,
+       "cutoff_hex": "0x1.26c35e7d2a6f1p-1",
+       "calls": 896,
+       "tp": 565,
+       "fp": 331,
+       "fn": 386,
+       "f1_exact": "1130/1847",
+       "f1": 0.6118029236599891
+      }
+     },
+     "dominance": {
+      "dominates": false,
+      "count": 0,
+      "witness": null
+     },
+     "budget": {
+      "k_p": 1302,
+      "status": "exact",
+      "point": {
+       "kind": "cutoff",
+       "cutoff": 0.44031571567705435,
+       "cutoff_hex": "0x1.c2e21f7afdbadp-2",
+       "calls": 1302,
+       "tp": 645,
+       "fp": 657,
+       "fn": 306,
+       "f1_exact": "430/751",
+       "f1": 0.5725699067909454
+      }
+     }
+    }
+   }
+  }
+ },
+ "by_horizon_mean_fold": {
+  "4": {
+   "n_folds": 7,
+   "persistence_f1": 0.6552546019124209,
+   "arms": {
+    "original": {
+     "argmax_f1": 0.6266083331219622,
+     "hindsight_max_f1": 0.6671355070699841,
+     "gap_optimum_minus_persistence": 0.011880905157563062,
+     "gap_optimum_minus_argmax": 0.04052717394802193,
+     "gap_argmax_minus_persistence": -0.02864626879045887,
+     "folds_optimum_gt_persistence": 6,
+     "folds_dominating_persistence": 3,
+     "budget_exact": 7,
+     "budget_bracket": 0,
+     "mean_budget_tp_minus_persistence_tp_exact": -19.428571428571427
+    },
+    "anchored": {
+     "argmax_f1": 0.6337520537355957,
+     "hindsight_max_f1": 0.6720491978410167,
+     "gap_optimum_minus_persistence": 0.016794595928595685,
+     "gap_optimum_minus_argmax": 0.03829714410542099,
+     "gap_argmax_minus_persistence": -0.021502548176825304,
+     "folds_optimum_gt_persistence": 5,
+     "folds_dominating_persistence": 4,
+     "budget_exact": 7,
+     "budget_bracket": 0,
+     "mean_budget_tp_minus_persistence_tp_exact": -10.0
+    }
+   }
+  },
+  "8": {
+   "n_folds": 7,
+   "persistence_f1": 0.5555679092094884,
+   "arms": {
+    "original": {
+     "argmax_f1": 0.5340305919064058,
+     "hindsight_max_f1": 0.587541582265109,
+     "gap_optimum_minus_persistence": 0.03197367305562061,
+     "gap_optimum_minus_argmax": 0.053510990358703256,
+     "gap_argmax_minus_persistence": -0.02153731730308264,
+     "folds_optimum_gt_persistence": 5,
+     "folds_dominating_persistence": 3,
+     "budget_exact": 7,
+     "budget_bracket": 0,
+     "mean_budget_tp_minus_persistence_tp_exact": -1.5714285714285714
+    },
+    "anchored": {
+     "argmax_f1": 0.5285126717163132,
+     "hindsight_max_f1": 0.5991424866470437,
+     "gap_optimum_minus_persistence": 0.04357457743755518,
+     "gap_optimum_minus_argmax": 0.07062981493073024,
+     "gap_argmax_minus_persistence": -0.02705523749317505,
+     "folds_optimum_gt_persistence": 5,
+     "folds_dominating_persistence": 3,
+     "budget_exact": 7,
+     "budget_bracket": 0,
+     "mean_budget_tp_minus_persistence_tp_exact": 7.428571428571429
+    }
+   }
+  },
+  "12": {
+   "n_folds": 7,
+   "persistence_f1": 0.5477106782504761,
+   "arms": {
+    "original": {
+     "argmax_f1": 0.47904284564154026,
+     "hindsight_max_f1": 0.5654590523216675,
+     "gap_optimum_minus_persistence": 0.017748374071191262,
+     "gap_optimum_minus_argmax": 0.08641620668012713,
+     "gap_argmax_minus_persistence": -0.06866783260893587,
+     "folds_optimum_gt_persistence": 3,
+     "folds_dominating_persistence": 1,
+     "budget_exact": 7,
+     "budget_bracket": 0,
+     "mean_budget_tp_minus_persistence_tp_exact": -21.0
+    },
+    "anchored": {
+     "argmax_f1": 0.5150102759384912,
+     "hindsight_max_f1": 0.5812329569063647,
+     "gap_optimum_minus_persistence": 0.033522278655888534,
+     "gap_optimum_minus_argmax": 0.06622268096787344,
+     "gap_argmax_minus_persistence": -0.0327004023119849,
+     "folds_optimum_gt_persistence": 4,
+     "folds_dominating_persistence": 1,
+     "budget_exact": 7,
+     "budget_bracket": 0,
+     "mean_budget_tp_minus_persistence_tp_exact": -8.571428571428571
+    }
+   }
+  }
+ },
+ "interpretation": "Hindsight envelope within the deterministic scalar-cutoff family only, chosen with E3 truth on repeatedly exposed origin-known folds. Not a bound on four-class, feature-based, randomised or row-specific policies; not a deployable rule, validation or adoption evidence. Failure on a root means only that this frozen checkpoint's cutoff family cannot beat persistence on that fold; success is fold-specific headroom, not a transferable gain, and does not mean overfitting is solved. k_p is fixed without target outcomes but evaluated on an exposed cohort. Argmax is generally not in the family, so the optimum need not reach argmax. Both arms already use persistence information (anchored is not independent ranking evidence). Mean-fold per H only; no pooled oracle, no significance tests."
+}

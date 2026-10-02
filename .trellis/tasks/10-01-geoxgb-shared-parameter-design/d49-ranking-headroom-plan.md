@@ -1,4 +1,4 @@
-# D49 / A23: zero-fit ranking-headroom diagnostic (approved)
+# D49 / A23: zero-fit ranking-headroom diagnostic (completed; no policy adopted; supervisor verification passed)
 
 2026-10-02. Supervisor selection under the user's delegated Stage 1 research authority, after the D26–D48 finite checkpoint. Approved as written after supervisor review, with three implementation clarifications (zero-denominator F1, predict-none tie winner, direct argmax recomputation); the planning commit precedes any code, and real scoring waits for supervisor release. Same active task, executor, audit run and base.
 - **Endpoint:** the primary crisis-F1 endpoint (four-class argmax → code ≥ 2) and the final criterion are unchanged.
@@ -70,3 +70,11 @@ D39 recorded that the persistence operating point was not tested against the roo
 - **Script:** one small task-research script, `research/d49_ranking_headroom.py`. It reuses the D40 hash and CSV reading pattern and installed numpy/pandas (sklearn only if useful). Its exact bytes are committed before execution, and the script git blob must equal HEAD at run time. It has no fit API calls.
 - **Outputs (external):** under `C:\Users\swl00\geoxgb_runs\geoxgb-d49-ranking-headroom-20261002\`: the frontier file, a compact summary and an identity JSON (script blob and sha, input hashes, runtime).
 - **Order:** supervisor review → align pointers and commit the planning (GitNexus attempt) → native implement and native check (each ≤ 10 min) → producer commit → supervisor release → single zero-fit run → factual report → supervisor independent check and synthesis → stop after D49.
+
+## 5. Result (2026-10-02)
+
+- **Producer and run:** producer `879c335` (blob `67a9867e…`; selftest OK). Run `C:\Users\swl00\geoxgb_runs\geoxgb-d49-ranking-headroom-20261002`: exit 0 in 4 s, zero fits, 713 excluded, 7 folds per H, all 42 budget points exact. Executor factual record `4bc18fb`.
+- **Supervisor verification:** PASS (`research/d49_supervisor_verify.py` / `research/d49_supervisor_verification.json`; 950 checks, 225,241 frontier endpoints, independent searchsorted method).
+- **Findings:** [research/d49-ranking-headroom-findings.md](research/d49-ranking-headroom-findings.md).
+- **Decision:** no policy adopted and no overfitting resolution claimed. Original-arm hindsight max − persistence (mean-fold) +.011881 / +.031974 / +.017748 at H4/H8/H12, beating persistence on 6/7, 5/7, 3/7 folds, weak dominance on 3/7, 3/7, 1/7; mean TP gaps at persistence's call count −19.429 / −1.571 / −21, so hindsight headroom does not establish uniformly better ranking. Mean-fold persistence differs from earlier pooled figures by aggregation only. No pooled oracle headline.
+- **Stage 1** remains unresolved; no D50.
