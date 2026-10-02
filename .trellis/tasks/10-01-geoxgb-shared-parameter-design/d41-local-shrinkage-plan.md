@@ -1,4 +1,4 @@
-# D41 / A15：冻结分区的局部增量减半对照
+# D41 / A15：冻结分区的局部增量减半对照（已完成；诊断候选，不采用；独立核验通过）
 
 2026-10-02，监督方依据用户委托决定此有界Stage1研究。Claude已只读核查产物可用性并提出限制；本契约评审、提交后才数值运行。零新增拟合，不修改生产预测规则，不运行Stage2/3、完整648、最终期或close。
 
@@ -33,3 +33,10 @@ D34的Brier搜索候选在C上改善明显，E3收益很小且危机概率Brier�
 - root/full的原始C/E3混淆和Brier复现D36；报告逐折delta，不能只呈现最佳汇总。无E4或下游地图输出。保留包含root/part/area/target/H/truth/route及四类概率/预测的逐键外部文件、紧凑summary和输入hash。
 - 一个最小外部脚本，冻结Windows Python3.12.10/numpy2.2.6/pandas2.2.3；不改生产符号。自检用合成margin验证几何均值恒等式、相同分布直接复制、无truth依赖；实际数据核对完整键、原臂分数、fallback不变及分组回加。执行方与监督方用不同计算表达式独立核对（log-probability平均再softmax），按浮点容差核对概率、精确核对argmax和混淆；若近并列导致标签差异须报告。
 - 小脚本/摘要/核验/综合最终留task research，大逐键文件留外部并记录路径/hash。先提交spec并同步prd/design/implement/PROGRESS与experiment-plan短指针（保持文件大小限制），再执行。结果后停止扩展，由监督方判断下一方向；不继续扫描alpha，不将本轮完成写成Stage1过拟合解决。
+
+## 结果（2026-10-02；零拟合）
+
+见[research/d41-local-shrinkage-findings.md](research/d41-local-shrinkage-findings.md)。主脚本`research/d41_local_shrinkage.py`、汇总`research/d41_summary.json`；逐键结果留外部`C:\Users\swl00\geoxgb_runs\d41-local-shrinkage-20261002\rows.csv.gz`（sha256 `a36104f6b2ffa966e8328b88a9960fd082dd2648b9a2b8ff01022027b2a7df3e`）。执行方独立核验`research/d41_executor_check.py/.json`（log-prob均值再softmax；2938项0不一致；321047键唯一完整；root/full精确、half≤4.4e-16、标签精确；所比较的汇总块与persistence字段范围见JSON scope）；监督方另以混淆直接核对217个F1。
+- E3全键（113508）root/half/full F1 .550455/.551071/.551124，Brier .101890546/.101884060/.101950206；persistence同键（112795）.551516/.552130/.552179，Brier .101884595/.101878271/.101945013，persistence F1 .586406。逐折均值half F1 +.000644、Brier −.0000086；full +.000737、+.0000555。H8 Brier随幅度变差（.110754/.110941/.111168），H4/H12小幅改善。
+- C（窗口内插值，诊断）全键F1 .669541/.674645/.679823，同键（129522）.677720/.681710/.686491，随幅度单调改善。
+- 监督方决定：半收缩仅为诊断候选，不采用、非默认；E3转移弱且异质，不足以构成有用修复；不再调alpha/窗口/root阈值；Stage1分区过拟合仍未解决。

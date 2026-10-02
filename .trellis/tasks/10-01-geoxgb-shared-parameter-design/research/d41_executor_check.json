@@ -1,0 +1,49 @@
+{
+ "scope": "all 21 Brier candidates x C/E3 (321047 rows): sources/keys/truth/provenance (local vs hash-equal zero increment), probabilities positive, identity rows, persistence via <=2020-12 snapshot hist_phase_o00, every row of rows.csv.gz (keys, columns, exact root/full, half via log-prob mean + softmax at 1e-12, exact labels), the root/half/full blocks (n, confusion, F1, Brier, changes vs root, half_vs_full) of all/matched/per_horizon/per_root/transitions/routes and fold_means; persistence counts/Brier only where present in matched and the four origin-known transition groups (other optional persistence fields not compared); D36 root/full reproduction",
+ "comparisons": 2938,
+ "issues": [],
+ "max_abs_prob_diff": {
+  "root": 0.0,
+  "half": 4.440892098500626e-16,
+  "full": 0.0
+ },
+ "near_ties_half_lt_1e-9": 0,
+ "route_rows": {
+  "C": {
+   "local": 147305,
+   "zero_increment": 60234
+  },
+  "E3": {
+   "local": 81018,
+   "zero_increment": 32490
+  }
+ },
+ "versions": {
+  "python": "3.12.10",
+  "numpy": "2.2.6",
+  "pandas": "2.2.3"
+ },
+ "e3_all": {
+  "root": {
+   "tp": 9767,
+   "fp": 5029,
+   "fn": 10924,
+   "f1": 0.5504550962324232,
+   "brier": 0.10189054595144785
+  },
+  "half": {
+   "tp": 9803,
+   "fp": 5084,
+   "fn": 10888,
+   "f1": 0.551070886502895,
+   "brier": 0.10188405974559919
+  },
+  "full": {
+   "tp": 9845,
+   "fp": 5191,
+   "fn": 10846,
+   "f1": 0.5511237999272259,
+   "brier": 0.10195020593917442
+  }
+ }
+}
