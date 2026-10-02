@@ -1,6 +1,6 @@
 # GeoXGBoost 部分参数共享：需求规格 v1.0
 
-状态：**当前：D42/A16旧/当前地图共同重拟合迁移对照已批准（12组，≤175次区域L1；d42-map-transfer-plan.md）；D41/A15冻结分区局部增量减半对照已完成，诊断候选、不采用（零拟合，核验通过；d41-local-shrinkage-plan.md）；D40/A14起点前决策规则可行性对照已完成、不采用（无新拟合，核验通过；d40-forward-decision-plan.md）；D39/A13概率诊断已完成（仅诊断，核验通过；d39-probability-diagnostic-plan.md）；D38/A12固定弱persistence margin root已完成，核验通过，保留为探索性root候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D37/A11时间加权root已完成且不采用（3b53989，核验通过；d37-recency-root-plan.md）；D36已完成（仅分析）；D35/A10已完成（be5f485，核验通过；Brier仅为探索性候选，D35后停止新训练；d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
+状态：**当前：D42/A16旧/当前地图共同重拟合迁移对照已完成，两臂均不采用（175次区域L1，核验通过；d42-map-transfer-plan.md）；D41/A15冻结分区局部增量减半对照已完成，诊断候选、不采用（零拟合，核验通过；d41-local-shrinkage-plan.md）；D40/A14起点前决策规则可行性对照已完成、不采用（无新拟合，核验通过；d40-forward-decision-plan.md）；D39/A13概率诊断已完成（仅诊断，核验通过；d39-probability-diagnostic-plan.md）；D38/A12固定弱persistence margin root已完成，核验通过，保留为探索性root候选、不采用为默认（2d4fe4e；d38-persistence-margin-root-plan.md）；D37/A11时间加权root已完成且不采用（3b53989，核验通过；d37-recency-root-plan.md）；D36已完成（仅分析）；D35/A10已完成（be5f485，核验通过；Brier仅为探索性候选，D35后停止新训练；d35-global-increment-control-plan.md）；D34/A9已完成（7b2bf6f，核验通过）；D33/A8已完成（69f2cc3）；D32/A7分配证据导出已完成（c079b75）。D30/D31已完成（D31不确定，见各自计划）。Stage1过拟合仍未解决；审计run ed632775保持active，本轮不运行Stage2/3、完整648、最终评价或关闭。**
 brainstorm → spec → grill 已完成；D24确认设计，随后“可以开始执行”授权按冻结规划实施及首轮有限实验，取代此前仅规划的范围。此处状态文字不代替task.json或审计运行记录。
 基准 commit：`14c89bc150194452361bb495c601de070cd94ce7`。
 
@@ -220,6 +220,6 @@ Stage1过拟合机制诊断：六个冻结D29候选的root/depth1/full同行比�
 
 D34的21个Brier候选，保存概率上的几何收缩`p_half∝sqrt(p_root·p_local)`（零增量行复制root），C/E3同键对比root/full/half，另报真实局部/零增量路由分层；无alpha网格、不改终点或地图。结果：E3转移弱且异质（H8 Brier变差），C为插值；不采用。见[d41-local-shrinkage-plan.md](d41-local-shrinkage-plan.md)与[research/d41-local-shrinkage-findings.md](research/d41-local-shrinkage-findings.md)。
 
-## D42：旧地图与当前地图的共同重拟合对照（已批准）
+## D42：旧地图与当前地图的共同重拟合对照（已完成；不采用）
 
-12个目标：最新同H旧地图（U<O）与当前地图，均在当前root与当前fitting行上按空间成员各区续训L1一次（同支持/回退规则），对照root与D35 global20；C/E3同键，C仅描述。不证明学习几何优于任意分区。见[d42-map-transfer-plan.md](d42-map-transfer-plan.md)。
+12个目标：最新同H旧地图（U<O）与当前地图，均在当前root与当前fitting行上按空间成员各区续训L1一次（同支持/回退规则），对照root与D35 global20；C/E3同键，C仅描述。不证明学习几何优于任意分区。结果：E3效应弱且异质，各臂均低于persistence；不采用。见[d42-map-transfer-plan.md](d42-map-transfer-plan.md)与[research/d42-map-transfer-findings.md](research/d42-map-transfer-findings.md)。
