@@ -237,4 +237,6 @@ D24 accepts design and D25 authorizes execution. Final planning review and conte
 
 - [x] Executor read-only scoping: no prior known-origin FIT restriction; at H4/H8 the restriction coincides with the triannual calendar regime (4–12 label dates), at H12 it retains 85.6–87.4% of FIT (removing 12.6–14.4%, less than H4/H8); complete 21-root support table in the plan (counts only).
 - [x] Supervisor review (approved; wording corrected: selection basis and H12 extent).
-- [ ] Planning commit; native implement (`research/d48_known_origin_fit.py`, exact bytes committed before fits); native check; producer commit; supervisor recheck and release; single run (≤21 fits); factual report; stop.
+- [x] Planning commit 140da65; native implement (~3 min, 474 lines); native check (~4 min, no result-affecting finding, no edits); producer commit 2326483 (script blob 86264d86…, sha256 120a885b…); selftest OK; package suite 116 OK (exit 0) at HEAD.
+- [x] Supervisor recheck and release; single run `C:\Users\swl00\geoxgb_runs\geoxgb-d48-known-origin-fit-20261002` (log `d48-run.log`), exit 0 in 185 s: 21 known-origin fits (839,486 FIT rows total), all original gates passed, base_score 5E-1, rounds 200/400/400, 0 reload mismatches, 0 S/C/E3 key overlaps; dev_baselines check 15 checked / 6 not_covered (same as D47).
+- [ ] Factual report delivered; awaiting supervisor independent verification and synthesis; stop.
