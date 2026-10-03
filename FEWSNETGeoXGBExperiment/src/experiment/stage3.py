@@ -70,7 +70,7 @@ class Panel:
     weight = None          # the frozen snapshot fits unweighted rows
     gate_metric = "macro"  # D13 as frozen
 
-    def fit_pool(self, origin: int, excluded=frozenset()):
+    def fit_pool(self, origin: int, excluded=frozenset(), internal=False):
         if excluded:
             raise ValueError("the frozen snapshot has no release masks")
         return self, self.window(origin)
@@ -90,7 +90,7 @@ class Panel:
     def gate_months(self, origin: int):
         return None        # the prepared schedule's gate dates
 
-    def store_identity(self, pool, rows, excluded, origin) -> dict:
+    def store_identity(self, pool, rows, excluded, origin, internal=False) -> dict:
         return {}
 
     def window(self, origin: int) -> np.ndarray:
@@ -151,9 +151,14 @@ class ScenarioPanel:
     gate_metric = "crisis"
     META = ("country", "scenario_k", "persistence_class_code", "persistence_source_month", "persistence_age")
 
-    def __init__(self, availability, k: int, strategy: str, prediction_areas=None):
+    def __init__(self, availability, k: int, strategy: str, prediction_areas=None, gate_k=None):
+        """``k``: the outer forecast's simulated missed cycles (0 for actual cases, whose genuine
+        non-releases are already absent from the ledger). ``gate_k`` (default k): the intensity
+        replayed at every internal gate origin (actual cases: the verified missed-cycle count)."""
         self.av = availability
         self.k = int(k)
+        self.gate_k = self.k if gate_k is None else (
+            {str(c): int(v) for c, v in gate_k.items()} if isinstance(gate_k, dict) else int(gate_k))
         self.strategy = strategy
         self.horizon = availability.horizon
         self.features = list(availability.features)
@@ -161,7 +166,8 @@ class ScenarioPanel:
         self.prediction_areas = np.array(sorted(int(a) for a in areas), dtype=np.int64)
         led = availability.ledger
         self.identity = {
-            "kind": "availability_scenario", "scenario_k": self.k, "strategy": strategy, "horizon": self.horizon,
+            "kind": "availability_scenario", "scenario_k": self.k, "gate_k": self.gate_k, "strategy": strategy,
+            "horizon": self.horizon,
             "due_rule": led.due_rule,
             "ledger_sha256": hashlib.sha256(led.frame[["cycle_id", "product", "country", "reference_month",
                                                       "release_date", "evidence"]].to_csv(index=False).encode()).hexdigest(),
@@ -172,26 +178,31 @@ class ScenarioPanel:
         self.sha256 = hashlib.sha256(json.dumps(self.identity, sort_keys=True).encode()).hexdigest()
         self._pools = {}
 
-    def outer_exclusions(self, origin: int) -> frozenset:
-        return self.av.ledger.hidden(origin, self.k)
+    def outer_exclusions(self, origin: int):
+        return self.av.hidden_for(origin, self.k)
 
     def gate_months(self, origin: int) -> list:
         return self.av.gate_dates(origin, self.k)
 
-    def fit_pool(self, origin: int, excluded=frozenset()):
-        key = (int(origin), frozenset(excluded))
+    def fit_pool(self, origin: int, excluded=frozenset(), internal=False):
+        k = self.gate_k if internal else self.k
+        freeze = lambda v: (tuple(sorted((c, frozenset(x)) for c, x in v.items()))   # noqa: E731
+                            if isinstance(v, dict) else frozenset(v))
+        key = (int(origin), freeze(excluded), tuple(sorted(k.items())) if isinstance(k, dict) else k)
         if key not in self._pools:
-            frame, _ = self.av.fitting_view(origin, self.k, self.strategy, excluded)
+            frame, _ = self.av.fitting_view(origin, k, self.strategy, excluded)
             self._pools[key] = FitPool(frame, self.features)
         pool = self._pools[key]
         return pool, np.arange(len(pool.y))
 
-    def store_identity(self, pool, rows, excluded, origin) -> dict:
+    def store_identity(self, pool, rows, excluded, origin, internal=False) -> dict:
         w = None if pool.weight is None else pool.weight[rows]
-        masked = frozenset(excluded) | self.av.ledger.hidden(origin, self.k)
-        return {"scenario_sha256": self.sha256, "scenario_k": self.k, "strategy": self.strategy,
-                "excluded_months": [ml(m) for m in sorted(excluded)],
-                "masked_months": [ml(m) for m in sorted(masked)],
+        k = self.gate_k if internal else self.k
+        masked = self.av.union(excluded, self.av.hidden_for(origin, k))
+        labels = (lambda v: {str(c): [ml(m) for m in sorted(x)] for c, x in sorted(v.items())}
+                  if isinstance(v, dict) else [ml(m) for m in sorted(v)])
+        return {"scenario_sha256": self.sha256, "scenario_k": self.k, "intensity_k": k, "strategy": self.strategy,
+                "excluded_months": labels(excluded), "masked_months": labels(masked),
                 "features_sha256": hashlib.sha256(np.ascontiguousarray(pool.X[rows]).tobytes()).hexdigest(),
                 "weights_sha256": None if w is None else hashlib.sha256(w.astype(np.float64).tobytes()).hexdigest(),
                 "labels_sha256": hashlib.sha256(np.ascontiguousarray(pool.y[rows], dtype=np.int64).tobytes()).hexdigest(),
@@ -210,7 +221,7 @@ class ScenarioPanel:
         features of the internal forecast at V = U - H under the same k and inherited exclusions."""
         lawful = self.av.lawful_labels(month, outer_origin, excluded)
         areas = lawful["area"].to_numpy(dtype=np.int64)
-        view = self.av.prediction_view(areas, np.full(len(areas), month), self.k, excluded)
+        view = self.av.prediction_view(areas, np.full(len(areas), month), self.gate_k, excluded)
         truth = lawful["class_code"].to_numpy(dtype=np.int64)
         return EvalRows(view, self.features, truth), np.arange(len(areas))
 
@@ -231,8 +242,8 @@ class GlobalStore:
     def path(self, horizon, origin, g):
         return self.root / f"h{horizon}" / g / f"O{ml(origin)}"
 
-    def get(self, panel, origin: int, g: str, fit_if_missing=True, excluded=frozenset()):
-        pool, rows = panel.fit_pool(origin, excluded)
+    def get(self, panel, origin: int, g: str, fit_if_missing=True, excluded=frozenset(), internal=False):
+        pool, rows = panel.fit_pool(origin, excluded, internal)
         # "g_config_params" is the REQUESTED G configuration (identity); the fit record's
         # "params" are the resolved xgb.train parameters (provenance). They used to share one
         # key, so the fit record overwrote the identity field and every disk reopen failed.
@@ -240,7 +251,7 @@ class GlobalStore:
                     "g_config_params": plan.G_CONFIGS[g], "snapshot_sha256": panel.sha256,
                     "fit_keys_sha256": pool.keys_sha(rows),
                     "fit_label_months": [ml(origin - plan.WINDOW), ml(origin - 1)]}
-        extra = panel.store_identity(pool, rows, excluded, origin)
+        extra = panel.store_identity(pool, rows, excluded, origin, internal)
         identity.update(extra)
         digest = hashlib.sha256(json.dumps(identity, sort_keys=True, default=str).encode()).hexdigest()
         key = (panel.horizon, origin, g, digest)
@@ -419,10 +430,10 @@ def _run_arm(panel, store, spec, g, origin, target, g_booster, g_record, p_globa
     pair_frames = []
     for u in gate_months:
         v = u - horizon
-        gv, gv_record = store.get(panel, v, g, excluded=outer)
+        gv, gv_record = store.get(panel, v, g, excluded=outer, internal=True)
         ev, rows_u = panel.gate_rows(u, origin, outer)
         p_u = nx.proba(gv, ev.X[rows_u]) if len(rows_u) else np.zeros((0, 4))
-        pool, win = panel.fit_pool(v, outer)
+        pool, win = panel.fit_pool(v, outer, internal=True)
         for c in clusters:
             in_c = np.isin(ev.area[rows_u], members[c])
             val = rows_u[in_c]

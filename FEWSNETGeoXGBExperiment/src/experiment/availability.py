@@ -17,7 +17,10 @@ X. Scenario k hides the latest k due cycles for every country (G1). Fewer than k
 an unsupported case, never a smaller k.
 
 For a forecast at X with intensity k and inherited exclusions E (outer cycles for internal gate
-origins), E' = E | hidden(X, k). Fitting labels are months in [X-59, X) released by X and not in
+origins), E' = E | hidden(X, k). Actual cases may carry a per-country intensity ``{country: k}``
+(verified missed ordinarily-due cycles) and per-country exclusions ``{country: cycles}``: the masks
+apply to that country's rows only, inside the same pooled/local fitting and prediction population
+(no per-country model). Fitting labels are months in [X-59, X) released by X and not in
 E'. A training key's IPC history is rebuilt at its own origin o from releases visible at o,
 minus its own hidden(o, k') and minus E': strategy A uses k' = 0 at weight 1, strategy B the
 k' = 0/1/2 variants at weight 1/3 each, grouped by original key; support counts original keys.
@@ -92,6 +95,11 @@ class ReleaseLedger:
             raise ValueError(f"{len(gaps)} labelled (country, month) without a release row, e.g. "
                              f"{gaps.head(3).to_dict('records')}")
 
+    def fully_released(self, month: int, cutoff: int) -> bool:
+        """True when every country's release of cycle ``month`` is visible at ``cutoff``."""
+        rel = self.frame.loc[self.frame["ref"] == int(month), "release"]
+        return bool(len(rel)) and int(rel.max()) <= int(cutoff)
+
     def hidden(self, origin: int, k: int) -> frozenset:
         """The latest k cycles due at the end of ``origin`` (synchronised across countries)."""
         if k == 0:
@@ -131,6 +139,7 @@ class Availability:
         self.features = (ff.aligned_feature_names(schema, alignment) if alignment is not None
                          else list(schema["ordered_features"]))
         self.area_country = observations.drop_duplicates("area").set_index("area")["country"].to_dict()
+        self.countries = sorted({str(c) for c in observations["country"]} | {str(c) for c in self.truth["country"]})
         # Immutable input identity: copies above are never mutated; any input label, release,
         # ledger or alignment change gives a new digest (cache identities include it). Evaluator
         # truth is deliberately excluded: forecasts never depend on it.
@@ -141,9 +150,36 @@ class Availability:
         self.inputs_sha256 = hashlib.sha256("\x1e".join(payload).encode()).hexdigest()
 
     # -- visibility -------------------------------------------------------------------
+    def hidden_for(self, origin: int, k):
+        """hidden(origin, k) for an int k, or {country: hidden(origin, k_c)} for a per-country k."""
+        if isinstance(k, dict):
+            missing = sorted(set(self.obs["country"].astype(str)) - set(map(str, k)))
+            if missing:
+                raise ValueError(f"per-country intensity lacks countries {missing[:5]}")
+            return {str(c): self.ledger.hidden(origin, int(v)) for c, v in k.items()}
+        return self.ledger.hidden(origin, int(k))
+
+    def union(self, a, b):
+        """Union of two exclusion sets, each global (frozenset) or per-country (dict). A global
+        set stays global: in a mixed union it applies to EVERY known country."""
+        if not isinstance(a, dict) and not isinstance(b, dict):
+            return frozenset(a) | frozenset(b)
+        countries = set(self.countries) | {str(c) for d in (a, b) if isinstance(d, dict) for c in d}
+        part = lambda d, c: frozenset(d.get(c, frozenset())) if isinstance(d, dict) else frozenset(d)   # noqa: E731
+        return {c: part(a, c) | part(b, c) for c in countries}
+
+    def _masked(self, frame: pd.DataFrame, excluded) -> np.ndarray:
+        if isinstance(excluded, dict):
+            out = np.zeros(len(frame), dtype=bool)
+            country = frame["country"].astype(str).to_numpy()
+            for c, months in excluded.items():
+                out |= (country == str(c)) & frame["month"].isin(list(months)).to_numpy()
+            return out
+        return frame["month"].isin(list(excluded)).to_numpy()
+
     def visible(self, cutoff: int, excluded=frozenset()) -> pd.DataFrame:
         o = self.obs
-        return o[(o["release"] <= cutoff) & ~o["month"].isin(list(excluded))]
+        return o[(o["release"].to_numpy() <= cutoff) & ~self._masked(o, excluded)]
 
     def label_pool(self, origin: int, excluded=frozenset()) -> pd.DataFrame:
         """Lawful fitting labels for a fit at ``origin``: months in [O-59, O), released, not excluded."""
@@ -153,7 +189,7 @@ class Availability:
     def gate_dates(self, origin: int, k: int) -> list:
         """Up to six latest globally observed label months U < O lawful at O after its own mask (G2);
         not restricted to the fitting window."""
-        months = self.visible(origin, self.ledger.hidden(origin, k))["month"].unique()
+        months = self.visible(origin, self.hidden_for(origin, k))["month"].unique()
         earlier = sorted(int(m) for m in months if m < origin)
         return earlier[-plan.GATE_DATES:]
 
@@ -180,6 +216,10 @@ class Availability:
         """Features of keys (area, target) at origin T - H; IPC history rebuilt per (origin, k')."""
         areas = np.asarray(areas, dtype=np.int64)
         targets = np.asarray(targets, dtype=np.int64)
+        if isinstance(inner_k, dict):   # per-country intensity -> per-row k of each area's country
+            # areas without any labelled history have no country and no IPC inputs to mask
+            inner_k = np.array([int(inner_k.get(str(self.area_country.get(int(a))), 0)) for a in areas],
+                               dtype=np.int64)
         inner_k = np.broadcast_to(np.asarray(inner_k, dtype=np.int64), areas.shape)
         origins = targets - self.horizon
         if len(areas) == 0:   # an empty (e.g. support-limited) pool is a valid, featureless view
@@ -187,7 +227,7 @@ class Availability:
         history = None
         for o, k in sorted(set(zip(origins.tolist(), inner_k.tolist()))):
             pos = np.where((origins == o) & (inner_k == k))[0]
-            seen = self.visible(o, frozenset(excluded) | self.ledger.hidden(o, k))
+            seen = self.visible(o, self.union(excluded, self.ledger.hidden(o, k)))
             block = ff.history_features(seen.assign(phase=seen["class_code"] + 1)[["area", "month", "phase"]],
                                         areas[pos], origins[pos])
             if history is None:
@@ -202,7 +242,7 @@ class Availability:
         ``support`` counts original keys only (rows/areas/dates/classes), never variant copies."""
         if strategy not in STRATEGIES:
             raise ValueError(f"strategy must be one of {sorted(STRATEGIES)}")
-        outer = frozenset(excluded) | self.ledger.hidden(origin, k)
+        outer = self.union(excluded, self.hidden_for(origin, k))
         pool = self.label_pool(origin, outer).sort_values(["area", "month"]).reset_index(drop=True)
         keys = pd.DataFrame({"orig_key": np.arange(len(pool)), "area": pool["area"].to_numpy(),
                              "country": pool["country"].to_numpy(), "target_month": pool["month"].to_numpy(),
@@ -234,10 +274,12 @@ class Availability:
             return pd.concat([pd.DataFrame({c: pd.Series(dtype=float) for c in cols}), self.provenance([]),
                               self.key_features([], [], k)], axis=1)
         feats = self.key_features(areas, targets, k, excluded)
+        row_k = ([int(k.get(str(self.area_country.get(int(a))), 0)) for a in areas] if isinstance(k, dict)
+                 else int(k))   # the intensity actually applied to each row
         keys = pd.DataFrame({"area": areas, "country": [self.area_country.get(int(a)) for a in areas],
                              "target_month": targets, "origin_month": origins, "horizon": self.horizon,
-                             "scenario_k": k})
-        seen = self.visible(int(origins[0]), frozenset(excluded) | self.ledger.hidden(int(origins[0]), k))
+                             "scenario_k": row_k})
+        seen = self.visible(int(origins[0]), self.union(excluded, self.hidden_for(int(origins[0]), k)))
         latest = seen.sort_values("month").groupby("area").tail(1).set_index("area")
         src = latest["month"].reindex(areas).to_numpy(dtype=float)
         keys["persistence_class_code"] = latest["class_code"].reindex(areas).to_numpy(dtype=float)
@@ -289,7 +331,9 @@ class Availability:
         release = obs["release"].reindex(idx).to_numpy(dtype=float)
         reason = np.where(np.isnan(code), "no_label", "")
         if lawful_at is not None:
-            hidden = np.isin(idx.get_level_values(1), list(excluded))
+            keyed = pd.DataFrame({"month": idx.get_level_values(1),
+                                  "country": [self.area_country.get(int(a), "") for a in idx.get_level_values(0)]})
+            hidden = self._masked(keyed, excluded)
             late = ~np.isnan(code) & (np.isnan(release) | (release > lawful_at) | hidden)
             reason = np.where(late, "not_lawful_at_cutoff", reason)
             code = np.where(late, np.nan, code)

@@ -24,6 +24,31 @@ Order and information boundaries:
 * final    four XGB arms on the original 2021-2024 schedule, run once.
 
 No phase reads a later phase's output; final folds never feed any choice.
+
+Interruption task (10-02 design D2/D4/G4), separate phases on the scenario schedule:
+
+python scripts/run_experiment.py --run-dir RUN scen-develop [--workers N]
+python scripts/run_experiment.py --run-dir RUN scen-select
+python scripts/run_experiment.py --run-dir RUN scen-freeze
+python scripts/run_experiment.py --run-dir RUN scen-historical
+python scripts/run_experiment.py --run-dir RUN scen-actual --actual-availability CSV --actual-scaffold JSON
+python scripts/run_experiment.py --run-dir RUN scen-report [--expert-table CSV]
+python scripts/run_experiment.py --run-dir RUN scen-evaluate --truth-release DIR [--expert-table CSV]
+
+* scen-develop  72 complete development folds = A/B x H4/H8 x k 0/1/2 x six 2019-2020
+                targets: per strategy and origin the common origin-legal crisis-weighted map
+                (run_stage2.scenario_map_pool), then the full Stage 3 fold (ScenarioPanel,
+                same-intensity gate, crisis gate, fixed G/L).
+* scen-select   per H: normal-scenario parity (crisis F1 - matched persistence F1 >= -0.02),
+                then the mean of the one/two-cycle F1; exact ties A; no qualifier = no winner.
+* scen-freeze   per H with a winner: that strategy's final map from candidates through 2020-12;
+                horizons without a winner record that no final model is released.
+* scen-historical  frozen recipe/maps on the common post-freeze 2021-2024 calendar, k = 0/1/2.
+* scen-actual   2025 prediction-only folds (truth never loaded): outer forecast on the real
+                ledger (k=0), gate replay at the verified missed-cycle count; refuses without a
+                verified country/product availability table.
+* scen-report   Study1/Study2/country tables and paired country-block crisis-F1 intervals from the
+                saved historical predictions (persistence on matched keys).
 """
 from __future__ import annotations
 
@@ -340,11 +365,15 @@ def map_for(run: Path, sub: pd.DataFrame, paths: dict | None = None):
 
 # ------------------------------------------------------------------------------ fold persistence
 
-def save_fold(base: Path, result: dict, identity: dict, keep_boosters: bool) -> dict:
+def save_fold(base: Path, result: dict, identity: dict, keep_boosters: bool, extra: dict | None = None) -> dict:
+    """``extra`` (interruption task): further keyed frames written before the completion record,
+    e.g. the same-input pooled diagnostic ``pooled_predictions.csv.gz``."""
     if (base / "fold.json").exists():
         raise FileExistsError(f"{base} is complete; folds are never refitted")
     base.mkdir(parents=True, exist_ok=False)
     write_csv_gz(base / "predictions.csv.gz", result["predictions"])
+    for name, frame in (extra or {}).items():
+        write_csv_gz(base / name, frame)
     if result["gate_pairs"] is not None:
         write_csv_gz(base / "gate_pairs.csv.gz", result["gate_pairs"])
     (base / "gate.json").write_text(json.dumps({"regions": result["gate"], "locals": result["locals"],
@@ -441,6 +470,613 @@ def dev_predictions(run: Path, horizon: int, target: str, label: str):
         return None
     acc.accept_record(base, "fold.json", ["predictions.csv.gz", "gate.json"])
     return read_csv(base / "predictions.csv.gz")
+
+
+# ------------------------------------------------------------------------------ interruption scenarios
+
+SCEN_PARITY = Fraction(-2, 100)
+FREEZE_MONTH = plan.PARTITION_INFO_CUTOFF
+ACTUAL_COLUMNS = ("country", "product", "origin_month", "missed_cycles", "evidence", "source")
+EXTENSION_FIELDS = ("path", "sha256", "first_month", "last_month", "overlap_months", "source")
+#: actual cases: (target, horizon) - October primary, June supplementary forecast-only
+ACTUAL_CASES = (("2025-10", 4), ("2025-10", 8), ("2025-06", 4), ("2025-06", 8))
+REAL_EVIDENCE = ("verified_vintage", "reconstructed")
+
+
+def scenario_dev_plan() -> list:
+    """The frozen development forecasting folds (design G4: 72 with the six DEV_TARGETS)."""
+    folds = [{"strategy": s, "horizon": h, "scenario_k": k, "target_month": t,
+              "origin_month": s3.ml(s3.mi(t) - h)}
+             for s in plan.SCENARIO_STRATEGIES for h in plan.SCENARIO_HORIZONS for k in plan.SCENARIO_KS
+             for t in plan.DEV_TARGETS]
+    expected = (len(plan.SCENARIO_STRATEGIES) * len(plan.SCENARIO_HORIZONS) * len(plan.SCENARIO_KS)
+                * len(plan.DEV_TARGETS))
+    if len(folds) != expected or len({tuple(f.values()) for f in folds}) != expected:
+        raise RuntimeError("the scenario development plan is not the frozen fold set")
+    return folds
+
+
+def scen_dev_fold(ctx, strategy: str, horizon: int, k: int, target: str, store, map_record: dict,
+                  cluster_of: dict | None, gate_k=None, prediction_areas=None) -> dict:
+    """One complete forecasting fold (development, historical or actual): pooled global and the
+    system arm (strategy map + gated L1 locals; non-learned map routes are the pooled global
+    with their reason). ``gate_k`` = internal replay intensity, int or {country: k} (actual)."""
+    panel = s3.ScenarioPanel(ctx, k, strategy, prediction_areas=prediction_areas, gate_k=gate_k)
+    fold = {"target_month": target, "origin_month": s3.ml(s3.mi(target) - horizon)}
+    route = map_record["route"]
+    arms = [{"arm": "pooled", "label": "pooled", "local": None, "route": None},
+            {"arm": "shared", "label": "system", "local": plan.SCENARIO_LOCAL, "route": route,
+             "cluster_of": cluster_of if route == "learned_map" else None}]
+    return s3.run_fold(panel, store, fold, plan.SCENARIO_G[horizon], arms)
+
+
+def scen_fold_scores(preds: pd.DataFrame) -> dict:
+    """Pooled crisis confusion counts of one fold: model on genuine-truth keys, and model vs the
+    lawful persistence comparator on identical matched keys (D4/D5)."""
+    truth = preds["y_true_code"].to_numpy(dtype=float)
+    labelled = np.isfinite(truth)
+    pers = preds["persistence_class_code"].to_numpy(dtype=float)
+    matched = labelled & np.isfinite(pers)
+    y = np.where(labelled, truth, 0).astype(np.int64)
+    pred = preds["y_pred_code"].to_numpy(dtype=np.int64)
+    return {"model": fourclass.crisis_counts(y[labelled], pred[labelled]),
+            "model_matched": fourclass.crisis_counts(y[matched], pred[matched]),
+            "persistence": fourclass.crisis_counts(y[matched], pers[matched].astype(np.int64)),
+            "keys": int(len(preds)), "labelled": int(labelled.sum()), "matched": int(matched.sum())}
+
+
+def _f1(counts: dict):
+    d = 2 * counts["tp"] + counts["fp"] + counts["fn"]
+    return Fraction(2 * counts["tp"], d) if d else None
+
+
+def _add(a: dict, b: dict) -> dict:
+    return {key: a.get(key, 0) + b[key] for key in ("tp", "fp", "fn", "tn")}
+
+
+def _txt(value):
+    return None if value is None else str(value)
+
+
+def ab_select(fold_scores: list) -> dict:
+    """D4 selection from complete development predictions (exact rationals).
+
+    ``fold_scores``: dicts with strategy, horizon, scenario_k, target_month and the
+    ``scen_fold_scores`` counts; their identities must equal ``scenario_dev_plan()`` exactly
+    (no missing, duplicate or extra fold). Per H, a strategy qualifies when its normal-scenario
+    crisis F1 minus matched persistence F1 is defined and >= -0.02 AND its one/two-cycle F1 are
+    defined; qualifiers are ranked by the equal-weight mean of those two F1; exact ties favour A;
+    none qualifying -> no winner, with the unmet criteria."""
+    want = sorted((f["strategy"], f["horizon"], f["scenario_k"], f["target_month"]) for f in scenario_dev_plan())
+    got = sorted((f["strategy"], int(f["horizon"]), int(f["scenario_k"]), f["target_month"]) for f in fold_scores)
+    if got != want:
+        raise RuntimeError("development scores do not match the frozen fold identities exactly")
+    pooled = {}
+    for f in fold_scores:
+        cur = pooled.setdefault((f["strategy"], int(f["horizon"]), int(f["scenario_k"])),
+                                {"model": {}, "model_matched": {}, "persistence": {}})
+        for side in ("model", "model_matched", "persistence"):
+            cur[side] = _add(cur[side], f[side])
+    out = {}
+    for h in plan.SCENARIO_HORIZONS:
+        rows = {}
+        for s in plan.SCENARIO_STRATEGIES:
+            normal, one, two = (pooled[(s, h, k)] for k in plan.SCENARIO_KS)
+            fm, fp = _f1(normal["model_matched"]), _f1(normal["persistence"])
+            parity = None if fm is None or fp is None else fm - fp
+            f1, f2 = _f1(one["model"]), _f1(two["model"])
+            mean = None if f1 is None or f2 is None else (f1 + f2) / 2
+            unmet = ([] if parity is not None and parity >= SCEN_PARITY else
+                     ["normal_parity_undefined" if parity is None else "normal_parity_below_-0.02"])
+            if mean is None:
+                unmet.append("interruption_f1_undefined")
+            rows[s] = {"normal_model_matched_f1": _txt(fm), "normal_persistence_f1": _txt(fp),
+                       "normal_parity": _txt(parity), "one_cycle_f1": _txt(f1), "two_cycle_f1": _txt(f2),
+                       "interruption_mean_f1": _txt(mean),
+                       "one_cycle_persistence_f1": _txt(_f1(one["persistence"])),
+                       "two_cycle_persistence_f1": _txt(_f1(two["persistence"])),
+                       "qualifies": not unmet, "unmet": unmet,
+                       "counts": {f"k{k}": pooled[(s, h, k)] for k in plan.SCENARIO_KS}}
+        qualified = [s for s in plan.SCENARIO_STRATEGIES if rows[s]["qualifies"]]
+        if qualified:
+            best = max(Fraction(rows[s]["interruption_mean_f1"]) for s in qualified)
+            winners = [s for s in qualified if Fraction(rows[s]["interruption_mean_f1"]) == best]
+            decision = {"winner": "A" if "A" in winners else winners[0], "tie": len(winners) > 1}
+        else:
+            decision = {"winner": None, "reason": "no strategy meets the normal parity and defined-interruption "
+                                                  "criteria; final-model release stops for this horizon"}
+        out[str(h)] = {**decision, "strategies": rows}
+    return out
+
+
+def historical_targets(ctx, horizon: int, first: str = "2021-01", last: str = "2024-12") -> dict:
+    """D2 common historical calendar for one H over the frozen Feb/Jun/Oct schedule in
+    [first, last]: a target is eligible when its origin O = T - H and both simulated missed
+    cycles at O (k=2) fall strictly after the 2020-12 freeze; the same targets serve k=0/1/2.
+    Targets without genuine truth stay prediction targets (coverage ``truth_available``)."""
+    from src.experiment.availability import UnsupportedScenario
+    freeze = s3.mi(FREEZE_MONTH)
+    labelled = set(int(m) for m in ctx.obs["month"].unique())
+    schedule = [m for m in range(s3.mi(first), s3.mi(last) + 1) if m % 12 + 1 in (2, 6, 10)]
+    eligible, excluded, coverage = [], [], {}
+    for t in schedule:
+        o = t - horizon
+        try:
+            hidden = ctx.ledger.hidden(o, max(plan.SCENARIO_KS))
+        except UnsupportedScenario as exc:
+            excluded.append({"target_month": s3.ml(t), "reason": f"unsupported_scenario: {exc}"})
+            continue
+        if o <= freeze or min(hidden) <= freeze:
+            excluded.append({"target_month": s3.ml(t), "reason": "origin_or_missed_cycle_not_after_2020-12_freeze"})
+            continue
+        eligible.append(s3.ml(t))
+        coverage[s3.ml(t)] = {"truth_available": t in labelled}
+    return {"horizon": horizon, "targets": eligible, "excluded": excluded, "coverage": coverage}
+
+
+def actual_gate_intensity(table: pd.DataFrame | None, origin: str, countries) -> dict:
+    """Actual-case contract (G2): {country: verified missed ordinarily-due cycles} at this origin.
+
+    Refuses (SystemExit) when the table is absent, lacks a column, carries non-real evidence or
+    no source, lacks a cohort country, or gives one country two counts. Countries may differ:
+    the per-country intensity masks that country's rows inside the shared fit population."""
+    if table is None:
+        raise SystemExit(f"actual {origin}: no verified country/product availability table; run refused")
+    missing = [c for c in ACTUAL_COLUMNS if c not in table.columns]
+    if missing:
+        raise SystemExit(f"actual availability table lacks {missing}")
+    rows = table[(table["origin_month"].astype(str) == origin) & (table["product"] == "CS")]
+    if (~rows["evidence"].isin(REAL_EVIDENCE)).any() or rows["source"].isna().any():
+        raise SystemExit(f"actual {origin}: availability evidence must be verified/reconstructed with a source")
+    counts = pd.to_numeric(rows["missed_cycles"], errors="coerce")
+    if counts.isna().any() or (counts < 0).any() or (counts != np.round(counts)).any():
+        raise SystemExit(f"actual {origin}: missed cycles must be non-negative integers")
+    per = rows.assign(missed_cycles=counts.astype(int)).groupby(rows["country"].astype(str))["missed_cycles"]
+    if (per.nunique() > 1).any():
+        raise SystemExit(f"actual {origin}: a country has conflicting missed-cycle counts")
+    k = per.first().to_dict()
+    lacking = sorted(set(map(str, countries)) - set(k))
+    if lacking:
+        raise SystemExit(f"actual {origin}: no availability entry for countries {lacking[:5]}; run refused")
+    return {c: int(k[c]) for c in map(str, countries)}
+
+
+def _covariate_columns(schema: dict) -> list:
+    return list(schema["static_sources"] + schema["dynamic_sources_at_origin"])
+
+
+def _certified_panel(path: Path, sha: str, schema: dict):
+    """The pinned panel's key and covariate columns only, after re-certifying its bytes."""
+    from scripts.prepare_fourclass import load_panel
+    from src.utils.run_identity import file_sha256 as _sha
+    if _sha(path) != sha:
+        raise SystemExit(f"{path}: source bytes differ from the prepared source identity")
+    panel = load_panel(path)
+    return panel[["FEWSNET_admin_code", "date"] + _covariate_columns(schema)]
+
+
+def load_extension(manifest_path: Path, schema: dict, pinned) -> pd.DataFrame:
+    """Actual-case covariate extension (hashed manifest contract, D1/D7).
+
+    The manifest names the file, its SHA-256, its month range, the overlap months used for the
+    identity check and its source. Only key and schema covariate columns are read (never
+    outcome/expert columns). On every overlap month the retained covariates must equal the pinned
+    panel; months after the pinned panel then extend the scaffold. Any gap refuses."""
+    from src.utils.run_identity import file_sha256 as _sha
+    if manifest_path is None:
+        raise SystemExit("actual cases need --actual-scaffold (hashed covariate extension manifest); refused")
+    manifest = json.loads(Path(manifest_path).read_text(encoding="utf-8"))
+    missing = [f for f in EXTENSION_FIELDS if f not in manifest]
+    if missing or not manifest["overlap_months"]:
+        raise SystemExit(f"extension manifest lacks {missing or ['overlap_months']}")
+    path = Path(manifest["path"])
+    if _sha(path) != manifest["sha256"]:
+        raise SystemExit("extension file bytes differ from its manifest")
+    cols = ["FEWSNET_admin_code", "date"] + _covariate_columns(schema)
+    ext = pd.read_csv(path, usecols=cols)
+    ext["date"] = pd.to_datetime(ext["date"].astype(str).str[:7], format="%Y-%m")
+    if ext.duplicated(["FEWSNET_admin_code", "date"]).any():
+        raise SystemExit("extension has duplicate area-month keys")
+    overlap = pd.to_datetime(pd.Series(manifest["overlap_months"]), format="%Y-%m")
+    a = pinned[pinned["date"].isin(overlap)].sort_values(["FEWSNET_admin_code", "date"]).reset_index(drop=True)
+    b = ext[ext["date"].isin(overlap)].sort_values(["FEWSNET_admin_code", "date"]).reset_index(drop=True)
+    if len(a) == 0 or len(a) != len(b) or not (a[["FEWSNET_admin_code", "date"]].to_numpy()
+                                             == b[["FEWSNET_admin_code", "date"]].to_numpy()).all():
+        raise SystemExit("extension overlap keys differ from the pinned panel")
+    for c in _covariate_columns(schema):
+        x, y = a[c].to_numpy(dtype=float), b[c].to_numpy(dtype=float)
+        if not np.allclose(x, y, equal_nan=True, rtol=0, atol=1e-9):
+            raise SystemExit(f"extension disagrees with the pinned panel on {c} over the overlap months")
+    later = ext[ext["date"] > pinned["date"].max()]
+    if later.empty:
+        raise SystemExit("extension adds no month after the pinned panel")
+    return pd.concat([pinned, later[pinned.columns]], ignore_index=True)
+
+
+def scenario_context(run: Path, horizon: int, development_truth: bool = True, extension: Path | None = None,
+                     real: bool = True, schema: dict | None = None):
+    """Availability of an accepted prepared interruption run.
+
+    Accepts the preparation, re-certifies the pinned panel bytes on every load, reads only its
+    key/covariate columns, and uses the prepared ledger/alignment (``real`` refuses synthetic
+    evidence; tests may pass real=False). ``development_truth`` supplies input labels as
+    evaluator truth (development/historical); actual production passes False. ``extension``
+    (actual only) is the hashed covariate-extension manifest; without it the scaffold ends at
+    the pinned panel."""
+    from src.experiment import availability as av
+    from src.feature import fourclass_features as ff
+    acc.accept_prepared(run)
+    prepared = run / "prepared"
+    manifests = prepared / "manifests"
+    for name in ("release_ledger.csv", "alignment.json", "sources.json"):
+        if not (manifests / name).is_file():
+            raise SystemExit(f"{name} missing: this run was not prepared with a release ledger and alignment")
+    schema = schema or load_schema(SCHEMA_PATH)
+    alignment = json.loads((manifests / "alignment.json").read_text(encoding="utf-8"))
+    ledger = av.ReleaseLedger(pd.read_csv(manifests / "release_ledger.csv", dtype=str), real=real)
+    obs = read_csv(prepared / "ledgers" / "observations.csv")[["area", "month", "country", "class_code"]]
+    source = json.loads((manifests / "sources.json").read_text(encoding="utf-8"))["sources"]["panel"]
+    panel = _certified_panel(Path(source["path"]), source["sha256"], schema)
+    if extension is not None:
+        panel = load_extension(extension, schema, panel)
+    scaffold = ff.Scaffold(panel, _covariate_columns(schema))
+    return av.Availability(obs, ledger, scaffold, schema, horizon, alignment,
+                           truth=obs if development_truth else None)
+
+
+def scen_candidate_ledger(run: Path) -> pd.DataFrame:
+    """The complete 648-row crisis ledger from ACCEPTED Stage 1 scenario evidence (identity,
+    code, preparation and every output hash first; ineligible statuses stay as rows)."""
+    from scripts.run_stage2 import scenario_candidate_row
+    accepted = acc.accept_scenario_stage1(run)
+    return pd.DataFrame([scenario_candidate_row(run / "stage1_scenario", v["entry"]) for v in accepted.values()])
+
+
+def _inputs_identity(run: Path, ctx, **extra) -> dict:
+    """Lawful-input identity bound into every scenario fold record: the accepted preparation, the
+    Availability input digest (labels, releases, ledger, alignment, features) and, for actual
+    cases, the extension manifest / availability table hashes."""
+    return {"prepared_outputs_sha256": file_sha256(run / "prepared" / "manifests" / "outputs.json"),
+            "availability_inputs_sha256": ctx.inputs_sha256, **extra}
+
+
+def _fold_dir(root: Path, fold: dict) -> Path:
+    return root / fold["strategy"] / f"h{fold['horizon']}" / f"k{fold['scenario_k']}" / fold["target_month"]
+
+
+def _run_or_accept(base: Path, identity: dict, compute) -> dict:
+    """A fold is computed once: an existing completion record is accepted only if its identity
+    equals the expected one (never silently reused when incompatible)."""
+    if (base / "fold.json").exists():
+        return acc.accept_fold(base, identity)
+    result = compute()
+    return save_fold(base, result["system"], identity, False,
+                     extra={"pooled_predictions.csv.gz": result["pooled"]["predictions"]})
+
+
+def _scenario_map(run: Path, ledger: pd.DataFrame, strategy: str, cutoff: int, release, strict: bool,
+                  k_max: int, label: str):
+    from scripts.run_stage2 import build_consensus, cluster_map, pool_identity, scenario_map_pool
+    sub = scenario_map_pool(ledger, strategy, cutoff, release, strict=strict, k_max=k_max)
+    paths = {n: run / "stage1_scenario" / "candidates" / n / "correspondence_table.csv"
+             for n in sub.loc[sub["status"] == "scored", "name"]}
+    ident = pool_identity(sub, "crisis")
+    geometry = run / "prepared" / "geometry" / "FEWSNET_admin_code_lat_lon.csv"
+    record = build_consensus(run / "scenario_maps" / ident, sub, paths, geometry, label, metric="crisis")
+    return ident, record, cluster_map(run / "scenario_maps" / ident, record)
+
+
+def scen_develop(run: Path, workers: int) -> None:
+    ledger = scen_candidate_ledger(run)
+    contexts = {h: scenario_context(run, h) for h in plan.SCENARIO_HORIZONS}
+    release = contexts[plan.SCENARIO_HORIZONS[0]].ledger
+    st = s3.GlobalStore(run / "scenario_globals")
+    maps = {}
+    for fold in scenario_dev_plan():
+        key = (fold["strategy"], fold["origin_month"])
+        if key not in maps:
+            maps[key] = _scenario_map(run, ledger, key[0], s3.mi(key[1]), release, True, max(plan.SCENARIO_KS),
+                                      f"{key[0]}@O{key[1]}")
+        ident, record, cluster_of = maps[key]
+        identity = {**fold, "phase": "scenario_development", "map_id": ident, "map_route": record["route"],
+                    **_inputs_identity(run, contexts[fold["horizon"]])}
+        _run_or_accept(_fold_dir(run / "scenario_development", fold), identity,
+                       lambda: scen_dev_fold(contexts[fold["horizon"]], fold["strategy"], fold["horizon"],
+                                             fold["scenario_k"], fold["target_month"], st, record, cluster_of))
+        print(json.dumps({**fold, "map_route": record["route"]}), flush=True)
+
+
+def scen_select(run: Path) -> None:
+    out = run / "scenario_development"
+    if (out / "selection.json").exists():
+        raise FileExistsError("selection is written once")
+    scores = []
+    for fold in scenario_dev_plan():
+        base = _fold_dir(out, fold)
+        record = acc.accept_fold(base, {k: fold[k] for k in ("strategy", "horizon", "scenario_k", "target_month")})
+        scores.append({**fold, **scen_fold_scores(read_csv(base / "predictions.csv.gz")),
+                       "fold_sha256": file_sha256(base / "fold.json"), "map_id": record["map_id"]})
+    finish(out, "selection.json", {"phase": "scenario_select", "rule": "D4 normal parity >= -0.02, then mean one/"
+                                   "two-cycle crisis F1, ties A, no qualifier no winner",
+                                   "decisions": ab_select(scores), "folds": len(scores),
+                                   "fold_records": {f"{s['strategy']}_h{s['horizon']}_k{s['scenario_k']}_"
+                                                    f"{s['target_month']}": s["fold_sha256"] for s in scores}})
+
+
+def _accept_selection(run: Path) -> dict:
+    """The accepted selection whose recorded fold records still equal the current fold files."""
+    out = run / "scenario_development"
+    selection = acc.accept_record(out, "selection.json")
+    for fold in scenario_dev_plan():
+        key = f"{fold['strategy']}_h{fold['horizon']}_k{fold['scenario_k']}_{fold['target_month']}"
+        if selection["fold_records"].get(key) != file_sha256(_fold_dir(out, fold) / "fold.json"):
+            raise RuntimeError(f"selection fold record {key} differs from the current fold")
+    return selection
+
+
+def scen_freeze(run: Path) -> None:
+    out = run / "scenario_final"
+    if (out / "frozen.json").exists():
+        raise FileExistsError("the recipe is frozen once")
+    selection = _accept_selection(run)
+    ledger = scen_candidate_ledger(run)
+    release = scenario_context(run, plan.SCENARIO_HORIZONS[0]).ledger
+    frozen = {}
+    for h in plan.SCENARIO_HORIZONS:
+        decision = selection["decisions"][str(h)]
+        if decision["winner"] is None:
+            frozen[str(h)] = {"released": False, "reason": decision["reason"]}
+            continue
+        ident, record, _ = _scenario_map(run, ledger, decision["winner"], s3.mi(FREEZE_MONTH), release, False, 0,
+                                         f"{decision['winner']}@final")
+        frozen[str(h)] = {"released": True, "strategy": decision["winner"], "map_id": ident,
+                          "map_route": record["route"], "g_config": plan.SCENARIO_G[h],
+                          "local_config": plan.SCENARIO_LOCAL}
+    out.mkdir(parents=True, exist_ok=True)
+    finish(out, "frozen.json", {"phase": "scenario_freeze", "cutoff": FREEZE_MONTH, "recipe": frozen,
+                                "selection_sha256": file_sha256(run / "scenario_development" / "selection.json")})
+
+
+def _accept_frozen(run: Path) -> dict:
+    frozen = acc.accept_record(run / "scenario_final", "frozen.json")
+    _accept_selection(run)
+    if frozen["selection_sha256"] != file_sha256(run / "scenario_development" / "selection.json"):
+        raise RuntimeError("frozen recipe is not bound to the current accepted selection")
+    return frozen
+
+
+def _frozen_map(run: Path, entry: dict):
+    from scripts.run_stage2 import accept_consensus, cluster_map
+    record = accept_consensus(run / "scenario_maps" / entry["map_id"], None, "crisis")
+    return record, cluster_map(run / "scenario_maps" / entry["map_id"], record)
+
+
+def scen_historical(run: Path) -> None:
+    frozen = _accept_frozen(run)
+    out = run / "scenario_historical"
+    if (out / "historical.json").exists():
+        raise FileExistsError("historical evaluation is run once")
+    out.mkdir(parents=True, exist_ok=True)
+    st = s3.GlobalStore(run / "scenario_globals")
+    calendar = {}
+    for h in plan.SCENARIO_HORIZONS:
+        entry = frozen["recipe"][str(h)]
+        if not entry["released"]:
+            calendar[str(h)] = {"released": False, "reason": entry["reason"]}
+            continue
+        ctx = scenario_context(run, h)
+        record, cluster_of = _frozen_map(run, entry)
+        cal = {**historical_targets(ctx, h), "released": True, "strategy": entry["strategy"]}
+        calendar[str(h)] = cal
+        for k in plan.SCENARIO_KS:
+            for target in cal["targets"]:
+                fold = {"strategy": entry["strategy"], "horizon": h, "scenario_k": k, "target_month": target}
+                identity = {**fold, "phase": "scenario_historical", "map_id": entry["map_id"],
+                            **_inputs_identity(run, ctx)}
+                _run_or_accept(_fold_dir(out, fold), identity,
+                               lambda: scen_dev_fold(ctx, entry["strategy"], h, k, target, st, record, cluster_of))
+    finish(out, "historical.json", {"phase": "scenario_historical", "calendar": calendar,
+                                    "frozen_sha256": file_sha256(run / "scenario_final" / "frozen.json")})
+
+
+def scen_actual(run: Path, availability_csv: Path | None, extension: Path | None) -> None:
+    """2025 prediction-only folds. Refuses without the verified availability table or the hashed
+    covariate extension; truth is never loaded."""
+    frozen = _accept_frozen(run)
+    table = None if availability_csv is None else pd.read_csv(availability_csv, dtype={"origin_month": str})
+    out = run / "scenario_actual"
+    st = s3.GlobalStore(run / "scenario_globals")
+    done = {}
+    for target, h in ACTUAL_CASES:
+        entry = frozen["recipe"][str(h)]
+        if not entry["released"]:
+            done[f"h{h}_{target}"] = {"released": False, "reason": entry["reason"]}
+            continue
+        if extension is None:
+            raise SystemExit("actual cases need --actual-scaffold (hashed covariate extension); refused")
+        ctx = scenario_context(run, h, development_truth=False, extension=extension)
+        origin = s3.ml(s3.mi(target) - h)
+        gate_k = actual_gate_intensity(table, origin, ctx.countries)
+        record, cluster_of = _frozen_map(run, entry)
+        fold = {"strategy": entry["strategy"], "horizon": h, "scenario_k": 0, "target_month": target}
+        identity = {**fold, "phase": "scenario_actual", "gate_k": gate_k, "map_id": entry["map_id"],
+                    "truth": "not loaded; evaluated only after a separate truth release",
+                    **_inputs_identity(run, ctx, extension_manifest_sha256=file_sha256(extension),
+                                       availability_table_sha256=file_sha256(availability_csv))}
+        rec = _run_or_accept(out / f"h{h}" / target, identity,
+                             lambda: scen_dev_fold(ctx, entry["strategy"], h, 0, target, st, record, cluster_of,
+                                                   gate_k=gate_k))
+        done[f"h{h}_{target}"] = {"released": True, "fold_sha256": file_sha256(out / f"h{h}" / target / "fold.json"),
+                                  "rows": rec.get("rows")}
+    out.mkdir(parents=True, exist_ok=True)
+    finish(out, "actual.json", {"phase": "scenario_actual", "cases": done,
+                                "frozen_sha256": file_sha256(run / "scenario_final" / "frozen.json")})
+
+
+def _with_pooled(base: Path, preds: pd.DataFrame) -> pd.DataFrame:
+    """System predictions joined 1:1 to the saved same-input pooled diagnostic of the same fold."""
+    pooled = read_csv(base / "pooled_predictions.csv.gz")[["area", "target_month", "y_pred_code"]]
+    out = preds.merge(pooled.rename(columns={"y_pred_code": "y_pred_pooled"}), on=["area", "target_month"],
+                      how="left", validate="one_to_one")
+    if out["y_pred_pooled"].isna().any():
+        raise RuntimeError(f"{base}: pooled diagnostic keys differ from the system keys")
+    return out
+
+
+def _origin_truth(preds: pd.DataFrame, horizon: int, keyed: pd.Series) -> np.ndarray:
+    """Evaluator-only exact-origin truth at (area, T - H) from keyed genuine labels; NaN if absent
+    (never the latest earlier label)."""
+    months = preds["target_month"].map(s3.mi) - int(horizon)
+    return keyed.reindex(pd.MultiIndex.from_arrays([preds["area"], months])).to_numpy(dtype=float)
+
+
+def _report_entries(rep, preds: pd.DataFrame, origin_truth, horizon: int, k, expert=None):
+    entries, tables = [], {}
+    studies = rep.study_rows(preds, origin_truth)
+    for name in ("study1", "study2"):
+        rows = studies[name]
+        matched = rows[rows["persistence_class_code"].notna()]
+        entry = {"horizon": horizon, "scenario_k": k, "study": name, "cohort_keys": int(len(preds)),
+                 "keys": int(len(rows)), "matched": int(len(matched)),
+                 "model_standalone": fourclass.nullable_crisis_summary(rows["truth_code"].astype(int),
+                                                                       rows["y_pred_code"].astype(int))
+                 if len(rows) else None,
+                 "vs_persistence": rep.crisis_paired_bootstrap(matched, "y_pred_code", "persistence_class_code"),
+                 "vs_pooled_same_input": rep.crisis_paired_bootstrap(rows, "y_pred_code", "y_pred_pooled")}
+        if expert is not None:
+            with_expert = rows.merge(expert, on=["area", "target_month"], how="left")
+            ex = with_expert[with_expert["expert_class_code"].notna()]
+            entry["vs_expert"] = rep.crisis_paired_bootstrap(ex, "y_pred_code", "expert_class_code")
+            entry["expert_coverage"] = {str(r or "matched"): int(n) for r, n in
+                                        with_expert["expert_reason"].fillna("").value_counts().items()}
+        if name == "study2":
+            entry.update(onset_model=rep.onset_recall(rows, "y_pred_code"),
+                         onset_persistence=rep.onset_recall(matched, "persistence_class_code"),
+                         excluded_missing_origin=studies["study2_excluded_missing_origin"],
+                         excluded_origin_crisis=studies["study2_excluded_origin_crisis"])
+        entries.append(entry)
+    keyed = preds.assign(origin_truth=np.asarray(origin_truth, dtype=float))
+    if expert is not None:
+        keyed = keyed.merge(expert, on=["area", "target_month"], how="left")
+    comparators = {"persistence": "persistence_class_code", "pooled": "y_pred_pooled",
+                   **({"expert": "expert_class_code"} if expert is not None else {})}
+    tables["country"] = rep.country_table(keyed, "y_pred_code", comparators, keyed["origin_truth"])
+    tables["keyed"] = keyed     # reconstructible evaluator/comparator join (D6)
+    return entries, tables
+
+
+def _expert_for(rep, preds: pd.DataFrame, expert_csv: Path | None, horizon: int):
+    """Keyed expert comparator; without a documented table every key keeps an explicit
+    'no_documented_expert_table' coverage reason."""
+    keys = preds[["area", "target_month", "origin_month"]].assign(horizon=horizon)
+    table = None if expert_csv is None else pd.read_csv(expert_csv)
+    return rep.keyed_expert(keys, table)[["area", "target_month", "expert_class_code", "expert_reason"]]
+
+
+def scen_report(run: Path, expert_csv: Path | None = None) -> None:
+    from scripts import report_fourclass as rep
+    out = run / "scenario_report"
+    if (out / "report.json").exists():
+        raise FileExistsError("the report is written once")
+    historical = acc.accept_record(run / "scenario_historical", "historical.json")
+    _accept_frozen(run)
+    if historical["frozen_sha256"] != file_sha256(run / "scenario_final" / "frozen.json"):
+        raise RuntimeError("historical evaluation is not bound to the current frozen recipe")
+    out.mkdir(parents=True, exist_ok=True)
+    obs = read_csv(run / "prepared" / "ledgers" / "observations.csv").set_index(["area", "month"])["class_code"]
+    results = []
+    for h, cal in historical["calendar"].items():
+        if not cal.get("released"):
+            results.append({"horizon": int(h), "released": False, "reason": cal.get("reason")})
+            continue
+        for k in plan.SCENARIO_KS:
+            frames = []
+            for target in cal["targets"]:
+                base = _fold_dir(run / "scenario_historical", {"strategy": cal["strategy"], "horizon": int(h),
+                                                               "scenario_k": k, "target_month": target})
+                acc.accept_fold(base, {"strategy": cal["strategy"], "horizon": int(h), "scenario_k": k,
+                                       "target_month": target})
+                frames.append(_with_pooled(base, read_csv(base / "predictions.csv.gz")))
+            if not frames:
+                results.append({"horizon": int(h), "scenario_k": k, "released": True, "reason": "no eligible target"})
+                continue
+            preds = pd.concat(frames, ignore_index=True).rename(columns={"y_true_code": "truth_code"})
+            origin_truth = _origin_truth(preds, int(h), obs)
+            entries, tables = _report_entries(rep, preds, origin_truth, int(h), k, _expert_for(rep, preds, expert_csv,
+                                                                                                int(h)))
+            results += entries
+            tables["country"].to_csv(out / f"country_h{h}_k{k}.csv", index=False)
+            write_csv_gz(out / f"keyed_h{h}_k{k}.csv.gz", tables["keyed"])
+    finish(out, "report.json", {"phase": "scenario_report", "comparisons": results,
+                                "historical_sha256": file_sha256(run / "scenario_historical" / "historical.json"),
+                                "expert_table_sha256": None if expert_csv is None else file_sha256(expert_csv),
+                                "note": "historical 2021-2024 only; 2025 truth is evaluated by scen-evaluate after its "
+                                        "separate approved release"})
+
+
+TRUTH_RELEASE_FIELDS = ("approved", "approved_by", "crosswalk", "truth_file", "truth_sha256", "frozen_actual")
+
+
+def scen_evaluate(run: Path, release_dir: Path | None, expert_csv: Path | None = None) -> None:
+    """Separate evaluation of FROZEN actual predictions once approved keyed truth is released.
+
+    ``release_dir/release.json`` must be approved, name the crosswalk, the truth file and its
+    SHA-256, and record the SHA-256 of the frozen ``scenario_actual/actual.json`` it evaluates
+    (so truth is released only after predictions are frozen). Truth rows (area, target_month,
+    class_code 0..3) are joined to the frozen keys; unmatched keys stay coverage, never zero-filled;
+    a target without any released truth is reported unevaluable (e.g. June)."""
+    from scripts import report_fourclass as rep
+    if release_dir is None:
+        raise SystemExit("scen-evaluate needs --truth-release (approved keyed truth release)")
+    actual = acc.accept_record(run / "scenario_actual", "actual.json")
+    release = json.loads((Path(release_dir) / "release.json").read_text(encoding="utf-8"))
+    missing = [f for f in TRUTH_RELEASE_FIELDS if f not in release]
+    if missing or release["approved"] is not True:
+        raise SystemExit(f"truth release not approved or lacks {missing}")
+    if release["frozen_actual"] != file_sha256(run / "scenario_actual" / "actual.json"):
+        raise SystemExit("truth release does not bind the frozen actual predictions")
+    truth_path = Path(release_dir) / release["truth_file"]
+    if file_sha256(truth_path) != release["truth_sha256"]:
+        raise SystemExit("truth file bytes differ from the release record")
+    truth = pd.read_csv(truth_path)
+    codes = pd.to_numeric(truth["class_code"], errors="coerce")
+    if truth.duplicated(["area", "target_month"]).any() or codes.isna().any() or (~codes.isin([0, 1, 2, 3])).any():
+        raise SystemExit("released truth must be unique keys with class codes on the 0..3 axis")
+    out = run / "scenario_evaluation"
+    if (out / "evaluation.json").exists():
+        raise FileExistsError("the evaluation is written once")
+    out.mkdir(parents=True, exist_ok=True)
+    released_truth = truth.assign(month=truth["target_month"].map(s3.mi)).set_index(["area", "month"])["class_code"]
+    obs = read_csv(run / "prepared" / "ledgers" / "observations.csv").set_index(["area", "month"])["class_code"]
+    keyed = pd.concat([obs, released_truth[~released_truth.index.isin(obs.index)]])   # genuine labels only
+    results = []
+    for case, info in actual["cases"].items():
+        if not info.get("released"):
+            results.append({"case": case, "released": False})
+            continue
+        h, target = int(case.split("_")[0][1:]), case.split("_", 1)[1]
+        base = run / "scenario_actual" / f"h{h}" / target
+        acc.accept_record(base, "fold.json", ["predictions.csv.gz", "gate.json"])
+        if file_sha256(base / "fold.json") != info["fold_sha256"]:
+            raise RuntimeError(f"{case}: actual fold differs from the frozen actual record")
+        preds = _with_pooled(base, read_csv(base / "predictions.csv.gz").drop(columns=["y_true_code"]))
+        joined = preds.merge(truth.rename(columns={"class_code": "truth_code"})[["area", "target_month", "truth_code"]],
+                             on=["area", "target_month"], how="left")
+        origin_truth = _origin_truth(joined, h, keyed)
+        evaluable = bool(joined["truth_code"].notna().any())
+        entries, tables = _report_entries(rep, joined, origin_truth, h, "actual",
+                                          _expert_for(rep, joined, expert_csv, h))
+        results += [{"case": case, "evaluable": evaluable,
+                     **({} if evaluable else {"reason": "no released genuine truth for this target "
+                                                        "(forecast/coverage only)"}), **e} for e in entries]
+        tables["country"].to_csv(out / f"country_{case}.csv", index=False)   # coverage-only countries kept
+        write_csv_gz(out / f"keyed_{case}.csv.gz", tables["keyed"])
+    finish(out, "evaluation.json", {"phase": "scenario_evaluate", "results": results,
+                                    "truth_release": {k: release[k] for k in TRUTH_RELEASE_FIELDS},
+                                    "expert_table_sha256": None if expert_csv is None else file_sha256(expert_csv),
+                                    "note": "Study2 uses evaluator-only exact-origin truth from genuine historical "
+                                            "labels or the released truth at (area, T - H); keys without it are "
+                                            "excluded and counted, never filled with an earlier label"})
 
 
 # ------------------------------------------------------------------------------ select
@@ -626,12 +1262,31 @@ def final(run: Path, workers: int) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run-dir", type=Path, required=True)
-    parser.add_argument("phase", choices=("gscreen", "maps", "develop", "select", "oldmap", "freeze", "final"))
+    parser.add_argument("phase", choices=("gscreen", "maps", "develop", "select", "oldmap", "freeze", "final",
+                                          "scen-develop", "scen-select", "scen-freeze", "scen-historical",
+                                          "scen-actual", "scen-report", "scen-evaluate"))
+    parser.add_argument("--actual-availability", type=Path, default=None,
+                        help="scen-actual: verified country/product missed-cycle table (refused when absent)")
+    parser.add_argument("--actual-scaffold", type=Path, default=None,
+                        help="scen-actual: hashed covariate-extension manifest (refused when absent)")
+    parser.add_argument("--expert-table", type=Path, default=None,
+                        help="scen-report/scen-evaluate: documented same-horizon expert table (optional)")
+    parser.add_argument("--truth-release", type=Path, default=None,
+                        help="scen-evaluate: approved keyed truth release directory")
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--reuse-gscreen-from", type=Path, default=None,
                         help="gscreen only: reuse an earlier run's saved G predictions (identity-checked, no refit)")
     args = parser.parse_args()
     run = args.run_dir.resolve()
+    if args.phase.startswith("scen-"):   # interruption task: own crisis-aligned phases
+        started = time.time()
+        {"scen-develop": lambda: scen_develop(run, args.workers), "scen-select": lambda: scen_select(run),
+         "scen-freeze": lambda: scen_freeze(run), "scen-historical": lambda: scen_historical(run),
+         "scen-actual": lambda: scen_actual(run, args.actual_availability, args.actual_scaffold),
+         "scen-report": lambda: scen_report(run, args.expert_table),
+         "scen-evaluate": lambda: scen_evaluate(run, args.truth_release, args.expert_table)}[args.phase]()
+        print(f"{args.phase} finished in {time.time() - started:.0f}s", flush=True)
+        return
     if args.phase != "gscreen" and not plan.DOWNSTREAM_ALIGNED:
         raise SystemExit(f"{args.phase}: Stage 2/3 metric alignment to {plan.ENDPOINT} awaits review of the Stage 1 "
                          "diagnostics (D26); not run")

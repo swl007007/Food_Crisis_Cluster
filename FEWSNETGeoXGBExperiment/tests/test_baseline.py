@@ -3337,11 +3337,11 @@ class ReleaseAwareViews(unittest.TestCase):
         self.assertEqual(masked.loc[0, 'truth_reason'], 'not_lawful_at_cutoff')
 
 
-def scenario_fixture(n_areas=40, truth=True, relabel=None):
+def scenario_fixture(n_areas=40, truth=True, relabel=None, last_year=2020):
     """Synthetic release-aware Availability: AAA areas (< n/2) released M+1, BBB released M, one extra
     unlabelled prediction area, tri-annual cycles 2012-2020, two covariates (static, monthly lag 1)."""
     from src.experiment import availability as av
-    cycles = [m(f'{y}-{mm:02d}') for y in range(2012, 2021) for mm in (2, 6, 10)]
+    cycles = [m(f'{y}-{mm:02d}') for y in range(2012, last_year + 1) for mm in (2, 6, 10)]
     country = {a: ('AAA' if a < n_areas // 2 else 'BBB') for a in range(n_areas)}
     rng = np.random.default_rng(7)
     obs = pd.DataFrame([(a, c, country[a], int((a // 10 + c // 4 + rng.integers(0, 2)) % 4))
@@ -3352,7 +3352,7 @@ def scenario_fixture(n_areas=40, truth=True, relabel=None):
                             f'{ff.month_label([c + lag])[0]}-10', 'synthetic', 'unit-test fixture')
                            for c in cycles for ctry, lag in (('AAA', 1), ('BBB', 0))],
                           columns=list(av.LEDGER_COLUMNS))
-    months = pd.date_range('2011-01-01', '2021-12-01', freq='MS')
+    months = pd.date_range('2011-01-01', f'{max(last_year + 1, 2021)}-12-01', freq='MS')
     panel = pd.DataFrame([(a, d) for a in range(n_areas + 1) for d in months], columns=['FEWSNET_admin_code', 'date'])
     idx = ff.month_index(panel['date'])
     panel['crop'] = (panel['FEWSNET_admin_code'] % 7).astype(float)
@@ -3413,7 +3413,7 @@ class ScenarioStage3(unittest.TestCase):
         gates = self.ctx.gate_dates(O, 1)
         self.assertEqual(sorted(set(pairs['validation_month'])), [ml_ for ml_ in ff.month_label(gates)])
         for u in gates:                                                          # internal fits inherit the outer mask
-            _, rec = store.get(panel, u - 4, 'G1', fit_if_missing=False, excluded=hidden)
+            _, rec = store.get(panel, u - 4, 'G1', fit_if_missing=False, excluded=hidden, internal=True)
             self.assertEqual(rec['excluded_months'], list(ff.month_label(sorted(hidden))))
             lawful = self.ctx.lawful_labels(u, O, hidden)                       # input labels lawful at O
             used = pairs.loc[pairs['validation_month'] == ff.month_label([u])[0], 'area']
@@ -3706,6 +3706,9 @@ class ScenarioStage1(unittest.TestCase):
                 try:
                     rec = mgf.scenario_root(frame, 'r50', 42, 4, T, Path(t), Path(t) / 'ck', None, self.ctx.features)
                     roles[strategy] = pd.read_csv('fold_membership.csv.gz')
+                    diag = pd.read_csv(Path(t) / rec['candidates'][0] / 'fit_diagnostic_predictions.csv.gz')
+                    self.assertEqual(len(diag), rec['original_keys']['fitting'])        # one row per original F key
+                    self.assertFalse(diag.duplicated(['area', 'target_month']).any())
                     evidence = pd.read_csv(Path(t) / rec['candidates'][0] / 'assignment_evidence.csv')
                     self.assertTrue((evidence['fitting_variant_rows'] ==
                                      (3 if strategy == 'B' else 1) * evidence['fitting_rows']).all())
@@ -3723,11 +3726,585 @@ class ScenarioStage1(unittest.TestCase):
         self.assertEqual(sum(b['original_keys'][r] for r in ('fitting', 'search_S', 'confirmation_C')), keys)
         cand = records['B'][1]
         self.assertIn('confirmation', cand)                                       # C scored after freeze only
+        self.assertEqual(cand['fit_diagnostic']['support']['rows'], b['original_keys']['fitting'])
+        self.assertEqual(cand['fit_diagnostic']['frozen_digest_before_scoring'],
+                         cand['confirmation']['frozen_digest_before_scoring'])
+        for block in (cand['scores']['partitioned_crisis'], cand['scores']['validation']['final']['crisis'],
+                      cand['confirmation']['root']['crisis'], cand['fit_diagnostic']['final']['crisis']):
+            self.assertIn('f1_na_reason', block)                                  # nullable reporting
+        undefined = fourclass.nullable_crisis_summary([0, 0], [0, 0])
+        self.assertEqual((undefined['f1'], undefined['f1_na_reason']), (None, '2TP+FP+FN=0'))
         self.assertGreater(cand['fits']['child_fits'], 0, 'fixture must fit children')
         for entry in cand['fits']['fit_log'][1:]:
             if entry.get('kind') == 'continuation':
                 self.assertEqual(entry['parent_structure_sha256'], b['root_fit']['structure_sha256'])
                 self.assertEqual(entry['sample_weight']['n'], 3 * entry['fit_support']['rows'])
+
+
+class ScenarioStage2(unittest.TestCase):
+    """Interruption task G4: matched E3 crisis E4 weights, legitimate NA and distinct routes."""
+
+    def row(self, name, f, b, status='scored', reason='', strategy='A', target='2018-10', last=None):
+        return {'name': name, 'strategy': strategy, 'horizon': 4, 'target_month': target, 'scenario_k': 0,
+                'status': status, 'crisis_f1': f, 'crisis_f1_base': b, 'na_reason': reason, 'n_terminal': 2,
+                'evidence_last_month': last or target, 'correspondence_sha256': 'x', 'source': 'test'}
+
+    def test_crisis_weights_na_eligibility_and_corrupt_rows(self):
+        led = pd.DataFrame([self.row('a', .6, .5), self.row('b', .4, .5),
+                            self.row('c', np.nan, np.nan, 'e3_undefined', 'e3_crisis_f1_undefined:root'),
+                            self.row('d', np.nan, np.nan, 'no_e3_target_labels', 'no_e3_target_labels')])
+        w = stage2.crisis_plan_weights(led)['weight'].to_numpy()
+        self.assertAlmostEqual(w[0], np.log(.6 / .4) - np.log(.5 / .5))
+        self.assertEqual(w[1], 0.0)
+        self.assertTrue(np.isnan(w[2]) and np.isnan(w[3]))
+        for bad in (self.row('e', np.nan, .5), self.row('f', np.nan, np.nan, 'e3_undefined', ''),
+                    self.row('g', .5, .5, 'e3_undefined', 'x'), self.row('h', .6, .5, 'scored', 'leftover')):
+            with self.assertRaises(ValueError):
+                stage2.crisis_plan_weights(pd.DataFrame([bad]))
+
+    def stage(self, tmp, status='completed', truth=(2, 2, 0, 0), part=(2, 0, 0, 0), pool=(0, 0, 0, 0),
+              counts=None):
+        entry = {'candidate': 'scenA_h4_2018-10_G1_k0_r80_s42_L1_gt0', 'root': 'scenA_h4_2018-10_G1_k0_r80_s42',
+                 'strategy': 'A', 'horizon': 4, 'target_month': '2018-10', 'scenario_k': 0}
+        root_dir = tmp / 'roots' / entry['root']
+        root_dir.mkdir(parents=True)
+        (root_dir / 'root.json').write_text(json.dumps({'status': status, 'candidates': [entry['candidate']],
+                                                         'root': entry['root'], 'strategy': 'A', 'horizon': 4,
+                                                         'target_month': '2018-10', 'scenario_k': 0}))
+        (root_dir / 'completion.json').write_text(json.dumps({'status': status}))
+        pd.DataFrame({'area': [1, 2], 'target_month': ['2018-02', '2018-06'], 'role': ['fitting', 'validation'],
+                      'class_code': [0, 2]}).to_csv(root_dir / 'fold_membership.csv.gz', index=False)
+        if status == 'completed':
+            cand = tmp / 'candidates' / entry['candidate']
+            cand.mkdir(parents=True)
+            truth, part, pool = map(np.array, (truth, part, pool))
+            scores = {'partitioned_crisis': fourclass.crisis_counts(truth, part),
+                      'pooled_crisis': fourclass.crisis_counts(truth, pool)}
+            if counts:
+                scores['partitioned_crisis'] = {**scores['partitioned_crisis'], **counts}
+            (cand / 'candidate.json').write_text(json.dumps({'candidate': entry['candidate'], 'scores': scores,
+                                                             'partition': {'n_terminal': 3}}))
+            pd.DataFrame({'y_true_code': truth, 'y_pred_partitioned_code': part,
+                          'y_pred_pooled_code': pool}).to_csv(cand / 'target_predictions.csv', index=False)
+            pd.DataFrame({'FEWSNET_admin_code': [1], 'partition_id': ['0']}).to_csv(
+                cand / 'correspondence_table.csv', index=False)
+        return entry
+
+    def test_candidate_rows_from_saved_matched_rows(self):
+        with tempfile.TemporaryDirectory() as t:
+            tmp = Path(t) / 'ok'
+            r = stage2.scenario_candidate_row(tmp, self.stage(tmp))
+            self.assertEqual(r['status'], 'scored')
+            self.assertAlmostEqual(r['crisis_f1'], 2 / 3)
+            self.assertEqual(r['crisis_f1_base'], 0.0)                              # defined zero, not NA
+            self.assertEqual(r['evidence_last_month'], '2018-10')
+            tmp = Path(t) / 'undef'
+            r = stage2.scenario_candidate_row(tmp, self.stage(tmp, truth=(0, 0, 0, 0), part=(0, 0, 0, 0)))
+            self.assertEqual(r['status'], 'e3_undefined')
+            self.assertTrue(np.isnan(r['crisis_f1']))
+            for status in ('no_e3_target_labels', 'root_insufficient_support'):
+                tmp = Path(t) / status
+                r = stage2.scenario_candidate_row(tmp, self.stage(tmp, status=status))
+                self.assertEqual((r['status'], r['na_reason']), (status, status))
+            tmp = Path(t) / 'forged'
+            with self.assertRaises(RuntimeError):                                    # rows vs record disagree
+                stage2.scenario_candidate_row(tmp, self.stage(tmp, counts={'tp': 2}))
+            tmp = Path(t) / 'missing'
+            entry = self.stage(tmp)
+            (tmp / 'roots' / entry['root'] / 'completion.json').unlink()
+            with self.assertRaises(RuntimeError):                                    # missing never becomes NA
+                stage2.scenario_candidate_row(tmp, entry)
+            tmp = Path(t) / 'substituted'
+            entry = self.stage(tmp)
+            (tmp / 'roots' / entry['root'] / 'root.json').write_text(json.dumps(
+                {'status': 'completed', 'candidates': [entry['candidate']], 'root': entry['root'], 'strategy': 'B',
+                 'horizon': 4, 'target_month': '2018-10', 'scenario_k': 0}))
+            with self.assertRaises(RuntimeError):                                    # another root's evidence
+                stage2.scenario_candidate_row(tmp, entry)
+            tmp = Path(t) / 'nofile'
+            entry = self.stage(tmp)
+            (tmp / 'candidates' / entry['candidate'] / 'target_predictions.csv').unlink()
+            with self.assertRaises(FileNotFoundError):
+                stage2.scenario_candidate_row(tmp, entry)
+
+    def test_routes_and_acceptance_under_the_crisis_metric(self):
+        with tempfile.TemporaryDirectory() as t:
+            tmp = Path(t)
+            frame, paths, coords = ConsensusAndBoundaries().candidates(tmp)
+            scored = pd.DataFrame([{**self.row(n, .6, .5), 'horizon': h, 'target_month': tm,
+                                    'correspondence_sha256': frame.loc[i, 'correspondence_sha256']}
+                                   for i, (n, h, tm) in enumerate(zip(frame['name'], frame['horizon'],
+                                                                      frame['target_month']))])
+            na = pd.DataFrame([self.row('zz_na', np.nan, np.nan, 'e3_undefined', 'e3_crisis_f1_undefined:root')])
+            with redirect_stdout(StringIO()):
+                none = stage2.build_consensus(tmp / 'none', scored.iloc[:0], {}, coords, 'x', metric='crisis')
+                noscore = stage2.build_consensus(tmp / 'noscore', na, {}, coords, 'x', metric='crisis')
+                zero = stage2.build_consensus(tmp / 'zero', scored.assign(crisis_f1=.4), paths, coords, 'x',
+                                              metric='crisis')
+                mixed = pd.concat([scored, na], ignore_index=True)
+                learned = stage2.build_consensus(tmp / 'map', mixed, paths, coords, 'x', metric='crisis')
+            self.assertEqual([r['route'] for r in (none, noscore, zero, learned)],
+                             ['no_prior_candidates', 'no_scorable_evidence', 'null_consensus', 'learned_map'])
+            self.assertEqual(learned['eligible_candidates'], 3)
+            self.assertEqual(learned['ineligible_reasons'], {'e3_crisis_f1_undefined:root': 1})
+            saved = pd.read_csv(tmp / 'map' / 'plan_weights.csv')
+            self.assertEqual(len(saved), 4)                                          # full ledger kept
+            self.assertTrue(np.isnan(saved.loc[saved['name'] == 'zz_na', 'weight']).all())
+            for out, cands in (('noscore', na), ('map', mixed)):
+                stage2.accept_consensus(tmp / out, cands, 'crisis')
+            with self.assertRaises(RuntimeError):
+                stage2.accept_consensus(tmp / 'map', mixed, 'macro')                 # metric is part of identity
+            self.assertEqual(stage2.build_consensus(tmp / 'map', mixed, paths, coords, 'x',
+                                                    metric='crisis')['pool_identity'], learned['pool_identity'])
+
+    def test_common_origin_legal_pool_uses_full_evidence_span(self):
+        _, ctx, _ = scenario_fixture()
+        led = ctx.ledger
+        rows = pd.DataFrame([self.row('ok', .6, .5, target='2018-10'),
+                             self.row('late_evidence', .6, .5, target='2018-10', last='2019-02'),
+                             self.row('hidden_target', .6, .5, target='2019-02'),
+                             self.row('other_strategy', .6, .5, strategy='B', target='2018-10'),
+                             self.row('after_origin', .6, .5, target='2019-06')])
+        O = m('2019-06')                                                             # hidden(O, 2) = Feb, Jun 2019
+        self.assertEqual(led.hidden(O, 2), {m('2019-02'), m('2019-06')})
+        dev = stage2.scenario_map_pool(rows, 'A', O, led, strict=True)
+        self.assertEqual(list(dev['name']), ['ok'])
+        final = pd.DataFrame([self.row('oct', .6, .5, target='2020-10')])
+        self.assertEqual(len(stage2.scenario_map_pool(final, 'A', m('2020-12'), led, strict=False, k_max=0)), 1)
+        self.assertEqual(len(stage2.scenario_map_pool(final, 'A', m('2020-10'), led, strict=False, k_max=0)), 0)
+
+
+class ScenarioDevelopment(unittest.TestCase):
+    """Interruption task D4/G4: 72 complete development folds and the A/B stop rule."""
+
+    @staticmethod
+    def counts(tp, fp, fn, tn=10):
+        return {'tp': tp, 'fp': fp, 'fn': fn, 'tn': tn}
+
+    def folds(self, spec):
+        """spec[(strategy, h, k)] = (model, model_matched, persistence) per-fold counts."""
+        out = []
+        for f in rexp.scenario_dev_plan():
+            model, matched, pers = spec[(f['strategy'], f['horizon'], f['scenario_k'])]
+            out.append({**f, 'model': model, 'model_matched': matched, 'persistence': pers})
+        return out
+
+    def base(self):
+        c = self.counts
+        return {(s, h, k): (c(5, 5, 5), c(5, 5, 5), c(5, 5, 5)) for s in 'AB' for h in (4, 8) for k in (0, 1, 2)}
+
+    def test_plan_is_the_frozen_72(self):
+        plan_ = rexp.scenario_dev_plan()
+        self.assertEqual(len(plan_), 72)
+        self.assertEqual(len({(f['strategy'], f['horizon'], f['scenario_k'], f['target_month']) for f in plan_}), 72)
+        self.assertEqual({f['target_month'] for f in plan_}, set(plan.DEV_TARGETS))
+
+    def test_selection_rule_ties_stop_and_undefined(self):
+        c = self.counts
+        tie = rexp.ab_select(self.folds(self.base()))
+        self.assertEqual((tie['4']['winner'], tie['4']['tie']), ('A', True))       # exact tie favours A
+        spec = self.base()
+        spec[('B', 4, 1)] = (c(8, 2, 2), c(8, 2, 2), c(5, 5, 5))                   # B better under interruption
+        self.assertEqual(rexp.ab_select(self.folds(spec))['4']['winner'], 'B')
+        spec[('B', 4, 0)] = (c(5, 5, 5), c(1, 9, 9), c(5, 5, 5))                   # B fails normal parity
+        out = rexp.ab_select(self.folds(spec))['4']
+        self.assertEqual(out['winner'], 'A')
+        self.assertEqual(out['strategies']['B']['unmet'], ['normal_parity_below_-0.02'])
+        spec[('A', 4, 0)] = (c(5, 5, 5), c(5, 5, 5), c(0, 0, 0))                   # persistence F1 undefined
+        out = rexp.ab_select(self.folds(spec))['4']
+        self.assertIsNone(out['winner'])                                           # no automatic winner
+        self.assertEqual(out['strategies']['A']['unmet'], ['normal_parity_undefined'])
+        boundary = self.base()                                                     # parity exactly -0.02 qualifies
+        boundary[('A', 8, 0)] = (c(5, 5, 5), c(48, 52, 52, 0), c(50, 50, 50, 0))   # 96/200 vs 100/200
+        sel = rexp.ab_select(self.folds(boundary))['8']['strategies']['A']
+        self.assertEqual(Fraction(sel['normal_parity']), Fraction(-2, 100))
+        self.assertTrue(sel['qualifies'])
+        with self.assertRaises(RuntimeError):
+            rexp.ab_select(self.folds(self.base())[:-1])                           # incomplete folds
+        dup = self.folds(self.base())
+        dup[-1] = dict(dup[-2])                                                    # a duplicate replaces a month
+        with self.assertRaises(RuntimeError):
+            rexp.ab_select(dup)
+
+    def test_complete_fold_keys_scores_and_persistence(self):
+        _, ctx, _ = scenario_fixture()
+        cluster_of = {a: (0 if a < 20 else 1) for a in range(40)}
+        with tempfile.TemporaryDirectory() as t, patch.dict(plan.G_CONFIGS, SMALL_G), \
+                patch.dict(plan.FIT_SUPPORT, {'rows': 20, 'areas': 5, 'dates': 3, 'classes': 2}), \
+                patch.dict(plan.STAGE3_GATE_SUPPORT, {'rows': 10, 'areas': 5, 'dates': 2, 'local_fit_dates': 2}):
+            res = rexp.scen_dev_fold(ctx, 'B', 4, 2, '2020-10', s3.GlobalStore(Path(t)), {'route': 'learned_map'},
+                                     cluster_of)
+            none = rexp.scen_dev_fold(ctx, 'A', 4, 0, '2020-10', s3.GlobalStore(Path(t)),
+                                      {'route': 'no_prior_candidates'}, None)
+        preds = res['system']['predictions']
+        self.assertEqual(len(preds), 41)
+        self.assertTrue((preds['scenario_k'] == 2).all())
+        sc = rexp.scen_fold_scores(preds)
+        self.assertEqual((sc['labelled'], sc['matched']), (40, 40))
+        lab = preds[preds['y_true_code'].notna()]
+        self.assertEqual(sc['model'], fourclass.crisis_counts(lab['y_true_code'].astype(int), lab['y_pred_code']))
+        self.assertTrue((none['system']['predictions']['route'] == 'no_prior_candidates_pooled').all())
+
+
+class ScenarioReporting(unittest.TestCase):
+    """Interruption task G3/D5: crisis paired country-block uncertainty, studies and country tables."""
+
+    def rows(self, spec):
+        """spec: list of (country, truth, model, comparator)."""
+        frame = pd.DataFrame(spec, columns=['country', 'truth_code', 'model', 'comp'])
+        return frame.assign(area=np.arange(len(frame)), target_month='2021-10')
+
+    def test_bootstrap_point_ci_shared_schedule_and_na(self):
+        spec = []
+        for c, (tp, fp, fn) in {'X': (3, 1, 1), 'Y': (2, 2, 1), 'Z': (4, 0, 2)}.items():
+            spec += [(c, 2, 2, 2)] * tp + [(c, 0, 2, 0)] * fp + [(c, 2, 0, 0)] * fn + [(c, 0, 0, 0)] * 3
+        frame = self.rows(spec)
+        out = report.crisis_paired_bootstrap(frame, 'model', 'comp')
+        self.assertAlmostEqual(out['model_f1'], float(fourclass.crisis_f1_exact(frame['truth_code'], frame['model'])))
+        self.assertEqual((out['valid_draws'], out['undefined_draws'], out['ci_reason']), (2000, 0, ''))
+        self.assertLessEqual(out['ci95_low'], out['ci95_high'])
+        self.assertEqual(report.crisis_paired_bootstrap(frame, 'model', 'comp'), out)    # fixed seed, no state
+        sparse = self.rows([('X', 2, 2, 0), ('X', 0, 0, 0), ('Y', 0, 0, 0), ('Z', 0, 0, 0)])
+        na = report.crisis_paired_bootstrap(sparse, 'model', 'comp')
+        self.assertEqual(na['valid_draws'] + na['undefined_draws'], 2000)               # never redrawn
+        self.assertGreater(na['undefined_draws'], 0)
+        self.assertEqual((na['ci95_low'], na['ci_reason']), (None, 'undefined bootstrap draws'))
+        self.assertIsNotNone(na['delta'])                                               # defined point kept
+        one = report.crisis_paired_bootstrap(self.rows([('X', 2, 2, 0), ('X', 0, 0, 2)]), 'model', 'comp')
+        self.assertEqual(one['ci_reason'], 'fewer than two country blocks')
+        empty = report.crisis_paired_bootstrap(frame.iloc[:0], 'model', 'comp')     # empty cohort (e.g. Study2)
+        self.assertEqual((empty['n'], empty['ci_reason'], empty['valid_draws']), (0, 'no eligible rows', 0))
+        quiet = report.crisis_paired_bootstrap(self.rows([('X', 0, 0, 0), ('Y', 0, 0, 0)]), 'model', 'comp')
+        self.assertEqual((quiet['model_f1'], quiet['ci_reason']), (None, 'point F1 undefined'))
+        with self.assertRaises(ValueError):
+            report.crisis_paired_bootstrap(frame.assign(comp=np.nan), 'model', 'comp')
+
+    def test_studies_onset_and_country_table(self):
+        frame = self.rows([('X', 2, 2, 0), ('X', 0, 0, 0), ('X', np.nan, 2, 0), ('Y', 2, 0, 0), ('Y', 3, 3, 3)])
+        origin = [0, 1, 0, np.nan, 2]
+        st = report.study_rows(frame, origin)
+        self.assertEqual(len(st['study1']), 4)                                          # unlabelled target out
+        self.assertEqual(len(st['study2']), 2)                                          # origin non-crisis only
+        self.assertEqual((st['study2_excluded_missing_origin'], st['study2_excluded_origin_crisis']), (1, 1))
+        self.assertEqual(report.onset_recall(st['study2'], 'model'), {'onsets': 1, 'recall': 1.0, 'reason': ''})
+        self.assertEqual(report.onset_recall(st['study2'], 'comp')['recall'], 0.0)       # persistence-like zero
+        table = report.country_table(frame.assign(comp=[0, 0, 0, np.nan, 3]), 'model', 'comp').set_index('country')
+        self.assertEqual(table.loc['X', 'cohort_keys'], 3)                       # unlabelled key still in cohort
+        self.assertEqual(table.loc['X', 'labelled_keys'], 2)
+        self.assertAlmostEqual(table.loc['Y', 'model_f1_labelled'], 2 / 3)        # standalone, incl. unmatched key
+        self.assertEqual(table.loc['Y', 'comparator_matched_keys'], 1)
+        wide = report.country_table(frame, 'model', {'persistence': 'comp', 'expert': 'missing_col'},
+                                    origin_truth=origin).set_index('country')
+        self.assertEqual(wide.loc['X', 'study2_eligible_keys'], 2)                  # risk-set coverage per country
+        self.assertEqual(wide.loc['Y', 'study2_excluded_missing_origin'], 1)
+        self.assertIn('expert: comparator unavailable', wide.loc['X', 'na_reasons'])
+        self.assertEqual(table.loc['Y', 'crisis_events'], 2)
+
+
+class ScenarioFinalPath(unittest.TestCase):
+    """Interruption task D2/G2: historical calendar, actual availability contract, gate intensity."""
+
+    def test_historical_calendar_requires_origin_and_both_cycles_after_freeze(self):
+        _, ctx, _ = scenario_fixture(last_year=2022)
+        h4 = rexp.historical_targets(ctx, 4)
+        self.assertEqual(h4['targets'][0], '2021-10')                             # O 2021-06, hidden Feb/Jun 2021
+        self.assertEqual([e['target_month'] for e in h4['excluded']], ['2021-02', '2021-06'])
+        h8 = rexp.historical_targets(ctx, 8)
+        self.assertEqual(h8['targets'][0], '2022-02')
+        self.assertTrue(all(e['reason'] for e in h8['excluded']))
+
+    def test_actual_availability_contract_refuses_unresolved_metadata(self):
+        good = pd.DataFrame([('AAA', 'CS', '2025-06', 1, 'verified_vintage', 'doc'),
+                             ('BBB', 'CS', '2025-06', 2, 'reconstructed', 'doc')], columns=rexp.ACTUAL_COLUMNS)
+        self.assertEqual(rexp.actual_gate_intensity(good, '2025-06', ['AAA', 'BBB']), {'AAA': 1, 'BBB': 2})
+        conflict = pd.concat([good, good.iloc[:1].assign(missed_cycles=2)], ignore_index=True)
+        for table, countries in ((None, ['AAA']), (good.iloc[:1], ['AAA', 'BBB']), (conflict, ['AAA', 'BBB']),
+                                 (good.assign(evidence='synthetic'), ['AAA', 'BBB']),
+                                 (good.assign(missed_cycles=[1.5, 2]), ['AAA', 'BBB']),
+                                 (good.drop(columns='source'), ['AAA'])):
+            with self.assertRaises(SystemExit):
+                rexp.actual_gate_intensity(table, '2025-06', countries)
+
+    def test_mixed_union_keeps_global_exclusions_and_per_row_intensity(self):
+        _, ctx, _ = scenario_fixture()
+        mixed = ctx.union({'AAA': frozenset({m('2019-02')})}, frozenset({m('2020-02')}))
+        self.assertEqual(mixed['BBB'], {m('2020-02')})                            # global stays global
+        self.assertEqual(mixed['AAA'], {m('2019-02'), m('2020-02')})
+        seen = ctx.visible(m('2020-10'), mixed)
+        self.assertFalse(((seen['country'] == 'BBB') & (seen['month'] == m('2020-02'))).any())
+        self.assertTrue(((seen['country'] == 'BBB') & (seen['month'] == m('2019-02'))).any())
+        view = ctx.prediction_view([1, 30, 40], [m('2020-10')] * 3, {'AAA': 1, 'BBB': 2})
+        self.assertEqual(list(view['scenario_k']), [1, 2, 0])                     # per row; no-history area 0
+        self.assertTrue(np.isnan(view.loc[0, 'hist_phase_o00']))                  # AAA: June hidden at k=1
+        self.assertEqual(view.loc[0, 'hist_latest_observed_age'], 4)
+        self.assertEqual(view.loc[1, 'hist_latest_observed_age'], 8)              # BBB: two cycles hidden
+
+    def test_expert_matching_requires_horizon_origin_validity_and_release(self):
+        keys = pd.DataFrame({'area': [1, 1, 1, 2, 3], 'target_month': ['2021-10'] * 5,
+                             'origin_month': ['2021-06'] * 5, 'horizon': [4, 8, 4, 4, 4]})
+        row = dict(area=1, issue_month='2021-06', product='P', horizon=4, validity_start='2021-10',
+                   validity_end='2022-01', class_code=2, release_date='2021-06-30', evidence='reconstructed',
+                   source='doc')
+        experts = pd.DataFrame([row, {**row, 'area': 2, 'release_date': '2021-07-05'},
+                                {**row, 'area': 3, 'validity_start': '2021-06', 'validity_end': '2021-09'}])
+        out = report.keyed_expert(keys, experts)
+        self.assertEqual(list(out['expert_class_code'].fillna(-1)), [2, -1, 2, -1, -1])
+        self.assertEqual(list(out['expert_reason']), ['', 'no_expert_for_horizon', '',
+                                                      'expert_released_after_origin_cutoff', 'validity_excludes_target'])
+        self.assertTrue((report.keyed_expert(keys, None)['expert_reason'] == 'no_documented_expert_table').all())
+        for bad in (experts.assign(evidence='synthetic'), experts.assign(class_code=[2, 4, 1]),
+                    experts.assign(class_code=[2.5, 1, 1]), experts.drop(columns='horizon')):
+            with self.assertRaises(ValueError):
+                report.keyed_expert(keys, bad)
+        self.assertEqual(report.keyed_expert(keys, experts.assign(evidence='synthetic'), real=False)
+                         ['expert_class_code'].notna().sum(), 2)
+
+    def test_real_fold_with_per_country_gate_intensity(self):
+        _, ctx, _ = scenario_fixture()
+        gate_k = {'AAA': 1, 'BBB': 2}
+        with tempfile.TemporaryDirectory() as t, patch.dict(plan.G_CONFIGS, SMALL_G), \
+                patch.dict(plan.FIT_SUPPORT, {'rows': 20, 'areas': 5, 'dates': 3, 'classes': 2}), \
+                patch.dict(plan.STAGE3_GATE_SUPPORT, {'rows': 10, 'areas': 5, 'dates': 2, 'local_fit_dates': 2}), \
+                patch.object(plan, 'GATE_DATES', 2):
+            store = s3.GlobalStore(Path(t))
+            res = rexp.scen_dev_fold(ctx, 'B', 4, 0, '2020-10', store, {'route': 'learned_map'},
+                                     {a: (0 if a < 20 else 1) for a in range(40)}, gate_k=gate_k)
+            self.assertEqual(len(res['system']['predictions']), 41)
+            internal = [r for r in (rec for _, rec in store.memo.values()) if r['intensity_k'] == gate_k]
+            self.assertTrue(internal)                                              # internal globals at dict k
+            masked = internal[0]['masked_months']
+            self.assertEqual(len(masked['AAA']) + 1, len(masked['BBB']))          # 1 vs 2 cycles per country
+            outer = [r for r in (rec for _, rec in store.memo.values()) if r['intensity_k'] == 0]
+            self.assertEqual(outer[0]['masked_months'], [])                        # outer forecast: real ledger
+
+    def test_outer_and_internal_gate_intensity_are_separate(self):
+        _, ctx, _ = scenario_fixture()
+        actual = s3.ScenarioPanel(ctx, 0, 'A', gate_k=2)
+        O, V = m('2020-06'), m('2019-10')
+        outer, _ = actual.fit_pool(O)
+        normal, _ = s3.ScenarioPanel(ctx, 0, 'A').fit_pool(O)
+        np.testing.assert_array_equal(outer.X, normal.X)                          # outer forecast: real ledger only
+        inner, _ = actual.fit_pool(V, internal=True)
+        replay, _ = s3.ScenarioPanel(ctx, 2, 'A').fit_pool(V)
+        np.testing.assert_array_equal(inner.X, replay.X)                          # internal: verified intensity
+        with tempfile.TemporaryDirectory() as t, patch.dict(plan.G_CONFIGS, SMALL_G):
+            store = s3.GlobalStore(Path(t))
+            _, rec = store.get(actual, V, 'G1', internal=True)
+            self.assertEqual((rec['scenario_k'], rec['intensity_k']), (0, 2))
+            self.assertEqual(rec['masked_months'], list(ff.month_label(sorted(ctx.ledger.hidden(V, 2)))))
+
+
+def synthetic_scenario_run(root: Path, crisis: bool = True) -> dict:
+    """A synthetic PREPARED interruption run on disk (hashed outputs, identity record, pinned panel,
+    release ledger, alignment, the complete 648-root Stage 1 evidence set). Labels follow a
+    learnable pattern; ``crisis=False`` keeps every label non-crisis (undefined crisis F1)."""
+    import pickle as _pickle
+    from scripts import run_stage1 as s1
+    av, ctx, schema = scenario_fixture(last_year=2022)
+    obs = ctx.obs[['area', 'month', 'country']].copy()
+    obs['class_code'] = ((obs['area'] // 10 + obs['month'] // 4) % 4) if crisis else (obs['area'] % 2)
+    prepared = root / 'prepared'
+    for d in ('manifests', 'ledgers', 'geometry', 'scenario'):
+        (prepared / d).mkdir(parents=True)
+    months = pd.date_range('2011-01-01', '2023-12-01', freq='MS')
+    panel = pd.DataFrame([(a, d) for a in range(41) for d in months], columns=['FEWSNET_admin_code', 'date'])
+    idx = ff.month_index(panel['date'])
+    panel['crop'] = (panel['FEWSNET_admin_code'] % 7).astype(float)
+    panel['EVI'] = np.sin(idx / 3 + panel['FEWSNET_admin_code'])
+    panel['month'] = panel['date'].dt.month
+    panel_path = root / 'sources' / 'panel.csv'
+    panel_path.parent.mkdir()
+    panel.assign(date=panel['date'].dt.strftime('%Y-%m')).to_csv(panel_path, index=False)
+    ext_months = pd.date_range('2023-12-01', '2025-12-01', freq='MS')
+    ext = pd.DataFrame([(a, d) for a in range(41) for d in ext_months], columns=['FEWSNET_admin_code', 'date'])
+    eidx = ff.month_index(ext['date'])
+    ext['crop'] = (ext['FEWSNET_admin_code'] % 7).astype(float)
+    ext['EVI'] = np.sin(eidx / 3 + ext['FEWSNET_admin_code'])
+    ext_path = root / 'sources' / 'extension.csv'
+    ext.assign(date=ext['date'].dt.strftime('%Y-%m')).to_csv(ext_path, index=False)
+    (root / 'sources' / 'extension.json').write_text(json.dumps(
+        {'path': str(ext_path), 'sha256': rid.file_sha256(ext_path), 'first_month': '2023-12',
+         'last_month': '2025-12', 'overlap_months': ['2023-12'], 'source': 'unit-test fixture'}))
+    (prepared / 'manifests' / 'sources.json').write_text(json.dumps(
+        {'sources': {'panel': {'path': str(panel_path), 'sha256': rid.file_sha256(panel_path)}}}))
+    ctx.ledger.frame[list(av.LEDGER_COLUMNS)].to_csv(prepared / 'manifests' / 'release_ledger.csv', index=False)
+    (prepared / 'manifests' / 'alignment.json').write_text(json.dumps(ctx.alignment))
+    obs.to_csv(prepared / 'ledgers' / 'observations.csv', index=False)
+    coords = pd.DataFrame({'FEWSNET_admin_code': range(41), 'lat': np.arange(41) // 7 * 1.0,
+                           'lon': np.arange(41) % 7 * 1.0})
+    coords.to_csv(prepared / 'geometry' / 'FEWSNET_admin_code_lat_lon.csv', index=False)
+    (prepared / 'geometry' / 'polygon_contiguity_info.pkl').write_bytes(_pickle.dumps(None))
+    for f in ('manifests/runtime.json', 'manifests/preflight.json', 'manifests/features.json',
+              'manifests/geometry.json', 'ledgers/baselines.csv', 'ledgers/dev_baselines.csv',
+              'snapshot_h4.parquet', 'snapshot_h8.parquet', 'snapshot_h12.parquet'):
+        (prepared / f).write_text('{}')
+    (prepared / 'scenario' / 'features.json').write_text(json.dumps({'ordered_features': ctx.features}))
+    entries = [{**r, 'input': s1.scenario_input_name(r)} for r in plan.scenario_stage1_schedule()]
+    for name in {e['input'] for e in entries}:
+        (prepared / 'scenario' / name).write_text('synthetic input placeholder')
+    (prepared / 'manifests' / 'schedule.json').write_text(json.dumps({'stage1_scenario_roots': entries}))
+    outputs = rid.output_hashes(prepared)
+    (prepared / 'manifests' / 'outputs.json').write_text(json.dumps(outputs))
+    (prepared / 'manifests' / 'identity.json').write_text(json.dumps(
+        {'stage': 'prepare', 'code': rid.code_identity(), 'runtime': rid.runtime_identity(),
+         'outputs_sha256': rid.file_sha256(prepared / 'manifests' / 'outputs.json')}))
+    stage = root / 'stage1_scenario'
+    scored_targets = ('2018-02', '2018-06', '2018-10', '2019-02')
+    for e in entries:
+        rdir = stage / 'roots' / e['root']
+        rdir.mkdir(parents=True)
+        done = e['target_month'] in scored_targets and e['ratio'] == 'r80' and e['split_seed'] == 42
+        status = 'completed' if done else 'no_e3_target_labels'
+        (rdir / 'root.json').write_text(json.dumps({'root': e['root'], 'status': status, 'candidates': [e['candidate']],
+                                                    **{f: e[f] for f in ('strategy', 'horizon', 'target_month',
+                                                                         'scenario_k', 'ratio', 'split_seed')}}))
+        (rdir / 'command.json').write_text('{}')
+        (rdir / 'run.log').write_text('')
+        files = [f'roots/{e["root"]}/{f}' for f in ('root.json', 'command.json', 'run.log')]
+        if done:
+            pd.DataFrame({'area': [1], 'target_month': [e['target_month']], 'role': ['heldout_target'],
+                          'class_code': [2]}).to_csv(rdir / 'fold_membership.csv.gz', index=False)
+            files.append(f'roots/{e["root"]}/fold_membership.csv.gz')
+            cdir = stage / 'candidates' / e['candidate']
+            cdir.mkdir(parents=True)
+            truth, part, pool = np.array([2, 2, 2, 0, 0]), np.array([2, 2, 0, 0, 2]), np.array([2, 0, 0, 2, 2])
+            record = {'candidate': e['candidate'], 'partition': {'n_terminal': 2},
+                      'scores': {'partitioned_crisis': fourclass.crisis_counts(truth, part),
+                                 'pooled_crisis': fourclass.crisis_counts(truth, pool)}}
+            (cdir / 'candidate.json').write_text(json.dumps(record))
+            pd.DataFrame({'y_true_code': truth, 'y_pred_partitioned_code': part,
+                          'y_pred_pooled_code': pool}).to_csv(cdir / 'target_predictions.csv', index=False)
+            split = coords['lat'] < 3 if e['horizon'] == 4 else coords['lon'] < 3
+            pd.DataFrame({'FEWSNET_admin_code': range(41), 'partition_id': np.where(split, '0', '1')}).to_csv(
+                cdir / 'correspondence_table.csv', index=False)
+            for f in s1.candidate_files(record, True):
+                if not (cdir / f).exists():
+                    (cdir / f).write_text('synthetic evidence placeholder')
+            files += [f'candidates/{e["candidate"]}/{f}' for f in s1.candidate_files(record, True)]
+        (rdir / 'completion.json').write_text(json.dumps(
+            {'root': e['root'], 'status': status, 'candidates': [e['candidate']],
+             'prepared': rid.file_sha256(prepared / 'manifests' / 'outputs.json'),
+             'g_selection': 'fixed design capacities (G4 of 10-02)', 'code': rid.code_identity(),
+             'runtime': rid.runtime_identity(), 'outputs': {f: rid.file_sha256(stage / f) for f in files}}))
+    availability = pd.DataFrame([(c, 'CS', o, kk, 'reconstructed', 'unit-test fixture')
+                                 for o in ('2025-06', '2025-02', '2024-10')
+                                 for c, kk in (('AAA', 1), ('BBB', 2))], columns=rexp.ACTUAL_COLUMNS)
+    availability.to_csv(root / 'sources' / 'availability.csv', index=False)
+    return {'schema': schema, 'extension': root / 'sources' / 'extension.json',
+            'availability': root / 'sources' / 'availability.csv'}
+
+
+class ScenarioDriverSmoke(unittest.TestCase):
+    """End-to-end drivers on a synthetic prepared run: scen-develop -> select -> freeze -> historical ->
+    actual -> report -> evaluate (positive path) and the no-qualifier path. Only test-scale constants,
+    the synthetic schema and real=False for the synthetic ledger are patched; the drivers run as is."""
+
+    def patches(self, schema):
+        from functools import partial
+        return [patch.dict(plan.G_CONFIGS, SMALL_G),
+                patch.dict(plan.FIT_SUPPORT, {'rows': 20, 'areas': 5, 'dates': 3, 'classes': 2}),
+                patch.dict(plan.STAGE3_GATE_SUPPORT, {'rows': 10, 'areas': 5, 'dates': 2, 'local_fit_dates': 2}),
+                patch.object(plan, 'DEV_TARGETS', ('2020-06', '2020-10')), patch.object(plan, 'GATE_DATES', 3),
+                patch.object(rexp, 'scenario_context', partial(rexp.scenario_context, real=False, schema=schema)),
+                patch.object(rexp, 'historical_targets', partial(rexp.historical_targets, last='2022-10'))]
+
+    def run_drivers(self, run, info, positive):
+        with redirect_stdout(StringIO()):
+            rexp.scen_develop(run, 1)
+            rexp.scen_select(run)
+            rexp.scen_freeze(run)
+            rexp.scen_historical(run)
+            rexp.scen_actual(run, info['availability'], info['extension'])
+            rexp.scen_report(run)
+
+    def test_positive_full_driver_path(self):
+        with tempfile.TemporaryDirectory() as t:
+            run = Path(t)
+            info = synthetic_scenario_run(run, crisis=True)
+            ps = self.patches(info['schema'])
+            for p_ in ps:
+                p_.start()
+            try:
+                self.run_drivers(run, info, True)
+                selection = json.loads((run / 'scenario_development' / 'selection.json').read_text())
+                self.assertEqual(selection['folds'], 24)
+                frozen = json.loads((run / 'scenario_final' / 'frozen.json').read_text())
+                released = sorted(int(h) for h, e in frozen['recipe'].items() if e['released'])
+                self.assertTrue(released, selection['decisions'])
+                fold = next((run / 'scenario_historical').rglob('fold.json')).parent
+                self.assertTrue((fold / 'pooled_predictions.csv.gz').is_file())    # same-input pooled kept
+                frec = json.loads((fold / 'fold.json').read_text())
+                self.assertIn('availability_inputs_sha256', frec)                   # lawful-input identity
+                with redirect_stdout(StringIO()):                                  # actual entry refusals
+                    with self.assertRaises(SystemExit):
+                        rexp.scen_actual(run, None, info['extension'])
+                    with self.assertRaises(SystemExit):
+                        rexp.scen_actual(run, info['availability'], None)
+                actual = json.loads((run / 'scenario_actual' / 'actual.json').read_text())
+                cases = sorted(k for k, v in actual['cases'].items() if v['released'])
+                self.assertEqual(cases, sorted(f'h{h}_{t_}' for t_, h in rexp.ACTUAL_CASES if h in released))
+                arec = json.loads((run / 'scenario_actual' / f'h{released[0]}' / '2025-10' / 'fold.json').read_text())
+                self.assertEqual(arec['gate_k'], {'AAA': 1, 'BBB': 2})              # per-country replay
+                self.assertIn('extension_manifest_sha256', arec)
+                preds = pd.read_csv(run / 'scenario_actual' / f'h{released[0]}' / '2025-10' / 'predictions.csv.gz')
+                self.assertTrue(preds['y_true_code'].isna().all())                 # truth never loaded
+                ctx = rexp.scenario_context(run, 4, development_truth=False, extension=info['extension'])
+                evi = ctx.prediction_view([5], [m('2025-10')], 0)['EVI'].item()
+                self.assertAlmostEqual(evi, np.sin(m('2025-05') / 3 + 5))            # admitted extension, O - 1
+                base_ctx = rexp.scenario_context(run, 4, development_truth=False)
+                self.assertTrue(np.isnan(base_ctx.prediction_view([5], [m('2025-10')], 0)['EVI'].item()))
+                report_ = json.loads((run / 'scenario_report' / 'report.json').read_text())
+                s1 = [c for c in report_['comparisons'] if c.get('study') == 'study1']
+                self.assertTrue(s1 and all('vs_pooled_same_input' in c for c in s1))
+                with self.assertRaises(FileExistsError):                           # historical is run once
+                    rexp.scen_historical(run)
+                rel = run / 'release'                                              # separate truth release
+                rel.mkdir()
+                truth = preds.loc[preds['area'] < 40, ['area', 'target_month']]
+                truth = truth.assign(class_code=(truth['area'] // 10) % 4)
+                truth.to_csv(rel / 'truth.csv', index=False)
+                release = {'approved': True, 'approved_by': 'unit-test', 'crosswalk': 'identity (fixture)',
+                           'truth_file': 'truth.csv', 'truth_sha256': rid.file_sha256(rel / 'truth.csv'),
+                           'frozen_actual': rid.file_sha256(run / 'scenario_actual' / 'actual.json')}
+                (rel / 'release.json').write_text(json.dumps({**release, 'frozen_actual': 'stale'}))
+                with self.assertRaises(SystemExit):                                # must bind frozen predictions
+                    rexp.scen_evaluate(run, rel)
+                (rel / 'release.json').write_text(json.dumps(release))
+                with redirect_stdout(StringIO()):
+                    rexp.scen_evaluate(run, rel)
+                ev = json.loads((run / 'scenario_evaluation' / 'evaluation.json').read_text())
+                evaluated = sorted({r['case'] for r in ev['results'] if r.get('evaluable')})
+                unevaluable = sorted({r['case'] for r in ev['results'] if r.get('evaluable') is False})
+                self.assertEqual(evaluated, [c for c in cases if c.endswith('2025-10')])
+                self.assertEqual(unevaluable, [c for c in cases if c.endswith('2025-06')])
+                for c in unevaluable:                                               # coverage-only countries kept
+                    table = pd.read_csv(run / 'scenario_evaluation' / f'country_{c}.csv')
+                    self.assertEqual(table['labelled_keys'].sum(), 0)
+                    self.assertGreater(table['cohort_keys'].sum(), 0)
+            finally:
+                for p_ in ps:
+                    p_.stop()
+
+    def test_no_qualifier_path_reports_unmet_without_failure(self):
+        with tempfile.TemporaryDirectory() as t:
+            run = Path(t)
+            info = synthetic_scenario_run(run, crisis=False)
+            ps = self.patches(info['schema'])
+            for p_ in ps:
+                p_.start()
+            try:
+                self.run_drivers(run, info, False)
+                selection = json.loads((run / 'scenario_development' / 'selection.json').read_text())
+                self.assertTrue(all(d['winner'] is None for d in selection['decisions'].values()))
+                hist = json.loads((run / 'scenario_historical' / 'historical.json').read_text())
+                self.assertTrue(all(not c['released'] and c['reason'] for c in hist['calendar'].values()))
+                actual = json.loads((run / 'scenario_actual' / 'actual.json').read_text())
+                self.assertTrue(all(not v['released'] for v in actual['cases'].values()))
+                report_ = json.loads((run / 'scenario_report' / 'report.json').read_text())
+                self.assertTrue(all(c.get('released') is False for c in report_['comparisons']))
+            finally:
+                for p_ in ps:
+                    p_.stop()
 
 
 class CommittedCode(unittest.TestCase):

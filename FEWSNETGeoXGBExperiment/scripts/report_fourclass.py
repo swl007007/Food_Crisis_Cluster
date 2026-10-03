@@ -231,6 +231,203 @@ def d3_decision(contrasts: list, complete: bool) -> dict:
             "interpretation": "three marginal per-H intervals, not a simultaneous 95% statement"}
 
 
+# ------------------------------------------------------------------------------ interruption task (G3, D4, D5)
+
+def _crisis_matrix(rows: pd.DataFrame, column: str, countries: list) -> np.ndarray:
+    """(n_countries, 3) crisis TP/FP/FN of one prediction column, countries on the shared axis."""
+    index = {c: i for i, c in enumerate(countries)}
+    out = np.zeros((len(countries), 3))
+    if len(rows) == 0:
+        return out
+    pos = rows["country"].map(index).to_numpy(dtype=np.int64)
+    t = rows["truth_code"].to_numpy(dtype=float) >= fourclass.CRISIS_MIN_CODE
+    p = rows[column].to_numpy(dtype=float) >= fourclass.CRISIS_MIN_CODE
+    for j, flag in enumerate((t & p, ~t & p, t & ~p)):
+        out[:, j] = np.bincount(pos, weights=flag.astype(float), minlength=len(countries))
+    return out
+
+
+def _f1_counts(m: np.ndarray):
+    tp, fp, fn = m[..., 0], m[..., 1], m[..., 2]
+    d = 2 * tp + fp + fn
+    return np.where(d > 0, 2 * tp / np.where(d > 0, d, 1), np.nan)
+
+
+def crisis_paired_bootstrap(rows: pd.DataFrame, model: str, comparator: str, draws: int = DRAWS,
+                            seed: int = SEED) -> dict:
+    """G3 paired country-block uncertainty of crisis F1(model) - F1(comparator) on identical keys.
+
+    ``rows`` are the matched eligible keys (truth_code, country and both prediction columns,
+    no missing). Each draw samples the C countries with replacement C times (fresh
+    default_rng(seed): every comparison with the same country set shares the schedule),
+    applies identical multiplicities to both arms and pools counts. Undefined draws stay
+    undefined (no redraw, no zero). A numerical 95% linear-percentile interval requires
+    defined point F1s, >= 2 countries and all ``draws`` differences defined; otherwise CI is
+    None with the reason and the valid/undefined draw counts."""
+    if rows[["truth_code", model, comparator]].isna().any().any():
+        raise ValueError("bootstrap rows must be matched keys without missing predictions")
+    countries = sorted(rows["country"].astype(str).unique())
+    rows = rows.assign(country=rows["country"].astype(str))
+    a, b = _crisis_matrix(rows, model, countries), _crisis_matrix(rows, comparator, countries)
+    fa, fb = (_f1_counts(m.sum(axis=0)) for m in (a, b))
+    out = {"n": int(len(rows)), "countries": len(countries),
+           "model_f1": None if np.isnan(fa) else float(fa), "comparator_f1": None if np.isnan(fb) else float(fb),
+           "delta": None if np.isnan(fa) or np.isnan(fb) else float(fa - fb),
+           "crisis_events": int(a[:, 0].sum() + a[:, 2].sum()), "draws": draws, "seed": seed}
+    events = a[:, 0] + a[:, 2]
+    out["max_country_event_share"] = float(events.max() / events.sum()) if events.sum() else None
+    if not countries:
+        return {**out, "ci95_low": None, "ci95_high": None, "ci_reason": "no eligible rows",
+                "valid_draws": 0, "undefined_draws": 0}
+    rng = np.random.default_rng(seed)
+    deltas = np.empty(draws)
+    for d in range(draws):
+        mult = np.bincount(rng.integers(0, len(countries), size=len(countries)), minlength=len(countries))
+        deltas[d] = _f1_counts(mult @ a) - _f1_counts(mult @ b)
+    valid = np.isfinite(deltas)
+    out.update(valid_draws=int(valid.sum()), undefined_draws=int((~valid).sum()))
+    reason = ("point F1 undefined" if out["delta"] is None else "fewer than two country blocks"
+              if len(countries) < 2 else "undefined bootstrap draws" if not valid.all() else "")
+    if reason:
+        return {**out, "ci95_low": None, "ci95_high": None, "ci_reason": reason}
+    lo, hi = np.percentile(deltas, [2.5, 97.5], method="linear")
+    return {**out, "ci95_low": float(lo), "ci95_high": float(hi), "ci_reason": ""}
+
+
+def study_rows(preds: pd.DataFrame, origin_truth) -> dict:
+    """D5 cohorts from one set of keyed predictions (same recipe and rule for both studies).
+
+    Study1: keys with genuine target truth. Study2: Study1 keys whose genuine exact-origin truth
+    (evaluator-only; NaN = unavailable, excluded and counted) is non-crisis, i.e. the 0->0/0->1
+    risk set; onset = target crisis within it."""
+    frame = preds.assign(origin_truth=np.asarray(origin_truth, dtype=float))
+    study1 = frame[frame["truth_code"].notna()].copy()
+    has_origin = study1["origin_truth"].notna()
+    study2 = study1[has_origin & (study1["origin_truth"] < fourclass.CRISIS_MIN_CODE)].copy()
+    return {"study1": study1, "study2": study2,
+            "study2_excluded_missing_origin": int((~has_origin).sum()),
+            "study2_excluded_origin_crisis": int((has_origin & (study1["origin_truth"] >= fourclass.CRISIS_MIN_CODE)).sum())}
+
+
+def onset_recall(study2: pd.DataFrame, column: str):
+    onset = study2["truth_code"] >= fourclass.CRISIS_MIN_CODE
+    if not onset.any():
+        return {"onsets": 0, "recall": None, "reason": "no genuine onset"}
+    hit = study2.loc[onset, column] >= fourclass.CRISIS_MIN_CODE
+    return {"onsets": int(onset.sum()), "recall": float(hit.mean()), "reason": ""}
+
+
+def _f1_or_reason(frame: pd.DataFrame, column: str, empty: str):
+    if not len(frame):
+        return None, empty
+    s = fourclass.nullable_crisis_summary(frame["truth_code"].astype(int), frame[column].astype(int))
+    return s["f1"], s["f1_na_reason"]
+
+
+def country_table(rows: pd.DataFrame, model: str, comparators, origin_truth=None) -> pd.DataFrame:
+    """Descriptive per-country supplement over the WHOLE prediction cohort (no tests, no selection).
+
+    Every country with a predicted key appears, with cohort/labelled keys, regions, months, crisis
+    events and the standalone model crisis F1. ``comparators`` (name -> column, or one column name)
+    each add matched keys, model and comparator F1 and their difference on identical matched keys.
+    With ``origin_truth`` the Study2 risk set is described per country too: eligible keys, keys
+    excluded for missing or crisis origin, genuine onsets and model onset recall. Undefined or
+    absent values are None with a reason; no country is dropped."""
+    comparators = {"comparator": comparators} if isinstance(comparators, str) else dict(comparators)
+    frame = rows.assign(origin_truth=np.nan if origin_truth is None else np.asarray(origin_truth, dtype=float))
+    out = []
+    for country, g in frame.groupby(frame["country"].astype(str)):
+        lab = g[g["truth_code"].notna()]
+        f, why = _f1_or_reason(lab, model, "no labelled keys")
+        row = {"country": country, "cohort_keys": int(len(g)), "labelled_keys": int(len(lab)),
+               "regions": int(g["area"].nunique()), "target_months": int(g["target_month"].nunique()),
+               "crisis_events": int((lab["truth_code"] >= fourclass.CRISIS_MIN_CODE).sum()),
+               "model_f1_labelled": f}
+        reasons = [f"model_labelled: {why}"] if why else []
+        for name, col in comparators.items():
+            mat = lab[lab[col].notna()] if col in lab else lab.iloc[:0]
+            fm, wm = _f1_or_reason(mat, model, "no matched keys")
+            fc, wc = _f1_or_reason(mat, col, "no matched keys") if col in lab else (None, "comparator unavailable")
+            row.update({f"{name}_matched_keys": int(len(mat)), f"model_f1_vs_{name}": fm, f"{name}_f1": fc,
+                        f"delta_vs_{name}": None if fm is None or fc is None else fm - fc})
+            reasons += [f"{name}: {w}" for w in (wm, wc) if w]
+        if origin_truth is not None:
+            has = lab["origin_truth"].notna()
+            risk = lab[has & (lab["origin_truth"] < fourclass.CRISIS_MIN_CODE)]
+            onset = risk["truth_code"] >= fourclass.CRISIS_MIN_CODE
+            row.update(study2_eligible_keys=int(len(risk)), study2_excluded_missing_origin=int((~has).sum()),
+                       study2_excluded_origin_crisis=int((has & (lab["origin_truth"] >= fourclass.CRISIS_MIN_CODE)).sum()),
+                       onsets=int(onset.sum()),
+                       onset_recall_model=float((risk.loc[onset, model] >= fourclass.CRISIS_MIN_CODE).mean())
+                       if onset.any() else None)
+        row["na_reasons"] = "; ".join(reasons)
+        out.append(row)
+    return pd.DataFrame(out)
+
+
+#: Documented expert-forecast table (interruption task D5): one row per issued projection.
+EXPERT_COLUMNS = ("area", "issue_month", "product", "horizon", "validity_start", "validity_end", "class_code",
+                  "release_date", "evidence", "source")
+
+
+def keyed_expert(keys: pd.DataFrame, experts: pd.DataFrame | None, real: bool = True) -> pd.DataFrame:
+    """Same-horizon genuine expert comparator on forecast keys (area, target_month, origin_month, horizon).
+
+    A key receives an expert class only from a documented projection whose declared ``horizon``
+    equals the key's H, issued at its exact origin month, whose validity interval contains its
+    target month, and released by the origin-month-end cutoff. ``product`` is provenance; the
+    product-to-horizon mapping must be documented in the table, never inferred here. Every other
+    key keeps NaN with its coverage reason; no stale carry-forward or other-horizon proxy.
+    ``real`` refuses synthetic evidence; class codes must be integers on the 0..3 axis."""
+    out = keys[["area", "target_month", "origin_month", "horizon"]].copy()
+    out["expert_class_code"] = np.nan
+    out["expert_reason"] = "no_documented_expert_table"
+    if experts is None or experts.empty:
+        return out
+    missing = [c for c in EXPERT_COLUMNS if c not in experts.columns]
+    if missing:
+        raise ValueError(f"expert table lacks {missing}")
+    allowed = ["verified_vintage", "reconstructed"] + ([] if real else ["synthetic"])
+    if (~experts["evidence"].isin(allowed)).any() or experts["source"].isna().any():
+        raise ValueError(f"expert rows need evidence in {allowed} and a source")
+    codes = pd.to_numeric(experts["class_code"], errors="coerce")
+    if codes.isna().any() or (codes != np.round(codes)).any() or (~codes.isin([0, 1, 2, 3])).any():
+        raise ValueError("expert class codes must be non-null integers on the fixed 0..3 axis")
+    ex = experts.copy()
+    month = lambda col: pd.to_datetime(ex[col].astype(str).str[:7], format="%Y-%m")   # noqa: E731
+    ex["issue"] = (month("issue_month").dt.year * 12 + month("issue_month").dt.month - 1).to_numpy()
+    ex["start"] = (month("validity_start").dt.year * 12 + month("validity_start").dt.month - 1).to_numpy()
+    ex["end"] = (month("validity_end").dt.year * 12 + month("validity_end").dt.month - 1).to_numpy()
+    rel = pd.to_datetime(ex["release_date"].astype(str), format="%Y-%m-%d")
+    ex["release"] = (rel.dt.year * 12 + rel.dt.month - 1).to_numpy()
+    tm = out["target_month"].map(lambda v: int(str(v)[:4]) * 12 + int(str(v)[5:7]) - 1 if isinstance(v, str) else int(v))
+    om = out["origin_month"].map(lambda v: int(str(v)[:4]) * 12 + int(str(v)[5:7]) - 1 if isinstance(v, str) else int(v))
+    by_area = {a: g for a, g in ex.groupby("area")}
+    codes, reasons = [], []
+    for area, t, o, h in zip(out["area"], tm, om, out["horizon"]):
+        g = by_area.get(area)
+        if g is None:
+            codes.append(np.nan); reasons.append("no_expert_for_area"); continue
+        g = g[g["horizon"].astype(int) == int(h)]
+        if g.empty:
+            codes.append(np.nan); reasons.append("no_expert_for_horizon"); continue
+        issued = g[g["issue"] == o]
+        if issued.empty:
+            codes.append(np.nan); reasons.append("no_expert_issued_at_origin"); continue
+        covering = issued[(issued["start"] <= t) & (issued["end"] >= t)]
+        if covering.empty:
+            codes.append(np.nan); reasons.append("validity_excludes_target"); continue
+        released = covering[covering["release"] <= o]
+        if released.empty:
+            codes.append(np.nan); reasons.append("expert_released_after_origin_cutoff"); continue
+        if released["class_code"].nunique() != 1:
+            raise ValueError(f"area {area}: conflicting documented expert classes for one key")
+        codes.append(float(released["class_code"].iloc[0])); reasons.append("")
+    out["expert_class_code"] = codes
+    out["expert_reason"] = reasons
+    return out
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--run-dir", type=Path, required=True)

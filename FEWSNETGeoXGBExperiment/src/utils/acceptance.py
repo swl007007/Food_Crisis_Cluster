@@ -230,6 +230,57 @@ def v7_final_map() -> dict:
 FOLD_FILES = ("predictions.csv.gz", "gate.json")
 
 
+#: interruption task: the fixed G record written by run_stage1 --split-mode scen
+SCENARIO_G_RECORD = "fixed design capacities (G4 of 10-02)"
+SCENARIO_ROOT_FILES = ("root.json", "command.json", "run.log")
+SCENARIO_PREPARED = ("manifests/release_ledger.csv", "manifests/alignment.json", "scenario/features.json")
+
+
+def accept_scenario_stage1(run: Path) -> dict:
+    """Interruption task: every one of the 648 scheduled scenario roots has a current-code
+    completion record bound to this preparation and the fixed G record, names exactly its own
+    root and candidate, carries a known status, and every required output exists with its hash;
+    the prepared scenario inputs are recorded. Returns {candidate: {entry, status}}."""
+    from scripts.run_stage1 import candidate_files, scenario_entries
+    run = Path(run)
+    prepared = accept_prepared(run)
+    recorded = _json(run / "prepared" / "manifests" / "outputs.json")
+    problems = [f"prepared {rel} not recorded" for rel in SCENARIO_PREPARED if rel not in recorded]
+    stage = run / "stage1_scenario"
+    out = {}
+    for entry in scenario_entries(schedule(run)):
+        name, cand = entry["root"], entry["candidate"]
+        if f"scenario/{entry['input']}" not in recorded:
+            problems.append(f"{name}: prepared input {entry['input']} not recorded")
+        path = stage / "roots" / name / "completion.json"
+        if not path.is_file():
+            problems.append(f"{name}: no completion record")
+            continue
+        record = _json(path)
+        problems += _identity_problems(record, name)
+        if record.get("root") != name or record.get("prepared") != prepared["outputs_sha256"] \
+                or record.get("g_selection") != SCENARIO_G_RECORD or record.get("candidates") != [cand]:
+            problems.append(f"{name}: record belongs to another root, preparation, G record or candidate")
+        status = record.get("status")
+        required = [f"roots/{name}/{f}" for f in SCENARIO_ROOT_FILES]
+        if status == "completed":
+            required.append(f"roots/{name}/fold_membership.csv.gz")
+            c = _json(stage / "candidates" / cand / "candidate.json")
+            if c.get("candidate") != cand:
+                problems.append(f"{cand}: candidate.json describes another candidate")
+            required += [f"candidates/{cand}/{f}" for f in candidate_files(c, True)]
+        elif status not in ("no_e3_target_labels", "root_insufficient_support"):
+            problems.append(f"{name}: unknown status {status!r}")
+        problems += [f"{name}: {p}" for p in rid.check_inventory(stage, record.get("outputs") or {}, required)]
+        root = _json(stage / "roots" / name / "root.json")
+        fields = ("strategy", "horizon", "target_month", "scenario_k", "ratio", "split_seed")
+        if root.get("root") != name or any(root.get(f) != entry[f] for f in fields):
+            problems.append(f"{name}: root.json identity differs from the schedule")
+        out[cand] = {"entry": entry, "status": status}
+    _raise(problems, "Stage 1 scenario")
+    return out
+
+
 def accept_fold(fold_dir: Path, expected: dict) -> dict:
     """One external fold of one arm: completion record (fold.json, written last), its
     identity fields equal ``expected`` and every output present with its hash."""

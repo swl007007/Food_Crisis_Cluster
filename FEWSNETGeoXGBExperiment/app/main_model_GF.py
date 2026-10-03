@@ -134,14 +134,18 @@ def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch
 
 def run_candidate(name, local, family, root, data, work, checkpoint_dir, contiguity_info, features,
                   increment_source="parent", confirmation=None, e1="hard_f1", X_weight=None, X_key=None,
-                  e2_score=None):
+                  e2_score=None, nullable_scores=False, fit_diagnostic=None):
     """One partition search from the shared root; returns the candidate record.
 
     ``confirmation`` (D29/A4 only) = (X, y, groups, months) of the C rows. They are never
     part of ``data``, so GeoRF.fit (E1/q, E2, support, stopping) cannot see them; the
     candidate is frozen (digest recorded) before C is predicted with predict-only routing.
     ``X_weight``/``X_key`` (interruption scenario roots only, default None): per-row fitting
-    weights and original-key ids aligned with ``data``, forwarded to the partition."""
+    weights and original-key ids aligned with ``data``, forwarded to the partition.
+    ``nullable_scores`` (scenario roots): crisis scores are None-with-reason when undefined.
+    ``fit_diagnostic`` (scenario roots) = (X, y, groups, months) of the ORIGINAL fitting keys,
+    one designated-k row each: scored predict-only after the candidate is frozen (G4 train
+    gap); it never affects fitting, search, routes or any arm."""
     Xtrain, ytrain, gtrain, mtrain, x_set, Xtest, ytest, gtest, y_pool = data
     cand_work = work / "georf" / name
     cand_work.mkdir(parents=True)
@@ -161,7 +165,7 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
         model_dir = Path(model.model_dir).resolve()
     finally:
         os.chdir(here)
-    frozen = frozen_digest(model_dir) if confirmation is not None else None
+    frozen = frozen_digest(model_dir) if (confirmation is not None or fit_diagnostic is not None) else None
     saved_branch = np.load(model_dir / "space_partitions" / "X_branch_id.npy", allow_pickle=False)
     if not np.array_equal(saved_branch, get_X_branch_id_by_group(gtrain, model.s_branch)):
         raise RuntimeError("saved X_branch_id disagrees with s_branch routing")
@@ -172,6 +176,13 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
     part_crisis, pool_crisis = fourclass.crisis_summary(ytest, y_part), fourclass.crisis_summary(ytest, y_pool)
     score = float(fourclass.endpoint_exact(ytest, y_part))
     score_base = float(fourclass.endpoint_exact(ytest, y_pool))
+    score_na_reason = ""
+    if nullable_scores:
+        part_crisis = fourclass.nullable_crisis_summary(ytest, y_part)
+        pool_crisis = fourclass.nullable_crisis_summary(ytest, y_pool)
+        score, score_base = part_crisis["f1"], pool_crisis["f1"]
+        score_na_reason = "; ".join(f"{side}: 2TP+FP+FN=0" for side, v in (("partitioned", score), ("root", score_base))
+                                    if v is None)
     # Generalisation evidence (D26): the final partition and the root on ALL of the
     # candidate's validation rows (E2 population) next to the E3 target-month scores.
     val = x_set == 1
@@ -213,16 +224,25 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
                                "branch_id": np.where(branch_val == "", "root", branch_val.astype(str))})
     with gzip.open(out / "validation_predictions.csv.gz", "wt", encoding="utf-8", newline="") as handle:
         validation.to_csv(handle, index=False)
-    pd.DataFrame([{"endpoint": plan.ENDPOINT, "score": score, "score_base": score_base,
+    pd.DataFrame([{"endpoint": plan.ENDPOINT, "score": np.nan if score is None else score,
+                   "score_base": np.nan if score_base is None else score_base,
+                   **({"score_na_reason": score_na_reason} if nullable_scores else {}),
                    "macro_f1_fourclass": part_summary["macro_f1"], "macro_f1_fourclass_base": pool_summary["macro_f1"],
                    "n": len(ytest)}]).to_csv(out / "heldout_scores.csv", index=False, float_format="%.17g")
     for fname in ("s_branch.pkl", "branch_table.npy", "X_branch_id.npy"):
         shutil.copy2(model_dir / "space_partitions" / fname, out / fname)
     confirmation_scores = None
     if confirmation is not None:
-        confirmation_scores = score_confirmation(model, root[0], confirmation, lookup, out)
+        confirmation_scores = score_confirmation(model, root[0], confirmation, lookup, out, nullable=nullable_scores)
         if frozen_digest(model_dir) != frozen:
             raise RuntimeError("the candidate changed during confirmation scoring")
+    fit_scores = None
+    if fit_diagnostic is not None:
+        fit_scores = score_confirmation(model, root[0], fit_diagnostic, lookup, out, nullable=True,
+                                        filename="fit_diagnostic_predictions.csv.gz")
+        fit_scores["support"] = nx.support(fit_diagnostic[1], fit_diagnostic[2], fit_diagnostic[3])
+        if frozen_digest(model_dir) != frozen:
+            raise RuntimeError("the candidate changed during fit-diagnostic scoring")
 
     # D32/A7: Stage 1 spatial evidence, written after the candidate is frozen (and C scored).
     last_save = {}
@@ -268,9 +288,13 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
                    "partitioned": part_summary, "pooled": pool_summary,
                    "partitioned_crisis": part_crisis, "pooled_crisis": pool_crisis,
                    "validation": {"n": int(val.sum()),
-                                  "final": {"crisis_f1": fourclass.crisis_f1(ytrain[val], y_final_val),
+                                  "final": {**({"crisis": fourclass.nullable_crisis_summary(ytrain[val], y_final_val)}
+                                               if nullable_scores else
+                                               {"crisis_f1": fourclass.crisis_f1(ytrain[val], y_final_val)}),
                                             "macro_f1_fourclass": fourclass.macro_f1(ytrain[val], y_final_val)},
-                                  "root": {"crisis_f1": fourclass.crisis_f1(ytrain[val], y_root_val),
+                                  "root": {**({"crisis": fourclass.nullable_crisis_summary(ytrain[val], y_root_val)}
+                                              if nullable_scores else
+                                              {"crisis_f1": fourclass.crisis_f1(ytrain[val], y_root_val)}),
                                            "macro_f1_fourclass": fourclass.macro_f1(ytrain[val], y_root_val)}},
                    "pooled_source": "the candidate's own global root booster (same G, same fitting rows)",
                    "note": "score/score_base = E3 target-month crisis-positive F1 (D26 primary, also the E4 weight "
@@ -281,6 +305,11 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
         **({"confirmation": {**confirmation_scores, "frozen_digest_before_scoring": frozen,
                              "role": "D29 diagnostic only: no gate, no pruning, no root fallback, not an E4 input"}}
            if confirmation is not None else {}),
+        **({"fit_diagnostic": {**fit_scores, "frozen_digest_before_scoring": frozen,
+                               "role": ("G4 train-gap diagnostic on ORIGINAL fitting keys (one designated-k row "
+                                        "each), predict-only after freeze; never a fit, search, route or E4 input")}}
+           if fit_diagnostic is not None else {}),
+        **({"score_na_reason": score_na_reason} if nullable_scores else {}),
         "routing_export": {"file": "correspondence_table.csv",
                            "contract": "prediction routing (compatibility); not proof of learned spatial assignment"},
         "assignment_evidence": assignment_record,
@@ -333,9 +362,13 @@ def matched_search_roles(x_set, conf_rows, gtrain, mtrain, expected, seed):
     return recent, sampled
 
 
-def score_confirmation(model, root_booster, confirmation, lookup, out):
+def score_confirmation(model, root_booster, confirmation, lookup, out, nullable=False,
+                       filename="confirmation_predictions.csv.gz"):
     """Predict every C row with the frozen candidate (predict-only routing; areas without
-    a learned route use the existing root fallback) and the root; write the keyed file."""
+    a learned route use the existing root fallback) and the root; write the keyed file.
+
+    Interruption scenario roots: ``nullable`` reports crisis F1 None-with-reason when undefined,
+    and the same predict-only scoring writes the original-F diagnostic (``filename``)."""
     Xc, yc, gc, mc = confirmation
     branch_c = get_X_branch_id_by_group(gc, model.s_branch)
     proba_final = model.model.predict_proba_georf(Xc, gc, model.s_branch, X_branch_id=branch_c)
@@ -349,8 +382,14 @@ def score_confirmation(model, root_booster, confirmation, lookup, out):
         frame[f"p_root_{label}"] = proba_root[:, k]
     for k, label in enumerate(fourclass.CLASS_LABELS):
         frame[f"p_final_{label}"] = proba_final[:, k]
-    with gzip.open(out / "confirmation_predictions.csv.gz", "wt", encoding="utf-8", newline="") as handle:
+    with gzip.open(out / filename, "wt", encoding="utf-8", newline="") as handle:
         frame.to_csv(handle, index=False, float_format="%.17g")
+    if nullable:
+        return {"n": int(len(yc)), "unrouted_rows": int((~routed).sum()), "file": filename,
+                "final": {"crisis": fourclass.nullable_crisis_summary(yc, y_final),
+                          "macro_f1_fourclass": fourclass.macro_f1(yc, y_final)},
+                "root": {"crisis": fourclass.nullable_crisis_summary(yc, y_root),
+                         "macro_f1_fourclass": fourclass.macro_f1(yc, y_root)}}
     return {"n": int(len(yc)), "unrouted_rows": int((~routed).sum()),
             "final": {"crisis_f1": fourclass.crisis_f1(yc, y_final), "macro_f1_fourclass": fourclass.macro_f1(yc, y_final)},
             "root": {"crisis_f1": fourclass.crisis_f1(yc, y_root), "macro_f1_fourclass": fourclass.macro_f1(yc, y_root)}}
@@ -493,7 +532,11 @@ def scenario_root(frame, ratio, split_seed, horizon, term, work, checkpoint_dir,
     cand = run_candidate(candidate, plan.SCENARIO_LOCAL, plan.SCENARIO_FAMILY, (booster, record), data, work,
                          checkpoint_dir, contiguity_info, features, increment_source="root",
                          confirmation=confirmation, X_weight=None if unit else weight, X_key=key,
-                         e2_score=fourclass.crisis_f1_exact_or_none)
+                         e2_score=fourclass.crisis_f1_exact_or_none, nullable_scores=True,
+                         fit_diagnostic=(fit_key_rows[features].to_numpy(dtype=float),
+                                         fit_key_rows["class_code"].to_numpy(dtype=np.int64),
+                                         fit_key_rows["area"].to_numpy(dtype=np.int64),
+                                         fit_key_rows["target_month"].to_numpy(dtype=np.int64)))
     out = {**base, "status": "completed", "candidates": [candidate], "root_fit": record,
            "root_booster_sha256": record["booster_sha256"], "candidate_record": cand["candidate"]}
     write_json("root.json", out)

@@ -200,6 +200,17 @@ def crisis_summary(y_true, y_pred):
             "recall": c["tp"] / (c["tp"] + c["fn"]) if c["tp"] + c["fn"] else None}
 
 
+def nullable_crisis_summary(y_true, y_pred):
+    """Reporting summary (interruption task G3): counts plus F1/precision/recall that are None
+    with a reason when undefined, never the internal zero."""
+    c = crisis_counts(y_true, y_pred)
+    f1 = crisis_f1_exact_or_none(y_true, y_pred)
+    return {**c, "n": int(sum(c.values())), "f1": None if f1 is None else float(f1),
+            "f1_na_reason": "" if f1 is not None else "2TP+FP+FN=0",
+            "precision": c["tp"] / (c["tp"] + c["fp"]) if c["tp"] + c["fp"] else None,
+            "recall": c["tp"] / (c["tp"] + c["fn"]) if c["tp"] + c["fn"] else None}
+
+
 def crisis_scan_masses(y_true, y_pred, y_group):
     """(groups, Y, A) with ONE crisis column: D_g = 2TP_g + FP_g + FN_g, Y = D_g / D,
     A = 2TP_g / D (zero when D = 0) — the crisis analogue of scan_masses."""

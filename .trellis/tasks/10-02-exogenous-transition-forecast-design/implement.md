@@ -2,6 +2,8 @@
 
 Status: **approved for execution**, 2026-10-02. User approved the complete final planning summary with “ok implement”. Follow the recorded audit lifecycle before code changes and D7 data readiness before real fitting; protected final outcomes remain isolated. Scientific contracts below are unchanged.
 
+Execution steering, 2026-10-02: user reaffirmed goal mode and made this approved spec/plan's priorities controlling, superseding the older goal text prioritising metric improvement. Complete lawful inputs and engineering checks before the finite development schedule, then freeze, retrospective evaluation, actual predictions and separate final evaluation in section 6 order. The three remaining driver/comparator/evaluator interfaces stay in scope within this dependency order. Synthetic engineering may proceed while D7 is blocked; no tuning beyond the approved plan.
+
 ## 1. Completed planning decisions
 
 - [x] Resolve G1: synchronise simulated missed releases across participating regions; actual 2025 uses verified availability.
@@ -43,32 +45,26 @@ Status: **approved for execution**, 2026-10-02. User approved the complete final
 
 ## 4. Implement the smallest compatible change
 
-Reviewed partial implementation: 53917be adds optional sample weights to native continuation and both XGBmodel training modes. Independent Windows verification: `python3.12.exe tests/test_baseline.py WeightedContinuation` (4 passed). End-to-end A/B forwarding and original-key support remain unchecked below until their callers are integrated. Slices 2–4 implement release-aware availability, scenario Stage3 and the 648-entry Stage1 plumbing; review fixes cover fitting-label cache identity, requested-versus-resolved parameter separation, exact aligned schema, original assignment counts, undefined E2 and empty E3 outcomes. Pre-commit full suite: 147/148 passed, with only the new uncommitted module file-count check pending commit. Stage2, full-pipeline selection/reporting and D7 source certification remain outstanding; these component checks do not establish data readiness.
+Reviewed implementation checkpoints:
 
-Executor packet status (uncommitted, awaiting coordinator review; boxes are ticked only after independent verification). Slices 2–4 plus review fixes, synthetic tests only, frozen Windows Python, full suite 147/148:
+- `53917be`: weighted native continuation and adapter forwarding; independent 4/4 checks.
+- `702888a`: release-aware views, Stage1 648-entry scenario plumbing, original-key support and Stage3 scenario/gate/cache behavior. Independent post-commit `CommittedCode ScenarioStage3 ScenarioStage1`: 15/15 passed; the earlier uncommitted file-count failure is resolved.
+- Slices 5–7 and review corrections are verified for an engineering checkpoint: Stage2 crisis E4/NA, exact 72-fold selection, reporting and historical/actual entry points; source/fold identity checks, same-input pooled outputs, country-specific replay and coverage, expert interface and separate truth release. Independent Windows regression: 163/163 passed (99.875s); executor driver smoke: 2/2 passed (375.880s), covering both qualifying and no-qualifier paths. All 165 tests are covered. After the independent run the only Python change was one stale smoke-test output filename, verified by reconstructing the previous source digest. The smoke uses a smaller synthetic development calendar; it is not the real 648-candidate/72-fold experiment.
+- User reiterated “continue，包括上面三个”: continue these slices and finish the disclosed engineering gaps (driver-level synthetic validation, lawful expert comparator interface, separate final-truth evaluation input). This does not invent missing source evidence or release protected 2025 outcomes before frozen predictions.
 
-- **Failing test:** the only failure is `CommittedCode` counting code files, 64 versus 65, which clears once the new module is committed.
-- **Slice 2:** release-ledger and alignment availability views, with A/B original-key views.
-- **Slice 3:** the Stage 3 `ScenarioPanel`, crisis gate, forecast-only cohort and cache identity. The identity covers labels and inputs; the requested G configuration is now separate from the resolved params, and disk reopen is fixed on both panels.
-- **Slice 4:** Stage 1 scenario plumbing and the frozen 648 schedule; weights and original-key support in `partition`; the undefined-E2 guard; a deliberate no-target root; the pinned scenario feature manifest; evidence that separates variant rows from original rows.
+Real data stays blocked by D7. Preserve the active audit run; no task closure until the agreed evidence is complete.
 
-Not yet done:
-
-- Stage 2 crisis-F1/NA routing;
-- scenario development maps and the 72-fold selection;
-- the historical and 2025 runners and reports.
-
-Real data stays blocked by D7.
-
-- [ ] Reuse the existing three-stage experiment; add only the availability/scenario behavior needed by the frozen design. Preserve raw sources and old outputs.
-- [ ] Rebuild IPC-derived predictors under the as-of boundary; apply the same contract to pooled/local fits and prediction. Preserve origin-specific covariate availability and genuine-label fitting eligibility.
+- [x] Reuse the existing three-stage experiment; add only the availability/scenario behavior needed by the frozen design. Preserve raw sources and old outputs.
+- [x] Rebuild IPC-derived predictors under the as-of boundary; apply the same contract to pooled/local fits and prediction. Preserve origin-specific covariate availability and genuine-label fitting eligibility (synthetic validation; real source admission remains D7).
 - [x] Implement A/B training with grouped variants and conserved fitting weight through both global fitting and local continuation; current continuation lacks a weight argument. Compute support from original keys, not expanded arrays. Reuse the existing global weight validation where applicable.
 - [x] Select the existing shared-root increment mode explicitly; preserve root-prefix invariance and separate routing parent from the model prefix. Align Stage3 local gate from legacy macro-F1 to crisis F1, requiring gain strictly >0.01 versus fold-global and genuine support, otherwise global fallback.
-- [ ] Reuse keyed prediction/reporting infrastructure for matched ordinary/prolonged persistence and available experts, Study2 subsets, coverage and country supplements.
+- [x] Reuse keyed prediction/reporting infrastructure for matched ordinary/prolonged persistence and available experts, Study2 subsets, coverage and country supplements. Interfaces and synthetic paths are verified; real comparator/source claims await D7 and saved real runs.
 - [x] Bind both in-memory and disk global/model caches to the lawful input, strategy, scenario, outer exclusion, fitting-key and weight identities. The current GlobalStore memo key (H, origin, G) is insufficient across scenarios.
 - [x] Separate forecast keys from evaluator truth so June targets without genuine labels still receive predictions; never fabricate class codes to satisfy the current labelled-only Panel/run_fold interface.
 
 ## 5. Verify before real runs
+
+The full synthetic suite above covers the engineering contracts below. Their real-data reconciliation remains part of sections 3 and 6; unchecked real evidence must not be inferred from a test count.
 
 - [ ] Minimal synthetic check: changing a hidden recent IPC or future covariate cannot change permitted features/predictions, while changing a permitted older input can.
 - [ ] Minimal synthetic check: augmentation variants remain in one split, conserve weight in both root/local training and do not inflate support; the frozen root prefix remains unchanged.

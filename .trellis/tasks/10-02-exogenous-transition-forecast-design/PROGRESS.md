@@ -174,3 +174,106 @@ Still to do: Stage 2 crisis-F1 E4 weights with NA/fallback routing; scenario dev
 - Assignment evidence: `fitting_rows` counts original keys and `fitting_variant_rows` the copies.
 - `train_branch.py` CRLF endings preserved.
 - Windows py3.12.10 full suite: 147/148; the only failure is the expected `CommittedCode` file count until commit. GitNexus impact/detect_changes unavailable (LadybugDB); fallback source review used.
+
+2026-10-02 (Codex checkpoint): slices 2–4 committed as 702888a1b9bb260016c800d8764a3f2a1ffa3ac3. Independent post-commit frozen Windows check `tests/test_baseline.py CommittedCode ScenarioStage3 ScenarioStage1`: 15/15 passed in 18.835s, including changed-label cache isolation, fresh disk reopen, truth-free forecasts, exact schema, undefined E2 and empty E3 status. Combined with executor full 147/148 pre-commit, the sole file-count failure is resolved. This is component validation, not completed task acceptance. Claude resumed Stage2 and remaining scenario runner/reporting under existing authorisation. Review requested NA reporting in scenario candidate S/C/E3 outputs and keyed original-F diagnostics after freeze; later reporting must not reinterpret undefined as zero or count augmented rows as original support.
+
+2026-10-02 slice 5 (Stage 2 crisis E4/NA + reporting alignment; uncommitted; synthetic only):
+- `run_stage2.py` crisis metric (the legacy macro path is unchanged):
+  - `scenario_candidate_row` recomputes matched E3 crisis F1 (partitioned vs own root) from the saved `target_predictions.csv` rows and requires agreement with the `candidate.json` counts;
+  - `no_e3_target_labels` and `root_insufficient_support` are legitimate ineligible rows with a reason;
+  - a missing completion record, file or count mismatch raises.
+- `crisis_plan_weights`: clipped-logit E4 on scored rows; NA rows keep weight NaN with a reason; corrupt combinations raise.
+- `build_consensus`/`accept_consensus(metric="crisis")`:
+  - routes no_prior_candidates / no_scorable_evidence / null_consensus / learned_map, coherent between producer and acceptance;
+  - the full ledger is persisted, but only eligible rows enter steps 1–6, with crisis F1 carried in the legacy score columns and disclosed;
+  - the metric is part of map acceptance.
+- `scenario_map_pool` (common origin-legal pool per strategy) keeps a candidate only when:
+  - its E3 target is before O (strict for development; ≤ the 2020-12 cutoff for the final freeze);
+  - its target cycle is released by the cutoff in every country (`ReleaseLedger.fully_released`);
+  - its full evidence span (`evidence_last_month` = last F/S/C/E3 label month from the saved `fold_membership`; IPC inputs precede their own origins) ends before the first cycle hidden at the cutoff under k_max = 2.
+
+  Late or reordered publication orders are refused at ledger construction.
+- Reporting alignment (scenario roots only; legacy modes unchanged):
+  - `fourclass.nullable_crisis_summary` (F1 None with a reason) is used for E3, S validation, C confirmation and a new original-F diagnostic (`fit_diagnostic_predictions.csv.gz`: one designated-k row per original fitting key, predict-only after the frozen digest, with support);
+  - `run_stage1` copies the file when declared.
+
+Technical choices (no new scientific assumptions):
+- crisis-ledger text columns are compared canonically (empty == NaN after a CSV round trip);
+- the E3 NA reason names the undefined side;
+- the evidence span is taken from saved role lineage, not from label values.
+
+Tests (Windows py3.12.10): `ScenarioStage2` 4, extended `ScenarioStage1`. Full suite 152/152.
+
+Next: development maps per origin and the 72 complete development folds with the A/B stop rule; Study1/Study2/country/bootstrap reporting; the prediction-only final path, which refuses actual 2025 runs without verified country/product availability.
+
+2026-10-02 slice 6 (development folds + A/B rule; uncommitted; synthetic only), in `scripts/run_experiment.py` (legacy phases untouched):
+- `scenario_dev_plan()` = the frozen 72 folds.
+- `scen_dev_fold` runs one complete fold through `s3.run_fold` with a `ScenarioPanel`, the strategy's origin map (learned → gated L1 locals; other routes → pooled with their reason) and fixed G/L.
+- `scen_fold_scores` gives crisis counts for the model on genuine-truth keys, and for the model vs lawful persistence on identical matched keys.
+- `ab_select` (exact rationals):
+  - qualify = normal parity ≥ −0.02 (defined) and defined one/two-cycle F1;
+  - rank by their mean; exact ties → A;
+  - no qualifier → no winner, with the unmet criteria;
+  - incomplete folds raise.
+- Driver phases `scen-develop` and `scen-select`:
+  - the 648-row crisis ledger from Stage 1 evidence; per (strategy, origin) the common-pool crisis map via `build_consensus`; folds saved with `save_fold`; selection written once;
+  - `scenario_context` builds Availability only from a prepared real ledger and alignment.
+
+Tests: `ScenarioDevelopment` 3 (plan; rule incl. the exact −0.02 boundary, tie, stop, undefined, incomplete; a real fold with key/score recount and the non-learned route). Full suite 155/155.
+
+The driver glue (`scen_develop`/`scen_select`/`scenario_context`) needs a prepared real run and is not exercised end to end. Real runs remain blocked by D7.
+
+2026-10-02 slice 7 (reporting + final path; uncommitted; synthetic only):
+- `report_fourclass.py` (legacy functions untouched):
+  - `crisis_paired_bootstrap`: G3 shared country-block multiplicities from a fresh `default_rng(42)`, 2,000 fixed draws, pooled crisis counts, undefined draws counted and never redrawn; the CI requires defined points, ≥ 2 countries and all draws defined, with a reason otherwise; event concentration reported;
+  - `study_rows`: Study1 = genuine-truth keys; Study2 = genuine exact-origin non-crisis risk set, with missing-origin and origin-crisis exclusions counted;
+  - `onset_recall`;
+  - `country_table`: descriptive, nullable F1, no tests.
+- `stage3.ScenarioPanel(gate_k=...)` with an explicit `internal` flag through `GlobalStore.get`/`fit_pool`. The outer forecast uses k (0 for actual cases on the real ledger) and internal gate replay uses `gate_k`; `intensity_k` is part of the store identity. The frozen Panel accepts and ignores the flag.
+- `run_experiment.py`:
+  - `historical_targets`: the D2 common calendar, with origin and both k=2 missed cycles strictly after 2020-12 and exclusion reasons. The fixture reproduces the illustrated first targets: H4 2021-10, H8 2022-02;
+  - `actual_gate_intensity`: the actual-case contract, which refuses a missing table, synthetic evidence, missing countries or country-specific differing counts; no global synthetic k is substituted;
+  - phases `scen-freeze` (winner's final map through 2020-12; no winner → no release), `scen-historical` (k 0/1/2 on the common calendar), `scen-actual` (prediction-only; truth never loaded; refuses unresolved availability) and `scen-report` (Study1/Study2/country/bootstrap vs matched persistence from historical predictions; 2025 truth deferred to a separate release with an approved crosswalk).
+
+Tests: `ScenarioReporting` 2 and `ScenarioFinalPath` 3. Full suite 160/160.
+
+Disclosed gap: the driver glue (`scen-freeze`/`historical`/`actual`/`report`) needs a prepared real run and is not exercised end to end. The expert comparator is not wired, because its source/horizon mapping is unresolved under D7. Real runs remain blocked by D7.
+
+2026-10-02 (Codex review of slices 5–7): user repeated continue including the above three; engineering scope includes end-to-end driver verification, expert comparator input and separately released 2025 truth evaluation. Reviewed Stage2/driver/report diff. Sent concrete fixes for missing candidate/prepared/source identity checks, retained pooled outputs, seasonal historical calendar, exact 72-fold identities, freeze-selection binding, no-winner reporting, country-specific actual replay, country coverage and fresh2025 covariate input. Independent first focused run: 11/12 pass, remaining consensus acceptance fails code identity while executor edits concurrently; rerun only after code freeze. This is not accepted as a clean test result. New README section distinguishes current study from old run_all.sh. No real fitting or final truth inspection; active audit run remains open.
+
+2026-10-02 (Codex continuation): user now prioritises the approved spec/implement sequence while retaining goal mode. The original goal is still active; its old metric-maximisation wording is superseded by this explicit steering, recorded in implement.md and sent to the same Claude session via Herdr. Audit run/base/executor reverified unchanged, controller running. Current review also requires exact-origin evaluator lookup, saved pooled comparisons, input-bound completed-fold reuse, frozen actual-fold hash checks, country exclusions/comparator coverage and non-vacuous driver assertions. Executor is repairing these; no stable packet or independent full-suite result yet. A trellis-check dispatch failed at the agent thread limit, so coordinator review continues directly. Official-page metadata follow-up is in research/d7-web-publication-followup.md; this is a new release-date lead, not a passed D7 calendar. Backend code-spec now records the scenario driver/expert/truth-release contracts. No real fit or 2025 outcome-table access occurred.
+
+2026-10-02/03 packet 5–7 + gaps (FROZEN for the coordinator commit; synthetic only; no real fit; no protected outcome access).
+
+Review fixes:
+- `accept_scenario_stage1` (prepared identity, completion code/runtime, exact root/candidate IDs, schedule fields, inventory) runs before any ledger row; `scenario_candidate_row` checks root/candidate identity.
+- `scenario_context` accepts the preparation and re-certifies the pinned panel hash on every load, reading only key and covariate columns.
+- The hashed 2025 covariate-extension manifest is required at actual entry: overlap equality with the pinned panel, covariate columns only, refusal otherwise. This is a D7 readiness input, so no real extension is admitted yet.
+- Per-country intensity and exclusions sit in the shared Availability:
+  - a mixed union keeps global exclusions global;
+  - the per-row k used is recorded;
+  - areas without a country use k = 0;
+  - the global fit population is unchanged.
+- `ScenarioPanel` keeps the mask dict-of-sets distinct from the intensity dict-of-ints in its cache key and identity. The smoke found the conflation bug; a dedicated fold regression now covers it.
+- Actual cases: the outer forecast runs on the real ledger (k = 0) and internal replay uses verified per-country counts, which may differ. A missing, synthetic, incomplete or conflicting table refuses.
+- Historical calendar: the frozen Feb/Jun/Oct schedule with no-truth coverage; only `UnsupportedScenario` is caught.
+- Folds:
+  - computed once, with reuse only via `accept_fold` against an identity that includes the prepared outputs, Availability inputs and actual extension/availability digests;
+  - the same-input pooled diagnostic is saved, and scored against the system on matched keys.
+- Bindings:
+  - the selection records fold hashes;
+  - the freeze binds the selection hash; historical binds the frozen recipe;
+  - the report checks historical → frozen → selection;
+  - evaluate checks the frozen `actual.json` and per-fold hashes.
+- `ab_select` validates exact fold identities (duplicates and missing folds refused). The no-qualifier path writes unmet records end to end.
+- Expert comparator (`keyed_expert`): requires a documented horizon, origin issue, validity containing T and release ≤ the origin cutoff; class codes integer 0..3; real mode refuses synthetic. Without an expert table, explicit coverage reasons are kept and no proxy is used. The expert table digest is recorded.
+- Separate 2025 truth-release evaluation (`scen-evaluate`): an approved release binding the frozen actual predictions and the truth hash; unique keyed truth; evaluator-only exact-origin lookup (historical labels or released truth, never a latest-label substitute); unevaluable targets (June) keep coverage-only country rows.
+- Country tables cover the full cohort universe, with Study2 eligibility/exclusion and onset support and all available comparators (persistence, pooled, expert). Keyed evaluator/comparator rows are saved.
+- Fixed: an empty-cohort bootstrap crash.
+
+Tests (Windows py3.12.10):
+- `ScenarioDriverSmoke` 2/2 (375.9 s, `/tmp/smoke_final.log`): the actual drivers scen-develop → select → freeze → historical → actual (heterogeneous per-country k, extension admitted) → report → evaluate, plus the no-qualifier path, on a synthetic prepared run;
+- coordinator: the remaining 163/163 tests (39 classes) on identical product code;
+- 165/165 tests in total.
+
+Real runs remain blocked by D7 (historical IPC release rule, 2025 truth crosswalk, extension/expert source facts).

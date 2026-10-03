@@ -1,5 +1,51 @@
 # FEWS NET four-class GeoXGBoost with frozen shared trees (first bounded round)
 
+## Current interruption-fallback study
+
+The active specification is
+`.trellis/tasks/10-02-exogenous-transition-forecast-design/` (`prd.md`, `design.md`,
+`evaluation-contract.md`, `implement.md`). The earlier study below remains incomplete;
+its results retain their original provenance.
+
+The new `scen`/`scen-*` path uses H4/H8, 59-month lawful fitting windows, four-class
+probabilities evaluated as binary crisis, and explicitly documented release eligibility.
+A trains on normal inputs; B uses grouped k=0/1/2 predictor variants at weight 1/3 each.
+Support counts original keys. Stage1 uses separate F/S/C/E3 roles and shared-root L1
+increments; Stage3 locals require crisis-F1 gain strictly above 0.01. The finite plans
+are 648 Stage1 candidates and 72 complete-pipeline development folds.
+
+Engineering checkpoint `702888a` covers availability and Stage1/Stage3 plumbing.
+The subsequent Stage2, selection and reporting integration passed 163 regression
+checks plus two complete driver smoke checks on synthetic inputs. Real fitting remains
+blocked by the source facts in task `data-readiness.md`; synthetic checks do not verify
+historical release dates or the 2025 truth crosswalk. The old `run_all.sh` sequence below
+is not the interruption-study entry point. Use the task execution ledger for current
+commands and readiness before launching a real experiment.
+
+After D7 passes, the interruption command order is:
+
+1. `scripts/prepare_fourclass.py --run-dir RUN --release-ledger LEDGER.csv --alignment ALIGNMENT.json`.
+2. `scripts/run_stage1.py --run-dir RUN --split-mode scen --workers 1`.
+3. `scripts/run_experiment.py --run-dir RUN scen-develop`, then `scen-select` and `scen-freeze`.
+4. `scen-historical`, followed by `scen-report [--expert-table EXPERTS.csv]` for the fixed historical evaluation.
+5. `scen-actual --actual-availability AVAILABILITY.csv --actual-scaffold EXTENSION.json` for prediction-only 2025 cases.
+6. Only after predictions are frozen: `scen-evaluate --truth-release RELEASE_DIR [--expert-table EXPERTS.csv]`.
+
+Steps 4–6 use the same `scripts/run_experiment.py --run-dir RUN` prefix. Use the pinned
+Windows interpreter below and a fresh run outside Dropbox. These are interface
+instructions, not evidence that current sources pass D7. A horizon without a qualifying
+A/B strategy ends with an unmet-criterion report and no final model release.
+
+`AVAILABILITY.csv` records country/product/origin, missed cycles, evidence and source;
+different countries can have different replay intensities within the shared fit.
+`EXTENSION.json` binds covariate-only input bytes and the pinned-panel overlap.
+Experts require documented issue/horizon/validity/release fields: an old projection is
+never renamed as a current expert. `RELEASE_DIR/release.json` binds approved keyed truth
+and its crosswalk to the frozen actual predictions. Unlabelled targets retain forecasts
+and country coverage. See backend code-spec section 6b for field-level contracts.
+
+## Earlier bounded-round method
+
 Four ordered IPC classes — 1, 2, 3 and merged "4或5" — forecast at 4/8/12 months with a
 three-stage partition pipeline whose base learner is native XGBoost. Every regional model
 is the fold's **global booster with its learned trees frozen** plus a small fixed number

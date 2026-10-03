@@ -58,12 +58,15 @@ CONFIRMATION_FILES = ("confirmation_predictions.csv.gz",)
 #: D32/A7: required only when the candidate declares this assignment-evidence schema
 ASSIGNMENT_SCHEMA = "d32-v1"
 ASSIGNMENT_FILES = ("assignment_evidence.csv",)
+#: interruption scenario candidates: the post-freeze original-F diagnostic, when declared
+FIT_DIAGNOSTIC_FILES = ("fit_diagnostic_predictions.csv.gz",)
 
 
 def candidate_files(candidate_record: dict, confirm: bool) -> tuple:
     """Files to copy/hash for one candidate; assignment evidence only when declared."""
     declared = (candidate_record.get("assignment_evidence") or {}).get("schema") == ASSIGNMENT_SCHEMA
-    return CANDIDATE_FILES + (CONFIRMATION_FILES if confirm else ()) + (ASSIGNMENT_FILES if declared else ())
+    return (CANDIDATE_FILES + (CONFIRMATION_FILES if confirm else ()) + (ASSIGNMENT_FILES if declared else ())
+            + (FIT_DIAGNOSTIC_FILES if "fit_diagnostic" in candidate_record else ()))
 NAMERS = {plan.ROOTINC: (plan.rootinc_root_name, plan.rootinc_candidate_name),
           plan.ROOTCONF: (plan.rootconf_root_name, plan.rootconf_candidate_name),
           plan.RECENTSEARCH: (plan.recentsearch_root_name, plan.recentsearch_candidate_name),

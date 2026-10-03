@@ -9,6 +9,7 @@ Evidence notes (task research):
 - `research/d7-panel-climate-lineage.md`: panel producers and climate rolling.
 - `research/d7-covariate-release-rules.md`: source/product release rules.
 - `probes/d7_label_calendar_n.py` → `d7_label_calendar_n.json`: historical label calendar and pre-mask N.
+- `research/d7-web-publication-followup.md`: later direct official-page checks found historical `publicationDate` metadata and verified the general service-resumption announcement. Product linkage/date corroboration remain unresolved; no historical release rule is adopted.
 
 ## Verdict summary
 
