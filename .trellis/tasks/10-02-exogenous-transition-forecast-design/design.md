@@ -91,6 +91,8 @@ Read [evaluation-contract.md](evaluation-contract.md) in full with this file. It
 
 ## D7. Mandatory data check, environment and execution limits
 
+User confirmed “沿用” on 2026-10-03: historical IPC CS is treated as known at the end of its reference month, preserving the original experiment convention. The ledger uses `reference_month_end` and `evidence=reconstructed`; these are assumed availability dates, not verified publication timestamps. No additional source tracing or lag comparison. This resolves the remaining historical-development timing decision; actual-2025 availability and evaluator-only truth retain their separate contracts.
+
 Execution clarification (user, 2026-10-03): existing sources are largely manually verified. Accept that attestation instead of requiring repeated independent provenance/archive corroboration. Concentrate D7 on concrete keys, usable inputs and temporal leakage checks needed to run the approved workflow. Record unresolved source detail as a limitation; do not extend source research indefinitely. This does not invent publication dates: the historical IPC availability convention is a separate explicit modelling choice. A final-2025 mapping or comparator gap blocks only its dependent outputs, not historical development.
 
 The remaining unknowns are source facts, not choices to infer from results. Resolve them after final execution approval, before any real fit. Record them in a task-local data-readiness record and the existing snapshot/config manifests; no new tracking framework is required:

@@ -84,6 +84,8 @@ No required phase-free/covariate-only/spatial-cold-start ablation, H12 arm, bina
 
 ## Technical dependencies and execution limits
 
+User confirmed “沿用” on 2026-10-03: historical IPC CS is treated as known at the end of its reference month, preserving the original experiment convention. The ledger uses `reference_month_end` and `evidence=reconstructed`; these are assumed availability dates, not verified publication timestamps. No additional source tracing or lag comparison. This resolves the remaining historical-development timing decision; actual-2025 availability and evaluator-only truth retain their separate contracts.
+
 Latest execution clarification (user, 2026-10-03): sources are largely manually verified; prioritise continuation over independent source re-verification. Accept user-attested source identity, preserve uncertainty disclosures and retain concrete key/temporal-leakage checks. Do not let unresolved final-2025 mapping or expert coverage block unrelated historical development. See design D7 and implement.md for this narrowing of the readiness gate.
 
 No user-owned planning question remains. Deferred source facts are mandatory pre-fit work under design D7: byte hashes/admin joins, genuine CS and actual release/outage calendars, fixed source-family lags/vintages, climate producer lineage, exact schema/keys and frozen Windows numerical environment. Unverifiable covariates are excluded; missing IPC calendar or ambiguous administrative mapping blocks dependent fitting. Final truth values remain isolated until frozen predictions; invalid final labels mean unevaluable reporting.

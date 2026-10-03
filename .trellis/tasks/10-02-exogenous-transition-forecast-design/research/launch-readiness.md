@@ -21,10 +21,10 @@ Alignment breakdown (69 sources):
 
 Ordered features: 162 − 18 excluded sources − 15 legacy columns derived from excluded sources = **129**.
 
-## Remaining configuration fields (only these)
+## Confirmed launch configuration
 
-1. **Historical IPC release convention.** `build_release_ledger.py --rule {reference_month_end | following_month_end} --source "<decision citation>"`. This is the scientific alignment decision being made by the coordinator and user. It sets origin-month CS visibility and every cycle mask; nothing runs until it is chosen.
-2. **Run directory**: `C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1` (fresh, outside Dropbox), used after the timing decision.
+1. **Historical IPC release convention.** User confirmed “沿用” on 2026-10-03: `--rule reference_month_end`, explicitly reconstructed availability rather than measured publication dates. Origin-month CS is available at month-end; no lag comparison.
+2. **Run directory**: `C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1` (fresh, outside Dropbox), confirmed for this run.
 3. **Stage 1 workers**: `--workers 1` initially, per D7's sequential start.
 
 Not needed for the 648/72 development: the 2025 crosswalk, the expert table, the covariate-extension manifest and the actual-availability table. These are used only by `scen-actual`/`scen-evaluate`.
@@ -36,9 +36,9 @@ Run from WSL; PY is the pinned interpreter. Every step refuses to overwrite comp
 ```bash
 PY=/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe
 T=".trellis/tasks/10-02-exogenous-transition-forecast-design/research"
-# 1. ledger from the DECIDED rule (no default)
+# 1. ledger from the user-confirmed rule (explicit argument)
 python3 $T/probes/build_release_ledger.py --panel "<1.Source Data>/FEWSNET_forecast_unadjusted_bm.csv" \
-    --rule <DECIDED> --source "<decision citation>" --out $T/launch/release_ledger.csv
+    --rule reference_month_end --source "User confirmed original reference-month-end convention, 2026-10-03; reconstructed assumption" --out $T/launch/release_ledger.csv
 cd FEWSNETGeoXGBExperiment
 # 2. preparation (pinned sources, preflight, snapshots, 108 scenario inputs, schedule); ~2 h+
 $PY -B scripts/prepare_fourclass.py --run-dir 'C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1' \

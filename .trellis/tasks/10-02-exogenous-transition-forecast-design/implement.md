@@ -41,6 +41,8 @@ Metric priority reaffirmed by user, 2026-10-03: the current PRD R3/design D4/G3�
 
 ## 3. Mandatory data readiness before real fitting
 
+User confirmed “沿用” on 2026-10-03: historical IPC CS is treated as known at the end of its reference month, preserving the original experiment convention. The ledger uses `reference_month_end` and `evidence=reconstructed`; these are assumed availability dates, not verified publication timestamps. No additional source tracing or lag comparison. This resolves the remaining historical-development timing decision; actual-2025 availability and evaluator-only truth retain their separate contracts.
+
 - [ ] Pin existing code, numerical environment, root/model configurations, maps and reusable prediction artifacts. Retain old incomplete-task lineage.
 - [ ] Verify 2025 source/administrative mapping and covariate availability using metadata first. Keep final value columns isolated until the evaluation release point.
 - [ ] Record source-family release rules and verified-versus-reconstructed vintage status, including revised-value limitations; inspect climate rolling producer before adopting precomputed fields. Freeze availability rules before fitting.
