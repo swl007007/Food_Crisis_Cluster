@@ -301,3 +301,12 @@ No CSV comparison was performed. Source identity is user-attested; no further we
 - Remaining fields: the release rule (user/coordinator decision), the fresh run directory outside Dropbox, and the Stage 1 worker count. The exact commands are in the readiness note.
 
 2026-10-03 (user reaffirmation): actual spec metrics control; the original goal optimisation wording is superseded. No further source tracing, including producer tracing. Sent exact crisis-F1/parity/A-B/stop/local-gate rules to the bound Claude executor and recorded them prominently in implement.md. Continue minimal launch preparation; do not add superiority requirements or tuning.
+
+2026-10-03 launch config corrections (coordinator review; no research, no fit):
+- crop, range and market_access are excluded under D1 (unestablished historical as-of semantics). The 28 stable statics are kept as disclosed fixed reconstruction. Alignment = 28 static, 21 monthly, 2 annual, 18 excluded → **129 features**; it passes `check_alignment(real=True)`.
+- The annual reference-year convention is inherited with user-attested sources; within-year constancy is consistent with it but not proof.
+- Workers set to 1 initially (D7 sequential start); run dir `C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1`.
+- `launch/alignment.json` is tracked via a scoped `.gitignore` negation.
+- Scratch timing/storage: about 2–3.3 h and 0.7 GB for the 108 inputs. Provisional timing dates stayed scratch-only.
+- Metric contract per PRD R3/D4/G3–G4 (binding user steering).
+- The only pending input is the historical IPC release convention.

@@ -125,3 +125,5 @@ regional_ablation_results/*
 !FEWSNETGeoXGBExperiment/feature-schema.json
 !.trellis/tasks/**/task.json
 !.trellis/tasks/**/controller_run_records.json
+# Reviewed launch configuration of the interruption task travels with the repo (not a generated artifact)
+!.trellis/tasks/10-02-exogenous-transition-forecast-design/research/launch/alignment.json
