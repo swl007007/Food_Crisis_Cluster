@@ -187,6 +187,8 @@ Recorded only, ahead of eventual product edits. GitNexus `impact` is required pe
 
 ## 9. Verdict (bounded D7 pass, 2026-10-02)
 
+**Superseding execution steering, 2026-10-03:** user states sources have largely been manually verified and directs effort back to the existing work. The table below remains the historical independent-verification record, not an unchanged blanket prohibition on execution. Accept source identity as user-attested; stop additional web/archive research. Next-run requirements are concrete preparation/configuration, key consistency and the explicit historical IPC availability convention (pending user answer). Unresolved expert coverage or final-2025 crosswalk affects only dependent comparisons/evaluation. No dates, source values or verification results are fabricated by this narrowing.
+
 **Real fitting: BLOCKED.** Code implementation can proceed against synthetic source-ledger fixtures.
 
 | D7 item | Verdict | Blocking evidence / next fact needed |

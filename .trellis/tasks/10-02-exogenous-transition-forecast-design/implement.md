@@ -4,6 +4,10 @@ Status: **approved for execution**, 2026-10-02. User approved the complete final
 
 Execution steering, 2026-10-02: user reaffirmed goal mode and made this approved spec/plan's priorities controlling, superseding the older goal text prioritising metric improvement. Complete lawful inputs and engineering checks before the finite development schedule, then freeze, retrospective evaluation, actual predictions and separate final evaluation in section 6 order. The three remaining driver/comparator/evaluator interfaces stay in scope within this dependency order. Synthetic engineering may proceed while D7 is blocked; no tuning beyond the approved plan.
 
+Latest user steering, 2026-10-03: sources have largely been manually verified; stop spending most effort independently corroborating them. Accept existing source identity as user-attested and prioritise continuing the implemented workflow. Stop open-ended web/archive investigations. Section 3 now checks concrete input availability, keys, masks and leakage-relevant temporal semantics needed for the next run; incomplete independent source corroboration alone is not a launch gate. Historical IPC month-end availability remains one explicit scientific convention to resolve directly, without further source hunting. Prepare the existing runner/configuration meanwhile. Later 2025 truth/crosswalk and unavailable expert comparisons do not block unrelated historical development. Keep goal mode active.
+
+Metric priority reaffirmed by user, 2026-10-03: the current PRD R3/design D4/G3–G4 alone govern execution and success. Use pooled crisis F1; screen normal matched persistence delta >= -0.02, rank qualifying A/B by mean k1/k2 F1, exact ties A, stop final release for a horizon with no qualifier. Preserve the separate Stage3 local gain >0.01 and support gates. Do not optimise against the old goal wording or expand tuning to beat persistence/expert/pooled. No additional source tracing.
+
 ## 1. Completed planning decisions
 
 - [x] Resolve G1: synchronise simulated missed releases across participating regions; actual 2025 uses verified availability.
@@ -49,6 +53,7 @@ Reviewed implementation checkpoints:
 
 - `53917be`: weighted native continuation and adapter forwarding; independent 4/4 checks.
 - `702888a`: release-aware views, Stage1 648-entry scenario plumbing, original-key support and Stage3 scenario/gate/cache behavior. Independent post-commit `CommittedCode ScenarioStage3 ScenarioStage1`: 15/15 passed; the earlier uncommitted file-count failure is resolved.
+- `b43ef6a`: committed the verified slices 5–7 and driver/comparator/evaluator packet described below; 165 tests covered. No real experiment or task closure implied.
 - Slices 5–7 and review corrections are verified for an engineering checkpoint: Stage2 crisis E4/NA, exact 72-fold selection, reporting and historical/actual entry points; source/fold identity checks, same-input pooled outputs, country-specific replay and coverage, expert interface and separate truth release. Independent Windows regression: 163/163 passed (99.875s); executor driver smoke: 2/2 passed (375.880s), covering both qualifying and no-qualifier paths. All 165 tests are covered. After the independent run the only Python change was one stale smoke-test output filename, verified by reconstructing the previous source digest. The smoke uses a smaller synthetic development calendar; it is not the real 648-candidate/72-fold experiment.
 - User reiterated “continue，包括上面三个”: continue these slices and finish the disclosed engineering gaps (driver-level synthetic validation, lawful expert comparator interface, separate final-truth evaluation input). This does not invent missing source evidence or release protected 2025 outcomes before frozen predictions.
 

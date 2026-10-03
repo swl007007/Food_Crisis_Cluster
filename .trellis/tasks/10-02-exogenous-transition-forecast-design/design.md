@@ -91,6 +91,8 @@ Read [evaluation-contract.md](evaluation-contract.md) in full with this file. It
 
 ## D7. Mandatory data check, environment and execution limits
 
+Execution clarification (user, 2026-10-03): existing sources are largely manually verified. Accept that attestation instead of requiring repeated independent provenance/archive corroboration. Concentrate D7 on concrete keys, usable inputs and temporal leakage checks needed to run the approved workflow. Record unresolved source detail as a limitation; do not extend source research indefinitely. This does not invent publication dates: the historical IPC availability convention is a separate explicit modelling choice. A final-2025 mapping or comparator gap blocks only its dependent outputs, not historical development.
+
 The remaining unknowns are source facts, not choices to infer from results. Resolve them after final execution approval, before any real fit. Record them in a task-local data-readiness record and the existing snapshot/config manifests; no new tracking framework is required:
 
 1. Source paths, byte hashes, canonical administrative keys/crosswalk and duplicate handling; genuine IPC CS versus forecasts/fills; actual country/product release-cycle identities and outage coverage. A filename/month is not proof of publication or truth. Identify final truth sources using metadata only; defer outcome-value validation/scoring until predictions and recipe are frozen. If final truth fails validation then report unevaluable, not substituted labels.

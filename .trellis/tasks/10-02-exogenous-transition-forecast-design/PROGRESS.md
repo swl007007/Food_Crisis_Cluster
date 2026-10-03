@@ -277,3 +277,27 @@ Tests (Windows py3.12.10):
 - 165/165 tests in total.
 
 Real runs remain blocked by D7 (historical IPC release rule, 2025 truth crosswalk, extension/expert source facts).
+
+2026-10-03 D7 publication corroboration (bounded ~10 min; read-only; no fit, product edit or 2025 values): `research/d7-publication-corroboration.md`.
+- The official pages carry `publicationDate` together with their own report type and period labels: Ethiopia Feb 2020 = 2020-02-06 (Food Security Outlook, "February - September 2020"); Ethiopia Oct 2020 = 2020-10-06 ("October 2020 - May 2021"); Kenya Feb 2020 = 2020-02-28 ("February - September 2020"). This links each date to a named outlook cycle.
+- Internet Archive earliest captures are only later upper bounds (Ethiopia Oct 2020: 2020-11-07; Kenya Feb 2020: 2020-05-03). Ethiopia Feb 2020 was not obtained (Archive offline). No PDF date was obtained, because the link is client-side.
+- Verdict: not admissible as a verified vintage or a release rule. The FEWSNET.csv row-month ↔ report/CS linkage is unproven, the dates are uncorroborated, and there are only two countries with a 22-day spread within one cycle. No M+0/M+1/M+2 adopted.
+- D7 remains blocked. Recommended next decisive facts: FDW historical CS records → document ids → page date, plus a value match against FEWSNET.csv rows on unprotected cycles; and an independent dated copy for Ethiopia Feb 2020.
+
+2026-10-03 D7 historical-cycle linkage probe STOPPED by user steering ("不建议把大部分时间放在核实来源上…现在重点是继续已有工作"). The partial finding is kept as a limitation:
+- the FDW CS rows for Ethiopia, reporting 2020-02 (929 rows; the date filter works), all reference `datasourcedocument` 6537 = "Food Security Outlook, Ethiopia" (schedule "Ad Hoc", 49 collections). That is a reusable country product definition, not one dated issue;
+- the per-issue `datacollection`/`datacollectionperiod` objects need authentication;
+- row `created` = 2021-08-10 (bulk ingestion).
+
+No CSV comparison was performed. Source identity is user-attested; no further web/archive research. The historical IPC release-date convention is being resolved by the coordinator with the user (a scientific alignment question). No dates are invented and no fit happens until it is resolved.
+
+2026-10-03 (Codex, user priority correction): engineering packet committed as b43ef6ac4e787b69d1cee48d72eb400117ba5523; 165 tests covered, scoped tree was clean. User explicitly says sources are largely manually verified and source checking must not dominate continuation. Sent Esc and redirected the bound Claude executor from publication research to minimal existing-runner preparation. Accept source identity as user-attested; no additional web/archive work. PRD/design/implement/data-readiness now narrow D7 to concrete runtime inputs, keys and leakage-relevant time semantics. One direct question is pending: retain the original reference-month-end IPC availability convention as a disclosed reconstruction, or shift to next-month-end. No inferred answer or real fit yet; later 2025 truth/crosswalk and missing expert coverage must not block unrelated historical development. Goal remains active. Attempted read-only scout dispatch hit the existing thread limit; no child ran. FLDAS documentation follow-up was saved before the user steering; it does not activate a feature rule.
+
+2026-10-03 launch preparation (no product/test edit, no fit): `research/launch-readiness.md`.
+- `research/launch/alignment.json` built by `probes/build_alignment.py` from the agreed D7 rules: 31 static, 21 monthly at L=1 (ACLED, FLDAS), 2 annual (GDP Y−1 from July; CC Y−2), 15 excluded. It passes `check_alignment(real=True)`, giving 132 of 162 features.
+- GDP and CC are constant within calendar year in the pinned panel (2010–2023), so `value_month` = 12.
+- `probes/build_release_ledger.py` requires an explicit rule (`reference_month_end` | `following_month_end`) and a citation; there is no default. Dry run: 954 (ISO, cycle) rows, 22 countries, 51 cycles.
+- Timing on the real panel: `stage1_input` A 42 s / B 88 s per input, so about 2 h for the 108 inputs.
+- Remaining fields: the release rule (user/coordinator decision), the fresh run directory outside Dropbox, and the Stage 1 worker count. The exact commands are in the readiness note.
+
+2026-10-03 (user reaffirmation): actual spec metrics control; the original goal optimisation wording is superseded. No further source tracing, including producer tracing. Sent exact crisis-F1/parity/A-B/stop/local-gate rules to the bound Claude executor and recorded them prominently in implement.md. Continue minimal launch preparation; do not add superiority requirements or tuning.

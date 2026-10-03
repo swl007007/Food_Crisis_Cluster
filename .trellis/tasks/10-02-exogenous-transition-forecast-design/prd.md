@@ -84,6 +84,8 @@ No required phase-free/covariate-only/spatial-cold-start ablation, H12 arm, bina
 
 ## Technical dependencies and execution limits
 
+Latest execution clarification (user, 2026-10-03): sources are largely manually verified; prioritise continuation over independent source re-verification. Accept user-attested source identity, preserve uncertainty disclosures and retain concrete key/temporal-leakage checks. Do not let unresolved final-2025 mapping or expert coverage block unrelated historical development. See design D7 and implement.md for this narrowing of the readiness gate.
+
 No user-owned planning question remains. Deferred source facts are mandatory pre-fit work under design D7: byte hashes/admin joins, genuine CS and actual release/outage calendars, fixed source-family lags/vintages, climate producer lineage, exact schema/keys and frozen Windows numerical environment. Unverifiable covariates are excluded; missing IPC calendar or ambiguous administrative mapping blocks dependent fitting. Final truth values remain isolated until frozen predictions; invalid final labels mean unevaluable reporting.
 
 Conservative fit budget:648 candidates/<=40,824 Stage1 fits;72 development, <=57 historical and <=4 actual2025 forecasting folds. With N frozen maximum distinct mapped fitting areas, total <=40,824+931×(1+floor(N/50)); compute N before launch. Sequential initially, immutable scratch runs outside Dropbox, exact-identity cache reuse only, no grid expansion. Stop on leakage/key/identity/schedule errors. Exact commands follow the minimal implementation; no model command is executed during planning.
