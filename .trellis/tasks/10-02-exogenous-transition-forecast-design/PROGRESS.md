@@ -121,3 +121,56 @@ Final planning verification: PRD re-read after convergence; original PRD file:li
 - Still missing end to end: `stage3.fit_local`/global-store weight forwarding and weight-aware cache identity; original-key support counting; release-eligibility ledger and cycle masks; scenario/B-variant construction; the crisis-F1 Stage 3 gate; the new 648/72 schedules; the prediction cohort for unlabelled targets. The A/B pipeline is **not** implemented, and no real data has been run.
 
 2026-10-02 (Codex review): inspected the weighted-continuation diff and independently ran frozen Windows Python `tests/test_baseline.py WeightedContinuation`:4/4 PASS. The dotted `-m unittest tests.test_baseline.WeightedContinuation` invocation failed because tests is not an importable package; direct script invocation is the working command. No real data/final values used in these checks. Authorised the next finite synthetic engineering slice: release/cycle-aware feature construction and grouped A/B fitting views. Real fitting remains blocked by D7; task stays in_progress.
+
+2026-10-02 user clarification (via Codex): FEWSNET.csv is a directly downloaded original source ("这个是直接下载的原文件"), not a local generated file. Its supplied column definitions are its provenance; there is no local producer search. This does not establish historical release dates or prove the legacy row-month to FDW validity-interval mapping. `data-readiness.md` sections 3, 4 and 9 updated.
+
+2026-10-02 slices 2–3 (uncommitted; synthetic only; real data gated by D7).
+
+Slice 2:
+- `src/feature/fourclass_features.py`: `covariate_features(alignment=None)` keeps the frozen path. A non-None alignment is validated (`check_alignment`):
+  - monthly sources at O−lag;
+  - annual sources at the latest eligible reference year;
+  - optional actual-release evidence: unreleased → NaN, with no backward search;
+  - excluded sources dropped.
+
+  No lag values are adopted.
+- New `src/experiment/availability.py`:
+  - `ReleaseLedger`: `cycle_id` maps one-to-one to the reference month; publication order must match reference order; real runs refuse synthetic rows or missing coverage; `DUE_RULE` = earliest-country release, recorded as reconstruction metadata;
+  - `Availability`: masked visibility, `[O−59, O)` lawful label pools, G2 gate dates (not window-limited), IPC history rebuilt through the existing `history_features`, A/B original-key fitting views (B = k′ 0/1/2 at w/3), prediction views with lawful persistence, a separate evaluator truth view, and provenance.
+
+Slice 3 (`src/experiment/stage3.py`):
+- The engine interface is implemented by the frozen `Panel` (behaviour unchanged) and by a new `ScenarioPanel`.
+- `GlobalStore` keys both its memo and disk path on the full identity digest: scenario, strategy, masked months, feature and weight hashes. This fixes Codex trap 1.
+- Weights reach the global, shared and independent fits; support is counted on original keys.
+- Internal gate fits and gate rows inherit the outer hidden cycles, and gate truth must be lawful at the outer cutoff.
+- The target prediction cohort needs no labels and carries persistence metadata. This fixes Codex trap 2.
+- The crisis-F1 gate requires a gain strictly above 0.01; undefined → not enabled.
+
+Tests (Windows py3.12.10): `ReleaseAwareViews` 11, `ScenarioStage3` 4; mutation checks detected. Full suite 134/135: only `CommittedCode` fails, by file count, until the new module is committed.
+
+Still to do: wire `prepare_fourclass`/`run_experiment` to build `ScenarioPanel` from a real ledger and alignment; the Stage 1 scenario schedule (648) and B-weight plumbing in partition; Stage 2 crisis-F1 E4 weights with NA routing; the 72-fold A/B selection; final reports/bootstrap.
+
+2026-10-02 slice 4 (Stage 1 scenario plumbing; uncommitted; synthetic only):
+- `plan.scenario_stage1_schedule()`: the frozen 648 candidates (A/B × H4/H8 × 9 targets × k 0/1/2 × r80/r50 × seeds 42/43/44; G1/G4, L1/gt0, root increments, confirmation seed 42).
+- `partition()` gains optional `X_weight`/`X_key`: child support is counted on original keys and child fits receive weights. Plumbed through `GeoRF.fit` and `train_branch`. Defaults are unchanged.
+- `Availability.stage1_input` produces fit_variant / eval (designated k plus outer exclusion, one row per original key) / labelled target rows.
+- `main_model_GF.scenario_root` and `--scenario-input`: label-blind split on original keys, then the D29 S/C split, a weighted root, and `run_candidate` with weights and keys. C is scored after freeze.
+- `run_stage1 --split-mode scen` accepts only the exact frozen 648 with prepared inputs. G is fixed, with no screen.
+- `prepare_fourclass --release-ledger --alignment` (real-only) writes `prepared/scenario/*.parquet` and the scenario schedule, covered by the outputs hash.
+
+Tests: `Stage1Variants` 2 and `ScenarioStage1` 4 (one real scenario root end to end with fitted children). Full suite 140/141 (only `CommittedCode` file count).
+
+Still to do: Stage 2 crisis-F1 E4 weights with NA/fallback routing; scenario development maps; 72-fold A/B selection; final/historical/2025 runner and reports. A real run needs the D7 ledger, alignment and 2025 crosswalk.
+
+2026-10-02 (Codex independent slice 2–4 review, fixes pending recheck): independently ran 29 focused synthetic checks on pinned Windows Python (`ScenarioStage3 Stage3Engine ReleaseAwareViews WeightedContinuation ScenarioStage1 Stage1Variants`), all passed. Source review additionally found gate dates incorrectly window-limited, real alignment bypass, empty-pool failure, evaluator truth coupled to input releases, ignored cycle identity, and missing fitting-label cache identity. Sent to bound Claude for fixes and targeted regression; initial availability corrections were inspected. Requested exact aligned schema validation, original assignment counts, undefined E2 handling and retained empty-target outcomes before packet acceptance. Trellis-check dispatch failed at agent thread limit; no alternative reviewer identity invented. GitNexus impact/detect_changes still fail with LadybugDB shadow-page replay error; direct caller/diff inspection used. Real fitting remains blocked by D7. No task closure or audit-pass claim. Updated implement lifecycle evidence and backend scenario interface contract.
+
+2026-10-02 packet 2–4 review fixes (code frozen for the coordinator commit):
+- Fitting-label digest (`labels_sha256`) and an immutable `Availability.inputs_sha256` (observations, ledger, alignment; evaluator truth deliberately excluded) are in the store identity.
+- A shared-store defect is fixed: the requested `g_config_params` is now separate from the resolved fit `params`, which previously overwrote the identity and broke every disk reopen, including on the frozen Panel. Disk reopen is tested for both panels.
+- Evaluator truth is empty unless supplied. Gate truth uses input labels lawful at the outer cutoff, and forecast production needs no truth.
+- The pinned `prepared/scenario/features.json` is verified at the CLI.
+- Undefined E2 parent crisis F1 rejects the split, with no exported score. This guard is defence in depth: the E1 zero-mass guard already prevents it, and a test forces the call path.
+- A root with no labelled E3 target is recorded as `no_e3_target_labels`, with no fit.
+- Assignment evidence: `fitting_rows` counts original keys and `fitting_variant_rows` the copies.
+- `train_branch.py` CRLF endings preserved.
+- Windows py3.12.10 full suite: 147/148; the only failure is the expected `CommittedCode` file count until commit. GitNexus impact/detect_changes unavailable (LadybugDB); fallback source review used.

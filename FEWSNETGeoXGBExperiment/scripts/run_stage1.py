@@ -49,7 +49,8 @@ SPLIT_MODES = {"random": ("stage1_roots", "stage1_candidates", "stage1"),
                                    "stage1_recentsearch"),
                plan.MATCHEDSIZE: ("stage1_matchedsize_roots", "stage1_matchedsize_candidates",
                                   "stage1_matchedsize"),
-               plan.E1PAIR: ("stage1_e1pair_roots", "stage1_e1pair_candidates", "stage1_e1pair")}
+               plan.E1PAIR: ("stage1_e1pair_roots", "stage1_e1pair_candidates", "stage1_e1pair"),
+               plan.SCENARIO: ("stage1_scenario_roots", "stage1_scenario_candidates", "stage1_scenario")}
 #: modes that run under the D26-locked G (no reselection)
 LOCKED_G_MODES = (plan.TIME_BLOCK, plan.ROOTINC, plan.ROOTCONF, plan.RECENTSEARCH, plan.MATCHEDSIZE, plan.E1PAIR)
 #: D29/A4 only: the frozen-candidate confirmation predictions
@@ -124,9 +125,33 @@ def rootinc_entries(schedule: dict, mode: str = plan.ROOTINC) -> list:
     return rows
 
 
+#: identity fields a prepared scenario entry must carry exactly as plan.scenario_stage1_schedule()
+SCENARIO_FIELDS = ("strategy", "horizon", "target_month", "scenario_k", "ratio", "split_seed", "g_config",
+                   "local_config", "threshold_family", "increment_source", "confirmation_seed", "root", "candidate")
+
+
+def scenario_entries(schedule: dict) -> list:
+    """Interruption task: the prepared 648 scenario roots, identical to the frozen plan; else refused."""
+    rows = schedule.get(SPLIT_MODES[plan.SCENARIO][0])
+    if rows is None:
+        raise SystemExit("this preparation has no scenario schedule; prepare with a release ledger and alignment")
+    want = [{f: r[f] for f in SCENARIO_FIELDS} for r in plan.scenario_stage1_schedule()]
+    if [{f: r.get(f) for f in SCENARIO_FIELDS} for r in rows] != want:
+        raise SystemExit("the scenario schedule is not exactly the frozen 648 plan entries")
+    if any(not r.get("input") for r in rows):
+        raise SystemExit("a scenario root has no prepared input")
+    return rows
+
+
+def scenario_input_name(r: dict) -> str:
+    return f"{r['strategy']}_h{r['horizon']}_{r['target_month']}_k{r['scenario_k']}.parquet"
+
+
 def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     """root name -> schedule entry with its selected G (the frozen 162, or the six tb3)."""
     out = {}
+    if mode == plan.SCENARIO:   # fixed design capacities: no G selection
+        return {r["root"]: dict(r) for r in scenario_entries(schedule)}
     if mode == plan.E1PAIR:
         for r in e1pair_entries(schedule):
             g = g_of[str(r["horizon"])]
@@ -145,6 +170,8 @@ def scheduled_roots(schedule: dict, g_of: dict, mode: str = "random") -> dict:
 
 def scheduled_candidates(schedule: dict, g_of: dict, mode: str = "random") -> dict:
     out = {}
+    if mode == plan.SCENARIO:
+        return {r["candidate"]: dict(r) for r in scenario_entries(schedule)}
     if mode == plan.E1PAIR:
         for r in e1pair_entries(schedule):
             g = g_of[str(r["horizon"])]
@@ -191,15 +218,16 @@ def run_root(run: Path, name: str, root: dict, python: str, prepared_identity: d
     ckpt = stage1 / "checkpoints"
     ckpt.mkdir(parents=True, exist_ok=True)
     prepared = run / "prepared"
-    command = [python, "-B", str(PACKAGE / "app" / "main_model_GF.py"),
-               "--data", str(prepared / f"snapshot_h{root['horizon']}.parquet"),
+    source = (["--scenario-input", str(prepared / "scenario" / root["input"])] if "strategy" in root
+              else ["--data", str(prepared / f"snapshot_h{root['horizon']}.parquet")])
+    command = [python, "-B", str(PACKAGE / "app" / "main_model_GF.py"), *source,
                "--geometry-dir", str(prepared / "geometry"), "--schema", str(SCHEMA),
                "--forecasting_scope", str(plan.SCOPE_OF[root["horizon"]]), "--desired_terms", root["target_month"],
                "--g-config", root["g_config"], "--ratio", root["ratio"], "--split-seed", str(root["split_seed"]),
                "--checkpoint-dir", str(ckpt),
                "--increment-source", root.get("increment_source", "parent")]
     confirm = "confirmation_seed" in root
-    if confirm:
+    if confirm and "strategy" not in root:   # scenario roots run their own S/C split
         command.append("--confirmation-split")
     if root.get("e1_pair"):
         command.append("--e1-pair")
@@ -252,12 +280,17 @@ def main() -> None:
                              "rootconf: the six D29 roots with the S/C confirmation split; "
                              "recentsearch: the six D30 roots with S restricted to the latest six months; "
                              "matchedsize: the 18 D31 roots (six H/T x search seeds 101/102/103) with a "
-                             "per-area matched-size search drawn from all original S dates")
+                             "per-area matched-size search drawn from all original S dates; "
+                             "scen: the 648 interruption scenario roots (A/B x H4/H8 x 9 targets x k 0/1/2 x "
+                             "r80/r50 x seeds 42/43/44) from prepared scenario inputs")
     args = parser.parse_args()
     run = args.run_dir.resolve()
     from src.utils.acceptance import accept_g_selection
     prepared_identity = require_prepared(run)
-    g_of, g_record = accept_g_selection(run)
+    if args.split_mode == plan.SCENARIO:
+        g_of, g_record = {str(h): g for h, g in plan.SCENARIO_G.items()}, "fixed design capacities (G4 of 10-02)"
+    else:
+        g_of, g_record = accept_g_selection(run)
     if args.split_mode in LOCKED_G_MODES:
         require_tb3_g(g_of)
     schedule = json.loads((run / "prepared" / "manifests" / "schedule.json").read_text(encoding="utf-8"))

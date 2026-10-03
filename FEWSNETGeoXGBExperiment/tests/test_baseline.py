@@ -10,6 +10,7 @@ from fractions import Fraction
 from io import StringIO
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -636,6 +637,14 @@ class Stage3Engine(unittest.TestCase):
         ind, irec = s3.fit_local('independent', g, self.panel, rows, 'G1', 'L1')
         self.assertEqual(ind.num_boosted_rounds(), 6 + 20)
         self.assertNotEqual(irec['parent_sha256'], nx.sha(g))
+
+    def test_fresh_store_reopens_a_stored_global_from_disk(self):
+        _, rec = self.store.get(self.panel, m('2021-02'), 'G1')
+        fresh = s3.GlobalStore(self.root / 'globals')
+        booster, again = fresh.get(self.panel, m('2021-02'), 'G1', fit_if_missing=False)
+        self.assertEqual(again['booster_sha256'], rec['booster_sha256'])
+        self.assertEqual(again['g_config_params'], plan.G_CONFIGS['G1'])      # requested config (identity)
+        self.assertEqual(again['params']['objective'], 'multi:softprob')          # resolved params (provenance)
 
     def test_no_map_and_null_routes_are_the_pooled_global(self):
         with redirect_stdout(StringIO()):
@@ -3092,6 +3101,633 @@ class WeightedContinuation(unittest.TestCase):
                 self.assertEqual(nx.raw(model.booster), nx.raw(plain), source)
                 self.assertNotIn('sample_weight', model.fit_record)
                 self.assertEqual(nx.raw(nx.from_raw(model._store[''][0])), nx.raw(self.root))  # root intact
+
+
+class ReleaseAwareViews(unittest.TestCase):
+    """Interruption design D1/G2/G4: release ledger, cycle masks and A/B views on synthetic inputs."""
+
+    from src.experiment import availability as av
+
+    CYCLES = [m(f'{y}-{mm:02d}') for y in range(2014, 2021) for mm in (2, 6, 10)]
+
+    def setUp(self):
+        self.av = type(self).av
+        # Areas 1, 2 in AAA (released the month after the cycle), area 3 in BBB (same month).
+        self.area_country = {1: 'AAA', 2: 'AAA', 3: 'BBB'}
+        self.obs = pd.DataFrame([(a, c, self.area_country[a], (a + c // 4) % 4)
+                                 for a in (1, 2, 3) for c in self.CYCLES],
+                                columns=['area', 'month', 'country', 'class_code'])
+        self.ledger_rows = pd.DataFrame(
+            [(f'CS-{ff.month_label([c])[0]}', 'CS', ctry, ff.month_label([c])[0],
+              f'{ff.month_label([c + lag])[0]}-{day:02d}', 'synthetic', 'unit-test fixture')
+             for c in self.CYCLES for ctry, lag, day in (('AAA', 1, 15), ('BBB', 0, 28))],
+            columns=list(self.av.LEDGER_COLUMNS))
+        months = pd.date_range('2014-01-01', '2021-12-01', freq='MS')
+        panel = pd.DataFrame([(a, d) for a in (1, 2, 3) for d in months], columns=['FEWSNET_admin_code', 'date'])
+        idx = ff.month_index(panel['date'])
+        panel['crop'] = panel['FEWSNET_admin_code'].astype(float)
+        panel['EVI'] = (idx + 1000 * panel['FEWSNET_admin_code']).astype(float)
+        panel['GDP'] = (idx // 12).astype(float)          # annual value repeated monthly
+        self.scaffold = ff.Scaffold(panel, ['crop', 'EVI', 'GDP'])
+        hist = list(ff.history_features(pd.DataFrame(columns=['area', 'month', 'phase']), [1], [m('2020-06')]))
+        evi_lags = [f'EVI_l{k}' for k in range(1, 13)]
+        self.schema = {'static_sources': ['crop'], 'dynamic_sources_at_origin': ['EVI', 'GDP'],
+                       'legacy_covariate_derived': evi_lags, 'known_calendar': ['target_year', 'target_month_sin',
+                                                                                'target_month_cos'],
+                       'ordered_features': ['crop', 'EVI', 'GDP'] + evi_lags +
+                       ['target_year', 'target_month_sin', 'target_month_cos'] + hist}
+        self.alignment = {
+            'crop': {'kind': 'static', 'status': 'synthetic', 'evidence': 'fixture'},
+            'EVI': {'kind': 'monthly', 'lag': 1, 'status': 'synthetic', 'evidence': 'fixture'},
+            'GDP': {'kind': 'annual', 'release_delay_years': 1, 'release_month': 7, 'value_month': 12,
+                    'status': 'synthetic', 'evidence': 'fixture'}}
+
+    def ctx(self, obs=None, ledger=None, alignment='default', horizon=4):
+        led = self.av.ReleaseLedger(self.ledger_rows if ledger is None else ledger)
+        obs = self.obs if obs is None else obs
+        return self.av.Availability(obs, led, self.scaffold, self.schema, horizon,
+                                    self.alignment if alignment == 'default' else alignment, truth=obs)
+
+    def test_ledger_contract_and_real_run_refusals(self):
+        rows = self.ledger_rows
+        with self.assertRaises(ValueError):
+            self.av.ReleaseLedger(pd.concat([rows, rows.iloc[:1]]))               # duplicate cycle row
+        early = rows.copy()
+        early.loc[0, 'release_date'] = '2013-12-01'                              # before its reference month
+        with self.assertRaises(ValueError):
+            self.av.ReleaseLedger(early)
+        with self.assertRaises(ValueError):
+            self.av.ReleaseLedger(rows, real=True)                               # synthetic rows refused
+        recon = rows.assign(evidence='reconstructed').iloc[1:]                   # one (country, cycle) missing
+        led = self.av.ReleaseLedger(recon, real=True)
+        with self.assertRaises(ValueError):                                      # missing calendar blocks
+            self.av.Availability(self.obs, led, self.scaffold, self.schema, 4,
+                                 {k: {**v, 'status': 'reconstructed'} for k, v in self.alignment.items()})
+        lenient = self.av.Availability(self.obs, self.av.ReleaseLedger(rows.iloc[1:]), self.scaffold,
+                                       self.schema, 4, self.alignment)
+        self.assertEqual(lenient.unreleased, 2)                                  # AAA areas 1, 2: never visible
+
+    def test_cycle_masks_are_publication_identities(self):
+        led = self.av.ReleaseLedger(self.ledger_rows)
+        self.assertEqual(led.hidden(m('2020-06'), 0), frozenset())
+        self.assertEqual(led.hidden(m('2020-06'), 1), {m('2020-06')})            # BBB released in June: due
+        self.assertEqual(led.hidden(m('2020-06'), 2), {m('2020-02'), m('2020-06')})
+        self.assertEqual(led.hidden(m('2020-05'), 1), {m('2020-02')})            # June not yet due
+        with self.assertRaises(self.av.UnsupportedScenario):
+            led.hidden(m('2014-02'), 2)                                          # never a smaller k
+
+    def test_delayed_release_hidden_and_future_labels_and_persistence(self):
+        c = self.ctx()
+        T, O = m('2020-10'), m('2020-06')
+        k0 = c.prediction_view([1, 3], [T, T], 0)
+        self.assertTrue(np.isnan(k0.loc[0, 'hist_phase_o00']))                   # AAA June released in July
+        self.assertEqual(k0.loc[1, 'hist_phase_o00'], (3 + O // 4) % 4 + 1)     # BBB June released by cutoff
+        self.assertEqual(k0.loc[0, 'persistence_source_month'], m('2020-02'))   # prolonged-lag persistence
+        self.assertEqual(k0.loc[0, 'persistence_age'], 4)
+        self.assertEqual(k0.loc[1, 'persistence_age'], 0)
+        k2 = c.prediction_view([1, 3], [T, T], 2)
+        for col in ('hist_phase_o00', 'hist_phase_o04'):
+            self.assertTrue(np.isnan(k2.loc[1, col]))                            # exact lags stay missing
+        self.assertEqual(k2.loc[1, 'hist_phase_o08'], (3 + m('2019-10') // 4) % 4 + 1)
+        self.assertEqual(k2.loc[1, 'hist_latest_observed_age'], 8)               # older source keeps its age
+        self.assertEqual(k2.loc[1, 'persistence_source_month'], m('2019-10'))
+        self.assertEqual(k2.loc[1, 'persistence_class_code'], (3 + m('2019-10') // 4) % 4)
+        changed = self.obs.copy()
+        hidden_or_future = changed['month'].isin([m('2020-02'), m('2020-06'), m('2020-10')])
+        changed.loc[hidden_or_future, 'class_code'] = 3 - changed.loc[hidden_or_future, 'class_code']
+        pd.testing.assert_frame_equal(self.ctx(obs=changed).prediction_view([1, 3], [T, T], 2), k2)
+        older = self.obs.copy()
+        older.loc[older['month'] == m('2019-10'), 'class_code'] = 3 - older.loc[older['month'] == m('2019-10'),
+                                                                                 'class_code']
+        self.assertFalse(self.ctx(obs=older).prediction_view([1, 3], [T, T], 2).equals(k2))
+
+    def test_label_pool_outer_mask_and_delayed_label(self):
+        c = self.ctx()
+        X = m('2020-10')
+        self.assertEqual(c.label_pool(X, c.ledger.hidden(X, 1))['month'].max(), m('2020-06'))
+        pool2 = c.label_pool(X, c.ledger.hidden(X, 2))
+        self.assertEqual(pool2['month'].max(), m('2020-02'))                     # outer mask removes June for all
+        self.assertGreaterEqual(pool2['month'].min(), X - plan.WINDOW)
+        late = self.ledger_rows.copy()
+        late.loc[(late['country'] == 'AAA') & (late['reference_month'] == '2020-02'), 'release_date'] = '2020-08-01'
+        pool = self.ctx(ledger=late).label_pool(m('2020-06'))
+        feb = pool[pool['month'] == m('2020-02')]
+        self.assertEqual(sorted(feb['area']), [3])                               # AAA Feb not out by June
+        self.assertEqual(self.ctx().gate_dates(X, 1),
+                         [m(t) for t in ('2018-10', '2019-02', '2019-06', '2019-10', '2020-02', '2020-06')])
+
+    def test_strategy_b_groups_conserve_weight_and_original_support(self):
+        c = self.ctx()
+        X = m('2020-10')
+        a, sup_a = c.fitting_view(X, 1, 'A')
+        b, sup_b = c.fitting_view(X, 1, 'B')
+        self.assertEqual(sup_a, sup_b)                                           # original keys only
+        self.assertEqual(sup_b['rows'], a['orig_key'].nunique())
+        self.assertEqual(len(b), 3 * len(a))
+        np.testing.assert_allclose(b.groupby('orig_key')['weight'].sum(), 1.0)
+        self.assertTrue((b.groupby('orig_key')['variant_k'].apply(sorted).map(tuple) == (0, 1, 2)).all())
+        self.assertTrue((b.groupby('orig_key')[['area', 'target_month', 'class_code']].nunique() == 1).all().all())
+        pd.testing.assert_frame_equal(b[b['variant_k'] == 0].drop(columns=['variant_k', 'weight']).reset_index(drop=True),
+                                      a.drop(columns=['variant_k', 'weight']).reset_index(drop=True))
+        key = b[(b['area'] == 3) & (b['target_month'] == m('2020-02'))].set_index('variant_k')  # origin 2019-10
+        self.assertEqual(key.loc[0, 'hist_phase_o00'], (3 + m('2019-10') // 4) % 4 + 1)
+        self.assertTrue(np.isnan(key.loc[1, 'hist_phase_o00']))                  # own latest cycle hidden
+        self.assertTrue(np.isnan(key.loc[2, 'hist_phase_o04']))
+        self.assertEqual(key.loc[2, 'hist_phase_o08'], (3 + m('2019-02') // 4) % 4 + 1)
+
+    def test_inherited_exclusions_reach_labels_and_every_variant(self):
+        c = self.ctx()
+        V, gone = m('2020-06'), frozenset({m('2019-10')})                        # internal origin, outer cycle
+        frame, _ = c.fitting_view(V, 0, 'B', excluded=gone)
+        self.assertNotIn(m('2019-10'), set(frame['target_month']))               # label removed
+        late_keys = frame[frame['origin_month'] >= m('2019-10')]
+        self.assertTrue(len(late_keys))
+        self.assertTrue((late_keys['hist_w12_n_obs'] <= 2).all())               # 2019-10 never in any history
+        ref = c.key_features(late_keys['area'], late_keys['target_month'], late_keys['variant_k'], gone)
+        pd.testing.assert_frame_equal(late_keys[c.features].reset_index(drop=True), ref)
+
+    def test_monthly_lag_annual_eligible_year_and_release_evidence(self):
+        O = np.array([m('2020-06'), m('2020-07')])
+        out = ff.covariate_features(self.scaffold, self.schema, [3, 3], O + 4, O, self.alignment)
+        np.testing.assert_array_equal(out['EVI'], 3000 + O - 1)                 # exact source month O - 1
+        np.testing.assert_array_equal(out['EVI_l1'], 3000 + O - 2)
+        np.testing.assert_array_equal(out['GDP'], [2018, 2019])                  # July release of Y-1
+        delayed = {**self.alignment, 'GDP': {**self.alignment['GDP'], 'releases': {2018: '2019-07-01',
+                                                                                  2019: '2020-09-15'}},
+                   'EVI': {**self.alignment['EVI'], 'releases': {'2020-05': '2020-06-30', '2020-06': '2020-08-02'}}}
+        ev = ff.covariate_features(self.scaffold, self.schema, [3, 3], O + 4, O, delayed)
+        np.testing.assert_array_equal(ev['GDP'], [2018, 2018])                   # delayed 2019 not exposed
+        self.assertEqual(ev.loc[0, 'EVI'], 3000 + O[0] - 1)
+        self.assertTrue(np.isnan(ev.loc[1, 'EVI']))                              # June not out: NaN, no search back
+        self.assertTrue(np.isnan(ev.loc[0, 'EVI_l1']))                           # no evidence for April
+        prov = self.ctx(alignment=delayed).provenance(O)
+        np.testing.assert_array_equal(prov['prov_GDP_ref_year'], [2018, 2018])
+        np.testing.assert_array_equal(prov['prov_GDP_age_years'], [2, 2])
+        np.testing.assert_array_equal(prov['prov_EVI_source_month'], O - 1)
+        dropped = {**self.alignment, 'EVI': {'kind': 'excluded', 'status': 'synthetic', 'evidence': 'fixture'}}
+        names = ff.aligned_feature_names(self.schema, dropped)
+        self.assertFalse({'EVI', 'EVI_l1', 'EVI_l12'} & set(names))
+        self.assertFalse({'EVI', 'EVI_l1'} & set(ff.covariate_features(self.scaffold, self.schema, [3], [O[0] + 4],
+                                                                       [O[0]], dropped)))
+        for bad in ({}, {**self.alignment, 'GDP': {'kind': 'annual', 'status': 'synthetic', 'evidence': 'x'}},
+                    {**self.alignment, 'EVI': {**self.alignment['EVI'], 'evidence': ''}},
+                    {**self.alignment, 'EVI': {**self.alignment['EVI'], 'releases': {'2020-05': '2020-04-01'}}}):
+            with self.assertRaises(ValueError):
+                ff.covariate_features(self.scaffold, self.schema, [3], [O[0] + 4], [O[0]], bad)
+        with self.assertRaises(ValueError):
+            ff.check_alignment(self.schema, self.alignment, real=True)
+
+    def test_cycle_identity_order_and_real_alignment_refusals(self):
+        rows = self.ledger_rows
+        split = rows.copy()
+        split.loc[split['country'] == 'BBB', 'cycle_id'] = split.loc[split['country'] == 'BBB', 'cycle_id'] + 'b'
+        with self.assertRaises(ValueError):
+            self.av.ReleaseLedger(split)                                         # two ids for one reference month
+        merged = rows.copy()
+        merged['cycle_id'] = 'CS-one'
+        with self.assertRaises(ValueError):
+            self.av.ReleaseLedger(merged)                                        # one id for many months
+        swapped = rows.copy()
+        swapped.loc[swapped['reference_month'] == '2019-06', 'release_date'] = '2019-12-01'
+        with self.assertRaises(ValueError):                                      # publication order != reference order
+            self.av.ReleaseLedger(swapped)
+        led = self.av.ReleaseLedger(rows)
+        self.assertEqual(led.due_rule, 'earliest_country_release')
+        self.assertEqual(led.cycle_id[m('2020-06')], 'CS-2020-06')
+        real = self.av.ReleaseLedger(rows.assign(evidence='reconstructed'), real=True)
+        with self.assertRaises(ValueError):
+            self.av.Availability(self.obs, real, self.scaffold, self.schema, 4, None)   # no legacy covariates
+
+    def test_gate_dates_not_limited_to_fitting_window_and_empty_pools(self):
+        old = self.obs[self.obs['month'] <= m('2015-10')]
+        c = self.ctx(obs=old)
+        O = m('2021-02')
+        self.assertEqual(len(c.label_pool(O)), 0)                                # all labels older than O-59
+        self.assertEqual(c.gate_dates(O, 0),                                    # lawful U < O, any age
+                         [m(t) for t in ('2014-02', '2014-06', '2014-10', '2015-02', '2015-06', '2015-10')])
+        frame, support = c.fitting_view(O, 0, 'B')
+        self.assertEqual(len(frame), 0)
+        self.assertEqual(support['rows'], 0)
+        self.assertEqual(list(c.key_features([], [], 0).columns), c.features)
+
+    def test_evaluator_truth_includes_labels_without_input_release(self):
+        final = pd.DataFrame({'area': [1, 3], 'month': [m('2021-02')] * 2, 'country': ['AAA', 'BBB'],
+                              'class_code': [2, 0]})                             # no ledger row for 2021-02
+        truth = pd.concat([self.obs, final], ignore_index=True)
+        c = self.av.Availability(self.obs, self.av.ReleaseLedger(self.ledger_rows), self.scaffold, self.schema,
+                                 4, self.alignment, truth=truth)
+        t = c.truth_view([1, 3], [m('2021-02')] * 2)
+        self.assertEqual(list(t['truth_code']), [2, 0])
+        self.assertEqual(list(t['truth_reason']), ['', ''])
+        lawful = c.truth_view([1, 3], [m('2021-02')] * 2, lawful_at=m('2021-06'))
+        self.assertEqual(list(lawful['truth_reason']), ['not_lawful_at_cutoff'] * 2)   # never an input
+        self.assertNotIn(m('2021-02'), set(c.visible(m('2021-12'))['month']))
+
+    def test_unlabelled_prediction_targets_keep_rows_and_truth_is_separate(self):
+        c = self.ctx()
+        T = m('2021-02')                                                         # no label exists
+        view = c.prediction_view([1, 2, 3], [T] * 3, 1)
+        self.assertEqual(len(view), 3)
+        self.assertFalse({'class_code', 'truth_code'} & set(view.columns))
+        truth = c.truth_view([1, 3], [T, m('2020-10')])
+        self.assertEqual(list(truth['truth_reason']), ['no_label', ''])
+        gate = c.truth_view([1, 3], [m('2020-06'), m('2020-06')], lawful_at=m('2020-06'))
+        self.assertEqual(list(gate['truth_reason']), ['not_lawful_at_cutoff', ''])   # AAA June out in July
+        masked = c.truth_view([3], [m('2020-06')], lawful_at=m('2020-10'), excluded={m('2020-06')})
+        self.assertEqual(masked.loc[0, 'truth_reason'], 'not_lawful_at_cutoff')
+
+
+def scenario_fixture(n_areas=40, truth=True, relabel=None):
+    """Synthetic release-aware Availability: AAA areas (< n/2) released M+1, BBB released M, one extra
+    unlabelled prediction area, tri-annual cycles 2012-2020, two covariates (static, monthly lag 1)."""
+    from src.experiment import availability as av
+    cycles = [m(f'{y}-{mm:02d}') for y in range(2012, 2021) for mm in (2, 6, 10)]
+    country = {a: ('AAA' if a < n_areas // 2 else 'BBB') for a in range(n_areas)}
+    rng = np.random.default_rng(7)
+    obs = pd.DataFrame([(a, c, country[a], int((a // 10 + c // 4 + rng.integers(0, 2)) % 4))
+                        for a in range(n_areas) for c in cycles], columns=['area', 'month', 'country', 'class_code'])
+    if relabel is not None:                                                     # (area, month, class_code)
+        obs.loc[(obs['area'] == relabel[0]) & (obs['month'] == relabel[1]), 'class_code'] = relabel[2]
+    ledger = pd.DataFrame([(f'CS-{ff.month_label([c])[0]}', 'CS', ctry, ff.month_label([c])[0],
+                            f'{ff.month_label([c + lag])[0]}-10', 'synthetic', 'unit-test fixture')
+                           for c in cycles for ctry, lag in (('AAA', 1), ('BBB', 0))],
+                          columns=list(av.LEDGER_COLUMNS))
+    months = pd.date_range('2011-01-01', '2021-12-01', freq='MS')
+    panel = pd.DataFrame([(a, d) for a in range(n_areas + 1) for d in months], columns=['FEWSNET_admin_code', 'date'])
+    idx = ff.month_index(panel['date'])
+    panel['crop'] = (panel['FEWSNET_admin_code'] % 7).astype(float)
+    panel['EVI'] = np.sin(idx / 3 + panel['FEWSNET_admin_code'])
+    scaffold = ff.Scaffold(panel, ['crop', 'EVI'])
+    hist = list(ff.history_features(pd.DataFrame(columns=['area', 'month', 'phase']), [1], [m('2020-06')]))
+    schema = {'static_sources': ['crop'], 'dynamic_sources_at_origin': ['EVI'], 'legacy_covariate_derived': [],
+              'known_calendar': ['target_year', 'target_month_sin', 'target_month_cos'],
+              'history_blocks': {'all': hist},
+              'ordered_features': ['crop', 'EVI', 'target_year', 'target_month_sin', 'target_month_cos'] + hist}
+    schema['proposed_feature_count'] = len(schema['ordered_features'])
+    alignment = {'crop': {'kind': 'static', 'status': 'synthetic', 'evidence': 'fixture'},
+                 'EVI': {'kind': 'monthly', 'lag': 1, 'status': 'synthetic', 'evidence': 'fixture'}}
+    return av, av.Availability(obs, av.ReleaseLedger(ledger), scaffold, schema, 4, alignment,
+                               truth=obs if truth else None), schema
+
+
+class ScenarioStage3(unittest.TestCase):
+    """Interruption task: Stage 3 engine on release-aware views (G2/G4), synthetic rows only."""
+
+    def setUp(self):
+        self.av, self.ctx, _ = scenario_fixture()
+        self.cluster_of = {a: (0 if a < 20 else 1) for a in range(40)}
+        self.tmp = tempfile.TemporaryDirectory()
+        self.patches = [patch.dict(plan.G_CONFIGS, SMALL_G),
+                        patch.dict(plan.FIT_SUPPORT, {'rows': 20, 'areas': 5, 'dates': 3, 'classes': 2}),
+                        patch.dict(plan.STAGE3_GATE_SUPPORT, {'rows': 10, 'areas': 5, 'dates': 2, 'local_fit_dates': 2})]
+        for p in self.patches:
+            p.start()
+
+    def tearDown(self):
+        for p in self.patches:
+            p.stop()
+        self.tmp.cleanup()
+
+    def specs(self):
+        return [{'arm': 'pooled', 'label': 'pooled', 'local': None, 'route': None},
+                {'arm': 'shared', 'label': 'mapped', 'local': 'L1', 'route': 'learned_map',
+                 'cluster_of': self.cluster_of}]
+
+    def test_scenario_fold_lawful_pools_weights_gate_and_forecast_only_rows(self):
+        panel = s3.ScenarioPanel(self.ctx, 1, 'B')
+        store = s3.GlobalStore(Path(self.tmp.name) / 'g')
+        O, T = m('2020-06'), m('2020-10')
+        hidden = self.ctx.ledger.hidden(O, 1)
+        res = s3.run_fold(panel, store, {'target_month': '2020-10', 'origin_month': '2020-06'}, 'G1', self.specs())
+        preds = res['mapped']['predictions']
+        self.assertEqual(sorted(preds['area']), list(range(41)))                # cohort incl. unlabelled area 40
+        self.assertTrue(np.isnan(preds.loc[preds['area'] == 40, 'y_true_code']).all())
+        self.assertEqual(preds.loc[preds['area'] == 40, 'route'].item(), 'unmapped_area_global')
+        self.assertTrue((preds.loc[preds['area'] < 40, 'persistence_source_month'] <= O - 4).all())  # June hidden
+        _, grec = store.get(panel, O, 'G1', fit_if_missing=False)
+        pool = self.ctx.label_pool(O, hidden)
+        self.assertEqual(grec['fit_support']['rows'], len(pool))                # original keys, not 3x rows
+        self.assertEqual(grec['sample_weight']['n'], 3 * len(pool))
+        self.assertAlmostEqual(grec['sample_weight']['sum'], len(pool), places=3)  # w/3 conserves total weight
+        pairs = res['mapped']['gate_pairs']
+        gates = self.ctx.gate_dates(O, 1)
+        self.assertEqual(sorted(set(pairs['validation_month'])), [ml_ for ml_ in ff.month_label(gates)])
+        for u in gates:                                                          # internal fits inherit the outer mask
+            _, rec = store.get(panel, u - 4, 'G1', fit_if_missing=False, excluded=hidden)
+            self.assertEqual(rec['excluded_months'], list(ff.month_label(sorted(hidden))))
+            lawful = self.ctx.lawful_labels(u, O, hidden)                       # input labels lawful at O
+            used = pairs.loc[pairs['validation_month'] == ff.month_label([u])[0], 'area']
+            self.assertEqual(sorted(used), sorted(lawful['area']))
+        for dec in res['mapped']['gate']:
+            self.assertEqual(dec['metric'], 'crisis_f1')
+        pooled = res['pooled']['predictions']
+        np.testing.assert_array_equal(pooled.filter(like='p_').to_numpy(),
+                                      nx.proba(nx.from_raw((Path(self.tmp.name) / 'g').glob('h4/G1/O2020-06_*.ubj')
+                                                           .__next__().read_bytes()),
+                                               panel.target_rows(T)[0].X))
+
+    def test_store_identity_separates_strategies_scenarios_and_masks(self):
+        store = s3.GlobalStore(Path(self.tmp.name) / 'g')
+        O = m('2020-06')
+        got = {}
+        for k, strategy in ((0, 'A'), (1, 'A'), (2, 'A'), (1, 'B')):
+            got[(k, strategy)] = store.get(s3.ScenarioPanel(self.ctx, k, strategy), O, 'G1')
+        shas = {key: rec['booster_sha256'] for key, (_, rec) in got.items()}
+        self.assertEqual(len(store.memo), 4)                                    # one entry per identity
+        # k=1 hides only the origin cycle itself (outside [O-59, O)): same bytes, separate identity
+        self.assertEqual(shas[(0, 'A')], shas[(1, 'A')])
+        self.assertEqual(got[(0, 'A')][1]['masked_months'], [])
+        self.assertEqual(got[(1, 'A')][1]['masked_months'], ['2020-06'])
+        self.assertEqual(got[(2, 'A')][1]['masked_months'], ['2020-02', '2020-06'])
+        self.assertEqual(len({shas[(0, 'A')], shas[(2, 'A')], shas[(1, 'B')]}), 3)   # k=2 drops Feb labels
+        self.assertNotIn('sample_weight', got[(2, 'A')][1])
+        again = store.get(s3.ScenarioPanel(self.ctx, 1, 'B'), O, 'G1')
+        self.assertIs(again[0], got[(1, 'B')][0])                                # exact identity reuse only
+        path = next((Path(self.tmp.name) / 'g' / 'h4' / 'G1').glob('O2020-06_*.json'))
+        record = json.loads(path.read_text())
+        record['strategy'] = 'tampered'
+        path.write_text(json.dumps(record))
+        fresh = s3.GlobalStore(Path(self.tmp.name) / 'g')
+        with self.assertRaises(RuntimeError):
+            for k, strategy in ((0, 'A'), (1, 'A'), (2, 'A'), (1, 'B')):
+                fresh.get(s3.ScenarioPanel(self.ctx, k, strategy), O, 'G1')
+
+    def test_changed_fitting_label_never_reuses_a_stale_global(self):
+        O = m('2020-06')
+        _, other, _ = scenario_fixture(relabel=(3, m('2020-02'), 3 - int(self.ctx.obs.query('area == 3 and month == @m("2020-02")')
+                                                                          ['class_code'].iloc[0])))
+        root = Path(self.tmp.name) / 'g'
+        store = s3.GlobalStore(root)
+        a, b = s3.ScenarioPanel(self.ctx, 0, 'A'), s3.ScenarioPanel(other, 0, 'A')
+        pa, ra = a.fit_pool(O)
+        pb, rb = b.fit_pool(O)
+        np.testing.assert_array_equal(pa.X, pb.X)                               # label is not in any history
+        self.assertFalse(np.array_equal(pa.y, pb.y))
+        _, rec_a = store.get(a, O, 'G1')
+        _, rec_b = store.get(b, O, 'G1')
+        self.assertNotEqual(rec_a['labels_sha256'], rec_b['labels_sha256'])
+        self.assertNotEqual(rec_a['booster_sha256'], rec_b['booster_sha256'])  # recomputed, not reused
+        _, rec_disk = s3.GlobalStore(root).get(b, O, 'G1', fit_if_missing=False)  # disk path keyed apart
+        self.assertEqual(rec_disk['booster_sha256'], rec_b['booster_sha256'])
+
+    def test_forecast_production_needs_no_evaluator_truth(self):
+        _, prod, _ = scenario_fixture(truth=False)
+        self.assertEqual(prod.inputs_sha256, self.ctx.inputs_sha256)             # truth never in input identity
+        panel = s3.ScenarioPanel(prod, 1, 'A')
+        src, rows = panel.target_rows(m('2020-10'))
+        self.assertTrue(np.isnan(src.y.astype(float)).all())                     # no truth before its release
+        ref, _ = s3.ScenarioPanel(self.ctx, 1, 'A').target_rows(m('2020-10'))
+        np.testing.assert_array_equal(src.X, ref.X)
+        ev, _ = panel.gate_rows(m('2019-10'), m('2020-06'), prod.ledger.hidden(m('2020-06'), 1))
+        self.assertEqual(len(ev.y), 40)                                          # gates use lawful input labels
+
+    def test_weighted_local_fit_uses_original_support(self):
+        panel = s3.ScenarioPanel(self.ctx, 0, 'B')
+        pool, rows = panel.fit_pool(m('2020-06'))
+        store = s3.GlobalStore(Path(self.tmp.name) / 'g')
+        g, _ = store.get(panel, m('2020-06'), 'G1')
+        sub = rows[pool.area[rows] < 20]
+        booster, rec = s3.fit_local('shared', g, pool, sub, 'G1', 'L1')
+        self.assertEqual(rec['sample_weight']['n'], len(sub))
+        self.assertEqual(rec['fit_support']['rows'], len(sub) // 3)
+        _, ind = s3.fit_local('independent', g, pool, sub, 'G1', 'L1')
+        self.assertEqual(ind['independent_prefix']['sample_weight']['n'], len(sub))
+
+    def test_crisis_gate_exact_boundary_undefined_and_fold_gate_mismatch(self):
+        n = 300
+        pairs = pd.DataFrame({'area': np.arange(n) % 30, 'validation_month': np.repeat(['a', 'b', 'c'], 100),
+                              'local_fit_ok': True, 'y_true': np.r_[np.full(100, 2), np.zeros(200, int)],
+                              'y_global': np.zeros(n, int)})
+        for fp, enabled in ((99, False), (98, True)):                          # 2/200 = .01 exactly vs 2/199
+            local = np.zeros(n, int)
+            local[0] = 2
+            local[100:100 + fp] = 3
+            dec = s3.gate_decision(pairs.assign(y_local_routed=local), 'crisis')
+            self.assertEqual(dec['enabled'], enabled, fp)
+            self.assertEqual(dec['crisis_f1_global'], 0.0)                      # defined zero: TP = 0, D > 0
+        quiet = pairs.assign(y_true=0, y_local_routed=0)
+        dec = s3.gate_decision(quiet, 'crisis')
+        self.assertFalse(dec['enabled'])
+        self.assertEqual(dec['reason'], 'gate_metric_undefined')
+        self.assertIsNone(dec['crisis_f1_global'])
+        panel = s3.ScenarioPanel(self.ctx, 0, 'A')
+        with self.assertRaises(ValueError):
+            s3.run_fold(panel, s3.GlobalStore(Path(self.tmp.name) / 'g'),
+                        {'target_month': '2020-10', 'origin_month': '2020-06',
+                         'gate': [{'validation_month': '2019-02'}]}, 'G1', self.specs())
+
+
+class Stage1Variants(unittest.TestCase):
+    """Interruption task G4: Stage 1 partition with grouped B variants (weights w/3, original-key support)."""
+
+    def test_support_counts_original_keys_not_variant_copies(self):
+        X, y, groups, split, months, labeller, proposal = Stage1Partition().fixture()
+        fit = np.flatnonzero(split == 0)
+        rows = np.r_[np.repeat(fit, 3), np.flatnonzero(split == 1)]          # three variants per fitting key
+        key = rows.copy()
+        Xv, yv, gv, sv, mv = X[rows], y[rows], groups[rows], split[rows], months[rows]
+        floor = {'rows': 3, 'areas': 1, 'dates': 1, 'classes': 1}
+        for keys, expected in ((None, 'accepted'), (key, 'rejected_no_eligible_child')):
+            model = PresetModel('.', labeller)
+            model.set_root(int((sv == 0).sum()))
+            _, decisions = run_partition(model, Xv, yv, gv, sv, mv, proposal=proposal, fit_support=floor,
+                                         X_key=keys)
+            self.assertEqual(decisions[0]['outcome'], expected)                 # 6 copies vs 2 original keys
+        self.assertEqual(decisions[0]['fit_support'][0]['rows'], 2)
+        bad = PresetModel('.', labeller)
+        bad.set_root(int((sv == 0).sum()))
+        with self.assertRaises(ValueError):
+            run_partition(bad, Xv, yv, gv, sv, mv, proposal=proposal, X_key=key[:-1])
+
+    def test_real_children_receive_variant_weights(self):
+        rng = np.random.default_rng(3)
+        groups = np.repeat(np.arange(40), 30)
+        X = rng.normal(size=(len(groups), 4)); X[:, 3] = groups >= 20
+        y = ((X[:, 0] + 3 * X[:, 3] * X[:, 1]) > 0).astype(int) * 2
+        months = np.tile(np.arange(30), 40)
+        from src.utils.split import group_aware_train_val_split
+        split = group_aware_train_val_split(groups, .5, 1, 42, True)['X_set']
+        fit = np.flatnonzero(split == 0)
+        rows = np.r_[np.repeat(fit, 3), np.flatnonzero(split == 1)]
+        weight = np.where(split[rows] == 0, 1 / 3, 1.0)
+        Xv, yv, gv, sv, mv = X[rows], y[rows], groups[rows], split[rows], months[rows]
+        root, rec = nx.fit_global(Xv[sv == 0], yv[sv == 0], SMALL_G['G1'], sample_weight=weight[sv == 0])
+        with tempfile.TemporaryDirectory() as tmp:
+            model = nx.XGBmodel(tmp, plan.L_CONFIGS['L1'])
+            model.set_root(root, rec)
+            run_partition(model, Xv, yv, gv, sv, mv, threshold=Fraction(0), X_weight=weight, X_key=rows)
+            children = [e for e in model.fit_log[1:] if e.get('kind') == 'continuation']
+            self.assertTrue(children)
+            for entry in children:
+                self.assertEqual(entry['sample_weight']['n'], 3 * entry['fit_support']['rows'])
+                self.assertAlmostEqual(entry['sample_weight']['sum'], entry['fit_support']['rows'], places=4)
+                self.assertEqual(entry['parent_structure_sha256'], rec['structure_sha256'])
+
+
+class ScenarioStage1(unittest.TestCase):
+    """Interruption task G4: the 648 schedule, prepared root inputs and one real scenario root."""
+
+    def setUp(self):
+        self.av, self.ctx, self.schema = scenario_fixture()
+
+    def test_schedule_is_the_frozen_648(self):
+        sched = plan.scenario_stage1_schedule()
+        self.assertEqual(len(sched), 648)
+        per = pd.DataFrame(sched).groupby(['strategy', 'horizon']).size()
+        self.assertTrue((per == 162).all())
+        self.assertEqual({r['g_config'] for r in sched if r['horizon'] == 4}, {'G1'})
+        self.assertEqual({r['g_config'] for r in sched if r['horizon'] == 8}, {'G4'})
+        self.assertEqual({(r['local_config'], r['threshold_family']) for r in sched}, {('L1', 'gt0')})
+        self.assertEqual(sorted({r['target_month'] for r in sched}), sorted(plan.STAGE1_TARGETS))
+
+    def test_stage1_input_roles_eval_features_and_labelled_targets(self):
+        T, k = m('2020-10'), 2
+        frame = self.ctx.stage1_input(T, k, 'B')
+        fit, ev, tgt = (frame[frame['role'] == r] for r in ('fit_variant', 'eval', 'target'))
+        self.assertEqual(len(fit), 3 * len(ev))
+        self.assertFalse(ev['orig_key'].duplicated().any())
+        self.assertEqual(set(fit['orig_key']), set(ev['orig_key']))
+        self.assertTrue((ev['variant_k'] == k).all() and (ev['weight'] == 1.0).all())
+        outer = self.ctx.ledger.hidden(T - 4, k)
+        ref = self.ctx.key_features(ev['area'], ev['target_month'], k, outer)
+        pd.testing.assert_frame_equal(ev[self.ctx.features].reset_index(drop=True), ref)
+        self.assertNotIn(40, set(tgt['area']))                                    # E3 needs a genuine label
+        self.assertEqual(len(tgt), 40)
+        self.assertFalse(set(ev['target_month']) & set(outer))                    # outer-hidden labels absent
+
+    def test_prepared_inputs_and_runner_accept_only_the_frozen_648(self):
+        from scripts import run_stage1 as s1
+        ledger = self.ctx.ledger.frame[list(self.av.LEDGER_COLUMNS)]
+        obs = self.ctx.obs[['area', 'month', 'country', 'class_code']]
+        sched = plan.scenario_stage1_schedule()
+        with tempfile.TemporaryDirectory() as t:
+            with self.assertRaises(ValueError):                                    # synthetic evidence: real refuses
+                prep.write_scenario_inputs(Path(t), obs, self.ctx.scaffold, self.schema, ledger, self.ctx.alignment)
+            some = [dict(r) for r in sched[:6]] + [dict(sched[-1])]
+            rows = prep.write_scenario_inputs(Path(t), obs, self.ctx.scaffold, self.schema, ledger,
+                                              self.ctx.alignment, real=False, entries=some)
+            names = sorted(p.name for p in (Path(t) / 'scenario').iterdir() if p.suffix == '.parquet')
+            self.assertEqual(names, sorted({s1.scenario_input_name(r) for r in some}))   # shared per (s, H, T, k)
+            pinned = json.loads((Path(t) / 'scenario' / 'features.json').read_text())['ordered_features']
+            self.assertEqual(pinned, self.ctx.features)
+            self.assertEqual([r['input'] for r in rows], [s1.scenario_input_name(r) for r in some])
+            frame = pd.read_parquet(Path(t) / 'scenario' / rows[-1]['input'])
+            self.assertEqual(set(frame['strategy']), {'B'})
+            self.assertEqual(set(frame['scenario_k']), {2})
+        with self.assertRaises(SystemExit):
+            s1.scenario_entries({'stage1_scenario_roots': rows})                    # partial schedule refused
+        full = [{**r, 'input': s1.scenario_input_name(r)} for r in sched]
+        roots = s1.scheduled_roots({'stage1_scenario_roots': full}, {}, plan.SCENARIO)
+        self.assertEqual(len(roots), 648)
+        self.assertTrue(all(r['increment_source'] == 'root' for r in roots.values()))
+        tampered = [dict(r) for r in full]
+        tampered[0]['g_config'] = 'G2'
+        with self.assertRaises(SystemExit):
+            s1.scheduled_candidates({'stage1_scenario_roots': tampered}, {}, plan.SCENARIO)
+
+    def test_no_target_root_is_recorded_without_fitting(self):
+        from app import main_model_GF as mgf
+        frame = self.ctx.stage1_input(m('2020-10'), 0, 'A')
+        frame = frame[frame['role'] != 'target']
+        with tempfile.TemporaryDirectory() as t:
+            here = os.getcwd()
+            os.chdir(t)
+            try:
+                rec = mgf.scenario_root(frame, 'r80', 42, 4, '2020-10', Path(t), Path(t) / 'ck', None,
+                                        self.ctx.features)
+            finally:
+                os.chdir(here)
+            self.assertEqual(rec['status'], 'no_e3_target_labels')
+            self.assertEqual(rec['candidates'], [plan.scenario_candidate_name('A', 4, '2020-10', 0, 'r80', 42)])
+            self.assertEqual(sorted(p.name for p in Path(t).iterdir()), ['root.json'])   # no fit, no checkpoints
+
+    def test_cli_refuses_inputs_without_the_pinned_feature_order(self):
+        import argparse
+        from app import main_model_GF as mgf
+        with tempfile.TemporaryDirectory() as t:
+            t = Path(t)
+            (t / 'scenario').mkdir()
+            schema_path = t / 'schema.json'
+            schema_path.write_text(json.dumps(self.schema))
+            (t / 'scenario' / 'features.json').write_text(json.dumps({'ordered_features': self.ctx.features}))
+            frame = self.ctx.stage1_input(m('2020-10'), 0, 'A').drop(columns=['EVI'])
+            frame.to_parquet(t / 'scenario' / 'x.parquet', index=False)
+            args = argparse.Namespace(forecasting_scope=1, desired_terms='2020-10', increment_source='root',
+                                      g_config='G1', confirmation_split=False, e1_pair=False, recent_search=False,
+                                      matched_size_seed=None, data=None, scenario_input=str(t / 'scenario' / 'x.parquet'),
+                                      schema=str(schema_path), geometry_dir=str(t), ratio='r80', split_seed=42,
+                                      checkpoint_dir=str(t / 'ck'))
+            with self.assertRaises(ValueError):
+                mgf.scenario_main(args)
+
+    def test_undefined_e2_parent_metric_through_partition(self):
+        X, y, groups, split, months, _, proposal = Stage1Partition().fixture()
+        y = np.zeros_like(y)                                                       # no crisis anywhere
+
+        def labeller(labels, ids):                                                 # children call crisis
+            return np.zeros(len(ids), dtype=int) if labels[0] == 'root' else np.full(len(ids), 2)
+        model = PresetModel('.', labeller)
+        model.set_root(int((split == 0).sum()))
+        # The E1 zero-mass guard already stops this node (exposure == the E2 parent denominator);
+        # force nonzero E1 masses so the E2 call path itself is exercised (defence in depth).
+        fake = (np.array([10, 20]), np.ones((2, 1)), np.array([10, 20]), np.zeros((2, 1)))
+        with patch.object(trans, 'get_class_wise_stat', return_value=fake):
+            _, decisions = run_partition(model, X, y, groups, split, months, proposal=proposal,
+                                         threshold=Fraction(0), e2_score=fourclass.crisis_f1_exact_or_none)
+        d = decisions[0]
+        self.assertEqual(d['outcome'], 'rejected_undefined_parent_metric')
+        self.assertIsNone(d['gain'])
+        self.assertIsNone(d['parent_macro_f1'])
+        self.assertIsNone(d['scores']['parent_parent'])
+        self.assertIn('metric_undefined', d)
+
+    def test_undefined_e2_parent_metric_cannot_accept(self):
+        y = np.zeros(10, int)
+        out = opt.select_macro_children(y[:5], y[5:], y[:5], y[5:], y[:5] + 2, y[5:], min_improvement=0,
+                                        score=fourclass.crisis_f1_exact_or_none)
+        self.assertFalse(out[0])
+        self.assertIsNone(out[3])
+        self.assertEqual(fourclass.crisis_f1_exact_or_none([2, 0], [0, 0]), 0)    # defined zero stays zero
+
+    def test_real_scenario_root_splits_original_keys_and_weights_children(self):
+        from app import main_model_GF as mgf
+        T = '2020-10'
+        roles, records = {}, {}
+        for strategy in ('A', 'B'):
+            frame = self.ctx.stage1_input(m(T), 1, strategy)
+            with tempfile.TemporaryDirectory() as t, patch.object(trans, 'CONTIGUITY', False), \
+                    patch.object(trans, 'generate_count_grid', return_value=(None, 0, 1)), \
+                    patch.dict(plan.G_CONFIGS, SMALL_G), \
+                    patch.dict(plan.FIT_SUPPORT, {'rows': 20, 'areas': 5, 'dates': 3, 'classes': 2}), \
+                    patch.dict(plan.STAGE1_VAL_SUPPORT, {'rows': 5, 'areas': 3, 'dates': 2}), \
+                    patch.object(mgf, 'MAX_DEPTH', 3), redirect_stdout(StringIO()):
+                here = os.getcwd()
+                os.chdir(t)
+                try:
+                    rec = mgf.scenario_root(frame, 'r50', 42, 4, T, Path(t), Path(t) / 'ck', None, self.ctx.features)
+                    roles[strategy] = pd.read_csv('fold_membership.csv.gz')
+                    evidence = pd.read_csv(Path(t) / rec['candidates'][0] / 'assignment_evidence.csv')
+                    self.assertTrue((evidence['fitting_variant_rows'] ==
+                                     (3 if strategy == 'B' else 1) * evidence['fitting_rows']).all())
+                    records[strategy] = (rec, json.loads((Path(t) / rec['candidates'][0] / 'candidate.json').read_text()))
+                finally:
+                    os.chdir(here)
+        pd.testing.assert_frame_equal(roles['A'], roles['B'])                    # same label-blind key roles
+        a, b = records['A'][0], records['B'][0]
+        self.assertEqual(a['root_support'], b['root_support'])                   # original keys only
+        self.assertEqual(b['fitting_rows_with_variants'], 3 * a['fitting_rows_with_variants'])
+        self.assertNotIn('sample_weight', a['root_fit'])
+        self.assertEqual(b['root_fit']['sample_weight']['n'], b['fitting_rows_with_variants'])
+        self.assertEqual(b['root_fit']['fit_support']['rows'], b['original_keys']['fitting'])
+        keys = len(self.ctx.label_pool(m(T) - 4, self.ctx.ledger.hidden(m(T) - 4, 1)))
+        self.assertEqual(sum(b['original_keys'][r] for r in ('fitting', 'search_S', 'confirmation_C')), keys)
+        cand = records['B'][1]
+        self.assertIn('confirmation', cand)                                       # C scored after freeze only
+        self.assertGreater(cand['fits']['child_fits'], 0, 'fixture must fit children')
+        for entry in cand['fits']['fit_log'][1:]:
+            if entry.get('kind') == 'continuation':
+                self.assertEqual(entry['parent_structure_sha256'], b['root_fit']['structure_sha256'])
+                self.assertEqual(entry['sample_weight']['n'], 3 * entry['fit_support']['rows'])
 
 
 class CommittedCode(unittest.TestCase):

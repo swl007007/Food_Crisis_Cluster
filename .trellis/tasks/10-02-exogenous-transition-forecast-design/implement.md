@@ -30,8 +30,8 @@ Status: **approved for execution**, 2026-10-02. User approved the complete final
 ## 2. Prepare the approved execution lifecycle
 
 - [x] Present final plan and obtain subsequent execution approval: user “ok implement”, 2026-10-02.
-- [ ] Commit the approved spec/plan after change-scope verification.
-- [ ] Verify exact registered repository path and actual Claude executor identity in Herdr; use trellis-audit registration/start wrappers, preserving any existing lifecycle state. Planning alone does not start an audit run.
+- [x] Commit the approved spec/plan after change-scope verification: d1a4484, whitespace follow-up e843682 (audit base).
+- [x] Verify exact registered repository path and actual Claude executor identity in Herdr; active run 5c4dede7bc6e44f0835fbde1ad2f473d, Claude session b0e22913-4f4b-430f-8d19-dee565d26eec / term_65ccaebe9009a8. Reverified on resume; do not rebind/reset the active run. Planning alone does not start an audit run.
 
 ## 3. Mandatory data readiness before real fitting
 
@@ -43,13 +43,30 @@ Status: **approved for execution**, 2026-10-02. User approved the complete final
 
 ## 4. Implement the smallest compatible change
 
+Reviewed partial implementation: 53917be adds optional sample weights to native continuation and both XGBmodel training modes. Independent Windows verification: `python3.12.exe tests/test_baseline.py WeightedContinuation` (4 passed). End-to-end A/B forwarding and original-key support remain unchecked below until their callers are integrated. Slices 2–4 implement release-aware availability, scenario Stage3 and the 648-entry Stage1 plumbing; review fixes cover fitting-label cache identity, requested-versus-resolved parameter separation, exact aligned schema, original assignment counts, undefined E2 and empty E3 outcomes. Pre-commit full suite: 147/148 passed, with only the new uncommitted module file-count check pending commit. Stage2, full-pipeline selection/reporting and D7 source certification remain outstanding; these component checks do not establish data readiness.
+
+Executor packet status (uncommitted, awaiting coordinator review; boxes are ticked only after independent verification). Slices 2–4 plus review fixes, synthetic tests only, frozen Windows Python, full suite 147/148:
+
+- **Failing test:** the only failure is `CommittedCode` counting code files, 64 versus 65, which clears once the new module is committed.
+- **Slice 2:** release-ledger and alignment availability views, with A/B original-key views.
+- **Slice 3:** the Stage 3 `ScenarioPanel`, crisis gate, forecast-only cohort and cache identity. The identity covers labels and inputs; the requested G configuration is now separate from the resolved params, and disk reopen is fixed on both panels.
+- **Slice 4:** Stage 1 scenario plumbing and the frozen 648 schedule; weights and original-key support in `partition`; the undefined-E2 guard; a deliberate no-target root; the pinned scenario feature manifest; evidence that separates variant rows from original rows.
+
+Not yet done:
+
+- Stage 2 crisis-F1/NA routing;
+- scenario development maps and the 72-fold selection;
+- the historical and 2025 runners and reports.
+
+Real data stays blocked by D7.
+
 - [ ] Reuse the existing three-stage experiment; add only the availability/scenario behavior needed by the frozen design. Preserve raw sources and old outputs.
 - [ ] Rebuild IPC-derived predictors under the as-of boundary; apply the same contract to pooled/local fits and prediction. Preserve origin-specific covariate availability and genuine-label fitting eligibility.
-- [ ] Implement A/B training with grouped variants and conserved fitting weight through both global fitting and local continuation; current continuation lacks a weight argument. Compute support from original keys, not expanded arrays. Reuse the existing global weight validation where applicable.
-- [ ] Select the existing shared-root increment mode explicitly; preserve root-prefix invariance and separate routing parent from the model prefix. Align Stage3 local gate from legacy macro-F1 to crisis F1, requiring gain strictly >0.01 versus fold-global and genuine support, otherwise global fallback.
+- [x] Implement A/B training with grouped variants and conserved fitting weight through both global fitting and local continuation; current continuation lacks a weight argument. Compute support from original keys, not expanded arrays. Reuse the existing global weight validation where applicable.
+- [x] Select the existing shared-root increment mode explicitly; preserve root-prefix invariance and separate routing parent from the model prefix. Align Stage3 local gate from legacy macro-F1 to crisis F1, requiring gain strictly >0.01 versus fold-global and genuine support, otherwise global fallback.
 - [ ] Reuse keyed prediction/reporting infrastructure for matched ordinary/prolonged persistence and available experts, Study2 subsets, coverage and country supplements.
-- [ ] Bind both in-memory and disk global/model caches to the lawful input, strategy, scenario, outer exclusion, fitting-key and weight identities. The current GlobalStore memo key (H, origin, G) is insufficient across scenarios.
-- [ ] Separate forecast keys from evaluator truth so June targets without genuine labels still receive predictions; never fabricate class codes to satisfy the current labelled-only Panel/run_fold interface.
+- [x] Bind both in-memory and disk global/model caches to the lawful input, strategy, scenario, outer exclusion, fitting-key and weight identities. The current GlobalStore memo key (H, origin, G) is insufficient across scenarios.
+- [x] Separate forecast keys from evaluator truth so June targets without genuine labels still receive predictions; never fabricate class codes to satisfy the current labelled-only Panel/run_fold interface.
 
 ## 5. Verify before real runs
 

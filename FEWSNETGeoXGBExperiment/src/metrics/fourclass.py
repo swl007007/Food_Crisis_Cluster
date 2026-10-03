@@ -181,6 +181,14 @@ def crisis_f1_exact(y_true, y_pred):
     return Fraction(2 * c["tp"], denominator) if denominator else Fraction(0)
 
 
+def crisis_f1_exact_or_none(y_true, y_pred):
+    """Exact crisis F1 with the reporting convention: None (undefined) when 2TP + FP + FN = 0.
+    Interruption task (G3/G4) scorer for E2/E3/gates; ``crisis_f1_exact`` keeps the internal zero."""
+    c = crisis_counts(y_true, y_pred)
+    denominator = 2 * c["tp"] + c["fp"] + c["fn"]
+    return Fraction(2 * c["tp"], denominator) if denominator else None
+
+
 def crisis_f1(y_true, y_pred):
     return float(crisis_f1_exact(y_true, y_pred))
 

@@ -221,3 +221,47 @@ def g_tiebreak_key(name: str):
     """Exact-tie order for G selection: fewer rounds, shallower trees, config number."""
     c = G_CONFIGS[name]
     return (c["rounds"], c["max_depth"], int(name[1:]))
+
+
+#: Interruption task (10-02 design G4): the finite Stage 1 scenario schedule. A/B training
+#: strategy x H4/H8 x the nine 2018-2020 targets x outer availability scenario k=0/1/2 x
+#: r80/r50 x split seeds 42/43/44 = 648 candidates (162 per strategy/horizon). Fixed D26
+#: capacities (H4 G1, H8 G4), L1 shared-root increments (D28) with the D29 S/C split
+#: (confirmation seed 42) and E2 family gt0; no other grid. Candidate count is not a fit count.
+SCENARIO = "scen"
+SCENARIO_STRATEGIES = ("A", "B")
+SCENARIO_HORIZONS = (4, 8)
+SCENARIO_KS = (0, 1, 2)
+SCENARIO_G = {4: "G1", 8: "G4"}
+SCENARIO_LOCAL = "L1"
+SCENARIO_FAMILY = "gt0"
+SCENARIO_CANDIDATES = 648
+
+
+def scenario_root_name(strategy, h, target, k, ratio, seed):
+    return f"{SCENARIO}{strategy}_h{h}_{target}_{SCENARIO_G[h]}_k{k}_{ratio}_s{seed}"
+
+
+def scenario_candidate_name(strategy, h, target, k, ratio, seed):
+    return f"{scenario_root_name(strategy, h, target, k, ratio, seed)}_{SCENARIO_LOCAL}_{SCENARIO_FAMILY}"
+
+
+def scenario_stage1_schedule() -> list:
+    """The 648 scheduled scenario roots (one L1/gt0 candidate each), in a fixed order."""
+    out = []
+    for strategy in SCENARIO_STRATEGIES:
+        for h in SCENARIO_HORIZONS:
+            for target in STAGE1_TARGETS:
+                for k in SCENARIO_KS:
+                    for ratio in SPLIT_RATIOS:
+                        for seed in SPLIT_SEEDS:
+                            out.append({"strategy": strategy, "horizon": h, "target_month": target,
+                                        "scenario_k": k, "ratio": ratio, "split_seed": seed,
+                                        "g_config": SCENARIO_G[h], "local_config": SCENARIO_LOCAL,
+                                        "threshold_family": SCENARIO_FAMILY, "increment_source": "root",
+                                        "confirmation_seed": CONFIRMATION_SEED,
+                                        "root": scenario_root_name(strategy, h, target, k, ratio, seed),
+                                        "candidate": scenario_candidate_name(strategy, h, target, k, ratio, seed)})
+    if len(out) != SCENARIO_CANDIDATES or len({r["candidate"] for r in out}) != SCENARIO_CANDIDATES:
+        raise RuntimeError("scenario Stage 1 schedule is not the frozen 648 distinct candidates")
+    return out

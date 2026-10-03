@@ -866,12 +866,17 @@ def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvem
     strict gain above ``min_improvement`` (0 or .01 by threshold family), decided in
     rational arithmetic. A side that is not ``eligible`` (support/path fallback) only
     offers the parent route; its rows still count in every combination.
+
+    A scorer may return None for an undefined metric (interruption task G4): an undefined
+    parent score cannot establish an accepted split, and an undefined combination is never chosen.
     """
     score = score or fourclass.macro_f1_exact  # D26 callers pass the crisis-F1 scorer
     truth = np.concatenate((y0, y1))
     base = score(truth, np.concatenate((parent0, parent1)))
     best, choice, predictions = base, (False, False), (parent0, parent1)
     scores = {'parent_parent': base}
+    if base is None:
+        return False, choice, predictions, None, None, scores
     for use0, use1 in ((True, False), (False, True), (True, True)):
         if (use0 and not eligible[0]) or (use1 and not eligible[1]):
             continue
@@ -879,7 +884,7 @@ def select_macro_children(y0, y1, parent0, parent1, child0, child1, min_improvem
         pred1 = child1 if use1 else parent1
         value = score(truth, np.concatenate((pred0, pred1)))
         scores[f"{'child' if use0 else 'parent'}_{'child' if use1 else 'parent'}"] = value
-        if value > best:
+        if value is not None and value > best:
             best, choice, predictions = value, (use0, use1), (pred0, pred1)
     accepted = best - base > Fraction(str(min_improvement))
     return accepted, choice, predictions, base, best, scores

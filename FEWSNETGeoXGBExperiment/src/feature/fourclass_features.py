@@ -90,17 +90,157 @@ class Scaffold:
         return total
 
 
-def covariate_features(scaffold: Scaffold, schema: dict, areas, targets, origins) -> pd.DataFrame:
+#: Legacy derived covariate -> its source column (aligned with that source's rule).
+LEGACY_BASE = {"WFP_Price_m4": "WFP_Price", "WFP_Price_m12": "WFP_Price", "nightlight_m12": "nightlight",
+               **{f"EVI_l{k}": "EVI" for k in range(1, 13)}}
+ALIGNMENT_KINDS = ("static", "monthly", "annual", "excluded")
+ALIGNMENT_STATUS = ("verified_vintage", "reconstructed", "synthetic")
+
+
+def _release_months(rule: dict) -> dict:
+    """Optional actual-release evidence: reference (month index, or year for annual) -> release month."""
+    out = {}
+    for ref, date in (rule.get("releases") or {}).items():
+        stamp = pd.Timestamp(date)
+        key = int(ref) if rule["kind"] == "annual" else int(month_index([f"{ref}-01"])[0])
+        out[key] = stamp.year * 12 + stamp.month - 1
+    return out
+
+
+def check_alignment(schema: dict, alignment: dict, real: bool = False) -> dict:
+    """Validate a per-source availability table (interruption design D1, D7).
+
+    ``alignment[name]`` = {"kind": static|monthly|annual|excluded, "status": verified_vintage|
+    reconstructed|synthetic, "evidence": citation, plus "lag" (monthly, months >= 0) or
+    "release_delay_years"/"release_month"/"value_month" (annual)}, optionally "releases": actual
+    release dates per reference ("YYYY-MM" monthly, year annual -> "YYYY-MM-DD"). Every static/
+    dynamic source needs an entry; there are no defaults, so this code adopts no lag. ``real``
+    refuses synthetic entries."""
+    if not isinstance(alignment, dict):
+        raise ValueError("alignment must be a dict of per-source rules")
+    sources = schema["static_sources"] + schema["dynamic_sources_at_origin"]
+    if set(alignment) != set(sources):
+        raise ValueError(f"alignment must cover exactly the schema sources: "
+                         f"missing {sorted(set(sources) - set(alignment))}, extra {sorted(set(alignment) - set(sources))}")
+    for name, rule in alignment.items():
+        kind = rule.get("kind")
+        if kind not in ALIGNMENT_KINDS:
+            raise ValueError(f"{name}: unknown kind {kind!r}")
+        if rule.get("status") not in ALIGNMENT_STATUS or not rule.get("evidence"):
+            raise ValueError(f"{name}: status and evidence are required")
+        if real and rule["status"] == "synthetic":
+            raise ValueError(f"{name}: synthetic availability rule in a real run")
+        if kind == "monthly" and not (isinstance(rule.get("lag"), int) and rule["lag"] >= 0):
+            raise ValueError(f"{name}: monthly sources need an integer lag >= 0")
+        if kind == "annual":
+            ok = (isinstance(rule.get("release_delay_years"), int) and rule["release_delay_years"] >= 0
+                  and rule.get("release_month") in range(1, 13) and rule.get("value_month") in range(1, 13))
+            if not ok:
+                raise ValueError(f"{name}: annual sources need release_delay_years, release_month, value_month")
+        if rule.get("releases"):
+            if kind not in ("monthly", "annual"):
+                raise ValueError(f"{name}: release evidence applies to monthly/annual sources only")
+            try:
+                released = _release_months(rule)
+            except (ValueError, TypeError) as exc:
+                raise ValueError(f"{name}: malformed release evidence ({exc})") from None
+            for ref, month in released.items():
+                if month < (ref * 12 if kind == "annual" else ref):
+                    raise ValueError(f"{name}: a release precedes its reference period")
+    for derived, base in LEGACY_BASE.items():
+        if derived in schema["legacy_covariate_derived"] and alignment[base]["kind"] not in ("monthly", "excluded"):
+            raise ValueError(f"{derived}: its source {base} must be monthly or excluded")
+    return alignment
+
+
+def aligned_feature_names(schema: dict, alignment: dict) -> list:
+    """Schema order without excluded sources and the legacy columns derived from them."""
+    dropped = {n for n, r in alignment.items() if r["kind"] == "excluded"}
+    dropped |= {d for d, b in LEGACY_BASE.items() if b in dropped}
+    return [c for c in schema["ordered_features"] if c not in dropped]
+
+
+def annual_reference_year(origins, rule: dict) -> np.ndarray:
+    """Latest eligible annual reference year at each origin cutoff (float; NaN if none).
+
+    With actual release evidence: the latest evidenced reference year released by the origin
+    month (a delayed release is not exposed). Otherwise the documented calendar: reference year r
+    is released in ``release_month`` of year r + ``release_delay_years``."""
+    origins = np.asarray(origins, dtype=np.int64)
+    released = _release_months(rule)
+    if not released:
+        return ((origins - (rule["release_month"] - 1)) // 12 - rule["release_delay_years"]).astype(float)
+    refs = np.array(sorted(released), dtype=np.int64)
+    months = np.array([released[r] for r in refs], dtype=np.int64)
+    out = np.full(origins.shape, np.nan)
+    for i, o in enumerate(origins):
+        eligible = refs[months <= o]
+        if eligible.size:
+            out[i] = eligible.max()
+    return out
+
+
+def source_release_month(rule: dict, refs) -> np.ndarray:
+    """Evidenced release month of each reference (month index or year); NaN without evidence."""
+    released = _release_months(rule)
+    return np.array([released.get(int(r), np.nan) if np.isfinite(r) else np.nan
+                     for r in np.asarray(refs, dtype=float)], dtype=float)
+
+
+def covariate_features(scaffold: Scaffold, schema: dict, areas, targets, origins,
+                       alignment: dict | None = None) -> pd.DataFrame:
+    """Covariates at calendar offsets from O.
+
+    ``alignment`` None (default) keeps the frozen exact-origin values. Any other value is first
+    validated by ``check_alignment``: monthly sources and their legacy lags/sums are read relative
+    to the exact source month O - lag; annual sources take the value of their latest eligible
+    reference year (``annual_reference_year``) at ``value_month``; static sources stay at O;
+    excluded sources and their derived columns are omitted. Where actual release evidence is
+    given, a selected source month/year not released by the origin cutoff stays NaN: the
+    eligible publication is chosen first and a missing value is never replaced by searching back."""
     origins = np.asarray(origins, dtype=np.int64)
     rows = np.array([scaffold.area_pos[int(a)] for a in areas], dtype=np.int64)
+    rule = {} if alignment is None else check_alignment(schema, alignment)
+
+    def read(name, months):
+        """Value at source months, NaN where release evidence says it is not out by the origin."""
+        months = np.asarray(months, dtype=np.int64)
+        values = scaffold.at(name, rows, months)
+        r = rule.get(name)
+        if r is not None and r.get("releases"):
+            released = source_release_month(r, months)
+            values = np.where(released <= origins, values, np.nan)   # NaN release -> not released
+        return values
+
+    def end(name):  # source-month endpoint replacing O
+        r = rule.get(name)
+        return origins if r is None or r["kind"] == "static" else origins - r["lag"]
+
     out = {}
     for name in schema["static_sources"] + schema["dynamic_sources_at_origin"]:
-        out[name] = scaffold.at(name, rows, origins)
-    out["WFP_Price_m4"] = scaffold.trailing_sum("WFP_Price", rows, origins, 4)
-    out["WFP_Price_m12"] = scaffold.trailing_sum("WFP_Price", rows, origins, 12)
-    out["nightlight_m12"] = scaffold.trailing_sum("nightlight", rows, origins, 12)
-    for k in range(1, 13):
-        out[f"EVI_l{k}"] = scaffold.at("EVI", rows, origins - k)
+        r = rule.get(name)
+        if r is not None and r["kind"] == "excluded":
+            continue
+        if r is not None and r["kind"] == "annual":
+            ref = annual_reference_year(origins, r)
+            month = np.where(np.isfinite(ref), np.nan_to_num(ref) * 12 + r["value_month"] - 1, -10 ** 9)
+            out[name] = np.where(np.isfinite(ref), scaffold.at(name, rows, month.astype(np.int64)), np.nan)
+        else:
+            out[name] = read(name, end(name))
+
+    def keep(base):  # frozen default: always; aligned: only a retained monthly source
+        return alignment is None or rule.get(base, {}).get("kind") == "monthly"
+
+    for derived, width in (("WFP_Price_m4", 4), ("WFP_Price_m12", 12), ("nightlight_m12", 12)):
+        base = LEGACY_BASE[derived]
+        if keep(base):
+            total = np.zeros(len(origins))
+            for k in range(1, width + 1):   # same [E-width, E-1] window as Scaffold.trailing_sum
+                total = total + read(base, end(base) - k)
+            out[derived] = total
+    if keep("EVI"):
+        for k in range(1, 13):
+            out[f"EVI_l{k}"] = read("EVI", end("EVI") - k)
     targets = np.asarray(targets, dtype=np.int64)
     angle = 2 * np.pi * (targets % 12) / 12
     out["target_year"] = (targets // 12).astype(float)

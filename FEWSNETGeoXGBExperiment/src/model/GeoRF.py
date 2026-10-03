@@ -123,7 +123,8 @@ class GeoRF():
 	        split = None,
 	        contiguity_type = CONTIGUITY_TYPE, polygon_contiguity_info = POLYGON_CONTIGUITY_INFO,
 	        track_partition_metrics = False, correspondence_table_path = None, feature_names=None, VIS_DEBUG_MODE=True,
-	        root=None, local_config=None, threshold=None, X_month=None, increment_source='parent', e1='hard_f1'):#X_loc is unused
+	        root=None, local_config=None, threshold=None, X_month=None, increment_source='parent', e1='hard_f1',
+	        X_weight=None, X_key=None, e2_score=None):#X_loc is unused
 		"""
     Train the geo-aware random forest (Geo-RF).
 
@@ -437,7 +438,8 @@ class GeoRF():
 		                   VIS_DEBUG_MODE = VIS_DEBUG_MODE,
 		                   X_month = np.asarray(X_month), threshold = threshold,
 		                   fit_support = FIT_SUPPORT, val_support = STAGE1_VAL_SUPPORT,
-		                   path_round_cap = PATH_ROUND_CAP, e1 = e1)#X_loc = X_loc is unused
+		                   path_round_cap = PATH_ROUND_CAP, e1 = e1,
+		                   X_weight = X_weight, X_key = X_key, e2_score = e2_score)#X_loc = X_loc is unused
 		
 		# Handle different return formats (with/without metrics tracker)
 		if track_partition_metrics and VIS_DEBUG_MODE:

@@ -66,7 +66,7 @@ The historical join is unambiguous apart from these. The pinned-panel preflight 
   - Code inference (no values read): unmatched rows have NaN `fews_ipc`, and cell 14 sets `fews_ipc_crisis = (fews_ipc >= 3)`, giving **0 for unmatched rows**. Using FEWS_2025.csv as-is would therefore fabricate non-crisis truth.
 - Memory/prior planning recorded that normalized-v1 carries 2025-10 truth for all 5,718 codes, which exceeds the 4,480 name matches. That lineage is unexplained; see section 5 for the producer status.
 - **Decision rule (D5/D7): an absent or ambiguous crosswalk blocks only the dependent 2025 truth keys.** It does not block historical implementation, which uses the pinned, already-joined FEWSNET.csv. October 2025 evaluation requires an approved, documented crosswalk before outcome release.
-  - The historical file states "Joined to districts using largest spatial overlap rule" (`Column Descriptions.xlsx`), but its producer is not local.
+  - FEWSNET.csv is a **directly downloaded original source** (user clarification, 2026-10-02). There is no local producer to find. Its own supplied column definitions apply, including "Joined to districts using largest spatial overlap rule" (`Column Descriptions.xlsx`).
   - **No unapproved geometric aggregation of IPC is introduced to recover coverage.**
   - The name and boundary evidence comes partly from 2026 records, so it does not establish that a 2025 mapping is valid.
   - Every unmatched or ambiguous unit and country stays excluded with a coverage reason, never zero-filled.
@@ -106,7 +106,7 @@ Facts:
 - **Expert comparators.**
   - FEWSNET.csv describes `fews_proj_near` as "Estimated IPC phase for the following 4 month period" and `fews_proj_med` as "…following 8 month period" (`Column Descriptions.xlsx`).
   - The raw FDW validity windows are ML1 = D..D+3 and ML2 = D+4..D+7. Under these windows, the legacy T−4 near join targets a month outside ML1's stated interval.
-  - The FEWSNET.csv producer, i.e. how its row month relates to the FDW `reporting_date`, is not available locally, so the mismatch is **unresolved**, not declared.
+  - FEWSNET.csv is a directly downloaded original source (user, 2026-10-02), so its supplied definitions are the provenance. They do not establish exact historical release dates, and they do not prove a mapping between this legacy download's row months and the newer FDW validity intervals. The mismatch is therefore **unresolved**, not declared.
   - Per D5, a comparator whose genuine projected interval excludes T is unavailable/mismatched with a coverage reason. It is never relabelled to another horizon, and model horizons/cutoffs do not move. The legacy expert F1 (~0.81) is not evidence of comparator validity.
   - FDW timestamps also suggest that outlook projections issued at O land after O's month end. This needs the same release rule.
 
@@ -191,11 +191,11 @@ Recorded only, ahead of eventual product edits. GitNexus `impact` is required pe
 | D7 item | Verdict | Blocking evidence / next fact needed |
 |---|---|---|
 | Code identity, frozen Windows environment | PASS | section 1 |
-| Pinned training source hashes, historical admin keys | PASS | section 2; 2996/1667 name anomalies recorded |
+| Pinned training source hashes, historical admin keys | PASS (FEWSNET.csv = directly downloaded original source, per user) | section 2; 2996/1667 name anomalies recorded |
 | Historical IPC release rule (cycle mask G2, gate dates, calendar, IPC-derived features, ordinary persistence) | **BLOCKED** | No publication-date field; FDW `created` values are database events (pre-2021 bulk re-ingested; 2021–2023 Feb cycles range M+0..M+7 for 4 countries). No official historical publication-lag source found in the bounded search. Needed: official FEWS NET release evidence (e.g. dated report postings) supporting a documented reconstruction. M+1 and M+2 are not adopted. |
 | Actual 2025 availability per country/product | PARTIAL | local files show no CS 2025-01..09 and no projections reported Feb–Jul 2025; relaunch evidence is unverified. Exact per-country 2025 missed-cycle intensity depends on the release rule. |
 | October 2025 truth crosswalk | **BLOCKED (dependent 2025 keys only)** | name join only: 1,093 of 5,573 October 2025 CS rows unmatched (DRC wholly; Ethiopia 645/1,141; smaller losses in 7 others); FEWS_2025.csv zero-fills unmatched crisis flags. Needed: an approved, documented crosswalk. June 2025: forecast/coverage-only. |
-| Expert comparator alignment | UNRESOLVED | the raw ML1 window D..D+3 vs the legacy T−4 join; the FEWSNET.csv producer is not local; mismatched keys remain unavailable with a reason (D5) |
+| Expert comparator alignment | UNRESOLVED | the raw ML1 window D..D+3 vs the legacy T−4 join; FEWSNET.csv is a directly downloaded original (its definitions say "following 4/8 month period") and does not prove the mapping to FDW intervals; mismatched keys remain unavailable with a reason (D5) |
 | Climate rolling producer | PASS as a finding → z-scores EXCLUDED | section 5 |
 | Covariate release rules | PARTIAL | 54 candidates (21 monthly L=1, 2 annual, 31 static with 23 flagged) and 30 excluded; no family certified until URL/quote/lineage records and Codex schema approval. 2025 covariates need pinned-vs-2025 value agreement (not run). |
 | Schedules/roles | design fixed; exact eligible dates **BLOCKED** with the release rule | section 7 |

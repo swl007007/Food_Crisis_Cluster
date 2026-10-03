@@ -21,6 +21,7 @@ import hashlib
 import json
 import pickle
 import platform
+import shutil
 import sys
 from pathlib import Path
 
@@ -522,6 +523,38 @@ def build_schedule(observations: pd.DataFrame) -> dict:
     return schedule
 
 
+def write_scenario_inputs(out: Path, observations: pd.DataFrame, scaffold, schema: dict, ledger: pd.DataFrame,
+                          alignment: dict, real: bool = True, entries=None) -> list:
+    """Interruption task (10-02 design D1/G2/G4): the prepared Stage 1 scenario inputs.
+
+    One ``Availability.stage1_input`` parquet per (strategy, H, T, k) under ``out/scenario`` and
+    the scenario schedule entries (plan.scenario_stage1_schedule plus their ``input`` file).
+    ``real`` (default) refuses synthetic ledger/alignment evidence and an incomplete ledger: a
+    missing release calendar blocks dependent fitting (D7). ``entries`` restricts the schedule
+    (tests only); the runner accepts nothing but the complete frozen 648."""
+    from src.experiment import availability as av
+    led = av.ReleaseLedger(ledger, real=real)
+    obs = observations[["area", "month", "country", "class_code"]]
+    # Development (2018-2020) E3 truth = the genuine input labels; never final-period truth.
+    contexts = {h: av.Availability(obs, led, scaffold, schema, h, alignment, truth=obs)
+                for h in plan.SCENARIO_HORIZONS}
+    features = contexts[plan.SCENARIO_HORIZONS[0]].features
+    rows = plan.scenario_stage1_schedule() if entries is None else list(entries)
+    folder = out / "scenario"
+    folder.mkdir(parents=True, exist_ok=True)
+    written = {}
+    for r in rows:
+        name = f"{r['strategy']}_h{r['horizon']}_{r['target_month']}_k{r['scenario_k']}.parquet"
+        if name not in written:
+            frame = contexts[r["horizon"]].stage1_input(mi(r["target_month"]), r["scenario_k"], r["strategy"])
+            frame.to_parquet(folder / name, index=False)
+            written[name] = int((frame["role"] == "eval").sum())
+        r["input"] = name
+    # Pinned ordered feature list: the Stage 1 CLI refuses inputs that do not carry it exactly.
+    (folder / "features.json").write_text(json.dumps({"ordered_features": features}, indent=1), encoding="utf-8")
+    return rows
+
+
 def build_geometry(out: Path, coords: pd.DataFrame, shapefile: Path, areas: np.ndarray) -> dict:
     """Release polygon grouping over the labelled-area universe (setup_spatial_groups)."""
     from src.adjacency.adjacency_utils import load_or_create_adjacency_matrix
@@ -606,7 +639,14 @@ def main() -> None:
     parser.add_argument("--source-root", type=Path, default=DEFAULT_SOURCE_ROOT,
                         required=DEFAULT_SOURCE_ROOT is None)
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--release-ledger", type=Path, default=None,
+                        help="interruption task: verified/reconstructed FEWS NET release ledger CSV "
+                             "(availability.LEDGER_COLUMNS); with --alignment writes the scenario inputs")
+    parser.add_argument("--alignment", type=Path, default=None,
+                        help="interruption task: per-source covariate availability JSON (check_alignment)")
     args = parser.parse_args()
+    if (args.release_ledger is None) != (args.alignment is None):
+        raise SystemExit("--release-ledger and --alignment are required together")
     out = args.run_dir / "prepared"
     if out.exists():
         raise FileExistsError(f"{out} exists; preparation outputs are never overwritten")
@@ -657,6 +697,16 @@ def main() -> None:
         snapshots[horizon].to_parquet(out / f"snapshot_h{horizon}.parquet", index=False)
         print(f"  h={horizon}: {len(snapshots[horizon])} keys", flush=True)
     write_json(manifests / "features.json", feature_manifest(schema, snapshots))
+    if args.release_ledger is not None:
+        print("building interruption scenario inputs", flush=True)
+        alignment = json.loads(args.alignment.read_text(encoding="utf-8"))
+        ledger_frame = pd.read_csv(args.release_ledger, dtype=str)
+        shutil.copy2(args.release_ledger, manifests / "release_ledger.csv")
+        shutil.copy2(args.alignment, manifests / "alignment.json")
+        schedule["stage1_scenario_roots"] = write_scenario_inputs(out, observations, scaffold, schema,
+                                                                  ledger_frame, alignment, real=True)
+        schedule["stage1_scenario_candidates"] = schedule["stage1_scenario_roots"]
+        write_json(manifests / "schedule.json", schedule)
 
     print("building geometry", flush=True)
     areas = np.sort(observations["area"].unique())

@@ -100,6 +100,69 @@ production defaults.
 - A missing Stage 1 candidate or non-finite score stops Stage 2; only a complete ledger
   of all-zero weights may take the null-consensus route.
 
+## 6b. GeoXGB interruption availability (2026-10-02 task)
+
+### Scope / Trigger
+
+Applies only to the approved `exogenous-transition-forecast-design` scenario path in
+`FEWSNETGeoXGBExperiment`. Its PRD/design/evaluation-contract override the older
+Ethiopia and fixed-macro conventions above. Synthetic implementation checks do not
+certify source availability; `data-readiness.md` must pass before real fitting.
+
+### Signatures
+
+- `continue_booster(parent, X, y, config, sample_weight=None)`; `XGBmodel.train(..., sample_weight=None)`.
+- `covariate_features(scaffold, schema, areas, targets, origins, alignment=None)`.
+- `ReleaseLedger(frame, real=False)` and `Availability(..., alignment=None, truth=None)`.
+- `ScenarioPanel(availability, k, strategy, prediction_areas=None)` uses the existing Stage3 engine.
+- `plan.scenario_stage1_schedule()` freezes 648 candidate identities; `run_stage1.py --split-mode scen` consumes prepared scenario inputs.
+
+### Contracts
+
+Ledger columns are `cycle_id, product, country, reference_month, release_date,
+evidence, source`. Reference month is not release date. Monthly covariates use the
+declared exact lag; missing or unreleased values remain NaN. Annual covariates use
+the latest eligible reference year. `alignment=None` preserves the legacy feature
+builder only; real scenario views require explicit alignment.
+
+Original area/target keys determine F/S/C roles and support. B repeats fitting keys
+at weights 1/3 for each of k=0/1/2; S/C are single designated-scenario observations.
+Weights reach root and local fits. Local continuation preserves the shared root.
+Gate dates are the latest six lawful dates U<O, independent of the 59-month fitting
+window. Scenario Stage3 uses exact crisis-F1 gain >0.01; legacy Panel retains its
+frozen metric. Prediction cohorts do not require target labels; truth is evaluator-only.
+
+### Validation & Error Matrix
+
+| Condition | Required result |
+|---|---|
+| Synthetic ledger/alignment in a real run, missing release coverage or missing real alignment | Refuse |
+| Fewer documented due cycles than requested k | Unsupported scenario; never silently reduce k |
+| Hidden IPC or release after cutoff | Exclude from fitting labels and every derived input |
+| Empty/unsupported local fitting or undefined gate F1 | Preserve evaluation keys; global fallback |
+| Gate gain exactly 0.01 | Local disabled |
+| Changed strategy, masks, fitting keys, features, labels or weights | Cannot reuse an incompatible global model |
+
+### Good / Base / Bad Cases
+
+Good: three B variants conserve one original row's weight and support. Base: A uses
+unit weights. Bad: counting variants as three independent observations or filling
+an unlabeled target with persistence to make it evaluable.
+
+### Tests Required
+
+Run `tests/test_baseline.py` with `ReleaseAwareViews`, `WeightedContinuation`,
+`ScenarioStage3`, `Stage3Engine`, `ScenarioStage1` and `Stage1Variants` on the pinned
+Windows Python. Check hidden-input invariance, grouped roles, original-key support,
+root-prefix invariance, cache isolation and forecast-only rows. Full regression is
+required before the final task check; retain explicit unresolved data blockers.
+
+### Wrong vs Correct
+
+Wrong: choose gate dates from the 59-month fitting pool or use one memo key for all
+scenarios. Correct: select lawful gate dates independently and bind caches to the
+actual fitting inputs, labels, weights and scenario identity.
+
 ## 7. Wrong vs Correct
 
 ```python

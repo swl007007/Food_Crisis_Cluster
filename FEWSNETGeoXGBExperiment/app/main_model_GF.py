@@ -80,11 +80,13 @@ ASSIGNMENT_STATUSES = ("searched_assigned", "searched_root", "unsearched_fit_fal
 
 
 def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch_booster=None,
-                        root_booster_sha=None) -> pd.DataFrame:
+                        root_booster_sha=None, X_key=None) -> pd.DataFrame:
     """D32/A7 Stage 1 spatial evidence, one row per area (pure; reads no labels or scores).
 
     prediction_branch_id is the existing routing (s_branch, "" -> root); spatial support
-    comes only from actual search rows (x_set == 1): areas without any are "s-1"."""
+    comes only from actual search rows (x_set == 1): areas without any are "s-1".
+    ``X_key`` (interruption scenario roots): original-key ids; ``fitting_rows`` then counts
+    ORIGINAL fitting keys and ``fitting_variant_rows`` the augmented copies (not support)."""
     gtrain, gtest = np.asarray(gtrain), np.asarray(gtest)
     x_set = np.asarray(x_set)
     conf_groups = np.asarray([] if conf_groups is None else conf_groups, dtype=gtrain.dtype)
@@ -95,6 +97,12 @@ def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch
         return dict(zip(u.tolist(), n.tolist()))
 
     search, fitting = count(gtrain[x_set == 1]), count(gtrain[x_set == 0])
+    variants = None
+    if X_key is not None:
+        X_key = np.asarray(X_key)
+        fit_idx = np.flatnonzero(x_set == 0)
+        first = fit_idx[np.unique(X_key[fit_idx], return_index=True)[1]]
+        variants, fitting = fitting, count(gtrain[first])
     target, conf = count(gtest), count(conf_groups)
     branch = get_X_branch_id_by_group(universe, s_branch)
     branch = np.where(branch == "", "root", branch.astype(str))
@@ -113,6 +121,8 @@ def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch
                "spatial_partition_id": b if n_s >= 1 else "s-1",
                "search_rows": n_s, "fitting_rows": n_f, "target_rows": n_t, "confirmation_rows": n_c,
                "assignment_status": status}
+        if variants is not None:
+            row["fitting_variant_rows"] = variants.get(area, 0)
         if branch_booster is not None and root_booster_sha is not None:
             row["routed_booster_is_root"] = bool(b == "root" or branch_booster.get(b) == root_booster_sha)
         rows.append(row)
@@ -123,12 +133,15 @@ def assignment_evidence(gtrain, x_set, gtest, s_branch, conf_groups=None, branch
 
 
 def run_candidate(name, local, family, root, data, work, checkpoint_dir, contiguity_info, features,
-                  increment_source="parent", confirmation=None, e1="hard_f1"):
+                  increment_source="parent", confirmation=None, e1="hard_f1", X_weight=None, X_key=None,
+                  e2_score=None):
     """One partition search from the shared root; returns the candidate record.
 
     ``confirmation`` (D29/A4 only) = (X, y, groups, months) of the C rows. They are never
     part of ``data``, so GeoRF.fit (E1/q, E2, support, stopping) cannot see them; the
-    candidate is frozen (digest recorded) before C is predicted with predict-only routing."""
+    candidate is frozen (digest recorded) before C is predicted with predict-only routing.
+    ``X_weight``/``X_key`` (interruption scenario roots only, default None): per-row fitting
+    weights and original-key ids aligned with ``data``, forwarded to the partition."""
     Xtrain, ytrain, gtrain, mtrain, x_set, Xtest, ytest, gtest, y_pool = data
     cand_work = work / "georf" / name
     cand_work.mkdir(parents=True)
@@ -142,7 +155,8 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
                   feature_names=features, print_to_file=True, track_partition_metrics=False,
                   VIS_DEBUG_MODE=False, root=root, local_config=plan.L_CONFIGS[local],
                   threshold=plan.THRESHOLD_FAMILIES[family], X_month=mtrain,
-                  increment_source=increment_source, e1=e1)
+                  increment_source=increment_source, e1=e1, X_weight=X_weight, X_key=X_key,
+                  e2_score=e2_score)
         fit_seconds = time.time() - fit_started
         model_dir = Path(model.model_dir).resolve()
     finally:
@@ -219,7 +233,7 @@ def run_candidate(name, local, family, root, data, work, checkpoint_dir, contigu
         or branch_booster.get("root")
     evidence = assignment_evidence(gtrain, x_set, gtest, model.s_branch,
                                    conf_groups=None if confirmation is None else confirmation[2],
-                                   branch_booster=branch_booster, root_booster_sha=root_sha)
+                                   branch_booster=branch_booster, root_booster_sha=root_sha, X_key=X_key)
     evidence.to_csv(out / "assignment_evidence.csv", index=False)
     by_status = evidence.groupby("assignment_status")
     assignment_record = {
@@ -388,9 +402,135 @@ def nx_file_sha(path):
     return file_sha256(path)
 
 
+def scenario_root(frame, ratio, split_seed, horizon, term, work, checkpoint_dir, contiguity_info, features):
+    """Interruption task (10-02 design G4): one scenario Stage 1 root and its L1/gt0 candidate.
+
+    ``frame`` is ``Availability.stage1_input`` for (strategy, H, T, k). The label-blind split
+    runs on ORIGINAL keys (eval rows) before augmentation: fitting keys contribute their
+    strategy variants (weights), validation keys their single designated-k eval row, split
+    again label-blind into search S and diagnostic C (D29). The root is the weighted global G
+    on the fitting variant rows; the candidate continues it once per child (D28). Returns the
+    root record (status, candidates, identities); writes the same files as ``main``."""
+    strategy = str(frame["strategy"].iloc[0])
+    k = int(frame["scenario_k"].iloc[0])
+    if frame["strategy"].nunique() != 1 or frame["scenario_k"].nunique() != 1 or not (frame["horizon"] == horizon).all():
+        raise ValueError("scenario input mixes strategies, scenarios or horizons")
+    if ratio not in plan.SPLIT_RATIOS or split_seed not in plan.SPLIT_SEEDS or horizon not in plan.SCENARIO_HORIZONS:
+        raise ValueError("scenario roots run r80/r50, seeds 42/43/44, H4/H8 only")
+    g_config = plan.SCENARIO_G[horizon]
+    fit_rows_all = frame[frame["role"] == "fit_variant"]
+    keys = frame[frame["role"] == "eval"].sort_values("orig_key").reset_index(drop=True)
+    target = frame[frame["role"] == "target"].reset_index(drop=True)
+    if set(fit_rows_all["orig_key"]) != set(keys["orig_key"]) or keys["orig_key"].duplicated().any():
+        raise ValueError("fitting variants and eval keys disagree")
+    root_name = plan.scenario_root_name(strategy, horizon, term, k, ratio, split_seed)
+    candidate = plan.scenario_candidate_name(strategy, horizon, term, k, ratio, split_seed)
+    if len(target) == 0:
+        # Scheduled identity kept (G4): no genuine E3 target label -> no fit; Stage 2 reads the
+        # status as an ineligible candidate with this reason, never a zero score.
+        out = {"root": root_name, "kind": "interruption_scenario", "strategy": strategy, "scenario_k": k,
+               "horizon": horizon, "target_month": term, "ratio": ratio, "split_seed": split_seed,
+               "status": "no_e3_target_labels", "candidates": [candidate],
+               "reason": "no genuine labelled target rows at T; candidate ineligible for E4 weighting"}
+        write_json("root.json", out)
+        return out
+    origin = pd.Period(term, freq="M") - horizon
+    o_index = int(origin.year * 12 + origin.month - 1)
+    gk, mk = keys["area"].to_numpy(dtype=np.int64), keys["target_month"].to_numpy(dtype=np.int64)
+    if len(keys) and (mk.min() < o_index - plan.WINDOW or mk.max() >= o_index):
+        raise ValueError("scenario keys fall outside [O-59, O)")
+    x_set_key, val_ratio, validation_split = stage1_split(ratio, gk, mk, o_index, split_seed, horizon, term)
+    val_idx = np.flatnonzero(x_set_key == 1)
+    conf_key = np.zeros(len(keys), dtype=bool)
+    conf_key[val_idx[confirmation_split(gk[val_idx], mk[val_idx], plan.CONFIRMATION_SEED) == 1]] = True
+    fit_keys = set(keys.loc[x_set_key == 0, "orig_key"])
+    fit_part = fit_rows_all[fit_rows_all["orig_key"].isin(fit_keys)].sort_values(["orig_key", "variant_k"])
+    search_part = keys[(x_set_key == 1) & ~conf_key]
+    conf_part = keys[conf_key]
+    data_rows = pd.concat([fit_part, search_part], ignore_index=True)
+    x_set = np.r_[np.zeros(len(fit_part), dtype=int), np.ones(len(search_part), dtype=int)]
+    Xtrain = data_rows[features].to_numpy(dtype=float)
+    ytrain = data_rows["class_code"].to_numpy(dtype=np.int64)
+    gtrain = data_rows["area"].to_numpy(dtype=np.int64)
+    mtrain = data_rows["target_month"].to_numpy(dtype=np.int64)
+    weight = data_rows["weight"].to_numpy(dtype=float)
+    key = data_rows["orig_key"].to_numpy(dtype=np.int64)
+    Xtest, ytest = target[features].to_numpy(dtype=float), target["class_code"].to_numpy(dtype=np.int64)
+    gtest = target["area"].to_numpy(dtype=np.int64)
+
+    fit_key_rows = keys[x_set_key == 0]
+    root_support = nx.support(fit_key_rows["class_code"], fit_key_rows["area"], fit_key_rows["target_month"])
+    roles = pd.DataFrame({"area": np.r_[gk, gtest], "target_month": month_label(np.r_[mk, target["target_month"]]),
+                          "role": np.r_[np.where(conf_key, "confirmation", np.where(x_set_key == 1, "validation",
+                                                                                     "fitting")),
+                                        np.full(len(gtest), "heldout_target")],
+                          "class_code": np.r_[keys["class_code"], ytest]})
+    with gzip.open("fold_membership.csv.gz", "wt", encoding="utf-8", newline="") as handle:
+        roles.to_csv(handle, index=False)
+    w_fit = weight[x_set == 0]
+    base = {"root": root_name, "kind": "interruption_scenario", "strategy": strategy, "scenario_k": k,
+            "horizon": horizon, "target_month": term, "origin_month": str(origin), "g_config": g_config,
+            "ratio": ratio, "val_ratio": val_ratio, "split_seed": split_seed, "increment_source": "root",
+            "confirmation_seed": plan.CONFIRMATION_SEED, "model_seed": plan.XGB_BASE["seed"],
+            "original_keys": {"fitting": int((x_set_key == 0).sum()), "search_S": int(len(search_part)),
+                              "confirmation_C": int(conf_key.sum()), "heldout_target": int(len(target))},
+            "fitting_rows_with_variants": int(len(fit_part)),
+            "root_support": root_support, "validation_split": validation_split,
+            "fitting_keys_sha256": nx.keys_sha(fit_key_rows["area"], fit_key_rows["target_month"]),
+            "search_keys_sha256": nx.keys_sha(search_part["area"], search_part["target_month"]),
+            "confirmation_keys_sha256": nx.keys_sha(conf_part["area"], conf_part["target_month"])}
+    if root_support["classes"] < 2:
+        write_json("root.json", {**base, "status": "root_insufficient_support", "candidates": [candidate]})
+        return {**base, "status": "root_insufficient_support", "candidates": [candidate]}
+    unit = bool(np.all(w_fit == 1.0))
+    booster, record = nx.fit_global(Xtrain[x_set == 0], ytrain[x_set == 0], plan.G_CONFIGS[g_config],
+                                    sample_weight=None if unit else w_fit)
+    record.update(fit_keys_sha256=base["fitting_keys_sha256"], fit_support=root_support)
+    y_pool = fourclass.argmax_codes(nx.proba(booster, Xtest))
+    confirmation = (conf_part[features].to_numpy(dtype=float), conf_part["class_code"].to_numpy(dtype=np.int64),
+                    conf_part["area"].to_numpy(dtype=np.int64), conf_part["target_month"].to_numpy(dtype=np.int64))
+    data = (Xtrain, ytrain, gtrain, mtrain, x_set, Xtest, ytest, gtest, y_pool)
+    cand = run_candidate(candidate, plan.SCENARIO_LOCAL, plan.SCENARIO_FAMILY, (booster, record), data, work,
+                         checkpoint_dir, contiguity_info, features, increment_source="root",
+                         confirmation=confirmation, X_weight=None if unit else weight, X_key=key,
+                         e2_score=fourclass.crisis_f1_exact_or_none)
+    out = {**base, "status": "completed", "candidates": [candidate], "root_fit": record,
+           "root_booster_sha256": record["booster_sha256"], "candidate_record": cand["candidate"]}
+    write_json("root.json", out)
+    return out
+
+
+def scenario_main(args) -> int:
+    """CLI wrapper of ``scenario_root``: validates the frozen scenario identity, then runs it."""
+    horizon = forecasting_scope_to_lag(args.forecasting_scope, LAGS_MONTHS)
+    term = str(pd.Period(args.desired_terms, freq="M"))
+    if term not in plan.STAGE1_TARGETS or term > PARTITION_INFO_CUTOFF:
+        raise ValueError(f"{term} is not a frozen Stage 1 candidate target")
+    if (args.increment_source != "root" or args.g_config != plan.SCENARIO_G.get(horizon) or args.confirmation_split
+            or args.e1_pair or args.recent_search or args.matched_size_seed is not None or args.data is not None):
+        raise ValueError("scenario roots use the locked G, root increments and their own S/C split only")
+    frame = pd.read_parquet(args.scenario_input)
+    schema_order = load_schema(Path(args.schema))["ordered_features"]
+    pinned = Path(args.scenario_input).parent / "features.json"
+    features = json.loads(pinned.read_text(encoding="utf-8"))["ordered_features"]
+    if [c for c in schema_order if c in features] != features:
+        raise ValueError("pinned scenario features are not an ordered subset of the frozen schema")
+    present = [c for c in frame.columns if c in schema_order]
+    if present != features:
+        raise ValueError("scenario input columns differ from the pinned ordered feature list")
+    with open(Path(args.geometry_dir) / "polygon_contiguity_info.pkl", "rb") as handle:
+        contiguity_info = pickle.load(handle)
+    scenario_root(frame, args.ratio, args.split_seed, horizon, term, Path.cwd(), args.checkpoint_dir,
+                  contiguity_info, features)
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--data", required=True, help="snapshot_h{H}.parquet for this scope")
+    parser.add_argument("--data", default=None, help="snapshot_h{H}.parquet for this scope (all frozen modes)")
+    parser.add_argument("--scenario-input", default=None,
+                        help="interruption task: Availability.stage1_input parquet of one (strategy, H, T, k) root; "
+                             "replaces --data and runs the single L1/gt0 shared-root candidate with the S/C split")
     parser.add_argument("--geometry-dir", required=True)
     parser.add_argument("--schema", required=True)
     parser.add_argument("--forecasting_scope", type=int, choices=(1, 2, 3), required=True)
@@ -415,6 +555,10 @@ def main():
                         help="D31/A6 matchedsize: per-area matched-size search drawn label-blind from all original "
                              "S dates with this search seed (101/102/103; requires --confirmation-split)")
     args = parser.parse_args()
+    if args.scenario_input is not None:
+        return scenario_main(args)
+    if args.data is None:
+        raise ValueError("--data is required outside --scenario-input")
     matched = args.matched_size_seed is not None
     if args.e1_pair and (not args.confirmation_split or args.recent_search or matched):
         raise ValueError("--e1-pair runs only with --confirmation-split, without recent/matched search (A9)")

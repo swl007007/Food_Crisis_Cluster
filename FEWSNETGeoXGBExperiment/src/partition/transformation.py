@@ -221,9 +221,23 @@ def partition(model, X, y,
   path_cap = paras.get('path_round_cap')
   if X_month is None or threshold is None or fit_floor is None or val_floor is None or path_cap is None:
     raise ValueError('partition() requires X_month, threshold, fit_support, val_support, path_round_cap')
+  # Interruption task (G4): optional per-row fitting weights (strategy B variants at w/3) and
+  # original-key ids; support then counts ORIGINAL keys, never variant copies. None = unchanged.
+  X_weight = paras.get('X_weight')
+  X_key = paras.get('X_key')
+  if X_weight is not None:
+    X_weight = np.asarray(X_weight, dtype=float)
+    if X_weight.shape != (len(y),):
+      raise ValueError('X_weight must have one weight per row')
+  if X_key is not None:
+    X_key = np.asarray(X_key)
+    if X_key.shape != (len(y),):
+      raise ValueError('X_key must have one original-key id per row')
   local_rounds = int(model.local_config['rounds'])
   # D34/A9: the E1 search signal; hard_f1 (default) is the unchanged D26 crisis-F1 mass.
   e1 = paras.get('e1', 'hard_f1') or 'hard_f1'
+  # Interruption task (G4): optional E2 scorer returning None for an undefined metric.
+  e2_score = paras.get('e2_score') or fourclass.endpoint_exact
   if e1 not in E1_VARIANTS:
     raise ValueError(f'unknown E1 variant {e1!r}; expected one of {E1_VARIANTS}')
   partition.scan_diagnostics = {}
@@ -795,8 +809,11 @@ def partition(model, X, y,
       # it offers only the parent route (its validation rows still count).
       from src.model.native_xgb import keys_sha, meets, support
       ids = get_branch_X_id(X_id, train_list, val_list, s0_train, s1_train, s0_val, s1_val)
-      fit_sup = [support(y[r], X_group[r], X_month[r]) for r in ids[:2]]
-      val_sup = [support(y[r], X_group[r], X_month[r]) for r in ids[2:]]
+      def original(r):  # one row per original key (first occurrence) when variants are present
+        r = np.asarray(r, dtype=np.int64)
+        return r if X_key is None else r[np.unique(X_key[r], return_index=True)[1]]
+      fit_sup = [support(y[o], X_group[o], X_month[o]) for o in map(original, ids[:2])]
+      val_sup = [support(y[o], X_group[o], X_month[o]) for o in map(original, ids[2:])]
       parent_rounds = model.path_rounds(branch_id)
       within_cap = parent_rounds + local_rounds <= path_cap
       eligible = tuple(bool(within_cap and meets(fit_sup[k], fit_floor) and meets(val_sup[k], val_floor))
@@ -822,14 +839,16 @@ def partition(model, X, y,
       print("Training new branches...")#i and j splits are not used in train_and_eval_two_branch()
       y0_pred, y1_pred = train_and_eval_two_branch(model, X0_train, y0_train, X0_val,
                                                   X1_train, y1_train, X1_val, branch_id,
-                                                  fit=eligible, meta=meta)
+                                                  fit=eligible, meta=meta,
+                                                  weights=(None, None) if X_weight is None else
+                                                  (X_weight[ids[0]], X_weight[ids[1]]))
 
       if macro_mode:
         parent0 = base_eval_using_merged_branch_data(model, X0_val, branch_id)
         parent1 = base_eval_using_merged_branch_data(model, X1_val, branch_id)
         accepted, selected, predictions, base_f1, split_f1, scores = select_macro_children(
             y0_val, y1_val, parent0, parent1, y0_pred, y1_pred,
-            min_improvement=threshold, eligible=eligible, score=fourclass.endpoint_exact,
+            min_improvement=threshold, eligible=eligible, score=e2_score,
         )
         sig = int(accepted)
         import pandas as _pd  # partition() rebinds pd locally further down
@@ -849,19 +868,26 @@ def partition(model, X, y,
           y0_pred, y1_pred = predictions
         else:
           y0_pred, y1_pred = parent0, parent1
+        undefined = base_f1 is None   # G4: an undefined parent metric is never exported as a score
         partition.decisions.append({
           'branch_id': branch_id, 'depth': len(branch_id),
-          'outcome': 'accepted' if accepted else 'rejected_gate',
-          'parent_macro_f1': str(base_f1), 'best_macro_f1': str(split_f1),
-          'gain': str(split_f1 - base_f1),
-          'scores': {key: str(value) for key, value in scores.items()},
+          'outcome': 'rejected_undefined_parent_metric' if undefined else ('accepted' if accepted else 'rejected_gate'),
+          'parent_macro_f1': None if undefined else str(base_f1),
+          'best_macro_f1': None if undefined else str(split_f1),
+          'gain': None if undefined else str(split_f1 - base_f1),
+          **({'metric_undefined': 'parent: 2TP + FP + FN = 0 on the complete parent validation keys'}
+             if undefined else {}),
+          'scores': {key: None if value is None else str(value) for key, value in scores.items()},
           'selected_children': [bool(v) for v in selected] if accepted else [False, False],
           'n_groups': [int(len(s0_group)), int(len(s1_group))],
           'rows_train': [int(len(y0_train)), int(len(y1_train))],
           'rows_val': [int(len(y0_val)), int(len(y1_val))],
           'threshold': str(threshold), 'endpoint': ENDPOINT_NAME, **support_record,
         })
-        print(f"Macro-F1 performance gate: parent={float(base_f1):.6f}, candidate={float(split_f1):.6f}, accepted={bool(sig)}")
+        if undefined:
+          print(f"E2 gate: parent metric undefined; split rejected")
+        else:
+          print(f"Macro-F1 performance gate: parent={float(base_f1):.6f}, candidate={float(split_f1):.6f}, accepted={bool(sig)}")
       else:
         sig = 1
         #test only if a new split will give a depth > MIN_DEPTH

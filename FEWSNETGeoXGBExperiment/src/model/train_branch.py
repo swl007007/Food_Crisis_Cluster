@@ -30,19 +30,22 @@ def train_and_eval_using_merged_branch_data(model, X_train, y_train, X_val,
 
 def train_and_eval_two_branch(model, X0_train, y0_train, X0_val,
                               X1_train, y1_train, X1_val,
-                              branch_id, fit=(True, True), meta=(None, None)):
+                              branch_id, fit=(True, True), meta=(None, None), weights=(None, None)):
   '''
   This is for the scenario with split. Each child continues the parent checkpoint;
   a side with fit=False is NOT fitted: it stores the parent's exact checkpoint and
-  returns the parent's predictions (support or path-round fallback).
+  returns the parent's predictions (support or path-round fallback). ``weights`` (per side,
+  default None) are forwarded as the child's row ``sample_weight`` only when given.
   '''
   predictions = []
-  for suffix, X_train, y_train, X_val, do_fit, info in (
-      ('0', X0_train, y0_train, X0_val, fit[0], meta[0]),
-      ('1', X1_train, y1_train, X1_val, fit[1], meta[1])):
+  for suffix, X_train, y_train, X_val, do_fit, info, w in (
+      ('0', X0_train, y0_train, X0_val, fit[0], meta[0], weights[0]),
+      ('1', X1_train, y1_train, X1_val, fit[1], meta[1], weights[1])):
     print(f"Training branch {suffix}:" if do_fit else f"Branch {suffix}: inherits parent (not fitted)")
     model.load(branch_id)
-    if do_fit:
+    if do_fit and w is not None:
+      model.train(X_train, y_train, branch_id, meta=info, sample_weight=w)
+    elif do_fit:
       model.train(X_train, y_train, branch_id, meta=info)
     predictions.append(model.predict(X_val))
     model.save(branch_id + suffix)
