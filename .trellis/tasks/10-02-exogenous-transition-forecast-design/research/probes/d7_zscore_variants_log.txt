@@ -1,0 +1,26 @@
+## pinned: rows=1029240 admins=5718 dates=2010-01-01..2024-12-01
+Tair_zscore   globalroll_then_admin_fullsample_z     n=  997920 match=1.0000 maxabs=8.12e-11 match_first11=1.0000 match_interior=1.0000
+Tair_zscore   adminroll_then_admin_fullsample_z      n=  923400 match=0.0002 maxabs=14.4 match_first11=0.0002 match_interior=0.0002
+Tair_zscore   admin_rolling12_z_incl_current         n=  915976 match=0.0000 maxabs=6.83 match_first11=0.0000 match_interior=0.0000
+Tair_zscore   admin_rolling12_z_prior_only           n=  910907 match=0.0000 maxabs=inf match_first11=0.0000 match_interior=0.0000
+Tair_zscore   global_rolling12_z_incl_current        n= 1013593 match=0.0000 maxabs=inf match_first11=0.0000 match_interior=0.0000
+Tair_zscore stored nonnull=1028700 null=540
+Rainf_zscore  globalroll_then_admin_fullsample_z     n= 1002960 match=0.9944 maxabs=inf match_first11=0.9944 match_interior=0.9944
+Rainf_zscore  adminroll_then_admin_fullsample_z      n=  935100 match=0.0002 maxabs=inf match_first11=0.0002 match_interior=0.0002
+Rainf_zscore  admin_rolling12_z_incl_current         n=  912875 match=0.0000 maxabs=7.99 match_first11=0.0000 match_interior=0.0000
+Rainf_zscore  admin_rolling12_z_prior_only           n=  908357 match=0.0000 maxabs=inf match_first11=0.0000 match_interior=0.0000
+Rainf_zscore  global_rolling12_z_incl_current        n=  960817 match=0.0000 maxabs=inf match_first11=0.0000 match_interior=0.0000
+Rainf_zscore stored nonnull=1028160 null=1080
+## normv1: rows=1120728 admins=5718 dates=2010-01-01..2026-04-01
+Tair_zscore   globalroll_then_admin_fullsample_z     n= 1120728 match=1.0000 maxabs=1.78e-15 match_first11=1.0000 match_interior=1.0000
+Tair_zscore   adminroll_then_admin_fullsample_z      n= 1120728 match=0.0002 maxabs=16.5 match_first11=0.0002 match_interior=0.0002
+Tair_zscore   admin_rolling12_z_incl_current         n= 1005429 match=0.0000 maxabs=7.34 match_first11=0.0000 match_interior=0.0000
+Tair_zscore   admin_rolling12_z_prior_only           n= 1000767 match=0.0000 maxabs=inf match_first11=0.0000 match_interior=0.0000
+Tair_zscore   global_rolling12_z_incl_current        n= 1093748 match=0.0000 maxabs=10.4 match_first11=0.0000 match_interior=0.0000
+Tair_zscore stored nonnull=1120728 null=0
+Rainf_zscore  globalroll_then_admin_fullsample_z     n= 1119748 match=1.0000 maxabs=1.78e-15 match_first11=1.0000 match_interior=1.0000
+Rainf_zscore  adminroll_then_admin_fullsample_z      n= 1117592 match=0.0002 maxabs=13.5 match_first11=0.0002 match_interior=0.0002
+Rainf_zscore  admin_rolling12_z_incl_current         n= 1001097 match=0.0000 maxabs=8.97 match_first11=0.0000 match_interior=0.0000
+Rainf_zscore  admin_rolling12_z_prior_only           n=  997181 match=0.0000 maxabs=inf match_first11=0.0000 match_interior=0.0000
+Rainf_zscore  global_rolling12_z_incl_current        n= 1044187 match=0.0000 maxabs=10.5 match_first11=0.0000 match_interior=0.0000
+Rainf_zscore stored nonnull=1119748 null=980

@@ -12,7 +12,9 @@ record stores the booster's resolved ``save_config()``.
 
 Input contract (D14): dense float matrices, +/-inf -> NaN, NaN passed to XGBoost as
 missing; no imputer, no pseudo rows, no sample or class weights. Optional diagnostic inputs
-default to None (unchanged path): D37 row ``sample_weight`` and D38 per-row (n, 4) float32
+default to None (unchanged path): D37 row ``sample_weight`` (``fit_global``, and
+``continue_booster``/``XGBmodel.train`` for the interruption-augmentation weights of the
+appended rounds) and D38 per-row (n, 4) float32
 ``base_margin``; a margin-trained booster carries the ``MARGIN_ATTR`` marker, ``proba`` then
 requires the same per-row margin, and ``continue_booster`` refuses it as a parent.
 """
@@ -208,8 +210,12 @@ def fit_global(X, y, config: dict, sample_weight=None, base_margin=None) -> tupl
     return booster, record
 
 
-def continue_booster(parent: xgb.Booster, X, y, config: dict) -> tuple[xgb.Booster, dict]:
-    """Append ``config['rounds']`` rounds to an immutable parent (default process_type)."""
+def continue_booster(parent: xgb.Booster, X, y, config: dict, sample_weight=None) -> tuple[xgb.Booster, dict]:
+    """Append ``config['rounds']`` rounds to an immutable parent (default process_type).
+
+    ``sample_weight`` (default None = unchanged behaviour and record): validated row weights for
+    the appended rounds only, e.g. the interruption-augmentation w/3 variants; passed to XGBoost
+    as float32 and recorded in a ``sample_weight`` block. The parent prefix is never refitted."""
     if is_margin_marked(parent):
         raise ValueError("continuation of a per-row base-margin booster is not supported (D38)")
     params, rounds = booster_params(config)
@@ -218,9 +224,13 @@ def continue_booster(parent: xgb.Booster, X, y, config: dict) -> tuple[xgb.Boost
     y = np.asarray(y, dtype=np.int64)
     if len(y) == 0:
         raise ValueError("empty fitting pool")
+    w32 = None if sample_weight is None else check_sample_weight(sample_weight, len(y))
     before = raw(parent)
     n0 = parent.num_boosted_rounds()
-    child = xgb.train(params, dmatrix(X, y), num_boost_round=rounds, xgb_model=parent)
+    dm = dmatrix(X, y)
+    if w32 is not None:
+        dm.set_weight(w32)
+    child = xgb.train(params, dm, num_boost_round=rounds, xgb_model=parent)
     probe = np.asarray(X)[:PROBE_ROWS]
     problems = []
     if raw(parent) != before:
@@ -242,18 +252,21 @@ def continue_booster(parent: xgb.Booster, X, y, config: dict) -> tuple[xgb.Boost
         problems.append("child prefix does not reproduce the parent margins")
     if problems:
         raise RuntimeError(f"frozen-prefix continuation violated: {problems}")
-    return child, {"kind": "continuation", "parent_sha256": parent_sha,
-                   "parent_rounds": n0, "rounds_added": rounds, "rounds_total": n0 + rounds,
-                   "params": params, "resolved_config": resolved_config(child),
-                   "base_score": base_score(child), "rows": int(len(y)),
-                   "class_counts": [int(np.sum(y == k)) for k in range(N_CLASSES)],
-                   "parent_structure_sha256": parent_prefix["sha256"],
-                   "child_prefix_structure_sha256": child_prefix["sha256"],
-                   "structure_sha256": prefix_identity(child)["sha256"],
-                   "prefix_check": (f"serialized trees/tree_info/base_score of the first {n0} rounds "
-                                    f"equal the parent's; parent bytes unchanged; prefix margins equal "
-                                    f"on {len(probe)} fitting rows"),
-                   "booster_sha256": sha(child)}
+    record = {"kind": "continuation", "parent_sha256": parent_sha,
+              "parent_rounds": n0, "rounds_added": rounds, "rounds_total": n0 + rounds,
+              "params": params, "resolved_config": resolved_config(child),
+              "base_score": base_score(child), "rows": int(len(y)),
+              "class_counts": [int(np.sum(y == k)) for k in range(N_CLASSES)],
+              "parent_structure_sha256": parent_prefix["sha256"],
+              "child_prefix_structure_sha256": child_prefix["sha256"],
+              "structure_sha256": prefix_identity(child)["sha256"],
+              "prefix_check": (f"serialized trees/tree_info/base_score of the first {n0} rounds "
+                               f"equal the parent's; parent bytes unchanged; prefix margins equal "
+                               f"on {len(probe)} fitting rows"),
+              "booster_sha256": sha(child)}
+    if w32 is not None:
+        record["sample_weight"] = weight_record(w32)
+    return child, record
 
 
 def support(y, areas, months) -> dict:
@@ -322,7 +335,8 @@ class XGBmodel:
         self.fit_log.append(dict(self.fit_record, saved_as=None))
         self.save("")
 
-    def train(self, X, y, branch_id, meta=None):
+    def train(self, X, y, branch_id, meta=None, sample_weight=None):
+        """``sample_weight`` (default None = unchanged) is forwarded to ``continue_booster``."""
         if self.booster is None or self.fit_record is None:
             raise RuntimeError("no parent loaded: Stage 1 children are continuations only")
         parent = self.fit_record
@@ -332,7 +346,8 @@ class XGBmodel:
             # D28 / A3: every new child continues the SHARED ROOT once; the current parent
             # stays the E1/E2 comparison and the fallback, but its increment is not inherited.
             root_payload, root_record = self._root
-            child, record = continue_booster(from_raw(root_payload), X, y, self.local_config)
+            child, record = continue_booster(from_raw(root_payload), X, y, self.local_config,
+                                             sample_weight=sample_weight)
             self.booster = child
             self.fit_record = {**record, "trained_under": branch_id or "",
                                "path_rounds_added": record["rounds_added"],
@@ -344,7 +359,7 @@ class XGBmodel:
                                **(meta or {})}
             self.fit_log.append(dict(self.fit_record))
             return
-        child, record = continue_booster(self.booster, X, y, self.local_config)
+        child, record = continue_booster(self.booster, X, y, self.local_config, sample_weight=sample_weight)
         self.booster = child
         self.fit_record = {**record, "trained_under": branch_id or "",
                            "path_rounds_added": parent["path_rounds_added"] + record["rounds_added"],

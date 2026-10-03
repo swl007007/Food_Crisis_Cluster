@@ -3020,6 +3020,80 @@ class StumpRoot(unittest.TestCase):
         self.assertEqual(st.plan_defaults(), snap)
 
 
+class WeightedContinuation(unittest.TestCase):
+    """Interruption-augmentation weights through the local continuation; synthetic rows only."""
+
+    def setUp(self):
+        self.X, self.y = synthetic(n=600, seed=5)
+        self.root, self.root_rec = nx.fit_global(self.X, self.y, SMALL_G['G1'])
+        self.sub = np.arange(0, 600, 2)
+        self.w = np.tile([1 / 3, 1 / 3, 1 / 3, 1.0, 0.5, 2.0], 50)  # nonuniform, length 300
+
+    def _reference(self, weight=None):
+        params, rounds = nx.booster_params(plan.L_CONFIGS['L1'])
+        dm = xgb.DMatrix(nx.clean(self.X[self.sub]), label=self.y[self.sub], missing=np.nan, nthread=4)
+        if weight is not None:
+            dm.set_weight(np.asarray(weight, dtype=np.float32))
+        return xgb.train(params, dm, num_boost_round=rounds, xgb_model=nx.from_raw(nx.raw(self.root)))
+
+    def test_default_call_is_backward_compatible(self):
+        child, rec = nx.continue_booster(self.root, self.X[self.sub], self.y[self.sub], plan.L_CONFIGS['L1'])
+        self.assertNotIn('sample_weight', rec)
+        self.assertEqual(set(rec), {"kind", "parent_sha256", "parent_rounds", "rounds_added", "rounds_total",
+                                    "params", "resolved_config", "base_score", "rows", "class_counts",
+                                    "parent_structure_sha256", "child_prefix_structure_sha256",
+                                    "structure_sha256", "prefix_check", "booster_sha256"})
+        self.assertEqual(nx.raw(child), nx.raw(self._reference()))
+
+    def test_nonuniform_weights_match_direct_reference_and_keep_prefix(self):
+        before = nx.raw(self.root)
+        child, rec = nx.continue_booster(self.root, self.X[self.sub], self.y[self.sub], plan.L_CONFIGS['L1'],
+                                         sample_weight=self.w)
+        self.assertEqual(nx.raw(self.root), before)                          # parent bytes unchanged
+        self.assertEqual(nx.raw(child), nx.raw(self._reference(self.w)))     # direct xgb.train reference
+        unweighted, _ = nx.continue_booster(self.root, self.X[self.sub], self.y[self.sub], plan.L_CONFIGS['L1'])
+        self.assertNotEqual(nx.raw(child), nx.raw(unweighted))
+        n0 = self.root.num_boosted_rounds()
+        self.assertEqual(rec['child_prefix_structure_sha256'], self.root_rec['structure_sha256'])
+        self.assertEqual(nx.prefix_identity(child, n0)['sha256'], nx.prefix_identity(self.root)['sha256'])
+        np.testing.assert_array_equal(
+            child.predict(nx.dmatrix(self.X), output_margin=True, iteration_range=(0, n0)),
+            self.root.predict(nx.dmatrix(self.X), output_margin=True))
+        w32 = self.w.astype(np.float32)
+        self.assertEqual(rec['sample_weight']['dtype'], 'float32')
+        self.assertEqual(rec['sample_weight']['n'], 300)
+        self.assertEqual(rec['sample_weight']['sha256'], hashlib.sha256(w32.tobytes()).hexdigest())
+        self.assertAlmostEqual(rec['sample_weight']['sum'], float(w32.astype(np.float64).sum()))
+        self.assertEqual(rec['rows'], 300)                                    # rows, not weighted support
+
+    def test_malformed_weights_are_rejected_before_fitting(self):
+        before = nx.raw(self.root)
+        for bad in (np.ones(299), np.ones((300, 1)), np.r_[np.ones(299), np.nan], np.r_[np.ones(299), 0.0],
+                    np.r_[np.ones(299), -1.0], np.r_[np.ones(299), np.inf], np.r_[np.ones(299), 1e300]):
+            with self.assertRaises(ValueError):
+                nx.continue_booster(self.root, self.X[self.sub], self.y[self.sub], plan.L_CONFIGS['L1'],
+                                    sample_weight=bad)
+        self.assertEqual(nx.raw(self.root), before)
+
+    def test_xgbmodel_train_forwards_weights_in_root_and_parent_modes(self):
+        weighted, _ = nx.continue_booster(self.root, self.X[self.sub], self.y[self.sub], plan.L_CONFIGS['L1'],
+                                          sample_weight=self.w)
+        plain, _ = nx.continue_booster(self.root, self.X[self.sub], self.y[self.sub], plan.L_CONFIGS['L1'])
+        for source in nx.INCREMENT_SOURCES:
+            with tempfile.TemporaryDirectory() as tmp:
+                model = nx.XGBmodel(tmp, plan.L_CONFIGS['L1'], increment_source=source)
+                model.set_root(nx.from_raw(nx.raw(self.root)), self.root_rec)
+                model.load('')
+                model.train(self.X[self.sub], self.y[self.sub], '', sample_weight=self.w)
+                self.assertEqual(nx.raw(model.booster), nx.raw(weighted), source)
+                self.assertEqual(model.fit_record['sample_weight']['n'], 300)
+                model.load('')
+                model.train(self.X[self.sub], self.y[self.sub], '')                 # default unchanged
+                self.assertEqual(nx.raw(model.booster), nx.raw(plain), source)
+                self.assertNotIn('sample_weight', model.fit_record)
+                self.assertEqual(nx.raw(nx.from_raw(model._store[''][0])), nx.raw(self.root))  # root intact
+
+
 class CommittedCode(unittest.TestCase):
     def test_schema_is_committed_and_identity_matches_git(self):
         import subprocess

@@ -99,3 +99,25 @@ Validation found design.md exceeded Trellis's32,768-byte per-file injection limi
 Final planning verification: PRD re-read after convergence; original PRD file:line anchors preserved. task.py validate passes both8-entry context manifests without truncation warnings; JSON/path/size and finite-schedule arithmetic checks pass; git diff --check passes. Live task.json confirms planning and execution_authorized=false. Final summary is presented for subsequent user approval; data readiness and scientific performance remain unverified.
 
 2026-10-02: User explicitly approved the complete final summary with “ok implement”. Execution scope is now authorised, conditional on audit start and D7 pre-fit readiness. No extra planning confirmation required. Preparing plan commit and freshly verified Claude executor; status remains planning until the bound executor starts through trellis-audit.
+
+2026-10-02 (execution, Claude executor; audit run 5c4dede7bc6e44f0835fbde1ad2f473d, base e8436827): Started the run with `trellis-audit --repo <exact path> start`; task status in_progress, verified by Codex. Completed a bounded D7 data-readiness pass using metadata/provenance only (`data-readiness.md`; evidence in `research/d7-*.md` and `research/probes/`). No product code, fits, scores or 2025+ IPC value columns were touched.
+- PASS: frozen Windows environment (all pinned packages; xgboost.dll hash equals the prior runs); pinned source hashes; historical admin keys.
+- BLOCKED for real fitting: (1) no defensible historical IPC CS release rule, because FDW timestamps are database events and the M+1/M+2 proposals are not adopted; this leaves cycle masks, gate dates, the historical calendar, IPC-derived features and ordinary persistence undefined; (2) the October 2025 truth crosswalk is a name join with 1,093 of 5,573 October 2025 CS rows unmatched (only DRC wholly; Ethiopia 645/1,141; corrected after Codex recount — earlier figures mixed in 2026 rows), and FEWS_2025.csv zero-fills unmatched crisis flags; this blocks the dependent 2025 keys only.
+- Findings: the climate z-scores in both the pinned and 2025 panels come from a cross-admin rolling window plus full-sample standardisation (producer `assemble_latest_FEWSNET/02_preprocess_and_combine.ipynb` cells 16–17; reproduction match 1.0000, except pinned Rainf 0.9944 because of ±inf rows), so they are excluded. Covariates: 54 candidates and 30 excluded; none certified pending URL/lineage records and schema approval. Provisional pre-mask fit bound ≤147,889 (keys-only N ≤ 5,714). The raw ML1/ML2 validity windows vs the legacy expert join are unresolved.
+- Change boundary recorded, including Codex's GlobalStore memo-key and unlabelled-target traps.
+- Not implemented: no scenario/A-B pipeline, release ledger, masks, weighted continuation or crisis-F1 gate exists in code yet.
+
+2026-10-02 (engineering slice 1; Codex-authorised; uncommitted): `FEWSNETGeoXGBExperiment/src/model/native_xgb.py`.
+- `continue_booster(..., sample_weight=None)` validates weights with the existing `check_sample_weight`, applies them only to the appended rounds, and adds a `weight_record` block only when weights are given.
+- `XGBmodel.train(..., sample_weight=None)` forwards them in both root and parent increment modes.
+- Defaults are byte-identical to before.
+- New `tests/test_baseline.py::WeightedContinuation` (4 tests, synthetic rows only):
+  - the default record and bytes equal a direct `xgb.train` continuation;
+  - nonuniform weights equal a direct weighted `xgb.train` reference, while parent bytes, prefix structure and prefix margins stay unchanged;
+  - malformed weights (length, shape, NaN, 0, negative, inf, float32 overflow) raise before fitting;
+  - `XGBmodel.train` forwards weights in both modes.
+- Frozen Windows Python 3.12.10: pre-edit focused baseline 18/18 OK; post-edit focused 22/22 OK; full suite 120/120 OK.
+- GitNexus `impact` and `detect_changes` failed with the known LadybugDB shadow-page error; callers were inspected directly: `stage3.fit_local`, `stage1_global_increment.py`, `stage1_map_transfer.py`, `XGBmodel.train`; risk low, additive keyword.
+- Still missing end to end: `stage3.fit_local`/global-store weight forwarding and weight-aware cache identity; original-key support counting; release-eligibility ledger and cycle masks; scenario/B-variant construction; the crisis-F1 Stage 3 gate; the new 648/72 schedules; the prediction cohort for unlabelled targets. The A/B pipeline is **not** implemented, and no real data has been run.
+
+2026-10-02 (Codex review): inspected the weighted-continuation diff and independently ran frozen Windows Python `tests/test_baseline.py WeightedContinuation`:4/4 PASS. The dotted `-m unittest tests.test_baseline.WeightedContinuation` invocation failed because tests is not an importable package; direct script invocation is the working command. No real data/final values used in these checks. Authorised the next finite synthetic engineering slice: release/cycle-aware feature construction and grouped A/B fitting views. Real fitting remains blocked by D7; task stays in_progress.

@@ -48,6 +48,8 @@ Status: **approved for execution**, 2026-10-02. User approved the complete final
 - [ ] Implement A/B training with grouped variants and conserved fitting weight through both global fitting and local continuation; current continuation lacks a weight argument. Compute support from original keys, not expanded arrays. Reuse the existing global weight validation where applicable.
 - [ ] Select the existing shared-root increment mode explicitly; preserve root-prefix invariance and separate routing parent from the model prefix. Align Stage3 local gate from legacy macro-F1 to crisis F1, requiring gain strictly >0.01 versus fold-global and genuine support, otherwise global fallback.
 - [ ] Reuse keyed prediction/reporting infrastructure for matched ordinary/prolonged persistence and available experts, Study2 subsets, coverage and country supplements.
+- [ ] Bind both in-memory and disk global/model caches to the lawful input, strategy, scenario, outer exclusion, fitting-key and weight identities. The current GlobalStore memo key (H, origin, G) is insufficient across scenarios.
+- [ ] Separate forecast keys from evaluator truth so June targets without genuine labels still receive predictions; never fabricate class codes to satisfy the current labelled-only Panel/run_fold interface.
 
 ## 5. Verify before real runs
 
@@ -63,6 +65,7 @@ Status: **approved for execution**, 2026-10-02. User approved the complete final
 - [ ] Stage2 check: matched candidate/root E3 crisis F1 feeds the inherited clipped-logit transform; legitimate NA, valid zero weight and absent/corrupt artifacts retain distinct outcomes; no positive weight yields the specified global fallback.
 - [ ] Local gate check: crisis-F1 gain exactly 0.01 does not enable a local; gain >0.01 enables only with adequate original-key support and lawful matched historical gate rows.
 - [ ] Reconcile saved predictions with scenario/study counts and comparator coverage. Run relevant existing regression checks for the modules actually changed; no speculative test framework.
+- [ ] Cache-isolation check: changing strategy/scenario/outer masks cannot return a previously memoized model with incompatible inputs. Forecast-only check: target keys lacking truth produce predictions and coverage, with no accuracy metric or hidden truth dependency.
 
 ## 6. Run in the approved order
 

@@ -1,0 +1,91 @@
+pinned_panel {'rows': 1029240, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 0, 'distinct_key': 1029240, 'n_months': 180, 'first_ym': '2010-01', 'last_ym': '2024-12', 'rows_per_month_distinct': [5718]}
+FEWSNET.csv {'rows': 302949, 'null_id': 1, 'distinct_id': 5716, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 0, 'distinct_key': 302949, 'n_months': 53, 'first_ym': '2009-07', 'last_ym': '2024-10', 'rows_per_month_distinct': [5716]}
+panel_2025 {'rows': 91490, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 4, 'distinct_key': 91488, 'n_months': 16, 'first_ym': '2025-01', 'last_ym': '2026-04', 'rows_per_month_distinct': [5718, 5719]}
+panel_2025_combined {'rows': 1120730, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 4, 'distinct_key': 1120728, 'n_months': 196, 'first_ym': '2010-01', 'last_ym': '2026-04', 'rows_per_month_distinct': [5718, 5719]}
+panel_2025_combined_normv1 {'rows': 1120728, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 0, 'distinct_key': 1120728, 'n_months': 196, 'first_ym': '2010-01', 'last_ym': '2026-04', 'rows_per_month_distinct': [5718]}
+FEWS_2025.csv {'rows': 10086, 'null_id': 1, 'distinct_id': 5716, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 6, 'distinct_key': 10083, 'n_months': 3, 'first_ym': '2025-10', 'last_ym': '<NA>', 'rows_per_month_distinct': [1238, 4367, 4481]}
+FEWS_scaffold {'rows': 1029240, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_key_rows': 0, 'distinct_key': 1029240, 'n_months': 180, 'first_ym': '2010-01', 'last_ym': '2024-12', 'rows_per_month_distinct': [5718]}
+coords {'rows': 5718, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_id_rows': 0}
+geoidentifier {'rows': 5718, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_id_rows': 0}
+scaffold_fixed {'rows': 5718, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_id_rows': 0}
+shapefile_dbf {'rows': 5718, 'null_id': 0, 'distinct_id': 5718, 'id_min': 0, 'id_max': 5717, 'dup_id_rows': 0}
+MONTHS FEWSNET.csv {'2009-07': 5716, '2009-10': 5716, '2010-01': 5716, '2010-04': 5716, '2010-07': 5716, '2010-10': 5716, '2011-01': 5716, '2011-04': 5716, '2011-07': 5716, '2011-10': 5716, '2012-01': 5716, '2012-04': 5716, '2012-07': 5716, '2012-10': 5716, '2013-01': 5716, '2013-04': 5716, '2013-07': 5716, '2013-10': 5716, '2014-01': 5716, '2014-04': 5716, '2014-07': 5716, '2014-10': 5716, '2015-01': 5716, '2015-04': 5716, '2015-07': 5716, '2015-10': 5716, '2016-02': 5716, '2016-06': 5716, '2016-10': 5716, '2017-02': 5716, '2017-06': 5716, '2017-10': 5716, '2018-02': 5716, '2018-06': 5716, '2018-10': 5716, '2019-02': 5716, '2019-06': 5716, '2019-10': 5716, '2020-02': 5716, '2020-06': 5716, '2020-10': 5716, '2021-02': 5716, '2021-06': 5716, '2021-10': 5716, '2022-02': 5716, '2022-06': 5716, '2022-10': 5716, '2023-02': 5716, '2023-06': 5716, '2023-10': 5716, '2024-02': 5716, '2024-06': 5716, '2024-10': 5716}
+MONTHS FEWS_2025.csv {'2025-10': 4481, '2026-02': 4367, '<NA>': 1238}
+MONTHS panel_2025 {'2025-01': 5718, '2025-02': 5718, '2025-03': 5718, '2025-04': 5718, '2025-05': 5718, '2025-06': 5718, '2025-07': 5718, '2025-08': 5718, '2025-09': 5718, '2025-10': 5719, '2025-11': 5718, '2025-12': 5718, '2026-01': 5718, '2026-02': 5719, '2026-03': 5718, '2026-04': 5718}
+MONTHS pinned_panel n= 180 first 2010-01 last 2024-12 counts [5718]
+  missing months: []
+MONTHS panel_2025_combined n= 196 first 2010-01 last 2026-04 counts [5718, 5719]
+  missing months: []
+MONTHS panel_2025_combined_normv1 n= 196 first 2010-01 last 2026-04 counts [5718]
+  missing months: []
+MONTHS FEWS_scaffold n= 180 first 2010-01 last 2024-12 counts [5718]
+  missing months: []
+FEWSNET.csv distinct months 53
+SET pinned_panel vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET FEWSNET.csv vs pinned_panel {'n': 5716, 'inter': 5716, 'only_this': 0, 'only_ref': 2, 'ex_only_this': [], 'ex_only_ref': [216, 2786]}
+SET panel_2025 vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET panel_2025_combined vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET normv1 vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET FEWS_2025.csv vs pinned_panel {'n': 5716, 'inter': 5716, 'only_this': 0, 'only_ref': 2, 'ex_only_this': [], 'ex_only_ref': [216, 2786]}
+SET coords vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET geoidentifier vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET scaffold vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET scaffold_fixed vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET shapefile_dbf vs pinned_panel {'n': 5718, 'inter': 5718, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET pinned_panel vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET FEWSNET.csv vs FEWSNET.csv {'n': 5716, 'inter': 5716, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET panel_2025 vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET panel_2025_combined vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET normv1 vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET FEWS_2025.csv vs FEWSNET.csv {'n': 5716, 'inter': 5716, 'only_this': 0, 'only_ref': 0, 'ex_only_this': [], 'ex_only_ref': []}
+SET coords vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET geoidentifier vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET scaffold vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET scaffold_fixed vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+SET shapefile_dbf vs FEWSNET.csv {'n': 5718, 'inter': 5716, 'only_this': 2, 'only_ref': 0, 'ex_only_this': [216, 2786], 'ex_only_ref': []}
+H: admin_codes with >1 admin_name: 2 ; admin_names with >1 admin_code: 1 ; distinct names: 5717
+H country count 23
+panel∩dbf codes 5718 unit_name equal: 5718
+examples panel vs dbf: [{'unit_name': 'Abiemnhom, Unity, South Sudan', 'unit_name_dbf': 'Abiemnhom, Unity, South Sudan', 'admin_name': 'Abiemnhom, Unity, South Sudan'}, {'unit_name': 'Abyei, Warrap, South Sudan', 'unit_name_dbf': 'Abyei, Warrap, South Sudan', 'admin_name': 'Abyei, Warrap, South Sudan'}, {'unit_name': 'Akobo, Jonglei, South Sudan', 'unit_name_dbf': 'Akobo, Jonglei, South Sudan', 'admin_name': 'Akobo, Jonglei, South Sudan'}]
+H∩dbf codes 5716 admin_name equal: 5714
+examples H vs dbf: [{'admin_name': 'Amo River Irrigated Cereals and Oilseed Zone, Kaldar, Balkh, Afghanistan', 'admin_name_dbf': 'Amo River Irrigated Cereals and Oilseed Zone, Kaldar, Balkh, Afghanistan', 'unit_name': 'Amo River Irrigated Cereals and Oilseed Zone, Kaldar, Balkh, Afghanistan'}, {'admin_name': 'Amo River Irrigated Cereals and Oilseed Zone, Khamyab, Jawzjan, Afghanistan', 'admin_name_dbf': 'Amo River Irrigated Cereals and Oilseed Zone, Khamyab, Jawzjan, Afghanistan', 'unit_name': 'Amo River Irrigated Cereals and Oilseed Zone, Khamyab, Jawzjan, Afghanistan'}, {'admin_name': 'Amo River Irrigated Cereals and Oilseed Zone, Qarqin, Jawzjan, Afghanistan', 'admin_name_dbf': 'Amo River Irrigated Cereals and Oilseed Zone, Qarqin, Jawzjan, Afghanistan', 'unit_name': 'Amo River Irrigated Cereals and Oilseed Zone, Qarqin, Jawzjan, Afghanistan'}]
+H∩panel codes 5716 H.admin_name endswith panel.unit_name: 5714
+examples H vs panel same code: [{'admin_name': 'Amo River Irrigated Cereals and Oilseed Zone, Kaldar, Balkh, Afghanistan', 'unit_name': 'Amo River Irrigated Cereals and Oilseed Zone, Kaldar, Balkh, Afghanistan'}, {'admin_name': 'Amo River Irrigated Cereals and Oilseed Zone, Khamyab, Jawzjan, Afghanistan', 'unit_name': 'Amo River Irrigated Cereals and Oilseed Zone, Khamyab, Jawzjan, Afghanistan'}, {'admin_name': 'Amo River Irrigated Cereals and Oilseed Zone, Qarqin, Jawzjan, Afghanistan', 'unit_name': 'Amo River Irrigated Cereals and Oilseed Zone, Qarqin, Jawzjan, Afghanistan'}]
+dbf admin_code dup: 0 dbf unit_name dup rows: 2 dbf admin_name dup rows: 2 dbf LZCODE examples: ['', '', '']
+dbf cov_start/cov_end/report_mon distinct: {'07-2021': 4389, '06-2021': 1250, '09-2020': 79} {'09-2021': 5574, '09-2020': 79, '06-2021': 65} {'07-2021': 4389, '06-2021': 1250, '09-2020': 79}
+geoid∩coords 5718 max|dlat| 7.105427357601002e-15 max|dlon| 1.4210854715202004e-14
+geoid∩scaffold_fixed 5718 unit_name equal 5718
+geoid∩panel unit_name equal 5718 of 5718
+geoid∩dbf unit_name equal 5718 of 5718
+panel unit_name per id unique: 0 ids with >1 name; 1 names with >1 id
+RAW rows 12086 distinct fnid 6807 null fnid 0
+RAW scenario x reporting_date: {('CS', 'Current Situation', '2025-10-01'): 5573, ('CS', 'Current Situation', '2026-02-01'): 5867, ('ML1', 'Near Term Projection ', '2024-10-01'): 323, ('ML2', 'Medium Term Projection ', '2024-10-01'): 323}
+RAW scenario x projection_start/end: {('CS', '2025-10-01', '2025-10-31'): 5573, ('CS', '2026-02-01', '2026-02-28'): 5867, ('ML1', '2024-10-01', '2025-01-31'): 323, ('ML2', '2025-02-01', '2025-05-31'): 323}
+RAW collection_status/status: {('Published', 'Collected'): 12040, ('Published', 'Not Available'): 7, ('Published', 'Not Projected'): 39}
+RAW classification_scale: {'IPC 3.1': 12072, 'IPC 3.1-aligned': 14}
+RAW key dup (fnid, scenario, reporting_date, projection_start): 0
+RAW fnid -> full_name >1: 0 ; full_name -> fnid >1: 502
+examples full_name with >1 fnid: {'Agropastoral Belt, Abalak, Tahoua, Niger': ['NE2020C3050104', 'NE2026C3050104'], 'Agropastoral Belt, Bagaroua, Tahoua, Niger': ['NE2020C3050204', 'NE2026C3050204'], 'Agropastoral Belt, Belbedji, Zinder, Niger': ['NE2020C3070104', 'NE2026C3070104'], 'Agropastoral Belt, Bermo, Maradi, Niger': ['NE2020C3040204', 'NE2026C3040204'], 'Agropastoral Belt, Bosso, Diffa, Niger': ['NE2020C3020104', 'NE2026C3020104']}
+fnid boundary-vintage (chars 3-6) by country_code: {('AF', '2018'): 509, ('AO', '2022'): 1, ('BF', '2021'): 65, ('BF', '2026'): 68, ('BI', '2020'): 46, ('CD', '2023'): 345, ('CF', '2026'): 104, ('CM', '2020'): 96, ('ET', '2023'): 1141, ('ET', 'REF0'): 9, ('ET', 'REF1'): 10, ('ET', 'REF2'): 1, ('GT', '2019'): 353, ('HN', '2026'): 50, ('HT', '2015'): 174, ('KE', '2016'): 640, ('KE', 'REF0'): 2, ('LB', '2026'): 26, ('LS', '2012'): 1, ('MG', '2019'): 154, ('ML', '2024'): 116, ('MR', '1990'): 1, ('MW', '2022'): 84, ('MZ', '2021'): 233, ('NE', '2020'): 182, ('NE', '2026'): 176, ('NG', '2021'): 284, ('NG', 'IDP1'): 21, ('NI', '2012'): 1, ('SD', '2025'): 370, ('SD', '2026'): 369, ('SD', 'IDP0'): 1, ('SD', 'IDP1'): 3, ('SD', 'IDP2'): 1, ('SD', 'IDP3'): 2, ('SD', 'IDP5'): 1, ('SD', 'IDP6'): 10, ('SD', 'IDP7'): 3, ('SO', '2016'): 199, ('SO', 'IDP0'): 8, ('SO', 'IDP1'): 10, ('SS', '2011'): 79, ('SV', '2026'): 59, ('SY', '2026'): 14, ('TD', '2022'): 92, ('TG', '2024'): 1, ('UG', '2021'): 318, ('VE', '2026'): 25, ('YE', '2016'): 145, ('ZW', '2021'): 204}
+RAW dataseries 'From' examples: {'10/01/2023': 2282, '01/01/2016': 1968, '01/01/2021': 1109, '06/01/2021': 1034, '01/01/2018': 1018, '10/01/2019': 706, '06/01/2023': 690, '02/01/2026': 647, '01/01/2020': 466, '10/01/2025': 370}
+RAW country counts (distinct fnid): {'Ethiopia': 1161, 'Sudan': 760, 'Kenya': 642, 'Afghanistan': 509, 'Niger': 358, 'Guatemala': 353, 'Democratic Republic of the Congo': 345, 'Uganda': 318, 'Nigeria': 305, 'Mozambique': 233, 'Somalia': 217, 'Zimbabwe': 204, 'Haiti': 174, 'Madagascar': 154, 'Yemen': 145, 'Burkina Faso': 133, 'Mali': 116, 'Central African Republic': 104, 'Cameroon': 96, 'Chad': 92, 'Malawi': 84, 'South Sudan': 79, 'El Salvador': 59, 'Honduras': 50, 'Burundi': 46, 'Lebanon': 26, 'Venezuela': 25, 'Syria': 14, 'Angola': 1, 'Mauritania': 1, 'Lesotho': 1, 'Nicaragua': 1, 'Togo': 1}
+fnid ∩ dbf LZCODE: 0
+CS rows 11440 CS distinct full_names 5982 matched to FEWSNET.csv admin_name 4480 unmatched 1502 ; H names not in CS 1238
+CS full_name matched to dbf admin_name 4481 ; to panel unit_name 4481
+examples CS-unmatched: ['Aba-Korow, Shebelle, Somali, Ethiopia', 'Abaala town, Kilbati, Afar, Ethiopia', 'Abaala, Kilbati, Afar, Ethiopia', 'Ababo, Horo Guduru, Oromia, Ethiopia', 'Abay Chomen, Horo Guduru, Oromia, Ethiopia', 'Abaya, West Gujii, Oromia, Ethiopia']
+examples H-not-in-CS: ['Aba-Korow, Shabelle, Somali, Ethiopia', 'Abaala town, Kilbati /Zone2, Afar, Ethiopia', 'Abaala, Kilbati /Zone2, Afar, Ethiopia', 'Ababo, Horo Gudru Wellega, Oromia, Ethiopia', 'Abay Chomen, Horo Gudru Wellega, Oromia, Ethiopia', 'Abaya, West Guji, Oromia, Ethiopia']
+CS 2025-10-01: rows 5573, distinct names 5573, matched 4480, rows sharing a name 0
+CS 2026-02-01: rows 5867, distinct names 5867, matched 4366, rows sharing a name 0
+notebook-style left join rows (prev->new): 10086 rows with NA date: 1238 dup (id, reporting_date): 4
+prev (admin_name, admin_code) pairs: 5719
+per-country CS name match (matched/unmatched): {'Afghanistan': {'sum': 509, 'count': 509, 'un': 0}, 'Burkina Faso': {'sum': 65, 'count': 133, 'un': 68}, 'Burundi': {'sum': 46, 'count': 46, 'un': 0}, 'Cameroon': {'sum': 96, 'count': 96, 'un': 0}, 'Central African Republic': {'sum': 0, 'count': 104, 'un': 104}, 'Chad': {'sum': 90, 'count': 92, 'un': 2}, 'Democratic Republic of the Congo': {'sum': 0, 'count': 345, 'un': 345}, 'El Salvador': {'sum': 0, 'count': 59, 'un': 59}, 'Ethiopia': {'sum': 496, 'count': 1161, 'un': 665}, 'Guatemala': {'sum': 353, 'count': 353, 'un': 0}, 'Haiti': {'sum': 174, 'count': 174, 'un': 0}, 'Honduras': {'sum': 0, 'count': 50, 'un': 50}, 'Kenya': {'sum': 639, 'count': 642, 'un': 3}, 'Lebanon': {'sum': 0, 'count': 26, 'un': 26}, 'Madagascar': {'sum': 154, 'count': 154, 'un': 0}, 'Malawi': {'sum': 76, 'count': 84, 'un': 8}, 'Mali': {'sum': 96, 'count': 116, 'un': 20}, 'Mozambique': {'sum': 233, 'count': 233, 'un': 0}, 'Niger': {'sum': 182, 'count': 225, 'un': 43}, 'Nigeria': {'sum': 284, 'count': 305, 'un': 21}, 'Somalia': {'sum': 198, 'count': 217, 'un': 19}, 'South Sudan': {'sum': 79, 'count': 79, 'un': 0}, 'Sudan': {'sum': 361, 'count': 391, 'un': 30}, 'Syria': {'sum': 0, 'count': 14, 'un': 14}, 'Venezuela': {'sum': 0, 'count': 25, 'un': 25}, 'Yemen': {'sum': 145, 'count': 145, 'un': 0}, 'Zimbabwe': {'sum': 204, 'count': 204, 'un': 0}}
+per-country FEWSNET.csv codes present in dated FEWS_2025 rows: {'Afghanistan': {'sum': 509, 'count': 509}, 'Burkina Faso': {'sum': 65, 'count': 65}, 'Burundi': {'sum': 46, 'count': 46}, 'Cameroon': {'sum': 96, 'count': 96}, 'Chad': {'sum': 90, 'count': 93}, 'Democratic Republic of the Congo': {'sum': 0, 'count': 345}, 'Ethiopia': {'sum': 496, 'count': 1040}, 'Guatemala': {'sum': 353, 'count': 353}, 'Haiti': {'sum': 174, 'count': 174}, 'Kenya': {'sum': 639, 'count': 639}, 'Madagascar': {'sum': 154, 'count': 154}, 'Malawi': {'sum': 76, 'count': 83}, 'Mali': {'sum': 96, 'count': 115}, 'Mozambique': {'sum': 233, 'count': 233}, 'Niger': {'sum': 182, 'count': 182}, 'Nigeria': {'sum': 284, 'count': 284}, 'Somalia': {'sum': 198, 'count': 198}, 'South Sudan': {'sum': 79, 'count': 79}, 'Sudan': {'sum': 361, 'count': 361}, 'System.IO.MemoryStream': {'sum': 0, 'count': 1}, 'Uganda': {'sum': 0, 'count': 318}, 'Yemen': {'sum': 145, 'count': 145}, 'Zimbabwe': {'sum': 204, 'count': 204}}
+FEWS_2025 dated distinct ids 4480 ∩ pinned 4480
+pinned∩combined months 180 2010-01 2024-12
+overlap keys pinned 1029240 combined 1029240 pinned-only 0 combined-only 0 ex [] []
+combined vs normv1 keys: combined-only 0 normv1-only 0
+combined dup key rows 4 by month (top): {'2025-10': 2, '2026-02': 2}
+panel_2025 vs combined (2025+ months): a-only 0 c-only 0
+combined months not in pinned: ['2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07', '2025-08', '2025-09', '2025-10', '2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04']
+pinned months not in combined: []
+pinned vs combined unit_name equal per id: 5718 of 5718
