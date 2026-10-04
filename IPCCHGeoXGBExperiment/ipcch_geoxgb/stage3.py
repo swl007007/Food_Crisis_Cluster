@@ -33,6 +33,15 @@ from ipcch_geoxgb.stage1 import meets, support
 
 STAGE3_GAIN = Fraction(1, 100)
 
+#: Keyed prediction columns (fixed order; an H with only empty folds writes a header-only file).
+PREDICTION_COLUMNS = (
+    ["admin_code", "target_month", "target_ord", "horizon_months", "origin_ord", "fold_id", "period",
+     "country_key", "phase_truth", "crisis_truth", "q3_truth", "region", "route", "provider", "global_identity"]
+    + [f"{arm}_{t}_{kind}" for t in quartet.TARGETS for arm in ("geo", "pool") for kind in ("raw", "star")]
+    + ["geo_phase", "pool_phase", "persistence_available", "persistence_phase", "persistence_q3",
+       "persistence_source_month", "persistence_age_months"]
+)
+
 
 @dataclass
 class HorizonContext:
@@ -190,7 +199,7 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
             v = int(u) - h
             gv_digest, gv, _ = ctx.global_quartet(v, {**tag, "use": "gate", "gate_month": int(u)})
             u_rows = ctx.rows_at(u)
-            _, _, phase_u = predict(gv, ctx.X[u_rows])
+            raw_u, star_u, phase_u = predict(gv, ctx.X[u_rows])
             for region in ctx.regions:
                 in_region = np.isin(ctx.area[u_rows], ctx.regions[region])
                 if not in_region.any():
@@ -202,15 +211,21 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
                     error.add_note(f"stage3 H{h} {fold['fold_id']} gate month {int(u)} region {region}")
                     raise
                 if local_ref is not None:
-                    _, _, phase_l = predict(local_ref[1], ctx.X[val])
-                    ok, local_digest = True, local_ref[0]
-                else:
-                    phase_l, ok, local_digest = phase_u[in_region], False, ""
+                    raw_l, star_l, phase_l = predict(local_ref[1], ctx.X[val])
+                    ok, local_digest, routed_provider = True, local_ref[0], local_ref[0]
+                else:  # support fallback: the local-routed side IS that date's global
+                    raw_l, star_l, phase_l = raw_u[in_region], star_u[in_region], phase_u[in_region]
+                    ok, local_digest, routed_provider = False, "", gv_digest
+                quartets = {}
+                for j, t in enumerate(quartet.TARGETS):
+                    quartets[f"global_{t}_raw"], quartets[f"global_{t}_star"] = raw_u[in_region, j], star_u[in_region, j]
+                    quartets[f"local_routed_{t}_raw"], quartets[f"local_routed_{t}_star"] = raw_l[:, j], star_l[:, j]
                 pair_frames.append(pd.DataFrame({
                     "region": region, "admin_code": ctx.area[val], "validation_month": int(u),
                     "internal_origin": v, "phase_truth": ctx.keys["phase_truth"].to_numpy()[val],
                     "phase_global": phase_u[in_region], "phase_local_routed": phase_l,
                     "local_fit_ok": ok, "global_identity": gv_digest, "local_identity": local_digest,
+                    "local_routed_provider": routed_provider, "target_ord": int(u), **quartets,
                     "local_fit_keys": sup["keys"], "local_fit_areas": sup["areas"],
                     "local_fit_months": sup["target_months"],
                 }))
@@ -261,6 +276,7 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
     for col in ("persistence_available", "persistence_phase", "persistence_q3",
                 "persistence_source_month", "persistence_age_months"):
         pred[col] = k[col].to_numpy()
+    pred = pred[PREDICTION_COLUMNS]
     ledger.update(status="scored", gate_dates=[int(u) for u in dates], current_global=g_ref_digest,
                   current_global_support=g_info,
                   local_regions=int(sum(1 for d in gate_records if d.get("route") == "local")))

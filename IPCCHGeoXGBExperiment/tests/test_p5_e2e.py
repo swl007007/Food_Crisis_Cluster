@@ -34,7 +34,7 @@ def _contract():
     return c
 
 
-def _write_prepared(run):
+def _write_prepared(run, west_areas=N_AREAS // 2):
     rng = np.random.default_rng(11)
     prepared = run / "prepared"
     prepared.mkdir(parents=True)
@@ -42,7 +42,7 @@ def _write_prepared(run):
     keys = pd.DataFrame(rows, columns=["admin_code", "target_ord"])
     keys["target_month"] = [f"{o // 12:04d}-{o % 12 + 1:02d}" for o in keys["target_ord"]]
     x0 = rng.normal(size=len(keys))
-    west = keys["admin_code"].to_numpy() < N_AREAS // 2
+    west = keys["admin_code"].to_numpy() < west_areas
     q3 = np.clip(0.2 + np.where(west, 0.2, -0.2) * x0 + rng.normal(0, 0.02, len(keys)), 0, 0.9)
     keys["q2"], keys["q3"], keys["q4"], keys["q5"] = np.minimum(q3 + 0.15, 1), q3, q3 * 0.4, q3 * 0.05
     phase = 1 + (keys[["q2", "q3", "q4", "q5"]].to_numpy() >= 0.2).sum(axis=1)
@@ -133,8 +133,8 @@ def _rewrite_predictions(root, change):
     summary_path.write_text(json.dumps(summary))
 
 
-def _failed(result, prefix):
-    return any(f.split(":")[0].endswith(prefix) for f in result["failures"])
+def _failed(result, name):
+    return any(name in f.split(":")[0] or name in f for f in result["failures"])
 
 
 def test_dropped_row_is_caught(run, tmp_path):
@@ -168,6 +168,7 @@ def test_stale_gate_is_caught(run, tmp_path):
         path.write_text("\n".join(json.dumps(x) for x in lines) + "\n")
     result = _tamper(run, tmp_path, flip)
     assert _failed(result, "gate_decision")
+    assert any("gate_decision" in f and "inventory" not in f for f in result["failures"])
 
 
 def test_inherited_local_prefix_is_caught(run, tmp_path):
@@ -180,7 +181,7 @@ def test_inherited_local_prefix_is_caught(run, tmp_path):
                 return
         pytest.fail("no Stage3 local model in the synthetic run")
     result = _tamper(run, tmp_path, reparent)
-    assert _failed(result, "local_prefix_is_global")
+    assert _failed(result, "models.artifact_valid") or _failed(result, "local parent digest")
 
 
 def test_report_count_tampering_is_caught(run, tmp_path):
@@ -190,7 +191,7 @@ def test_report_count_tampering_is_caught(run, tmp_path):
         rep["horizons"][str(H)]["main"]["E_all"]["geo"]["binary"]["counts"]["tp"] += 1
         path.write_text(json.dumps(rep))
     result = _tamper(run, tmp_path, bump)
-    assert _failed(result, "report.counts")
+    assert _failed(result, "report_counts")
 
 
 def test_model_target_order_swap_is_caught(run, tmp_path):
@@ -203,4 +204,127 @@ def test_model_target_order_swap_is_caught(run, tmp_path):
                 path.write_text(json.dumps(record))
                 return
     result = _tamper(run, tmp_path, swap)
-    assert _failed(result, "models.target_order")
+    assert _failed(result, "fitting-target digest") or _failed(result, "models.target_order")
+
+
+# ------------------------------------------------- supervisor P4/P5 review tamper classes
+
+
+def test_missing_boosters_are_caught(run, tmp_path):
+    result = _tamper(run, tmp_path, lambda r: [p.unlink() for p in (r / "models").rglob("*.ubj")])
+    assert _failed(result, "lineage") or _failed(result, "artifact_valid")
+
+
+def test_changed_fitting_X_is_caught(run, tmp_path):
+    def change(root):
+        path = root / "prepared" / f"X_rich561_h{H:02d}.npy"
+        X = np.load(path)
+        X[:, 0] = 1e6
+        np.save(path, X)
+    result = _tamper(run, tmp_path, change)
+    assert _failed(result, "prepared.inventory_and_digests")
+
+
+def test_wrong_full_metrics_are_caught(run, tmp_path):
+    def wrong(root):
+        path = root / "report" / "report.json"
+        rep = json.loads(path.read_text())
+        e = rep["horizons"][str(H)]["main"]["E_all"]
+        e["geo"]["four_class"]["accuracy"] = 0.5
+        e["geo"]["q3_r2_projected"] = 0.99
+        e["delta_geo_minus_pool"]["binary.f1"] = 0.123
+        path.write_text(json.dumps(rep))
+    result = _tamper(run, tmp_path, wrong)
+    assert sum("report_metric" in f or "report_delta" in f for f in result["failures"]) >= 3
+
+
+def test_fabricated_bootstrap_counts_are_caught(run, tmp_path):
+    def fabricate(root):
+        path = root / "report" / "report.json"
+        rep = json.loads(path.read_text())
+        b = rep["horizons"][str(H)]["main"]["bootstrap"]["geo_vs_pool_E_all"]
+        b["country_counts"]["geo"] = [[50, 0, 0, 50], [50, 0, 0, 50]]
+        b["point_delta"], b["interval"], b["na_reason"] = 1.0, [1.0, 1.0], ""
+        path.write_text(json.dumps(rep))
+        draws_path = root / "report" / f"bootstrap_h{H:02d}_geo_vs_pool_E_all.csv.gz"
+        draws = pd.read_csv(draws_path)
+        draws["delta"] = 1.0
+        draws.to_csv(draws_path, index=False, compression=GZ)
+    result = _tamper(run, tmp_path, fabricate)
+    assert _failed(result, "bootstrap_point") and _failed(result, "bootstrap_draws")
+
+
+def test_missing_report_is_caught(run, tmp_path):
+    result = _tamper(run, tmp_path, lambda r: shutil.rmtree(r / "report"))
+    assert _failed(result, "inventory.report")
+
+
+def test_omitted_scored_fold_is_caught(run, tmp_path):
+    fold = f"main_h{H:02d}_2003-06"
+
+    def omit(root):
+        s3 = root / "stage3" / f"h{H:02d}"
+        _rewrite_predictions(root, lambda p: p[p["fold_id"] != fold])
+        ledger = pd.read_csv(s3 / "fold_ledger.csv")
+        ledger[ledger["fold_id"] != fold].to_csv(s3 / "fold_ledger.csv", index=False)
+        gates = [x for x in (s3 / "gate_decisions.jsonl").read_text().splitlines() if fold not in x]
+        (s3 / "gate_decisions.jsonl").write_text("\n".join(gates) + "\n")
+        for path in s3.glob(f"pairs_{fold}*"):
+            path.unlink()
+    result = _tamper(run, tmp_path, omit)
+    assert _failed(result, "schedule_complete")
+
+
+def test_removed_gates_with_fake_local_provider_are_caught(run, tmp_path):
+    def fake(root):
+        s3 = root / "stage3" / f"h{H:02d}"
+        (s3 / "gate_decisions.jsonl").write_text("")
+        _rewrite_predictions(root, lambda p: p.assign(
+            route=np.where(p["region"].fillna("") != "", "local", p["route"]),
+            provider=np.where(p["region"].fillna("") != "", "f" * 64, p["provider"])))
+    result = _tamper(run, tmp_path, fake)
+    assert _failed(result, "gate_decision_inventory") and _failed(result, "local_rows_have_decisions")
+
+
+# ------------------------------------------------- genuine adopted-local end to end
+
+
+@pytest.fixture(scope="module")
+def adopted_run(tmp_path_factory):
+    mp = pytest.MonkeyPatch()
+    for module in (learnmap, predict):
+        mp.setattr(module, "load_experiment_contract", _contract)
+    root = tmp_path_factory.mktemp("adopted") / "run"
+    _write_prepared(root, west_areas=56)  # 70% of areas one regime, 30% the reverse
+    learnmap.run_learn_map(root)
+    predict.run_predict(root)
+    report.run_report(root)
+    mp.undo()
+    return root
+
+
+def test_adopted_local_end_to_end_replays(adopted_run):
+    pred = pd.read_csv(adopted_run / "stage3" / f"h{H:02d}" / "predictions.csv.gz")
+    local = pred["route"] == "local"
+    assert local.any(), "the asymmetric world must adopt at least one current local quartet"
+    differs = np.any([pred.loc[local, f"geo_{q}_raw"].to_numpy() != pred.loc[local, f"pool_{q}_raw"].to_numpy()
+                      for q in ("q2", "q3", "q4", "q5")], axis=0)
+    assert differs.all()  # adopted rows carry local predictions, not pooled copies
+    gates = [json.loads(x) for x in (adopted_run / "stage3" / f"h{H:02d}" / "gate_decisions.jsonl").read_text().splitlines()]
+    assert any(g["route"] == "local" and g["enabled"] for g in gates)
+    rep = json.loads((adopted_run / "report" / "report.json").read_text())
+    assert rep["horizons"][str(H)]["main"]["routes"]["rows"]["local"] == int(local.sum())
+    result = replay_run(adopted_run, _contract())
+    assert result["status"] == "passed", result["failures"][:10]
+
+
+def test_adopted_local_prediction_tamper_is_caught(adopted_run, tmp_path):
+    def nudge(p):
+        i = p.index[p["route"] == "local"][0]
+        p.loc[i, "geo_q3_raw"] += 1e-3
+        return p
+    copy_dir = tmp_path / "t"
+    shutil.copytree(adopted_run, copy_dir)
+    _rewrite_predictions(copy_dir, nudge)
+    result = replay_run(copy_dir, _contract())
+    assert _failed(result, "local_lineage")

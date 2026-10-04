@@ -211,7 +211,12 @@ def _run_learn_map(run_dir: Path, context: dict) -> dict:
         if selection["status"] != "selected":
             raise TechnicalError(f"H{h}: selection_unavailable (all candidates NA); no winner frozen")
         winner = next(e for e in entries if e["candidate"] == selection["winner"])
-        frozen = _freeze(out, h, winner, neighbours, contract)
+        frozen = _freeze(out, h, winner, neighbours, contract, {
+            "prepared_manifest_sha256": bound["manifest_sha256"],
+            "contract_version": contract["contract_version"],
+            "schema": [schema["schema_version"], schema["ordered_names_sha256"]],
+            "selection_sha256": sha256_file(hdir / "selection.json"),
+        })
         summary["horizons"][str(h)] = {
             "fit_keys": int(len(fit_keys)), "validation_keys": int(len(val_keys)),
             "winner": selection["winner"], "ranking": selection["ranking"], "frozen": frozen,
@@ -268,13 +273,15 @@ def _score_candidate(hdir, name, gid, lid, contract, val_keys, X_val, result, pr
     }
 
 
-def _freeze(out: Path, h: int, winner: dict, neighbours: dict, contract: dict) -> dict:
+def _freeze(out: Path, h: int, winner: dict, neighbours: dict, contract: dict, binding: dict) -> dict:
     """Freeze the winning terminal membership map (not its Stage1 providers)."""
     source = out / f"h{h:02d}" / winner["candidate"] / "terminal_map.csv"
     membership = pd.read_csv(source, dtype={"node_id": str})
     for node_id in membership["node_id"].unique():
         stage1.node_depth(node_id)  # malformed/lost IDs stop here
     frozen = membership[["admin_code", "node_id"]].sort_values("admin_code")
+    if frozen["admin_code"].duplicated().any():
+        raise TechnicalError(f"H{h}: an area appears in two terminal regions of the winning map")
     path = out / f"frozen_map_h{h:02d}.csv"
     frozen.to_csv(path, index=False)
     regions = {}
@@ -292,6 +299,7 @@ def _freeze(out: Path, h: int, winner: dict, neighbours: dict, contract: dict) -
         "learned_areas": int(len(frozen)),
         "connectivity": regions,
         "note": "membership only; Stage3 refits quartets on its own windows (clarification 2)",
+        **binding,
     }
     write_json(out / f"frozen_h{h:02d}.json", record)
     return record

@@ -24,12 +24,40 @@ from ipcch_geoxgb.stage1 import node_depth
 GZ = {"method": "gzip", "mtime": 0}
 
 
-def load_frozen(stage1_dir: Path, h: int) -> tuple[dict, dict]:
+def load_frozen(stage1_dir: Path, h: int, prepared_manifest_sha256: str) -> tuple[dict, dict]:
+    """The frozen map for H, bound to this H, this prepared data and the Stage1 winner.
+
+    Rejects a record/CSV copied from another H or run, a map that differs from
+    its record, a record that differs from the completed Stage1 summary or its
+    selection ledger, and duplicate areas.
+    """
     record = json.loads((stage1_dir / f"frozen_h{h:02d}.json").read_text(encoding="utf-8"))
+    summary_path = stage1_dir / "stage1-summary.json"
+    if not summary_path.is_file():
+        raise TechnicalError("Stage1 summary missing: learn-map did not complete")
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    selection_path = stage1_dir / f"h{h:02d}" / "selection.json"
+    selection = json.loads(selection_path.read_text(encoding="utf-8"))
+    problems = []
+    if record.get("H") != h:
+        problems.append(f"record is for H{record.get('H')}")
+    if record.get("prepared_manifest_sha256") != prepared_manifest_sha256:
+        problems.append("record is bound to different prepared data")
+    if summary.get("horizons", {}).get(str(h), {}).get("frozen") != record:
+        problems.append("record differs from the Stage1 summary")
+    if selection.get("selection", {}).get("winner") != record.get("candidate") or \
+            record.get("selection_sha256") != sha256_file(selection_path):
+        problems.append("record differs from the selection ledger")
+    if record.get("candidate") != f"{record.get('G')}{record.get('L')}":
+        problems.append("candidate id differs from its G/L recipe")
     path = stage1_dir / f"frozen_map_h{h:02d}.csv"
-    if sha256_file(path) != record["map_sha256"]:
-        raise TechnicalError(f"frozen map H{h} does not match its freeze record")
+    if sha256_file(path) != record.get("map_sha256"):
+        problems.append("map bytes differ from the freeze record")
+    if problems:
+        raise TechnicalError(f"frozen map H{h} rejected: {problems}")
     fmap = pd.read_csv(path, dtype={"node_id": str})
+    if fmap["admin_code"].duplicated().any():
+        raise TechnicalError(f"frozen map H{h} has duplicate areas")
     for node_id in fmap["node_id"].unique():
         node_depth(node_id)
     return record, dict(zip(fmap["admin_code"].astype(int), fmap["node_id"]))
@@ -68,7 +96,7 @@ def _run_predict(run_dir: Path, context: dict) -> dict:
     summary = {"stage": "P4-stage3", "base_identity": base_identity, "horizons": {}}
     for h in contract["calendar"]["horizons_months"]:
         context.update(H=h, fold_id=None, origin_ord=None)
-        frozen, region_of = load_frozen(stage1_dir, h)
+        frozen, region_of = load_frozen(stage1_dir, h, bound["manifest_sha256"])
         keys, X = load_horizon(prepared, h)
         ctx = stage3.HorizonContext(
             h=h, keys=keys, X=X,
@@ -94,7 +122,8 @@ def _run_predict(run_dir: Path, context: dict) -> dict:
                     gate_log.write(json.dumps({"fold_id": fold["fold_id"], **decision}, default=str) + "\n")
                 if result["pairs"] is not None and len(result["pairs"]):
                     result["pairs"].to_csv(hdir / f"pairs_{fold['fold_id']}.csv.gz", index=False, compression=GZ)
-        frame = pd.concat(predictions, ignore_index=True)
+        frame = (pd.concat(predictions, ignore_index=True) if predictions
+                 else pd.DataFrame(columns=stage3.PREDICTION_COLUMNS))  # all folds empty: ledger-only H (R47)
         frame.to_csv(hdir / "predictions.csv.gz", index=False, compression=GZ)
         pd.DataFrame(ledger).to_csv(hdir / "fold_ledger.csv", index=False)
         summary["horizons"][str(h)] = {

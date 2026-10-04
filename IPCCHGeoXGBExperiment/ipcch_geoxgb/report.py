@@ -119,18 +119,81 @@ def bootstrap_delta(frame: pd.DataFrame, arm_a: str, arm_b: str) -> tuple[dict, 
     return {**record, "interval": [float(lo), float(hi)], "na_reason": ""}, draws
 
 
-def diagnostics(frame: pd.DataFrame, by: str) -> pd.DataFrame:
+def _f1_with_reason(frame: pd.DataFrame, arm: str) -> tuple[float | None, str]:
+    if len(frame) == 0:
+        return None, "no keys"
+    b = panel(frame, arm)["binary"]
+    return b["f1"], b["na_reasons"].get("f1", "")
+
+
+def _delta(a: float | None, b: float | None, ra: str, rb: str) -> tuple[float | None, str]:
+    if a is None or b is None:
+        return None, "; ".join(r for r in (ra, rb) if r) or "undefined arm score"
+    return a - b, ""
+
+
+def diagnostics(frame: pd.DataFrame, by: str, scheduled=None) -> pd.DataFrame:
+    """Descriptive per-country / per-month crisis-F1 points, paired deltas, NA reasons, coverage.
+
+    ``scheduled`` (month table) adds every scheduled month, including
+    ``no_valid_target`` months as n = 0 rows (R47). No intervals here (R49).
+    """
+    values = list(frame[by].unique())
+    if scheduled is not None:
+        values = sorted(set(values) | set(scheduled))
     rows = []
-    for value, part in frame.groupby(by):
-        row = {by: value, "keys": int(len(part)), "persistence_keys": int(part["persistence_available"].sum())}
-        for arm in ("geo", "pool"):
-            row[f"{arm}_f1"] = panel(part, arm)["binary"]["f1"]
+    for value in sorted(values):
+        part = frame[frame[by] == value]
         paired = part[part["persistence_available"] == 1]
-        if len(paired):
-            row["geo_f1_paired"] = panel(paired, "geo")["binary"]["f1"]
-            row["persistence_f1_paired"] = panel(paired, "persistence")["binary"]["f1"]
+        row = {by: value, "keys": int(len(part)), "persistence_keys": int(len(paired)),
+               "persistence_coverage": (len(paired) / len(part)) if len(part) else None}
+        g, rg = _f1_with_reason(part, "geo")
+        p, rp = _f1_with_reason(part, "pool")
+        d, rd = _delta(g, p, rg, rp)
+        gp, rgp = _f1_with_reason(paired, "geo")
+        sp, rsp = _f1_with_reason(paired, "persistence")
+        dp, rdp = _delta(gp, sp, rgp, rsp)
+        row.update({"geo_f1": g, "pool_f1": p, "delta_geo_minus_pool_f1": d, "na_reason_E_all": rd,
+                    "geo_f1_paired": gp, "persistence_f1_paired": sp, "delta_geo_minus_persistence_f1": dp,
+                    "na_reason_E_persist": rdp})
+        if len(part) == 0:
+            row["status"] = "no_valid_target"
         rows.append(row)
     return pd.DataFrame(rows)
+
+
+def cohort_entry(frame: pd.DataFrame, arms: tuple[str, str]) -> dict:
+    """Full panels for both arms and every delta; an empty cohort is explicit NA."""
+    a, b = arms
+    if len(frame) == 0:
+        return {"n": 0, "status": "empty_cohort", a: None, b: None,
+                f"delta_{a}_minus_{b}": None, "na_reason": "no keys in this cohort"}
+    pa, pb = panel(frame, a), panel(frame, b)
+    return {"n": int(len(frame)), "status": "scored", a: pa, b: pb, f"delta_{a}_minus_{b}": deltas(pa, pb)}
+
+
+def route_coverage(e_all: pd.DataFrame, fmap: pd.DataFrame, frozen: dict, gates: list[dict]) -> dict:
+    """R36 coverage with explicit denominators (learned map, local adoption, global fallback)."""
+    learned = set(fmap["admin_code"].astype(int))
+    areas = set(e_all["admin_code"].astype(int))
+    route = e_all["route"].astype(str)
+    fallback = route[route.str.startswith("global_fallback")]
+    return {
+        "map": {"accepted_split": bool(frozen["accepted_split"]), "terminal_regions": int(frozen["terminal_regions"]),
+                "learned_map_areas": len(learned)},
+        "areas": {"denominator_cohort_areas": len(areas), "in_learned_map": len(areas & learned),
+                  "unmapped": len(areas - learned),
+                  "ever_local_routed": int(e_all.loc[route == "local", "admin_code"].nunique())},
+        "rows": {"denominator_cohort_rows": int(len(e_all)), "local": int((route == "local").sum()),
+                 "global_fallback": int(len(fallback)),
+                 "global_fallback_by_reason": {k: int(v) for k, v in fallback.value_counts().sort_index().items()},
+                 "global_only_no_accepted_split": int((route == "global_only_no_accepted_split").sum()),
+                 "unmapped_area_global": int((route == "unmapped_area_global").sum())},
+        "gate_region_folds": {"denominator_decisions": len(gates),
+                              "enabled": sum(1 for g in gates if g.get("enabled")),
+                              "adopted_local": sum(1 for g in gates if g.get("route") == "local"),
+                              "regions_ever_adopted": len({g["region"] for g in gates if g.get("route") == "local"})},
+    }
 
 
 def run_report(run_dir: Path) -> dict:
@@ -162,22 +225,29 @@ def _run_report(run_dir: Path, context: dict) -> dict:
         if pred.duplicated(["admin_code", "target_ord", "horizon_months"]).any():
             raise TechnicalError(f"H{h}: duplicated prediction key")
         hrep = {}
+        fmap = pd.read_csv(run_dir / "stage1" / f"frozen_map_h{int(h):02d}.csv", dtype={"node_id": str})
+        frozen = json.loads((run_dir / "stage1" / f"frozen_h{int(h):02d}.json").read_text(encoding="utf-8"))
+        fold_ledger = pd.read_csv(stage3_dir / f"h{int(h):02d}" / "fold_ledger.csv")
+        gate_path = stage3_dir / f"h{int(h):02d}" / "gate_decisions.jsonl"
+        gate_all = [json.loads(x) for x in gate_path.read_text(encoding="utf-8").splitlines()] if gate_path.is_file() else []
         for period in ("main", "supplementary"):
+            context.update(period=period)
             e_all = pred[pred["period"] == period]
             e_persist = e_all[e_all["persistence_available"] == 1]
+            folds = fold_ledger[fold_ledger["period"] == period]
+            fold_ids = set(folds["fold_id"])
+            gates = [g for g in gate_all if g["fold_id"] in fold_ids]
             entry = {
-                "coverage": {"E_all_keys": int(len(e_all)), "E_persist_keys": int(len(e_persist)),
+                "coverage": {"scheduled_folds": int(len(folds)),
+                             "scored_folds": int((folds["status"] == "scored").sum()),
+                             "no_valid_target_folds": int((folds["status"] == "no_valid_target").sum()),
+                             "E_all_keys": int(len(e_all)), "E_persist_keys": int(len(e_persist)),
                              "persistence_coverage": (len(e_persist) / len(e_all)) if len(e_all) else None,
-                             "countries": int(e_all["country_key"].nunique()),
-                             "local_routed_keys": int((e_all["route"] == "local").sum()),
-                             "unmapped_keys": int((e_all["route"] == "unmapped_area_global").sum())},
+                             "countries": int(e_all["country_key"].nunique())},
+                "routes": route_coverage(e_all, fmap, frozen, gates),
+                "E_all": cohort_entry(e_all, ("geo", "pool")),
+                "E_persist": cohort_entry(e_persist, ("geo", "persistence")),
             }
-            if len(e_all):
-                g_all, p_all = panel(e_all, "geo"), panel(e_all, "pool")
-                entry["E_all"] = {"geo": g_all, "pool": p_all, "delta_geo_minus_pool": deltas(g_all, p_all)}
-            if len(e_persist):
-                g_p, s_p = panel(e_persist, "geo"), panel(e_persist, "persistence")
-                entry["E_persist"] = {"geo": g_p, "persistence": s_p, "delta_geo_minus_persistence": deltas(g_p, s_p)}
             if period == "main":
                 for name, cohort, other in (("geo_vs_pool_E_all", e_all, "pool"),
                                             ("geo_vs_persistence_E_persist", e_persist, "persistence")):
@@ -187,9 +257,10 @@ def _run_report(run_dir: Path, context: dict) -> dict:
                         draws.to_csv(dpath, index=False, compression=GZ)
                         record["draws_sha256"] = sha256_file(dpath)
                     entry.setdefault("bootstrap", {})[name] = record
-            for by in ("country_key", "target_month"):
-                if len(e_all):
-                    diagnostics(e_all, by).to_csv(out / f"diag_h{int(h):02d}_{period}_{by}.csv", index=False)
+            months = [f"{o // 12:04d}-{o % 12 + 1:02d}" for o in sorted(folds["target_ord"].unique())]
+            diagnostics(e_all, "country_key").to_csv(out / f"diag_h{int(h):02d}_{period}_country_key.csv", index=False)
+            diagnostics(e_all, "target_month", scheduled=months).to_csv(
+                out / f"diag_h{int(h):02d}_{period}_target_month.csv", index=False)
             hrep[period] = entry
         hrep["predictions_sha256"] = info["predictions_sha256"]
         report["horizons"][h] = hrep

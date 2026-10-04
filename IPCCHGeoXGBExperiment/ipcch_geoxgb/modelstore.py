@@ -199,6 +199,7 @@ class ModelStore:
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
         self.ledger_path = Path(ledger_path)
+        self.ledger_path.touch(exist_ok=True)  # an empty ledger is evidence of zero requests
         self.counts = {"requests": 0, "hits": 0, "fits": 0, "failed": 0}
 
     def _dir(self, digest: str) -> Path:
