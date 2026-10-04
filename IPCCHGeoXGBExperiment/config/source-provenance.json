@@ -1,5 +1,5 @@
 {
-  "provenance_version": "ipcch-geoxgb-provenance-p2",
+  "provenance_version": "ipcch-geoxgb-provenance-p3",
   "policy": "Reference allowlist; copy only necessary components with destination/symbol/adaptation provenance. No live legacy imports. No old candidate configs or fitted caches.",
   "source_manifest": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/source-manifest.json",
   "verification": "2026-10-04: all 14 sources re-hashed; bytes, sha256 and git blob at the recorded commit all match (see P0-evidence.md)",
@@ -258,25 +258,36 @@
       "destination": "ipcch_geoxgb/metrics.py",
       "adaptation": "phase inputs (1..5) with fixed 1/2/3/4-5 axis; R27 NA policy (undefined -> None with reason, never internal zero; absent class -> macro NA); adds F2, accuracy, R\u00b2 rules and exact strict gain gate; scan masses return raw counts",
       "phase": "P2"
-    }
-  ],
-  "pending": [
+    },
     {
       "source": "FEWSNETGeoXGBExperiment/src/partition/partition_opt.py",
-      "phase": "P3",
-      "scope": "scan math, smoothing, complete parent/child routing",
       "sha256": "5c985a6a881931d9366aeb119996353ab69840fe7c66a941b8c9d8d80873269e",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
+      "lines": "213-218,573-660,860-904,959-1028",
+      "symbols": [
+        "get_c_b",
+        "swap_partition_polygon",
+        "select_macro_children",
+        "scan"
+      ],
+      "destination": "ipcch_geoxgb/stage1.py (scan, smooth, select_route)",
+      "adaptation": "single crisis column; R46 exact 45-55% prefix with canonical area-ID ties replaces get_top_cells/optimize_size; 1000 iterations, last candidate; synchronous induced-neighbour vote with exact 9*same < 4*total; route selection on exact Fraction F1 with threshold 0 and clarification-1 order; no config imports",
+      "phase": "P3"
     },
     {
       "source": "FEWSNETGeoXGBExperiment/src/partition/transformation.py",
-      "phase": "P3",
-      "scope": "recursive shared-root architecture without legacy imports/caps",
       "sha256": "82578beec64c6d2a5a63c42f5eba230e8d3f1962addec77451dcbf92cd40c0ac",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
-    },
+      "lines": "318-500,777-886,1060-1128",
+      "symbols": [
+        "partition (level loop, zero-mass guard, support/eligibility, complete-route gate, child inheritance)"
+      ],
+      "destination": "ipcch_geoxgb/stage1.py::search_candidate/_attempt_split + learnmap.py",
+      "adaptation": "membership depth <= 4, no PATH_ROUND_CAP; children continue the ROOT global once (shared root); R28/R29 original-key support incl. 20/20 crisis classes; non-numeric node IDs ('r', 'r0', ...); membership map separate from provider table; no visualization, no bare config/src imports",
+      "phase": "P3"
+    }
+  ],
+  "pending": [
     {
       "source": "FEWSNETGeoXGBExperiment/src/experiment/stage3.py",
       "phase": "P4",
@@ -359,6 +370,11 @@
       "destination": "ipcch_geoxgb/modelstore.py",
       "phase": "P2",
       "note": "new: R48 exact-identity quartet store and request ledger"
+    },
+    {
+      "destination": "ipcch_geoxgb/learnmap.py",
+      "phase": "P3",
+      "note": "new orchestration: prepared re-verification, root reuse across L, R44 selection, frozen map + R38 diagnostics"
     }
   ]
 }

@@ -15,8 +15,8 @@ Scope: `IPCCHGeoXGBExperiment/` and this task's documentation/evidence.
 | Foundation freeze | component-complete | foundation-freeze.md; same Claude released to implement.md P1–P6 with phase supervision |
 | P1 data/features | implemented, checked | 98 tests pass; dev prepare `p1-dev-20261004` passed (42,695 valid; crisis 17,807; 122 folds, 110 non-empty; 2026-01..04); see P1-evidence.md |
 | P2 quartet/metrics | implemented, checked | 131 tests pass (synthetic only, no project-data fit); see P2-evidence.md |
-| P3 Stage1 | in progress | Scan/size/smoothing/support/route gate, depth-4 recursion, 8-recipe selection |
-| P4 Stage3 | pending | Depends on P1/P2/P3 |
+| P3 Stage1 | implemented, checked | 175 tests pass (synthetic + end-to-end with real quartets/adjacency, test-only small contract); see P3-evidence.md |
+| P4 Stage3 | in progress | Rolling folds, R37 gate replay, matched pooled, persistence pairing |
 | P5 report/replay | pending | Depends on saved P3/P4 evidence |
 | P6 formal run/delivery | pending | Depends on implementation tests and frozen code |
 | Controller close audit | pending | Only after complete committed delivery |
@@ -29,6 +29,6 @@ pass is claimed.
 
 Resume: reconcile this ledger with Git, the three authority documents, the live
 Claude identity and audit run `7ced754ea36c48c0a6d24ba2a17addec`.
-Next: Claude executes P3 under implement.md, reporting phase commits/evidence
-to Codex (P1, P2 reported with their commits). Before P6 formal fits,
+Next: Claude executes P4 under implement.md, reporting phase commits/evidence
+to Codex (P1-P3 reported with their commits). Before P6 formal fits,
 report the implementation-ready identity for supervisor verification.

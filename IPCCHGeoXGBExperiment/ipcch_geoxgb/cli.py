@@ -4,7 +4,7 @@ Run with the package directory on the import path, e.g. from the repository
 root ``PYTHONPATH=IPCCHGeoXGBExperiment python -m ipcch_geoxgb validate-config``.
 
 Exit codes: 0 success, 1 contract failure, 2 runtime does not match the lock,
-3 scientific phase not implemented yet (nothing written).
+3 scientific phase not implemented yet (nothing written), 4 R41 technical failure.
 """
 
 from __future__ import annotations
@@ -14,11 +14,10 @@ import json
 import sys
 
 from ipcch_geoxgb import __version__
-from ipcch_geoxgb.errors import ContractError, NotImplementedPhaseError
+from ipcch_geoxgb.errors import ContractError, NotImplementedPhaseError, TechnicalError
 
 #: Scientific phases; each fails explicitly until its implementation lands.
 PENDING_PHASES = {
-    "learn-map": "P3 (direct Stage1 maps and frozen winners)",
     "predict": "P4 (rolling Stage3 and paired baselines)",
     "report": "P5 (reporting and independent replay)",
 }
@@ -85,6 +84,25 @@ def cmd_prepare(args) -> int:
     return 0
 
 
+def existing_run(run_id: str):
+    from ipcch_geoxgb import RUNS_DIR  # noqa: PLC0415
+
+    run_dir = RUNS_DIR / run_id
+    if not (run_dir / "prepared" / "prepared-manifest.json").is_file():
+        raise ContractError(f"run {run_id!r} has no completed prepare stage")
+    return run_dir
+
+
+def cmd_learn_map(args) -> int:
+    from ipcch_geoxgb.learnmap import run_learn_map  # noqa: PLC0415
+
+    summary = run_learn_map(existing_run(args.run_id))
+    _print({"status": "passed", "summary_sha256": summary["summary_sha256"],
+            "winners": {h: v["winner"] for h, v in summary["horizons"].items()},
+            "model_store": summary["model_store"]})
+    return 0
+
+
 def cmd_pending(args) -> int:
     raise NotImplementedPhaseError(
         f"'{args.command}' belongs to {PENDING_PHASES[args.command]} and is not implemented "
@@ -106,6 +124,9 @@ def build_parser() -> argparse.ArgumentParser:
     prep = sub.add_parser("prepare", help="P1: QC ledger, rich561 matrices, F/S split, calendars")
     prep.add_argument("--run-id", required=True, help="new run directory under runs/")
     prep.set_defaults(func=cmd_prepare)
+    learn = sub.add_parser("learn-map", help="P3: Stage1 search for all H x G x L, R44 selection, frozen maps")
+    learn.add_argument("--run-id", required=True, help="existing run with a completed prepare stage")
+    learn.set_defaults(func=cmd_learn_map)
     for name, phase in PENDING_PHASES.items():
         sub.add_parser(name, help=f"not implemented yet: {phase}").set_defaults(func=cmd_pending)
     return parser
@@ -126,3 +147,6 @@ def main(argv: list[str] | None = None) -> int:
     except ContractError as error:
         print(f"CONTRACT FAILURE: {error}", file=sys.stderr)
         return 1
+    except TechnicalError as error:
+        print(f"TECHNICAL FAILURE (R41, run incomplete): {error}", file=sys.stderr)
+        return 4
