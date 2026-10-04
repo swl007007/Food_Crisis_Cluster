@@ -1,5 +1,5 @@
 {
-  "provenance_version": "ipcch-geoxgb-provenance-p1",
+  "provenance_version": "ipcch-geoxgb-provenance-p2",
   "policy": "Reference allowlist; copy only necessary components with destination/symbol/adaptation provenance. No live legacy imports. No old candidate configs or fitted caches.",
   "source_manifest": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/source-manifest.json",
   "verification": "2026-10-04: all 14 sources re-hashed; bytes, sha256 and git blob at the recorded commit all match (see P0-evidence.md)",
@@ -223,49 +223,44 @@
       "destination": "ipcch_geoxgb/schedule.py::main_fold_calendar/supplementary_calendar",
       "adaptation": "main schedule from config contract (122 folds); development folds dropped (Stage1 uses pooled F/S); adds R47 2026 supplementary calendar and 12-month coverage ledger",
       "phase": "P1"
-    }
-  ],
-  "pending": [
-    {
-      "source": "../IPCCH/src/ipcch/forecasting_weight_decay.py",
-      "phase": "P2",
-      "scope": "four cumulative regression targets (reference)",
-      "sha256": "ca609c40efdfa5823f0dba6e7eab93e42bbe35180261837f6d9475a0e62dec53",
-      "commit": "c06bc0f59ba37a672234595b1f63b53d21652134",
-      "status": "pending: not ported, no code in package"
-    },
-    {
-      "source": "../IPCCH/src/ipcch/operational_contract.py",
-      "phase": "P2",
-      "scope": "quartet/20% decision (projection contract overrides old decoder)",
-      "sha256": "3aed60d093130defc2833468e929bb7f03a3cbda3c2a6fa1cadcb912ff86efa0",
-      "commit": "c06bc0f59ba37a672234595b1f63b53d21652134",
-      "status": "pending: not ported, no code in package"
     },
     {
       "source": "FEWSNETGeoXGBExperiment/src/model/native_xgb.py",
-      "phase": "P2",
-      "scope": "native continuation/provenance adapted to scalar regression quartet",
       "sha256": "1c5822ccb6307441fd1552f22f86c70cbb5748ec69e67ed036faa006d0002d57",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
+      "lines": "101-130,132-155,177-211,213-270",
+      "symbols": [
+        "raw",
+        "sha",
+        "from_raw",
+        "base_score",
+        "resolved_config",
+        "prefix_identity",
+        "fit_global",
+        "continue_booster"
+      ],
+      "destination": "ipcch_geoxgb/quartet.py",
+      "adaptation": "scalar reg:squarederror quartet (one tree per round) instead of 4-class softprob; explicit global base_score .5; unit weights (no sample-weight/base-margin paths); constant targets recorded and fitted; fresh-copy continuation with byte/rounds/base-score/prefix-structure/prefix-margin checks; explicit finite+shape output checks (R41); XGBmodel/Stage1 store not copied",
+      "phase": "P2"
     },
     {
       "source": "FEWSNETGeoXGBExperiment/src/metrics/fourclass.py",
-      "phase": "P2",
-      "scope": "exact F1 counts/gain and scan mass",
       "sha256": "505f12b5dc597166ab2b4a777f1f2627daa9aaafc07c574916c1a0b50319aeee",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
-    },
-    {
-      "source": "FEWSNETGeoXGBExperiment/src/experiment/plan.py",
-      "phase": "P2",
-      "scope": "G/L recipe table (already restated in config/experiment-contract.json; no code copied)",
-      "sha256": "991e2780bde4e2a01fc1cbed5f626714898417d79c423741e157b4d98dba0816",
-      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
-    },
+      "lines": "39-61,170-190,214-227",
+      "symbols": [
+        "confusion",
+        "class_counts",
+        "crisis_counts",
+        "crisis_f1_exact_or_none",
+        "crisis_scan_masses"
+      ],
+      "destination": "ipcch_geoxgb/metrics.py",
+      "adaptation": "phase inputs (1..5) with fixed 1/2/3/4-5 axis; R27 NA policy (undefined -> None with reason, never internal zero; absent class -> macro NA); adds F2, accuracy, R\u00b2 rules and exact strict gain gate; scan masses return raw counts",
+      "phase": "P2"
+    }
+  ],
+  "pending": [
     {
       "source": "FEWSNETGeoXGBExperiment/src/partition/partition_opt.py",
       "phase": "P3",
@@ -331,6 +326,39 @@
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
       "phase": "P1",
       "use": "history formulas sections 1-2 cross-read; implemented via the PH code copy above, no text copied"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/experiment/plan.py",
+      "sha256": "991e2780bde4e2a01fc1cbed5f626714898417d79c423741e157b4d98dba0816",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P2",
+      "use": "G1-G4/L1-L2 values (24-44) restated in config/experiment-contract.json; booster_params not copied"
+    },
+    {
+      "source": "../IPCCH/src/ipcch/forecasting_weight_decay.py",
+      "sha256": "ca609c40efdfa5823f0dba6e7eab93e42bbe35180261837f6d9475a0e62dec53",
+      "commit": "c06bc0f59ba37a672234595b1f63b53d21652134",
+      "phase": "P2",
+      "use": "cumulative target definitions (132-141) cross-read; targets.py builds exact Q_k/S instead"
+    },
+    {
+      "source": "../IPCCH/src/ipcch/operational_contract.py",
+      "sha256": "3aed60d093130defc2833468e929bb7f03a3cbda3c2a6fa1cadcb912ff86efa0",
+      "commit": "c06bc0f59ba37a672234595b1f63b53d21652134",
+      "phase": "P2",
+      "use": "decode_phase_predictions (224-293) cross-read; its cummax repair is superseded by projection.py bounded isotonic projection (R15)"
+    }
+  ],
+  "new_components": [
+    {
+      "destination": "ipcch_geoxgb/projection.py",
+      "phase": "P2",
+      "note": "new: exact enumeration of 8 contiguous block partitions + clip; reference PAVA in tests"
+    },
+    {
+      "destination": "ipcch_geoxgb/modelstore.py",
+      "phase": "P2",
+      "note": "new: R48 exact-identity quartet store and request ledger"
     }
   ]
 }

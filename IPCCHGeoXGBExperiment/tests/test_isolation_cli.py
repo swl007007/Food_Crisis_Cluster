@@ -58,8 +58,14 @@ def test_import_probe_has_no_legacy_modules(tmp_path, where):
     assert {"ipcch_geoxgb.cli", "ipcch_geoxgb.preflight", "ipcch_geoxgb.geography"} <= set(probe["loaded"])
     assert not FORBIDDEN_MODULES & set(probe["files"])
     assert _external_files(probe["files"]) == []
-    # Importing every module (including preflight) never loads XGBoost.
-    assert "xgboost" not in probe["files"]
+
+
+def test_preflight_and_cli_do_not_load_xgboost(tmp_path):
+    """The read-only preflight path never imports the numerical model stack."""
+    code = "import json, sys; import ipcch_geoxgb.cli, ipcch_geoxgb.preflight; print(json.dumps('xgboost' in sys.modules))"
+    result = _run(["-c", code], tmp_path)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) is False
 
 
 def test_import_probe_detects_a_legacy_import():
