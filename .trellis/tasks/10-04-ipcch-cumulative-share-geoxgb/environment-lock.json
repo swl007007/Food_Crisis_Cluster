@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "observed_date": "2026-10-04",
+  "interpreter_wsl": "/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe",
+  "actual_probe": {
+    "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scipy": "1.15.2",
+      "scikit-learn": "1.6.1",
+      "xgboost": "3.0.0",
+      "geopandas": "1.0.1",
+      "shapely": "2.1.0",
+      "polars": "1.27.1",
+      "pyarrow": "19.0.1",
+      "pytest": "9.1.0",
+      "pyproj": "3.7.1",
+      "pyogrio": "0.11.0"
+    }
+  },
+  "policy": "Use existing pinned Windows runtime for numerical artifacts. Do not install/upgrade/substitute. Package requirements list only used libraries from this lock; metadata includes available reference dependencies.",
+  "model_runtime": {
+    "device": "cpu",
+    "tree_method": "hist",
+    "nthread": 4,
+    "seed": 42
+  },
+  "geometry_dependency_probe": "Read-only scout Windows metadata verification on 2026-10-04; no package imports or installs"
+}

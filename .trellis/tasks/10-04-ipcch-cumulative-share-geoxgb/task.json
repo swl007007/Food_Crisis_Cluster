@@ -1,0 +1,35 @@
+{
+  "id": "ipcch-cumulative-share-geoxgb",
+  "name": "ipcch-cumulative-share-geoxgb",
+  "title": "IPCCH cumulative-share GeoXGB architecture",
+  "description": "Approved IPCCH cumulative-share GeoXGB: independent infrastructure, supervisor foundation freeze, Claude scientific implementation and run under R51.",
+  "status": "planning",
+  "dev_type": "backend",
+  "scope": "IPCCHGeoXGBExperiment",
+  "package": "IPCCHGeoXGBExperiment",
+  "priority": "P2",
+  "creator": "swl007007",
+  "assignee": "swl007007",
+  "createdAt": "2026-10-04",
+  "completedAt": null,
+  "branch": "ipcch-cumulative-share-geoxgb",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "IPCCHGeoXGBExperiment/",
+    ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/design.md",
+    ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/implement.md"
+  ],
+  "notes": "",
+  "meta": {
+    "spec_version": "1.0",
+    "execution_authority": "R51",
+    "progress_ledger": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/PROGRESS.md",
+    "foundation_freeze": "pending"
+  }
+}
