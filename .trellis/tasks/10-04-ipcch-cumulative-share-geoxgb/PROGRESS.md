@@ -18,7 +18,7 @@ Scope: `IPCCHGeoXGBExperiment/` and this task's documentation/evidence.
 | P3 Stage1 | implemented, checked | 175 tests pass (synthetic + end-to-end with real quartets/adjacency, test-only small contract); see P3-evidence.md |
 | P4 Stage3 | implemented, checked | synthetic tests; see P4P5-evidence.md |
 | P5 report/replay | implemented, checked | 218 tests pass incl. end-to-end replay and tamper detection; see P4P5-evidence.md |
-| P6 formal run/delivery | awaiting implementation-ready release | Freeze evidence to supervisor before any formal fit |
+| P6 formal run/delivery | awaiting implementation-ready release | implementation-ready.md (code 13e74b5); no formal fit until released |
 | Controller close audit | pending | Only after complete committed delivery |
 
 P0 built the independent package foundation. P1 added the QC ledger, phase
