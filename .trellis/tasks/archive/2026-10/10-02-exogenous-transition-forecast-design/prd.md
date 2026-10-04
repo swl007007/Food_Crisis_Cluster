@@ -118,3 +118,9 @@ Faithful finite execution is complete through scen-evaluate; see `research/final
 - **October 2025:** Δ −.0064 (H4) and −.0649 (H8), both CIs including 0. June 2025, the October Study 2 cells and the expert comparator are valid NA/unevaluable routes, not success claims.
 - **Unresolved provenance**, listed in the final report: no exact realized fit count; internal-local support-only evidence; exact-name truth mapping without geometric certification; reconstructed availability (historical month-end convention; 2025 user attestation).
 - No metric or scientific contract was changed and nothing was retuned.
+
+### Closure status update (2026-10-03, post-close)
+
+The completion evidence above was written while AC7 was pending; it is kept as chronology.
+
+**Current status:** AC7's independent close/spot audit requirement is USER-WAIVED (2026-10-03): the user explicitly authorized skipping the close and spot audits (“准许跳过close audit和spot audit，因为supervisor已经完成了相关内容”). Close-audit job e356444e8f195f33fe13cbb7 failed operationally twice at TUI bootstrap (401 unauthorized; attempts 1 and 2), with no audit result. The waiver is recorded by the coordinator. This is not an audit PASS. The completed science and checks were accepted by the supervisor, not by an independent audit.

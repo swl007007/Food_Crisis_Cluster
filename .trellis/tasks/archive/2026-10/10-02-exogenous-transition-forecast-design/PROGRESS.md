@@ -694,3 +694,32 @@ No CSV comparison was performed. Source identity is user-attested; no further we
   - final-report.md (d4dc0c5b…): the conclusion is confined to primary Study 1, with the positive Study 2 k ≥ 1 intervals (H4 k1, H8 k2) noted. The partition 'no measurable benefit' claim is confined to Study 1, with the small Study 2 H8 k2 +.0026 disclosed. Task research is labelled 'final packet, pending commit'.
   - implement.md (0bb9d71f…): stale current-status claims reconciled with the completed phases (actual blocked/admission open → completed via table/extension/v2/evaluate; 'formal trellis-check outstanding' → three bounded reviews run; independent audit still outstanding).
   - Reviewer reports unchanged; AC7 still PENDING. PROGRESS history retained. PACKET FROZEN.
+
+---
+
+## Post-close operational addendum (2026-10-03; not part of the pinned close snapshot)
+
+This addendum was written after the bound close. It does **not** alter the pinned task snapshot (sha256 9e1b2f2b363c3783048e3a733ac57f9aff3f3f010dd5b917871fabcac1620fae) or any scientific evidence. **No audit has passed. AC7 remains pending.**
+
+- **Close.** `trellis-audit --repo <repo> close` was run from the bound session b0e22913-4f4b-430f-8d19-dee565d26eec (term_65ccaebe9009a8) on a clean HEAD b71ce98, rc 0.
+  - Close-audit job `e356444e8f195f33fe13cbb7`.
+  - audited_sha = completion_sha = b71ce983eda54376f5308c96c27a18980ed21976.
+  - base_sha e84368274241e6becc67d5a7e69dc39db23bda66 preserved.
+  - Audit run 5c4dede7bc6e44f0835fbde1ad2f473d left active_runs, closed by the wrapper.
+- **Archive move (performed by the wrapper; `task.py archive` was not invoked separately).**
+  - The task moved from `.trellis/tasks/10-02-exogenous-transition-forecast-design` to `.trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design`.
+  - All 97 previously tracked files are present at the archive path. Every one is byte-identical to HEAD except `task.json`, whose status changed in_progress → completed and completedAt to 2026-10-03.
+  - 22 tracked evidence files are git-ignored at the new path, because the old path's ignore negations do not apply there, so the archive commit needs `git add -f` for them: research/launch/*.csv, alignment.json, the probe summary JSONs and truth_release_v2/*.json.
+  - 5 untracked local files sit in the archive and were never tracked: research/probes/__pycache__/*.pyc (4) and research/probes/stage1_diagnostics_ledger.csv. They are not part of the evidence set.
+- **Attempt 1 of the close audit FAILED operationally.** It failed during the TUI bootstrap: account/read workspace routing discovery returned **401 unauthorized** (pane wR:p1 left at a terminal shell, no result). The controller status was "attention".
+  - `codex login status` still reported "Logged in using ChatGPT".
+  - This is an authentication/bootstrap failure, not an audit verdict.
+- **Retry.** The coordinator requested ONE bounded retry of the same job through the wrapper, with the same audited SHA and base. At the time of writing, attempt 2 is `launching` (pane wS:p1, agent audit-e356444e8f195f33-2). No new audit was created, reset or rebound by the executor, and the executor did not retry anything itself.
+- **Scientific evidence unchanged.** research/final-report.md and all results and hashes are as committed in b71ce98.
+
+- **Post-close update (2026-10-03).**
+  - Attempt 2 of close-audit job e356444e8f195f33fe13cbb7 also failed at the same TUI bootstrap with a 401 (pane wS:p1 left at a terminal shell, no result). Both failed attempts are retained.
+  - USER-WAIVED (2026-10-03): the user explicitly authorized skipping the close and spot audits (“准许跳过close audit和spot audit，因为supervisor已经完成了相关内容”). Close-audit job e356444e8f195f33fe13cbb7 failed operationally twice at TUI bootstrap (401 unauthorized; attempts 1 and 2), with no audit result. The waiver is recorded by the coordinator. This is not an audit PASS. The completed science and checks were accepted by the supervisor, not by an independent audit.
+  - No further audits or retries.
+  - Earlier 'AC7 pending' statements stay as chronology. The current closure status is USER-WAIVED for the audit; AC1–AC6 PASS on the recorded evidence.
+  - The pinned snapshot, the scientific results and the evidence hashes are unchanged. The executor made no controller DB edits.

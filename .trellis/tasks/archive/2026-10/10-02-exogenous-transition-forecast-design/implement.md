@@ -49,7 +49,7 @@ Historical-development readiness (2026-10-03, existing evidence; no new source r
 - the pre-fit reconcile `scen-b43ef6a-v1.reconcile.json` reports 648 candidates, 108 inputs, 129 features, a certified fit ceiling of 147,889 and no problems;
 - see `research/launch-readiness.md` and PROGRESS.
 
-The items below are split into a historical part and an actual-2025 part. Both were completed on 2026-10-03; the independent audit is still pending.
+The items below are split into a historical part and an actual-2025 part. Both were completed on 2026-10-03. The independent audit was later USER-WAIVED (not passed).
 
 - [x] Historical development: code, the Windows py3.12.10 numerical stack, sources and root/model configuration are pinned by the accepted preparation above. The old incomplete-task lineage is retained.
 - [x] Pin the frozen per-horizon maps and recipe at `scen-freeze` (after selection): scenario_final/frozen.json sha 2344ab59…573e, A on map 8965af6d6a724ba5d61d for both H, bound to selection c0b3c967…b8b. Reconciled with §6 (freeze item ticked); reused unchanged by scen-historical and later by scen-actual.
@@ -115,9 +115,9 @@ Real historical development is no longer blocked: D7 was resolved for 2018–202
 - three bounded trellis-check reviews (progress, follow-up, final);
 - the real-run independent reconciliations and recounts.
 
-The independent spot/close audit has **not** run; AC7 stays pending.
+The independent spot/close audit has **not** run. Its requirement was later **USER-WAIVED** (not passed); see section 7.
 
-The full synthetic suite above (165 tests at `b43ef6a`) covers the engineering contracts below. That coverage alone was not the formal trellis-check. Three bounded formal trellis-check reviews have since run (research/trellis-check-progress.md, -followup.md, -final.md). The independent audit is still outstanding.
+The full synthetic suite above (165 tests at `b43ef6a`) covers the engineering contracts below. That coverage alone was not the formal trellis-check. Three bounded formal trellis-check reviews have since run (research/trellis-check-progress.md, -followup.md, -final.md). The independent audit was later USER-WAIVED (not passed).
 
 - [x] Minimal synthetic check: changing a hidden recent IPC or future covariate cannot change permitted features/predictions, while changing a permitted older input can.
   - Evidence: 165-test evidence at the unchanged code identity (fd25e2f7…), plus the real-run independent global fit-key and mask checks (654/654, 4 actual outer) and local/gate reconciliation; trellis-check-progress PASS.
@@ -153,7 +153,7 @@ The full synthetic suite above (165 tests at `b43ef6a`) covers the engineering c
     - Stage 1: 648/648 accepted (669 attempts, `scen-b43ef6a-v1.stage1_acceptance.json`); diagnostics in `research/stage1-diagnostics.md`.
     - `scen-develop`: 72/72 folds.
     - `scen-select`: `selection.json` sha c0b3c967…b8b, A winner at H4 and H8, B failing normal parity at both; recorded with the negative results in PROGRESS.
-    - Three bounded formal trellis-check reviews have since run (progress, follow-up, final). The independent audit is still outstanding.
+    - Three bounded formal trellis-check reviews have since run (progress, follow-up, final). The independent audit was later USER-WAIVED (not passed).
 - [x] Freeze chosen per-horizon recipe/maps and configuration identity before later scores.
   - scenario_final/frozen.json sha 2344ab59…573e: A on map 8965af6d6a724ba5d61d for both horizons; H4 G1/L1, H8 G4/L1; bound to selection c0b3c967…b8b; written before any historical fit.
 - [x] Run fixed-recipe 2021–2024 retrospective evaluation; do not retune from its scores.
@@ -168,6 +168,11 @@ The full synthetic suite above (165 tests at `b43ef6a`) covers the engineering c
 
 - [x] Update PRD completion evidence and PROGRESS; preserve all keyed artifacts needed for the agreed conclusions.
   - Evidence: PRD completion-evidence addendum; research/final-report.md; external_evidence_manifest.json.
-- [ ] Commit relevant deliverables after change-scope checks; bound executor uses trellis-audit close only when authorised work/evidence is complete. A queued audit is not acceptance.
+- [x] Commit relevant deliverables after change-scope checks; bound executor uses trellis-audit close only when authorised work/evidence is complete. A queued audit is not acceptance.
+  - Done 2026-10-03:
+    - deliverables committed by the coordinator (482edb4, b71ce98);
+    - bound `trellis-audit close` invoked (job e356444e, completion b71ce98, base e8436827, archive path recorded);
+    - close/spot audit USER-WAIVED (2026-10-03): the user explicitly authorized skipping the close and spot audits (“准许跳过close audit和spot audit，因为supervisor已经完成了相关内容”). Close-audit job e356444e8f195f33fe13cbb7 failed operationally twice at TUI bootstrap (401 unauthorized; attempts 1 and 2), with no audit result. The waiver is recorded by the coordinator. This is not an audit PASS. The completed science and checks were accepted by the supervisor, not by an independent audit.
+
 
 Record exact commands after the minimal runner changes and before launching the frozen schedule; verify the design D7 environment rather than guessing an interpreter. No product code or test files are changed by this planning pass.

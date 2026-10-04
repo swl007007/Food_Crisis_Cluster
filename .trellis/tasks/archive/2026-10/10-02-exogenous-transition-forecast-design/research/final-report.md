@@ -1,6 +1,6 @@
 # Final report: food-crisis fallback forecasting during FEWS NET interruptions (task 10-02)
 
-2026-10-03, Claude executor. This is the faithful finite execution of the approved spec. It is **not** the independent spot/close audit (AC7 pending), and nothing here was retuned from evaluation scores.
+2026-10-03, Claude executor. This is the faithful finite execution of the approved spec. It is **not** an independent spot/close audit: that requirement was **USER-WAIVED** for this task (see AC7). Nothing here was retuned from evaluation scores.
 
 ## Scientific summary
 
@@ -48,7 +48,7 @@
 | AC4 frozen recipe/maps → historical and 2025 predictions; gate > 0.01 independent of −0.02 | **PASS** | frozen.json 2344ab59…; historical 57/57; actual.json c896a583…; gate decisions recounted exactly |
 | AC5 saved keyed predictions reproduce Study 1/2/country metrics, comparators, uncertainty, exclusions, June unevaluable | **PASS** | historical_metric_review.json (88d21073…); actual_metric_review.json (4d60d56f…); evaluation.json 8c43375a… (June unevaluable, Study 2 exclusions, expert NA) |
 | AC6 preserve negative evidence; report generalisation gaps | **PASS** | historical-results.md; actual-results.md; stage1-diagnostics.md; old lineage retained |
-| AC7 approved plan, identity, close only with evidence and an accepted audit | **PENDING** | Plan approved, committed and identity verified (audit run 5c4dede7…). The independent spot/close audit has not run; no close |
+| AC7 approved plan, identity, close only with evidence and an accepted audit | **USER-WAIVED (audit), not PASS** | USER-WAIVED (2026-10-03): the user explicitly authorized skipping the close and spot audits (“准许跳过close audit和spot audit，因为supervisor已经完成了相关内容”). Close-audit job e356444e8f195f33fe13cbb7 failed operationally twice at TUI bootstrap (401 unauthorized; attempts 1 and 2), with no audit result. The waiver is recorded by the coordinator. This is not an audit PASS. The completed science and checks were accepted by the supervisor, not by an independent audit. Earlier status (chronology): PENDING. | Plan approved, committed and identity verified (audit run 5c4dede7…). The independent spot/close audit has not run; no close |
 
 ## Artifact pointers
 
