@@ -3,15 +3,15 @@
 Authority: `prd.md`, `design.md`, `implement.md` v1.0. This is operational state,
 not approval. Updated 2026-10-04.
 
-Branch: `ipcch-cumulative-share-geoxgb` (prepared; baseline commit pending).
+Branch: `ipcch-cumulative-share-geoxgb`; frozen baseline `6c98f73c34272101ddc124cf20ed5ef338563646`.
 Scope: `IPCCHGeoXGBExperiment/` and this task's documentation/evidence.
 
 | Phase | Status | Evidence / next action |
 |---|---|---|
 | Science/spec/grill | component-complete | R1–R51; source-grounded clarifications in implement.md |
-| Baseline/context/manifests | in progress | Final scope validation then commit |
-| Audit binding/start | pending | Verify live Claude, rebind enrolled lowercase path, Claude starts |
-| P0 infrastructure | pending | Claude only; no fit; commit P0 evidence |
+| Baseline/context/manifests | complete | Committed `6c98f73c` |
+| Audit binding/start | complete | Run `7ced754ea36c48c0a6d24ba2a17addec` active, base_sha `6c98f73c…`, executor session `afc97c82…`/`term_65d044bdb69412`; first attempt refused by in_progress 10-03, user-authorized native archive (housekeeping commit `8160f68`); see audit-start-evidence.md |
+| P0 infrastructure | in progress | Claude only; no fit; commit P0 evidence |
 | Foundation freeze | pending | Codex reviews actual P0 artifacts/checks and releases same Claude |
 | P1 data/features | pending | Depends on foundation freeze |
 | P2 quartet/metrics | pending | Depends on foundation freeze and data contracts |

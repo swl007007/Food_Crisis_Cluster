@@ -3,7 +3,7 @@
   "name": "ipcch-cumulative-share-geoxgb",
   "title": "IPCCH cumulative-share GeoXGB architecture",
   "description": "Approved IPCCH cumulative-share GeoXGB: independent infrastructure, supervisor foundation freeze, Claude scientific implementation and run under R51.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "backend",
   "scope": "IPCCHGeoXGBExperiment",
   "package": "IPCCHGeoXGBExperiment",
