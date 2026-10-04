@@ -68,7 +68,7 @@ Study 2 uses exact-origin non-crisis keys only. Keys lacking exact-origin truth 
 
 - **Expert comparator.** No documented same-horizon expert table was supplied. Every key carries `no_documented_expert_table`; the 12 expert comparison routes are unavailable, not zero.
 - **Unlabelled keys.** Target keys without genuine truth are kept as forecast-only rows (coverage). They are excluded from the metrics, never filled.
-- **Country tables.** `scenario_report/country_h{H}_k{k}.csv` covers every cohort country (138 country rows in total). It is descriptive only, with no country-level significance claims.
+- **Country tables.** `scenario_report/country_h{H}_k{k}.csv` covers every cohort country. There are 138 country rows in total = 6 tables × 23 rows (22 countries plus one "unknown country / coverage only" row for forecast-only keys without a country). It is descriptive only, with no country-level significance claims.
 
 ## Negative results (preserved)
 

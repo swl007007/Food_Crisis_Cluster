@@ -21,10 +21,12 @@ resolved by the user-confirmed reconstructed convention: historical IPC Current 
 treated as known at the end of its reference month (`reference_month_end`, evidence
 `reconstructed`; assumed availability, not verified publication dates). The real
 historical development run was executed under that convention. For the 2025 cases, the actual
-CS availability table is now prepared as a user-attested reconstruction: missed service cycles
-0/1/2 at origins 2024-10/2025-02/2025-06, `evidence=reconstructed`, not verified vintage
-timestamps. Still pending: the frozen 2025 predictions (scen-actual), the approved truth release
-with its crosswalk, and expert-comparator coverage. Synthetic checks do not verify release dates
+CS availability was used as a user-attested reconstruction: missed service cycles 0/1/2 at
+origins 2024-10/2025-02/2025-06, `evidence=reconstructed`, not verified vintage timestamps.
+The 2025 predictions were frozen (scen-actual) and then evaluated against an approved,
+exact-name-mapped October-2025 truth release; geometric continuity is not certified. June 2025
+and the expert comparator have no source and are reported as unevaluable/NA. See the task's
+`research/final-report.md`. Synthetic checks do not verify release dates
 or the 2025 truth crosswalk. The old `run_all.sh` sequence below
 is not the interruption-study entry point. Use the task execution ledger for current
 commands and readiness before launching a real experiment.

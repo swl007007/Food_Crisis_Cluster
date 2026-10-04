@@ -1,0 +1,125 @@
+{
+  "pass": true,
+  "problems": [],
+  "forecast_rows": 22872,
+  "country_rows": 92,
+  "bootstrap_comparisons": 24,
+  "actual_sha256": "c896a583e4f7c0a82c03a0c07cd9338090fb6390cead6874ee52cfe73bc6a84a",
+  "evaluation_sha256": "8c43375a5f258a105c55540245fc0deb4284f36c550dbb1638a5709a6d79d427",
+  "probe_sha256": "d73f5e03134ed6a73aa9b4e05333087db1100bbef86a653db3d21702bc39edb5",
+  "comparisons": [
+    {
+      "case": "h4_2025-06",
+      "study": "study1",
+      "n": 0,
+      "matched": 0,
+      "model": null,
+      "persistence": null,
+      "delta": null,
+      "ci": [
+        null,
+        null
+      ],
+      "pooled_delta": null
+    },
+    {
+      "case": "h4_2025-06",
+      "study": "study2",
+      "n": 0,
+      "matched": 0,
+      "model": null,
+      "persistence": null,
+      "delta": null,
+      "ci": [
+        null,
+        null
+      ],
+      "pooled_delta": null
+    },
+    {
+      "case": "h8_2025-06",
+      "study": "study1",
+      "n": 0,
+      "matched": 0,
+      "model": null,
+      "persistence": null,
+      "delta": null,
+      "ci": [
+        null,
+        null
+      ],
+      "pooled_delta": null
+    },
+    {
+      "case": "h8_2025-06",
+      "study": "study2",
+      "n": 0,
+      "matched": 0,
+      "model": null,
+      "persistence": null,
+      "delta": null,
+      "ci": [
+        null,
+        null
+      ],
+      "pooled_delta": null
+    },
+    {
+      "case": "h4_2025-10",
+      "study": "study1",
+      "n": 4457,
+      "matched": 4457,
+      "model": 0.781491002570694,
+      "persistence": 0.7878787878787878,
+      "delta": -0.006387785308093807,
+      "ci": [
+        -0.017876104680697245,
+        0.00028840627010625014
+      ],
+      "pooled_delta": -0.002493498559431928
+    },
+    {
+      "case": "h4_2025-10",
+      "study": "study2",
+      "n": 0,
+      "matched": 0,
+      "model": null,
+      "persistence": null,
+      "delta": null,
+      "ci": [
+        null,
+        null
+      ],
+      "pooled_delta": null
+    },
+    {
+      "case": "h8_2025-10",
+      "study": "study1",
+      "n": 4457,
+      "matched": 4457,
+      "model": 0.7229580573951435,
+      "persistence": 0.7878787878787878,
+      "delta": -0.06492073048364433,
+      "ci": [
+        -0.1411843069369671,
+        0.02284216719723895
+      ],
+      "pooled_delta": -0.0005989710500373668
+    },
+    {
+      "case": "h8_2025-10",
+      "study": "study2",
+      "n": 0,
+      "matched": 0,
+      "model": null,
+      "persistence": null,
+      "delta": null,
+      "ci": [
+        null,
+        null
+      ],
+      "pooled_delta": null
+    }
+  ],
+  "scope": "Independent truth joins, exact origin exclusions, forecast equality, argmax, matched metrics, paired country-block bootstrap and country numeric fields. No refit or geometry certification."
+}

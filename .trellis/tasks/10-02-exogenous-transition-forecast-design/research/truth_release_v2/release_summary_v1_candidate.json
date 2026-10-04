@@ -1,0 +1,111 @@
+{
+ "raw_oct2025_cs_rows": 5573,
+ "raw_countries": 21,
+ "status_counts": {
+  "admitted": 4457,
+  "excluded_unmatched_name": 1093,
+  "excluded_no_genuine_phase:Not Projected": 19,
+  "excluded_no_genuine_phase:Not Available": 2,
+  "excluded_dbf_name_mismatch": 1,
+  "excluded_ambiguous_name_multiple_codes:2995/2996": 1
+ },
+ "admitted_keys": 4457,
+ "admitted_in_prediction_universe": 4457,
+ "prediction_areas": 5718,
+ "class_counts": {
+  "0": 1201,
+  "1": 1796,
+  "2": 1250,
+  "3": 210
+ },
+ "raw_phase_counts": {
+  "1": 1201,
+  "2": 1796,
+  "3": 1250,
+  "4": 210
+ },
+ "admitted_allowing_for_assistance": 44,
+ "by_country": {
+  "Afghanistan": {
+   "admitted": 509
+  },
+  "Burkina Faso": {
+   "admitted": 65
+  },
+  "Burundi": {
+   "admitted": 46
+  },
+  "Cameroon": {
+   "admitted": 96
+  },
+  "Chad": {
+   "admitted": 90,
+   "excluded_unmatched_name": 2
+  },
+  "Democratic Republic of the Congo": {
+   "excluded_unmatched_name": 345
+  },
+  "Ethiopia": {
+   "admitted": 496,
+   "excluded_unmatched_name": 645
+  },
+  "Guatemala": {
+   "admitted": 353
+  },
+  "Haiti": {
+   "admitted": 174
+  },
+  "Kenya": {
+   "admitted": 637,
+   "excluded_ambiguous_name_multiple_codes": 1,
+   "excluded_dbf_name_mismatch": 1,
+   "excluded_unmatched_name": 3
+  },
+  "Madagascar": {
+   "admitted": 154
+  },
+  "Malawi": {
+   "admitted": 56,
+   "excluded_no_genuine_phase": 20,
+   "excluded_unmatched_name": 8
+  },
+  "Mali": {
+   "admitted": 96,
+   "excluded_unmatched_name": 20
+  },
+  "Mozambique": {
+   "admitted": 233
+  },
+  "Niger": {
+   "admitted": 182
+  },
+  "Nigeria": {
+   "admitted": 284,
+   "excluded_unmatched_name": 21
+  },
+  "Somalia": {
+   "admitted": 198,
+   "excluded_unmatched_name": 19
+  },
+  "South Sudan": {
+   "admitted": 79
+  },
+  "Sudan": {
+   "admitted": 361,
+   "excluded_unmatched_name": 30
+  },
+  "Yemen": {
+   "admitted": 145
+  },
+  "Zimbabwe": {
+   "admitted": 203,
+   "excluded_no_genuine_phase": 1
+  }
+ },
+ "files": {
+  "crosswalk": "ab629b01f72ae5696dbbd36a2cc4b1b2707c1233f4cfbdc73d9b3ca04bd3652a",
+  "truth": "7ccc336f55c6325fcf3ccfa7508e2f4a4e2c97a6ecbd5ab493eaf37ab73547f2",
+  "release": "e80f960d02b05c2d4ea1c2c0cabfb33f96dfc9d56ffa953c227b5afa12da495e"
+ },
+ "frozen_actual_sha256": "c896a583e4f7c0a82c03a0c07cd9338090fb6390cead6874ee52cfe73bc6a84a"
+}

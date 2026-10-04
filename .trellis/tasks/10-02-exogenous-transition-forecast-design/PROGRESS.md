@@ -628,3 +628,69 @@ No CSV comparison was performed. Source identity is user-attested; no further we
   - **Code identity** fd25e2f7… (65 files) unchanged.
   - **Commit needs:** README, the task docs (design/prd/implement/PROGRESS/readiness/historical-results/dev-ledger…), the research probes and JSONs, and `git add -f` for the launch CSVs (*.csv is git-ignored).
   - NOT launched; awaiting the coordinator commit and release.
+- 2026-10-03 20:54 SCEN-ACTUAL LAUNCHED (coordinator authorisation after commit 482edb4).
+  - Pre-launch checks: HEAD 482edb4, package tree clean, code identity fd25e2f7… = HEAD, no scenario_actual, no other fit.
+  - Input hashes: launcher bd713324…, table 185e2c79…, manifest v2 72a766c6…, extension CSV 0d6b78ca….
+  - Single owner: launcher **PID 2504016** (via exec; scen-b43ef6a-v1.actual.pid), Python child 2504049.
+  - Command: `python3.12.exe -B scripts/run_experiment.py --run-dir 'C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1' scen-actual --actual-availability <research\launch\actual_availability.csv> --actual-scaffold <scen-b43ef6a-v1.actual-inputs-v1\extension_manifest.v2.json>`; 4 cases.
+  - Logs: scen-b43ef6a-v1.{actual,actual.nohup}.log. Exact-PID watcher on 2504016. No retry on failure. Truth and expert stay unopened.
+- 2026-10-03 21:09 SCEN-ACTUAL COMPLETE. Launcher 2504016 exited; scen-actual finished in 883 s, no traceback.
+  - `scenario_actual/actual.json`: sha c896a583e4f7c0a82c03a0c07cd9338090fb6390cead6874ee52cfe73bc6a84a.
+  - Post-run check: probe research/probes/actual_postrun_check.py (b2bc634b…), summary actual_postrun_check_summary.json (41abb0dc…). Exit 0, 0 problems.
+    - accept_record(actual.json) and _accept_frozen pass. actual.json binds frozen.json; code/runtime = selection; exactly the 4 ACTUAL_CASES, all released; fold SHAs match.
+    - Each fold: phase scenario_actual; A on map 8965af6d…; scenario_k 0; gate_k = table counts (22 countries: 0 at O 2024-10, 1 at O 2025-02, 2 at O 2025-06); prepared, table (185e2c79…) and manifest v2 (72a766c6…) SHAs; truth "not loaded"; 5,718 rows; outputs hashed; accept_record passes.
+    - Predictions: 5,718 unique areas per case; y_true_code all NaN. Persistence source/class/age = the latest lawful label ≤ O (5,716 rows with persistence per case).
+    - SD age 4/8/12 at O 2024-10/2025-02/2025-06. The minimum age elsewhere is 0/4/8; some areas in other countries have older latest labels (up to 123–131 months, area-level coverage).
+    - Routes per case: local_model 1,912 (h4 2025-06), 810 (h4 2025-10), 841 (h8 2025-06), 183 (h8 2025-10); the rest global fallback or unmapped (208).
+  - Output hashes are recorded in the summary JSON (fold.json, predictions, pooled, gate, gate_pairs per case).
+  - Truth and expert values are still unopened, pending the coordinator's actual-freeze acceptance. No retune, commit or close.
+- ACTUAL FREEZE ACCEPTED by the coordinator. Independently checked: actual.json c896a583…a84a; frozen/selection bindings; exactly H4/H8 × Jun/Oct 2025; fold output hashes; A/map/code/runtime; table 185e2c79 and extension 72a766c6; gate_k 22 × 0/1/2; 5,718 unique keys per case; truth absent. Prediction bytes preserved and never modified. Next: evaluator-only truth release preparation (2025 CS values may now be read, evaluator-only, never fed to fitting or selection).
+- Fit-key checker coverage for the actual run. The run now has 682 global records (654 + 28 actual):
+  - 4 actual outer globals (int k = 0; origins 2024-10/2025-02/2025-06): VALID for the unchanged coordinator checker (eed66e0d…). Run via a scratch run dir containing only these 4 records plus the byte-identical prepared observations/ledger → research/scenario_fit_keys_review_actual_outer.json (2ab40231…): 4/4, 0 problems. The historical evidence was not overwritten.
+  - 24 actual internal gate globals: per-country dict intensity_k and per-country mask dicts. NOT covered, because the checker assumes an int k and list masks. Left as a stated limitation, with no checker expansion.
+- Evaluator-only truth release CANDIDATE: research/truth-release-candidate.md. Packet in scen-b43ef6a-v1.truth-release-v1:
+  - Files: crosswalk ab629b01…, truth 7ccc336f…, release.json e80f960d… (approved: false; frozen_actual c896a583…), summary b9cf0cdd…; builder ab96e1a7….
+  - Source: the raw 2025_2026_FEWSNET.csv (a64ed4bb…), NOT FEWS_2025.csv.
+  - Exact-name one-to-one crosswalk. Result: 4,457 admitted (77.9% of October keys); 1,093 unmatched names (DRC 345 all; Ethiopia 645); Kenya 2995/2996 ambiguity excluded (2 rows); 21 with no genuine phase; Uganda has no raw October row.
+  - Class counts 1,201 / 1,796 / 1,250 / 210.
+  - Decision point: include the 44 admitted allowing-for-assistance rows (proposed; consistent with fews_ipc).
+  - June has no source, so it is forecast-only. No expert table, so it gets the NA route.
+  - No scores computed; the crosswalk was the probe build and nothing fed to fitting.
+- A first build attempt failed while writing its summary (tuple JSON keys) after writing crosswalk/truth/release. That just-created directory was deleted and fully rebuilt by the fixed builder.
+- 2026-10-03T22:20:50-04:00 Final bounded read-only trellis-check dispatched: agent a3b178d92faa9e797, 10-minute bound. Scope: scen_report tail/scen_evaluate; the 24 actual per-country internal gate globals vs G2; truth mapping/evaluation outputs; S-row weighting; relevant tests. Report: research/trellis-check-final.md.
+- Truth release v2 APPROVED (coordinator) and scen-evaluate RUN.
+  - v2 dir scen-b43ef6a-v1.truth-release-v2: release.json 985b5074…a570 (approved by the Codex coordinator under the user-approved spec; binds c896a583…).
+  - Truth 7ccc336f… and crosswalk ab629b01… are byte-identical to v1. Source metadata adds the consumed .dbf 2175dc97… and qualifies the .shp pin 3aba66a6…; the .dbf names re-read match the crosswalk on 4,479 matched rows. v1 preserved.
+  - Decisions recorded in release.json: 44 assistance-flagged published phases included (flag kept); exact-name + country + DBF-name mapping, with geometry NOT certified; exclusions and NA routes unchanged.
+  - scen-evaluate: command recorded in commands.log; rc 0; about 1 s; no expert table. Before/after hashes of 25 actual/frozen/release files are unchanged. evaluation.json 3f9c62b9….
+  - Results (research/actual-results.md):
+    - Oct H4: 4,457 keys / 20 countries; model .7815 vs persistence .7879; Δ −.0064 [−.0179, +.0003]; vs pooled −.0025.
+    - Oct H8: .7230 vs .7879; Δ −.0649 [−.1412, +.0228]; vs pooled −.0006.
+    - Oct Study 2: 0 eligible (4,457 lacking exact-origin truth), valid NA.
+    - June H4/H8: unevaluable, with the reason recorded. Expert: NA.
+  - No fitting or tuning; no commit or close.
+  - CORRECTION: evaluation.json sha is 8c43375a5f258a105c55540245fc0deb4284f36c550dbb1638a5709a6d79d427, not 3f9c62b9…. 3f9c62b9… is the shared sha of the identical coverage-only country_h4_2025-06.csv and country_h8_2025-06.csv. Fixed in actual-results.md.
+- Final bounded trellis-check (agent a3b178d92faa9e797) terminal (about 257 + 41 s, within bound). Report research/trellis-check-final.md (794c9bee…).
+  - Items 1–4 PASS: scen_evaluate/report code; the 24 actual per-country internal gate globals match G2; truth mapping/evaluation outputs; S-row weighting. Item 5 has test gaps only. June and expert are VALID-NA.
+  - Coordinator triage:
+    - F1: crosswalk hash externally pinned (release v2 plus recount).
+    - F2: not triggered (4,457 exact-month keys all matched).
+    - F3: the 23 country rows = 22 countries + "unknown country / coverage only"; wording fixed.
+    - F4: identical boosters disambiguated by the expected intensity.
+    - F5: test debt retained.
+    - No product or model change.
+- Coordinator actual metric recount PASS: 22,872 forecast rows, 92 country rows, 24 comparator/bootstrap entries, 8 Study results, 0 problems. Byte-exact copies: research/probes/actual_metric_review.py (d73f5e03…) and research/actual_metric_review.json (4d60d56f…).
+- FINAL PACKET (documentation only; no code, tests, fits or reruns):
+  - research/final-report.md: scientific summary, AC1–AC6 PASS, AC7 PENDING audit, artifact pointers, remaining debt and unresolved provenance (no exact realized fit count, etc.).
+  - research/actual-results.md: persistence qualified with saved source ages; practical parity H4 meets / H8 misses (descriptive; CIs are not equivalence); recount cited; 23-row country tables.
+  - research/historical-results.md: 138 = 6 × 23 rows.
+  - prd.md: completion-evidence addendum.
+  - implement.md: all items except the commit/close item ticked on explicit evidence (§5 note: 165 tests at the unchanged identity + three bounded trellis-checks + real recounts; no reruns; audit not run).
+  - README: status updated (README-only package diff; code identity fd25e2f7… unchanged).
+  - research/truth_release_v2/: approved release.json and candidate summary.
+  - research/external_evidence_manifest.json: 27 external files hash-pinned (truth/crosswalk, extension, run records, evaluation outputs); raw data outside the repo.
+  - Commit note: these evidence files match .gitignore '*.json' and need `git add -f`: research/truth_release_v2/release.json, research/truth_release_v2/release_summary_v1_candidate.json, research/probes/actual_postrun_check_summary.json.
+- Final scope corrections (coordinator review), documentation only:
+  - final-report.md (d4dc0c5b…): the conclusion is confined to primary Study 1, with the positive Study 2 k ≥ 1 intervals (H4 k1, H8 k2) noted. The partition 'no measurable benefit' claim is confined to Study 1, with the small Study 2 H8 k2 +.0026 disclosed. Task research is labelled 'final packet, pending commit'.
+  - implement.md (0bb9d71f…): stale current-status claims reconciled with the completed phases (actual blocked/admission open → completed via table/extension/v2/evaluate; 'formal trellis-check outstanding' → three bounded reviews run; independent audit still outstanding).
+  - Reviewer reports unchanged; AC7 still PENDING. PROGRESS history retained. PACKET FROZEN.

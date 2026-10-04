@@ -107,3 +107,14 @@ The package guideline `.trellis/spec/backend/local-forecasting-experiments.md` c
 - Existing GeoXGB schema has 162 columns: 75 IPC-history, 28 static, 41 dynamic, 15 covariate lag/aggregate and 3 calendar. Dropping the 75 leaves 87 candidates, not a selected new schema. IPC history includes levels, crisis indicators, changes, distributions, missingness/age, runs and interactions. D51 retained history/calendar and removed other covariates: it was not a phase-free ablation.
 
 Evidence: `PIPELINE_WORKFLOW.md:6–8` separates Stage1 2018–2020 from Stage3 2021–2024. The previous task's `experiment-plan.md:30,89,136` specifies selection through 2020-12, origin-relative 59-month fitting pools, and frozen subsequent evaluation. These are reusable starting contracts, not an automatic release of old execution scope. The trade-off is less recent data for choosing the recipe in exchange for compatibility and preserved temporal evaluation; later fitting can still use recently published observations under the frozen rule.
+
+
+## Completion evidence (2026-10-03, executor; pending the independent audit)
+
+Faithful finite execution is complete through scen-evaluate; see `research/final-report.md`.
+- AC1–AC6 PASS on explicit evidence. AC7 is PENDING the independent spot/close audit.
+- **Selection:** A at H4 and H8 (B failed normal parity).
+- **Historical:** no Study 1 Δ-vs-persistence CI excludes zero positively; H8 k0 is significantly negative.
+- **October 2025:** Δ −.0064 (H4) and −.0649 (H8), both CIs including 0. June 2025, the October Study 2 cells and the expert comparator are valid NA/unevaluable routes, not success claims.
+- **Unresolved provenance**, listed in the final report: no exact realized fit count; internal-local support-only evidence; exact-name truth mapping without geometric certification; reconstructed availability (historical month-end convention; 2025 user attestation).
+- No metric or scientific contract was changed and nothing was retuned.

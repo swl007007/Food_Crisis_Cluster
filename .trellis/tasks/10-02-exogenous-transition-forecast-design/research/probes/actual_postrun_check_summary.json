@@ -1,0 +1,389 @@
+{
+ "inputs": {
+  "table_sha256": "185e2c790d0b9d11102bceea0a5925947b99116ad4d3531a1148974eb9804b59",
+  "manifest_sha256": "72a766c626d699814aa532f8f973d9c5dde9fd041bf15bb64bd99d6ef44c81d6"
+ },
+ "actual_json_sha256": "c896a583e4f7c0a82c03a0c07cd9338090fb6390cead6874ee52cfe73bc6a84a",
+ "acceptors": "ok",
+ "cases": {
+  "h4_2025-06": {
+   "origin": "2025-02",
+   "gate_k_values": [
+    1
+   ],
+   "countries": 22,
+   "truth_all_nan": true,
+   "routes": {
+    "global_fallback:gate_gain_not_above_0.01": 3432,
+    "local_model": 1912,
+    "unmapped_area_global": 208,
+    "global_fallback:gate_metric_undefined": 166
+   },
+   "persistence_rows": 5716,
+   "ages_by_country": {
+    "AF": [
+     4
+    ],
+    "BF": [
+     4
+    ],
+    "BI": [
+     4
+    ],
+    "CD": [
+     4
+    ],
+    "CM": [
+     4
+    ],
+    "ET": [
+     4
+    ],
+    "GT": [
+     4
+    ],
+    "HT": [
+     4
+    ],
+    "KE": [
+     4
+    ],
+    "MG": [
+     4
+    ],
+    "ML": [
+     4
+    ],
+    "MW": [
+     4,
+     24,
+     32,
+     104
+    ],
+    "MZ": [
+     4
+    ],
+    "NE": [
+     4
+    ],
+    "NG": [
+     4
+    ],
+    "SD": [
+     8
+    ],
+    "SO": [
+     4
+    ],
+    "SS": [
+     4
+    ],
+    "TD": [
+     4
+    ],
+    "UG": [
+     4,
+     127
+    ],
+    "YE": [
+     4
+    ],
+    "ZW": [
+     4,
+     52
+    ]
+   },
+   "problems": []
+  },
+  "h4_2025-10": {
+   "origin": "2025-06",
+   "gate_k_values": [
+    2
+   ],
+   "countries": 22,
+   "truth_all_nan": true,
+   "routes": {
+    "global_fallback:gate_gain_not_above_0.01": 4534,
+    "local_model": 810,
+    "unmapped_area_global": 208,
+    "global_fallback:gate_metric_undefined": 166
+   },
+   "persistence_rows": 5716,
+   "ages_by_country": {
+    "AF": [
+     8
+    ],
+    "BF": [
+     8
+    ],
+    "BI": [
+     8
+    ],
+    "CD": [
+     8
+    ],
+    "CM": [
+     8
+    ],
+    "ET": [
+     8
+    ],
+    "GT": [
+     8
+    ],
+    "HT": [
+     8
+    ],
+    "KE": [
+     8
+    ],
+    "MG": [
+     8
+    ],
+    "ML": [
+     8
+    ],
+    "MW": [
+     8,
+     28,
+     36,
+     108
+    ],
+    "MZ": [
+     8
+    ],
+    "NE": [
+     8
+    ],
+    "NG": [
+     8
+    ],
+    "SD": [
+     12
+    ],
+    "SO": [
+     8
+    ],
+    "SS": [
+     8
+    ],
+    "TD": [
+     8
+    ],
+    "UG": [
+     8,
+     131
+    ],
+    "YE": [
+     8
+    ],
+    "ZW": [
+     8,
+     56
+    ]
+   },
+   "problems": []
+  },
+  "h8_2025-06": {
+   "origin": "2024-10",
+   "gate_k_values": [
+    0
+   ],
+   "countries": 22,
+   "truth_all_nan": true,
+   "routes": {
+    "global_fallback:gate_gain_not_above_0.01": 4503,
+    "local_model": 841,
+    "unmapped_area_global": 208,
+    "global_fallback:gate_metric_undefined": 166
+   },
+   "persistence_rows": 5716,
+   "ages_by_country": {
+    "AF": [
+     0
+    ],
+    "BF": [
+     0
+    ],
+    "BI": [
+     0
+    ],
+    "CD": [
+     0
+    ],
+    "CM": [
+     0
+    ],
+    "ET": [
+     0
+    ],
+    "GT": [
+     0
+    ],
+    "HT": [
+     0
+    ],
+    "KE": [
+     0
+    ],
+    "MG": [
+     0
+    ],
+    "ML": [
+     0
+    ],
+    "MW": [
+     0,
+     20,
+     28,
+     100
+    ],
+    "MZ": [
+     0
+    ],
+    "NE": [
+     0
+    ],
+    "NG": [
+     0
+    ],
+    "SD": [
+     4
+    ],
+    "SO": [
+     0
+    ],
+    "SS": [
+     0
+    ],
+    "TD": [
+     0
+    ],
+    "UG": [
+     0,
+     123
+    ],
+    "YE": [
+     0
+    ],
+    "ZW": [
+     0,
+     48
+    ]
+   },
+   "problems": []
+  },
+  "h8_2025-10": {
+   "origin": "2025-02",
+   "gate_k_values": [
+    1
+   ],
+   "countries": 22,
+   "truth_all_nan": true,
+   "routes": {
+    "global_fallback:gate_gain_not_above_0.01": 5161,
+    "unmapped_area_global": 208,
+    "local_model": 183,
+    "global_fallback:gate_metric_undefined": 166
+   },
+   "persistence_rows": 5716,
+   "ages_by_country": {
+    "AF": [
+     4
+    ],
+    "BF": [
+     4
+    ],
+    "BI": [
+     4
+    ],
+    "CD": [
+     4
+    ],
+    "CM": [
+     4
+    ],
+    "ET": [
+     4
+    ],
+    "GT": [
+     4
+    ],
+    "HT": [
+     4
+    ],
+    "KE": [
+     4
+    ],
+    "MG": [
+     4
+    ],
+    "ML": [
+     4
+    ],
+    "MW": [
+     4,
+     24,
+     32,
+     104
+    ],
+    "MZ": [
+     4
+    ],
+    "NE": [
+     4
+    ],
+    "NG": [
+     4
+    ],
+    "SD": [
+     8
+    ],
+    "SO": [
+     4
+    ],
+    "SS": [
+     4
+    ],
+    "TD": [
+     4
+    ],
+    "UG": [
+     4,
+     127
+    ],
+    "YE": [
+     4
+    ],
+    "ZW": [
+     4,
+     52
+    ]
+   },
+   "problems": []
+  }
+ },
+ "output_hashes": {
+  "h4/2025-06/gate.json": "86cb028e3a6a103d4d9e7e5d8f8c1a501ff90676323de100977abaf9e82d38c3",
+  "h4/2025-06/gate_pairs.csv.gz": "22ca20882bf680556bf4ed32eeb293aa2edcae2cf58ec565e59425fce95832cd",
+  "h4/2025-06/pooled_predictions.csv.gz": "6a14079db0916fe2b492334a7018651c1c0958220268425b6c7b358101d18dfb",
+  "h4/2025-06/predictions.csv.gz": "4128e26a3543d7a6785fbdedd48c3df37ff390da79f8b1a0951935aed03b10ea",
+  "h4/2025-06/fold.json": "81fdd16e03c9d9b6e7e02ed020880e3f4a073f2ee22f71d5b097f724ecf9c757",
+  "h4/2025-10/gate.json": "e1dfd3d0a04701135b524fc8439dbf52853d77cbee2cbfcb4d16d2b0860b53d3",
+  "h4/2025-10/gate_pairs.csv.gz": "938638468492bfd71908e8c9e050f3090ea1c54770d19aa0b3ec9cf5c19fd124",
+  "h4/2025-10/pooled_predictions.csv.gz": "5101405f6d8c1b2a6e5518f7edef7daff661151212e7f82d2cab3b51fc92fca9",
+  "h4/2025-10/predictions.csv.gz": "885b44dcfe67f0917fb2793b4a3cd9045c2a968f87b542a49c88f60e5658fa55",
+  "h4/2025-10/fold.json": "dbfd72700fc37341656b953a374d2d121270f6a771d70eb5b8721fb71cfd5737",
+  "h8/2025-06/gate.json": "d0582c374cf5754d1912e6c66ab9b9052c0049a49f75538ffd814e2e50ca4b10",
+  "h8/2025-06/gate_pairs.csv.gz": "25a86d32df4f570a777b66210369eb4e7c26d875d86ec71841df42bb1e0e32e7",
+  "h8/2025-06/pooled_predictions.csv.gz": "e110a5f102e8b5657856ece4b30fc70741ae06212f4019310db3a10fcf296baf",
+  "h8/2025-06/predictions.csv.gz": "94a2a507f2ca64a92b3012dc2296dc6c06d34cdf792891087058bd33649e7f0c",
+  "h8/2025-06/fold.json": "e49660c2371e9126a6921b257216a5dffe982b4000d92f4673e9646cf3496759",
+  "h8/2025-10/gate.json": "3975bd46b38a99f00d83d24f897140b4fae363ab6d5bab4eba0263231e9a3432",
+  "h8/2025-10/gate_pairs.csv.gz": "e82f23ad11d1ab6a8339e9e0526499cb1a450ed73a220864cc9a569254b31b0d",
+  "h8/2025-10/pooled_predictions.csv.gz": "08f8101fdc8b9ddde6a558574babf771e8ada0fb04348a48c2a7846722d78423",
+  "h8/2025-10/predictions.csv.gz": "3868e4d762c4c772fb9ae34a80b3ed06d7bfd9e5290bff47da2ad03c688671ce",
+  "h8/2025-10/fold.json": "262992d69a615690c8da6d2fbd2304f79ec6682e9036d0cd2be61a6ae07434b2"
+ },
+ "problems": []
+}

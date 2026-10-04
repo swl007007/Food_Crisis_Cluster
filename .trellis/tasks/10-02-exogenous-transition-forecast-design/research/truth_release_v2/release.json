@@ -1,0 +1,45 @@
+{
+ "approved": true,
+ "approved_by": "Codex coordinator under the user-approved spec (task 10-02), 2026-10-03",
+ "crosswalk": "crosswalk_oct2025.csv",
+ "truth_file": "truth_oct2025.csv",
+ "truth_sha256": "7ccc336f55c6325fcf3ccfa7508e2f4a4e2c97a6ecbd5ab493eaf37ab73547f2",
+ "frozen_actual": "c896a583e4f7c0a82c03a0c07cd9338090fb6390cead6874ee52cfe73bc6a84a",
+ "status": "APPROVED evaluator-only truth release v2 (supersedes candidate v1 metadata; truth/crosswalk bytes unchanged)",
+ "sources": {
+  "raw_2025_cs": {
+   "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\2025_2026_FEWSNET.csv",
+   "sha256": "a64ed4bb7e3fda952fa5f705c0ba4a35156215353d019f7b139f27c4f3637fce",
+   "note": "raw FEWS NET export; rows scenario CS, reporting_date 2025-10 (values read evaluator-only)"
+  },
+  "fewsnet_history_names": {
+   "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWSNET.csv",
+   "sha256": "8fdd4cca6f6ba26b84efc209c8eb36492e1257d51e24edd2c2ad4962df7b38d0",
+   "note": "FEWSNET.csv admin_name over all history (name -> admin code)"
+  },
+  "shapefile_dbf_attributes": {
+   "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWS NET Admin Boundaries\\FEWS_Admin_LZ_v3.dbf",
+   "sha256": "2175dc97d3c6969c627ebb07c4f456e05231b7050321b4bd40e9079f86b102d3",
+   "note": "attribute table actually consumed (admin_code, admin_name) via pyogrio, geometry not read"
+  },
+  "shapefile_shp_pin": {
+   "path": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\Outcome\\FEWSNET_IPC\\FEWS NET Admin Boundaries\\FEWS_Admin_LZ_v3.shp",
+   "sha256": "3aba66a6fbf6b2a8beb153df76a67662ce4e0a898fcb11e292a17cc174f5f742",
+   "note": "the prepared run's pinned .shp (geometry file); cited for identity only, not the attributes consumed"
+  }
+ },
+ "crosswalk_sha256": "ab629b01f72ae5696dbbd36a2cc4b1b2707c1233f4cfbdc73d9b3ca04bd3652a",
+ "rules": "Evaluator-only October-2025 truth release candidate (no fit; never feeds fitting/selection).\n\nSource: the raw FEWS NET export 2025_2026_FEWSNET.csv, rows with scenario CS and reporting_date 2025-10\n(NOT the derived/zero-filled FEWS_2025.csv). Crosswalk: EXACT full-name equality of\n``geographic_unit_full_name`` with FEWSNET.csv ``admin_name`` over all history. Admission requires:\n  1. the name maps to exactly one admin code (ambiguous names, e.g. Kenya 2995/2996, are excluded);\n  2. that code receives exactly one October row (one-to-one);\n  3. the raw country_code equals the code's country in the prepared observations;\n  4. the canonical shapefile DBF admin_name for the code equals the matched name;\n  5. a genuine IPC phase 1..5 (missing / Not Projected / Not Available excluded).\nNo fuzzy or spatial repair, no zero fill, no June label. Name equality is key evidence, not certified\ngeometric identity. class_code = min(phase, 4) - 1 (the four-class axis of the prepared labels).\nEvery raw row is kept in the crosswalk with its status. Writes a new external release directory\n(refuses overwrite) with release.json approved=false pending coordinator approval.",
+ "june_2025": "no local genuine June-2025 CS source; June targets stay forecast/coverage-only (no truth rows)",
+ "expert": "no documented same-horizon expert table; keys keep no_documented_expert_table",
+ "supersedes": {
+  "release": "C:\\Users\\swl00\\geoxgb_runs\\scen-b43ef6a-v1.truth-release-v1\\release.json",
+  "sha256": "e80f960d02b05c2d4ea1c2c0cabfb33f96dfc9d56ffa953c227b5afa12da495e",
+  "change": "source metadata only: .dbf attribute path/hash added, .shp pin qualified; approval set"
+ },
+ "decisions": {
+  "assistance_flag": "APPROVED: the 44 admitted rows with is_allowing_for_assistance=True are included as published CS phases under the existing observed-phase (fews_ipc) definition; the flag column is retained",
+  "mapping": "APPROVED: exact full-name + country + canonical DBF-name one-to-one mapping for this explicitly limited reconstructed evaluation; geometric/boundary continuity is NOT certified",
+  "exclusions": "all exclusions kept (unmatched incl. DRC all and Ethiopia 645, Kenya 2995/2996, no genuine phase); Uganda has no raw October row (coverage only); June, Study2 exact-origin and expert stay NA routes; no score-driven cohort change"
+ }
+}
