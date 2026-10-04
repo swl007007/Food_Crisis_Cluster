@@ -1,0 +1,2652 @@
+{
+  "passed": true,
+  "roots": {
+    "h4_2018-06_G1_r80_s42_e1pair": {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 91144
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65541
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 91144
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10119
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10119
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10119
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40480
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10119
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10119
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10119
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40480
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21456
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h4_2018-10_G1_r80_s42_e1pair": {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 91659
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65908
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 91659
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40772
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40772
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h4_2019-02_G1_r80_s42_e1pair": {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 87311
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 61361
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 87311
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41172
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41172
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h4_2019-06_G1_r80_s42_e1pair": {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 87820
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 61868
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 87820
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41176
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41176
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h4_2019-10_G1_r80_s42_e1pair": {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 88329
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 62374
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 88329
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41180
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41180
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h4_2020-02_G1_r80_s42_e1pair": {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 83973
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 62578
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 83973
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 31780
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 31780
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 22024
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h4_2020-06_G1_r80_s42_e1pair": {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 84332
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 62937
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 84332
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 31780
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 31780
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 22024
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2018-06_G4_r80_s42_e1pair": {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 90636
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65195
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 90636
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40156
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40156
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21456
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2018-10_G4_r80_s42_e1pair": {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 91151
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65545
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 91151
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40484
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40484
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2019-02_G4_r80_s42_e1pair": {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 91659
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65908
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 91659
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40772
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40772
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2019-06_G4_r80_s42_e1pair": {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 87311
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 61361
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 87311
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41172
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41172
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2019-10_G4_r80_s42_e1pair": {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 87820
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 61868
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 87820
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41176
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41176
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2020-02_G4_r80_s42_e1pair": {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 88470
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 62374
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 88470
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41180
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41180
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 22024
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h8_2020-06_G4_r80_s42_e1pair": {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 83973
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 62578
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 83973
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 31780
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 7944
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 7945
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 31780
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 22024
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2018-06_G2_r80_s42_e1pair": {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 94985
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 69546
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 94985
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10037
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10037
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10037
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40152
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10037
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10037
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10037
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10038
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40152
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5364
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21456
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2018-10_G2_r80_s42_e1pair": {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 90643
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65199
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 90643
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10040
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10040
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10040
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40160
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10039
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10040
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10040
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10040
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40160
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2019-02_G2_r80_s42_e1pair": {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 91151
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65545
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 91151
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40484
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10120
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10121
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40484
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2019-06_G2_r80_s42_e1pair": {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 91659
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 65908
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 91659
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 40772
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10193
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 40772
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2019-10_G2_r80_s42_e1pair": {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 87311
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 61361
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 87311
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41172
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10292
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41172
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5365
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 21460
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2020-02_G2_r80_s42_e1pair": {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 87961
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 61868
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 87961
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41176
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10293
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10294
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41176
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 22024
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    },
+    "h12_2020-06_G2_r80_s42_e1pair": {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "checks": {
+        "fitting_keys_sha256": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "membership_keys_truth_roles": {
+          "mismatches": 0,
+          "n": 88470
+        },
+        "fitting_excludes_S_C_target": {
+          "mismatches": 0,
+          "n": 62374
+        },
+        "window_[O-59,O)": {
+          "mismatches": 0,
+          "n": 1
+        },
+        "all_keys_le_2020-12": {
+          "mismatches": 0,
+          "n": 88470
+        },
+        "root_booster_sha": {
+          "mismatches": 0,
+          "n": 2
+        },
+        "hard_S_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_S_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_S_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "hard_C_p_root": {
+          "mismatches": 0,
+          "n": 41180
+        },
+        "hard_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "hard_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_S_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_S_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_S_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_keys": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_truth": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_y_root": {
+          "mismatches": 0,
+          "n": 10295
+        },
+        "brier_C_p_root": {
+          "mismatches": 0,
+          "n": 41180
+        },
+        "brier_E3_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_truth": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "brier_E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_root_keys": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_y_pred_pooled_code": {
+          "mismatches": 0,
+          "n": 5506
+        },
+        "E3_p_pooled": {
+          "mismatches": 0,
+          "n": 22024
+        },
+        "g_config_locked": {
+          "mismatches": 0,
+          "n": 1
+        }
+      },
+      "passed": true
+    }
+  },
+  "rule": "exact equality, round-trip parse; a root failing the pre-fit gate is not fitted; the first gate, projection, fit, reload, D49/D50 consistency, scoring or dev_baselines failure stops the run"
+}

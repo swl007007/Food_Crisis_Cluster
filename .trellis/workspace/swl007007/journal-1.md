@@ -97,3 +97,26 @@ Reviewed fixed implementation and closure commits against source, all-row artifa
 ### Next Steps
 
 - Push reviewed feature branch, merge into main and push main as authorized.
+
+
+## Session 4: Complete interruption fallback experiment; independent audits user-waived
+<!-- trellis-session: v=2 fp=58748a9bf95a23d9 -->
+
+**Date**: 2026-10-03
+**Task**: Complete interruption fallback experiment; independent audits user-waived
+**Branch**: `geoxgb-shared-parameter-experiment`
+
+### Summary
+
+Completed 648 Stage1 candidates,72 development,57 historical and4 actual forecasts with saved-key recounts; Oct2025 H4 F1 .7815 vs persistence .7879, H8 .7230. June/expert/OctStudy2 valid NA. Three Trellis checks and supervisor verification retained. Close-audit e356444e attempts failed401; user explicitly waived close and spot audit, recorded as waived not passed. Task archived; no retuning.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `482edb4` | Record historical evidence and confirmed 2025 CS availability |
+| `b71ce98` | Record actual 2025 evaluation and final experiment evidence |
+
+### Status
+
+[OK] **Completed**

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "checks": 407388,
+  "issues": [],
+  "scope": "All15 pairs, perH/overall, both cohorts, all aggregate/mean metrics, pool counts and all joined probabilities; separate supervisor check replayed6 saved models",
+  "source_summary_sha256": "2a8dafc680dff46c7921ac52ec35639a3a7de5f9438450d8d7f053f3780fb6bc"
+}

@@ -1,0 +1,252 @@
+# Evaluation 分层契约 v1.0
+
+**任务已关闭（incomplete，用户取消；closure-note-incomplete.md）。关闭前：D55/A29已批准规划（迁移筛选：各H汇总与逐折均值匹配E3危机F1均须严格高于原root与persistence，精确分数计算；d55-relative-coordinate-root-plan.md）；D54/A28已完成、未采用策略，Stage1当前配方相邻变体研究停止（research/stage1-research-decision-d54.md）；D53/A27已完成、未采用策略（描述性诊断；d53-state-probability-transfer-plan.md）；D52/A26已完成，不采用（仅诊断；d52-binary-root-proposal.md）；D51/A25已完成，不采用（d51-history-calendar-root-plan.md）；D50/A24已完成，不采用策略（d50-origin-phase-ranking-plan.md）；D49/A23已完成，不采用策略（d49-ranking-headroom-plan.md）；D26危机终点、D29冻结确认诊断及D30近期搜索；D30六根已完成；D31已完成且不确定；D32/A7已完成（c079b75）；D33/A8已完成（69f2cc3）；D34/A9已完成；D35/A10已完成；D37/A11已完成，不采用（d37-recency-root-plan.md）；D38/A12已完成，探索性候选、不采用（d38-persistence-margin-root-plan.md）；D39/A13仅诊断完成（d39-probability-diagnostic-plan.md）；D40/A14已完成，不采用（d40-forward-decision-plan.md）；D41/A15已完成，不采用（d41-local-shrinkage-plan.md）；D42/A16已完成，不采用（d42-map-transfer-plan.md）；D43/A17已完成，不采用（d43-temporal-map-refit-plan.md）；D44/A18已完成，不采用（d44-full-pool-root-diagnostic-plan.md）；D45/A19已完成，未采用策略（d45-root-prefix-diagnostic-plan.md）；D46/A20已完成，不采用（d46-crisis-weight-root-plan.md）；D47/A21已完成，不采用（d47-stump-root-plan.md）；D48/A22已完成，不采用（d48-known-origin-fit-plan.md），Stage3信息隔离保持，Stage1过拟合仍未解决。**
+
+D28共享root的单次局部增量及A3六根实施/实验方案均已批准。其E1/E2比较对象不变，拟合共享来源按末尾D28区分。
+
+2026-10-01；设计按D24采用，D25已授权执行。母包事实与新设计分开记录；本契约的研究证据来自规划阶段，不是已完成的新模型运行。
+D8 批准评价分层，D10 批准 E1/E2 复用及选择偏差取舍，D13 固定 Stage 3 每区 global+local 相对 global 的 >0.01 启用门槛。D9 修订为固定59个月，D11 接受局部缺少“4或5”。
+**D20/D23/D24当前状态**：Stage 1区域内随机80/20、50/50取代先前内部时间方案；D23将D12扩展为严格 >0 与 >0.01 两族。E1/E2复用、E3/E4外部评分、Stage 3时间拟合与D18条件地图筛选保持。seed、容量、支持及日程已按D24采用，统一见 `experiment-plan.md`；全开发期选择G造成的开发偏差另行披露。
+以下源码路径用 P 表示 `FEWSNETFourClassBaseline/`，不能用根目录 legacy GeoRF/XGB 替代。
+
+## 当前母包：用途分开，但部分数据复用
+
+| 层 | 用途与比较对象 | 当前数据 | 当前规则 |
+|---|---|---|---|
+| E1 区域误差与 q/scan | 当前父模型在哪些区域集中出错，提出候选区域集合 | 当前父分支 `X_set==1`；父模型只拟合 `X_set==0` | 按区域/类别 TP、FP、FN 构造归一化质量，扫描更新 q 和区域 gscore；不是显著性检验 |
+| E2 子模型接纳 | 新子模型组合是否优于当前父模型 | **复用 E1 的验证行**；子模型在各区域对应 `X_set==0` 拟合 | 汇总完整父验证集 confusion 后计算 fixed-four macro-F1，严格 gain >0.01；父模型赢平局；不是 p 值 |
+| E3 Stage 1 目标月评分 | 整个已学习分区模型相对 pooled baseline 的月度表现 | 窗口外目标月 T；独立于该候选的内部验证行 | partitioned 与 pooled 的同键 macro-F1；pooled 在相同真实 fitting 行另拟合 eval 模型，不直接读取 root checkpoint |
+| E4 Stage 2 consensus 权重 | 候选分区对最终地图贡献多少 | 消费 E3 的月度分数；无新预测评价集 | w=max(0,logit(clip(F_part))-logit(clip(F_pool)))，clip=[1e-6,1-1e-6]；无显著性检验 |
+| E5 Stage 3 预测与最终统计 | 固定地图后的 pooled/local、persistence、expert 表现 | 每个预测起点前的滚动历史拟合；目标月逐键预测用于报告 | 当前 local 只按 ≥50 行/≥2 类资格拟合，无 local 胜过 pooled 的验证门槛；最终用配对国家 bootstrap 给出差值区间 |
+
+现有拟合标签窗口为 `[O-35,O)`，内部每区随机留出约 20%，并非内部时间验证。
+当前 Stage 3 使用该历史池全部真实行拟合，没有 E1/E2 式内部验证。
+
+## E1：q 的含义
+
+对当前父分支的验证预测，区域 g、类别 k 的整数 TP/FP/FN 给出：
+
+    D_gk = 2 TP_gk + FP_gk + FN_gk
+    D_k  = sum_g D_gk
+    Y_gk = D_gk / (4 D_k)
+    A_gk = 2 TP_gk / (4 D_k)
+    C_gk = Y_gk - A_gk
+    B_gk = (sum_g C_gk) * Y_gk / (sum_g Y_gk)
+
+D_k=0 时 Y/A 对应列为 0。C 是观测错误质量，B 按父分支类级错误比例及区域 exposure 分配期望错误质量。
+候选区域集合 S 上，扫描迭代更新：
+
+    q_k = sum_{g in S} C_gk / sum_{g in S} B_gk
+    gscore_g = sum_k [C_gk log(q_k) + B_gk (1-q_k)]
+
+q 是按类别的错误质量倍率，用于寻找候选区域；四分类最终 q 为四个值，区域级数值是 gscore。
+非退化情况下 q>1 表示该集合错误相对期望更集中；分母无支持或 q=0 时实现令 q=1。
+初始化有区域×类别 C/B 比值，但不能把它与最终集合级 q、macro-F1 增益或 p-value 混为一谈。
+
+源码：`P/src/metrics/fourclass.py:139-153`（scan_masses）、
+`P/src/partition/partition_opt.py:207-212`（get_c_b）、`:942-1008`（scan）。
+
+## E2：当前父模型，不是每一层都比较全局根模型
+
+`base_eval_using_merged_branch_data` 加载当前 `branch_id`；只有空字符串分支是 root。
+更深层以当前父 checkpoint 为比较对象，父 checkpoint 可能继承更上层模型及变换。
+两个新子模型分别拟合后，在完整且相同的父验证键上比较四种路由：
+
+    parent / parent
+    child  / parent
+    parent / child
+    child  / child
+
+先合并两侧 confusion counts，再计算固定四类 macro-F1；不是各区域 F1 的平均。
+只有 best_candidate - parent >0.01 才接受，保留父模型的一侧复制父 checkpoint。
+变量 `sig=int(accepted)` 不代表统计显著性；四分类可达路径不使用 legacy 二分类 sig_test。
+该 >0.01 是当前母包内部接纳规则，新设计由 D12 沿用后又经 D23 扩展为 >0 和 >0.01 两族；它们不等于 D3 最终增益 CI 门槛。
+
+源码：`P/src/model/train_branch.py:10-17,31-50`；
+`P/src/partition/transformation.py:278-305,677-680,721-752`；
+`P/src/partition/partition_opt.py:854-873`（select_macro_children）。
+
+## E3/E4 与 E5 的边界
+
+当前母包Stage 1外部目标评分未参与候选内部切分，但决定consensus权重，属于地图学习。新设计按D24全开发期选G，E3另条件于该配置选择；只保证该目标未进入候选fitting/E1/E2行池，不能声称E3未影响任何模型选择。
+不能拿它再次声称整个地图/配置已经在独立测试上胜出。
+训练与地图合法性必须分别追踪：不仅要查 RF/XGB 训练标签截止，还要查候选评分标签截止。
+
+最终 Stage 3 的逐键预测可用于用户已定的三 horizon 科学验收；D3 要求各自相对 persistence 的配对增益 CI 下界 >0。
+该要求没有自动在每个节点启用 bootstrap，也没有把 q 或 consensus 权重转成假设检验。
+历史 2021–2024 已被查看的限制继续披露，不能声称 untouched holdout。
+
+源码：`P/app/main_model_GF.py:97-125,137-163`（实际 split 及目标月评分）；
+`P/src/model/GeoRF.py:301-317`（真实 fitting pool）；
+`P/scripts/step4_similarity_matrix.py:50-68`（compute_plan_weights）；
+`P/scripts/compare_partitioned_vs_pooled_rf_k40_nc4.py:111-174`（fit_fold）；
+`P/scripts/report_fourclass.py:120-138`（bootstrap）。
+
+Stage 2 当前将 fs1–fs3 的完整候选账本共同送入 general consensus（`P/scripts/run_stage2.py:68-79`）。扩展 Stage 1 生成方式只增加有身份的候选来源，不自动改变共识算法或拆成每 H 独立地图。
+
+D21区分候选诊断与最终目标：趋同可能是稳定性，高差异/数量不是验收，Stage 2不保证预测最优。方案取舍用开发期预测，最终Stage 3不调参。D24保留超过expert的H4/H8优化目标及增益/区间报告，不新增expert硬CI；persistence仍按D3/D17。
+
+## 新设计：已确认契约
+
+逐层区分目的/行池/决策对象。Stage 1随机fitting/validation来自外部O前合法池且键互斥，E3目标T不进入这两个行池；D24选择G可使用开发目标，故不声称T未影响任何候选配置。Stage 3内部global/local在各自V=U−H前合法拟合，不能用当前O模型回看U。Stage 1随机验证不声称满足每条验证行自身origin的前瞻约束。
+按 D14，各内部 origin 的全局／父／子模型及其验证预测采用相同的 dense 输入、NaN 原生缺失处理与 ±inf→NaN 清洗，不拟合或跨 origin 复用 RF 填充值；前缀中已学得的缺失分支方向保持不变。特征定义和时间可用性仍按 D7 检查，原生缺失处理不授权改变历史统计公式。
+
+按 D20，E1/q 与 E2/接纳复用同一候选的区域内随机验证行，父子模型只拟合该候选的 fitting 行；在候选外部 O 截止下利用 validation 标签寻找边界并选择子／父路由。D10 的复用原则保留，原多 origin 实现安排被取代。搜索与接纳仍是不同用途，复用不把 q 变成性能增益或显著性统计量。
+由于边界／路由已看过该验证池，E2 只是内部筛选，存在选择偏差，不能宣称这些行是完整分区策略逐起点的独立前瞻重放。整个搜索／接纳流程另由外层时间评价检验。E3 仍保留窗口外目标月用于候选评分/consensus，因其参与地图开发，不能自动替代最终独立证据；最终 E5 不用于调参。
+此前E1/E2严格顺序隔离及Stage 1内部多起点方案均已被取代。Stage 1 seeds/候选预算及Stage 3日程按D24采用，见experiment-plan.md。
+
+候选接纳池在多个节点/配置中复用有选择偏差；D10接受该内部取舍，不取消容量限制与外层评价。支持/接纳规则现按D24固定，不足则按规则回退或报告，不临时改变行池。D11只排除“缺4或5本身即禁用”，其余支持资格保持。
+
+增量轮数和回退属于选择过程，需注明开发行/有限预算；D24采用固定轮数，无early stopping。
+按D15每H统一选G/L各一套，跨分区、分割层及最终folds复用；不逐区调参。不同区域的增量和D12/D23、D13路由仍可不同；有限网格及顺序选择按experiment-plan.md。
+按 D9 修订，全局／父／子拟合标签窗都在自身 origin 取 `[origin-59,origin)`，内部 fitting 可以完整回溯到外部 fold 当前窗口之前；仍检查当时标签与特征可用性。窗口长度不再是开发搜索变量，不改变特征工程回溯公式。
+
+每层日期/键、父与root/pooled身份、支持/回退及预测消费角色已在experiment-plan.md固定规则；实施时保存实际键和身份。只存总分不足以重建这些关系。
+
+## 样本核查后的修订
+
+详见 `research/sample-support.md`。Stage 1 每行政区当前随机 validation 只有 0–2 条；Stage 3 的 local fitting 虽有 1,016–7,728 行，却只涉及 8 个真实月份，40% 的分区×fold 无“4或5”。这些是现有 RF 地图与真实标签的计数，不是未来 XGB 分区表现的预测。
+
+探索 E1=`[O-12,O-6)`、E2=`[O-6,O)` 实际只有 2／1 个观测月份；Stage 3 的 E2 缺“4或5”比例达 57.3%–60.7%。因此不能把两个日历上六个月的块当成两套充足的验证证据，本轮不冻结该拆分。
+
+旧窗口诊断须区分两种统计：历史池内前缀 `[O-35,O-12-H)` 在 Stage 3 仅有 H4/H8/H12 的 4／3／2 个月份；内部起点完整回溯 35 个月可各有 8 个真实月份。前者不是数据源历史上限，也不是已修订的 59 个月新契约。D10 的每条内部预测记录父树、子树和输入表示的 fitting origin；边界／路由选择另记录开发截止身份，不冒充内部逐起点完整前瞻策略。
+
+若 E2 声称是当时可运行的前瞻评价，E1 标签及选出的边界应在每个 E2 origin 已可用。E1 target 早于 E2 target、或两者行不相交，均不足以保证此点；上述相邻块尤其未证明 H8/H12 的搜索信息截止合法。确定具体日程时同时检查 selection cutoff 与 fitting cutoff。
+
+W=59在Stage 3增至14个真实月份，不证明收益。D9取代35/59择窗；D10允许内部复用，D11接受局部缺稀有类，Stage 1按D12/D23、Stage 3按D13。D24已采用具体日程/支持规则；D3最终CI目标不变，未授权训练。
+
+已确认 D12/D20/D23：E2 在完整父随机验证键上汇总两侧 confusion 后计算 fixed-four macro-F1；候选按 threshold_family 使用严格 gain >0 或 >0.01，等于自身门槛不接受，父模型赢平局。D23 只扩展 Stage 1 的两档固定生成对照，E3/E4 同口径评分，Stage 3 继续 D13 的 >0.01，不作用于 q 或 D3 最终 CI，不授权其他阈值搜索。
+
+已确认 D13：Stage 3 的每区增量必须在该区相同历史时间验证键上，相对 global 的 fixed-four macro-F1 严格增益 >0.01 才启用；等于 0.01、更低或没有可用验证收益证据时零增量回退全局。每条验证预测的拟合标签须在其内部 origin 可用，所有路由选择所用标签须在本次外部 fold origin 可用；不能用本次最终目标标签择路，也不能以当前全局模型回头预测内部过去起点。
+分区内合并各内部origin的confusion再算fixed-four macro-F1，不平均月F1或缩短类别轴。保存配对键、global身份、得分/回退原因；通过的路由用于外部fold重新拟合。该区总体不同于E2完整父分支，gate不是独立显著性结论，也不保证整体F1提高。D24固定最近六日期与至少三个有验证行且local可拟合日期；local失败日期保留global预测参与配对，D11仍适用。
+
+**已确认 D18 的地图截止**：允许用外部 origin O 已知的地图作条件历史筛选，使用更早验证目标 U<O，每个内部模型仍只在 V=U−H 以前合法拟合。地图可能利用过 U 的标签，因此分数仅用于内部路由，不能称完整策略在 V 的独立前瞻重放。最终地图／超参数／阈值只用截至 2020-12 的开发信息，Stage 3 标签或成绩不参与这些选择；本次外部预测不得使用其 origin 尚不可用的信息。D16 已批准的已到达标签滚动拟合／固定规则筛选继续适用。D18 为此项单独确认，不混同 D10 的 E1/E2 复用。
+
+## 已确认的开发与最终时间边界（D16）
+
+按 D16，以 2018–2020 目标月作为开发／地图学习阶段，最终配置与地图选择的信息截止为 2020-12；之后按母包 H4=2021-05、H8=2021-09、H12=2022-01 起至 2024-12 滚动评价。该阶段边界已确认，但不替代内部 origin 的完整日程，也不自动证明既有 E3 是整体流程独立外层评价。
+2021年后到达标签可在后续合法origin按59个月及D13更新，不据最终成绩改参数/阈值/地图。开发按origin截断候选评分目标后重建consensus，不用最终2020地图回测早期。D24先全开发期选G，因此开发地图/分数条件于配置选择，并非全部选择信息在历史origin已知；用户已接受且报告须披露。最终截止不放宽，已查看基线的历史仍称回溯评价。
+
+## 已确认的最终置信区间（D17）
+
+按 D17 沿母包使用国家块配对 bootstrap，对保存的最终同键预测进行重采样，不在每次抽样中重新拟合模型／选择地图。一次抽样对国家有放回抽取，与该国家关联的全部区域和整段月份同时保留；所有模型、cohorts 和 H 共用国家抽样次数。先按次数合并各国 confusion counts，再计算各模型 fixed-four macro-F1 及配对差值，不平均国家 F1，也不将每条区域月份当独立样本。
+
+复用母包 `scripts/report_fourclass.py:28-30,96-138,152-167` 的 seed=42、2,000 次有效抽样、最多20,000次尝试、差值2.5%/97.5%分位数（linear）。某个必需 cohort 完全空的抽样重抽并记录；单个类别缺失不作为重抽理由，保持固定四类轴。有效抽样不足时区间证据为 incomplete，不能判 D3 通过。保存国家权重、逐次差值和配对键；D3 仍要求每个 H 的点增益及 CI 下界均 >0，不把三个边际区间说成同时95%区间。
+
+解释限于这段已观察历史、固定预测下的国家块重采样，保留块内时间／空间依赖，不自动涵盖跨国共同冲击、未知未来年份或重新训练／选择的全部不确定性。已有按国家／年度的描述性表补充稳定性，不新增逐年胜出硬门槛。该方法与解释范围已按 D17 确认，不迁移成 E1/E2 或每区内部显著性检验。
+
+## D26 修订（2026-10-01）：二分类危机终点
+
+E1/E2/E3/E4 的得分统一改为 crisis-positive F1（IPC≥3=类码{2,3}；四分类 argmax 后折叠）：E1 用 crisis 单列 TP/FP/FN 质量；E2 为完整父验证键上精确 crisis F1 增益（>0 / >0.01 两族）；E3 为目标月 partitioned 与 root 的 crisis F1；E4 权重输入为该 crisis F1。四分类 fixed-four macro-F1 作为次要记录。Stage 3 gate、开发择优与最终 D3 的对齐见 experiment-plan.md A1，待 Stage 1 结果审阅后确认。
+
+## D27：时间块对照的评价角色
+
+只对experiment-plan.md A2的六个新候选，将E1/E2行池改为外部O之前合法59个月历史中的最近三个全局真实标签月份；此前月份为fitting，各区域沿用同一角色。E1仍搜索，E2仍在完整父验证键上以精确crisis gain>0接纳，不是两个独立数据集。父与子都不能拟合这三个验证月份，支持不足也不能移动这些行。
+
+这只是标签月份按时间留出，并非在每个验证目标U的origin=U−H分别重拟合；不套用Stage3内部rolling-origin的说法。E3目标T不进入该候选历史池，评价已冻结的root/local；G的开发选择偏差仍存在。最终Stage3信息边界不变。
+
+新旧方法E2行池不同；比较它们的E3时须以相同H/T的完全相同目标键和truth对齐。各自local−root比较之外必须报告root本身变化，不能把训练样本/时期变化误称纯分区机制效果。E3已用于本轮方法研究，仍属开发证据，不是独立最终成功检验。四分类概率保留，主分数为crisis-positive F1；不新增概率阈值调参。
+
+## D28：共享来源与评价对象分开
+
+Plan B新子模型从同候选root追加一次L1，但E1/q仍看当前父模型，E2仍在完整父验证键上比较当前父与两个新子模型的四种路由，严格crisis gain>0、父赢平局。无支持/未接纳的子侧继续当前父预测，不改成全局回退。E3比较最终路由与同拟合键的root；E4仍消费crisis得分。
+
+首轮使用D26相同r80、seed42、G、日期、L1和gt0，因此应核对fitting/validation/target键、truth和root预测一致。两臂E2虽同历史行，仍是各自自适应选择的内部得分，不能据此作独立显著性结论。E3及候选结构用于有界开发诊断，Stage3不参与。新增字段须区分共享root身份、当前比较父身份、实际20-round增量与最多80的路径搜索额度，不能把后者报告为真实模型树数。
+
+## D29：S内E1/E2与冻结后C分开（已完成，待科学评审）
+
+原r80 fitting保持，原validation=互斥S并C。S内E1/q及完整当前父键E2沿用原精确crisis gain>0规则；C不改名为E2，不替代E3或E4。C是冻结整份候选后的诊断集，无逐区启用门槛；root/local在全部相同C键上聚合confusion后计算crisis F1，四类概率/argmax后折叠及fixed-four次指标保持。
+
+全候选在C评分前冻结，不把C标签/得分反馈扫描、局部训练、支持、接纳、深度、停止、重试、剪枝或E4。C负增益照常保存，不据此退回root或丢候选。未知/无支持区域保留既有预测fallback及全部C评价键。按冻结后的终端报告C支持，少量正例作为限制，不新增20正例硬门槛。
+
+报告ΔS、ΔC、ΔE3，各为同一行池上的local−root；ΔS−ΔC只描述适应性搜索成绩与同历史确认成绩的差，ΔC−ΔE3只描述确认与目标月成绩差，不能单凭差值认定因果或时间漂移。C与fitting/S行键互斥不消除时空相关，也不提供逐origin前瞻保证。既有G选型、历史实验与本次方法设计已经使用开发数据，因此C仅对本次新搜索隔离，E3继续是开发评价，均非最终未触碰测试。
+
+D28主对照原E2使用完整validation；其保存预测可按新S/C键重算作描述性同键对照，但D28的C已用于旧搜索，必须标记为exposed，不称独立确认。只把新臂S与旧臂整个validation对比不是同样本差值。新旧E3保持完全相同目标键、truth、fitting键和root预测；只读保留旧产物。
+
+## D30：近期S与原C的角色
+
+E1/E2只消费原S在预定最近六个validation观察月份内的行，比较对象仍是当前父。原S更早行unused，不作拟合或确认；C全池不变且只在冻结后评价，另按相同六日期分近期/更早C报告，不把C用于选择。E3/E4保持。D29控制按同S_recent/C/target键重算，root须相同；搜索样本数量和时段同时改变，不能把差异当纯时间漂移因果效应。详见d30-recent-search-plan.md。
+
+## D31：等量搜索样本与解释边界（已完成）
+
+E1/E2只消费逐区等量抽取的原S搜索行，比较对象仍为当前父；unused与C监督不进入搜索。C冻结后全池及近六/更早日期分层只诊断，E4仍只用E3。D30–D31同键主比较仅限完整C与E3（D30无更早S预测）；报告每seed、每对seed、全部根与仅分裂根平均及fallback贡献；无假设检验结论、无成功门槛，ARI仅描述，未观察到差异为不确定。详见[d31-matched-search-plan.md](d31-matched-search-plan.md)。
+
+## D32：空间证据不由预测回退推断
+
+E1–E4及全部评价键不变。区的空间支持只由实际搜索行数决定；root预测回退（无搜索、仅目标、仅C）不构成已学习区域成员。见[d32-stage1-assignment-plan.md](d32-stage1-assignment-plan.md)。
+
+## D33：事后机制诊断的解释边界
+
+root/depth1/full在S/C/E3上同键报告；S自适应复用仅描述，新S概率为重放所得；E3为已暴露开发目标描述；不选择、不新E4，不作泛化或因果分解结论。见[d33-shallow-replay-plan.md](d33-shallow-replay-plan.md)。
+
+## D34：E1变体只改搜索信号
+
+E2/C/E3仍为四类argmax折叠危机F1；C只诊断；可沿用分数字段但不生成E4权重/Stage2输入；逐H/目标、汇总混淆与折均值分开报告，不自动选择。见[d34-e1-brier-contrast-plan.md](d34-e1-brier-contrast-plan.md)。
+
+## D35：容量对照的评分边界
+
+C/E3全体同键为主，S仅描述；另报`search_rows>0`/`==0`两层；不作分区因果归因。见[d35-global-increment-control-plan.md](d35-global-increment-control-plan.md)。
+
+## D37：加权root评分边界
+
+E3同键为主并与相同非缺失键persistence比较；C仅诊断；00/01/10/11/缺失五组只作事后误差层。见[d37-recency-root-plan.md](d37-recency-root-plan.md)。
+
+## D38：margin root评分边界
+
+E3同键为主，原root/anchored/prior-only/post-hoc控制与相同非缺失键persistence比较；C仅诊断；F1升而Brier变差只报告为决策折衷。见[d38-persistence-margin-root-plan.md](d38-persistence-margin-root-plan.md)。
+
+## D39：概率诊断边界
+
+仅描述暴露E3上的排序与固定箱校准；不选阈值、不拟合校准器、不改变argmax危机终点。见[d39-probability-diagnostic-plan.md](d39-probability-diagnostic-plan.md)。
+
+## D40：起点前决策规则评分边界
+
+阈值只来自U<O的同H同臂旧E3；当前truth不进入阈值函数；policy只报危机F1/混淆，与同臂argmax同键比较；6折汇总只描述该子集。见[d40-forward-decision-plan.md](d40-forward-decision-plan.md)。
+
+## D41：局部收缩评分边界
+
+C/E3同键root/full/half，危机Brier为首要连续诊断，原argmax危机F1照报；固定路由分层（真实局部/零增量）；C为窗口内插值，不作过拟合证据。见[d41-local-shrinkage-plan.md](d41-local-shrinkage-plan.md)。
+
+## D42：地图迁移评分边界
+
+E3同键四臂为主，C仅描述（旧地图可能见过当前C标签）；每组差值旁列区数与root回退占比；12组结果不与21组直接汇总比较。见[d42-map-transfer-plan.md](d42-map-transfer-plan.md)。
+
+## D43：时间块地图评分边界
+
+仅E3；四臂root/global20/random_map_refit/temporal_map_refit同键；C进入时间块池，不作确认评分；搜索root的E3预测仅描述且单列。见[d43-temporal-map-refit-plan.md](d43-temporal-map-refit-plan.md)。
+
+## D44：root对照评分边界
+
+E3全键与精确persistence可用同键队列；危机F1（四类argmax后code>=2）、四类macro-F1、float64危机Brier；逐组/逐H/15组汇总与逐组均值差分开；不作显著性/独立性或子集声明。见[d44-full-pool-root-diagnostic-plan.md](d44-full-pool-root-diagnostic-plan.md)。
+
+## D45：前缀诊断评分边界
+
+FIT/C/E3分别报告（FIT样本内、C窗口内插值、E3前向）；四类对数损失、危机Brier、argmax危机F1、四类macro-F1；按H标注绝对轮数，不跨H合并；不选轮数、不设显著性或采用规则；persistence只报危机F1、四类F1与one-hot Brier，不计对数损失。见[d45-root-prefix-diagnostic-plan.md](d45-root-prefix-diagnostic-plan.md)。
+
+## D46：加权root评分边界
+
+危机F1终点不变；E3全键与persistence可用同键；未加权Brier/对数损失照报（不保证方向）；根内危机AUC/AP用s=(p2+p3)/Σp（float64）且只报逐折均值；FIT/C/E3角色明确；无显著性或采用规则。见[d46-crisis-weight-root-plan.md](d46-crisis-weight-root-plan.md)。
+
+## D47：stump root评分边界
+
+危机F1（argmax→code≥2）为主要终点，附危机预测占比、四类F1、未加权Brier/对数损失；E3全键与persistence同键；根内AUC/AP仅为次要机理诊断、逐折均值；FIT→E3差距不作过拟合证据；无显著性或采用规则。见[d47-stump-root-plan.md](d47-stump-root-plan.md)。
+
+## D48：已知起点评分边界（已完成）
+
+仅在起点已知的FIT（样本内）、C（窗口内插值）、E3（前向）键上比较；缺失起点E3只报排除计数，不外推、不与原全键分数比较；危机F1为主要终点；无显著性检验或采用规则。原root的AUC/AP因队列不同（仅起点已知键）而与D46/D47全键值不同，已披露。见[d48-known-origin-fit-plan.md](d48-known-origin-fit-plan.md)。
+
+## D49：排序余量评分边界（已完成）
+
+仅起点已知E3键；事后最优使用E3真值，只是确定性标量阈值族内的事后包络；k_p不使用目标结局值确定，但仍在反复暴露的队列上评估；四类argmax一般不在该族内，最优不一定≥argmax；两臂都已含persistence信息；仅逐root与逐H逐折均值，无汇总oracle、无显著性或采用规则。见[d49-ranking-headroom-plan.md](d49-ranking-headroom-plan.md)。D49逐折均值persistence F1（.655255/.555568/.547711）与D46–D48汇总值（.651697/.555614/.549808）仅因聚合方式不同；不发布汇总oracle。
+
+## D50：精确起点阶段评分边界（已完成）
+
+四个精确阶段格全部报告（含空格与单类格），不按结局剔除、无最小样本门槛；AUC仅在P·N>0时定义；逐H均值只用有效折并注明n_valid/7与P/N；格内persistence F1有定义，因与已报计数重复而省略；低格内AUC不单独证明全局AUC或D49余量主要来自persistence；无汇总、无采用。见[d50-origin-phase-ranking-plan.md](d50-origin-phase-ranking-plan.md)。
+
+## D51：78特征root评分边界（已完成）
+
+主要终点为E3匹配精确起点键危机F1，同时对原root与persistence解读；全键原/新臂单列并报缺失计数；FIT/C差距缩小本身不构成证据；D50格内AUC四阶段全报（P/N/null原因，仅有效折均值）；无汇总AUC、显著性或成功阈值；不归因、不采用。见[d51-history-calendar-root-plan.md](d51-history-calendar-root-plan.md)。
+
+## D52：二分类root诊断评分边界（已完成）
+
+主终点仍为四分类argmax→码≥2的危机F1；D52为独立诊断：对照A（同.5规则）二分类p≥.5对原归一化质量s≥.5，对照B二分类对现有管线argmax及persistence，分开报告；共享二分类Brier与二分类对数损失（仅对数损失用float64 eps截断并披露截断数）；四分类macro-F1与四分类对数损失仅作原root参考，二分类臂不适用四分类macro；根内AUC/AP与D50格内AUC；无显著性、阈值或采用。见[d52-binary-root-proposal.md](d52-binary-root-proposal.md)。

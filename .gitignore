@@ -122,5 +122,9 @@ memory/
 regional_ablation_results/*
 # Four-class package schema and Trellis task records are part of the contract.
 !FEWSNETFourClassBaseline/feature-schema.json
+!FEWSNETGeoXGBExperiment/feature-schema.json
 !.trellis/tasks/**/task.json
 !.trellis/tasks/**/controller_run_records.json
+# Reviewed launch configuration of the interruption task travels with the repo (not a generated artifact)
+!.trellis/tasks/10-02-exogenous-transition-forecast-design/research/launch/alignment.json
+!.trellis/tasks/10-02-exogenous-transition-forecast-design/research/launch/release_ledger.csv

@@ -1,0 +1,71 @@
+{
+ "note": "Initial C-permutation comparison (first runnable version, 2026-10-03 ~18:10), transcribed from the console output because the summary file was overwritten by the corrected run. Comparator: raw file bytes for every file except candidate.json/root.json (hash of JSON minus 'confirmation'/'timings') and fold_membership (minus class_code). Result: pass=false for A and B.",
+ "results": {
+  "A": {
+   "c_keys": "(not captured in the truncated console tail)",
+   "files_compared": 28,
+   "differing_files": [
+    "candidate.json",
+    "confirmation_predictions.csv.gz",
+    "e2_predictions.csv.gz",
+    "fit_diagnostic_predictions.csv.gz",
+    "validation_predictions.csv.gz"
+   ],
+   "unexpected_differences": [
+    "candidate.json",
+    "e2_predictions.csv.gz",
+    "fit_diagnostic_predictions.csv.gz",
+    "validation_predictions.csv.gz"
+   ],
+   "root_status": [
+    "completed",
+    "completed"
+   ],
+   "pass": false
+  },
+  "B": {
+   "c_keys": 140,
+   "f_keys": 280,
+   "s_keys": 140,
+   "c_overlaps_f_or_s": 0,
+   "c_fit_variant_rows_in_input": 420,
+   "label_cells_changed": 436,
+   "files_compared": 28,
+   "differing_files": [
+    "candidate.json",
+    "confirmation_predictions.csv.gz",
+    "e2_predictions.csv.gz",
+    "fit_diagnostic_predictions.csv.gz",
+    "validation_predictions.csv.gz"
+   ],
+   "unexpected_differences": [
+    "candidate.json",
+    "e2_predictions.csv.gz",
+    "fit_diagnostic_predictions.csv.gz",
+    "validation_predictions.csv.gz"
+   ],
+   "root_status": [
+    "completed",
+    "completed"
+   ],
+   "pass": false
+  }
+ },
+ "diagnosis": {
+  "same_input_control_B": "running the IDENTICAL input twice produced the same 5 differing files",
+  "decompressed_csv_columns_differing_perm_vs_run1_B": {
+   "validation_predictions.csv.gz": [],
+   "fit_diagnostic_predictions.csv.gz": [],
+   "e2_predictions.csv.gz": []
+  },
+  "candidate_json_top_keys_differing_B": [
+   "checkpoints",
+   "confirmation",
+   "timings"
+  ],
+  "checkpoints_difference": "checkpoints.dir holds the absolute scratch path (e.g. ...\\Temp\\cperm_diag\\B_run1\\ck\\<candidate>); the checkpoint sha256 inventory is a separate field",
+  "fold_roles_equal": true,
+  "conclusion": "comparator artifact (gzip container mtime + scratch-path field), not a model difference"
+ },
+ "preservation": "NOT byte-preserved: the original summary file was overwritten by the corrected run before it was copied; this file is a transcript/narrative of the console output, not the original artifact."
+}

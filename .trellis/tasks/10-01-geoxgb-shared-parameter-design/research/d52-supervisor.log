@@ -1,0 +1,22 @@
+h4_2018-06_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h4_2018-10_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h4_2019-02_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h4_2019-06_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h4_2019-10_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h4_2020-02_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h4_2020-06_G1_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2018-06_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2018-10_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2019-02_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2019-06_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2019-10_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2020-02_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h8_2020-06_G4_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2018-06_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2018-10_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2019-02_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2019-06_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2019-10_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2020-02_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+h12_2020-06_G2_r80_s42_e1pair full-FIT lineage/binary+original UBJ replay/metrics PASS
+{"passed": true, "checks": 9111, "metric_cells": 504, "replayed_rows": 1660244}

@@ -1,0 +1,4511 @@
+{
+  "rule": "D40 pre-origin-only source optimization; no model fits, probability changes or current-target threshold choice. 6 eligible roots and 15 unchanged fallback roots; conditional exposed development, not endpoint adoption.",
+  "script_sha256": "a76f561db5d85381ffaee33a6ae5242d937c600b7cd43d079dd4fc2a86f6de85",
+  "input_hashes": {
+    "h12_2018-06_G2_r80_s42_e1pair": "08226ebf4ff7a7af5c72a4b031615b883242aaabc0906d720e4098bc693cc0e1",
+    "h12_2018-10_G2_r80_s42_e1pair": "a7821927da0ec57dc6883db137e4c2072ea6ddfdc8d712c28324a2f2dc88a528",
+    "h12_2019-02_G2_r80_s42_e1pair": "636b6ddc9e2a7d3721f5178aa0566431a6e668e7899e2c6d372e8b3089f4e1c4",
+    "h12_2019-06_G2_r80_s42_e1pair": "f6ad80cd071b33682f89c4cc8b630aefd387550862a584b24f6fd14ee1f803e9",
+    "h12_2019-10_G2_r80_s42_e1pair": "80f78ae1db8218c7d68df66945bf0f4544094ecd241981876002212bc9329bae",
+    "h12_2020-02_G2_r80_s42_e1pair": "54e1b892f8a910b7278a3547a0edf540e2fd8e2e06852eb3deb659005eccf8d9",
+    "h12_2020-06_G2_r80_s42_e1pair": "0f58934440dc7efe4a39c4319b587946839b32279645a485f1bc4af4a98d61f6",
+    "h4_2018-06_G1_r80_s42_e1pair": "0044066c2a1c907bc870a4c0d97000813fff54165591cb718da8d18c257d2cb0",
+    "h4_2018-10_G1_r80_s42_e1pair": "6b191d91fa4dfd8f0c410937ece7ae8148fcea92d534538d8613ab07c32b10a1",
+    "h4_2019-02_G1_r80_s42_e1pair": "2f6284f3b44557a9a51393a928e5350df88998245aa733fad1ccf405003537a1",
+    "h4_2019-06_G1_r80_s42_e1pair": "85fb7efa2a639866208f16ed6420a99d1cc861098a2aa7450d6496926954321b",
+    "h4_2019-10_G1_r80_s42_e1pair": "ba5af2b71250ab95a1b3876e594d57a52c65b4137acfc47a6643ae94b045d5ac",
+    "h4_2020-02_G1_r80_s42_e1pair": "e7e10cafa2be85ac8ce9324d3f1ca8fc6c4028df0a682939834219415d528302",
+    "h4_2020-06_G1_r80_s42_e1pair": "38a5c269a98329a0fb327327be5f2e19dbc5b1152f08c354217457d3214f1650",
+    "h8_2018-06_G4_r80_s42_e1pair": "c011092bd1b374dd764e52bdacac0aa4b5209feb110497a691c88907fffd0a43",
+    "h8_2018-10_G4_r80_s42_e1pair": "a0c2276aed2ea496a243b53be7e4aad65338b2b97a8ed342aa3658baaa59ce17",
+    "h8_2019-02_G4_r80_s42_e1pair": "8695d139f5c9b9e31b052982e8e664b85350ebe18b034631caf30bf238629340",
+    "h8_2019-06_G4_r80_s42_e1pair": "733833abce2792fdda2007753fd0e51af09e11c79364b1bfc4da66cf6a6f0950",
+    "h8_2019-10_G4_r80_s42_e1pair": "3b366991b1be4b63afc9754b0fe5c28a16ebdf17273492a0406d85c1f9f5bc41",
+    "h8_2020-02_G4_r80_s42_e1pair": "06504e29da5c47cb2e8f8d84a0674e5b5f82f4bde5400e51f504123681fc8260",
+    "h8_2020-06_G4_r80_s42_e1pair": "39fda4d2adac28f4bfb59719843c9550f1aa57be3948f883c9996e51a3d5b8ca"
+  },
+  "thresholds_sha256": "1decee017b2ec533b146d284a82c61f79434c3e208cd52c475f38cee2505d3b1",
+  "policy_rows_sha256": "ceaf8b56ef9e8c5b78f485dc6bb315439c12badabc0da3018b35d9187eda2abd",
+  "eligible_roots": 6,
+  "per_root": {
+    "h12_2018-06_G2_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5364,
+              "tp": 259,
+              "fp": 237,
+              "fn": 479,
+              "tn": 4389,
+              "f1": 0.419773095623987,
+              "f1_exact": "259/617"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 259,
+              "fp": 237,
+              "fn": 479,
+              "tn": 4389,
+              "f1": 0.419773095623987,
+              "f1_exact": "259/617"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5362,
+              "tp": 259,
+              "fp": 237,
+              "fn": 478,
+              "tn": 4388,
+              "f1": 0.42011354420113545,
+              "f1_exact": "518/1233"
+            },
+            "policy": {
+              "n": 5362,
+              "tp": 259,
+              "fp": 237,
+              "fn": 478,
+              "tn": 4388,
+              "f1": 0.42011354420113545,
+              "f1_exact": "518/1233"
+            },
+            "persistence": {
+              "n": 5362,
+              "tp": 424,
+              "fp": 595,
+              "fn": 313,
+              "tn": 4030,
+              "f1": 0.48291571753986334,
+              "f1_exact": "212/439"
+            }
+          },
+          "brier_unchanged": 0.0953807221868419,
+          "origin_coverage": 0.9996271439224459,
+          "transitions": {
+            "00": {
+              "n": 4030,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 313,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 595,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 424,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 2,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 629,
+            "policy_right": 411,
+            "persistence_right": 218
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5364,
+              "tp": 315,
+              "fp": 297,
+              "fn": 423,
+              "tn": 4329,
+              "f1": 0.4666666666666667,
+              "f1_exact": "7/15"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 315,
+              "fp": 297,
+              "fn": 423,
+              "tn": 4329,
+              "f1": 0.4666666666666667,
+              "f1_exact": "7/15"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5362,
+              "tp": 315,
+              "fp": 297,
+              "fn": 422,
+              "tn": 4328,
+              "f1": 0.4670126019273536,
+              "f1_exact": "630/1349"
+            },
+            "policy": {
+              "n": 5362,
+              "tp": 315,
+              "fp": 297,
+              "fn": 422,
+              "tn": 4328,
+              "f1": 0.4670126019273536,
+              "f1_exact": "630/1349"
+            },
+            "persistence": {
+              "n": 5362,
+              "tp": 424,
+              "fp": 595,
+              "fn": 313,
+              "tn": 4030,
+              "f1": 0.48291571753986334,
+              "f1_exact": "212/439"
+            }
+          },
+          "brier_unchanged": 0.09970649026379194,
+          "origin_coverage": 0.9996271439224459,
+          "transitions": {
+            "00": {
+              "n": 4030,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 313,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 595,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 424,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 2,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 469,
+            "policy_right": 329,
+            "persistence_right": 140
+          }
+        }
+      }
+    },
+    "h12_2018-10_G2_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 368,
+              "fp": 132,
+              "fn": 529,
+              "tn": 4336,
+              "f1": 0.5268432355046528,
+              "f1_exact": "736/1397"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 368,
+              "fp": 132,
+              "fn": 529,
+              "tn": 4336,
+              "f1": 0.5268432355046528,
+              "f1_exact": "736/1397"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 367,
+              "fp": 132,
+              "fn": 529,
+              "tn": 4336,
+              "f1": 0.5261648745519714,
+              "f1_exact": "734/1395"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 367,
+              "fp": 132,
+              "fn": 529,
+              "tn": 4336,
+              "f1": 0.5261648745519714,
+              "f1_exact": "734/1395"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 369,
+              "fp": 295,
+              "fn": 527,
+              "tn": 4173,
+              "f1": 0.47307692307692306,
+              "f1_exact": "123/260"
+            }
+          },
+          "brier_unchanged": 0.09201787375291767,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4173,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 527,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 295,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 369,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 561,
+            "policy_right": 361,
+            "persistence_right": 200
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 377,
+              "fp": 171,
+              "fn": 520,
+              "tn": 4297,
+              "f1": 0.5217993079584775,
+              "f1_exact": "754/1445"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 377,
+              "fp": 171,
+              "fn": 520,
+              "tn": 4297,
+              "f1": 0.5217993079584775,
+              "f1_exact": "754/1445"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 376,
+              "fp": 171,
+              "fn": 520,
+              "tn": 4297,
+              "f1": 0.5211365211365211,
+              "f1_exact": "752/1443"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 376,
+              "fp": 171,
+              "fn": 520,
+              "tn": 4297,
+              "f1": 0.5211365211365211,
+              "f1_exact": "752/1443"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 369,
+              "fp": 295,
+              "fn": 527,
+              "tn": 4173,
+              "f1": 0.47307692307692306,
+              "f1_exact": "123/260"
+            }
+          },
+          "brier_unchanged": 0.09880908914423171,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4173,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 527,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 295,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 369,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 393,
+            "policy_right": 262,
+            "persistence_right": 131
+          }
+        }
+      }
+    },
+    "h12_2019-02_G2_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 340,
+              "fp": 41,
+              "fn": 602,
+              "tn": 4382,
+              "f1": 0.5139833711262283,
+              "f1_exact": "680/1323"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 340,
+              "fp": 41,
+              "fn": 602,
+              "tn": 4382,
+              "f1": 0.5139833711262283,
+              "f1_exact": "680/1323"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 339,
+              "fp": 41,
+              "fn": 602,
+              "tn": 4382,
+              "f1": 0.5132475397426193,
+              "f1_exact": "678/1321"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 339,
+              "fp": 41,
+              "fn": 602,
+              "tn": 4382,
+              "f1": 0.5132475397426193,
+              "f1_exact": "678/1321"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 495,
+              "fp": 277,
+              "fn": 446,
+              "tn": 4146,
+              "f1": 0.5779334500875657,
+              "f1_exact": "330/571"
+            }
+          },
+          "brier_unchanged": 0.09575088075901576,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4146,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 446,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 277,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 495,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 470,
+            "policy_right": 275,
+            "persistence_right": 195
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 395,
+              "fp": 156,
+              "fn": 547,
+              "tn": 4267,
+              "f1": 0.5291359678499665,
+              "f1_exact": "790/1493"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 395,
+              "fp": 156,
+              "fn": 547,
+              "tn": 4267,
+              "f1": 0.5291359678499665,
+              "f1_exact": "790/1493"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 394,
+              "fp": 156,
+              "fn": 547,
+              "tn": 4267,
+              "f1": 0.528504359490275,
+              "f1_exact": "788/1491"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 394,
+              "fp": 156,
+              "fn": 547,
+              "tn": 4267,
+              "f1": 0.528504359490275,
+              "f1_exact": "788/1491"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 495,
+              "fp": 277,
+              "fn": 446,
+              "tn": 4146,
+              "f1": 0.5779334500875657,
+              "f1_exact": "330/571"
+            }
+          },
+          "brier_unchanged": 0.09728752897751666,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4146,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 446,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 277,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 495,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 296,
+            "policy_right": 158,
+            "persistence_right": 138
+          }
+        }
+      }
+    },
+    "h12_2019-06_G2_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 269,
+              "fp": 47,
+              "fn": 867,
+              "tn": 4182,
+              "f1": 0.37052341597796146,
+              "f1_exact": "269/726"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 269,
+              "fp": 47,
+              "fn": 867,
+              "tn": 4182,
+              "f1": 0.37052341597796146,
+              "f1_exact": "269/726"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 268,
+              "fp": 47,
+              "fn": 867,
+              "tn": 4182,
+              "f1": 0.3696551724137931,
+              "f1_exact": "268/725"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 268,
+              "fp": 47,
+              "fn": 867,
+              "tn": 4182,
+              "f1": 0.3696551724137931,
+              "f1_exact": "268/725"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 497,
+              "fp": 241,
+              "fn": 638,
+              "tn": 3988,
+              "f1": 0.5306994127068874,
+              "f1_exact": "994/1873"
+            }
+          },
+          "brier_unchanged": 0.11919360225627948,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 3988,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 638,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 241,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 497,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 443,
+            "policy_right": 204,
+            "persistence_right": 239
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 334,
+              "fp": 101,
+              "fn": 802,
+              "tn": 4128,
+              "f1": 0.4252068746021642,
+              "f1_exact": "668/1571"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 334,
+              "fp": 101,
+              "fn": 802,
+              "tn": 4128,
+              "f1": 0.4252068746021642,
+              "f1_exact": "668/1571"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 333,
+              "fp": 101,
+              "fn": 802,
+              "tn": 4128,
+              "f1": 0.42447418738049714,
+              "f1_exact": "222/523"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 333,
+              "fp": 101,
+              "fn": 802,
+              "tn": 4128,
+              "f1": 0.42447418738049714,
+              "f1_exact": "222/523"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 497,
+              "fp": 241,
+              "fn": 638,
+              "tn": 3988,
+              "f1": 0.5306994127068874,
+              "f1_exact": "994/1873"
+            }
+          },
+          "brier_unchanged": 0.11818100931454478,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 3988,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 638,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 241,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 497,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 322,
+            "policy_right": 149,
+            "persistence_right": 173
+          }
+        }
+      }
+    },
+    "h12_2019-10_G2_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 339,
+              "fp": 59,
+              "fn": 963,
+              "tn": 4004,
+              "f1": 0.3988235294117647,
+              "f1_exact": "339/850"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 339,
+              "fp": 59,
+              "fn": 963,
+              "tn": 4004,
+              "f1": 0.3988235294117647,
+              "f1_exact": "339/850"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 339,
+              "fp": 59,
+              "fn": 963,
+              "tn": 4004,
+              "f1": 0.3988235294117647,
+              "f1_exact": "339/850"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 339,
+              "fp": 59,
+              "fn": 963,
+              "tn": 4004,
+              "f1": 0.3988235294117647,
+              "f1_exact": "339/850"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 596,
+              "fp": 301,
+              "fn": 706,
+              "tn": 3762,
+              "f1": 0.5420645748067303,
+              "f1_exact": "1192/2199"
+            }
+          },
+          "brier_unchanged": 0.13956643138822844,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3762,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 706,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 301,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 596,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 543,
+            "policy_right": 264,
+            "persistence_right": 279
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 462,
+              "fp": 229,
+              "fn": 840,
+              "tn": 3834,
+              "f1": 0.46362267937782237,
+              "f1_exact": "924/1993"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 462,
+              "fp": 229,
+              "fn": 840,
+              "tn": 3834,
+              "f1": 0.46362267937782237,
+              "f1_exact": "924/1993"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 462,
+              "fp": 229,
+              "fn": 840,
+              "tn": 3834,
+              "f1": 0.46362267937782237,
+              "f1_exact": "924/1993"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 462,
+              "fp": 229,
+              "fn": 840,
+              "tn": 3834,
+              "f1": 0.46362267937782237,
+              "f1_exact": "924/1993"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 596,
+              "fp": 301,
+              "fn": 706,
+              "tn": 3762,
+              "f1": 0.5420645748067303,
+              "f1_exact": "1192/2199"
+            }
+          },
+          "brier_unchanged": 0.13484043416166075,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3762,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 706,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 301,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 596,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 230,
+            "policy_right": 84,
+            "persistence_right": 146
+          }
+        }
+      }
+    },
+    "h12_2020-02_G2_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 448,
+              "fp": 131,
+              "fn": 467,
+              "tn": 4460,
+              "f1": 0.5997322623828648,
+              "f1_exact": "448/747"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 448,
+              "fp": 131,
+              "fn": 467,
+              "tn": 4460,
+              "f1": 0.5997322623828648,
+              "f1_exact": "448/747"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 448,
+              "fp": 131,
+              "fn": 452,
+              "tn": 4334,
+              "f1": 0.605814739688979,
+              "f1_exact": "896/1479"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 448,
+              "fp": 131,
+              "fn": 452,
+              "tn": 4334,
+              "f1": 0.605814739688979,
+              "f1_exact": "896/1479"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 599,
+              "fp": 343,
+              "fn": 301,
+              "tn": 4122,
+              "f1": 0.6503800217155266,
+              "f1_exact": "599/921"
+            }
+          },
+          "brier_unchanged": 0.08419502222083648,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 4122,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 301,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 343,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 599,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 391,
+            "policy_right": 226,
+            "persistence_right": 165
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 489,
+              "fp": 162,
+              "fn": 426,
+              "tn": 4429,
+              "f1": 0.6245210727969349,
+              "f1_exact": "163/261"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 489,
+              "fp": 162,
+              "fn": 426,
+              "tn": 4429,
+              "f1": 0.6245210727969349,
+              "f1_exact": "163/261"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 489,
+              "fp": 162,
+              "fn": 411,
+              "tn": 4303,
+              "f1": 0.6305609284332688,
+              "f1_exact": "326/517"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 489,
+              "fp": 162,
+              "fn": 411,
+              "tn": 4303,
+              "f1": 0.6305609284332688,
+              "f1_exact": "326/517"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 599,
+              "fp": 343,
+              "fn": 301,
+              "tn": 4122,
+              "f1": 0.6503800217155266,
+              "f1_exact": "599/921"
+            }
+          },
+          "brier_unchanged": 0.08158403116487696,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 4122,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 301,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 343,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 599,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 303,
+            "policy_right": 187,
+            "persistence_right": 116
+          }
+        }
+      }
+    },
+    "h12_2020-06_G2_r80_s42_e1pair": {
+      "eligible": true,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 400,
+              "fp": 189,
+              "fn": 567,
+              "tn": 4350,
+              "f1": 0.5141388174807198,
+              "f1_exact": "200/389"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 463,
+              "fp": 295,
+              "fn": 504,
+              "tn": 4244,
+              "f1": 0.5368115942028986,
+              "f1_exact": "926/1725"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 400,
+              "fp": 189,
+              "fn": 551,
+              "tn": 4225,
+              "f1": 0.5194805194805194,
+              "f1_exact": "40/77"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 463,
+              "fp": 295,
+              "fn": 488,
+              "tn": 4119,
+              "f1": 0.5418373317729667,
+              "f1_exact": "926/1709"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 602,
+              "fp": 534,
+              "fn": 349,
+              "tn": 3880,
+              "f1": 0.5769046478198371,
+              "f1_exact": "1204/2087"
+            }
+          },
+          "brier_unchanged": 0.10302509827530851,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3880,
+              "corrected": 0,
+              "spoiled": 62,
+              "tp_change": 0,
+              "fp_change": 62
+            },
+            "01": {
+              "n": 349,
+              "corrected": 11,
+              "spoiled": 0,
+              "tp_change": 11,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 534,
+              "corrected": 4,
+              "spoiled": 48,
+              "tp_change": 0,
+              "fp_change": 44
+            },
+            "11": {
+              "n": 602,
+              "corrected": 54,
+              "spoiled": 2,
+              "tp_change": 52,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 590,
+            "policy_right": 345,
+            "persistence_right": 245
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 488,
+              "fp": 274,
+              "fn": 479,
+              "tn": 4265,
+              "f1": 0.5644881434355119,
+              "f1_exact": "976/1729"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 578,
+              "fp": 468,
+              "fn": 389,
+              "tn": 4071,
+              "f1": 0.5742672627918529,
+              "f1_exact": "1156/2013"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 488,
+              "fp": 274,
+              "fn": 463,
+              "tn": 4140,
+              "f1": 0.5697606538237011,
+              "f1_exact": "976/1713"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 578,
+              "fp": 468,
+              "fn": 373,
+              "tn": 3946,
+              "f1": 0.5788683024536805,
+              "f1_exact": "1156/1997"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 602,
+              "fp": 534,
+              "fn": 349,
+              "tn": 3880,
+              "f1": 0.5769046478198371,
+              "f1_exact": "1204/2087"
+            }
+          },
+          "brier_unchanged": 0.10256152136849091,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3880,
+              "corrected": 2,
+              "spoiled": 118,
+              "tp_change": 0,
+              "fp_change": 116
+            },
+            "01": {
+              "n": 349,
+              "corrected": 28,
+              "spoiled": 0,
+              "tp_change": 28,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 534,
+              "corrected": 0,
+              "spoiled": 78,
+              "tp_change": 0,
+              "fp_change": 78
+            },
+            "11": {
+              "n": 602,
+              "corrected": 72,
+              "spoiled": 10,
+              "tp_change": 62,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 472,
+            "policy_right": 257,
+            "persistence_right": 215
+          }
+        }
+      }
+    },
+    "h4_2018-06_G1_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5364,
+              "tp": 499,
+              "fp": 355,
+              "fn": 239,
+              "tn": 4271,
+              "f1": 0.6268844221105527,
+              "f1_exact": "499/796"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 499,
+              "fp": 355,
+              "fn": 239,
+              "tn": 4271,
+              "f1": 0.6268844221105527,
+              "f1_exact": "499/796"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 499,
+              "fp": 355,
+              "fn": 239,
+              "tn": 4271,
+              "f1": 0.6268844221105527,
+              "f1_exact": "499/796"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 499,
+              "fp": 355,
+              "fn": 239,
+              "tn": 4271,
+              "f1": 0.6268844221105527,
+              "f1_exact": "499/796"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 540,
+              "fp": 232,
+              "fn": 198,
+              "tn": 4394,
+              "f1": 0.7152317880794702,
+              "f1_exact": "108/151"
+            }
+          },
+          "brier_unchanged": 0.0810916050183347,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4394,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 198,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 232,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 540,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 182,
+            "policy_right": 9,
+            "persistence_right": 173
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5364,
+              "tp": 522,
+              "fp": 351,
+              "fn": 216,
+              "tn": 4275,
+              "f1": 0.6480446927374302,
+              "f1_exact": "116/179"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 522,
+              "fp": 351,
+              "fn": 216,
+              "tn": 4275,
+              "f1": 0.6480446927374302,
+              "f1_exact": "116/179"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 522,
+              "fp": 351,
+              "fn": 216,
+              "tn": 4275,
+              "f1": 0.6480446927374302,
+              "f1_exact": "116/179"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 522,
+              "fp": 351,
+              "fn": 216,
+              "tn": 4275,
+              "f1": 0.6480446927374302,
+              "f1_exact": "116/179"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 540,
+              "fp": 232,
+              "fn": 198,
+              "tn": 4394,
+              "f1": 0.7152317880794702,
+              "f1_exact": "108/151"
+            }
+          },
+          "brier_unchanged": 0.07825622015169571,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4394,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 198,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 232,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 540,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 141,
+            "policy_right": 2,
+            "persistence_right": 139
+          }
+        }
+      }
+    },
+    "h4_2018-10_G1_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 343,
+              "fp": 23,
+              "fn": 554,
+              "tn": 4445,
+              "f1": 0.5431512272367379,
+              "f1_exact": "686/1263"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 343,
+              "fp": 23,
+              "fn": 554,
+              "tn": 4445,
+              "f1": 0.5431512272367379,
+              "f1_exact": "686/1263"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 342,
+              "fp": 23,
+              "fn": 554,
+              "tn": 4445,
+              "f1": 0.542426645519429,
+              "f1_exact": "684/1261"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 342,
+              "fp": 23,
+              "fn": 554,
+              "tn": 4445,
+              "f1": 0.542426645519429,
+              "f1_exact": "684/1261"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 511,
+              "fp": 227,
+              "fn": 385,
+              "tn": 4241,
+              "f1": 0.6254589963280294,
+              "f1_exact": "511/817"
+            }
+          },
+          "brier_unchanged": 0.08579252831908965,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4241,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 385,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 227,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 511,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 377,
+            "policy_right": 206,
+            "persistence_right": 171
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 388,
+              "fp": 95,
+              "fn": 509,
+              "tn": 4373,
+              "f1": 0.5623188405797102,
+              "f1_exact": "194/345"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 388,
+              "fp": 95,
+              "fn": 509,
+              "tn": 4373,
+              "f1": 0.5623188405797102,
+              "f1_exact": "194/345"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 387,
+              "fp": 95,
+              "fn": 509,
+              "tn": 4373,
+              "f1": 0.5616835994194485,
+              "f1_exact": "387/689"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 387,
+              "fp": 95,
+              "fn": 509,
+              "tn": 4373,
+              "f1": 0.5616835994194485,
+              "f1_exact": "387/689"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 511,
+              "fp": 227,
+              "fn": 385,
+              "tn": 4241,
+              "f1": 0.6254589963280294,
+              "f1_exact": "511/817"
+            }
+          },
+          "brier_unchanged": 0.08230149859332304,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4241,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 385,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 227,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 511,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 256,
+            "policy_right": 132,
+            "persistence_right": 124
+          }
+        }
+      }
+    },
+    "h4_2019-02_G1_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 712,
+              "fp": 152,
+              "fn": 230,
+              "tn": 4271,
+              "f1": 0.7884828349944629,
+              "f1_exact": "712/903"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 712,
+              "fp": 152,
+              "fn": 230,
+              "tn": 4271,
+              "f1": 0.7884828349944629,
+              "f1_exact": "712/903"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 712,
+              "fp": 152,
+              "fn": 230,
+              "tn": 4271,
+              "f1": 0.7884828349944629,
+              "f1_exact": "712/903"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 712,
+              "fp": 152,
+              "fn": 230,
+              "tn": 4271,
+              "f1": 0.7884828349944629,
+              "f1_exact": "712/903"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 721,
+              "fp": 176,
+              "fn": 221,
+              "tn": 4247,
+              "f1": 0.7841218053289831,
+              "f1_exact": "1442/1839"
+            }
+          },
+          "brier_unchanged": 0.060304664387866504,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4247,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 221,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 176,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 721,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 67,
+            "policy_right": 41,
+            "persistence_right": 26
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 725,
+              "fp": 176,
+              "fn": 217,
+              "tn": 4247,
+              "f1": 0.7867607162235486,
+              "f1_exact": "1450/1843"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 725,
+              "fp": 176,
+              "fn": 217,
+              "tn": 4247,
+              "f1": 0.7867607162235486,
+              "f1_exact": "1450/1843"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 725,
+              "fp": 176,
+              "fn": 217,
+              "tn": 4247,
+              "f1": 0.7867607162235486,
+              "f1_exact": "1450/1843"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 725,
+              "fp": 176,
+              "fn": 217,
+              "tn": 4247,
+              "f1": 0.7867607162235486,
+              "f1_exact": "1450/1843"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 721,
+              "fp": 176,
+              "fn": 221,
+              "tn": 4247,
+              "f1": 0.7841218053289831,
+              "f1_exact": "1442/1839"
+            }
+          },
+          "brier_unchanged": 0.05640002287781665,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4247,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 221,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 176,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 721,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 6,
+            "policy_right": 5,
+            "persistence_right": 1
+          }
+        }
+      }
+    },
+    "h4_2019-06_G1_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 579,
+              "fp": 251,
+              "fn": 557,
+              "tn": 3978,
+              "f1": 0.5890132248219736,
+              "f1_exact": "579/983"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 579,
+              "fp": 251,
+              "fn": 557,
+              "tn": 3978,
+              "f1": 0.5890132248219736,
+              "f1_exact": "579/983"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 579,
+              "fp": 251,
+              "fn": 557,
+              "tn": 3978,
+              "f1": 0.5890132248219736,
+              "f1_exact": "579/983"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 579,
+              "fp": 251,
+              "fn": 557,
+              "tn": 3978,
+              "f1": 0.5890132248219736,
+              "f1_exact": "579/983"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 604,
+              "fp": 338,
+              "fn": 532,
+              "tn": 3891,
+              "f1": 0.5813282001924928,
+              "f1_exact": "604/1039"
+            }
+          },
+          "brier_unchanged": 0.10710319594204609,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3891,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 532,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 338,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 604,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 112,
+            "policy_right": 87,
+            "persistence_right": 25
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 603,
+              "fp": 328,
+              "fn": 533,
+              "tn": 3901,
+              "f1": 0.5834542815674891,
+              "f1_exact": "402/689"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 603,
+              "fp": 328,
+              "fn": 533,
+              "tn": 3901,
+              "f1": 0.5834542815674891,
+              "f1_exact": "402/689"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 603,
+              "fp": 328,
+              "fn": 533,
+              "tn": 3901,
+              "f1": 0.5834542815674891,
+              "f1_exact": "402/689"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 603,
+              "fp": 328,
+              "fn": 533,
+              "tn": 3901,
+              "f1": 0.5834542815674891,
+              "f1_exact": "402/689"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 604,
+              "fp": 338,
+              "fn": 532,
+              "tn": 3891,
+              "f1": 0.5813282001924928,
+              "f1_exact": "604/1039"
+            }
+          },
+          "brier_unchanged": 0.11059011397298943,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3891,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 532,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 338,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 604,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 11,
+            "policy_right": 10,
+            "persistence_right": 1
+          }
+        }
+      }
+    },
+    "h4_2019-10_G1_r80_s42_e1pair": {
+      "eligible": true,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 667,
+              "fp": 205,
+              "fn": 635,
+              "tn": 3858,
+              "f1": 0.6136154553817847,
+              "f1_exact": "667/1087"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 695,
+              "fp": 228,
+              "fn": 607,
+              "tn": 3835,
+              "f1": 0.6247191011235955,
+              "f1_exact": "278/445"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 667,
+              "fp": 205,
+              "fn": 635,
+              "tn": 3858,
+              "f1": 0.6136154553817847,
+              "f1_exact": "667/1087"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 695,
+              "fp": 228,
+              "fn": 607,
+              "tn": 3835,
+              "f1": 0.6247191011235955,
+              "f1_exact": "278/445"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 843,
+              "fp": 293,
+              "fn": 459,
+              "tn": 3770,
+              "f1": 0.6915504511894995,
+              "f1_exact": "843/1219"
+            }
+          },
+          "brier_unchanged": 0.11217433287218113,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3770,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 459,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 293,
+              "corrected": 1,
+              "spoiled": 24,
+              "tp_change": 0,
+              "fp_change": 23
+            },
+            "11": {
+              "n": 843,
+              "corrected": 33,
+              "spoiled": 5,
+              "tp_change": 28,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 213,
+            "policy_right": 65,
+            "persistence_right": 148
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 780,
+              "fp": 265,
+              "fn": 522,
+              "tn": 3798,
+              "f1": 0.6646783127396677,
+              "f1_exact": "1560/2347"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 835,
+              "fp": 293,
+              "fn": 467,
+              "tn": 3770,
+              "f1": 0.6872427983539094,
+              "f1_exact": "167/243"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 780,
+              "fp": 265,
+              "fn": 522,
+              "tn": 3798,
+              "f1": 0.6646783127396677,
+              "f1_exact": "1560/2347"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 835,
+              "fp": 293,
+              "fn": 467,
+              "tn": 3770,
+              "f1": 0.6872427983539094,
+              "f1_exact": "167/243"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 843,
+              "fp": 293,
+              "fn": 459,
+              "tn": 3770,
+              "f1": 0.6915504511894995,
+              "f1_exact": "843/1219"
+            }
+          },
+          "brier_unchanged": 0.11021927404306799,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3770,
+              "corrected": 0,
+              "spoiled": 2,
+              "tp_change": 0,
+              "fp_change": 2
+            },
+            "01": {
+              "n": 459,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 293,
+              "corrected": 0,
+              "spoiled": 26,
+              "tp_change": 0,
+              "fp_change": 26
+            },
+            "11": {
+              "n": 843,
+              "corrected": 55,
+              "spoiled": 0,
+              "tp_change": 55,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 12,
+            "policy_right": 2,
+            "persistence_right": 10
+          }
+        }
+      }
+    },
+    "h4_2020-02_G1_r80_s42_e1pair": {
+      "eligible": true,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 532,
+              "fp": 461,
+              "fn": 383,
+              "tn": 4130,
+              "f1": 0.5576519916142557,
+              "f1_exact": "266/477"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 588,
+              "fp": 623,
+              "fn": 327,
+              "tn": 3968,
+              "f1": 0.5531514581373471,
+              "f1_exact": "588/1063"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 532,
+              "fp": 461,
+              "fn": 368,
+              "tn": 4004,
+              "f1": 0.5620707871104068,
+              "f1_exact": "1064/1893"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 588,
+              "fp": 623,
+              "fn": 312,
+              "tn": 3842,
+              "f1": 0.5570819516816674,
+              "f1_exact": "1176/2111"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 606,
+              "fp": 696,
+              "fn": 294,
+              "tn": 3769,
+              "f1": 0.5504087193460491,
+              "f1_exact": "202/367"
+            }
+          },
+          "brier_unchanged": 0.10319667112169571,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3769,
+              "corrected": 0,
+              "spoiled": 34,
+              "tp_change": 0,
+              "fp_change": 34
+            },
+            "01": {
+              "n": 294,
+              "corrected": 3,
+              "spoiled": 0,
+              "tp_change": 3,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 696,
+              "corrected": 4,
+              "spoiled": 132,
+              "tp_change": 0,
+              "fp_change": 128
+            },
+            "11": {
+              "n": 606,
+              "corrected": 53,
+              "spoiled": 0,
+              "tp_change": 53,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 205,
+            "policy_right": 130,
+            "persistence_right": 75
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 586,
+              "fp": 690,
+              "fn": 329,
+              "tn": 3901,
+              "f1": 0.5349155636695573,
+              "f1_exact": "1172/2191"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 619,
+              "fp": 729,
+              "fn": 296,
+              "tn": 3862,
+              "f1": 0.5470614228899691,
+              "f1_exact": "1238/2263"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 586,
+              "fp": 690,
+              "fn": 314,
+              "tn": 3775,
+              "f1": 0.5386029411764706,
+              "f1_exact": "293/544"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 619,
+              "fp": 729,
+              "fn": 281,
+              "tn": 3736,
+              "f1": 0.550711743772242,
+              "f1_exact": "619/1124"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 606,
+              "fp": 696,
+              "fn": 294,
+              "tn": 3769,
+              "f1": 0.5504087193460491,
+              "f1_exact": "202/367"
+            }
+          },
+          "brier_unchanged": 0.10640326024748491,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3769,
+              "corrected": 0,
+              "spoiled": 26,
+              "tp_change": 0,
+              "fp_change": 26
+            },
+            "01": {
+              "n": 294,
+              "corrected": 4,
+              "spoiled": 0,
+              "tp_change": 4,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 696,
+              "corrected": 0,
+              "spoiled": 13,
+              "tp_change": 0,
+              "fp_change": 13
+            },
+            "11": {
+              "n": 606,
+              "corrected": 29,
+              "spoiled": 0,
+              "tp_change": 29,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 46,
+            "policy_right": 13,
+            "persistence_right": 33
+          }
+        }
+      }
+    },
+    "h4_2020-06_G1_r80_s42_e1pair": {
+      "eligible": true,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 610,
+              "fp": 261,
+              "fn": 357,
+              "tn": 4278,
+              "f1": 0.6637649619151251,
+              "f1_exact": "610/919"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 734,
+              "fp": 773,
+              "fn": 233,
+              "tn": 3766,
+              "f1": 0.5933710590137429,
+              "f1_exact": "734/1237"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5506,
+              "tp": 610,
+              "fp": 261,
+              "fn": 357,
+              "tn": 4278,
+              "f1": 0.6637649619151251,
+              "f1_exact": "610/919"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 734,
+              "fp": 773,
+              "fn": 233,
+              "tn": 3766,
+              "f1": 0.5933710590137429,
+              "f1_exact": "734/1237"
+            },
+            "persistence": {
+              "n": 5506,
+              "tp": 601,
+              "fp": 314,
+              "fn": 366,
+              "tn": 4225,
+              "f1": 0.638682252922423,
+              "f1_exact": "601/941"
+            }
+          },
+          "brier_unchanged": 0.0859780756264699,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4225,
+              "corrected": 0,
+              "spoiled": 312,
+              "tp_change": 0,
+              "fp_change": 312
+            },
+            "01": {
+              "n": 366,
+              "corrected": 103,
+              "spoiled": 0,
+              "tp_change": 103,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 314,
+              "corrected": 0,
+              "spoiled": 200,
+              "tp_change": 0,
+              "fp_change": 200
+            },
+            "11": {
+              "n": 601,
+              "corrected": 21,
+              "spoiled": 0,
+              "tp_change": 21,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 592,
+            "policy_right": 133,
+            "persistence_right": 459
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 623,
+              "fp": 318,
+              "fn": 344,
+              "tn": 4221,
+              "f1": 0.6530398322851153,
+              "f1_exact": "623/954"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 676,
+              "fp": 571,
+              "fn": 291,
+              "tn": 3968,
+              "f1": 0.6106594399277326,
+              "f1_exact": "676/1107"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5506,
+              "tp": 623,
+              "fp": 318,
+              "fn": 344,
+              "tn": 4221,
+              "f1": 0.6530398322851153,
+              "f1_exact": "623/954"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 676,
+              "fp": 571,
+              "fn": 291,
+              "tn": 3968,
+              "f1": 0.6106594399277326,
+              "f1_exact": "676/1107"
+            },
+            "persistence": {
+              "n": 5506,
+              "tp": 601,
+              "fp": 314,
+              "fn": 366,
+              "tn": 4225,
+              "f1": 0.638682252922423,
+              "f1_exact": "601/941"
+            }
+          },
+          "brier_unchanged": 0.08512873363006056,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4225,
+              "corrected": 0,
+              "spoiled": 181,
+              "tp_change": 0,
+              "fp_change": 181
+            },
+            "01": {
+              "n": 366,
+              "corrected": 51,
+              "spoiled": 0,
+              "tp_change": 51,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 314,
+              "corrected": 0,
+              "spoiled": 72,
+              "tp_change": 0,
+              "fp_change": 72
+            },
+            "11": {
+              "n": 601,
+              "corrected": 2,
+              "spoiled": 0,
+              "tp_change": 2,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 332,
+            "policy_right": 75,
+            "persistence_right": 257
+          }
+        }
+      }
+    },
+    "h8_2018-06_G4_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5364,
+              "tp": 408,
+              "fp": 778,
+              "fn": 330,
+              "tn": 3848,
+              "f1": 0.42411642411642414,
+              "f1_exact": "204/481"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 408,
+              "fp": 778,
+              "fn": 330,
+              "tn": 3848,
+              "f1": 0.42411642411642414,
+              "f1_exact": "204/481"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 408,
+              "fp": 778,
+              "fn": 330,
+              "tn": 3848,
+              "f1": 0.42411642411642414,
+              "f1_exact": "204/481"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 408,
+              "fp": 778,
+              "fn": 330,
+              "tn": 3848,
+              "f1": 0.42411642411642414,
+              "f1_exact": "204/481"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 365,
+              "fp": 299,
+              "fn": 373,
+              "tn": 4327,
+              "f1": 0.5206847360912982,
+              "f1_exact": "365/701"
+            }
+          },
+          "brier_unchanged": 0.12351076728567649,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4327,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 373,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 299,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 365,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 852,
+            "policy_right": 208,
+            "persistence_right": 644
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5364,
+              "tp": 436,
+              "fp": 820,
+              "fn": 302,
+              "tn": 3806,
+              "f1": 0.4373119358074223,
+              "f1_exact": "436/997"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 436,
+              "fp": 820,
+              "fn": 302,
+              "tn": 3806,
+              "f1": 0.4373119358074223,
+              "f1_exact": "436/997"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 436,
+              "fp": 820,
+              "fn": 302,
+              "tn": 3806,
+              "f1": 0.4373119358074223,
+              "f1_exact": "436/997"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 436,
+              "fp": 820,
+              "fn": 302,
+              "tn": 3806,
+              "f1": 0.4373119358074223,
+              "f1_exact": "436/997"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 365,
+              "fp": 299,
+              "fn": 373,
+              "tn": 4327,
+              "f1": 0.5206847360912982,
+              "f1_exact": "365/701"
+            }
+          },
+          "brier_unchanged": 0.12658921143301027,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 4327,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 373,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 299,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 365,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 742,
+            "policy_right": 146,
+            "persistence_right": 596
+          }
+        }
+      }
+    },
+    "h8_2018-10_G4_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 342,
+              "fp": 123,
+              "fn": 555,
+              "tn": 4345,
+              "f1": 0.5022026431718062,
+              "f1_exact": "114/227"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 342,
+              "fp": 123,
+              "fn": 555,
+              "tn": 4345,
+              "f1": 0.5022026431718062,
+              "f1_exact": "114/227"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 341,
+              "fp": 123,
+              "fn": 555,
+              "tn": 4345,
+              "f1": 0.5014705882352941,
+              "f1_exact": "341/680"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 341,
+              "fp": 123,
+              "fn": 555,
+              "tn": 4345,
+              "f1": 0.5014705882352941,
+              "f1_exact": "341/680"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 491,
+              "fp": 281,
+              "fn": 405,
+              "tn": 4187,
+              "f1": 0.5887290167865707,
+              "f1_exact": "491/834"
+            }
+          },
+          "brier_unchanged": 0.10645645384923663,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4187,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 405,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 281,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 491,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 412,
+            "policy_right": 210,
+            "persistence_right": 202
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 358,
+              "fp": 159,
+              "fn": 539,
+              "tn": 4309,
+              "f1": 0.5063649222065064,
+              "f1_exact": "358/707"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 358,
+              "fp": 159,
+              "fn": 539,
+              "tn": 4309,
+              "f1": 0.5063649222065064,
+              "f1_exact": "358/707"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 357,
+              "fp": 159,
+              "fn": 539,
+              "tn": 4309,
+              "f1": 0.5056657223796034,
+              "f1_exact": "357/706"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 357,
+              "fp": 159,
+              "fn": 539,
+              "tn": 4309,
+              "f1": 0.5056657223796034,
+              "f1_exact": "357/706"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 491,
+              "fp": 281,
+              "fn": 405,
+              "tn": 4187,
+              "f1": 0.5887290167865707,
+              "f1_exact": "491/834"
+            }
+          },
+          "brier_unchanged": 0.106411976562649,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4187,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 405,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 281,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 491,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 284,
+            "policy_right": 136,
+            "persistence_right": 148
+          }
+        }
+      }
+    },
+    "h8_2019-02_G4_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 415,
+              "fp": 64,
+              "fn": 527,
+              "tn": 4359,
+              "f1": 0.5840957072484166,
+              "f1_exact": "830/1421"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 415,
+              "fp": 64,
+              "fn": 527,
+              "tn": 4359,
+              "f1": 0.5840957072484166,
+              "f1_exact": "830/1421"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 414,
+              "fp": 64,
+              "fn": 527,
+              "tn": 4359,
+              "f1": 0.5835095137420718,
+              "f1_exact": "276/473"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 414,
+              "fp": 64,
+              "fn": 527,
+              "tn": 4359,
+              "f1": 0.5835095137420718,
+              "f1_exact": "276/473"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 494,
+              "fp": 244,
+              "fn": 447,
+              "tn": 4179,
+              "f1": 0.5884455032757594,
+              "f1_exact": "988/1679"
+            }
+          },
+          "brier_unchanged": 0.08561823299865581,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4179,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 447,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 244,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 494,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 332,
+            "policy_right": 216,
+            "persistence_right": 116
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 383,
+              "fp": 78,
+              "fn": 559,
+              "tn": 4345,
+              "f1": 0.5459729151817534,
+              "f1_exact": "766/1403"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 383,
+              "fp": 78,
+              "fn": 559,
+              "tn": 4345,
+              "f1": 0.5459729151817534,
+              "f1_exact": "766/1403"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5364,
+              "tp": 382,
+              "fp": 78,
+              "fn": 559,
+              "tn": 4345,
+              "f1": 0.5453247680228408,
+              "f1_exact": "764/1401"
+            },
+            "policy": {
+              "n": 5364,
+              "tp": 382,
+              "fp": 78,
+              "fn": 559,
+              "tn": 4345,
+              "f1": 0.5453247680228408,
+              "f1_exact": "764/1401"
+            },
+            "persistence": {
+              "n": 5364,
+              "tp": 494,
+              "fp": 244,
+              "fn": 447,
+              "tn": 4179,
+              "f1": 0.5884455032757594,
+              "f1_exact": "988/1679"
+            }
+          },
+          "brier_unchanged": 0.08422989179863241,
+          "origin_coverage": 0.9998136067101584,
+          "transitions": {
+            "00": {
+              "n": 4179,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 447,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 244,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 494,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 1,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 322,
+            "policy_right": 188,
+            "persistence_right": 134
+          }
+        }
+      }
+    },
+    "h8_2019-06_G4_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 491,
+              "fp": 224,
+              "fn": 645,
+              "tn": 4005,
+              "f1": 0.5305240410588871,
+              "f1_exact": "982/1851"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 491,
+              "fp": 224,
+              "fn": 645,
+              "tn": 4005,
+              "f1": 0.5305240410588871,
+              "f1_exact": "982/1851"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 491,
+              "fp": 224,
+              "fn": 645,
+              "tn": 4005,
+              "f1": 0.5305240410588871,
+              "f1_exact": "982/1851"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 491,
+              "fp": 224,
+              "fn": 645,
+              "tn": 4005,
+              "f1": 0.5305240410588871,
+              "f1_exact": "982/1851"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 595,
+              "fp": 302,
+              "fn": 541,
+              "tn": 3927,
+              "f1": 0.5853418593212002,
+              "f1_exact": "1190/2033"
+            }
+          },
+          "brier_unchanged": 0.10982082234623068,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3927,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 541,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 302,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 595,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 492,
+            "policy_right": 233,
+            "persistence_right": 259
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 564,
+              "fp": 203,
+              "fn": 572,
+              "tn": 4026,
+              "f1": 0.5927482921702575,
+              "f1_exact": "1128/1903"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 564,
+              "fp": 203,
+              "fn": 572,
+              "tn": 4026,
+              "f1": 0.5927482921702575,
+              "f1_exact": "1128/1903"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 564,
+              "fp": 203,
+              "fn": 572,
+              "tn": 4026,
+              "f1": 0.5927482921702575,
+              "f1_exact": "1128/1903"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 564,
+              "fp": 203,
+              "fn": 572,
+              "tn": 4026,
+              "f1": 0.5927482921702575,
+              "f1_exact": "1128/1903"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 595,
+              "fp": 302,
+              "fn": 541,
+              "tn": 3927,
+              "f1": 0.5853418593212002,
+              "f1_exact": "1190/2033"
+            }
+          },
+          "brier_unchanged": 0.10251612125955643,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3927,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 541,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 302,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 595,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 436,
+            "policy_right": 252,
+            "persistence_right": 184
+          }
+        }
+      }
+    },
+    "h8_2019-10_G4_r80_s42_e1pair": {
+      "eligible": false,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 523,
+              "fp": 317,
+              "fn": 779,
+              "tn": 3746,
+              "f1": 0.488328664799253,
+              "f1_exact": "523/1071"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 523,
+              "fp": 317,
+              "fn": 779,
+              "tn": 3746,
+              "f1": 0.488328664799253,
+              "f1_exact": "523/1071"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 523,
+              "fp": 317,
+              "fn": 779,
+              "tn": 3746,
+              "f1": 0.488328664799253,
+              "f1_exact": "523/1071"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 523,
+              "fp": 317,
+              "fn": 779,
+              "tn": 3746,
+              "f1": 0.488328664799253,
+              "f1_exact": "523/1071"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 615,
+              "fp": 327,
+              "fn": 687,
+              "tn": 3736,
+              "f1": 0.5481283422459893,
+              "f1_exact": "205/374"
+            }
+          },
+          "brier_unchanged": 0.14775712220884676,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3736,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 687,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 327,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 615,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 344,
+            "policy_right": 131,
+            "persistence_right": 213
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5365,
+              "tp": 482,
+              "fp": 261,
+              "fn": 820,
+              "tn": 3802,
+              "f1": 0.4713936430317848,
+              "f1_exact": "964/2045"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 482,
+              "fp": 261,
+              "fn": 820,
+              "tn": 3802,
+              "f1": 0.4713936430317848,
+              "f1_exact": "964/2045"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 482,
+              "fp": 261,
+              "fn": 820,
+              "tn": 3802,
+              "f1": 0.4713936430317848,
+              "f1_exact": "964/2045"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 482,
+              "fp": 261,
+              "fn": 820,
+              "tn": 3802,
+              "f1": 0.4713936430317848,
+              "f1_exact": "964/2045"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 615,
+              "fp": 327,
+              "fn": 687,
+              "tn": 3736,
+              "f1": 0.5481283422459893,
+              "f1_exact": "205/374"
+            }
+          },
+          "brier_unchanged": 0.1447466013978472,
+          "origin_coverage": 1.0,
+          "transitions": {
+            "00": {
+              "n": 3736,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "01": {
+              "n": 687,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 327,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "11": {
+              "n": 615,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 0,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 309,
+            "policy_right": 121,
+            "persistence_right": 188
+          }
+        }
+      }
+    },
+    "h8_2020-02_G4_r80_s42_e1pair": {
+      "eligible": true,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 529,
+              "fp": 289,
+              "fn": 386,
+              "tn": 4302,
+              "f1": 0.6105020196191575,
+              "f1_exact": "1058/1733"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 614,
+              "fp": 396,
+              "fn": 301,
+              "tn": 4195,
+              "f1": 0.6379220779220779,
+              "f1_exact": "1228/1925"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 529,
+              "fp": 289,
+              "fn": 371,
+              "tn": 4176,
+              "f1": 0.6158323632130385,
+              "f1_exact": "529/859"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 614,
+              "fp": 396,
+              "fn": 286,
+              "tn": 4069,
+              "f1": 0.6429319371727749,
+              "f1_exact": "614/955"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 492,
+              "fp": 644,
+              "fn": 408,
+              "tn": 3821,
+              "f1": 0.48330058939096265,
+              "f1_exact": "246/509"
+            }
+          },
+          "brier_unchanged": 0.08711303379055613,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3821,
+              "corrected": 0,
+              "spoiled": 53,
+              "tp_change": 0,
+              "fp_change": 53
+            },
+            "01": {
+              "n": 408,
+              "corrected": 55,
+              "spoiled": 0,
+              "tp_change": 55,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 644,
+              "corrected": 6,
+              "spoiled": 60,
+              "tp_change": 0,
+              "fp_change": 54
+            },
+            "11": {
+              "n": 492,
+              "corrected": 30,
+              "spoiled": 0,
+              "tp_change": 30,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 710,
+            "policy_right": 540,
+            "persistence_right": 170
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 455,
+              "fp": 283,
+              "fn": 460,
+              "tn": 4308,
+              "f1": 0.5505142165759226,
+              "f1_exact": "910/1653"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 672,
+              "fp": 534,
+              "fn": 243,
+              "tn": 4057,
+              "f1": 0.6336633663366337,
+              "f1_exact": "64/101"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 455,
+              "fp": 283,
+              "fn": 445,
+              "tn": 4182,
+              "f1": 0.5555555555555556,
+              "f1_exact": "5/9"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 672,
+              "fp": 534,
+              "fn": 228,
+              "tn": 3931,
+              "f1": 0.6381766381766382,
+              "f1_exact": "224/351"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 492,
+              "fp": 644,
+              "fn": 408,
+              "tn": 3821,
+              "f1": 0.48330058939096265,
+              "f1_exact": "246/509"
+            }
+          },
+          "brier_unchanged": 0.09186938370980637,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3821,
+              "corrected": 0,
+              "spoiled": 125,
+              "tp_change": 0,
+              "fp_change": 125
+            },
+            "01": {
+              "n": 408,
+              "corrected": 156,
+              "spoiled": 0,
+              "tp_change": 156,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 644,
+              "corrected": 0,
+              "spoiled": 126,
+              "tp_change": 0,
+              "fp_change": 126
+            },
+            "11": {
+              "n": 492,
+              "corrected": 61,
+              "spoiled": 0,
+              "tp_change": 61,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 634,
+            "policy_right": 462,
+            "persistence_right": 172
+          }
+        }
+      }
+    },
+    "h8_2020-06_G4_r80_s42_e1pair": {
+      "eligible": true,
+      "arms": {
+        "original": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 694,
+              "fp": 690,
+              "fn": 273,
+              "tn": 3849,
+              "f1": 0.5903870693321991,
+              "f1_exact": "1388/2351"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 766,
+              "fp": 1082,
+              "fn": 201,
+              "tn": 3457,
+              "f1": 0.544227353463588,
+              "f1_exact": "1532/2815"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 694,
+              "fp": 690,
+              "fn": 257,
+              "tn": 3724,
+              "f1": 0.5944325481798716,
+              "f1_exact": "1388/2335"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 766,
+              "fp": 1082,
+              "fn": 185,
+              "tn": 3332,
+              "f1": 0.5473383351196855,
+              "f1_exact": "1532/2799"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 647,
+              "fp": 655,
+              "fn": 304,
+              "tn": 3759,
+              "f1": 0.5743453173546382,
+              "f1_exact": "1294/2253"
+            }
+          },
+          "brier_unchanged": 0.11550300962815842,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3759,
+              "corrected": 0,
+              "spoiled": 245,
+              "tp_change": 0,
+              "fp_change": 245
+            },
+            "01": {
+              "n": 304,
+              "corrected": 39,
+              "spoiled": 0,
+              "tp_change": 39,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 655,
+              "corrected": 0,
+              "spoiled": 147,
+              "tp_change": 0,
+              "fp_change": 147
+            },
+            "11": {
+              "n": 647,
+              "corrected": 33,
+              "spoiled": 0,
+              "tp_change": 33,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 690,
+            "policy_right": 191,
+            "persistence_right": 499
+          }
+        },
+        "anchored": {
+          "all": {
+            "argmax": {
+              "n": 5506,
+              "tp": 633,
+              "fp": 556,
+              "fn": 334,
+              "tn": 3983,
+              "f1": 0.5871985157699443,
+              "f1_exact": "633/1078"
+            },
+            "policy": {
+              "n": 5506,
+              "tp": 763,
+              "fp": 1019,
+              "fn": 204,
+              "tn": 3520,
+              "f1": 0.5551109494361586,
+              "f1_exact": "1526/2749"
+            }
+          },
+          "matched": {
+            "argmax": {
+              "n": 5365,
+              "tp": 633,
+              "fp": 556,
+              "fn": 318,
+              "tn": 3858,
+              "f1": 0.591588785046729,
+              "f1_exact": "633/1070"
+            },
+            "policy": {
+              "n": 5365,
+              "tp": 763,
+              "fp": 1019,
+              "fn": 188,
+              "tn": 3395,
+              "f1": 0.5583607757043542,
+              "f1_exact": "1526/2733"
+            },
+            "persistence": {
+              "n": 5365,
+              "tp": 647,
+              "fp": 655,
+              "fn": 304,
+              "tn": 3759,
+              "f1": 0.5743453173546382,
+              "f1_exact": "1294/2253"
+            }
+          },
+          "brier_unchanged": 0.10977121744234077,
+          "origin_coverage": 0.9743915728296404,
+          "transitions": {
+            "00": {
+              "n": 3759,
+              "corrected": 0,
+              "spoiled": 303,
+              "tp_change": 0,
+              "fp_change": 303
+            },
+            "01": {
+              "n": 304,
+              "corrected": 62,
+              "spoiled": 0,
+              "tp_change": 62,
+              "fp_change": 0
+            },
+            "10": {
+              "n": 655,
+              "corrected": 0,
+              "spoiled": 160,
+              "tp_change": 0,
+              "fp_change": 160
+            },
+            "11": {
+              "n": 647,
+              "corrected": 68,
+              "spoiled": 0,
+              "tp_change": 68,
+              "fp_change": 0
+            },
+            "missing": {
+              "n": 141,
+              "corrected": 0,
+              "spoiled": 0,
+              "tp_change": 0,
+              "fp_change": 0
+            }
+          },
+          "departure": {
+            "n": 712,
+            "policy_right": 232,
+            "persistence_right": 480
+          }
+        }
+      }
+    }
+  },
+  "all_21": {
+    "anchored": {
+      "all": {
+        "argmax": {
+          "n": 113508,
+          "tp": 10398,
+          "fp": 5973,
+          "fn": 10293,
+          "tn": 86844,
+          "f1": 0.5611138092925368,
+          "f1_exact": "3466/6177"
+        },
+        "policy": {
+          "n": 113508,
+          "tp": 10976,
+          "fp": 7201,
+          "fn": 9715,
+          "tn": 85616,
+          "f1": 0.5647833693526809,
+          "f1_exact": "5488/9717"
+        }
+      },
+      "matched": {
+        "argmax": {
+          "n": 112795,
+          "tp": 10392,
+          "fp": 5973,
+          "fn": 10215,
+          "tn": 86215,
+          "f1": 0.5621551444336255,
+          "f1_exact": "1732/3081"
+        },
+        "policy": {
+          "n": 112795,
+          "tp": 10970,
+          "fp": 7201,
+          "fn": 9637,
+          "tn": 84987,
+          "f1": 0.5657847232967146,
+          "f1_exact": "10970/19389"
+        },
+        "persistence": {
+          "n": 112795,
+          "tp": 11707,
+          "fp": 7614,
+          "fn": 8900,
+          "tn": 84574,
+          "f1": 0.586405529953917,
+          "f1_exact": "509/868"
+        }
+      },
+      "brier_unchanged": 0.1013142931772618,
+      "origin_coverage": 0.9937185044225958,
+      "transitions": {
+        "00": {
+          "n": 84574,
+          "corrected": 2,
+          "spoiled": 755,
+          "tp_change": 0,
+          "fp_change": 753
+        },
+        "01": {
+          "n": 8900,
+          "corrected": 301,
+          "spoiled": 0,
+          "tp_change": 301,
+          "fp_change": 0
+        },
+        "10": {
+          "n": 7614,
+          "corrected": 0,
+          "spoiled": 475,
+          "tp_change": 0,
+          "fp_change": 475
+        },
+        "11": {
+          "n": 11707,
+          "corrected": 287,
+          "spoiled": 10,
+          "tp_change": 277,
+          "fp_change": 0
+        },
+        "missing": {
+          "n": 713,
+          "corrected": 0,
+          "spoiled": 0,
+          "tp_change": 0,
+          "fp_change": 0
+        }
+      },
+      "departure": {
+        "n": 6728,
+        "policy_right": 3202,
+        "persistence_right": 3526
+      }
+    },
+    "original": {
+      "all": {
+        "argmax": {
+          "n": 113508,
+          "tp": 9767,
+          "fp": 5029,
+          "fn": 10924,
+          "tn": 87788,
+          "f1": 0.5504550962324232,
+          "f1_exact": "19534/35487"
+        },
+        "policy": {
+          "n": 113508,
+          "tp": 10195,
+          "fp": 6331,
+          "fn": 10496,
+          "tn": 86486,
+          "f1": 0.5478679098261547,
+          "f1_exact": "20390/37217"
+        }
+      },
+      "matched": {
+        "argmax": {
+          "n": 112795,
+          "tp": 9761,
+          "fp": 5029,
+          "fn": 10846,
+          "tn": 87159,
+          "f1": 0.5515156651693647,
+          "f1_exact": "19522/35397"
+        },
+        "policy": {
+          "n": 112795,
+          "tp": 10189,
+          "fp": 6331,
+          "fn": 10418,
+          "tn": 85857,
+          "f1": 0.548872787997953,
+          "f1_exact": "20378/37127"
+        },
+        "persistence": {
+          "n": 112795,
+          "tp": 11707,
+          "fp": 7614,
+          "fn": 8900,
+          "tn": 84574,
+          "f1": 0.586405529953917,
+          "f1_exact": "509/868"
+        }
+      },
+      "brier_unchanged": 0.10189054595144785,
+      "origin_coverage": 0.9937185044225958,
+      "transitions": {
+        "00": {
+          "n": 84574,
+          "corrected": 0,
+          "spoiled": 706,
+          "tp_change": 0,
+          "fp_change": 706
+        },
+        "01": {
+          "n": 8900,
+          "corrected": 211,
+          "spoiled": 0,
+          "tp_change": 211,
+          "fp_change": 0
+        },
+        "10": {
+          "n": 7614,
+          "corrected": 15,
+          "spoiled": 611,
+          "tp_change": 0,
+          "fp_change": 596
+        },
+        "11": {
+          "n": 11707,
+          "corrected": 224,
+          "spoiled": 7,
+          "tp_change": 217,
+          "fp_change": 0
+        },
+        "missing": {
+          "n": 713,
+          "corrected": 0,
+          "spoiled": 0,
+          "tp_change": 0,
+          "fp_change": 0
+        }
+      },
+      "departure": {
+        "n": 9207,
+        "policy_right": 4486,
+        "persistence_right": 4721
+      }
+    }
+  },
+  "eligible_6_descriptive": {
+    "anchored": {
+      "all": {
+        "argmax": {
+          "n": 32895,
+          "tp": 3565,
+          "fp": 2386,
+          "fn": 2468,
+          "tn": 24476,
+          "f1": 0.5949599465954606,
+          "f1_exact": "3565/5992"
+        },
+        "policy": {
+          "n": 32895,
+          "tp": 4143,
+          "fp": 3614,
+          "fn": 1890,
+          "tn": 23248,
+          "f1": 0.6008701957940537,
+          "f1_exact": "4143/6895"
+        }
+      },
+      "matched": {
+        "argmax": {
+          "n": 32331,
+          "tp": 3565,
+          "fp": 2386,
+          "fn": 2406,
+          "tn": 23974,
+          "f1": 0.5980540177822513,
+          "f1_exact": "3565/5961"
+        },
+        "policy": {
+          "n": 32331,
+          "tp": 4143,
+          "fp": 3614,
+          "fn": 1828,
+          "tn": 22746,
+          "f1": 0.603583916083916,
+          "f1_exact": "1381/2288"
+        },
+        "persistence": {
+          "n": 32331,
+          "tp": 3791,
+          "fp": 3136,
+          "fn": 2180,
+          "tn": 23224,
+          "f1": 0.5878430764459606,
+          "f1_exact": "3791/6449"
+        }
+      },
+      "brier_unchanged": 0.10095268126248542,
+      "origin_coverage": 0.9828545371637026,
+      "transitions": {
+        "00": {
+          "n": 23224,
+          "corrected": 2,
+          "spoiled": 755,
+          "tp_change": 0,
+          "fp_change": 753
+        },
+        "01": {
+          "n": 2180,
+          "corrected": 301,
+          "spoiled": 0,
+          "tp_change": 301,
+          "fp_change": 0
+        },
+        "10": {
+          "n": 3136,
+          "corrected": 0,
+          "spoiled": 475,
+          "tp_change": 0,
+          "fp_change": 475
+        },
+        "11": {
+          "n": 3791,
+          "corrected": 287,
+          "spoiled": 10,
+          "tp_change": 277,
+          "fp_change": 0
+        },
+        "missing": {
+          "n": 564,
+          "corrected": 0,
+          "spoiled": 0,
+          "tp_change": 0,
+          "fp_change": 0
+        }
+      },
+      "departure": {
+        "n": 2208,
+        "policy_right": 1041,
+        "persistence_right": 1167
+      }
+    },
+    "original": {
+      "all": {
+        "argmax": {
+          "n": 32895,
+          "tp": 3432,
+          "fp": 2095,
+          "fn": 2601,
+          "tn": 24767,
+          "f1": 0.5937716262975778,
+          "f1_exact": "858/1445"
+        },
+        "policy": {
+          "n": 32895,
+          "tp": 3860,
+          "fp": 3397,
+          "fn": 2173,
+          "tn": 23465,
+          "f1": 0.580887885628292,
+          "f1_exact": "772/1329"
+        }
+      },
+      "matched": {
+        "argmax": {
+          "n": 32331,
+          "tp": 3432,
+          "fp": 2095,
+          "fn": 2539,
+          "tn": 24265,
+          "f1": 0.5969733866759437,
+          "f1_exact": "3432/5749"
+        },
+        "policy": {
+          "n": 32331,
+          "tp": 3860,
+          "fp": 3397,
+          "fn": 2111,
+          "tn": 22963,
+          "f1": 0.5836105231327487,
+          "f1_exact": "1930/3307"
+        },
+        "persistence": {
+          "n": 32331,
+          "tp": 3791,
+          "fp": 3136,
+          "fn": 2180,
+          "tn": 23224,
+          "f1": 0.5878430764459606,
+          "f1_exact": "3791/6449"
+        }
+      },
+      "brier_unchanged": 0.10111784701693093,
+      "origin_coverage": 0.9828545371637026,
+      "transitions": {
+        "00": {
+          "n": 23224,
+          "corrected": 0,
+          "spoiled": 706,
+          "tp_change": 0,
+          "fp_change": 706
+        },
+        "01": {
+          "n": 2180,
+          "corrected": 211,
+          "spoiled": 0,
+          "tp_change": 211,
+          "fp_change": 0
+        },
+        "10": {
+          "n": 3136,
+          "corrected": 15,
+          "spoiled": 611,
+          "tp_change": 0,
+          "fp_change": 596
+        },
+        "11": {
+          "n": 3791,
+          "corrected": 224,
+          "spoiled": 7,
+          "tp_change": 217,
+          "fp_change": 0
+        },
+        "missing": {
+          "n": 564,
+          "corrected": 0,
+          "spoiled": 0,
+          "tp_change": 0,
+          "fp_change": 0
+        }
+      },
+      "departure": {
+        "n": 3000,
+        "policy_right": 1404,
+        "persistence_right": 1596
+      }
+    }
+  }
+}

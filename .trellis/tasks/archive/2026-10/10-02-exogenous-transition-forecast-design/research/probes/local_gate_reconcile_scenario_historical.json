@@ -1,0 +1,313 @@
+{
+ "phase": "scenario_historical",
+ "totals": {
+  "folds": 57,
+  "gated_folds": 57,
+  "outer_locals": 232,
+  "outer_b_weight_blocks": 0,
+  "regions": 969,
+  "gate_blocks": 5764,
+  "internal_local_fits": 5764,
+  "prediction_rows": 325926,
+  "forecast_rows": 325926,
+  "persistence_rows": 317612,
+  "outer_globals_linked": 57,
+  "internal_globals_linked": 342
+ },
+ "problems": [],
+ "folds": [
+  {
+   "fold": "A/h4/k0/2021-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2022-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2022-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2022-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2023-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2023-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2023-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2024-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2024-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2024-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2021-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2022-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2022-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2022-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2023-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2023-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2023-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2024-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2024-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2024-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2021-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2022-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2022-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2022-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2023-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2023-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2023-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2024-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2024-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2024-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2022-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2022-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2022-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2023-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2023-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2023-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2024-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2024-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2024-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2022-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2022-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2022-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2023-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2023-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2023-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2024-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2024-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2024-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2022-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2022-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2022-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2023-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2023-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2023-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2024-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2024-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2024-10",
+   "map_route": "learned_map",
+   "problems": []
+  }
+ ],
+ "evidence_scope": {
+  "outer_locals": "saved fit_keys_sha256 + fit_support + variant rows vs independently reconstructed ordered keys (outer lawful pool x frozen map cluster); B native sample_weight block (float32 sha/n/sum/min/max) vs repeated float32(1/3); A has no weight block",
+  "internal_locals": "support counts and support decision only; internal local key lists are not saved",
+  "gate_keys": "evaluator key sets and truth vs lawful labels at U under the outer mask",
+  "gate_decisions": "exact-fraction recount from saved gate pairs (predictions themselves not refit)",
+  "forecast_truth_persistence": "all folds: y_true at T, persistence class/source month/age = latest label <= O with release <= O outside hidden(O,k), from prepared observations",
+  "global_links": "outer (gate global booster + fit-key sha) and internal (gate_pairs global sha) linked to a saved record whose origin/strategy/k/excluded/masked equal masks derived from the fold origin and k; record key digests are covered by the independent fit-key checker"
+ }
+}

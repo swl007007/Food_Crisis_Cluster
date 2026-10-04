@@ -1,0 +1,82 @@
+{
+  "selection_sha256": "c0b3c967127c9a91c557343d5d9af3114c4c0975558b4c1a9d70ac4644ab9b8b",
+  "verified_folds": 72,
+  "verified_selection_outputs": 354,
+  "forecast_rows": 411696,
+  "unlabelled_rows_retained": 21288,
+  "routes": {
+    "learned_map": 66,
+    "no_prior_candidates": 6
+  },
+  "metrics": [
+    {
+      "strategy": "A",
+      "horizon": 4,
+      "normal_model_matched_f1": 0.6282687295047507,
+      "normal_persistence_f1": 0.64156527458073,
+      "normal_parity": -0.013296545075979329,
+      "one_cycle_f1": 0.5484129101093626,
+      "two_cycle_f1": 0.5657995735607676,
+      "interruption_mean_f1": 0.5571062418350651,
+      "one_cycle_persistence_f1": 0.5427852348993288,
+      "two_cycle_persistence_f1": 0.5678656260604004,
+      "qualifies": true,
+      "matched_interruption_deltas": {
+        "1": 0.007143438424494251,
+        "2": -0.00046911562591528915
+      }
+    },
+    {
+      "strategy": "B",
+      "horizon": 4,
+      "normal_model_matched_f1": 0.6002730996813838,
+      "normal_persistence_f1": 0.64156527458073,
+      "normal_parity": -0.04129217489934632,
+      "one_cycle_f1": 0.5016501650165016,
+      "two_cycle_f1": 0.5258571699185451,
+      "interruption_mean_f1": 0.5137536674675234,
+      "one_cycle_persistence_f1": 0.5427852348993288,
+      "two_cycle_persistence_f1": 0.5678656260604004,
+      "qualifies": false,
+      "matched_interruption_deltas": {
+        "1": -0.03962098604332652,
+        "2": -0.040359687818120125
+      }
+    },
+    {
+      "strategy": "A",
+      "horizon": 8,
+      "normal_model_matched_f1": 0.5477610686381584,
+      "normal_persistence_f1": 0.5427852348993288,
+      "normal_parity": 0.0049758337388295885,
+      "one_cycle_f1": 0.565096499836441,
+      "two_cycle_f1": 0.5482791586998088,
+      "interruption_mean_f1": 0.5566878292681249,
+      "one_cycle_persistence_f1": 0.5678656260604004,
+      "two_cycle_persistence_f1": 0.5378468169165843,
+      "qualifies": true,
+      "matched_interruption_deltas": {
+        "1": -0.0012399598037378405,
+        "2": 0.011877601966713029
+      }
+    },
+    {
+      "strategy": "B",
+      "horizon": 8,
+      "normal_model_matched_f1": 0.49330628803245435,
+      "normal_persistence_f1": 0.5427852348993288,
+      "normal_parity": -0.0494789468668745,
+      "one_cycle_f1": 0.4942551505546751,
+      "two_cycle_f1": 0.4881673087506879,
+      "interruption_mean_f1": 0.49121122965268155,
+      "one_cycle_persistence_f1": 0.5678656260604004,
+      "two_cycle_persistence_f1": 0.5378468169165843,
+      "qualifies": false,
+      "matched_interruption_deltas": {
+        "1": -0.0719896447427019,
+        "2": -0.04819735514457221
+      }
+    }
+  ],
+  "verdict": "PASS bounded selection recount; not full-task audit"
+}

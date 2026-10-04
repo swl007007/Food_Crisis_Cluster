@@ -1,0 +1,2012 @@
+{
+  "status": "PASS",
+  "checks": 1016,
+  "pair_comparisons": 35537568,
+  "source_rows": 113508,
+  "matched_rows": 112795,
+  "excluded": 713,
+  "root_cells": 84,
+  "arm_cells": 168,
+  "producer_head": "386b25a691faca789ef95a5c51b2df175e08d883",
+  "verifier_sha256": "a8f1a800f7ebaf5103ce8e51e3ebd1e207beadd70928f084e802485faf79b45d",
+  "method": "direct positive-negative comparisons in128-row chunks, wins=1 ties=0.5; exact integer numerator; no sklearn/producer imports; zero fits",
+  "artifacts": {
+    "summary.json": "6e296f83390429fac1692cd0e9756fc2e1c2534e8e64935ba1560e6320f6376e",
+    "identity.json": "3bf01888b050409491f42916bce9aaad0e049816ff512543ad001325c43fb9ac"
+  },
+  "exact_pair_counts": [
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 400316,
+      "denominator": 524736,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 392486,
+      "denominator": 524736,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 306444,
+      "denominator": 562898,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 258726,
+      "denominator": 562898,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 251654,
+      "denominator": 377646,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 253512,
+      "denominator": 377646,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 4994,
+      "denominator": 6460,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 4892,
+      "denominator": 6460,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 798158,
+      "denominator": 907572,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 788400,
+      "denominator": 907572,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 614330,
+      "denominator": 970784,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 540662,
+      "denominator": 970784,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 139222,
+      "denominator": 167856,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 132704,
+      "denominator": 167856,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 2010,
+      "denominator": 2964,
+      "reason": null
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 1690,
+      "denominator": 2964,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 299852,
+      "denominator": 356958,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 298028,
+      "denominator": 356958,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 621166,
+      "denominator": 1005758,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 539028,
+      "denominator": 1005758,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 187378,
+      "denominator": 252624,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 178306,
+      "denominator": 252624,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 648174,
+      "denominator": 732252,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 641030,
+      "denominator": 732252,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 954560,
+      "denominator": 1351292,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 956784,
+      "denominator": 1351292,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 155818,
+      "denominator": 230396,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 171136,
+      "denominator": 230396,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 367108,
+      "denominator": 444604,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 369902,
+      "denominator": 444604,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 821992,
+      "denominator": 1311648,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 868414,
+      "denominator": 1311648,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 226876,
+      "denominator": 337870,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 220226,
+      "denominator": 337870,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 120,
+      "denominator": 124,
+      "reason": null
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 124,
+      "denominator": 124,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 350696,
+      "denominator": 460890,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 361386,
+      "denominator": 460890,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 319054,
+      "denominator": 561880,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 311932,
+      "denominator": 561880,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 280976,
+      "denominator": 372498,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 290522,
+      "denominator": 372498,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 318914,
+      "denominator": 412920,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 324038,
+      "denominator": 412920,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 447640,
+      "denominator": 821548,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 442922,
+      "denominator": 821548,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 450564,
+      "denominator": 593472,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 459652,
+      "denominator": 593472,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 480,
+      "denominator": 480,
+      "reason": null
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 480,
+      "denominator": 480,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 149752,
+      "denominator": 177630,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 159830,
+      "denominator": 177630,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 286656,
+      "denominator": 510686,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 295505,
+      "denominator": 510686,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 117970,
+      "denominator": 229164,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 121956,
+      "denominator": 229164,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 322,
+      "denominator": 396,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 326,
+      "denominator": 396,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 384306,
+      "denominator": 451752,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 382216,
+      "denominator": 451752,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 714374,
+      "denominator": 934304,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 742022,
+      "denominator": 934304,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 176440,
+      "denominator": 223368,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 181930,
+      "denominator": 223368,
+      "reason": null
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 10346,
+      "denominator": 22312,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 9456,
+      "denominator": 22312,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 388706,
+      "denominator": 632772,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 391444,
+      "denominator": 632772,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 185624,
+      "denominator": 242176,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 193712,
+      "denominator": 242176,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 351588,
+      "denominator": 444288,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 357166,
+      "denominator": 444288,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 622976,
+      "denominator": 947044,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 624608,
+      "denominator": 947044,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 305294,
+      "denominator": 366960,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 287853,
+      "denominator": 366960,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 614,
+      "denominator": 768,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 608,
+      "denominator": 768,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 133062,
+      "denominator": 150528,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 131912,
+      "denominator": 150528,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 784668,
+      "denominator": 1210972,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 754042,
+      "denominator": 1210972,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 298296,
+      "denominator": 466032,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 301849,
+      "denominator": 466032,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 54,
+      "denominator": 90,
+      "reason": null
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 62,
+      "denominator": 90,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 113344,
+      "denominator": 160684,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 116140,
+      "denominator": 160684,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 533032,
+      "denominator": 731120,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 533333,
+      "denominator": 731120,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 589128,
+      "denominator": 803584,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 597142,
+      "denominator": 803584,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 352,
+      "denominator": 352,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 352,
+      "denominator": 352,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 143258,
+      "denominator": 163494,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 144148,
+      "denominator": 163494,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 654189,
+      "denominator": 1063960,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 644076,
+      "denominator": 1063960,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 316283,
+      "denominator": 359844,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 308227,
+      "denominator": 359844,
+      "reason": null
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 487422,
+      "denominator": 565704,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 487688,
+      "denominator": 565704,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 365854,
+      "denominator": 778872,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 357772,
+      "denominator": 778872,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 126110,
+      "denominator": 167768,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 124044,
+      "denominator": 167768,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 2676,
+      "denominator": 3224,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 2382,
+      "denominator": 3224,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 378692,
+      "denominator": 466958,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 382060,
+      "denominator": 466958,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 366968,
+      "denominator": 884856,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 391666,
+      "denominator": 884856,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 173886,
+      "denominator": 254024,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 167008,
+      "denominator": 254024,
+      "reason": null
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 269672,
+      "denominator": 341460,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 258870,
+      "denominator": 341460,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 811016,
+      "denominator": 1128192,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 841296,
+      "denominator": 1128192,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 199428,
+      "denominator": 231800,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 197704,
+      "denominator": 231800,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 412728,
+      "denominator": 486540,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 408446,
+      "denominator": 486540,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 723210,
+      "denominator": 1104048,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 739808,
+      "denominator": 1104048,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 242434,
+      "denominator": 336798,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 275474,
+      "denominator": 336798,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 280,
+      "denominator": 280,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 280,
+      "denominator": 280,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 496696,
+      "denominator": 570650,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 496464,
+      "denominator": 570650,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 489962,
+      "denominator": 1067692,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 483062,
+      "denominator": 1067692,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 223266,
+      "denominator": 365586,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 247514,
+      "denominator": 365586,
+      "reason": null
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 0,
+      "denominator": 0,
+      "reason": "no_negative"
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 262200,
+      "denominator": 319470,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 273240,
+      "denominator": 319470,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 855642,
+      "denominator": 1021068,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 870404,
+      "denominator": 1021068,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 468246,
+      "denominator": 576752,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 462948,
+      "denominator": 576752,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 444,
+      "denominator": 480,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 434,
+      "denominator": 480,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "original",
+      "numerator": 246624,
+      "denominator": 321264,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 0,
+      "arm": "anchored",
+      "numerator": 251332,
+      "denominator": 321264,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "original",
+      "numerator": 424282,
+      "denominator": 672570,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 1,
+      "arm": "anchored",
+      "numerator": 414138,
+      "denominator": 672570,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "original",
+      "numerator": 632402,
+      "denominator": 808750,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 2,
+      "arm": "anchored",
+      "numerator": 639548,
+      "denominator": 808750,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "original",
+      "numerator": 352,
+      "denominator": 352,
+      "reason": null
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "code": 3,
+      "arm": "anchored",
+      "numerator": 352,
+      "denominator": 352,
+      "reason": null
+    }
+  ],
+  "by_horizon_mean_fold_valid_only": {
+    "4": {
+      "0": {
+        "origin_phase": 1,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 31,
+            "N": 2865,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 84,
+            "N": 2689,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 4,
+            "N": 2789,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 78,
+            "N": 2848,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 32,
+            "N": 2352,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 34,
+            "N": 2363,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 31,
+            "N": 2637,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.7734837239054783,
+          "anchored": 0.7791951542442433
+        }
+      },
+      "1": {
+        "origin_phase": 2,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 167,
+            "N": 1529,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 301,
+            "N": 1552,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 217,
+            "N": 1458,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 454,
+            "N": 1043,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 427,
+            "N": 1418,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 260,
+            "N": 1406,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 335,
+            "N": 1588,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.6557018569626363,
+          "anchored": 0.6583570307913867
+        }
+      },
+      "2": {
+        "origin_phase": 3,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 507,
+            "N": 226,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 492,
+            "N": 227,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 688,
+            "N": 176,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 556,
+            "N": 330,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 798,
+            "N": 292,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 584,
+            "N": 688,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 573,
+            "N": 314,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.7364680437823827,
+          "anchored": 0.7397609111904079
+        }
+      },
+      "3": {
+        "origin_phase": 4,
+        "n_valid": 4,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 33,
+            "N": 6,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 19,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2019-02",
+            "P": 33,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2019-06",
+            "P": 48,
+            "N": 8,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 45,
+            "N": 1,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 22,
+            "N": 8,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 28,
+            "N": 0,
+            "valid": false
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.8031526199494949,
+          "anchored": 0.8259469696969697
+        }
+      }
+    },
+    "8": {
+      "0": {
+        "origin_phase": 1,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 97,
+            "N": 2916,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 83,
+            "N": 2813,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 63,
+            "N": 2710,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 90,
+            "N": 2703,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 101,
+            "N": 2825,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 69,
+            "N": 2315,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 69,
+            "N": 2328,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.824208057082526,
+          "anchored": 0.8265012686163862
+        }
+      },
+      "1": {
+        "origin_phase": 2,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 276,
+            "N": 1411,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 322,
+            "N": 1374,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 384,
+            "N": 1469,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 451,
+            "N": 1224,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 586,
+            "N": 911,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 339,
+            "N": 1506,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 235,
+            "N": 1431,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.5980117782135154,
+          "anchored": 0.6054861982107453
+        }
+      },
+      "2": {
+        "origin_phase": 3,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 313,
+            "N": 268,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 452,
+            "N": 281,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 475,
+            "N": 244,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 567,
+            "N": 297,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 559,
+            "N": 327,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 452,
+            "N": 638,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 625,
+            "N": 647,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.7458440373278188,
+          "anchored": 0.7625938112035789
+        }
+      },
+      "3": {
+        "origin_phase": 4,
+        "n_valid": 4,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 52,
+            "N": 31,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 39,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2019-02",
+            "P": 19,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2019-06",
+            "P": 28,
+            "N": 5,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 56,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2020-02",
+            "P": 40,
+            "N": 6,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 22,
+            "N": 8,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.9387562034739454,
+          "anchored": 0.9107501033912324
+        }
+      }
+    },
+    "12": {
+      "0": {
+        "origin_phase": 1,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 96,
+            "N": 2733,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 159,
+            "N": 2854,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 63,
+            "N": 2833,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 139,
+            "N": 2634,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 82,
+            "N": 2711,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 81,
+            "N": 2845,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 90,
+            "N": 2294,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.8180683124927117,
+          "anchored": 0.8182608952975345
+        }
+      },
+      "1": {
+        "origin_phase": 2,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 217,
+            "N": 1297,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 368,
+            "N": 1319,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 383,
+            "N": 1313,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 499,
+            "N": 1354,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 624,
+            "N": 1051,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 220,
+            "N": 1277,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 259,
+            "N": 1586,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.6058044327385975,
+          "anchored": 0.573846574758121
+        }
+      },
+      "2": {
+        "origin_phase": 3,
+        "n_valid": 7,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 339,
+            "N": 557,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 312,
+            "N": 269,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 456,
+            "N": 277,
+            "valid": true
+          },
+          {
+            "date": "2019-06",
+            "P": 478,
+            "N": 241,
+            "valid": true
+          },
+          {
+            "date": "2019-10",
+            "P": 565,
+            "N": 299,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 543,
+            "N": 343,
+            "valid": true
+          },
+          {
+            "date": "2020-06",
+            "P": 562,
+            "N": 528,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.7284016917687214,
+          "anchored": 0.7309619250274518
+        }
+      },
+      "3": {
+        "origin_phase": 4,
+        "n_valid": 4,
+        "n_folds": 7,
+        "supports": [
+          {
+            "date": "2018-06",
+            "P": 85,
+            "N": 38,
+            "valid": true
+          },
+          {
+            "date": "2018-10",
+            "P": 57,
+            "N": 26,
+            "valid": true
+          },
+          {
+            "date": "2019-02",
+            "P": 39,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2019-06",
+            "P": 19,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2019-10",
+            "P": 31,
+            "N": 2,
+            "valid": true
+          },
+          {
+            "date": "2020-02",
+            "P": 56,
+            "N": 0,
+            "valid": false
+          },
+          {
+            "date": "2020-06",
+            "P": 40,
+            "N": 6,
+            "valid": true
+          }
+        ],
+        "mean_fold_auc": {
+          "original": 0.8547361506964024,
+          "anchored": 0.8318627450980391
+        }
+      }
+    }
+  },
+  "runtime": {
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3"
+  }
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "root": "h4_2018-06_G1_r80_s42_e1pair",
+    "rows": 65541,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h4_2018-10_G1_r80_s42_e1pair",
+    "rows": 65908,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h4_2019-02_G1_r80_s42_e1pair",
+    "rows": 61361,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h4_2019-06_G1_r80_s42_e1pair",
+    "rows": 61868,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h4_2019-10_G1_r80_s42_e1pair",
+    "rows": 62374,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h4_2020-02_G1_r80_s42_e1pair",
+    "rows": 62578,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h4_2020-06_G1_r80_s42_e1pair",
+    "rows": 62937,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2018-06_G4_r80_s42_e1pair",
+    "rows": 65195,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2018-10_G4_r80_s42_e1pair",
+    "rows": 65545,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2019-02_G4_r80_s42_e1pair",
+    "rows": 65908,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2019-06_G4_r80_s42_e1pair",
+    "rows": 61361,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2019-10_G4_r80_s42_e1pair",
+    "rows": 61868,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2020-02_G4_r80_s42_e1pair",
+    "rows": 62374,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h8_2020-06_G4_r80_s42_e1pair",
+    "rows": 62578,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2018-06_G2_r80_s42_e1pair",
+    "rows": 69546,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2018-10_G2_r80_s42_e1pair",
+    "rows": 65199,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2019-02_G2_r80_s42_e1pair",
+    "rows": 65545,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2019-06_G2_r80_s42_e1pair",
+    "rows": 65908,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2019-10_G2_r80_s42_e1pair",
+    "rows": 61361,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2020-02_G2_r80_s42_e1pair",
+    "rows": 61868,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  },
+  {
+    "root": "h12_2020-06_G2_r80_s42_e1pair",
+    "rows": 62374,
+    "features": 162,
+    "exact_array_equality_with_nan": true
+  }
+]

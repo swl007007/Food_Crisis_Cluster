@@ -1,0 +1,55 @@
+# Root E1 crisis exposure and evidence-free side assignment (zero fit, 2026-10-01)
+
+**Scope:** saved D29 root predictions on S (`validation_predictions.csv.gz` `y_root`) and saved `s_branch.pkl`, plus original v1 root-decision rows for two additional H4 targets outside the D29 six-case contrast (previously used in v1; G3 root and full validation, unlike D29). No fits; this is not a fix.
+
+## 1. Exposure counts
+
+The E1 crisis masses are `D_g = 2TP_g + FP_g + FN_g`, `Y = D_g/D`, `A = 2TP_g/D` (`src/metrics/fourclass.py:195-207`, used at `partition_opt.py:132`). Areas whose S rows are all true negatives therefore have zero E1 exposure, although they do have S rows. This is **not** the D32 no-search condition. These areas must not be masked as `s-1`, and this is not called a code bug.
+
+**D29 six roots** (independent recount matches the supervisor's `/tmp/d33_e1_mass_support.json` on every field; `mixed` = ≥1 TP and ≥1 FP/FN):
+
+| Quantity | Range over the six roots |
+|---|---|
+| S areas | 5082–5286 |
+| Exposed areas (D_g > 0) | 844–1189 |
+| Areas with exactly one TP/FP/FN row | 722–958 |
+| TN-only areas | 4097–4316 |
+| Total D | 1374–2185 |
+| Largest single-area share of D | ≤ 0.3% |
+
+**Additional targets outside the D29 six-case contrast, previously used in v1** (G3 roots rather than D29's G1, and the full r80 validation = S ∪ C rather than S, about 4 rows per area; root-decision `y_parent` in `e2_predictions.csv.gz`):
+
+| Target | Areas | Zero-exposure areas | One-event areas |
+|---|---|---|---|
+| H4 2018-06 | 5363 | 3950 (74%) | 790 |
+| H4 2018-10 | 5365 | 3958 (74%) | 796 |
+
+Sparse exposure is therefore not specific to the six exposed cases. Under the pre-D26 four-class masses, every correct row contributed mass to its class, so this condition arose with the D26 binary E1 endpoint.
+
+## 2. How zero-exposure areas are assigned at the root split (mechanism, not proven cause)
+
+- A zero-mass group has `c = b = 0`, so its scan score is `g = c·log q + b(1−q) = 0`.
+- `get_top_cells` (`partition_opt.py`) sorts `g` with `np.argsort` and fills `s0` up to about half of the **groups**: `FLEX_TYPE='n_group'`, `FLEX_RATIO=0.1` (`config.py:216-220`).
+- The side of most zero-mass groups is therefore set by sort/tie order on the area index, then smoothed by contiguity refinement.
+
+**Saved D29 depth-1 sides:**
+- 1803–1927 zero-mass areas sit on side 0.
+- Sorted by admin code, the side of zero-mass areas switches only 48–84 times over more than 4,000 areas.
+- Only 7.5–15% of side-0 zero-mass areas lie below the median code.
+- Exposed areas on side 0: 254–491 of 844–1189.
+
+The source establishes that TN-only areas carry **zero E1 preference** before refinement, so their placement depends on the scan's tie order and the group-count balance. The observed final memberships **correlate** with admin-code order, but geographic and country ordering of codes and contiguity refinement confound the attribution. Without a permutation intervention, this does not show that most final membership follows ID rather than E1. It plausibly contributes to root-split instability; it is not shown to cause the transfer failure. The contrast motivation is unchanged.
+
+**Reproduction:** `python3 research/e1_exposure_tie.py <D29 stage1_rootconf dir>`.
+
+## 3. Source references and status (supervisor addition)
+
+- `partition_opt.py` `get_c_b` (213–218) gives `c = b = 0` for TN-only areas.
+- `scan` (989–991) then gives `g = 0` for every finite `q`.
+- `get_top_cells` / `optimize_size` (835–858 / 243–270) use `np.argsort` and an `n_group` flex near one half (`FLEX_RATIO=.1`). The 77–83% zero-mass area set therefore crosses the split boundary, and tied zero-score assignments can depend on tie order before geographic refinement.
+
+**Status:** a source-derived, aggregate-supported mechanism hypothesis, more specific than "small sample size"; not a proven causal attribution.
+
+**Constraints for any next contrast:**
+- Do not change the tie rule or flex settings in the same experiment as a soft-loss (e.g. Brier) E1 alternative.
+- Zero S rows (D32 `s-1`) and zero F1 mass (TN-only with S rows) remain distinct conditions.

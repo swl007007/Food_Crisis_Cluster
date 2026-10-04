@@ -1,0 +1,135 @@
+{
+  "roots": 21,
+  "confusion_score_checks": 210,
+  "probability_rows_per_model": 321047,
+  "independent_no_refit": true,
+  "aggregate": {
+    "C": {
+      "original": {
+        "f1": 0.6695407311420668,
+        "brier_loss": 0.04791390770981172
+      },
+      "weighted": {
+        "f1": 0.6624534192768657,
+        "brier_loss": 0.04861355653522885
+      }
+    },
+    "E3": {
+      "original": {
+        "f1": 0.5504550962324232,
+        "brier_loss": 0.10189054595144784
+      },
+      "weighted": {
+        "f1": 0.5489523071387051,
+        "brier_loss": 0.10423801073383031
+      }
+    }
+  },
+  "details": [
+    {
+      "root": "h4_2018-06_G1_r80_s42_e1pair",
+      "weights_sha256": "1639a9df25b9d789eb9b9fd48ee1dba59b563963f8d569a7f00601e79c888767",
+      "fitting_rows": 65541
+    },
+    {
+      "root": "h4_2018-10_G1_r80_s42_e1pair",
+      "weights_sha256": "d0493001591085eef54b6d89941a7583d9af9f26dd6403960138996d1defddb6",
+      "fitting_rows": 65908
+    },
+    {
+      "root": "h4_2019-02_G1_r80_s42_e1pair",
+      "weights_sha256": "1a31ef827ca2ab73f8ab1c7262a647b9a983986b9b30e18e55a786779db9b101",
+      "fitting_rows": 61361
+    },
+    {
+      "root": "h4_2019-06_G1_r80_s42_e1pair",
+      "weights_sha256": "685a3de5ad993a3997275253e3a14e2cf76aecd04af72afc236e711a35a09092",
+      "fitting_rows": 61868
+    },
+    {
+      "root": "h4_2019-10_G1_r80_s42_e1pair",
+      "weights_sha256": "1c2dd971bfd9b8f9a130d9f9a434f39e3bb30e94ef8e43071f9797dff9336d29",
+      "fitting_rows": 62374
+    },
+    {
+      "root": "h4_2020-02_G1_r80_s42_e1pair",
+      "weights_sha256": "5de46b9dabc2f4ee6f75f9cb14bee4c01701291db2bd828526399a6317d1e91b",
+      "fitting_rows": 62578
+    },
+    {
+      "root": "h4_2020-06_G1_r80_s42_e1pair",
+      "weights_sha256": "b21fa90f8610d9cccf3eb6454486dc6d84e0de753fa3b31bdda539aca0a0ddb8",
+      "fitting_rows": 62937
+    },
+    {
+      "root": "h8_2018-06_G4_r80_s42_e1pair",
+      "weights_sha256": "5ec98ae3c0b68be966cb88db31df8072aa52624905c4c1d243a108887ce05f4e",
+      "fitting_rows": 65195
+    },
+    {
+      "root": "h8_2018-10_G4_r80_s42_e1pair",
+      "weights_sha256": "79b7a2a38b2426f66950cb084207761384e8742ba16abe0423f7f36fe2a74049",
+      "fitting_rows": 65545
+    },
+    {
+      "root": "h8_2019-02_G4_r80_s42_e1pair",
+      "weights_sha256": "d0493001591085eef54b6d89941a7583d9af9f26dd6403960138996d1defddb6",
+      "fitting_rows": 65908
+    },
+    {
+      "root": "h8_2019-06_G4_r80_s42_e1pair",
+      "weights_sha256": "1a31ef827ca2ab73f8ab1c7262a647b9a983986b9b30e18e55a786779db9b101",
+      "fitting_rows": 61361
+    },
+    {
+      "root": "h8_2019-10_G4_r80_s42_e1pair",
+      "weights_sha256": "685a3de5ad993a3997275253e3a14e2cf76aecd04af72afc236e711a35a09092",
+      "fitting_rows": 61868
+    },
+    {
+      "root": "h8_2020-02_G4_r80_s42_e1pair",
+      "weights_sha256": "1c2dd971bfd9b8f9a130d9f9a434f39e3bb30e94ef8e43071f9797dff9336d29",
+      "fitting_rows": 62374
+    },
+    {
+      "root": "h8_2020-06_G4_r80_s42_e1pair",
+      "weights_sha256": "5de46b9dabc2f4ee6f75f9cb14bee4c01701291db2bd828526399a6317d1e91b",
+      "fitting_rows": 62578
+    },
+    {
+      "root": "h12_2018-06_G2_r80_s42_e1pair",
+      "weights_sha256": "b638b3536b17db9e195c5946505db14ba68ebbfb454784bf63743f8ad1f792de",
+      "fitting_rows": 69546
+    },
+    {
+      "root": "h12_2018-10_G2_r80_s42_e1pair",
+      "weights_sha256": "2d870f1c68648b11879bf66ac586492c4f4f043c7f0a6f79516ee5c9a4554632",
+      "fitting_rows": 65199
+    },
+    {
+      "root": "h12_2019-02_G2_r80_s42_e1pair",
+      "weights_sha256": "79b7a2a38b2426f66950cb084207761384e8742ba16abe0423f7f36fe2a74049",
+      "fitting_rows": 65545
+    },
+    {
+      "root": "h12_2019-06_G2_r80_s42_e1pair",
+      "weights_sha256": "d0493001591085eef54b6d89941a7583d9af9f26dd6403960138996d1defddb6",
+      "fitting_rows": 65908
+    },
+    {
+      "root": "h12_2019-10_G2_r80_s42_e1pair",
+      "weights_sha256": "1a31ef827ca2ab73f8ab1c7262a647b9a983986b9b30e18e55a786779db9b101",
+      "fitting_rows": 61361
+    },
+    {
+      "root": "h12_2020-02_G2_r80_s42_e1pair",
+      "weights_sha256": "685a3de5ad993a3997275253e3a14e2cf76aecd04af72afc236e711a35a09092",
+      "fitting_rows": 61868
+    },
+    {
+      "root": "h12_2020-06_G2_r80_s42_e1pair",
+      "weights_sha256": "1c2dd971bfd9b8f9a130d9f9a434f39e3bb30e94ef8e43071f9797dff9336d29",
+      "fitting_rows": 62374
+    }
+  ]
+}

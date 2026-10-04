@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": 66451,
+  "source_rows": 1660244,
+  "role_cells": 315,
+  "month_cells": 3535,
+  "contrasts": 168,
+  "summary_cells": 120,
+  "summary_sha256": "47157b4edd8616a311a648183de62e50d0be4138fabab68244053da879caf75a",
+  "script_sha256": "2c4ffa6a73e784bb4458cfd3fde98c496537f46914da95b092afd38ee9970a8b",
+  "method": "stdlib csv/gzip/math.fsum, no producer imports/fits; all63 input hashes, role and month cells incl empties, independent support/rate/mean/bias/Brier, weighted month recomposition, all paired contrasts and summary means; signs from validated saved raw deltas."
+}

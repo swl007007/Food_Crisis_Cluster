@@ -1,0 +1,35 @@
+{
+  "change_totals_cells": 16,
+  "changes_cells": 326,
+  "check_counts": {
+    "alignment": 51,
+    "change_totals": 114,
+    "changes": 2283,
+    "d38": 4,
+    "d39": 210,
+    "d41_reconciliation": 672,
+    "identity": 72,
+    "input_hash": 64,
+    "integrity": 10,
+    "metadata": 10,
+    "output_hash": 4,
+    "per_root": 3782,
+    "pooled": 873,
+    "probability": 11,
+    "reconciliation": 132,
+    "record_pin": 4,
+    "zero_increment": 158
+  },
+  "checks_total": 8454,
+  "d38_max_abs_probability_diff": 0.0,
+  "failures": [],
+  "input_files_verified": 64,
+  "output_files_verified": 4,
+  "per_root_cells": 378,
+  "pooled_cells": 16,
+  "row_counts": {
+    "C": 207539,
+    "E3": 113508
+  },
+  "status": "passed"
+}

@@ -1,0 +1,3427 @@
+{
+  "pairs": {
+    "h4_2019-02_G1_r80_s42_e1pair": {
+      "horizon": 4,
+      "target": "2019-02",
+      "source_target": "2018-06",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "5ed6cd3fa758c676148a8b213062a5fd0fc8013e79d2128c4dced8f6dab47be7",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1880,
+                "areas": 171,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  412,
+                  884,
+                  555,
+                  29
+                ]
+              },
+              "fit_keys_sha256": "ba55d32591d9e4433be00d91a1f7b5b59ed2d02d8268f02d968d1a6858ec45eb",
+              "eligible": true
+            },
+            "00010": {
+              "support": {
+                "rows": 1140,
+                "areas": 95,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  194,
+                  476,
+                  416,
+                  54
+                ]
+              },
+              "fit_keys_sha256": "994e9a2d5abbd88bfe3f89b4f6a226e0fc49f00241c61b67d89b339782df9e58",
+              "eligible": true
+            },
+            "00011": {
+              "support": {
+                "rows": 1754,
+                "areas": 157,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  351,
+                  807,
+                  531,
+                  65
+                ]
+              },
+              "fit_keys_sha256": "b0fd47cbce4e72ca25859a2bce15bf9e672526c34227c60c113c74dcf39bbbaf",
+              "eligible": true
+            },
+            "0010": {
+              "support": {
+                "rows": 2094,
+                "areas": 199,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  411,
+                  814,
+                  731,
+                  138
+                ]
+              },
+              "fit_keys_sha256": "a43e17a1cb29b0463c8a1c7695810881839fb41813ae1a78eef9be65de1a4170",
+              "eligible": true
+            },
+            "0011": {
+              "support": {
+                "rows": 1623,
+                "areas": 246,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  660,
+                  223,
+                  571,
+                  169
+                ]
+              },
+              "fit_keys_sha256": "18ac54447fb364bfaeddf2fd6530b17d1020e3840b0f8efedcfeb98bef81e607",
+              "eligible": true
+            },
+            "0100": {
+              "support": {
+                "rows": 2292,
+                "areas": 211,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  627,
+                  1115,
+                  500,
+                  50
+                ]
+              },
+              "fit_keys_sha256": "d886716002af49cf267c406f86bb7867145bebbeb22565f975ff5ccfd50fe89f",
+              "eligible": true
+            },
+            "01010": {
+              "support": {
+                "rows": 1716,
+                "areas": 143,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  453,
+                  888,
+                  342,
+                  33
+                ]
+              },
+              "fit_keys_sha256": "8b010ab850260304ae11b8dd3d5f588c3b992fc91e6ca7e82582b0c49b6efd56",
+              "eligible": true
+            },
+            "01011": {
+              "support": {
+                "rows": 2628,
+                "areas": 219,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  722,
+                  1381,
+                  475,
+                  50
+                ]
+              },
+              "fit_keys_sha256": "4c65eb5c685a311dd01b6a4a894db145d296f10779b628cb2ecd15fdfdcbaf46",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 9912,
+                "areas": 826,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  3255,
+                  5311,
+                  1256,
+                  90
+                ]
+              },
+              "fit_keys_sha256": "80465f3bde52efbf4630a39bcf5e2715180e9ceb06cae89238cc5f89839a403c",
+              "eligible": true
+            },
+            "10": {
+              "support": {
+                "rows": 17136,
+                "areas": 1428,
+                "dates": 16,
+                "classes": 3,
+                "class_counts": [
+                  12466,
+                  4026,
+                  644,
+                  0
+                ]
+              },
+              "fit_keys_sha256": "d17c151bab0e3f0678a338cd69c6ba6eed635eab832150965d1068c4ade1b5ba",
+              "eligible": true
+            },
+            "11": {
+              "support": {
+                "rows": 18770,
+                "areas": 1565,
+                "dates": 16,
+                "classes": 3,
+                "class_counts": [
+                  17760,
+                  898,
+                  112,
+                  0
+                ]
+              },
+              "fit_keys_sha256": "8ac3bbeb0726301819ed5a3e8083cb63d87bb20a68e8401b675c73b26a7a9eef",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10293,
+              "missing_map": 1,
+              "s-1": 104,
+              "support_fallback": 0,
+              "local": 10188
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 1,
+              "s-1": 104,
+              "support_fallback": 0,
+              "local": 5260
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "53a7e05572671e74368220e9c975ff5af577d4fd03a9edb9618b89d8c9e18ef6",
+          "regions": {
+            "00": {
+              "support": {
+                "rows": 8702,
+                "areas": 937,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1854,
+                  3799,
+                  2678,
+                  371
+                ]
+              },
+              "fit_keys_sha256": "04aead5252ec29ea29459936ba80d34947bb44339e88653a0f0820b1123900d5",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17565,
+                "areas": 1495,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  5761,
+                  8659,
+                  2880,
+                  265
+                ]
+              },
+              "fit_keys_sha256": "c3dadfaad485a4df0c5653dbca9957541c7e7c1bece3be7bc74af337d91c47d7",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 35075,
+                "areas": 2927,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29848,
+                  4533,
+                  652,
+                  42
+                ]
+              },
+              "fit_keys_sha256": "4d168ad88cf2d4f55acd998ea86bf31d9eb584aa42a4cb1af0a7ec055b84f57b",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10293,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 10287
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 5359
+            }
+          }
+        }
+      }
+    },
+    "h4_2019-06_G1_r80_s42_e1pair": {
+      "horizon": 4,
+      "target": "2019-06",
+      "source_target": "2018-10",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "c8a56460ea44dc2ef3ffe2178632ea3077119f3cd455c17505e50146e4368a8a",
+          "regions": {
+            "000": {
+              "support": {
+                "rows": 5221,
+                "areas": 460,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  836,
+                  2564,
+                  1647,
+                  174
+                ]
+              },
+              "fit_keys_sha256": "dc263a8e99793022396a8ee5e8b792272894b770a3724f475e60306397050104",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4476,
+                "areas": 492,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1506,
+                  1444,
+                  1293,
+                  233
+                ]
+              },
+              "fit_keys_sha256": "2ad9c40bc82493569dc85877e030fc2c627183849d0a64cba76b1b3fd7c88cbe",
+              "eligible": true
+            },
+            "0100": {
+              "support": {
+                "rows": 2606,
+                "areas": 219,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  516,
+                  1389,
+                  654,
+                  47
+                ]
+              },
+              "fit_keys_sha256": "bbc4c0541297e2729a29213973f62f717b087663e505fbfbcc2b61f20e629952",
+              "eligible": true
+            },
+            "01010": {
+              "support": {
+                "rows": 1620,
+                "areas": 135,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  449,
+                  762,
+                  385,
+                  24
+                ]
+              },
+              "fit_keys_sha256": "620bcd31da071bc5341af1802f36c43c7bbe20cb445ea976ace4cdbdd221283a",
+              "eligible": true
+            },
+            "01011": {
+              "support": {
+                "rows": 2352,
+                "areas": 197,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  612,
+                  1284,
+                  401,
+                  55
+                ]
+              },
+              "fit_keys_sha256": "b2899a74d51064aa461a7e5793f251019472b8390ceda1b519010fc0e5dca85d",
+              "eligible": true
+            },
+            "0110": {
+              "support": {
+                "rows": 3986,
+                "areas": 334,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1175,
+                  2069,
+                  653,
+                  89
+                ]
+              },
+              "fit_keys_sha256": "920112a6109b31a104bd60b0234249ecd7bf316f6355ddedaebd653ea218092f",
+              "eligible": true
+            },
+            "0111": {
+              "support": {
+                "rows": 6068,
+                "areas": 506,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2198,
+                  3145,
+                  692,
+                  33
+                ]
+              },
+              "fit_keys_sha256": "20e19d2e213b41d91b9a5a0b8d6a9a3b774465b743570dfae39410105755056e",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 35046,
+                "areas": 2923,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29425,
+                  4643,
+                  922,
+                  56
+                ]
+              },
+              "fit_keys_sha256": "c7be533e4848c3934a14262b56455ba1e686992f98e3caa55fa94272f7febc2f",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10294,
+              "missing_map": 0,
+              "s-1": 99,
+              "support_fallback": 0,
+              "local": 10195
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 99,
+              "support_fallback": 0,
+              "local": 5266
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "19305cb63557196165d0a7c71c322ded79813a13a5baacb8c9fdbd03c264f991",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 2065,
+                "areas": 180,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  423,
+                  1137,
+                  459,
+                  46
+                ]
+              },
+              "fit_keys_sha256": "ff9e3eb9b630838a03f3e82f7708582ec375bff805dcefca5e51690b7d6fbe9a",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 3025,
+                "areas": 256,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  483,
+                  1587,
+                  878,
+                  77
+                ]
+              },
+              "fit_keys_sha256": "e4972e043e2c68cab78096197c02896d72b227c02c61087c56c03763861cd717",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4682,
+                "areas": 534,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1063,
+                  1692,
+                  1640,
+                  287
+                ]
+              },
+              "fit_keys_sha256": "3f2b0e60b4ac25d7deccff1724a8e67fa7c48beb4f9103aa5a195768e6bcb730",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17210,
+                "areas": 1480,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  5681,
+                  8375,
+                  2933,
+                  221
+                ]
+              },
+              "fit_keys_sha256": "df52cff4644d844995445da79b3fca5dc70b649b1550b926c1e58156890bd2b7",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34871,
+                "areas": 2911,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29234,
+                  4710,
+                  847,
+                  80
+                ]
+              },
+              "fit_keys_sha256": "cfbac27df460fb90d86b35778bae40b8c467236fd53b9ffb7076c06853c00f8f",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10294,
+              "missing_map": 0,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 10290
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 5361
+            }
+          }
+        }
+      }
+    },
+    "h4_2019-10_G1_r80_s42_e1pair": {
+      "horizon": 4,
+      "target": "2019-10",
+      "source_target": "2019-02",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "53a7e05572671e74368220e9c975ff5af577d4fd03a9edb9618b89d8c9e18ef6",
+          "regions": {
+            "00": {
+              "support": {
+                "rows": 9516,
+                "areas": 937,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2067,
+                  4006,
+                  3004,
+                  439
+                ]
+              },
+              "fit_keys_sha256": "2271d66b947aeadd99d5f50ca30a5984745594d1ec0a3b62ca22e16284f9a42b",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17721,
+                "areas": 1495,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  5525,
+                  8584,
+                  3334,
+                  278
+                ]
+              },
+              "fit_keys_sha256": "409f172c4ec90ab6a44c11c2bf3c6045db1108fd407a8ee1e48407e352eae712",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 35111,
+                "areas": 2927,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29268,
+                  4856,
+                  943,
+                  44
+                ]
+              },
+              "fit_keys_sha256": "a3bcbb3af9321c6c1cfa9ee284d796ebe64d5be629cabe8527c7df44a729f648",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10295,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 10289
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 5359
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "4c5436954f05ca389749d5361caac67bc4b711904c52445a412ae230c3d0e076",
+          "regions": {
+            "00000": {
+              "support": {
+                "rows": 833,
+                "areas": 76,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  224,
+                  367,
+                  231,
+                  11
+                ]
+              },
+              "fit_keys_sha256": "b732c59453dc58cd97861851978b92c6f26c3d9354575215905919634e852019",
+              "eligible": true
+            },
+            "00001": {
+              "support": {
+                "rows": 1172,
+                "areas": 98,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  232,
+                  595,
+                  320,
+                  25
+                ]
+              },
+              "fit_keys_sha256": "9e5218eaacb180eb74c5ee4ef98264836d882546f57d341191acdb99c4a9fc34",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2663,
+                "areas": 233,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  416,
+                  1424,
+                  764,
+                  59
+                ]
+              },
+              "fit_keys_sha256": "dcea52deb1e366b64a77445094f990951699030357c1f25ddcf8b4b49ec708aa",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4927,
+                "areas": 528,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1197,
+                  1753,
+                  1683,
+                  294
+                ]
+              },
+              "fit_keys_sha256": "7d35494874a84e1f3e5aa4236e00fdb2fa82c436700afd0c08e4524f5752d20c",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17793,
+                "areas": 1511,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  5762,
+                  8510,
+                  3261,
+                  260
+                ]
+              },
+              "fit_keys_sha256": "11decaaaf53578afb15fa78e43ce490a50ce5753a278e00c3f6d078e8182f695",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34982,
+                "areas": 2918,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29040,
+                  4804,
+                  1026,
+                  112
+                ]
+              },
+              "fit_keys_sha256": "189e97de7542a3cbcf774ff8f2409d7f587fc8988c585a7bb698411f20f4206f",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10295,
+              "missing_map": 0,
+              "s-1": 1,
+              "support_fallback": 0,
+              "local": 10294
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 1,
+              "support_fallback": 0,
+              "local": 5364
+            }
+          }
+        }
+      }
+    },
+    "h4_2020-02_G1_r80_s42_e1pair": {
+      "horizon": 4,
+      "target": "2020-02",
+      "source_target": "2019-06",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "19305cb63557196165d0a7c71c322ded79813a13a5baacb8c9fdbd03c264f991",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 2090,
+                "areas": 180,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  344,
+                  1086,
+                  609,
+                  51
+                ]
+              },
+              "fit_keys_sha256": "5aa9fb74ab5f2e169157f7abe2fd024a3530027030315031b95fe0025f181b48",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 3038,
+                "areas": 256,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  374,
+                  1572,
+                  996,
+                  96
+                ]
+              },
+              "fit_keys_sha256": "22aa51b4419badf852a566847454a6f3c98942e29d774caa127e8139fe001838",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 5195,
+                "areas": 534,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  1096,
+                  1883,
+                  1873,
+                  343
+                ]
+              },
+              "fit_keys_sha256": "308934b9a42e659999106bd704c57e907796d75be75eddced740af12dd01af30",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17332,
+                "areas": 1480,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  5142,
+                  8476,
+                  3474,
+                  240
+                ]
+              },
+              "fit_keys_sha256": "56353478edcb3b4b607da4014812a2a38084e01cfb21df3a4490840f0aef274c",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34904,
+                "areas": 2911,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  28410,
+                  5348,
+                  1060,
+                  86
+                ]
+              },
+              "fit_keys_sha256": "3cd46af9894c2de23e25cd9a475b1823b09c4bab61ee91a1f1a527c58a64a809",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 7945,
+              "missing_map": 0,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 7941
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 141,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 5361
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "66b52941b3c4f1df0de6d8b8037e28d5e7d2a573cc0d1c392748b2ec3e3afd94",
+          "regions": {
+            "00000": {
+              "support": {
+                "rows": 898,
+                "areas": 81,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  198,
+                  414,
+                  264,
+                  22
+                ]
+              },
+              "fit_keys_sha256": "7f40ee216213ec693133883e75ab3c984737a26361eda92256a9fb1192fb51f7",
+              "eligible": true
+            },
+            "00001": {
+              "support": {
+                "rows": 1166,
+                "areas": 98,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  230,
+                  576,
+                  333,
+                  27
+                ]
+              },
+              "fit_keys_sha256": "7df5da76af6ef4951c33a088a8e2cf89915c1bc1145787242d197a79dffa7215",
+              "eligible": true
+            },
+            "00010": {
+              "support": {
+                "rows": 1368,
+                "areas": 116,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  207,
+                  714,
+                  410,
+                  37
+                ]
+              },
+              "fit_keys_sha256": "dbb9498e5245f01effc89eca3c9740a361de95701f49528177321fe0488533fe",
+              "eligible": true
+            },
+            "00011": {
+              "support": {
+                "rows": 1759,
+                "areas": 148,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  259,
+                  938,
+                  518,
+                  44
+                ]
+              },
+              "fit_keys_sha256": "506a497492aa7a29ffd9c5fb2356b667e25629db04a9aec82a500bb66dccb370",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 7583,
+                "areas": 656,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  1416,
+                  3868,
+                  2146,
+                  153
+                ]
+              },
+              "fit_keys_sha256": "bd909700158ad7c1f16905a562f6c1afaeaeb384208cd2a7d747b62d8fcd1ec5",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 16358,
+                "areas": 1431,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  6079,
+                  6611,
+                  3282,
+                  386
+                ]
+              },
+              "fit_keys_sha256": "0db0af364f74a85a5ccc0cf3ecb830a03e7d915ade7537d60a1abd3a253a3de0",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 33446,
+                "areas": 2835,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  26988,
+                  5248,
+                  1063,
+                  147
+                ]
+              },
+              "fit_keys_sha256": "af9f6524d60b0997e9fc0a745430c1cfcef30e9e0a077e0dc5f4b2493dc281d3",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 7945,
+              "missing_map": 0,
+              "s-1": 0,
+              "support_fallback": 0,
+              "local": 7945
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 0,
+              "s-1": 141,
+              "support_fallback": 0,
+              "local": 5365
+            }
+          }
+        }
+      }
+    },
+    "h4_2020-06_G1_r80_s42_e1pair": {
+      "horizon": 4,
+      "target": "2020-06",
+      "source_target": "2019-10",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "4c5436954f05ca389749d5361caac67bc4b711904c52445a412ae230c3d0e076",
+          "regions": {
+            "00000": {
+              "support": {
+                "rows": 857,
+                "areas": 76,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  179,
+                  342,
+                  322,
+                  14
+                ]
+              },
+              "fit_keys_sha256": "b91fb1976c1944b89abd4d2f52e92e52a7139800ab18093251ea5a40710733e7",
+              "eligible": true
+            },
+            "00001": {
+              "support": {
+                "rows": 1172,
+                "areas": 98,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  165,
+                  571,
+                  402,
+                  34
+                ]
+              },
+              "fit_keys_sha256": "d47df4e1ee4c1e8097387555925c0e482a58024a334b3a5748c773a1950bb841",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2702,
+                "areas": 233,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  315,
+                  1365,
+                  957,
+                  65
+                ]
+              },
+              "fit_keys_sha256": "809b1dcf6f4058db80165c5d27cb5d23ace6d5b583ce082f4d9124a20415ec12",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 5344,
+                "areas": 528,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  1304,
+                  1823,
+                  1891,
+                  326
+                ]
+              },
+              "fit_keys_sha256": "04f8eab3f623a7c73061b6dd26123cced53cb3f9ec01a3015f1c7c3d4b5540cf",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17875,
+                "areas": 1511,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  4843,
+                  8712,
+                  4048,
+                  272
+                ]
+              },
+              "fit_keys_sha256": "aa87f0b9f3786c09c7727621aea09031e4fdf323e25ac52732d94e0fa76292d6",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34982,
+                "areas": 2918,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  27826,
+                  5798,
+                  1252,
+                  106
+                ]
+              },
+              "fit_keys_sha256": "3394c9dcd2f9b405dce864c32084bc305541b280a01fb97ef3e9e24dd7d05395",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 7945,
+              "missing_map": 0,
+              "s-1": 1,
+              "support_fallback": 0,
+              "local": 7944
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 141,
+              "s-1": 1,
+              "support_fallback": 0,
+              "local": 5364
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "8726c74c38ae98322db4965c51773af53bd550ee7f2cbd8edc147dbc7fbb97de",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 2302,
+                "areas": 197,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  507,
+                  1096,
+                  659,
+                  40
+                ]
+              },
+              "fit_keys_sha256": "2e2308183f23e5cf385446c448bb7b4ef3a419f833c3b69d0699ba76e8e96673",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 3419,
+                "areas": 287,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  495,
+                  1800,
+                  1055,
+                  69
+                ]
+              },
+              "fit_keys_sha256": "176066d4651476c43f9fd5edd61512b1d528891cf0fe1d4c3e2a9a46f6a6fc88",
+              "eligible": true
+            },
+            "00100": {
+              "support": {
+                "rows": 1376,
+                "areas": 115,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  222,
+                  630,
+                  491,
+                  33
+                ]
+              },
+              "fit_keys_sha256": "7eb57f5a5ff3b6ccc03b4e5b96da692ee74c7f3937f0d7fad31717e79a7cd00b",
+              "eligible": true
+            },
+            "00101": {
+              "support": {
+                "rows": 2238,
+                "areas": 188,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  433,
+                  1129,
+                  627,
+                  49
+                ]
+              },
+              "fit_keys_sha256": "d124f297d66ce6c7113586b52f8c5032f7ad2fc6c411bc927ab4b54348886946",
+              "eligible": true
+            },
+            "0011": {
+              "support": {
+                "rows": 4031,
+                "areas": 349,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  817,
+                  1958,
+                  1202,
+                  54
+                ]
+              },
+              "fit_keys_sha256": "5b02468d5f359e6c158d5ce975f86c6c26e3a9308e6725b883482af012b397de",
+              "eligible": true
+            },
+            "0100": {
+              "support": {
+                "rows": 2907,
+                "areas": 251,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  560,
+                  1427,
+                  885,
+                  35
+                ]
+              },
+              "fit_keys_sha256": "0d051ced65c2eac27bf62b1ac00825876012056f0963cdbb51c32ff91392d9be",
+              "eligible": true
+            },
+            "01010": {
+              "support": {
+                "rows": 1948,
+                "areas": 168,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  511,
+                  979,
+                  439,
+                  19
+                ]
+              },
+              "fit_keys_sha256": "fdc01930a42f5610a29fd8eb9eb6c64de829ed3d2e123bdcc41199a3ef790648",
+              "eligible": true
+            },
+            "01011": {
+              "support": {
+                "rows": 2253,
+                "areas": 202,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  530,
+                  1192,
+                  453,
+                  78
+                ]
+              },
+              "fit_keys_sha256": "f50a89809a6e5232fb16b4ad30c7fb0e747957122dc1a2baff6ed1a578d483b1",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 9073,
+                "areas": 783,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  3803,
+                  3310,
+                  1709,
+                  251
+                ]
+              },
+              "fit_keys_sha256": "a0495055d28b688f66e5c9b466cf3bc48c9a6c7ce54592765041ec281d29b6a5",
+              "eligible": true
+            },
+            "10": {
+              "support": {
+                "rows": 14476,
+                "areas": 1228,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  10386,
+                  3281,
+                  762,
+                  47
+                ]
+              },
+              "fit_keys_sha256": "2b5cbd3dca3560efe80b2fcab677600cd1e6d1d5e3a529c975f1a2a42c06cc9c",
+              "eligible": true
+            },
+            "11": {
+              "support": {
+                "rows": 18914,
+                "areas": 1597,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  16368,
+                  1809,
+                  595,
+                  142
+                ]
+              },
+              "fit_keys_sha256": "af68125be8cb0f6d622cce37454fb60fecab4dc1a61b18a0e5d8a783edde52ab",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 7945,
+              "missing_map": 0,
+              "s-1": 0,
+              "support_fallback": 0,
+              "local": 7945
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 0,
+              "s-1": 141,
+              "support_fallback": 0,
+              "local": 5365
+            }
+          }
+        }
+      }
+    },
+    "h8_2019-06_G4_r80_s42_e1pair": {
+      "horizon": 8,
+      "target": "2019-06",
+      "source_target": "2018-06",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "c61def4b280c55d38556e7df8058ec4c393b2bca6f616dcf7aeed62cd749f631",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1846,
+                "areas": 160,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  378,
+                  884,
+                  550,
+                  34
+                ]
+              },
+              "fit_keys_sha256": "85f20692db6b0d10d865fbcfc60b87b8a9df1e96cd00100d6621ee45a9fb3186",
+              "eligible": true
+            },
+            "00010": {
+              "support": {
+                "rows": 1203,
+                "areas": 101,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  214,
+                  550,
+                  388,
+                  51
+                ]
+              },
+              "fit_keys_sha256": "e3c1b1cfb79191339e15242f9121650581b0577e4bef725ed6906aa24c4b98fa",
+              "eligible": true
+            },
+            "00011": {
+              "support": {
+                "rows": 1325,
+                "areas": 124,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  180,
+                  630,
+                  452,
+                  63
+                ]
+              },
+              "fit_keys_sha256": "b5f9d74a694f273a9c4389d26ac68606bd8d839760eac551afd8984bce07c7e5",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4374,
+                "areas": 486,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1170,
+                  1514,
+                  1379,
+                  311
+                ]
+              },
+              "fit_keys_sha256": "e0a8f498c3427abf332e322e8c0da6d9bc13dfbecaa55dded3ca9f572bbc7205",
+              "eligible": true
+            },
+            "010": {
+              "support": {
+                "rows": 7128,
+                "areas": 594,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2364,
+                  3343,
+                  1290,
+                  131
+                ]
+              },
+              "fit_keys_sha256": "2b09520b35fdce4e09693210d739b7f3c53837dceab248dbb0e8b96f69eaacec",
+              "eligible": true
+            },
+            "01100": {
+              "support": {
+                "rows": 1764,
+                "areas": 147,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  517,
+                  944,
+                  268,
+                  35
+                ]
+              },
+              "fit_keys_sha256": "e9a8dcfaa9429104805d06a9992852690c59ea12919a44a5bfb77c7df769654e",
+              "eligible": true
+            },
+            "01101": {
+              "support": {
+                "rows": 2292,
+                "areas": 191,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  980,
+                  1029,
+                  270,
+                  13
+                ]
+              },
+              "fit_keys_sha256": "ab5c7b179ae8ca703fb116dcc7ca6cb3b1a7aaa5b97562a3818a795269fb11d0",
+              "eligible": true
+            },
+            "0111": {
+              "support": {
+                "rows": 6048,
+                "areas": 504,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2326,
+                  3029,
+                  660,
+                  33
+                ]
+              },
+              "fit_keys_sha256": "be33a7d5360efb2f4a45490afcc18684b7ab5a459135ad13a35c377762c88385",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34498,
+                "areas": 2875,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28806,
+                  4847,
+                  844,
+                  1
+                ]
+              },
+              "fit_keys_sha256": "688be7b04c1c699c017eec4b1e25b6417c7395dd477a57bef6d0051718816c02",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10293,
+              "missing_map": 1,
+              "s-1": 182,
+              "support_fallback": 0,
+              "local": 10110
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 1,
+              "s-1": 182,
+              "support_fallback": 0,
+              "local": 5182
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "7fb737f65622c1bd81d0a485d4ee7613d8fbf0c7829d23d4f88659cf73f38283",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 2081,
+                "areas": 182,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  516,
+                  1030,
+                  494,
+                  41
+                ]
+              },
+              "fit_keys_sha256": "3deb09206f42b6ba1270624cf3738f913c5705e53db592f3648d710a77090689",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2867,
+                "areas": 255,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  433,
+                  1578,
+                  793,
+                  63
+                ]
+              },
+              "fit_keys_sha256": "80257cc6f899e796f69ebe8209f0cc27893cebfa24e4859eb86ae29ba3bc705b",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4246,
+                "areas": 531,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1217,
+                  1712,
+                  1170,
+                  147
+                ]
+              },
+              "fit_keys_sha256": "139022c3eabb3e591b94d9b7de151718a6dc3303418c3cb2595e95918369953b",
+              "eligible": true
+            },
+            "0100": {
+              "support": {
+                "rows": 2553,
+                "areas": 244,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  897,
+                  912,
+                  632,
+                  112
+                ]
+              },
+              "fit_keys_sha256": "f0a7046bce9e37d2dcfd20c6518b3f6418b2b0b497c37832a3aebc8754e50795",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 4341,
+                "areas": 365,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1172,
+                  2174,
+                  894,
+                  101
+                ]
+              },
+              "fit_keys_sha256": "4fc5ee2f6f6d1b67d4fe0270b0b82bf96de7a44ad687d27eb5c7fc5e607c0755",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 10173,
+                "areas": 854,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  3818,
+                  4709,
+                  1484,
+                  162
+                ]
+              },
+              "fit_keys_sha256": "8d3b1c23da29169a64093f93c475f1ce59eb39940c16b44b5866c5222f7ccaf7",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 35081,
+                "areas": 2928,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29410,
+                  4876,
+                  743,
+                  52
+                ]
+              },
+              "fit_keys_sha256": "4021b94cbb155b3a3a95d89a56dee4d5c5682fd4e787c4c4b655825d132dd425",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10293,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 10287
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 5359
+            }
+          }
+        }
+      }
+    },
+    "h8_2019-10_G4_r80_s42_e1pair": {
+      "horizon": 8,
+      "target": "2019-10",
+      "source_target": "2018-10",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "0396ccec520ee91662f201dec8c9439922f55284195b0e3b06c9ed38c7097acb",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1969,
+                "areas": 177,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  384,
+                  933,
+                  620,
+                  32
+                ]
+              },
+              "fit_keys_sha256": "f29735d088b172d449135f8c8356b14d9b206bb4769fd7f5d03fdbc773ebe50e",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2930,
+                "areas": 252,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  628,
+                  1336,
+                  867,
+                  99
+                ]
+              },
+              "fit_keys_sha256": "b4874f2e1042a8b70294acdadef774992dbc310ed670e74c25778415f4354760",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4363,
+                "areas": 487,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1451,
+                  1315,
+                  1335,
+                  262
+                ]
+              },
+              "fit_keys_sha256": "7b3db6509c8459dd2b1138c8939ad1a85bf4a72f542c246b5d4c2a037a55507a",
+              "eligible": true
+            },
+            "010": {
+              "support": {
+                "rows": 7181,
+                "areas": 602,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1945,
+                  3551,
+                  1503,
+                  182
+                ]
+              },
+              "fit_keys_sha256": "86b2fd9994cbea49438f7450563d9d19d99ee537e37bd64092d57d88650733b7",
+              "eligible": true
+            },
+            "0110": {
+              "support": {
+                "rows": 4212,
+                "areas": 351,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1382,
+                  2141,
+                  634,
+                  55
+                ]
+              },
+              "fit_keys_sha256": "2766ff51c28eb3f83a7ee40d90e6b72537ea7988b74710c45fd7607e6341d14c",
+              "eligible": true
+            },
+            "01110": {
+              "support": {
+                "rows": 2436,
+                "areas": 203,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  900,
+                  1221,
+                  281,
+                  34
+                ]
+              },
+              "fit_keys_sha256": "5a61ea991e2d4b29d90de10e2b1b004386116a42ea18b3c8248a77552961d39f",
+              "eligible": true
+            },
+            "01111": {
+              "support": {
+                "rows": 3300,
+                "areas": 275,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1341,
+                  1540,
+                  386,
+                  33
+                ]
+              },
+              "fit_keys_sha256": "f000aa34173697512049fc9077b172820fef9fe4d3433d08d4badc80de90a476",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34963,
+                "areas": 2914,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28673,
+                  5256,
+                  1020,
+                  14
+                ]
+              },
+              "fit_keys_sha256": "5fc1c801ee1733dd2a04c8f72446e1f4be5632f80593785610839abe373fcbc3",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10294,
+              "missing_map": 0,
+              "s-1": 104,
+              "support_fallback": 0,
+              "local": 10190
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 104,
+              "support_fallback": 0,
+              "local": 5261
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "5c68eb4e8dfbba4454cfb28aac5ff753be38d350306dc2bf2866930ffdc614b0",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1851,
+                "areas": 172,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  429,
+                  940,
+                  456,
+                  26
+                ]
+              },
+              "fit_keys_sha256": "8f022ae2969b7b377c20557be9196553e8b81eaafea850a1a52f1a850a60bb6a",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2656,
+                "areas": 233,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  436,
+                  1413,
+                  739,
+                  68
+                ]
+              },
+              "fit_keys_sha256": "cf4d90bc9ed2f7bb4a7638d38de910ae6cc16964694029f2a63afdc20dd88394",
+              "eligible": true
+            },
+            "0010": {
+              "support": {
+                "rows": 2868,
+                "areas": 243,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  550,
+                  1471,
+                  759,
+                  88
+                ]
+              },
+              "fit_keys_sha256": "aa1ffa752ddd63a28e1348b57efdddb6a55471e009f6468c43b23d645d43a4ba",
+              "eligible": true
+            },
+            "00110": {
+              "support": {
+                "rows": 1230,
+                "areas": 152,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  238,
+                  638,
+                  327,
+                  27
+                ]
+              },
+              "fit_keys_sha256": "5bde11c5eb494b328aea3ebbd9563524b48cc4aa17da0046c241d132b577e13f",
+              "eligible": true
+            },
+            "00111": {
+              "support": {
+                "rows": 1147,
+                "areas": 161,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  488,
+                  350,
+                  291,
+                  18
+                ]
+              },
+              "fit_keys_sha256": "e634fcbd6a97f6458dd90cece44aa5acad5dafcb2fcd8262d05aba0966db47d5",
+              "eligible": true
+            },
+            "01000": {
+              "support": {
+                "rows": 1120,
+                "areas": 96,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  360,
+                  532,
+                  219,
+                  9
+                ]
+              },
+              "fit_keys_sha256": "e78089ba25d726632bdcab6445a69e61184c3de4dbc066eb671090361205c68c",
+              "eligible": true
+            },
+            "01001": {
+              "support": {
+                "rows": 1662,
+                "areas": 143,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  357,
+                  801,
+                  463,
+                  41
+                ]
+              },
+              "fit_keys_sha256": "57b08243bb307af5ecd698c7c4f9969c763b450c5b12734d7de251aca81e916a",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 3944,
+                "areas": 372,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1357,
+                  1429,
+                  966,
+                  192
+                ]
+              },
+              "fit_keys_sha256": "8ce20a7ff5f4d6c04739375e2272d1931fc8268e2cd9a0dbcd26d60b6eb3d924",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 11150,
+                "areas": 932,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  4300,
+                  4958,
+                  1733,
+                  159
+                ]
+              },
+              "fit_keys_sha256": "7ad55552e24847410ce66b9da7331a9234446a65fdfd2559f11f6b8505d3ff97",
+              "eligible": true
+            },
+            "100": {
+              "support": {
+                "rows": 7320,
+                "areas": 611,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  4382,
+                  2517,
+                  399,
+                  22
+                ]
+              },
+              "fit_keys_sha256": "bbaab1a87b192ab33257e07c7864c3ba318d8df4b216155f1b49e4d94d98d688",
+              "eligible": true
+            },
+            "101": {
+              "support": {
+                "rows": 9188,
+                "areas": 768,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  7057,
+                  1803,
+                  281,
+                  47
+                ]
+              },
+              "fit_keys_sha256": "e1d667c4032b839e80f3ec1004a68630eed8ce231fe9b7a611128066a979bbee",
+              "eligible": true
+            },
+            "11": {
+              "support": {
+                "rows": 17717,
+                "areas": 1478,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  16930,
+                  649,
+                  124,
+                  14
+                ]
+              },
+              "fit_keys_sha256": "276970f9e0fd65ece08f676deb59da3ecc60c35d4dca09cc782523155cd5d9ec",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10294,
+              "missing_map": 0,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 10290
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 5361
+            }
+          }
+        }
+      }
+    },
+    "h8_2020-02_G4_r80_s42_e1pair": {
+      "horizon": 8,
+      "target": "2020-02",
+      "source_target": "2019-02",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "fe2012070125a2aed2d09b7b8bc8ad2b26ce863596fa8661b5038e21984d38a5",
+          "regions": {
+            "000": {
+              "support": {
+                "rows": 5068,
+                "areas": 450,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1046,
+                  2419,
+                  1478,
+                  125
+                ]
+              },
+              "fit_keys_sha256": "4211f46d080d17b05e74e846bae553c1db1e7674956144585d90500c61ae18f4",
+              "eligible": true
+            },
+            "00100": {
+              "support": {
+                "rows": 1199,
+                "areas": 100,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  207,
+                  621,
+                  330,
+                  41
+                ]
+              },
+              "fit_keys_sha256": "d7f325ada1cb01315f5f514062dadf279468d5e8ce40127e5457b7a3018d8aed",
+              "eligible": true
+            },
+            "00101": {
+              "support": {
+                "rows": 1465,
+                "areas": 136,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  232,
+                  691,
+                  454,
+                  88
+                ]
+              },
+              "fit_keys_sha256": "c2f5054f5a53a98b338f6a61c2afb4c8fab2dd9f72dc01d6950d527ace38d4ab",
+              "eligible": true
+            },
+            "00110": {
+              "support": {
+                "rows": 725,
+                "areas": 90,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  208,
+                  185,
+                  284,
+                  48
+                ]
+              },
+              "fit_keys_sha256": "a461e3a11a7c99dbfff94b902233efd8e219d5580130f7b3f29c3a72239ab532",
+              "eligible": true
+            },
+            "00111": {
+              "support": {
+                "rows": 1505,
+                "areas": 168,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  972,
+                  65,
+                  366,
+                  102
+                ]
+              },
+              "fit_keys_sha256": "9f383d8676feee6c564a44274ea1003de584b9e2835e194f67c83ec96bb0ac47",
+              "eligible": true
+            },
+            "01000": {
+              "support": {
+                "rows": 1186,
+                "areas": 99,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  263,
+                  636,
+                  274,
+                  13
+                ]
+              },
+              "fit_keys_sha256": "f3c71a090c21467e19672922c37d9fdb70df97a03fa46618eb43373b46c5c812",
+              "eligible": true
+            },
+            "01001": {
+              "support": {
+                "rows": 1591,
+                "areas": 133,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  319,
+                  878,
+                  359,
+                  35
+                ]
+              },
+              "fit_keys_sha256": "092dbd6f26ba5c831297acbb6f8ba5ee9ae83a9c1d81eb87e87319fb95bcb941",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 4275,
+                "areas": 357,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1255,
+                  1956,
+                  953,
+                  111
+                ]
+              },
+              "fit_keys_sha256": "d9a06d0041bcd2c67e4c924275b1ae27d27e3ca20baaff225ab4d2cca7813418",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 10402,
+                "areas": 868,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  3890,
+                  4842,
+                  1536,
+                  134
+                ]
+              },
+              "fit_keys_sha256": "071f4305c8222d4df24bbacedbdf0dbce09f7ddf7bb8c00c15ab213bdd96ab42",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34366,
+                "areas": 2865,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28279,
+                  4903,
+                  1120,
+                  64
+                ]
+              },
+              "fit_keys_sha256": "5e974c9f55ca65a3aae39be622288a790cb2d4d1628465023686cd4f03f756af",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10295,
+              "missing_map": 0,
+              "s-1": 99,
+              "support_fallback": 0,
+              "local": 10196
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 141,
+              "s-1": 99,
+              "support_fallback": 0,
+              "local": 5266
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "2830b7f56f9f4a0109f39f0b1cbfd8acbd234931f9710c09af0c7580c9de11ba",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1891,
+                "areas": 167,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  419,
+                  866,
+                  566,
+                  40
+                ]
+              },
+              "fit_keys_sha256": "af9205b4198114248c319e0ce6ec6439117d6ab6e1ac3859726a4d6e50dd2eeb",
+              "eligible": true
+            },
+            "00010": {
+              "support": {
+                "rows": 1187,
+                "areas": 99,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  245,
+                  613,
+                  294,
+                  35
+                ]
+              },
+              "fit_keys_sha256": "bca0c50ff4624482e887a6702f2ec23ed52e0d0cdf82265b1339acab3c19dfb3",
+              "eligible": true
+            },
+            "00011": {
+              "support": {
+                "rows": 1558,
+                "areas": 139,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  245,
+                  806,
+                  465,
+                  42
+                ]
+              },
+              "fit_keys_sha256": "3b8e972ae57c1a67b0565fce570f7ece3945e00010c0bcbab1bfa8c84bf9136c",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 5295,
+                "areas": 544,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1315,
+                  2538,
+                  1309,
+                  133
+                ]
+              },
+              "fit_keys_sha256": "8e6fd14c0fe2dfa3f8cab90eea2afb305256799dc2a3d424c2831058b701338c",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 18000,
+                "areas": 1542,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  6187,
+                  7733,
+                  3685,
+                  395
+                ]
+              },
+              "fit_keys_sha256": "895dd0c3a7e2a075962a2511f5ade0e4813259c51bb61b79bd2beda817b0b47e",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34439,
+                "areas": 2873,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28460,
+                  4897,
+                  966,
+                  116
+                ]
+              },
+              "fit_keys_sha256": "c3fda3104bd301f5a2a11d2e7122a90df3c8b20d359ede4448eeae0a21240704",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10295,
+              "missing_map": 0,
+              "s-1": 1,
+              "support_fallback": 0,
+              "local": 10294
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 0,
+              "s-1": 142,
+              "support_fallback": 0,
+              "local": 5364
+            }
+          }
+        }
+      }
+    },
+    "h8_2020-06_G4_r80_s42_e1pair": {
+      "horizon": 8,
+      "target": "2020-06",
+      "source_target": "2019-06",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "7fb737f65622c1bd81d0a485d4ee7613d8fbf0c7829d23d4f88659cf73f38283",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 2124,
+                "areas": 182,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  387,
+                  1048,
+                  639,
+                  50
+                ]
+              },
+              "fit_keys_sha256": "2c164e1e887bd60721c3b25e5fb1c3816129e40b8da77ceaa0c28e1af9c69afd",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2937,
+                "areas": 255,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  418,
+                  1552,
+                  868,
+                  99
+                ]
+              },
+              "fit_keys_sha256": "0870f36949c63720280dfca97fe884fc133f396688a5cfa8b9073b2667459400",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 5070,
+                "areas": 531,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  1487,
+                  2006,
+                  1405,
+                  172
+                ]
+              },
+              "fit_keys_sha256": "e8618de89dd51baadb0a210168ffb146684a9d6ae8df741b0fd372c5cd5d28e8",
+              "eligible": true
+            },
+            "0100": {
+              "support": {
+                "rows": 2705,
+                "areas": 244,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  838,
+                  905,
+                  835,
+                  127
+                ]
+              },
+              "fit_keys_sha256": "85290ba3d9b696a1fa0af373e30fbb05ff5c9c7920afaf808f1f74da4af2d4bb",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 4367,
+                "areas": 365,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  885,
+                  2249,
+                  1112,
+                  121
+                ]
+              },
+              "fit_keys_sha256": "cc3acc1f108720875c7e38e59ba36629794fb50f39e2b51d9485e10f13998438",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 10223,
+                "areas": 854,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  3228,
+                  4847,
+                  1963,
+                  185
+                ]
+              },
+              "fit_keys_sha256": "a59852ad824c4693c47acc83bbb07fd1682cf90cffbb8bc9c7af6daf272148c1",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 35121,
+                "areas": 2928,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  28122,
+                  5754,
+                  1183,
+                  62
+                ]
+              },
+              "fit_keys_sha256": "ea3a0602d654af4a06d62a3db4b90739809eda91fb837e37cedeb9c10464fcc8",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 7945,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 7939
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 141,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 5359
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "884f2962666d397aa1f1ced94a0c59a504cfaed8a5bb8deda52e066fa45ebe76",
+          "regions": {
+            "00": {
+              "support": {
+                "rows": 12444,
+                "areas": 1092,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  2477,
+                  6198,
+                  3504,
+                  265
+                ]
+              },
+              "fit_keys_sha256": "f6bcfc85922ec3ddf318f44252cb85981c6bef1586cccba92334f29aa0d3b6b7",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 16029,
+                "areas": 1388,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  6329,
+                  6689,
+                  2758,
+                  253
+                ]
+              },
+              "fit_keys_sha256": "5b878ddd2e64c25a10b5260a4eb1a0930b2197060033c34b5da1bd2cb041502a",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34105,
+                "areas": 2885,
+                "dates": 15,
+                "classes": 4,
+                "class_counts": [
+                  26571,
+                  5482,
+                  1754,
+                  298
+                ]
+              },
+              "fit_keys_sha256": "3620f50ac13187d72cf7c31760309b6c6e29774858189da9cd4a4b2aa3e29c25",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 7945,
+              "missing_map": 0,
+              "s-1": 0,
+              "support_fallback": 0,
+              "local": 7945
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 0,
+              "s-1": 141,
+              "support_fallback": 0,
+              "local": 5365
+            }
+          }
+        }
+      }
+    },
+    "h12_2019-10_G2_r80_s42_e1pair": {
+      "horizon": 12,
+      "target": "2019-10",
+      "source_target": "2018-06",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "3ca1953555561b5ad8c910fc33713fa8689417da46c46df500f71b5517b0db62",
+          "regions": {
+            "000": {
+              "support": {
+                "rows": 4647,
+                "areas": 403,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  940,
+                  2122,
+                  1412,
+                  173
+                ]
+              },
+              "fit_keys_sha256": "00622678fa57fbb6d934beafa47901a82a94299a31ff39e9d768d3ef51f2bb54",
+              "eligible": true
+            },
+            "0010": {
+              "support": {
+                "rows": 2893,
+                "areas": 256,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  564,
+                  1224,
+                  963,
+                  142
+                ]
+              },
+              "fit_keys_sha256": "7cc1496e6d9ef8b7e25471f3b7b091eb727847c301d006bf3ee20c56ddd61ddb",
+              "eligible": true
+            },
+            "0011": {
+              "support": {
+                "rows": 1508,
+                "areas": 236,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  547,
+                  275,
+                  500,
+                  186
+                ]
+              },
+              "fit_keys_sha256": "34ada0471cd9b20e48596682a3176e6c46427beeff6ddde3b942d590f2488307",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 15996,
+                "areas": 1333,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  5389,
+                  8149,
+                  2288,
+                  170
+                ]
+              },
+              "fit_keys_sha256": "9b1a829b10ed524ffc0875b8c256d1d0821be6640d2d537262d84411227b85a6",
+              "eligible": true
+            },
+            "10": {
+              "support": {
+                "rows": 15636,
+                "areas": 1303,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  11567,
+                  3398,
+                  670,
+                  1
+                ]
+              },
+              "fit_keys_sha256": "f0b5ea2d68b7c7f8b8d42bfd81a3b744b71b76204b25034a5d7192ad1deda5c5",
+              "eligible": true
+            },
+            "11": {
+              "support": {
+                "rows": 19798,
+                "areas": 1650,
+                "dates": 16,
+                "classes": 3,
+                "class_counts": [
+                  17922,
+                  1609,
+                  267,
+                  0
+                ]
+              },
+              "fit_keys_sha256": "f5c352a30ea1471601ff5917363b83674adf973fff142da12526844bbde88477",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10293,
+              "missing_map": 1,
+              "s-1": 183,
+              "support_fallback": 0,
+              "local": 10109
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 1,
+              "s-1": 183,
+              "support_fallback": 0,
+              "local": 5181
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "50278432cde51645e0d13a4ccc1d946620979d4c37842fe691d35d1fe0fa4166",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1968,
+                "areas": 177,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  459,
+                  933,
+                  537,
+                  39
+                ]
+              },
+              "fit_keys_sha256": "a82fd393755d0f3f9eb18da52c3213978497a8821284d78ff43b3f49bda0a049",
+              "eligible": true
+            },
+            "00010": {
+              "support": {
+                "rows": 1257,
+                "areas": 105,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  225,
+                  620,
+                  379,
+                  33
+                ]
+              },
+              "fit_keys_sha256": "16195f636c935d33e972de6f2baceedc09bcc91f7adac9a32d3fbb5f30a60a08",
+              "eligible": true
+            },
+            "00011": {
+              "support": {
+                "rows": 1787,
+                "areas": 162,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  262,
+                  907,
+                  561,
+                  57
+                ]
+              },
+              "fit_keys_sha256": "e4388f94d7b219068607b9d2e3c065f3a2bb1d371f181c256619f34cdcfd98c5",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4671,
+                "areas": 539,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1148,
+                  2157,
+                  1206,
+                  160
+                ]
+              },
+              "fit_keys_sha256": "897571764e2b0f3cbdb34e27c81da8d9156646a45c250e7742b8360cd8a0a1e6",
+              "eligible": true
+            },
+            "0100": {
+              "support": {
+                "rows": 2631,
+                "areas": 242,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  849,
+                  1153,
+                  577,
+                  52
+                ]
+              },
+              "fit_keys_sha256": "85cda94a679964ded9982c6e9248c47cf8a1be1fa92b20d832a9061956c60ecb",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 3924,
+                "areas": 362,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1426,
+                  1526,
+                  818,
+                  154
+                ]
+              },
+              "fit_keys_sha256": "d05d68f584ead22256bca5c4c3879bf8a05c644fc91274c320a21f76b1014c00",
+              "eligible": true
+            },
+            "0110": {
+              "support": {
+                "rows": 4428,
+                "areas": 372,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1561,
+                  2144,
+                  650,
+                  73
+                ]
+              },
+              "fit_keys_sha256": "751b25f339741498c48f07a194baf3fcbdd8d13fb0212d8c15a411fb215179f8",
+              "eligible": true
+            },
+            "0111": {
+              "support": {
+                "rows": 6006,
+                "areas": 507,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2267,
+                  2855,
+                  816,
+                  68
+                ]
+              },
+              "fit_keys_sha256": "6e5e782ec91102fd5f464e4c498842d86c6642f19317e79071c4466172bb1fa8",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34670,
+                "areas": 2893,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  29266,
+                  4696,
+                  666,
+                  42
+                ]
+              },
+              "fit_keys_sha256": "bf752e806e353f47eb56844145c23d09c90987081a92ac4f320d92f089c26236",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10293,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 10287
+            },
+            "E3": {
+              "n": 5365,
+              "missing_map": 0,
+              "s-1": 6,
+              "support_fallback": 0,
+              "local": 5359
+            }
+          }
+        }
+      }
+    },
+    "h12_2020-02_G2_r80_s42_e1pair": {
+      "horizon": 12,
+      "target": "2020-02",
+      "source_target": "2018-10",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "9a5920cae42d1b3aeba6a65710bcfac19f09bfbd681cbd4c713216fbdec078ad",
+          "regions": {
+            "000": {
+              "support": {
+                "rows": 5007,
+                "areas": 427,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  856,
+                  2429,
+                  1536,
+                  186
+                ]
+              },
+              "fit_keys_sha256": "3072d642d693a73c5b4fbe25b400e23ceabf77d1ab807577270e07f8b7c201d5",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 4371,
+                "areas": 470,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1107,
+                  1387,
+                  1535,
+                  342
+                ]
+              },
+              "fit_keys_sha256": "d46034ae306328c50a798012990af609a685152fb9c2e745a80328ac7f1fe10c",
+              "eligible": true
+            },
+            "01": {
+              "support": {
+                "rows": 17268,
+                "areas": 1439,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  6158,
+                  8462,
+                  2476,
+                  172
+                ]
+              },
+              "fit_keys_sha256": "e79e19be5c455a70b216159fb07e6616dcf04d2815396128b47bd70936491ebc",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34163,
+                "areas": 2847,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28141,
+                  4953,
+                  1065,
+                  4
+                ]
+              },
+              "fit_keys_sha256": "6c5455122c820743e92b2f5398ba4361e843f19fb650e34fccaf3af0e8e465cb",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10294,
+              "missing_map": 0,
+              "s-1": 182,
+              "support_fallback": 0,
+              "local": 10112
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 141,
+              "s-1": 182,
+              "support_fallback": 0,
+              "local": 5183
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "389faec9ebdf9576b464ceeedff5f6c5689b1aa307c6f1c27a4967f7a021058a",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1812,
+                "areas": 177,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  415,
+                  937,
+                  439,
+                  21
+                ]
+              },
+              "fit_keys_sha256": "c6f589475dcf65ec1d8e8819b162e592fbca2e43deaf965d5b9690e00563dbf0",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2447,
+                "areas": 210,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  410,
+                  1270,
+                  699,
+                  68
+                ]
+              },
+              "fit_keys_sha256": "14fc08556812c5bb9d459fbbb9fba5b9ea92ebf8011658d3381aa3acbf8dba6b",
+              "eligible": true
+            },
+            "00100": {
+              "support": {
+                "rows": 1241,
+                "areas": 105,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  215,
+                  667,
+                  324,
+                  35
+                ]
+              },
+              "fit_keys_sha256": "9d41692a7dfef246b049a687d1d76e1923623b32d663c99f1fc7b802fe5a85af",
+              "eligible": true
+            },
+            "00101": {
+              "support": {
+                "rows": 1641,
+                "areas": 141,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  307,
+                  822,
+                  458,
+                  54
+                ]
+              },
+              "fit_keys_sha256": "24a5f6be25cbeb955575215dabd2231dd5dc14109328460187d5b4a4e72bdec8",
+              "eligible": true
+            },
+            "00110": {
+              "support": {
+                "rows": 1319,
+                "areas": 144,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  243,
+                  619,
+                  411,
+                  46
+                ]
+              },
+              "fit_keys_sha256": "3f9001610e1c563414f282faf0e2fffc17433a7015dbdb9678863e1c7aefebf1",
+              "eligible": true
+            },
+            "00111": {
+              "support": {
+                "rows": 1142,
+                "areas": 162,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  471,
+                  491,
+                  166,
+                  14
+                ]
+              },
+              "fit_keys_sha256": "9fb58d4a38e3b5a5100ed1c4711dafb053403d064193e39b2664e616b10745af",
+              "eligible": true
+            },
+            "01000": {
+              "support": {
+                "rows": 1198,
+                "areas": 102,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  338,
+                  547,
+                  299,
+                  14
+                ]
+              },
+              "fit_keys_sha256": "ae2a312d13609526013c658213689dbe087210a3fd76ca47b4fb425d93ae3787",
+              "eligible": true
+            },
+            "01001": {
+              "support": {
+                "rows": 1982,
+                "areas": 170,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  510,
+                  986,
+                  474,
+                  12
+                ]
+              },
+              "fit_keys_sha256": "e0b3153f752441bfd020b3472fcb713fcbd26f0dbc014872ea88dd0e0ae3b289",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 3232,
+                "areas": 323,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1157,
+                  867,
+                  965,
+                  243
+                ]
+              },
+              "fit_keys_sha256": "7a88a369b32b9304965a111b18628bb2550d4100b2f0dc2825cc9d696765eebd",
+              "eligible": true
+            },
+            "0110": {
+              "support": {
+                "rows": 4656,
+                "areas": 389,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1614,
+                  2179,
+                  810,
+                  53
+                ]
+              },
+              "fit_keys_sha256": "8b840e51831575ee145e536a1895bd32cd3db3b69388ef311bf7cec8dde106ad",
+              "eligible": true
+            },
+            "0111": {
+              "support": {
+                "rows": 6350,
+                "areas": 531,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2289,
+                  3094,
+                  886,
+                  81
+                ]
+              },
+              "fit_keys_sha256": "906e5e756cb6277d2f2cff6651eec73170eff706a1ec1fad894f74b183327b8e",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34833,
+                "areas": 2907,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28915,
+                  5022,
+                  826,
+                  70
+                ]
+              },
+              "fit_keys_sha256": "b0f08674fc36c95b6d0bf85c0ae754f0bba0f69b2f03f3ee612af69313e55029",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10294,
+              "missing_map": 0,
+              "s-1": 4,
+              "support_fallback": 0,
+              "local": 10290
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 0,
+              "s-1": 145,
+              "support_fallback": 0,
+              "local": 5361
+            }
+          }
+        }
+      }
+    },
+    "h12_2020-06_G2_r80_s42_e1pair": {
+      "horizon": 12,
+      "target": "2020-06",
+      "source_target": "2019-02",
+      "maps": {
+        "old_map_refit": {
+          "map_sha256": "4812b7540a34ade24aeea00a6c14a19d9cb206d96fa3ae7f174bcf66c6f66e25",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1996,
+                "areas": 176,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  391,
+                  868,
+                  658,
+                  79
+                ]
+              },
+              "fit_keys_sha256": "84820ed6d76a86f36dad365bc48a46a632c8f60eb890078bb6bc70c4b256182d",
+              "eligible": true
+            },
+            "0001": {
+              "support": {
+                "rows": 2817,
+                "areas": 237,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  602,
+                  1372,
+                  771,
+                  72
+                ]
+              },
+              "fit_keys_sha256": "2593540eb956ea0ad03afaced8e551367360b1ff27a2446ff36be512f90ae67d",
+              "eligible": true
+            },
+            "001": {
+              "support": {
+                "rows": 5021,
+                "areas": 502,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1526,
+                  1682,
+                  1572,
+                  241
+                ]
+              },
+              "fit_keys_sha256": "a7b7bd8c9d59cf8dd8a54dd6054c0cfd8918bf15811acd18962c1abb11fd16b9",
+              "eligible": true
+            },
+            "01000": {
+              "support": {
+                "rows": 933,
+                "areas": 81,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  240,
+                  452,
+                  203,
+                  38
+                ]
+              },
+              "fit_keys_sha256": "7d6e887d6aac1341fdc8ed01a4c1c8b8346d397ac5627707babad6ae5d4f12f3",
+              "eligible": true
+            },
+            "01001": {
+              "support": {
+                "rows": 1543,
+                "areas": 141,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  547,
+                  469,
+                  440,
+                  87
+                ]
+              },
+              "fit_keys_sha256": "5727807eb018d1eac139ecdde8d489304f664afeae8e3a1b8f99996d207bd7dc",
+              "eligible": true
+            },
+            "0101": {
+              "support": {
+                "rows": 4064,
+                "areas": 342,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  1205,
+                  1859,
+                  882,
+                  118
+                ]
+              },
+              "fit_keys_sha256": "10b208643723f97536b8c620bf905e9d2dccec6a17fc6da2e21ff342bf4ce79c",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 10032,
+                "areas": 836,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  3552,
+                  5046,
+                  1330,
+                  104
+                ]
+              },
+              "fit_keys_sha256": "2db7e0e15927580efbc2ced70d3123ff69a6fcf99828e16acf03a5502b31271b",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 35352,
+                "areas": 2946,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28586,
+                  5452,
+                  1292,
+                  22
+                ]
+              },
+              "fit_keys_sha256": "2a0ba5a084546e455bde142371a858f72171b6727ea565ab2c322f7198415066",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10295,
+              "missing_map": 0,
+              "s-1": 104,
+              "support_fallback": 0,
+              "local": 10191
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 141,
+              "s-1": 104,
+              "support_fallback": 0,
+              "local": 5261
+            }
+          }
+        },
+        "current_map_refit": {
+          "map_sha256": "0a7d5960ff48844bff0250ea202afd82ee9ee7610433bbfbc1ff5c19671de9b3",
+          "regions": {
+            "0000": {
+              "support": {
+                "rows": 1857,
+                "areas": 174,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  423,
+                  829,
+                  571,
+                  34
+                ]
+              },
+              "fit_keys_sha256": "0ee62fcef31269a0574f0a1dda0410de10db125f7de7cc354415dc16bc5e9392",
+              "eligible": true
+            },
+            "00010": {
+              "support": {
+                "rows": 1203,
+                "areas": 101,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  224,
+                  642,
+                  316,
+                  21
+                ]
+              },
+              "fit_keys_sha256": "5e070c233a9abe0be094528bc29203b218e6995df473a6bc422a98c4060b6c7b",
+              "eligible": true
+            },
+            "00011": {
+              "support": {
+                "rows": 1340,
+                "areas": 114,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  304,
+                  632,
+                  364,
+                  40
+                ]
+              },
+              "fit_keys_sha256": "9a37bc9aafdd7abf27c1e7a2455001c658830918e6c288c4fa4850abcc93f93a",
+              "eligible": true
+            },
+            "0010": {
+              "support": {
+                "rows": 2899,
+                "areas": 245,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  547,
+                  1526,
+                  757,
+                  69
+                ]
+              },
+              "fit_keys_sha256": "1006ae04124e3df5c3950ecd936eb5ce5a6ebfdf53090b11ff475ae8a0f7e649",
+              "eligible": true
+            },
+            "00110": {
+              "support": {
+                "rows": 1606,
+                "areas": 152,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  296,
+                  767,
+                  475,
+                  68
+                ]
+              },
+              "fit_keys_sha256": "62fe832c52a1314fa3d35414126d1a2c31fd659db374ff4c746757704a00f348",
+              "eligible": true
+            },
+            "00111": {
+              "support": {
+                "rows": 1467,
+                "areas": 186,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  423,
+                  765,
+                  248,
+                  31
+                ]
+              },
+              "fit_keys_sha256": "fd1651f511112ee33c2cffc7081d50a55234307a031307f0b1e87d0544847a37",
+              "eligible": true
+            },
+            "010": {
+              "support": {
+                "rows": 6451,
+                "areas": 593,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  2404,
+                  1915,
+                  1854,
+                  278
+                ]
+              },
+              "fit_keys_sha256": "b6d72dc89791276d926c651ff60bd08d05723ff6185527c5b8a5f8e05bb94126",
+              "eligible": true
+            },
+            "011": {
+              "support": {
+                "rows": 10811,
+                "areas": 902,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  3628,
+                  5256,
+                  1799,
+                  128
+                ]
+              },
+              "fit_keys_sha256": "de4b1cbdc0bc737ca99451001c6a7587d79d0fa0a0c3dd9fb2988fe9dcfe017d",
+              "eligible": true
+            },
+            "1": {
+              "support": {
+                "rows": 34736,
+                "areas": 2897,
+                "dates": 16,
+                "classes": 4,
+                "class_counts": [
+                  28622,
+                  5121,
+                  901,
+                  92
+                ]
+              },
+              "fit_keys_sha256": "2f9912480726730b41c74d43f0614ecd0c838473a458c53627668fb62237388a",
+              "eligible": true
+            }
+          },
+          "coverage": {
+            "C": {
+              "n": 10295,
+              "missing_map": 0,
+              "s-1": 1,
+              "support_fallback": 0,
+              "local": 10294
+            },
+            "E3": {
+              "n": 5506,
+              "missing_map": 0,
+              "s-1": 142,
+              "support_fallback": 0,
+              "local": 5364
+            }
+          }
+        }
+      }
+    }
+  },
+  "expected_fits": 175,
+  "input_hashes": {
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h4_2019-02_G1_r80_s42_e1pair/fold_membership.csv.gz": "03a9e286068699d061a74e9b75eca17dfdbbb8e05e855a475f0050115ce3abd6",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2018-06_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "5ed6cd3fa758c676148a8b213062a5fd0fc8013e79d2128c4dced8f6dab47be7",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2019-02_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "53a7e05572671e74368220e9c975ff5af577d4fd03a9edb9618b89d8c9e18ef6",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h4_2019-06_G1_r80_s42_e1pair/fold_membership.csv.gz": "3f29ef53308acb6db71e353fb09782921a54cb448bae88e6278c90fd5e051b5d",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2018-10_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "c8a56460ea44dc2ef3ffe2178632ea3077119f3cd455c17505e50146e4368a8a",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2019-06_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "19305cb63557196165d0a7c71c322ded79813a13a5baacb8c9fdbd03c264f991",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h4_2019-10_G1_r80_s42_e1pair/fold_membership.csv.gz": "e9107a248303586237816424f78a9b44837c3c262dbb89b84c724d0bd2e4c82e",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2019-10_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "4c5436954f05ca389749d5361caac67bc4b711904c52445a412ae230c3d0e076",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h4_2020-02_G1_r80_s42_e1pair/fold_membership.csv.gz": "641ca95cd1da7d4e448df2a2dfe16e27b4a976c307964257730554da70a5588c",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2020-02_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "66b52941b3c4f1df0de6d8b8037e28d5e7d2a573cc0d1c392748b2ec3e3afd94",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h4_2020-06_G1_r80_s42_e1pair/fold_membership.csv.gz": "b2467a85b1eb418e4f2b9d464fed8dbe55ca8ba4027b225c14e136c16dc05592",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h4_2020-06_G1_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "8726c74c38ae98322db4965c51773af53bd550ee7f2cbd8edc147dbc7fbb97de",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h8_2019-06_G4_r80_s42_e1pair/fold_membership.csv.gz": "8a752245a93a53280a67b75d0db0289973d8cc3ad737c5548615bd20fb8333ce",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2018-06_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "c61def4b280c55d38556e7df8058ec4c393b2bca6f616dcf7aeed62cd749f631",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2019-06_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "7fb737f65622c1bd81d0a485d4ee7613d8fbf0c7829d23d4f88659cf73f38283",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h8_2019-10_G4_r80_s42_e1pair/fold_membership.csv.gz": "f495f49a2b731a3b8dcb76557e8d7eda6fd19d5e1c3f635d753ab42fc5c2a9d4",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2018-10_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "0396ccec520ee91662f201dec8c9439922f55284195b0e3b06c9ed38c7097acb",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2019-10_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "5c68eb4e8dfbba4454cfb28aac5ff753be38d350306dc2bf2866930ffdc614b0",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h8_2020-02_G4_r80_s42_e1pair/fold_membership.csv.gz": "fc303396c24b146bc3057ea398d04270c1ac3abb7a3b9a7c2ce4e322f43ce071",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2019-02_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "fe2012070125a2aed2d09b7b8bc8ad2b26ce863596fa8661b5038e21984d38a5",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2020-02_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "2830b7f56f9f4a0109f39f0b1cbfd8acbd234931f9710c09af0c7580c9de11ba",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h8_2020-06_G4_r80_s42_e1pair/fold_membership.csv.gz": "60462113bc083e9fe2de3cfdadf678f441f7c1f61f7e98d94515b37ef9cf217a",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h8_2020-06_G4_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "884f2962666d397aa1f1ced94a0c59a504cfaed8a5bb8deda52e066fa45ebe76",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h12_2019-10_G2_r80_s42_e1pair/fold_membership.csv.gz": "d4b19759e8d12da0ad4719f788e2df821b3c4d18a2e3f6fec730870fa94a5b3d",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h12_2018-06_G2_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "3ca1953555561b5ad8c910fc33713fa8689417da46c46df500f71b5517b0db62",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h12_2019-10_G2_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "50278432cde51645e0d13a4ccc1d946620979d4c37842fe691d35d1fe0fa4166",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h12_2020-02_G2_r80_s42_e1pair/fold_membership.csv.gz": "9b07fee7ba82ce385558973b3b07fbd7905c0faa86b347a022a2cbdfc95fe21d",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h12_2018-10_G2_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "9a5920cae42d1b3aeba6a65710bcfac19f09bfbd681cbd4c713216fbdec078ad",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h12_2020-02_G2_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "389faec9ebdf9576b464ceeedff5f6c5689b1aa307c6f1c27a4967f7a021058a",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/roots/h12_2020-06_G2_r80_s42_e1pair/fold_membership.csv.gz": "6f560bbaa13aa9686240db441f2af79a359236e643fff8131aee077edc18c3a7",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h12_2019-02_G2_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "4812b7540a34ade24aeea00a6c14a19d9cb206d96fa3ae7f174bcf66c6f66e25",
+    "/mnt/c/Users/swl00/geoxgb_runs/geoxgb-d34-e1-brier-20261002/stage1_e1pair/candidates/h12_2020-06_G2_L1_r80_s42_e1brier_gt0/assignment_evidence.csv": "0a7d5960ff48844bff0250ea202afd82ee9ee7610433bbfbc1ff5c19671de9b3"
+  }
+}

@@ -1,0 +1,182 @@
+{
+ "C": {
+  "all": {
+   "n": 207539,
+   "root_tp": 13434,
+   "root_fp": 3015,
+   "root_fn": 10246,
+   "brier_tp": 13848,
+   "brier_fp": 3212,
+   "brier_fn": 9832,
+   "corrected": 598,
+   "spoiled": 381
+  },
+  "groups": {
+   "00": {
+    "n": 105681,
+    "root_tp": 0,
+    "root_fp": 692,
+    "root_fn": 0,
+    "brier_tp": 0,
+    "brier_fp": 767,
+    "brier_fn": 0,
+    "corrected": 37,
+    "spoiled": 112
+   },
+   "01": {
+    "n": 7741,
+    "root_tp": 2014,
+    "root_fp": 0,
+    "root_fn": 5727,
+    "brier_tp": 2183,
+    "brier_fp": 0,
+    "brier_fn": 5558,
+    "corrected": 207,
+    "spoiled": 38
+   },
+   "10": {
+    "n": 7735,
+    "root_tp": 0,
+    "root_fp": 1386,
+    "root_fn": 0,
+    "brier_tp": 0,
+    "brier_fp": 1436,
+    "brier_fn": 0,
+    "corrected": 31,
+    "spoiled": 81
+   },
+   "11": {
+    "n": 8365,
+    "root_tp": 7306,
+    "root_fp": 0,
+    "root_fn": 1059,
+    "brier_tp": 7386,
+    "brier_fp": 0,
+    "brier_fn": 979,
+    "corrected": 97,
+    "spoiled": 17
+   },
+   "missing": {
+    "n": 78017,
+    "root_tp": 4114,
+    "root_fp": 937,
+    "root_fn": 3460,
+    "brier_tp": 4279,
+    "brier_fp": 1009,
+    "brier_fn": 3295,
+    "corrected": 226,
+    "spoiled": 133
+   }
+  },
+  "country": {
+   "countries": 20,
+   "net_total": 217,
+   "positive_countries": 12,
+   "negative_countries": 4,
+   "top3_positive": {
+    "ET": 83,
+    "KE": 48,
+    "NG": 31
+   },
+   "top3_negative": {
+    "AF": -7,
+    "HT": -5,
+    "MZ": -3
+   },
+   "share_abs_net_top3": 0.651
+  },
+  "persistence_coverage": 0.6241
+ },
+ "E3": {
+  "all": {
+   "n": 113508,
+   "root_tp": 9767,
+   "root_fp": 5029,
+   "root_fn": 10924,
+   "brier_tp": 9845,
+   "brier_fp": 5191,
+   "brier_fn": 10846,
+   "corrected": 248,
+   "spoiled": 332
+  },
+  "groups": {
+   "00": {
+    "n": 84574,
+    "root_tp": 0,
+    "root_fp": 1585,
+    "root_fn": 0,
+    "brier_tp": 0,
+    "brier_fp": 1715,
+    "brier_fn": 0,
+    "corrected": 27,
+    "spoiled": 157
+   },
+   "01": {
+    "n": 8900,
+    "root_tp": 701,
+    "root_fp": 0,
+    "root_fn": 8199,
+    "brier_tp": 729,
+    "brier_fp": 0,
+    "brier_fn": 8171,
+    "corrected": 39,
+    "spoiled": 11
+   },
+   "10": {
+    "n": 7614,
+    "root_tp": 0,
+    "root_fp": 3444,
+    "root_fn": 0,
+    "brier_tp": 0,
+    "brier_fp": 3476,
+    "brier_fn": 0,
+    "corrected": 70,
+    "spoiled": 102
+   },
+   "11": {
+    "n": 11707,
+    "root_tp": 9060,
+    "root_fp": 0,
+    "root_fn": 2647,
+    "brier_tp": 9110,
+    "brier_fp": 0,
+    "brier_fn": 2597,
+    "corrected": 112,
+    "spoiled": 62
+   },
+   "missing": {
+    "n": 713,
+    "root_tp": 6,
+    "root_fp": 0,
+    "root_fn": 78,
+    "brier_tp": 6,
+    "brier_fp": 0,
+    "brier_fn": 78,
+    "corrected": 0,
+    "spoiled": 0
+   }
+  },
+  "country": {
+   "countries": 21,
+   "net_total": -84,
+   "positive_countries": 7,
+   "negative_countries": 10,
+   "top3_positive": {
+    "AF": 11,
+    "SS": 6,
+    "ZW": 6
+   },
+   "top3_negative": {
+    "ET": -47,
+    "SO": -16,
+    "GT": -15
+   },
+   "share_abs_net_top3": 0.5
+  },
+  "persistence_coverage": 0.9937
+ },
+ "C_same_country_month_has_fitting_rows": {
+  "c_rows": 207539,
+  "with_fitting_same_country_month": 207497
+ }
+}

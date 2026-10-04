@@ -1,0 +1,13 @@
+rows 5573 countries 21 matched 4480 unmatched 1093
+                                  total  matched  unmatched
+country
+Ethiopia                           1141      496        645
+Democratic Republic of the Congo    345        0        345
+Sudan                               391      361         30
+Nigeria                             305      284         21
+Mali                                116       96         20
+Somalia                             217      198         19
+Malawi                               84       76          8
+Kenya                               642      639          3
+Chad                                 92       90          2
+wholly unmatched: ['Democratic Republic of the Congo']

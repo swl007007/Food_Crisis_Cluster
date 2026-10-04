@@ -100,6 +100,108 @@ production defaults.
 - A missing Stage 1 candidate or non-finite score stops Stage 2; only a complete ledger
   of all-zero weights may take the null-consensus route.
 
+## 6b. GeoXGB interruption availability (2026-10-02 task)
+
+### Scope / Trigger
+
+Applies only to the approved `exogenous-transition-forecast-design` scenario path in
+`FEWSNETGeoXGBExperiment`. Its PRD/design/evaluation-contract override the older
+Ethiopia and fixed-macro conventions above. Synthetic implementation checks do not
+certify source availability; `data-readiness.md` must pass before real fitting.
+
+### Signatures
+
+- `continue_booster(parent, X, y, config, sample_weight=None)`; `XGBmodel.train(..., sample_weight=None)`.
+- `covariate_features(scaffold, schema, areas, targets, origins, alignment=None)`.
+- `ReleaseLedger(frame, real=False)` and `Availability(..., alignment=None, truth=None)`.
+- `ScenarioPanel(availability, k, strategy, prediction_areas=None, gate_k=None)` uses the existing Stage3 engine; actual internal replay may supply country-specific `gate_k`.
+- `plan.scenario_stage1_schedule()` freezes 648 candidate identities; `run_stage1.py --split-mode scen` consumes prepared scenario inputs.
+- `run_experiment.py --run-dir RUN scen-develop|scen-select|scen-freeze|scen-historical|scen-actual|scen-report|scen-evaluate` uses the separate interruption schedule.
+- `scen-actual` requires `--actual-availability CSV --actual-scaffold MANIFEST`; reporting accepts `--expert-table CSV`; `scen-evaluate` requires `--truth-release DIR`.
+- `keyed_expert(keys, experts, real=True)` returns matched expert classes or explicit unavailability reasons; experts remain comparators only.
+
+### Contracts
+
+Ledger columns are `cycle_id, product, country, reference_month, release_date,
+evidence, source`. Reference month is not release date. Monthly covariates use the
+declared exact lag; missing or unreleased values remain NaN. Annual covariates use
+the latest eligible reference year. `alignment=None` preserves the legacy feature
+builder only; real scenario views require explicit alignment.
+
+Original area/target keys determine F/S/C roles and support. B repeats fitting keys
+at weights 1/3 for each of k=0/1/2; S/C are single designated-scenario observations.
+Weights reach root and local fits. Local continuation preserves the shared root.
+Gate dates are the latest six lawful dates U<O, independent of the 59-month fitting
+window. Scenario Stage3 uses exact crisis-F1 gain >0.01; legacy Panel retains its
+frozen metric. Prediction cohorts do not require target labels; truth is evaluator-only.
+
+Stage2 weights use matched E3 crisis F1 against each candidate's own root. Undefined
+scores are ineligible with a reason; zero weight, no prior candidates and no scorable
+evidence remain distinct. A/B selection consumes exactly the 72 scheduled development
+folds. Screen normal matched persistence gain at >=-0.02, then rank the equal-weight
+mean of k1/k2 F1; ties choose A, no qualifier stops that horizon's final release.
+
+Actual country-specific masks operate within the shared global/local population;
+they do not create separate country models. Extension covariates need a hashed source
+manifest and agreement with the pinned overlap; final truth is never a predictor.
+Expert rows carry `area, issue_month, product, horizon, validity_start, validity_end,
+class_code, release_date, evidence, source`. Match exact origin, declared horizon,
+target validity and release by cutoff. Do not reinterpret an old projection as a
+different horizon. Missing experts leave coverage rows, not zero predictions.
+
+Truth release uses `release.json` with `approved, approved_by, crosswalk, truth_file,
+truth_sha256, frozen_actual`; the last field binds the frozen actual-prediction
+record. Truth rows are unique `area,target_month,class_code` keys on the 0..3 axis.
+Study2 uses genuine exact-origin truth, including lawful historical observations or
+separately released evaluator labels, never the latest earlier label. Reports retain
+same-input pooled comparisons, all-country coverage and the keyed evaluator joins.
+
+### Validation & Error Matrix
+
+| Condition | Required result |
+|---|---|
+| Synthetic ledger/alignment in a real run, missing release coverage or missing real alignment | Refuse |
+| Fewer documented due cycles than requested k | Unsupported scenario; never silently reduce k |
+| Hidden IPC or release after cutoff | Exclude from fitting labels and every derived input |
+| Empty/unsupported local fitting or undefined gate F1 | Preserve evaluation keys; global fallback |
+| Gate gain exactly 0.01 | Local disabled |
+| Changed strategy, masks, fitting keys, features, labels or weights | Cannot reuse an incompatible global model |
+| Duplicate/missing development fold identity | Refuse selection even if the total remains 72 |
+| Expert validity misses target or release follows origin | Comparator unavailable with a reason |
+| Final truth release does not bind frozen actual predictions | Refuse evaluation |
+| Country/target without genuine truth | Preserve forecast/coverage; accuracy remains NA |
+| Undefined bootstrap draw | Count it without redrawing; numerical CI requires all 2,000 draws defined |
+
+### Good / Base / Bad Cases
+
+Good: three B variants conserve one original row's weight and support. Base: A uses
+unit weights. Bad: counting variants as three independent observations or filling
+an unlabeled target with persistence to make it evaluable.
+
+### Tests Required
+
+Run `tests/test_baseline.py` with `ReleaseAwareViews`, `WeightedContinuation`,
+`ScenarioStage3`, `Stage3Engine`, `ScenarioStage1` and `Stage1Variants` on the pinned
+Windows Python. Check hidden-input invariance, grouped roles, original-key support,
+root-prefix invariance, cache isolation and forecast-only rows. Full regression is
+required before the final task check; retain explicit unresolved data blockers.
+Also run `ScenarioStage2`, `ScenarioDevelopment`, `ScenarioReporting`,
+`ScenarioFinalPath` and `ScenarioDriverSmoke`. Exercise actual driver I/O on synthetic
+inputs, both qualifying/no-qualifier paths, country-specific replay, same-horizon
+expert admission, frozen-prediction truth release and missing-label coverage.
+
+### Wrong vs Correct
+
+Wrong: choose gate dates from the 59-month fitting pool or use one memo key for all
+scenarios. Correct: select lawful gate dates independently and bind caches to the
+actual fitting inputs, labels, weights and scenario identity.
+Wrong: treat an existing fold file as sufficient for reuse or accept its current
+predictions without checking the frozen record. Correct: verify recorded input and
+upstream identities plus output inventories before consuming saved results.
+Country intensity maps contain integers; exclusion maps contain sets of cycles.
+Canonicalise their cache keys separately. Applying a set-valued mask serializer to
+`{"AAA": 1, "BBB": 2}` fails on the actual-country path even when simulated k tests pass.
+
 ## 7. Wrong vs Correct
 
 ```python

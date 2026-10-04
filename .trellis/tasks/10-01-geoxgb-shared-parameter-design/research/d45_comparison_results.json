@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "checks": 4154,
+  "issues": [],
+  "rows": 321047,
+  "scope": "All21 roots, all189 FIT/C/E3 metric cells independently recomputed via sliced boosters; all perH aggregates/means/deltas and every persisted C/E3 prefix probability verified",
+  "summary_sha256": "2067978d533dd49843c6b3a5cddff0566967f74347bf30c4eddc4344ea341e57",
+  "identity_sha256": "ca6f63cc33d68cc7d9e60c6a70b63ada1f536bd565c0d2636afa112242528a61",
+  "script_sha256": "8c30540c93384d94ac27f10f6907fd2f0e6236418f4f1dc2552f1a1fc97e7133"
+}

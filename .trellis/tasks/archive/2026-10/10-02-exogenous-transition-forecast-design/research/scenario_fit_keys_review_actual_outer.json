@@ -1,0 +1,33 @@
+{
+ "scope": "all global records present at probe start, including completed/in-flight historical cache",
+ "method": "independent explicit filters and ordered key/label/weight byte hashes; no package imports",
+ "records": 4,
+ "problems": [],
+ "results": [
+  {
+   "record": "scenario_globals/actual/h4__G1__O2025-02_63b9deb436b0fad2.json",
+   "record_sha256": "c41ccfca12f76413d789ce7b7951930a93c2226d5a8911ae3865c669e3219add",
+   "original_keys": 73122,
+   "problems": []
+  },
+  {
+   "record": "scenario_globals/actual/h4__G1__O2025-06_a67b77c604f4828c.json",
+   "record_sha256": "fce557f0c08f997b6b18bfb8bc8d353d580c094d6cc4b8e90ae44b037580ced2",
+   "original_keys": 67616,
+   "problems": []
+  },
+  {
+   "record": "scenario_globals/actual/h8__G4__O2024-10_61cf54d1788a9433.json",
+   "record_sha256": "abde3a8d81bc9fe8f950564944a23f254e63c3908e632abbecb6704842c3954b",
+   "original_keys": 73292,
+   "problems": []
+  },
+  {
+   "record": "scenario_globals/actual/h8__G4__O2025-02_a9790104bb0153f0.json",
+   "record_sha256": "d3276413f277153f8488bdb206b7bc7f7d3ccdabd3de854b26ab74f48c329cf1",
+   "original_keys": 73122,
+   "problems": []
+  }
+ ],
+ "limits": "does not reconstruct covariates, prove booster internals or local per-key fitting provenance"
+}

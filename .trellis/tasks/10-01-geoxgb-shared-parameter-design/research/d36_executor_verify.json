@@ -1,0 +1,25 @@
+{
+ "C": {
+  "rows": 207539,
+  "brier_root": 0.04791390770981172,
+  "brier_brierlocal": 0.04712303330865564,
+  "known_share": 0.6240851117139429,
+  "matched_f1_root": 0.6777196044211751,
+  "matched_f1_brier": 0.6864911399669991,
+  "matched_f1_persistence": 0.5194684220331616
+ },
+ "E3": {
+  "rows": 113508,
+  "brier_root": 0.10189054595144784,
+  "brier_brierlocal": 0.10195020593917443,
+  "known_share": 0.9937185044225958,
+  "matched_f1_root": 0.5515156651693647,
+  "matched_f1_brier": 0.5521789151724331,
+  "matched_f1_persistence": 0.586405529953917
+ },
+ "ledger_check": {
+  "e3_keys_in_ledger": 81321,
+  "both_known": 80613,
+  "persistence_code_equal": 80613
+ }
+}

@@ -1,0 +1,374 @@
+{
+ "distance_to_nearest_acled": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_battles": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_explosions": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_violence": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_battles": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_explosions": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_violence": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_battles_w5": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_explosions_w5": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_violence_w5": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_battles_w5": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_explosions_w5": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_violence_w5": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_battles_w10": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_explosions_w10": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "event_count_violence_w10": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_battles_w10": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_explosions_w10": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "sum_fatalities_violence_w10": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "ACLED weekly Monday release of prior Sat-Fri (research/d7-covariate-release-rules.md)"
+ },
+ "Rainf_f_tavg_mean": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "FLDAS Noah01 C ~3-week release; _f_ forcing unchanged by Nov2020 reprocessing (research/d7-fldas-release-corroboration.md)"
+ },
+ "Tair_f_tavg_mean": {
+  "kind": "monthly",
+  "lag": 1,
+  "status": "reconstructed",
+  "evidence": "FLDAS Noah01 C ~3-week release; _f_ forcing unchanged by Nov2020 reprocessing (research/d7-fldas-release-corroboration.md)"
+ },
+ "lat": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "lon": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_10000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_12000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_15000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_17000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_19000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_25000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_31000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_32000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_33000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_34000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_36000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_38000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_4000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_40000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_43000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_7000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "AEZ_9000": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "distance_to_river": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "elevation": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "sg_cec_5-15cm": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "sg_cfvo_5-15cm": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "sg_nitrogen_5-15cm": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "sg_phh2o_5-15cm": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "sg_soc_5-15cm": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "ruggedness": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "slope": {
+  "kind": "static",
+  "status": "reconstructed",
+  "evidence": "user-attested pinned panel source identity; static reconstruction semantics; identity/units caveats disclosed (data-readiness s6)"
+ },
+ "GDP": {
+  "kind": "annual",
+  "release_delay_years": 1,
+  "release_month": 7,
+  "value_month": 12,
+  "status": "reconstructed",
+  "evidence": "WDI July update adds reference year Y-1"
+ },
+ "CC": {
+  "kind": "annual",
+  "release_delay_years": 2,
+  "release_month": 1,
+  "value_month": 12,
+  "status": "reconstructed",
+  "evidence": "WGI edition Sep-Dec of Y covers Y-1; conservative Y-2 at any origin"
+ },
+ "Tair_zscore": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "Rainf_zscore": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "CPI": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "EVI": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "nightlight": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "nightlight_sd": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "gpp_mean": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "FAO_price": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "market_distance": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "Food_CPI": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "Food_food_inflation": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "WFP_Price": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "WFP_Price_std": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "gini": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "pop": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "excluded per D7 data-readiness section 6"
+ },
+ "crop": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "historical as-of semantics unestablished (D1)"
+ },
+ "range": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "historical as-of semantics unestablished (D1)"
+ },
+ "market_access": {
+  "kind": "excluded",
+  "status": "reconstructed",
+  "evidence": "historical as-of semantics unestablished (D1)"
+ }
+}
