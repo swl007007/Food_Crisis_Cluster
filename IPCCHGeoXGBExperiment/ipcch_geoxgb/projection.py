@@ -4,13 +4,14 @@
 ``1 >= z2 >= z3 >= z4 >= z5 >= 0``, per row, equal weights, using only that
 row's raw predictions.
 
-Method. Without bounds, the least-squares non-increasing fit of four ordered
-values is the block-mean vector of some partition of (z2..z5) into contiguous
-blocks (pool-adjacent-violators). There are 2**3 = 8 such partitions; the
-optimum is the feasible (non-increasing) block-mean vector with the smallest
-squared error, found exactly by enumeration. With constant bounds [0, 1] on
-every coordinate, the bounded optimum is that isotonic solution clipped to
-[0, 1]. Clipping *before* the isotonic step is not equivalent and is not used.
+Method. Pool-adjacent-violators (PAVA) for a non-increasing fit: adjacent
+blocks that violate the order are merged and replaced by the mean of their
+original values, computed with ``math.fsum`` (exactly rounded), so finite
+inputs of any magnitude keep their block structure (an SSE-ranking of
+candidate partitions loses the comparison when |q_raw| is huge). Rows already
+non-increasing are returned unchanged. With constant bounds [0, 1] on every
+coordinate, the bounded optimum is that isotonic solution clipped to [0, 1].
+Clipping *before* the isotonic step is not equivalent and is not used.
 
 Decoding: ``phase = max({1} | {k : q_star_k >= 0.20})`` with no rounding;
 after projection this is ``1 + #{k : q_star_k >= 0.20}``.
@@ -18,7 +19,7 @@ after projection this is ``1 + #{k : q_star_k >= 0.20}``.
 
 from __future__ import annotations
 
-import itertools
+import math
 
 import numpy as np
 
@@ -28,21 +29,20 @@ THRESHOLD = 0.20
 N_TARGETS = 4
 
 
-def _partitions(n: int = N_TARGETS) -> list[list[tuple[int, int]]]:
-    """All partitions of range(n) into contiguous [start, stop) blocks."""
-    out = []
-    for cuts in itertools.product((False, True), repeat=n - 1):
-        blocks, start = [], 0
-        for i, cut in enumerate(cuts, start=1):
-            if cut:
-                blocks.append((start, i))
-                start = i
-        blocks.append((start, n))
-        out.append(blocks)
+def _pava_row(values: list[float]) -> list[float]:
+    blocks: list[list[float]] = []  # each block: its original values
+    means: list[float] = []
+    for value in values:
+        blocks.append([value])
+        means.append(value)
+        while len(means) > 1 and means[-2] < means[-1]:  # non-increasing violated
+            merged = blocks[-2] + blocks[-1]
+            blocks[-2:] = [merged]
+            means[-2:] = [math.fsum(merged) / len(merged)]
+    out: list[float] = []
+    for block, mean in zip(blocks, means):
+        out.extend([mean] * len(block))
     return out
-
-
-_PARTITIONS = _partitions()
 
 
 def isotonic_decreasing(raw: np.ndarray) -> np.ndarray:
@@ -52,20 +52,11 @@ def isotonic_decreasing(raw: np.ndarray) -> np.ndarray:
         raise TechnicalError(f"projection input shape {raw.shape}, expected (n, {N_TARGETS})")
     if not np.isfinite(raw).all():
         raise TechnicalError("projection input contains NaN/Inf (R41)")
-    best = np.full(raw.shape, np.nan)
-    best_sse = np.full(raw.shape[0], np.inf)
-    for blocks in _PARTITIONS:
-        candidate = np.empty_like(raw)
-        for start, stop in blocks:
-            candidate[:, start:stop] = raw[:, start:stop].mean(axis=1, keepdims=True)
-        feasible = np.all(np.diff(candidate, axis=1) <= 0.0, axis=1)
-        sse = ((candidate - raw) ** 2).sum(axis=1)
-        better = feasible & (sse < best_sse)
-        best[better] = candidate[better]
-        best_sse[better] = sse[better]
-    if np.isnan(best).any():  # the all-pooled partition is always feasible
-        raise TechnicalError("isotonic projection found no feasible partition")
-    return best
+    out = raw.copy()
+    violating = np.flatnonzero(np.any(np.diff(raw, axis=1) > 0.0, axis=1))
+    for row in violating:
+        out[row] = _pava_row(raw[row].tolist())
+    return out
 
 
 def project(raw: np.ndarray) -> np.ndarray:

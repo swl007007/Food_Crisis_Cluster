@@ -27,12 +27,17 @@ from typing import Callable
 import numpy as np
 
 from ipcch_geoxgb.errors import TechnicalError
-from ipcch_geoxgb.quartet import TARGETS, Quartet
+from ipcch_geoxgb.quartet import TARGETS, Quartet, base_score, from_raw, prefix_identity
 
 
 def array_digest(array) -> str:
-    """SHA256 of dtype, shape and C-ordered bytes (NaN bit patterns included)."""
+    """SHA256 of dtype, shape and C-ordered bytes (NaN bit patterns included).
+
+    Object arrays are refused: their bytes are pointers, not values.
+    """
     arr = np.ascontiguousarray(np.asarray(array))
+    if arr.dtype.kind == "O":
+        raise TechnicalError("array_digest needs a numeric/fixed-width array, not an object array")
     header = f"{arr.dtype.str}|{arr.shape}|".encode()
     return hashlib.sha256(header + arr.tobytes()).hexdigest()
 
@@ -43,6 +48,58 @@ def canonical(obj) -> str:
 
 def identity_digest(identity: dict) -> str:
     return hashlib.sha256(canonical(identity).encode()).hexdigest()
+
+
+REQUIRED_FIELDS = {
+    "target", "kind", "rounds_total", "params", "resolved_config", "base_score",
+    "structure_sha256", "booster_sha256", "weights", "rows", "constant", "y_sha256",
+}
+LOCAL_FIELDS = {
+    "parent_booster_sha256", "parent_rounds", "rounds_added",
+    "parent_structure_sha256", "child_prefix_structure_sha256",
+}
+
+
+def validate_fit_records(identity: dict, payloads: dict, records: dict) -> None:
+    """Required per-target fitting evidence, checked against the actual boosters.
+
+    Called before an entry is written and whenever one is loaded; any missing
+    or inconsistent field is a TechnicalError (never a refit).
+    """
+    expected_kind = "local" if str(identity.get("scope", "")).endswith("-local") else "global"
+    for q in TARGETS:
+        record = records.get(q)
+        if not isinstance(record, dict):
+            raise TechnicalError(f"fit record for {q} is missing")
+        required = REQUIRED_FIELDS | (LOCAL_FIELDS if record.get("kind") == "local" else set())
+        missing = sorted(required - set(record))
+        if missing:
+            raise TechnicalError(f"fit record for {q} lacks {missing}")
+        if record["target"] != q or record["kind"] != expected_kind:
+            raise TechnicalError(f"fit record for {q} has target/kind {record['target']}/{record['kind']}")
+        if hashlib.sha256(payloads[q]).hexdigest() != record["booster_sha256"]:
+            raise TechnicalError(f"fit record for {q} does not match its booster bytes")
+        booster = from_raw(payloads[q])
+        if booster.num_boosted_rounds() != record["rounds_total"]:
+            raise TechnicalError(f"{q}: booster rounds differ from the fit record")
+        if base_score(booster) != record["base_score"]:
+            raise TechnicalError(f"{q}: booster base score differs from the fit record")
+        if prefix_identity(booster)["sha256"] != record["structure_sha256"]:
+            raise TechnicalError(f"{q}: booster structure differs from the fit record")
+        learner = record["resolved_config"].get("learner", {})
+        if learner.get("objective", {}).get("name") != record["params"].get("objective"):
+            raise TechnicalError(f"{q}: resolved config objective differs from the requested params")
+        if learner.get("learner_model_param", {}).get("base_score") != record["base_score"]:
+            raise TechnicalError(f"{q}: resolved config base score differs from the fit record")
+        if record["kind"] == "local":
+            if record["rounds_total"] != record["parent_rounds"] + record["rounds_added"]:
+                raise TechnicalError(f"{q}: local rounds do not equal global + appended")
+            prefix = prefix_identity(booster, record["parent_rounds"])["sha256"]
+            if not (prefix == record["child_prefix_structure_sha256"] == record["parent_structure_sha256"]):
+                raise TechnicalError(f"{q}: local prefix does not match its global booster")
+            parents = identity.get("global_boosters")
+            if parents is not None and parents.get(q) != record["parent_booster_sha256"]:
+                raise TechnicalError(f"{q}: local parent digest differs from the identity's global booster")
 
 
 class ModelStore:
@@ -76,6 +133,7 @@ class ModelStore:
             if hashlib.sha256(payload).hexdigest() != record["booster_sha256"][q]:
                 raise TechnicalError(f"model entry {digest} {q} bytes do not match the recorded digest")
             payloads[q] = payload
+        validate_fit_records(identity, payloads, record.get("fit_records") or {})
         return Quartet(payloads, record["fit_records"])
 
     def get_or_fit(self, identity: dict, fit: Callable[[], Quartet], use: dict) -> tuple[Quartet, dict]:
@@ -93,6 +151,7 @@ class ModelStore:
             status = "hit"
         else:
             quartet = fit()
+            validate_fit_records(identity, quartet.payloads, quartet.records)
             tmp = directory.with_name(directory.name + ".tmp")
             if tmp.exists():
                 shutil.rmtree(tmp)

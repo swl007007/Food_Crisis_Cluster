@@ -112,7 +112,9 @@ def run_learn_map(run_dir: Path) -> dict:
         X_fit = np.asarray(X[fit_rows])
         X_val = np.asarray(X[val_rows])
         Y_fit = fit_keys[Y_COLS].to_numpy(dtype=np.float64)
-        fit_identity = {"fit_keys": key_digest(fit_keys), "X": array_digest(X_fit), "Y": array_digest(Y_fit)}
+        fit_identity = {"targets": list(quartet.TARGETS),
+                        "fit_scope": "stage1-F (2014-01..2022-12 within-area earliest halves)",
+                        "fit_keys": key_digest(fit_keys), "X": array_digest(X_fit), "Y": array_digest(Y_fit)}
         hdir = out / f"h{h:02d}"
         hdir.mkdir()
         entries = []
@@ -134,6 +136,7 @@ def run_learn_map(run_dir: Path) -> dict:
                     child_keys = fit_keys[mask]
                     Xc, Yc = X_fit[mask], Y_fit[mask]
                     identity = {**base_identity, "scope": "stage1-local", "H": h, "G": gid, "L": lid,
+                                "targets": list(quartet.TARGETS), "fit_scope": fit_identity["fit_scope"],
                                 "params": lparams, "rounds": lrounds,
                                 "region_areas": array_digest(np.asarray(areas, dtype=np.int64)),
                                 "global_identity": root[0], "global_boosters": root[1].booster_shas(),

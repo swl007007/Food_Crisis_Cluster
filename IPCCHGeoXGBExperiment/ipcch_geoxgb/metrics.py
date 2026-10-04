@@ -21,20 +21,42 @@ N_CLASSES = 4
 
 
 def _phases(values) -> np.ndarray:
+    """Exact integer phases 1..5 (a 0/NA sentinel is never a scored phase)."""
     arr = np.asarray(values)
     if arr.ndim != 1:
         raise TechnicalError("phase vectors must be one-dimensional")
+    if arr.dtype.kind == "f":
+        if not np.isfinite(arr).all() or not np.all(arr == np.round(arr)):
+            raise TechnicalError("phase values must be finite integers")
+    elif arr.size and arr.dtype.kind not in "iu":
+        raise TechnicalError(f"phase values must be numeric integers, got dtype {arr.dtype}")
     arr = arr.astype(np.int64)
     if arr.size and (arr.min() < 1 or arr.max() > 5):
         raise TechnicalError("phase outside 1..5")
     return arr
 
 
+def _aligned_phases(truth_phase, pred_phase) -> tuple[np.ndarray, np.ndarray]:
+    t, p = _phases(truth_phase), _phases(pred_phase)
+    if t.shape != p.shape:
+        raise TechnicalError(f"truth ({t.shape}) and prediction ({p.shape}) are not aligned")
+    return t, p
+
+
+def _finite_vector(values, name: str, n: int | None = None) -> np.ndarray:
+    arr = np.asarray(values, dtype=np.float64)
+    if arr.ndim != 1:
+        raise TechnicalError(f"{name} must be one-dimensional")
+    if n is not None and arr.shape[0] != n:
+        raise TechnicalError(f"{name} has {arr.shape[0]} rows, expected {n} (same cohort)")
+    if not np.isfinite(arr).all():
+        raise TechnicalError(f"{name} contains NaN/Inf")
+    return arr
+
+
 def crisis_counts(truth_phase, pred_phase) -> dict:
     """Binary crisis (phase >= 3) TP/FP/FN/TN over aligned rows."""
-    t, p = _phases(truth_phase) >= 3, _phases(pred_phase) >= 3
-    if t.shape != p.shape:
-        raise TechnicalError("truth and prediction are not aligned")
+    t, p = (x >= 3 for x in _aligned_phases(truth_phase, pred_phase))
     return {
         "tp": int(np.sum(t & p)),
         "fp": int(np.sum(~t & p)),
@@ -87,9 +109,7 @@ def binary_metrics(counts: dict) -> dict:
 
 
 def four_class_confusion(truth_phase, pred_phase) -> np.ndarray:
-    t, p = four_class(_phases(truth_phase)), four_class(_phases(pred_phase))
-    if t.shape != p.shape:
-        raise TechnicalError("truth and prediction are not aligned")
+    t, p = (four_class(x) for x in _aligned_phases(truth_phase, pred_phase))
     return np.bincount(t * N_CLASSES + p, minlength=N_CLASSES**2).reshape(N_CLASSES, N_CLASSES)
 
 
@@ -135,23 +155,33 @@ def four_class_metrics(matrix: np.ndarray) -> dict:
 
 
 def r_squared(truth, prediction) -> tuple[float | None, str]:
-    """1 - SSE/SST; NA when n < 2 or SST = 0; negative values are kept."""
-    y = np.asarray(truth, dtype=np.float64)
-    f = np.asarray(prediction, dtype=np.float64)
-    if y.shape != f.shape:
-        raise TechnicalError("q3 truth and prediction are not aligned")
+    """1 - SSE/SST; NA when n < 2 or the truth is constant; negative values are kept.
+
+    Constancy is decided on the exact values BEFORE any mean is formed: a
+    floating mean of identical values can differ from them in the last bit and
+    turn SST into ~1e-33, which would produce a meaningless huge negative R².
+    """
+    y = _finite_vector(truth, "q3 truth")
+    f = _finite_vector(prediction, "q3 prediction", n=y.shape[0])
     if y.size < 2:
         return None, "n < 2"
-    sst = float(((y - y.mean()) ** 2).sum())
-    if sst == 0.0:
+    if np.all(y == y[0]):
         return None, "constant truth (SST = 0)"
+    sst = float(((y - y.mean()) ** 2).sum())
     return 1.0 - float(((y - f) ** 2).sum()) / sst, ""
 
 
 def metric_panel(truth_phase, pred_phase, q3_true=None, q3_star=None, q3_raw=None) -> dict:
     """The full R8 panel for one cohort of aligned keyed rows."""
+    truth_phase, pred_phase = _aligned_phases(truth_phase, pred_phase)
+    n = truth_phase.shape[0]
+    if q3_true is not None:
+        _finite_vector(q3_true, "q3 truth", n=n)
+        for name, values in (("q3_star", q3_star), ("q3_raw", q3_raw)):
+            if values is not None:
+                _finite_vector(values, name, n=n)
     out = {
-        "n": int(len(np.asarray(truth_phase))),
+        "n": int(n),
         "binary": binary_metrics(crisis_counts(truth_phase, pred_phase)),
         "four_class": four_class_metrics(four_class_confusion(truth_phase, pred_phase)),
     }
@@ -172,8 +202,11 @@ def crisis_scan_masses(truth_phase, pred_phase, groups) -> tuple[np.ndarray, np.
     (zeros when D = 0). TN contributes no mass. Groups come back in ascending
     numeric order with their raw counts.
     """
-    t, p = _phases(truth_phase) >= 3, _phases(pred_phase) >= 3
-    groups = np.asarray(groups, dtype=np.int64)
+    t, p = (x >= 3 for x in _aligned_phases(truth_phase, pred_phase))
+    groups = np.asarray(groups)
+    if groups.ndim != 1 or groups.shape != t.shape or (groups.size and groups.dtype.kind not in "iu"):
+        raise TechnicalError("scan groups must be a 1-D integer vector aligned with the phases")
+    groups = groups.astype(np.int64)
     unique, inverse = np.unique(groups, return_inverse=True)
     tp = np.bincount(inverse, weights=(t & p), minlength=len(unique))
     fp = np.bincount(inverse, weights=(~t & p), minlength=len(unique))

@@ -81,6 +81,15 @@ def base_score(booster: xgb.Booster) -> str:
     return json.loads(booster.save_config())["learner"]["learner_model_param"]["base_score"]
 
 
+def resolved_config(booster: xgb.Booster) -> dict:
+    """The booster's resolved configuration captured AT FIT TIME.
+
+    A reloaded UBJ model can report reset non-model training defaults, so the
+    record keeps this fit-time snapshot rather than a later reload's view.
+    """
+    return json.loads(booster.save_config())
+
+
 def prefix_identity(booster: xgb.Booster, rounds: int | None = None) -> dict:
     """Digest of the first ``rounds`` trees (structure, splits, missing directions,
     leaf values; positional ``id`` excluded) plus the base score."""
@@ -136,6 +145,7 @@ def fit_global(X, y, params: dict, rounds: int) -> tuple[xgb.Booster, dict]:
         "kind": "global",
         "rounds_total": rounds,
         "params": params,
+        "resolved_config": resolved_config(booster),
         "base_score": base_score(booster),
         "structure_sha256": prefix_identity(booster)["sha256"],
         "booster_sha256": sha(booster),
@@ -183,6 +193,7 @@ def continue_local(parent_bytes: bytes, X, y, params: dict, rounds: int) -> tupl
         "rounds_added": rounds,
         "rounds_total": n0 + rounds,
         "params": params,
+        "resolved_config": resolved_config(child),
         "base_score": base_score(child),
         "parent_structure_sha256": parent_prefix["sha256"],
         "child_prefix_structure_sha256": child_prefix["sha256"],
@@ -225,7 +236,15 @@ def fit_global_quartet(X, Y, params: dict, rounds: int) -> Quartet:
 
 
 def continue_local_quartet(global_quartet: Quartet, X, Y, params: dict, rounds: int) -> Quartet:
-    """Each target continues ONLY its own global booster (no cross-target sharing)."""
+    """Each target continues ONLY its own global booster (no cross-target sharing).
+
+    The input must be a true global quartet: continuing an already-local
+    quartet would accumulate increments (e.g. 220 -> 240 rounds), which the
+    shared-root contract forbids.
+    """
+    kinds = {q: global_quartet.records[q].get("kind") for q in TARGETS}
+    if set(kinds.values()) != {"global"}:
+        raise TechnicalError(f"local continuation requires a global quartet, got kinds {kinds}")
     Y = np.asarray(Y, dtype=np.float64)
     if Y.ndim != 2 or Y.shape[1] != 4:
         raise TechnicalError(f"targets must be (n, 4), got {Y.shape}")

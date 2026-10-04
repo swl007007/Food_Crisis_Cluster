@@ -281,3 +281,90 @@ def test_crisis_scan_masses():
     np.testing.assert_allclose(A, [0.0, 0.5])
     _, Y0, A0, _ = metrics.crisis_scan_masses([1, 1], [1, 1], [1, 2])
     assert Y0.tolist() == [0.0, 0.0] and A0.tolist() == [0.0, 0.0]
+
+
+# ------------------------------------------------------------ supervisor P2 review regressions
+
+
+def test_constant_q3_truth_is_na_before_any_mean():
+    for pred in (np.full(3, 0.1), np.full(3, 0.2), np.array([0.1, 0.2, 0.3])):
+        assert metrics.r_squared(np.full(3, 0.2), pred) == (None, "constant truth (SST = 0)")
+    value, reason = metrics.r_squared([0.1, 0.2, 0.3], [0.3, 0.1, 0.5])
+    assert value < 0 and reason == ""  # valid negative R² kept
+
+
+@pytest.mark.parametrize(
+    "call",
+    [
+        lambda: metrics.crisis_scan_masses([1, 3], [3], [1, 2]),
+        lambda: metrics.crisis_scan_masses([1, 3], [3, 3], [1]),
+        lambda: metrics.crisis_scan_masses([[1, 3]], [[3, 3]], [[1, 2]]),
+        lambda: metrics.metric_panel([1, 2, 3, 4], [1, 2, 3, 4], [.1, .3], [.1, .3], [.1, .3]),
+        lambda: metrics.metric_panel([1, 2], [1, 2], [.1, np.nan], [.1, .3]),
+        lambda: metrics.r_squared([0.1, np.inf], [0.1, 0.2]),
+        lambda: metrics.r_squared([0.1, 0.2, 0.3], [0.1, 0.2]),
+        lambda: metrics.crisis_counts([0, 3], [1, 3]),  # phase-0 sentinel is never scored
+        lambda: metrics.crisis_counts([1.5, 3.0], [1.0, 3.0]),
+        lambda: metrics.four_class_confusion([1, 2], [1]),
+    ],
+)
+def test_metric_entrypoints_reject_misaligned_or_nonfinite_input(call):
+    with pytest.raises(TechnicalError):
+        call()
+
+
+def test_projection_is_stable_for_extreme_finite_inputs():
+    raw = np.array([[-1e8, 1e8, 0.9, 0.1], [1e15, -1e15, 0.5, 0.6], [0.5, 1.3, 0.1, 0.0]])
+    z = projection.project(raw)
+    np.testing.assert_allclose(z[0], [0.3, 0.3, 0.3, 0.1], atol=1e-12)
+    assert projection.decode(z[:1]).tolist() == [4]
+    np.testing.assert_allclose(z[1], [1.0, 0.0, 0.0, 0.0])  # 1e15, -1e15, then .55,.55 -> clip
+    np.testing.assert_allclose(z[2], [0.9, 0.9, 0.1, 0.0])  # clip-first counterexample unchanged
+
+
+def test_local_continuation_refuses_an_already_local_quartet(fitted):
+    X, Y, g, loc, _ = fitted
+    lp, lr = quartet.local_params(CONTRACT, "L1")
+    with pytest.raises(TechnicalError, match="requires a global quartet"):
+        quartet.continue_local_quartet(loc, X[:100], Y[:100], lp, lr)  # would be 220 -> 240
+
+
+def test_fit_records_carry_fit_time_resolved_config(fitted):
+    _, _, g, loc, _ = fitted
+    for q in quartet.TARGETS:
+        for record in (g.records[q], loc.records[q]):
+            learner = record["resolved_config"]["learner"]
+            assert learner["objective"]["name"] == "reg:squarederror"
+            assert learner["learner_model_param"]["base_score"] == record["base_score"]
+
+
+@pytest.mark.parametrize("damage", ["empty_q3_record", "objective", "rounds", "structure", "kind"])
+def test_incomplete_or_inconsistent_fit_record_stops_on_load(tmp_path, damage):
+    X, Y = _data(n=80)
+    gp, _ = quartet.global_params(CONTRACT, "G1")
+    store = ModelStore(tmp_path / "m", tmp_path / "l.jsonl")
+    identity = _identity(X, Y, np.arange(80))
+    _, entry = store.get_or_fit(identity, lambda: quartet.fit_global_quartet(X, Y, gp, 5), {})
+    d = entry["identity_sha256"]
+    path = tmp_path / "m" / d[:2] / d / "record.json"
+    record = json.loads(path.read_text())
+    rec = record["fit_records"]["q3"]
+    if damage == "empty_q3_record":
+        record["fit_records"]["q3"] = {}
+    elif damage == "objective":
+        rec["resolved_config"]["learner"]["objective"]["name"] = "reg:absoluteerror"
+    elif damage == "rounds":
+        rec["rounds_total"] = 6
+    elif damage == "structure":
+        rec["structure_sha256"] = "0" * 64
+    else:
+        rec["kind"] = "local"
+    path.write_text(json.dumps(record))
+    with pytest.raises(TechnicalError):
+        store.get_or_fit(identity, lambda: pytest.fail("must not refit"), {})
+
+
+def test_object_arrays_cannot_be_identity_digests():
+    with pytest.raises(TechnicalError):
+        array_digest(np.array(["a", 1], dtype=object))
+    assert array_digest(np.array([1, 2])) != array_digest(np.array([2, 1]))
