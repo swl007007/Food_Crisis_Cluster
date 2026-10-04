@@ -24,7 +24,8 @@ from ipcch_geoxgb.stage1 import node_depth
 GZ = {"method": "gzip", "mtime": 0}
 
 
-def load_frozen(stage1_dir: Path, h: int, prepared_manifest_sha256: str) -> tuple[dict, dict]:
+def load_frozen(stage1_dir: Path, h: int, prepared_manifest_sha256: str, contract_version: str,
+                schema_identity: list) -> tuple[dict, dict]:
     """The frozen map for H, bound to this H, this prepared data and the Stage1 winner.
 
     Rejects a record/CSV copied from another H or run, a map that differs from
@@ -43,6 +44,13 @@ def load_frozen(stage1_dir: Path, h: int, prepared_manifest_sha256: str) -> tupl
         problems.append(f"record is for H{record.get('H')}")
     if record.get("prepared_manifest_sha256") != prepared_manifest_sha256:
         problems.append("record is bound to different prepared data")
+    if record.get("contract_version") != contract_version:
+        problems.append("record is bound to a different contract version")
+    if record.get("schema") != list(schema_identity):
+        problems.append("record is bound to a different feature schema")
+    base = summary.get("base_identity", {})
+    if base.get("schema") != list(schema_identity) or base.get("prepared_manifest_sha256") != prepared_manifest_sha256:
+        problems.append("Stage1 summary identity differs from the current schema/prepared data")
     if summary.get("horizons", {}).get(str(h), {}).get("frozen") != record:
         problems.append("record differs from the Stage1 summary")
     if selection.get("selection", {}).get("winner") != record.get("candidate") or \
@@ -96,7 +104,8 @@ def _run_predict(run_dir: Path, context: dict) -> dict:
     summary = {"stage": "P4-stage3", "base_identity": base_identity, "horizons": {}}
     for h in contract["calendar"]["horizons_months"]:
         context.update(H=h, fold_id=None, origin_ord=None)
-        frozen, region_of = load_frozen(stage1_dir, h, bound["manifest_sha256"])
+        frozen, region_of = load_frozen(stage1_dir, h, bound["manifest_sha256"], contract["contract_version"],
+                                        [schema["schema_version"], schema["ordered_names_sha256"]])
         keys, X = load_horizon(prepared, h)
         ctx = stage3.HorizonContext(
             h=h, keys=keys, X=X,

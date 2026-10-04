@@ -26,7 +26,7 @@ import pandas as pd
 
 from ipcch_geoxgb.artifacts import sha256_file
 from ipcch_geoxgb.learnmap import verify_prepared
-from ipcch_geoxgb.modelstore import array_digest, target_digests, validate_fit_records
+from ipcch_geoxgb.modelstore import array_digest, identity_digest, target_digests, validate_fit_records
 from ipcch_geoxgb.quartet import TARGETS, Quartet
 
 Q = TARGETS
@@ -117,7 +117,15 @@ def _panel(truth, pred, q3_true, q3_star, q3_raw) -> dict:
         den = 2 * tpk + int(((t4 != k) & (p4 == k)).sum()) + int(((t4 == k) & (p4 != k)).sum())
         f1s.append(2 * tpk / den if den else None)
     n = len(t4)
+    confusion = [[int(((t4 == i) & (p4 == j)).sum()) for j in range(4)] for i in range(4)]
+    per_class = {}
+    for k, label in enumerate(("1", "2", "3", "4/5")):
+        tpk = confusion[k][k]
+        per_class[label] = {"support": int(sum(confusion[k])), "predicted": int(sum(r[k] for r in confusion)),
+                            "tp": tpk, "fp": int(sum(r[k] for r in confusion) - tpk),
+                            "fn": int(sum(confusion[k]) - tpk), "f1": f1s[k]}
     return {
+        "confusion": confusion, "per_class": per_class, "n": n,
         "binary.accuracy": _ratio(tp + tn, n), "binary.precision": _ratio(tp, tp + fp),
         "binary.recall": _ratio(tp, tp + fn), "binary.f1": _ratio(2 * tp, 2 * tp + fp + fn),
         "binary.f2": _ratio(5 * tp, 5 * tp + 4 * fn + fp),
@@ -169,9 +177,14 @@ class Models:
     def __init__(self, root: Path):
         self.root = root
         self.records = {}
+        self.bad_identity: list[str] = []
         for path in root.glob("*/*/record.json"):
             record = json.loads(path.read_text(encoding="utf-8"))
-            self.records[record["identity_sha256"]] = record
+            claimed = record.get("identity_sha256")
+            if not (identity_digest(record["identity"]) == claimed == path.parent.name):
+                self.bad_identity.append(f"{path.parent.name}: recomputed {identity_digest(record['identity'])[:12]}")
+                continue  # an entry whose identity does not hash to its address is not usable evidence
+            self.records[claimed] = record
         self._loaded: dict[str, Quartet] = {}
 
     def quartet(self, digest: str) -> Quartet:
@@ -212,6 +225,7 @@ def replay_run(run_dir: Path, contract: dict) -> dict:
     calendar = pd.read_csv(prepared / "fold_calendar.csv")
     split = pd.read_csv(prepared / "stage1_split.csv.gz")
     models = Models(run_dir / "models")
+    c.check("models.identity_digest", not models.bad_identity, "; ".join(models.bad_identity[:5]))
     c.check("inventory.stage1_summary", (run_dir / "stage1" / "stage1-summary.json").is_file())
     c.check("inventory.stage3_summary", (run_dir / "stage3" / "stage3-summary.json").is_file())
     c.check("inventory.report", (run_dir / "report" / "report.json").is_file())
@@ -231,6 +245,7 @@ def replay_run(run_dir: Path, contract: dict) -> dict:
         if pred is not None and report is not None:
             c.guard(f"H{h}.report", _replay_report, c, run_dir, h, pred, calendar, frozen, report)
     c.guard("models.requests", _replay_requests, c, run_dir, models, horizons, artifacts)
+    c.guard("models.stage1_requests", _replay_stage1_requests, c, run_dir, models, horizons, artifacts, split)
     return _result(c)
 
 
@@ -331,9 +346,16 @@ def _replay_stage3(c, run_dir, h, keys, X, sha, calendar, frozen, contract, mode
                if len(avail) else np.zeros(0))
         c.check(f"H{h}.persistence_not_after_origin", bool(np.all(src <= origin)) and
                 bool(np.all(avail["persistence_age_months"].to_numpy() == origin - src)), fid)
-        for col in ("persistence_available", "persistence_phase", "persistence_source_month"):
+        for col in ("persistence_available", "persistence_phase", "persistence_source_month", "persistence_age_months"):
             c.check(f"H{h}.persistence_matches_prepared", np.array_equal(
                 got[col].fillna("").astype(str).to_numpy(), k[col].fillna("").astype(str).to_numpy()), f"{fid}/{col}")
+        c.check(f"H{h}.persistence_q3_matches_prepared", np.array_equal(
+            got["persistence_q3"].to_numpy(dtype=float), k["persistence_q3"].to_numpy(dtype=float), equal_nan=True), fid)
+        c.check(f"H{h}.cohort_metadata", np.array_equal(got["country_key"].astype(str).to_numpy(),
+                                                        k["country_key"].astype(str).to_numpy())
+                and bool((got["period"] == fold["period"]).all()) and bool((got["horizon_months"] == h).all())
+                and bool((got["target_ord"] == target).all())
+                and np.array_equal(got["target_month"].astype(str).to_numpy(), k["target_month"].astype(str).to_numpy()), fid)
         for arm in ("geo", "pool"):
             raw = got[[f"{arm}_{q}_raw" for q in Q]].to_numpy()
             star = got[[f"{arm}_{q}_star" for q in Q]].to_numpy()
@@ -370,14 +392,27 @@ def _replay_stage3(c, run_dir, h, keys, X, sha, calendar, frozen, contract, mode
         pairs["region"] = pairs["region"].astype(str)
         for d in fold_decisions:
             region = str(d["region"])
-            enabled_expected = _replay_region_gate(
+            expect = _replay_region_gate(
                 c, h, fid, region, regions.get(region, set()), pairs[pairs["region"] == region], dates, keys, X, months,
                 area, row_of, models, floors_fit, floors_val, min_dates, window)
+            enabled_expected = expect["enabled"]
             c.check(f"H{h}.gate_decision", d["enabled"] == enabled_expected, f"{fid}/{region}")
+            for field in ("keys", "areas", "target_months", "crisis_keys", "noncrisis_keys", "local_fit_dates",
+                          "counts_global", "counts_local", "f1_global", "f1_local"):
+                c.check(f"H{h}.gate_record_fields", d.get(field) == expect.get(field), f"{fid}/{region}/{field}")
+            expected_reason = ("current_fit_support" if d.get("reason") == "current_fit_support" and enabled_expected
+                               else expect["reason"])
+            c.check(f"H{h}.gate_reason", d.get("reason") == expected_reason, f"{fid}/{region}")
             rows_te = got_region == region
+            c.check(f"H{h}.gate_record_counts", d.get("areas_in_map") == len(regions.get(region, set()))
+                    and d.get("test_keys") == int(rows_te.sum()), f"{fid}/{region}")
             cur = np.flatnonzero((months >= origin - window + 1) & (months <= origin))
             cur = cur[np.isin(area[cur], list(regions.get(region, set())))]
-            cur_ok = _meets(_support(keys.iloc[cur]), floors_fit)
+            cur_support = _support(keys.iloc[cur])
+            cur_ok = _meets(cur_support, floors_fit)
+            if "current_fit_support" in d:
+                c.check(f"H{h}.gate_current_support", d["current_fit_support"] == {k: int(v) for k, v in cur_support.items()},
+                        f"{fid}/{region}")
             if d.get("route") == "local":
                 c.check(f"H{h}.local_requires_gate_and_support", enabled_expected and cur_ok, f"{fid}/{region}")
                 lid = d.get("local_identity", "")
@@ -401,10 +436,19 @@ def _replay_stage3(c, run_dir, h, keys, X, sha, calendar, frozen, contract, mode
     return pred
 
 
+PAIR_COLUMNS = (["region", "admin_code", "target_ord", "validation_month", "internal_origin", "phase_truth",
+                 "phase_global", "phase_local_routed", "local_fit_ok", "global_identity", "local_identity",
+                 "local_routed_provider"]
+                + [f"{side}_{q}_{kind}" for side in ("global", "local_routed") for q in Q for kind in ("raw", "star")])
+
+
 def _replay_region_gate(c, h, fid, region, members, part, dates, keys, X, months, area, row_of, models,
-                        floors_fit, floors_val, min_dates, window) -> bool:
-    """Full historical keys per date, lineage of both quartets, support and the gate decision."""
+                        floors_fit, floors_val, min_dates, window) -> dict:
+    """Full historical keys per date, lineage of both quartets, support and the full gate record."""
     truth_all, global_all, local_all, ok_dates, months_seen, areas_seen = [], [], [], 0, set(), set()
+    missing = [col for col in PAIR_COLUMNS if col not in part.columns]
+    if not c.check(f"H{h}.pair_columns", not missing or len(part) == 0, f"{fid}/{region}: missing {missing[:4]}"):
+        return {"enabled": False, "reason": "pair evidence incomplete"}
     for u in dates:
         v = u - h
         expected = np.flatnonzero((months == u) & np.isin(area, list(members)))
@@ -444,10 +488,16 @@ def _replay_region_gate(c, h, fid, region, members, part, dates, keys, X, months
         if l_raw is not None:
             c.check(f"H{h}.pair_local_lineage", np.array_equal(l_raw, rows_u[[f"local_routed_{q}_raw" for q in Q]].to_numpy()),
                     f"{fid}/{region}/{u}")
-        g_phase = _phase(_project(rows_u[[f"global_{q}_raw" for q in Q]].to_numpy()))
-        l_phase = _phase(_project(rows_u[[f"local_routed_{q}_raw" for q in Q]].to_numpy()))
+        g_star = _project(rows_u[[f"global_{q}_raw" for q in Q]].to_numpy())
+        l_star = _project(rows_u[[f"local_routed_{q}_raw" for q in Q]].to_numpy())
+        c.check(f"H{h}.pair_star", np.allclose(g_star, rows_u[[f"global_{q}_star" for q in Q]].to_numpy(), atol=1e-12, rtol=0)
+                and np.allclose(l_star, rows_u[[f"local_routed_{q}_star" for q in Q]].to_numpy(), atol=1e-12, rtol=0),
+                f"{fid}/{region}/{u}")
+        g_phase, l_phase = _phase(g_star), _phase(l_star)
         c.check(f"H{h}.pair_phases", np.array_equal(g_phase, rows_u["phase_global"].to_numpy()) and
                 np.array_equal(l_phase, rows_u["phase_local_routed"].to_numpy()), f"{fid}/{region}/{u}")
+        c.check(f"H{h}.pair_truth", np.array_equal(rows_u["phase_truth"].to_numpy(), keys.iloc[rows]["phase_truth"].to_numpy())
+                and bool((rows_u["internal_origin"] == v).all()), f"{fid}/{region}/{u}")
         truth_all.append(keys.iloc[rows]["phase_truth"].to_numpy())
         global_all.append(g_phase)
         local_all.append(l_phase)
@@ -455,15 +505,27 @@ def _replay_region_gate(c, h, fid, region, members, part, dates, keys, X, months
         months_seen.add(u)
         areas_seen |= set(rows_u["admin_code"].astype(int))
     c.check(f"H{h}.pair_dates_complete", set(part["validation_month"].astype(int)) <= set(dates), f"{fid}/{region}")
-    if not truth_all:
-        return False
-    truth, g, l = np.concatenate(truth_all), np.concatenate(global_all), np.concatenate(local_all)
-    support = {"keys": len(truth), "areas": len(areas_seen), "target_months": len(months_seen),
-               "crisis_keys": int((truth >= 3).sum()), "noncrisis_keys": int((truth < 3).sum())}
-    if not _meets(support, floors_val) or ok_dates < min_dates:
-        return False
-    f_g, f_l = _f1(_counts(truth, g)), _f1(_counts(truth, l))
-    return f_g is not None and f_l is not None and (f_l - f_g) > Fraction(1, 100)
+    truth = np.concatenate(truth_all) if truth_all else np.zeros(0, dtype=int)
+    g = np.concatenate(global_all) if global_all else np.zeros(0, dtype=int)
+    loc = np.concatenate(local_all) if local_all else np.zeros(0, dtype=int)
+    record = {"keys": int(len(truth)), "areas": len(areas_seen), "target_months": len(months_seen),
+              "crisis_keys": int((truth >= 3).sum()), "noncrisis_keys": int((truth < 3).sum()),
+              "local_fit_dates": int(ok_dates)}
+    short = [k for k, v in floors_val.items() if record[k] < v]
+    if ok_dates < min_dates:
+        short.append("local_fit_dates")
+    f_g = f_l = None
+    if len(truth):
+        cg, cl = _counts(truth, g), _counts(truth, loc)
+        f_g, f_l = _f1(cg), _f1(cl)
+        record.update(counts_global=cg, counts_local=cl, f1_global=None if f_g is None else str(f_g),
+                      f1_local=None if f_l is None else str(f_l))
+    if short:
+        return {**record, "enabled": False, "reason": "gate_support:" + "+".join(short)}
+    if f_g is None or f_l is None:
+        return {**record, "enabled": False, "reason": "f1_undefined"}
+    passed = (f_l - f_g) > Fraction(1, 100)
+    return {**record, "enabled": bool(passed), "reason": "" if passed else "gain_not_above_threshold"}
 
 
 def _replay_report(c, run_dir, h, pred, calendar, frozen, report):
@@ -492,18 +554,16 @@ def _replay_report(c, run_dir, h, pred, calendar, frozen, report):
                 continue
             panels = {arm: _arm_panel(frame, arm) for arm in arms}
             for arm in arms:
-                s = saved[arm]
-                flat = {"binary.accuracy": s["binary"]["accuracy"], "binary.precision": s["binary"]["precision"],
-                        "binary.recall": s["binary"]["recall"], "binary.f1": s["binary"]["f1"],
-                        "binary.f2": s["binary"]["f2"], "four_class.accuracy": s["four_class"]["accuracy"],
-                        "four_class.macro_f1": s["four_class"]["macro_f1"],
-                        "q3_r2_projected": s.get("q3_r2_projected"), "q3_r2_raw": s.get("q3_r2_raw")}
-                for name, value in flat.items():
-                    c.check(f"H{h}.report_metric", _same(value, panels[arm][name]), f"{period}/{cohort}/{arm}/{name}")
-                c.check(f"H{h}.report_counts", s["binary"]["counts"] == panels[arm]["counts"], f"{period}/{cohort}/{arm}")
+                s = saved.get(arm) or {}
+                if not c.check(f"H{h}.report_panel_schema", _panel_schema_ok(s), f"{period}/{cohort}/{arm}"):
+                    continue
+                _check_panel_detail(c, h, f"{period}/{cohort}/{arm}", s, panels[arm])
             a, b = arms
-            delta = saved[f"delta_{a}_minus_{b}"]
-            for name in delta:
+            delta = saved.get(f"delta_{a}_minus_{b}") or {}
+            c.check(f"H{h}.report_delta_schema", set(delta) == set(DELTA_NAMES), f"{period}/{cohort}")
+            for name in DELTA_NAMES:
+                if name not in delta:
+                    continue
                 pa, pb = panels[a][name], panels[b][name]
                 c.check(f"H{h}.report_delta", _same(delta[name], None if pa is None or pb is None else pa - pb),
                         f"{period}/{cohort}/{name}")
@@ -511,10 +571,81 @@ def _replay_report(c, run_dir, h, pred, calendar, frozen, report):
             for name, frame, other in (("geo_vs_pool_E_all", e_all, "pool"),
                                        ("geo_vs_persistence_E_persist", e_persist, "persistence")):
                 _replay_bootstrap(c, run_dir, h, name, frame, other, entry.get("bootstrap", {}).get(name))
+        c.guard(f"H{h}.report_diagnostics", _replay_diagnostics, c, run_dir, h, period, e_all, cal)
         routes = entry.get("routes", {})
         c.check(f"H{h}.report_routes", routes.get("rows", {}).get("local") == int((e_all["route"] == "local").sum())
                 and routes.get("rows", {}).get("denominator_cohort_rows") == len(e_all)
                 and routes.get("map", {}).get("learned_map_areas") == len(frozen["map"]), period)
+
+
+DELTA_NAMES = ("binary.accuracy", "binary.precision", "binary.recall", "binary.f1", "binary.f2",
+               "four_class.accuracy", "four_class.macro_f1", "q3_r2_projected", "q3_r2_raw")
+BINARY_NAMES = ("accuracy", "precision", "recall", "f1", "f2")
+
+
+def _panel_schema_ok(s: dict) -> bool:
+    b, f = s.get("binary", {}), s.get("four_class", {})
+    return (set(BINARY_NAMES) | {"counts", "na_reasons"} <= set(b)
+            and {"accuracy", "macro_f1", "per_class", "confusion_rows_truth_cols_pred", "na_reasons"} <= set(f)
+            and {"q3_r2_projected", "q3_r2_raw", "n"} <= set(s))
+
+
+def _check_panel_detail(c, h, where, s, expected) -> None:
+    """Every saved scalar, count, confusion cell, per-class entry and NA reason of one arm panel."""
+    c.check(f"H{h}.report_n", s["n"] == expected["n"], where)
+    for name in BINARY_NAMES:
+        c.check(f"H{h}.report_metric", _same(s["binary"][name], expected[f"binary.{name}"]), f"{where}/{name}")
+    c.check(f"H{h}.report_na_reasons", set(s["binary"]["na_reasons"]) ==
+            {n for n in BINARY_NAMES if expected[f"binary.{n}"] is None}, where)
+    for name in ("accuracy", "macro_f1"):
+        c.check(f"H{h}.report_metric", _same(s["four_class"][name], expected[f"four_class.{name}"]), f"{where}/{name}")
+    c.check(f"H{h}.report_counts", s["binary"]["counts"] == expected["counts"], where)
+    c.check(f"H{h}.report_confusion", s["four_class"]["confusion_rows_truth_cols_pred"] == expected["confusion"], where)
+    saved_pc = s["four_class"]["per_class"]
+    c.check(f"H{h}.report_per_class", set(saved_pc) == set(expected["per_class"]) and all(
+        {k: v for k, v in saved_pc[label].items() if k != "f1"} == {k: v for k, v in exp.items() if k != "f1"}
+        and _same(saved_pc[label].get("f1"), exp["f1"]) for label, exp in expected["per_class"].items()), where)
+    four_reasons = set(s["four_class"]["na_reasons"])
+    c.check(f"H{h}.report_na_reasons", ("macro_f1" in four_reasons) == (expected["four_class.macro_f1"] is None)
+            and ("accuracy" in four_reasons) == (expected["n"] == 0), where)
+    for name in ("q3_r2_projected", "q3_r2_raw"):
+        c.check(f"H{h}.report_metric", _same(s[name], expected[name]), f"{where}/{name}")
+        c.check(f"H{h}.report_na_reasons", (f"{name}_na_reason" in s) == (expected[name] is None), f"{where}/{name}")
+
+
+def _diag_value(v):
+    return None if v is None or (isinstance(v, float) and np.isnan(v)) else v
+
+
+def _replay_diagnostics(c, run_dir, h, period, e_all, cal) -> None:
+    """Mandatory per-country / per-month diagnostic tables, recomputed row by row."""
+    months = [f"{o // 12:04d}-{o % 12 + 1:02d}" for o in sorted(cal["target_ord"].unique())]
+    for by, values in (("country_key", sorted(e_all["country_key"].astype(str).unique())),
+                       ("target_month", sorted(set(months) | set(e_all["target_month"].astype(str))))):
+        path = run_dir / "report" / f"diag_h{h:02d}_{period}_{by}.csv"
+        if not c.check(f"H{h}.diagnostic_file", path.is_file(), path.name):
+            continue
+        table = pd.read_csv(path, dtype={by: str}, keep_default_na=True)
+        c.check(f"H{h}.diagnostic_rows", sorted(table[by].astype(str)) == values, path.name)
+        for row in table.to_dict("records"):
+            part = e_all[e_all[by].astype(str) == str(row[by])]
+            paired = part[part["persistence_available"] == 1]
+            g = _arm_panel(part, "geo")["binary.f1"] if len(part) else None
+            p = _arm_panel(part, "pool")["binary.f1"] if len(part) else None
+            gp = _arm_panel(paired, "geo")["binary.f1"] if len(paired) else None
+            sp = _arm_panel(paired, "persistence")["binary.f1"] if len(paired) else None
+            d = None if g is None or p is None else g - p
+            dp = None if gp is None or sp is None else gp - sp
+            ok = (row["keys"] == len(part) and row["persistence_keys"] == len(paired)
+                  and _same(_diag_value(row["persistence_coverage"]), (len(paired) / len(part)) if len(part) else None)
+                  and _same(_diag_value(row["geo_f1"]), g) and _same(_diag_value(row["pool_f1"]), p)
+                  and _same(_diag_value(row["delta_geo_minus_pool_f1"]), d)
+                  and _same(_diag_value(row["geo_f1_paired"]), gp)
+                  and _same(_diag_value(row["persistence_f1_paired"]), sp)
+                  and _same(_diag_value(row["delta_geo_minus_persistence_f1"]), dp)
+                  and (isinstance(row["na_reason_E_all"], str) and row["na_reason_E_all"] != "") == (d is None)
+                  and (isinstance(row["na_reason_E_persist"], str) and row["na_reason_E_persist"] != "") == (dp is None))
+            c.check(f"H{h}.diagnostic_values", ok, f"{path.name}/{row[by]}")
 
 
 def _replay_bootstrap(c, run_dir, h, name, frame, other, saved):
@@ -542,9 +673,16 @@ def _replay_bootstrap(c, run_dir, h, name, frame, other, saved):
         den = 2 * ct[:, 0] + ct[:, 1] + ct[:, 2]
         return np.where(den > 0, 2 * ct[:, 0] / np.where(den > 0, den, 1), np.nan)
 
-    delta = f1(mult @ counts["geo"]) - f1(mult @ counts[other])
+    fa, fb = f1(mult @ counts["geo"]), f1(mult @ counts[other])
+    delta = fa - fb
     eligible = k >= 2 and point is not None and bool(np.isfinite(delta).all())
-    c.check(f"H{h}.bootstrap_eligibility", (saved["interval"] is not None) == eligible, name)
+    c.check(f"H{h}.bootstrap_eligibility", (saved["interval"] is not None) == eligible
+            and (saved.get("na_reason") == "") == eligible, name)
+    c.check(f"H{h}.bootstrap_country_counts", saved.get("country_counts") ==
+            {"geo": counts["geo"].tolist(), other: counts[other].tolist()}, name)
+    defined = int(np.isfinite(delta).sum())
+    c.check(f"H{h}.bootstrap_defined_counts", saved.get("defined_draws") == defined
+            and saved.get("undefined_draws") == DRAWS - defined, name)
     if eligible and saved["interval"] is not None:
         lo, hi = np.percentile(delta, [2.5, 97.5], method="linear")
         c.check(f"H{h}.bootstrap_interval", np.allclose([lo, hi], saved["interval"], rtol=1e-12, atol=1e-12), name)
@@ -552,7 +690,10 @@ def _replay_bootstrap(c, run_dir, h, name, frame, other, saved):
     if c.check(f"H{h}.bootstrap_draws_present", draws_path.is_file(), name):
         draws = pd.read_csv(draws_path)
         c.check(f"H{h}.bootstrap_draws", np.array_equal(draws[[f"m::{x}" for x in countries]].to_numpy(), mult)
-                and np.allclose(draws["delta"].to_numpy(), delta, equal_nan=True), name)
+                and np.allclose(draws["delta"].to_numpy(), delta, equal_nan=True)
+                and np.allclose(draws["f1_geo"].to_numpy(), fa, equal_nan=True)
+                and np.allclose(draws[f"f1_{other}"].to_numpy(), fb, equal_nan=True)
+                and np.array_equal(draws["draw"].to_numpy(), np.arange(DRAWS)), name)
 
 
 def _replay_requests(c, run_dir, models, horizons, artifacts):
@@ -586,5 +727,53 @@ def _replay_requests(c, run_dir, models, horizons, artifacts):
                     ident["global_boosters"] == glob["booster_sha256"], digest)
         c.check("models.fit_rows_rebuilt", array_digest(rows.astype(np.int64)) == ident["fit_rows"]
                 and len(rows) == ident["n_rows"], digest)
+        c.check("models.fit_keys_rebuilt", array_digest(
+            keys[["admin_code", "target_ord"]].to_numpy(dtype=np.int64)[rows]) == ident["fit_keys"], digest)
         c.check("models.target_order",
                 target_digests(keys[list(Q)].to_numpy(dtype=np.float64)[rows]) == ident["y_sha256"], digest)
+
+
+def _replay_stage1_requests(c, run_dir, models, horizons, artifacts, split):
+    """Rebuild every Stage1 fit (root and child, accepted or rejected) from its saved row references."""
+    ledger = [json.loads(x) for x in (run_dir / "stage1" / "model_requests.jsonl").read_text().splitlines()]
+    data = {}
+    for h in horizons:
+        keys = pd.read_csv(run_dir / "prepared" / f"keys_h{h:02d}.csv.gz")
+        X = np.load(run_dir / "prepared" / f"X_rich561_h{h:02d}.npy", mmap_mode="r")
+        roles = split.rename(columns={"month_ord": "target_ord"})[["admin_code", "target_ord", "split_role"]]
+        tagged = keys.reset_index().merge(roles, on=["admin_code", "target_ord"], how="left")
+        f_rows = tagged.loc[tagged["split_role"] == "fit", "index"].to_numpy()
+        data[h] = (keys, X, f_rows)
+    roots = {}
+    for use in ledger:
+        c.check("stage1_models.request_succeeded", use["status"] in ("fit", "hit"), use.get("candidate", ""))
+        digest = use["identity_sha256"]
+        if not c.check("stage1_models.request_record", digest in models.records, digest):
+            continue
+        c.guard("stage1_models.artifact_valid", models.quartet, digest)
+        ident = models.identity(digest)
+        h = use["H"]
+        keys, X, f_rows = data[h]
+        rows = np.asarray(use.get("prepared_rows", []), dtype=np.int64)
+        c.check("stage1_models.artifact_refs", use.get("keys_artifact_sha256") == artifacts[f"keys_h{h:02d}.csv.gz"]
+                and use.get("X_artifact_sha256") == artifacts[f"X_rich561_h{h:02d}.npy"], digest)
+        if use["purpose"] == "root_global":
+            c.check("stage1_models.root_rows_are_F", np.array_equal(rows, f_rows) and ident["scope"] == "stage1-global"
+                    and ident["H"] == h, digest)
+            roots[(h, ident["G"])] = (digest, ident)
+        else:
+            members = np.asarray(use.get("members", []), dtype=np.int64)
+            expected = f_rows[np.isin(keys["admin_code"].to_numpy()[f_rows], members)]
+            c.check("stage1_models.child_rows_are_member_F", np.array_equal(rows, expected)
+                    and ident["scope"] == "stage1-local" and ident["H"] == h, digest)
+            c.check("stage1_models.child_members", array_digest(np.sort(members)) == ident["region_areas"]
+                    and use.get("node_id", "").startswith(use.get("parent_node_id", "?")), digest)
+            glob = models.records.get(ident["global_identity"])
+            c.check("stage1_models.child_root", glob is not None and glob["identity"]["scope"] == "stage1-global"
+                    and glob["identity"]["H"] == h and glob["identity"]["G"] == ident["G"]
+                    and ident["global_boosters"] == glob["booster_sha256"], digest)
+        Y = keys[list(Q)].to_numpy(dtype=np.float64)[rows]
+        c.check("stage1_models.fit_identity_rebuilt",
+                array_digest(keys[["admin_code", "target_ord"]].to_numpy(dtype=np.int64)[rows]) == ident["fit_keys"]
+                and array_digest(np.asarray(X[rows])) == ident["X"] and array_digest(Y) == ident["Y"]
+                and len(rows) == ident["n_rows"] and target_digests(Y) == ident["y_sha256"], digest)

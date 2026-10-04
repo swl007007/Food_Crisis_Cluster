@@ -37,6 +37,13 @@ def _manifest_sha(root):
     return sha256_file(root / "prepared" / "prepared-manifest.json")
 
 
+def _binding():
+    from ipcch_geoxgb.contract import load_feature_schema
+
+    schema = load_feature_schema()
+    return p5._contract()["contract_version"], [schema["schema_version"], schema["ordered_names_sha256"]]
+
+
 def _copy(run, tmp_path):
     dest = tmp_path / "copy"
     shutil.copytree(run, dest)
@@ -44,11 +51,12 @@ def _copy(run, tmp_path):
 
 
 def test_frozen_map_accepted_when_bound(run):
-    record, region_of = predict.load_frozen(run / "stage1", H, _manifest_sha(run))
+    record, region_of = predict.load_frozen(run / "stage1", H, _manifest_sha(run), *_binding())
     assert record["H"] == H and len(region_of) == p5.N_AREAS
 
 
-@pytest.mark.parametrize("damage", ["other_h", "other_prepared", "not_summary_record", "duplicate_area"])
+@pytest.mark.parametrize("damage", ["other_h", "other_prepared", "not_summary_record", "duplicate_area",
+                                    "stale_contract", "absent_schema"])
 def test_frozen_map_rejected_when_mislinked(run, tmp_path, damage):
     root = _copy(run, tmp_path)
     s1 = root / "stage1"
@@ -60,6 +68,14 @@ def test_frozen_map_rejected_when_mislinked(run, tmp_path, damage):
         record["prepared_manifest_sha256"] = "0" * 64
     elif damage == "not_summary_record":
         record["terminal_regions"] += 1
+    elif damage in ("stale_contract", "absent_schema"):  # record AND summary agree, but are stale
+        if damage == "stale_contract":
+            record["contract_version"] = "ipcch-geoxgb-contract-v0.9"
+        else:
+            record.pop("schema")
+        summary = json.loads((s1 / "stage1-summary.json").read_text())
+        summary["horizons"][str(H)]["frozen"] = record
+        (s1 / "stage1-summary.json").write_text(json.dumps(summary))
     else:
         map_path = s1 / f"frozen_map_h{H:02d}.csv"
         fmap = pd.read_csv(map_path, dtype={"node_id": str})
@@ -70,7 +86,7 @@ def test_frozen_map_rejected_when_mislinked(run, tmp_path, damage):
         (s1 / "stage1-summary.json").write_text(json.dumps(summary))
     rec_path.write_text(json.dumps(record))
     with pytest.raises(TechnicalError):
-        predict.load_frozen(s1, H, _manifest_sha(root))
+        predict.load_frozen(s1, H, _manifest_sha(root), *_binding())
 
 
 def test_gate_pairs_carry_keyed_quartets_and_providers(run):

@@ -211,7 +211,12 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
                     error.add_note(f"stage3 H{h} {fold['fold_id']} gate month {int(u)} region {region}")
                     raise
                 if local_ref is not None:
-                    raw_l, star_l, phase_l = predict(local_ref[1], ctx.X[val])
+                    try:
+                        raw_l, star_l, phase_l = predict(local_ref[1], ctx.X[val])
+                    except Exception as error:
+                        error.add_note(f"stage3 H{h} {fold['fold_id']} gate month {int(u)} region {region} "
+                                       f"local provider {local_ref[0]} prediction")
+                        raise
                     ok, local_digest, routed_provider = True, local_ref[0], local_ref[0]
                 else:  # support fallback: the local-routed side IS that date's global
                     raw_l, star_l, phase_l = raw_u[in_region], star_u[in_region], phase_u[in_region]
@@ -246,7 +251,12 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
                     raise
                 decision["current_fit_support"] = sup
                 if local_ref is not None:
-                    r, s, p = predict(local_ref[1], ctx.X[eval_rows[rows_te]])
+                    try:
+                        r, s, p = predict(local_ref[1], ctx.X[eval_rows[rows_te]])
+                    except Exception as error:
+                        error.add_note(f"stage3 H{h} {fold['fold_id']} current region {region} "
+                                       f"local provider {local_ref[0]} prediction")
+                        raise
                     raw[rows_te], star[rows_te], phase[rows_te] = r, s, p
                     route[rows_te], provider[rows_te] = "local", local_ref[0]
                     decision.update(route="local", local_identity=local_ref[0])

@@ -159,7 +159,10 @@ def diagnostics(frame: pd.DataFrame, by: str, scheduled=None) -> pd.DataFrame:
         if len(part) == 0:
             row["status"] = "no_valid_target"
         rows.append(row)
-    return pd.DataFrame(rows)
+    columns = [by, "keys", "persistence_keys", "persistence_coverage", "geo_f1", "pool_f1",
+               "delta_geo_minus_pool_f1", "na_reason_E_all", "geo_f1_paired", "persistence_f1_paired",
+               "delta_geo_minus_persistence_f1", "na_reason_E_persist", "status"]
+    return pd.DataFrame(rows, columns=columns)  # fixed header even when empty
 
 
 def cohort_entry(frame: pd.DataFrame, arms: tuple[str, str]) -> dict:
@@ -183,7 +186,17 @@ def route_coverage(e_all: pd.DataFrame, fmap: pd.DataFrame, frozen: dict, gates:
                 "learned_map_areas": len(learned)},
         "areas": {"denominator_cohort_areas": len(areas), "in_learned_map": len(areas & learned),
                   "unmapped": len(areas - learned),
-                  "ever_local_routed": int(e_all.loc[route == "local", "admin_code"].nunique())},
+                  "ever_local_routed": int(e_all.loc[route == "local", "admin_code"].nunique()),
+                  "ever_global_routed": int(e_all.loc[route != "local", "admin_code"].nunique()),
+                  "ever_global_fallback": int(e_all.loc[route.str.startswith("global_fallback"), "admin_code"].nunique()),
+                  "ever_global_only_no_accepted_split": int(
+                      e_all.loc[route == "global_only_no_accepted_split", "admin_code"].nunique()),
+                  "ever_unmapped_area_global": int(e_all.loc[route == "unmapped_area_global", "admin_code"].nunique())},
+        "regions": {"denominator_map_regions": int(fmap["node_id"].nunique()),
+                    "ever_local_routed": int(e_all.loc[route == "local", "region"].nunique()),
+                    "ever_global_fallback": int(e_all.loc[route.str.startswith("global_fallback"), "region"].nunique()),
+                    "ever_global_only_no_accepted_split": int(
+                        e_all.loc[route == "global_only_no_accepted_split", "region"].nunique())},
         "rows": {"denominator_cohort_rows": int(len(e_all)), "local": int((route == "local").sum()),
                  "global_fallback": int(len(fallback)),
                  "global_fallback_by_reason": {k: int(v) for k, v in fallback.value_counts().sort_index().items()},
