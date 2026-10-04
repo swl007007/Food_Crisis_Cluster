@@ -73,6 +73,42 @@ def test_missing_p5_is_filled_and_flagged_but_p1_to_p4_are_not():
     assert _verdict("0.7", "0.1", "0.1", "0.1", "0", pop=None).reason == "population_missing"
 
 
+@pytest.mark.parametrize(
+    "token, reason",
+    [
+        ("inf", "population_not_finite"),
+        ("Infinity", "population_not_finite"),
+        ("+Infinity", "population_not_finite"),
+        ("-inf", "population_not_finite"),
+        ("-Infinity", "population_not_finite"),
+        ("NaN", "population_missing"),
+        ("nan", "population_missing"),
+        ("", "population_missing"),
+        ("-5", "population_not_positive"),
+    ],
+)
+def test_population_tokens_parse_into_qc(token, reason):
+    population = targets.to_decimal(token)
+    shares = [targets.to_decimal(v) for v in ("0.7", "0.1", "0.1", "0.1", "0")]
+    verdict = targets.classify_row(shares, population)
+    assert (verdict.valid, verdict.reason) == (0, reason)
+
+
+@pytest.mark.parametrize("token", ["Infinity", "-Infinity", "NaN"])
+def test_nonfinite_share_tokens_never_pass_qc(token):
+    shares = [targets.to_decimal(v) for v in ("0.7", "0.1", token, "0.1", "0")]
+    verdict = targets.classify_row(shares, targets.to_decimal("100"))
+    assert verdict.valid == 0
+    assert verdict.reason == ("missing_phase_1_to_4" if token == "NaN" else "phase_share_out_of_bounds")
+
+
+def test_infinite_population_row_in_ledger(tmp_path):
+    path = _write_raw(tmp_path, [(7, 2020, 1, "0.8", "0", "0.2", "0", "0", "Infinity", "3")])
+    ledger = targets.build_target_ledger(path)
+    assert ledger["target_invalid_reason"].tolist() == ["population_not_finite"]
+    assert ledger["target_valid"].tolist() == [0] and pd.isna(ledger["phase_truth"].iloc[0])
+
+
 def test_class_mappings():
     assert targets.four_class(np.array([1, 2, 3, 4, 5])).tolist() == [0, 1, 2, 3, 3]
     assert targets.binary_crisis(np.array([1, 2, 3, 4, 5])).tolist() == [0, 0, 1, 1, 1]

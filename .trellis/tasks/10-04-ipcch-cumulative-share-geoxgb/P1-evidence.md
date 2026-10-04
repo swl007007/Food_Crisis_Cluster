@@ -68,3 +68,15 @@ lists the SHA256 of every artifact (ignored under `runs/p1-dev-20261004/prepared
   package. This is the accepted R12 contract, recorded as a data fact.
 - GitNexus impact/detect_changes remain unavailable (LadybugDB shadow-page
   error); all P1 symbols are new and only used inside the package.
+
+## Supervisor correction after `cf26c4e`
+
+`targets.classify_row` checked population only for missing and `<= 0`, so a
+`Decimal("Infinity")` token would have passed. Added `population_not_finite`
+(checked after missing, before positivity) and tests that parse
+`inf/Infinity/+Infinity/-inf/-Infinity` (→ population_not_finite),
+`NaN/nan/""` (→ population_missing) and `-5` (→ population_not_positive) into
+QC, non-finite share tokens (never valid), and an Infinity row through
+`build_target_ledger`. The dev ledger of `p1-dev-20261004` contains 0 infinite
+population tokens (re-checked), so its evidence identity stands; P6 rebuilds
+with the final code.

@@ -137,6 +137,8 @@ def classify_row(phases: Sequence[Decimal | None], population: Decimal | None) -
             return RowVerdict(0, "phase_share_out_of_bounds", p5_filled, None, None, None, None)
     if population is None:
         return RowVerdict(0, "population_missing", p5_filled, None, None, None, None)
+    if not population.is_finite():  # Decimal("Infinity") would otherwise pass "> 0"
+        return RowVerdict(0, "population_not_finite", p5_filled, None, None, None, None)
     if population <= ZERO:
         return RowVerdict(0, "population_not_positive", p5_filled, None, None, None, None)
     total = exact_sum(filled)
