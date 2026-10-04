@@ -1,0 +1,8 @@
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/research/final-report.md", "reason": "10-02 results, artifacts and debt; source of the onset hypothesis (exploratory, already seen)."}
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/design.md", "reason": "10-02 availability/G2 gate replay, local gate and reporting contracts reused by the comparators."}
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/evaluation-contract.md", "reason": "Study 2 exact-origin rules, NA/bootstrap conventions reused for the onset endpoint."}
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/research/truth-release-candidate.md", "reason": "Approved exact-name crosswalk rule (D7) and its limitations; Oct-2025 truth v2 provenance."}
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/research/next-phase-readiness.md", "reason": "Covariate splice/extension pattern, load_extension limits (by-construction overlap) reused for extension v3."}
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Keyed snapshots, source hashes, immutable scratch runs and evidence reconciliation conventions."}
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/research/probes/build_truth_release.py", "reason": "Truth builder to adapt for Feb 2026 (same rule; run only after the prediction freeze)."}
+{"file": ".trellis/tasks/archive/2026-10/10-02-exogenous-transition-forecast-design/research/probes/assemble_actual_extension.py", "reason": "Two-source splice builder to adapt for extension v3 (2025-01..10, 2996 dedupe rule)."}
