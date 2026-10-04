@@ -184,6 +184,20 @@ def load_adjacency_cache(path: Path | str) -> dict:
     return payload
 
 
+def _exact_int_mapping(mapping: dict, name: str) -> dict:
+    """Canonical int -> int copy; a fractional or non-numeric key/value is a stop.
+
+    Checked before any comparison, so ``int()`` truncation (index + 0.25 -> index)
+    can never make a corrupt mapping look like a valid bijection.
+    """
+    keys = normalize_area_ids(list(mapping.keys()), source=f"{name} keys")
+    values = normalize_area_ids(list(mapping.values()), source=f"{name} values")
+    canonical = dict(zip(keys.tolist(), values.tolist()))
+    if len(canonical) != len(mapping):
+        raise ContractError(f"{name}: distinct keys collapse to the same integer")
+    return canonical
+
+
 def validate_adjacency_cache(
     payload: dict,
     geometry_ids: np.ndarray,
@@ -209,18 +223,18 @@ def validate_adjacency_cache(
     if payload["polygons"] != n:
         raise ContractError(f"cache polygons {payload['polygons']} != geometry features {n}")
 
-    group = payload["polygon_group_mapping"]
-    by_area = payload["polygon_id_mapping"]
-    if sorted(int(i) for i in group) != list(range(n)):
+    group = _exact_int_mapping(payload["polygon_group_mapping"], "polygon_group_mapping")
+    by_area = _exact_int_mapping(payload["polygon_id_mapping"], "polygon_id_mapping")
+    if sorted(group) != list(range(n)):
         raise ContractError("polygon_group_mapping keys are not the polygon indices 0..n-1")
-    if len(by_area) != n or {int(v) for v in by_area.values()} != set(range(n)):
+    if len(by_area) != n or set(by_area.values()) != set(range(n)):
         raise ContractError("polygon_id_mapping is not a bijection onto polygon indices")
-    if {int(a) for a in by_area} != set(geometry_ids.tolist()):
+    if set(by_area) != set(geometry_ids.tolist()):
         raise ContractError("polygon_id_mapping keys are not the geometry area IDs (mapping direction?)")
     for area, index in by_area.items():
-        if int(group[int(index)]) != int(area):
+        if group[index] != area:
             raise ContractError(f"area {area} -> index {index} is not inverted by polygon_group_mapping")
-    by_position = np.array([int(group[i]) for i in range(n)], dtype=np.int64)
+    by_position = np.array([group[i] for i in range(n)], dtype=np.int64)
     if not np.array_equal(by_position, geometry_ids):
         mismatch = int((by_position != geometry_ids).sum())
         raise ContractError(f"cache index -> area disagrees with shapefile row order at {mismatch} rows")
@@ -229,7 +243,8 @@ def validate_adjacency_cache(
         raise ContractError("cache area_ids differ from polygon_group_mapping order")
 
     adjacency = payload["adjacency_dict"]
-    if sorted(int(i) for i in adjacency) != list(range(n)):
+    keys = normalize_area_ids(list(adjacency), source="adjacency_dict keys")
+    if sorted(keys.tolist()) != list(range(n)) or len(adjacency) != n:
         raise ContractError("adjacency_dict keys are not the polygon indices 0..n-1")
     neighbours = {}
     for index in range(n):

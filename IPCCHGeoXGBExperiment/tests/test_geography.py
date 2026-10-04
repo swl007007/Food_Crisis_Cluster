@@ -109,6 +109,35 @@ def _mutations():
             area_ids_order, hash_mismatch, extra_key, wrong_id_column, centroid_shift]
 
 
+def _fractional_mutations():
+    def index_plus_quarter(p):
+        # every index shifted by .25: int() truncation would restore a valid bijection
+        p["polygon_id_mapping"] = {a: i + 0.25 for a, i in p["polygon_id_mapping"].items()}
+
+    def group_key_fraction(p):
+        p["polygon_group_mapping"] = {i + 0.25: a for i, a in p["polygon_group_mapping"].items()}
+
+    def area_value_fraction(p):
+        p["polygon_group_mapping"] = {i: a + 0.5 for i, a in p["polygon_group_mapping"].items()}
+
+    def area_key_fraction(p):
+        p["polygon_id_mapping"] = {a + 0.5: i for a, i in p["polygon_id_mapping"].items()}
+
+    def adjacency_key_fraction(p):
+        p["adjacency_dict"] = {i + 0.25: v for i, v in p["adjacency_dict"].items()}
+
+    return [index_plus_quarter, group_key_fraction, area_value_fraction, area_key_fraction,
+            adjacency_key_fraction]
+
+
+@pytest.mark.parametrize("mutate", _fractional_mutations(), ids=lambda f: f.__name__)
+def test_fractional_mapping_entries_are_rejected(mutate):
+    payload = _payload()
+    mutate(payload)
+    with pytest.raises(ContractError, match="not an integer"):
+        geo.validate_adjacency_cache(payload, ROW_IDS, COMPONENTS)
+
+
 @pytest.mark.parametrize("mutate", _mutations(), ids=lambda f: f.__name__)
 def test_corrupt_cache_is_rejected(mutate):
     payload = _payload()

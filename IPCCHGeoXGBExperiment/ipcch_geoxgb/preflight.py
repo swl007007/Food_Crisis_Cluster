@@ -9,9 +9,10 @@ Checks, in order, each stopping on the first violation:
    features; shared area universe across geometry/lookup/coordinates.
 4. Frozen adjacency cache: keys, component hashes, mapping direction, row
    order and centroids against the geometry, index range, symmetry.
-5. Raw panel keys: complete, integer, unique (admin_code, year, month), all
-   areas in the universe; per-area country equals the lookup; per-row lat/lon
-   within tolerance of the reference point.
+5. Raw panel keys: complete, integer, unique (admin_code, year, month); the
+   raw area set equals the universe (no outside or missing area -- a source
+   identity check, not a per-month valid-target requirement); per-area country
+   equals the lookup; per-row lat/lon within tolerance of the reference point.
 6. Known diagnostics (missing ISO3/code, centroid-vs-reference differences)
    are recorded against the planning observation, never repaired.
 """
@@ -119,7 +120,13 @@ def check_raw_panel(path, universe, lookup: pd.DataFrame, reference: pd.DataFram
     outside = sorted(set(np.unique(area).tolist()) - set(universe.tolist()))
     if outside:
         raise ContractError(f"raw panel has {len(outside)} areas outside the geography universe")
-    absent = len(set(universe.tolist()) - set(np.unique(area).tolist()))
+    # Source identity, not label coverage: every declared area must have at
+    # least one raw row; areas may still lack valid targets in any month/fold.
+    absent = sorted(set(universe.tolist()) - set(np.unique(area).tolist()))
+    if absent:
+        raise ContractError(
+            f"raw panel lacks rows for {len(absent)} universe areas (first: {absent[:5]})"
+        )
 
     raw_key = pd.Series(geo.country_key(raw["country_en"], raw["country"]))
     per_area = pd.DataFrame({"area": area, "key": raw_key}).drop_duplicates()
@@ -144,7 +151,7 @@ def check_raw_panel(path, universe, lookup: pd.DataFrame, reference: pd.DataFram
     return {
         "rows": int(len(raw)),
         "areas": int(len(np.unique(area))),
-        "universe_areas_without_rows": int(absent),
+        "universe_areas_without_rows": 0,
         "years": [int(years.min()), int(years.max())],
         "duplicate_keys": 0,
         "country_disagreements": 0,

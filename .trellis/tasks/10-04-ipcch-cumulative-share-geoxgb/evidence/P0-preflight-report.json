@@ -172,7 +172,7 @@
     }
   },
   "status": "passed",
-  "elapsed_seconds": 9.3,
+  "elapsed_seconds": 10.0,
   "limitations": [
     "Upstream nearest-neighbor administrative matching and boundary vintage not fully verified; topology validity does not establish identity correctness.",
     "Topology was not rebuilt; adjacency was validated structurally against the frozen cache.",

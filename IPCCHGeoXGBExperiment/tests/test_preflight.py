@@ -57,24 +57,29 @@ def test_raw_panel_passes_and_counts_rounding(tmp_path):
     assert out["rows"] == 3 and out["coordinate_rows_not_identical"] == 1
 
 
+#: A valid row for the second universe area, so each case trips only its own check.
+OTHER = _row(10, 2020, 1, "Somalia", "2.0", "40.0")
+
+
 @pytest.mark.parametrize(
-    "rows",
+    "rows, match",
     [
-        [_row(7, 2020, 1), _row(7, 2020, 1)],
-        [_row(7, 2020, 1), _row(99, 2020, 1)],
-        [_row(7, 2020, 1, "Somalia")],
-        [_row(7, 2020, 1), _row(7, 2020, 2, "Uganda")],
-        [_row(7, 2020, 1, lat="1.001")],
-        [_row(7, 2020, 13)],
-        [_row(7, 2020, 1, lat="")],
-        [_row("7.5", 2020, 1)],
+        ([_row(7, 2020, 1), _row(7, 2020, 1), OTHER], "duplicate"),
+        ([_row(7, 2020, 1), _row(99, 2020, 1), OTHER], "outside the geography universe"),
+        ([_row(7, 2020, 1)], "lacks rows for 1 universe areas"),
+        ([_row(7, 2020, 1, "Somalia"), OTHER], "disagree with the country lookup"),
+        ([_row(7, 2020, 1), _row(7, 2020, 2, "Uganda"), OTHER], "more than one country"),
+        ([_row(7, 2020, 1, lat="1.001"), OTHER], "from the reference point"),
+        ([_row(7, 2020, 13), OTHER], "month outside"),
+        ([_row(7, 2020, 1, lat=""), OTHER], "non-finite lat/lon"),
+        ([_row("7.5", 2020, 1), OTHER], "not an integer"),
     ],
-    ids=["duplicate-key", "area-outside-universe", "country-vs-lookup", "two-countries",
-         "coordinate-off", "bad-month", "blank-lat", "non-integer-area"],
+    ids=["duplicate-key", "area-outside-universe", "universe-area-missing", "country-vs-lookup",
+         "two-countries", "coordinate-off", "bad-month", "blank-lat", "non-integer-area"],
 )
-def test_raw_panel_stops(tmp_path, rows):
+def test_raw_panel_stops(tmp_path, rows, match):
     lookup, reference = _lookup_and_reference()
-    with pytest.raises(ContractError):
+    with pytest.raises(ContractError, match=match):
         pf.check_raw_panel(_panel(tmp_path, rows), np.array([7, 10]), lookup, reference, 1e-9)
 
 

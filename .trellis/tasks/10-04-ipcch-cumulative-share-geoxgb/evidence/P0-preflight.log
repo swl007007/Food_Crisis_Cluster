@@ -1,7 +1,7 @@
-## preflight --run-id p0-preflight-20261004 (cwd=repo root)
+## preflight --run-id p0-preflight-20261004b (cwd=repo root)
 {
   "status": "passed",
-  "report": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p0-preflight-20261004\\preflight\\preflight-report.json",
-  "sha256": "b9818b1baaf4642ef2364ecbb0bd1e4ce6a396e54ae59ec29dc9276c48b5cc0e"
+  "report": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p0-preflight-20261004b\\preflight\\preflight-report.json",
+  "sha256": "13777a955d6de5e406a57f76ee57280f4cbdaff97c22b14b00599a3f3e2e3724"
 }
 exit=0
