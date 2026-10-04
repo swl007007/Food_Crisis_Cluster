@@ -1,4 +1,4 @@
-# Implementation-ready identities for supervisor review (2026-10-04, refreshed after P2/P3 and P4/P5 reviews)
+# Implementation-ready identities for supervisor review (2026-10-04, refreshed after the residual list)
 
 State: **awaiting supervisor release of formal P6**. No formal fit, Stage1 map,
 Stage3 prediction or report has been produced on project data. P1 has one
@@ -6,13 +6,14 @@ development preparation (`p1-dev-20261004`, superseded by the formal prepare).
 
 ## Code
 
-- Implementation commit: `91552d04826b322073e0a40c17d49313e173cb1b` on `ipcch-cumulative-share-geoxgb`
+- Implementation commit: `6798df21ea87d4916c7f36fa6e0753c32bb3ef98` on `ipcch-cumulative-share-geoxgb`
   (chain from foundation `e1f0e65`: cf26c4e P1, 567fb3e P1 fix, 8a83580 P2,
   0087683 P3, 791b4fd P2 review fixes, 13e74b5 P4/P5, 3597834 P2/P3 review
-  fixes, 91552d0 P4/P5 review fixes). Package blob ids in
+  fixes, 91552d0 P4/P5 review fixes, 6798df2 residual list). Package blob ids in
   `evidence/implementation-ready-code-identity.txt`.
-- Tests on the pinned runtime: **261 passed** (`evidence/P4P5-review-pytest.log`);
-  review evidence in `P2P3-review-evidence.md` and `P4P5-review-evidence.md`.
+- Tests on the pinned runtime: **291 passed** (`evidence/residuals-pytest.log`);
+  review evidence in `P2P3-review-evidence.md`, `P4P5-review-evidence.md` and
+  `residuals-evidence.md`. Review boundary: `user-review-boundary.md`.
 - Provenance: `config/source-provenance.json` (sha256 `3a77066b…6fabc`):
   20 copied/adapted components, 5 reference-only sources, 7 new components,
   0 pending.
