@@ -18,7 +18,6 @@ from ipcch_geoxgb.errors import ContractError, NotImplementedPhaseError
 
 #: Scientific phases; each fails explicitly until its implementation lands.
 PENDING_PHASES = {
-    "prepare": "P1 (population targets, calendar, rich561)",
     "learn-map": "P3 (direct Stage1 maps and frozen winners)",
     "predict": "P4 (rolling Stage3 and paired baselines)",
     "report": "P5 (reporting and independent replay)",
@@ -71,6 +70,21 @@ def cmd_preflight(args) -> int:
     return 0
 
 
+def cmd_prepare(args) -> int:
+    from ipcch_geoxgb.artifacts import new_run_dir  # noqa: PLC0415
+    from ipcch_geoxgb.prepare import run_prepare  # noqa: PLC0415
+    from ipcch_geoxgb.runtime import probe_runtime  # noqa: PLC0415
+
+    runtime = probe_runtime()
+    if not runtime["matches_lock"]:
+        _print({"status": "failed", "reason": "runtime does not match lock", "runtime": runtime})
+        return 2
+    manifest = run_prepare(new_run_dir(args.run_id))
+    _print({"status": "passed", "manifest_sha256": manifest["manifest_sha256"], "ledger": manifest["ledger"],
+            "folds": manifest["folds"], "stage1_split": manifest["stage1_split"]})
+    return 0
+
+
 def cmd_pending(args) -> int:
     raise NotImplementedPhaseError(
         f"'{args.command}' belongs to {PENDING_PHASES[args.command]} and is not implemented "
@@ -89,6 +103,9 @@ def build_parser() -> argparse.ArgumentParser:
     pre = sub.add_parser("preflight", help="read-only input/geometry/cache preflight")
     pre.add_argument("--run-id", required=True, help="new run directory under runs/")
     pre.set_defaults(func=cmd_preflight)
+    prep = sub.add_parser("prepare", help="P1: QC ledger, rich561 matrices, F/S split, calendars")
+    prep.add_argument("--run-id", required=True, help="new run directory under runs/")
+    prep.set_defaults(func=cmd_prepare)
     for name, phase in PENDING_PHASES.items():
         sub.add_parser(name, help=f"not implemented yet: {phase}").set_defaults(func=cmd_pending)
     return parser

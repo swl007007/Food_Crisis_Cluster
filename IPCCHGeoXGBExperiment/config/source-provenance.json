@@ -1,5 +1,5 @@
 {
-  "provenance_version": "ipcch-geoxgb-provenance-p0",
+  "provenance_version": "ipcch-geoxgb-provenance-p1",
   "policy": "Reference allowlist; copy only necessary components with destination/symbol/adaptation provenance. No live legacy imports. No old candidate configs or fitted caches.",
   "source_manifest": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/source-manifest.json",
   "verification": "2026-10-04: all 14 sources re-hashed; bytes, sha256 and git blob at the recorded commit all match (see P0-evidence.md)",
@@ -136,33 +136,96 @@
       ],
       "destination": "config/feature-schema.json",
       "adaptation": "names/order copied; old status text dropped; new schema_version ipcch-geoxgb-rich561-ge020-v1 with >=0.20 semantics; original93 cross-checked once against IPCCHGeoRFExperiment.prepare_data.FEATURE_COLUMNS at build time (not a runtime import)"
-    }
-  ],
-  "pending": [
+    },
     {
       "source": "IPCCHGeoRFExperiment/prepare_data.py",
-      "phase": "P1",
-      "scope": "target QC/ledger (Decimal >=.20), original93 builder, calendar, Stage1 F/S split",
       "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
+      "lines": "101-120,171-208,237-289,292-380",
+      "symbols": [
+        "_to_decimal",
+        "_exact_context",
+        "_exact_sum",
+        "_classify_row",
+        "build_target_ledger"
+      ],
+      "destination": "ipcch_geoxgb/targets.py",
+      "adaptation": "QC steps/order unchanged; truth = max phase k with exact 5*sum(P_k..P5) >= S (inclusive, k=2..5) replacing strict 5*P3plus > S; adds normalized q2..q5 and p1..p5; no old count gate; identity verified by caller",
+      "phase": "P1"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "409-545,595-625,627-698,701-760,762-806,808-844,877-1079",
+      "symbols": [
+        "RAW_*_COLUMNS",
+        "FEATURE_COLUMNS",
+        "month_ordinal",
+        "month_label",
+        "load_covariate_panel",
+        "_PanelGrid",
+        "_build_panel_grid",
+        "_gather",
+        "_WindowSummer",
+        "_as_of_index",
+        "assemble_feature_matrix"
+      ],
+      "destination": "ipcch_geoxgb/features.py (original93)",
+      "adaptation": "same inventory/order and own-origin arithmetic; one horizon per call; label/recency history reads crisis_truth (phase>=3); returns ndarray + audit; raw and assembled infinities -> NaN with audit",
+      "phase": "P1"
     },
     {
       "source": "IPCCHPopulationHistoryExperiment/prepare_data.py",
-      "phase": "P1",
-      "scope": "history468 builder with >=.20 crisis states",
       "sha256": "d582ebad1112778eff1ce5c2d41a0df92bad6707df2455fd6fd5cde1d62814fc",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
+      "lines": "138-180,291-345,366-459,461-531,533-538,540-765,1018-1073",
+      "symbols": [
+        "SERIES_ORDER",
+        "WINDOWS",
+        "STATISTICS",
+        "BLOCK_ORDER",
+        "compute_series",
+        "HistoryIndex",
+        "build_history_index",
+        "_gather_window",
+        "_window_statistics",
+        "_pick",
+        "build_history_block",
+        "check_aliases"
+      ],
+      "destination": "ipcch_geoxgb/features.py (history468)",
+      "adaptation": "formulas unchanged; states = crisis_truth under >=0.20; q2..q5 series = exact-derived normalized shares (targets) instead of float sums of p; no live import of IPCCHGeoRFExperiment; engineered infinities still stop",
+      "phase": "P1"
     },
     {
-      "source": ".trellis/tasks/archive/2026-09/09-21-ipcch-population-history-xgb/technical-contract.md",
-      "phase": "P1",
-      "scope": "history formulas sections 1-2 (reference only)",
-      "sha256": "73c6dcaa0d24a229f3d223a27295cf7d49210e755b7d9f6fefbf622a3a764861",
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
       "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
-      "status": "pending: not ported, no code in package"
+      "lines": "2273-2362",
+      "symbols": [
+        "build_stage1_split"
+      ],
+      "destination": "ipcch_geoxgb/schedule.py::stage1_split",
+      "adaptation": "same within-area floor(n/2) F / ceil(n/2) S / singleton rule on original outcomes; adds F-before-S assertion; no inherited count gate",
+      "phase": "P1"
     },
+    {
+      "source": "IPCCHPopulationHistoryExperiment/prepare_data.py",
+      "sha256": "d582ebad1112778eff1ce5c2d41a0df92bad6707df2455fd6fd5cde1d62814fc",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "768-806",
+      "symbols": [
+        "MAIN_SCHEDULE",
+        "month_range",
+        "build_fold_calendar"
+      ],
+      "destination": "ipcch_geoxgb/schedule.py::main_fold_calendar/supplementary_calendar",
+      "adaptation": "main schedule from config contract (122 folds); development folds dropped (Stage1 uses pooled F/S); adds R47 2026 supplementary calendar and 12-month coverage ledger",
+      "phase": "P1"
+    }
+  ],
+  "pending": [
     {
       "source": "../IPCCH/src/ipcch/forecasting_weight_decay.py",
       "phase": "P2",
@@ -259,6 +322,15 @@
       "dependency": "IPCCHGeoRFExperiment.prepare_data repair_geometries/prepare_geography",
       "decision": "removed",
       "reason": "R39 forbids new repair; repaired layer is a pinned input"
+    }
+  ],
+  "reference_only": [
+    {
+      "source": ".trellis/tasks/archive/2026-09/09-21-ipcch-population-history-xgb/technical-contract.md",
+      "sha256": "73c6dcaa0d24a229f3d223a27295cf7d49210e755b7d9f6fefbf622a3a764861",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P1",
+      "use": "history formulas sections 1-2 cross-read; implemented via the PH code copy above, no text copied"
     }
   ]
 }
