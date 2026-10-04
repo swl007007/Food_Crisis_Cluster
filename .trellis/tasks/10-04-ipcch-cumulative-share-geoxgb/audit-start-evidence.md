@@ -45,3 +45,13 @@ This authorization covers only that archive.
    `archive/2026-10/`: `8160f68` "Archive completed pooled-onset-confirmatory task (10-03)".
    It therefore appears in the audit diff from base_sha as a pure task-directory
    move; it touches no code, data or 10-04 contract file.
+
+## Correction reference (append-only, 2026-10-04)
+
+The executor session recorded above (`afc97c82-11d4-4a79-ae5c-21d99cac82b5`)
+was later found to be a claude-mem observer session that inherited this
+pane's Herdr identity; the real executor process (PID 1827, same pane and
+terminal) has transcript/session `d148c921-36bd-4b42-9ff9-a4f16979e6b5`. The
+user-approved correction, performed by the supervisor without changing run
+`7ced754ea36c48c0a6d24ba2a17addec` or base `6c98f73c…`, is recorded in
+`executor-identity-repair.md`. The text above is preserved unchanged.

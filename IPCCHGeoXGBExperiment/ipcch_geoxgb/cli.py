@@ -4,7 +4,8 @@ Run with the package directory on the import path, e.g. from the repository
 root ``PYTHONPATH=IPCCHGeoXGBExperiment python -m ipcch_geoxgb validate-config``.
 
 Exit codes: 0 success, 1 contract failure, 2 runtime does not match the lock,
-3 scientific phase not implemented yet (nothing written), 4 R41 technical failure.
+3 scientific phase not implemented yet (nothing written), 4 R41 technical failure,
+5 replay found a failed check.
 """
 
 from __future__ import annotations
@@ -17,10 +18,7 @@ from ipcch_geoxgb import __version__
 from ipcch_geoxgb.errors import ContractError, NotImplementedPhaseError, TechnicalError
 
 #: Scientific phases; each fails explicitly until its implementation lands.
-PENDING_PHASES = {
-    "predict": "P4 (rolling Stage3 and paired baselines)",
-    "report": "P5 (reporting and independent replay)",
-}
+PENDING_PHASES: dict[str, str] = {}
 
 
 def _print(payload: dict) -> None:
@@ -103,6 +101,42 @@ def cmd_learn_map(args) -> int:
     return 0
 
 
+def cmd_predict(args) -> int:
+    from ipcch_geoxgb.predict import run_predict  # noqa: PLC0415
+
+    run_dir = existing_run(args.run_id)
+    if not all((run_dir / "stage1" / f"frozen_h{h:02d}.json").is_file() for h in (1, 3, 6, 12)):
+        raise ContractError(f"run {args.run_id!r} has no frozen Stage1 maps for every H")
+    summary = run_predict(run_dir)
+    _print({"status": "passed", "summary_sha256": summary["summary_sha256"],
+            "horizons": summary["horizons"], "model_store": summary["model_store"]})
+    return 0
+
+
+def cmd_report(args) -> int:
+    from ipcch_geoxgb.report import run_report  # noqa: PLC0415
+
+    run_dir = existing_run(args.run_id)
+    if not (run_dir / "stage3" / "stage3-summary.json").is_file():
+        raise ContractError(f"run {args.run_id!r} has no completed Stage3")
+    report = run_report(run_dir)
+    _print({"status": "passed", "report_sha256": report["report_sha256"]})
+    return 0
+
+
+def cmd_replay(args) -> int:
+    from ipcch_geoxgb.artifacts import write_json  # noqa: PLC0415
+    from ipcch_geoxgb.contract import load_experiment_contract  # noqa: PLC0415
+    from ipcch_geoxgb.replay import replay_run  # noqa: PLC0415
+
+    run_dir = existing_run(args.run_id)
+    result = replay_run(run_dir, load_experiment_contract())
+    digest = write_json(run_dir / "report" / f"replay-{args.label}.json", result)
+    _print({"status": result["status"], "failures": result["failures"][:20], "replay_sha256": digest,
+            "checks_passed": sum(result["passed_checks"].values())})
+    return 0 if result["status"] == "passed" else 5
+
+
 def cmd_pending(args) -> int:
     raise NotImplementedPhaseError(
         f"'{args.command}' belongs to {PENDING_PHASES[args.command]} and is not implemented "
@@ -127,6 +161,16 @@ def build_parser() -> argparse.ArgumentParser:
     learn = sub.add_parser("learn-map", help="P3: Stage1 search for all H x G x L, R44 selection, frozen maps")
     learn.add_argument("--run-id", required=True, help="existing run with a completed prepare stage")
     learn.set_defaults(func=cmd_learn_map)
+    pred = sub.add_parser("predict", help="P4: rolling Stage3 with frozen maps, gates, pooled and persistence")
+    pred.add_argument("--run-id", required=True, help="existing run with prepare and learn-map completed")
+    pred.set_defaults(func=cmd_predict)
+    rep = sub.add_parser("report", help="P5: metrics, paired deltas, coverage, R49 bootstrap from saved predictions")
+    rep.add_argument("--run-id", required=True)
+    rep.set_defaults(func=cmd_report)
+    rpl = sub.add_parser("replay", help="P5: independent recomputation of a completed run from saved evidence")
+    rpl.add_argument("--run-id", required=True)
+    rpl.add_argument("--label", default="independent", help="name of the replay record under report/")
+    rpl.set_defaults(func=cmd_replay)
     for name, phase in PENDING_PHASES.items():
         sub.add_parser(name, help=f"not implemented yet: {phase}").set_defaults(func=cmd_pending)
     return parser

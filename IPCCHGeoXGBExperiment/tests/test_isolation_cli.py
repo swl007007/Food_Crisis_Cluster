@@ -85,14 +85,19 @@ def test_cli_validate_config_from_any_directory(tmp_path, where):
     assert json.loads(result.stdout)["status"] == "passed"
 
 
-@pytest.mark.parametrize("command", sorted(PENDING_PHASES))
-def test_unported_phase_fails_explicitly_and_writes_nothing(tmp_path, command):
+@pytest.mark.parametrize("command", ["learn-map", "predict", "report", "replay"])
+def test_stage_without_prerequisite_run_fails_explicitly_and_writes_nothing(tmp_path, command):
     before = sorted(p.name for p in RUNS_DIR.iterdir()) if RUNS_DIR.exists() else []
-    result = _run(["-m", "ipcch_geoxgb", command, "--run-id", "should-not-exist"], tmp_path)
-    assert result.returncode == 3
-    assert "NOT IMPLEMENTED" in result.stderr and result.stdout == ""
+    result = _run(["-m", "ipcch_geoxgb", command, "--run-id", "no-such-run-for-tests"], tmp_path)
+    assert result.returncode == 1
+    assert "CONTRACT FAILURE" in result.stderr and "no completed prepare stage" in result.stderr
+    assert result.stdout == ""
     after = sorted(p.name for p in RUNS_DIR.iterdir()) if RUNS_DIR.exists() else []
     assert after == before and list(tmp_path.iterdir()) == []
+
+
+def test_no_scientific_phase_is_left_unported():
+    assert PENDING_PHASES == {}
 
 
 def test_strict_commands_reject_unknown_arguments(tmp_path):
