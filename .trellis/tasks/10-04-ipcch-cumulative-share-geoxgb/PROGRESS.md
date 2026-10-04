@@ -18,7 +18,7 @@ Scope: `IPCCHGeoXGBExperiment/` and this task's documentation/evidence.
 | P3 Stage1 | implemented, checked | 175 tests pass (synthetic + end-to-end with real quartets/adjacency, test-only small contract); see P3-evidence.md |
 | P4 Stage3 | implemented, checked | synthetic tests; see P4P5-evidence.md |
 | P5 report/replay | implemented, checked | 218 tests pass incl. end-to-end replay and tamper detection; see P4P5-evidence.md |
-| P6 formal run/delivery | awaiting implementation-ready release | implementation-ready.md (code 13e74b5); no formal fit until released |
+| P6 formal run/delivery | learn-map checkpoint reached; STOP before predict | run a `p6-formal-20261004` R41 file-lock stop (preserved); restart b `p6-formal-20261004b` (code 6798df2): prepare + all-H learn-map passed, 429 fits/0 failed; Stage3 budget 3136 exact / ≤3388 scalar fits; see p6-checkpoint-evidence.md, p6-restart-evidence.md |
 | Controller close audit | pending | Only after complete committed delivery |
 
 P0 built the independent package foundation. P1 added the QC ledger, phase

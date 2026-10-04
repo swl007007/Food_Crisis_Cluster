@@ -1,0 +1,27 @@
+2026-10-04T19:13:39-04:00
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\__main__.py", line 5, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\cli.py", line 189, in main
+    return args.func(args)
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\cli.py", line 99, in cmd_learn_map
+    summary = run_learn_map(existing_run(args.run_id))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\learnmap.py", line 114, in run_learn_map
+    return _run_learn_map(run_dir, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\learnmap.py", line 170, in _run_learn_map
+    root_quartet, root_use = store.get_or_fit(
+                             ^^^^^^^^^^^^^^^^^
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\modelstore.py", line 242, in get_or_fit
+    quartet, status = self._get_or_fit(digest, directory, identity, fit)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment\ipcch_geoxgb\modelstore.py", line 273, in _get_or_fit
+    os.replace(tmp, directory)
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004\\models\\a1\\a1b3f6a49652e56e57b6837f556ff0c5e52733dd38a4ec866ed6ec9a343343fe.tmp' -> 'C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004\\models\\a1\\a1b3f6a49652e56e57b6837f556ff0c5e52733dd38a4ec866ed6ec9a343343fe'
+exit=1
+2026-10-04T19:13:49-04:00

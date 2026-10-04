@@ -1,0 +1,66 @@
+2026-10-04T19:12:27-04:00
+{
+  "status": "passed",
+  "manifest_sha256": "3d4866ba4eec65c8a018cec9ad268725cdd0ae94151db97147ccbe99036353bb",
+  "ledger": {
+    "rows": 1219868,
+    "valid": 42695,
+    "areas_total": 6227,
+    "areas_with_valid": 6224,
+    "p5_filled_valid": 84,
+    "invalid_reasons": {
+      "missing_phase_1_to_4": 1176232,
+      "sum_out_of_bounds": 577,
+      "population_not_positive": 363,
+      "phase_share_out_of_bounds": 1
+    },
+    "phase_counts": {
+      "1": 8404,
+      "2": 16484,
+      "3": 15163,
+      "4": 2599,
+      "5": 45
+    },
+    "crisis": 17807,
+    "noncrisis": 24888,
+    "normalized_q_exactly_0_20": {
+      "q2": 282,
+      "q3": 2601,
+      "q4": 1376,
+      "q5": 14
+    }
+  },
+  "folds": {
+    "main_scheduled": 122,
+    "main_nonempty": 110,
+    "main_by_horizon": {
+      "1": 35,
+      "3": 33,
+      "6": 30,
+      "12": 24
+    },
+    "supplementary_folds": 16,
+    "supplementary_months": [
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04"
+    ]
+  },
+  "stage1_split": {
+    "window": [
+      "2014-01",
+      "2022-12"
+    ],
+    "original_outcomes": 19591,
+    "fit": 8561,
+    "validation": 9558,
+    "singleton_areas": 1472,
+    "multi_outcome_areas": 3264,
+    "zero_outcome_areas": 1491,
+    "crisis_fit": 2564,
+    "crisis_validation": 3355
+  }
+}
+exit=0
+2026-10-04T19:13:32-04:00

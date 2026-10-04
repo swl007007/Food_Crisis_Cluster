@@ -1,0 +1,47 @@
+{
+  "probe_dir": "runs\\p6-fileprobe-20261004b",
+  "pid": 11712,
+  "entries": [
+    {
+      "entry": 0,
+      "status": "ok",
+      "rename_seconds": 0.000718
+    },
+    {
+      "entry": 1,
+      "status": "ok",
+      "rename_seconds": 0.000654
+    },
+    {
+      "entry": 2,
+      "status": "ok",
+      "rename_seconds": 0.000667
+    },
+    {
+      "entry": 3,
+      "status": "ok",
+      "rename_seconds": 0.000687
+    },
+    {
+      "entry": 4,
+      "status": "ok",
+      "rename_seconds": 0.000695
+    },
+    {
+      "entry": 5,
+      "status": "ok",
+      "rename_seconds": 0.000706
+    },
+    {
+      "entry": 6,
+      "status": "ok",
+      "rename_seconds": 0.000718
+    },
+    {
+      "entry": 7,
+      "status": "ok",
+      "rename_seconds": 0.000765
+    }
+  ],
+  "status": "passed"
+}
