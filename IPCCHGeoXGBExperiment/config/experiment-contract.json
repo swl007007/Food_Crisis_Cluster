@@ -1,0 +1,98 @@
+{
+  "contract_version": "ipcch-geoxgb-contract-v1.0",
+  "authority": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/{prd.md R1-R51, design.md v1.0, implement.md v1.0}",
+  "note": "Frozen scientific constants. Values restate the accepted contract; this file grants no tuning freedom and is validated by ipcch_geoxgb.contract.",
+  "targets": {
+    "regressors": ["q2", "q3", "q4", "q5"],
+    "phase_threshold": "0.20",
+    "threshold_rule": ">=",
+    "projection": "bounded equal-weight least-squares decreasing isotonic, 1>=q2>=q3>=q4>=q5>=0, unrounded",
+    "four_class_axis": ["1", "2", "3", "4/5"],
+    "binary_positive_phases": [3, 4, 5]
+  },
+  "target_qc": {
+    "required_observed": ["phase1_percent", "phase2_percent", "phase3_percent", "phase4_percent"],
+    "zero_fill_if_missing": ["phase5_percent"],
+    "share_bounds": ["0", "1"],
+    "sum_bounds_inclusive": ["0.90", "1.10"],
+    "population_strictly_positive": true
+  },
+  "calendar": {
+    "horizons_months": [1, 3, 6, 12],
+    "development_first_target_month": "2014-01",
+    "development_last_month": "2022-12",
+    "main_evaluation_last_target_month": "2025-12",
+    "main_first_target_month": {"1": "2023-02", "3": "2023-04", "6": "2023-07", "12": "2024-01"},
+    "main_fold_counts": {"1": 35, "3": 33, "6": 30, "12": 24},
+    "main_fold_total": 122,
+    "supplementary_year": 2026,
+    "rolling_window_calendar_months": 36,
+    "availability_policy": "observation-month-end <= origin; not verified release timing",
+    "historical_gate_max_dates": 6
+  },
+  "features": {
+    "schema_file": "config/feature-schema.json",
+    "missing_policy": "native XGBoost NaN; raw/original93 infinities -> NaN with audit; history468 infinities fail"
+  },
+  "model": {
+    "objective": "reg:squarederror",
+    "fixed": {
+      "booster": "gbtree",
+      "tree_method": "hist",
+      "device": "cpu",
+      "num_parallel_tree": 1,
+      "seed": 42,
+      "nthread": 4,
+      "gamma": 0,
+      "max_delta_step": 0,
+      "max_bin": 256,
+      "grow_policy": "depthwise",
+      "eta": 0.05
+    },
+    "global_base_score": 0.5,
+    "global_common": {"min_child_weight": 10, "reg_lambda": 10, "reg_alpha": 0, "subsample": 0.8, "colsample_bytree": 0.8},
+    "local_common": {"min_child_weight": 20, "reg_lambda": 20, "reg_alpha": 1, "subsample": 1.0, "colsample_bytree": 1.0},
+    "global_recipes": {
+      "G1": {"max_depth": 3, "rounds": 200},
+      "G2": {"max_depth": 3, "rounds": 400},
+      "G3": {"max_depth": 4, "rounds": 200},
+      "G4": {"max_depth": 4, "rounds": 400}
+    },
+    "local_recipes": {
+      "L1": {"max_depth": 1, "appended_rounds": 20},
+      "L2": {"max_depth": 2, "appended_rounds": 40}
+    },
+    "early_stopping": false,
+    "sample_weight": 1,
+    "local_continuation": "shared-root: append to matching immutable global; no ancestor-local accumulation"
+  },
+  "selection": {
+    "objective": "absolute crisis F1 on complete common Stage1 S, merged TP/FP/FN",
+    "tie_order": ["fewer terminal learned regions", "fewer G+L nominal rounds", "shallower global depth", "shallower local depth", "smaller fixed G/L id"]
+  },
+  "partition": {
+    "max_member_depth": 4,
+    "searchable_parent_depths": [0, 1, 2, 3],
+    "max_terminal_regions": 16,
+    "scan_iterations": 1000,
+    "scan_initializations_per_parent": 1,
+    "candidate_size_fraction": ["9/20", "11/20"],
+    "smoothing_rounds": 3,
+    "smoothing_switch_below": "4/9",
+    "stage1_gain_strictly_greater_than": "0",
+    "stage3_gain_strictly_greater_than": "0.01",
+    "area_order": "numeric ascending canonical area id",
+    "stage2_consensus": false,
+    "donor_assignment": false
+  },
+  "support": {
+    "local_fit": {"keys": 500, "areas": 50, "target_months": 6},
+    "validation": {"keys": 100, "areas": 20, "target_months": 3, "crisis_keys": 20, "noncrisis_keys": 20},
+    "stage3_min_successful_local_dates": 3,
+    "global": "nonempty pool; required empty global pool stops the run"
+  },
+  "reporting": {
+    "bootstrap": {"unit": "country", "draws": 2000, "seed": 42, "generator": "numpy.random.default_rng", "percentiles": [2.5, 97.5], "min_countries": 2},
+    "fit_ceiling_upper_bound": {"stage1": 3904, "stage3": 80920, "total": 84824}
+  }
+}

@@ -1,0 +1,15 @@
+OK  sha=True bytes=True commit_blob=True 0e7cf012 IPCCHGeoRFExperiment/prepare_data.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 IPCCHGeoRFExperiment/report_results.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 IPCCHPopulationHistoryExperiment/prepare_data.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 IPCCHPopulationHistoryExperiment/report_results.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 IPCCHPopulationHistoryExperiment/config/feature-schema.json
+OK  sha=True bytes=True commit_blob=True 0e7cf012 FEWSNETGeoXGBExperiment/src/model/native_xgb.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 FEWSNETGeoXGBExperiment/src/partition/partition_opt.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 FEWSNETGeoXGBExperiment/src/partition/transformation.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 FEWSNETGeoXGBExperiment/src/experiment/stage3.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 FEWSNETGeoXGBExperiment/src/experiment/plan.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 FEWSNETGeoXGBExperiment/src/metrics/fourclass.py
+OK  sha=True bytes=True commit_blob=True 0e7cf012 .trellis/tasks/archive/2026-09/09-21-ipcch-population-history-xgb/technical-contract.md
+OK  sha=True bytes=True commit_blob=True c06bc0f5 src/ipcch/forecasting_weight_decay.py
+OK  sha=True bytes=True commit_blob=True c06bc0f5 src/ipcch/operational_contract.py
+14/14 sources match recorded sha256, bytes and commit blob

@@ -1,0 +1,7 @@
+## preflight --run-id p0-preflight-20261004 (cwd=repo root)
+{
+  "status": "passed",
+  "report": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p0-preflight-20261004\\preflight\\preflight-report.json",
+  "sha256": "b9818b1baaf4642ef2364ecbb0bd1e4ce6a396e54ae59ec29dc9276c48b5cc0e"
+}
+exit=0
