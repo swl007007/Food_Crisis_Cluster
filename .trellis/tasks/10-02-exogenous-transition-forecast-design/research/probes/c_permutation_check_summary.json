@@ -1,0 +1,65 @@
+{
+ "fixture": "tests/test_baseline.py::scenario_fixture (synthetic)",
+ "target": "2020-10",
+ "results": {
+  "A": {
+   "c_keys": 140,
+   "f_keys": 280,
+   "s_keys": 140,
+   "c_overlaps_f_or_s": 0,
+   "c_fit_variant_rows_in_input": 140,
+   "label_cells_changed": 218,
+   "files_compared": 28,
+   "same_input_control_differences": [],
+   "differing_files": [
+    "scenA_h4_2020-10_G1_k1_r50_s42_L1_gt0/confirmation_predictions.csv.gz"
+   ],
+   "unexpected_differences": [],
+   "root_status": [
+    "completed",
+    "completed"
+   ],
+   "fs_input_labels_unchanged": true,
+   "roles_equal": true,
+   "fs_membership_labels_equal": true,
+   "c_membership_labels_changed": 109,
+   "child_fits": [
+    6,
+    6
+   ],
+   "checkpoint_model_files_compared": 14,
+   "checkpoint_model_bytes_equal": true,
+   "pass": true
+  },
+  "B": {
+   "c_keys": 140,
+   "f_keys": 280,
+   "s_keys": 140,
+   "c_overlaps_f_or_s": 0,
+   "c_fit_variant_rows_in_input": 420,
+   "label_cells_changed": 436,
+   "files_compared": 28,
+   "same_input_control_differences": [],
+   "differing_files": [
+    "scenB_h4_2020-10_G1_k1_r50_s42_L1_gt0/confirmation_predictions.csv.gz"
+   ],
+   "unexpected_differences": [],
+   "root_status": [
+    "completed",
+    "completed"
+   ],
+   "fs_input_labels_unchanged": true,
+   "roles_equal": true,
+   "fs_membership_labels_equal": true,
+   "c_membership_labels_changed": 109,
+   "child_fits": [
+    6,
+    6
+   ],
+   "checkpoint_model_files_compared": 14,
+   "checkpoint_model_bytes_equal": true,
+   "pass": true
+  }
+ },
+ "pass": true
+}

@@ -16,9 +16,16 @@ are 648 Stage1 candidates and 72 complete-pipeline development folds.
 
 Engineering checkpoint `702888a` covers availability and Stage1/Stage3 plumbing.
 The subsequent Stage2, selection and reporting integration passed 163 regression
-checks plus two complete driver smoke checks on synthetic inputs. Real fitting remains
-blocked by the source facts in task `data-readiness.md`; synthetic checks do not verify
-historical release dates or the 2025 truth crosswalk. The old `run_all.sh` sequence below
+checks plus two complete driver smoke checks on synthetic inputs. For 2018–2024, D7 is
+resolved by the user-confirmed reconstructed convention: historical IPC Current Situation is
+treated as known at the end of its reference month (`reference_month_end`, evidence
+`reconstructed`; assumed availability, not verified publication dates). The real
+historical development run was executed under that convention. For the 2025 cases, the actual
+CS availability table is now prepared as a user-attested reconstruction: missed service cycles
+0/1/2 at origins 2024-10/2025-02/2025-06, `evidence=reconstructed`, not verified vintage
+timestamps. Still pending: the frozen 2025 predictions (scen-actual), the approved truth release
+with its crosswalk, and expert-comparator coverage. Synthetic checks do not verify release dates
+or the 2025 truth crosswalk. The old `run_all.sh` sequence below
 is not the interruption-study entry point. Use the task execution ledger for current
 commands and readiness before launching a real experiment.
 

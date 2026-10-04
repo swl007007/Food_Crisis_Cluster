@@ -43,11 +43,41 @@ Metric priority reaffirmed by user, 2026-10-03: the current PRD R3/design D4/G3�
 
 User confirmed “沿用” on 2026-10-03: historical IPC CS is treated as known at the end of its reference month, preserving the original experiment convention. The ledger uses `reference_month_end` and `evidence=reconstructed`; these are assumed availability dates, not verified publication timestamps. No additional source tracing or lag comparison. This resolves the remaining historical-development timing decision; actual-2025 availability and evaluator-only truth retain their separate contracts.
 
-- [ ] Pin existing code, numerical environment, root/model configurations, maps and reusable prediction artifacts. Retain old incomplete-task lineage.
+Historical-development readiness (2026-10-03, existing evidence; no new source research):
+- the run is `C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1`, prepared at HEAD `ca86bf7`, `accept_prepared` passed with code equal to HEAD, and the prepared outputs sha is `972902bb…5161`;
+- committed config: `research/launch/alignment.json` (129 features) and `research/launch/release_ledger.csv` (sha `83402d71…9f960`; `reference_month_end`, `reconstructed`);
+- the pre-fit reconcile `scen-b43ef6a-v1.reconcile.json` reports 648 candidates, 108 inputs, 129 features, a certified fit ceiling of 147,889 and no problems;
+- see `research/launch-readiness.md` and PROGRESS.
+
+The items below are split into a historical part (done) and actual-2025 requirements (still open).
+
+- [x] Historical development: code, the Windows py3.12.10 numerical stack, sources and root/model configuration are pinned by the accepted preparation above. The old incomplete-task lineage is retained.
+- [x] Pin the frozen per-horizon maps and recipe at `scen-freeze` (after selection): scenario_final/frozen.json sha 2344ab59…573e, A on map 8965af6d6a724ba5d61d for both H, bound to selection c0b3c967…b8b. Reconciled with §6 (freeze item ticked); reused unchanged by scen-historical and later by scen-actual.
+- [ ] Actual 2025 prediction artifacts: produced only by `scen-actual`. Its inputs are ready and the preflight passes (2026-10-03); the launch awaits coordinator review/commit and authorization. Truth stays unreleased until predictions are frozen.
 - [ ] Verify 2025 source/administrative mapping and covariate availability using metadata first. Keep final value columns isolated until the evaluation release point.
-- [ ] Record source-family release rules and verified-versus-reconstructed vintage status, including revised-value limitations; inspect climate rolling producer before adopting precomputed fields. Freeze availability rules before fitting.
-- [ ] Read relevant repository package specs; inspect candidate existing feature, fitting and evaluator modules before selecting exact edit locations. Perform symbol impact analysis before code edits.
-- [ ] Complete design D7 source/schema/environment record, exact fold/role/gate/cycle ledgers and N-based fit ceiling. No real fit until these checks pass; source-semantic changes require design review.
+- [x] Historical development: release rules and vintage status are frozen before fitting. IPC uses the user-confirmed month-end convention, recorded as `reconstructed` (assumed, not verified publication dates). The covariate alignment is committed:
+  - 28 static sources;
+  - 21 monthly at L=1, including only the two FLDAS raw means; the precomputed climate z-scores are excluded;
+  - 2 annual;
+  - 18 excluded.
+
+  Revised-value limitations are disclosed in `research/launch-readiness.md`.
+- [x] Actual 2025 covariate extension: an explicit two-source splice (pinned 2024-12 + combined 2025-01..06), assembled and verified 2026-10-03. Manifest `C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1.actual-inputs-v1\extension_manifest.v2.json` (sha 72a766c6…81d6; v1 da9b3084…9c9c kept, wording-only supersession). The real `load_extension` → Scaffold → covariate_features path under the frozen alignment matches the expected months. ACLED 2025 gap disclosed (research/next-phase-readiness.md).
+- [x] Actual 2025 CS availability table: `research/launch/actual_availability.csv` (sha 185e2c79…4b59; superseded wording v1 67365108…556c kept as `actual_availability.v1_superseded.csv`; 66 rows = 22 countries × origins 2024-10/2025-02/2025-06 with missed service cycles 0/1/2; `evidence=reconstructed`).
+  - Sources: the inherited month-end convention (2024-10) and the user attestation '可以确认' of 2026-10-03, given in the coordinator conversation and relayed via Herdr (2025 origins).
+  - Ledger reconciliation: the prepared ledger has no CS cycle after 2024-10. SD's last observed cycle is 2024-06 (ages 4/8/12, disclosed; no October label manufactured).
+  - Preflight `research/probes/actual_preflight_summary.json` (2a789356…; v1 da5f4301… kept): the code's `actual_gate_intensity` accepts all 22 countries at each origin; extension v2 scaffold through 2025-06; frozen recipe accepted; fresh output; code identity fd25e2f7….
+- [x] Specs and modules were read before the slice edits. For the recorded implementation checkpoints (section 4), symbol impact analysis was attempted. Where GitNexus failed (LadybugDB read-only error), the scoped source/caller inspection fallback was used and disclosed in PROGRESS. This is not a claim about every individual edit.
+- [x] Historical development D7: the source/schema/environment record, the 648-root schedule, the cycle ledger and the conservative N-based fit ceiling (147,889 total; Stage 1 ≤ 40,824) passed before the real fit.
+- [x] Reconcile the saved development and historical fold, role (train/S/C/E3) and internal-gate ledgers against the lawful keys and masks as those runs complete. The schedule and cycle ledger alone do not complete the original exact fold/role/gate/cycle ledger requirement.
+  - Done 2026-10-03 (research/dev-ledger-reconciliation.md):
+    - development 72/72 and historical 57/57 folds, 0 problems;
+    - independent global fit keys 654/654 records;
+    - independent outer-local key digests, gate keys/decisions and global mask links;
+    - historical identity and inventory 57/57.
+
+    Limit: internal gate locals have support-only evidence (no saved key lists).
+- [ ] Actual 2025 D7: the source/administrative mapping, the covariate availability and the evaluator-only truth release stay under their own contracts. Source-semantic changes require design review.
 
 ## 4. Implement the smallest compatible change
 
@@ -59,19 +89,23 @@ Reviewed implementation checkpoints:
 - Slices 5–7 and review corrections are verified for an engineering checkpoint: Stage2 crisis E4/NA, exact 72-fold selection, reporting and historical/actual entry points; source/fold identity checks, same-input pooled outputs, country-specific replay and coverage, expert interface and separate truth release. Independent Windows regression: 163/163 passed (99.875s); executor driver smoke: 2/2 passed (375.880s), covering both qualifying and no-qualifier paths. All 165 tests are covered. After the independent run the only Python change was one stale smoke-test output filename, verified by reconstructing the previous source digest. The smoke uses a smaller synthetic development calendar; it is not the real 648-candidate/72-fold experiment.
 - User reiterated “continue，包括上面三个”: continue these slices and finish the disclosed engineering gaps (driver-level synthetic validation, lawful expert comparator interface, separate final-truth evaluation input). This does not invent missing source evidence or release protected 2025 outcomes before frozen predictions.
 
-Real data stays blocked by D7. Preserve the active audit run; no task closure until the agreed evidence is complete.
+Real historical development is no longer blocked: D7 was resolved for 2018–2024 by the month-end convention above.
+- Stage 1 ran on real data: 669 candidate attempts. 21 hit native 0xC0000005 crashes of unknown attribution; all 21 completed in one identical diagnostic resume.
+- `accept_scenario_stage1` accepted all 648, saved as `scen-b43ef6a-v1.stage1_acceptance.json` (sha `dffae64d…37ab7`).
+- The actual-2025 phases remain blocked by their own requirements (section 3).
+- Preserve the active audit run; no task closure until the agreed evidence is complete.
 
 - [x] Reuse the existing three-stage experiment; add only the availability/scenario behavior needed by the frozen design. Preserve raw sources and old outputs.
-- [x] Rebuild IPC-derived predictors under the as-of boundary; apply the same contract to pooled/local fits and prediction. Preserve origin-specific covariate availability and genuine-label fitting eligibility (synthetic validation; real source admission remains D7).
+- [x] Rebuild IPC-derived predictors under the as-of boundary; apply the same contract to pooled/local fits and prediction. Preserve origin-specific covariate availability and genuine-label fitting eligibility (synthetic validation; real historical admission via the committed alignment/ledger in section 3; actual-2025 admission remains open).
 - [x] Implement A/B training with grouped variants and conserved fitting weight through both global fitting and local continuation; current continuation lacks a weight argument. Compute support from original keys, not expanded arrays. Reuse the existing global weight validation where applicable.
 - [x] Select the existing shared-root increment mode explicitly; preserve root-prefix invariance and separate routing parent from the model prefix. Align Stage3 local gate from legacy macro-F1 to crisis F1, requiring gain strictly >0.01 versus fold-global and genuine support, otherwise global fallback.
-- [x] Reuse keyed prediction/reporting infrastructure for matched ordinary/prolonged persistence and available experts, Study2 subsets, coverage and country supplements. Interfaces and synthetic paths are verified; real comparator/source claims await D7 and saved real runs.
+- [x] Reuse keyed prediction/reporting infrastructure for matched ordinary/prolonged persistence and available experts, Study2 subsets, coverage and country supplements. Interfaces and synthetic paths are verified; real comparator claims await the saved development/historical runs; actual-2025 experts and availability remain open (section 3).
 - [x] Bind both in-memory and disk global/model caches to the lawful input, strategy, scenario, outer exclusion, fitting-key and weight identities. The current GlobalStore memo key (H, origin, G) is insufficient across scenarios.
 - [x] Separate forecast keys from evaluator truth so June targets without genuine labels still receive predictions; never fabricate class codes to satisfy the current labelled-only Panel/run_fold interface.
 
 ## 5. Verify before real runs
 
-The full synthetic suite above covers the engineering contracts below. Their real-data reconciliation remains part of sections 3 and 6; unchecked real evidence must not be inferred from a test count.
+The full synthetic suite above (165 tests at `b43ef6a`) covers the engineering contracts below. That coverage is not the formal trellis-check and not the independent audit; both are still outstanding, so these boxes stay open until those reviews verify them against the saved real runs. Their real-data reconciliation remains part of sections 3 and 6; unchecked real evidence must not be inferred from a test count.
 
 - [ ] Minimal synthetic check: changing a hidden recent IPC or future covariate cannot change permitted features/predictions, while changing a permitted older input can.
 - [ ] Minimal synthetic check: augmentation variants remain in one split, conserve weight in both root/local training and do not inflate support; the frozen root prefix remains unchanged.
@@ -89,9 +123,17 @@ The full synthetic suite above covers the engineering contracts below. Their rea
 
 ## 6. Run in the approved order
 
-- [ ] Generate the confirmed648 Stage1 candidate schedule over2018–2020 and run the72 complete-pipeline development forecasting folds over2019–2020; preserve train/S/C/E3 diagnostics and report both strategies, including negative results. Internal gate refits count toward the separate fitting budget.
-- [ ] Freeze chosen per-horizon recipe/maps and configuration identity before later scores.
-- [ ] Run fixed-recipe 2021–2024 retrospective evaluation; do not retune from its scores.
+- [x] Generate the confirmed648 Stage1 candidate schedule over2018–2020 and run the72 complete-pipeline development forecasting folds over2019–2020; preserve train/S/C/E3 diagnostics and report both strategies, including negative results. Internal gate refits count toward the separate fitting budget.
+  - Done 2026-10-03:
+    - Stage 1: 648/648 accepted (669 attempts, `scen-b43ef6a-v1.stage1_acceptance.json`); diagnostics in `research/stage1-diagnostics.md`.
+    - `scen-develop`: 72/72 folds.
+    - `scen-select`: `selection.json` sha c0b3c967…b8b, A winner at H4 and H8, B failing normal parity at both; recorded with the negative results in PROGRESS.
+    - The formal trellis-check and the independent audit are still outstanding.
+- [x] Freeze chosen per-horizon recipe/maps and configuration identity before later scores.
+  - scenario_final/frozen.json sha 2344ab59…573e: A on map 8965af6d6a724ba5d61d for both horizons; H4 G1/L1, H8 G4/L1; bound to selection c0b3c967…b8b; written before any historical fit.
+- [x] Run fixed-recipe 2021–2024 retrospective evaluation; do not retune from its scores.
+  - Executed 2026-10-03: 57/57 folds plus scen-report (historical.json 67153c53…, report.json 4c0efad0…). Identity, inventory, fit-key and local/gate reconciliations pass. The coordinator's independent metric recount passes (research/historical_metric_review.json 88d21073…). Results in research/historical-results.md. Nothing was retuned.
+  - This covers historical execution and recount only, not a whole-task or audit pass.
 - [ ] Generate 2025 predictions under verified as-of information, then release evaluator-only truth for the predeclared final evaluation. June without genuine truth is coverage/forecast-only.
 - [ ] Report practical parity and uncertainty honestly; a negative scientific result can be a completed experiment, never a fabricated success.
 

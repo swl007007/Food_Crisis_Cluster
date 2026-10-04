@@ -1,0 +1,1578 @@
+{
+ "pinned": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\FEWSNET_forecast_unadjusted_bm.csv",
+ "combined": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_FEWSNET\\FEWSNET_forecast_unadjusted_bm_2025_combined.csv",
+ "rule": "np.isclose(equal_nan=True, rtol=0, atol=1e-9), as load_extension np.allclose",
+ "sources": {
+  "lat": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "lon": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_10000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_12000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_15000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_17000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_19000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_25000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_31000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_32000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_33000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_34000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_36000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_38000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_4000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_40000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_43000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_7000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "AEZ_9000": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "distance_to_river": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "elevation": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "sg_cec_5-15cm": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "sg_cfvo_5-15cm": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "sg_nitrogen_5-15cm": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "sg_phh2o_5-15cm": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "sg_soc_5-15cm": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "ruggedness": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "slope": {
+   "kind": "static",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-02": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-02_rows": 5718,
+     "pinned_2024-02_missing": 0
+    },
+    "2025-06": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-06_rows": 5718,
+     "pinned_2024-06_missing": 0
+    }
+   }
+  },
+  "distance_to_nearest_acled": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 5.684341886080802e-14,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_battles": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_explosions": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_violence": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_battles": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_explosions": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_violence": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_battles_w5": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_explosions_w5": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_violence_w5": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_battles_w5": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_explosions_w5": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_violence_w5": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_battles_w10": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_explosions_w10": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "event_count_violence_w10": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_battles_w10": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_explosions_w10": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "sum_fatalities_violence_w10": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 1304,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 5718,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "crop": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 5.684341886080802e-14,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "range": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 2.842170943040401e-14,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "nightlight": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "nightlight_sd": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "EVI": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "market_distance": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 5.684341886080802e-14,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "FAO_price": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 2.842170943040401e-14,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "Rainf_f_tavg_mean": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 1.6155871338926322e-27,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "Tair_f_tavg_mean": {
+   "kind": "monthly",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {
+    "2025-01": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-01_rows": 5718,
+     "pinned_2024-01_missing": 0
+    },
+    "2025-05": {
+     "rows": 5718,
+     "missing": 0,
+     "pinned_2024-05_rows": 5718,
+     "pinned_2024-05_missing": 0
+    }
+   }
+  },
+  "gpp_mean": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "market_access": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "CPI": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "GDP": {
+   "kind": "annual",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "CC": {
+   "kind": "annual",
+   "admitted": true,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "gini": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "WFP_Price": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 5.684341886080802e-14,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "WFP_Price_std": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "pop": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "Food_CPI": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "Food_food_inflation": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 0,
+   "nan_pattern_mismatch": 0,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 0,
+   "inf_involved_mismatch": 0,
+   "max_abs_finite_diff": 0.0,
+   "mismatch_months": 0,
+   "first_last": null,
+   "actual_month_missingness": {}
+  },
+  "Tair_zscore": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 1029240,
+   "nan_pattern_mismatch": 540,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 997920,
+   "inf_involved_mismatch": 30780,
+   "max_abs_finite_diff": 13.795655215300894,
+   "mismatch_months": 180,
+   "first_last": [
+    "2010-01",
+    "2024-12"
+   ],
+   "actual_month_missingness": {}
+  },
+  "Rainf_zscore": {
+   "kind": "excluded",
+   "admitted": false,
+   "mismatch": 1029240,
+   "nan_pattern_mismatch": 1080,
+   "both_same_signed_inf": 0,
+   "finite_value_mismatch": 997380,
+   "inf_involved_mismatch": 30960,
+   "max_abs_finite_diff": 12.249535851844264,
+   "mismatch_months": 180,
+   "first_last": [
+    "2010-01",
+    "2024-12"
+   ],
+   "actual_month_missingness": {}
+  }
+ },
+ "combined_duplicate_key_months": [
+  "2025-10",
+  "2026-02"
+ ],
+ "pinned_months": [
+  "2010-01",
+  "2024-12",
+  180
+ ],
+ "combined_months": [
+  "2010-01",
+  "2026-04",
+  196
+ ],
+ "shared_keys": 1029240,
+ "pinned_keys": 1029240,
+ "shared_months": [
+  "2010-01",
+  "2024-12",
+  180
+ ],
+ "admitted_summary": {
+  "sources": 51,
+  "sources_with_mismatch": 0,
+  "total_mismatch_cells": 0
+ },
+ "excluded_summary": {
+  "sources": 18,
+  "sources_with_mismatch": 2,
+  "total_mismatch_cells": 2058480
+ }
+}

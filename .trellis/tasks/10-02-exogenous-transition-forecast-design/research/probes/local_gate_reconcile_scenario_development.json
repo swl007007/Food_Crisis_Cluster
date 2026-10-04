@@ -1,0 +1,394 @@
+{
+ "phase": "scenario_development",
+ "totals": {
+  "folds": 72,
+  "gated_folds": 66,
+  "outer_locals": 278,
+  "outer_b_weight_blocks": 142,
+  "regions": 1194,
+  "gate_blocks": 7160,
+  "internal_local_fits": 6754,
+  "prediction_rows": 377388,
+  "forecast_rows": 411696,
+  "persistence_rows": 387768,
+  "outer_globals_linked": 72,
+  "internal_globals_linked": 396
+ },
+ "problems": [],
+ "folds": [
+  {
+   "fold": "A/h4/k0/2019-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k0/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2019-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k1/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2019-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h4/k2/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2019-02",
+   "map_route": "no_prior_candidates",
+   "problems": [],
+   "note": "non-learned map route: pooled global, no gate/locals"
+  },
+  {
+   "fold": "A/h8/k0/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k0/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2019-02",
+   "map_route": "no_prior_candidates",
+   "problems": [],
+   "note": "non-learned map route: pooled global, no gate/locals"
+  },
+  {
+   "fold": "A/h8/k1/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k1/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2019-02",
+   "map_route": "no_prior_candidates",
+   "problems": [],
+   "note": "non-learned map route: pooled global, no gate/locals"
+  },
+  {
+   "fold": "A/h8/k2/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "A/h8/k2/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k0/2019-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k0/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k0/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k0/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k0/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k0/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k1/2019-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k1/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k1/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k1/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k1/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k1/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k2/2019-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k2/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k2/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k2/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k2/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h4/k2/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k0/2019-02",
+   "map_route": "no_prior_candidates",
+   "problems": [],
+   "note": "non-learned map route: pooled global, no gate/locals"
+  },
+  {
+   "fold": "B/h8/k0/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k0/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k0/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k0/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k0/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k1/2019-02",
+   "map_route": "no_prior_candidates",
+   "problems": [],
+   "note": "non-learned map route: pooled global, no gate/locals"
+  },
+  {
+   "fold": "B/h8/k1/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k1/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k1/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k1/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k1/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k2/2019-02",
+   "map_route": "no_prior_candidates",
+   "problems": [],
+   "note": "non-learned map route: pooled global, no gate/locals"
+  },
+  {
+   "fold": "B/h8/k2/2019-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k2/2019-10",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k2/2020-02",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k2/2020-06",
+   "map_route": "learned_map",
+   "problems": []
+  },
+  {
+   "fold": "B/h8/k2/2020-10",
+   "map_route": "learned_map",
+   "problems": []
+  }
+ ],
+ "evidence_scope": {
+  "outer_locals": "saved fit_keys_sha256 + fit_support + variant rows vs independently reconstructed ordered keys (outer lawful pool x frozen map cluster); B native sample_weight block (float32 sha/n/sum/min/max) vs repeated float32(1/3); A has no weight block",
+  "internal_locals": "support counts and support decision only; internal local key lists are not saved",
+  "gate_keys": "evaluator key sets and truth vs lawful labels at U under the outer mask",
+  "gate_decisions": "exact-fraction recount from saved gate pairs (predictions themselves not refit)",
+  "forecast_truth_persistence": "all folds: y_true at T, persistence class/source month/age = latest label <= O with release <= O outside hidden(O,k), from prepared observations",
+  "global_links": "outer (gate global booster + fit-key sha) and internal (gate_pairs global sha) linked to a saved record whose origin/strategy/k/excluded/masked equal masks derived from the fold origin and k; record key digests are covered by the independent fit-key checker"
+ }
+}

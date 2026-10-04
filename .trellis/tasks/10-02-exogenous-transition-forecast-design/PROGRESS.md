@@ -312,3 +312,319 @@ No CSV comparison was performed. Source identity is user-attested; no further we
 - The only pending input is the historical IPC release convention.
 
 2026-10-03 (user timing decision): User confirmed “沿用” on 2026-10-03: historical IPC CS is treated as known at the end of its reference month, preserving the original experiment convention. The ledger uses `reference_month_end` and `evidence=reconstructed`; these are assumed availability dates, not verified publication timestamps. No additional source tracing or lag comparison. This resolves the remaining historical-development timing decision; actual-2025 availability and evaluator-only truth retain their separate contracts. Coordinator will commit the assumed release ledger/configuration, then direct the bound Claude executor to run preparation and the finite648/72 development in order with workers1. No real results claimed yet. The goal tool still reports blocked; it has no resume action, so work resumes under the user instruction without falsely claiming a goal-state change.
+
+2026-10-03 (Codex supervision): goal active again with supervision-only objective; actual spec metrics control. PID886199 preparation advancing (32/108 scenario inputs observed), runtime manifest matches pinned Windows environment. Reconciler review corrected Stage1-only N to descriptive and retained full-run conservative147889 fit bound, explicit129 features and per-original-key counts/weight totals. Tried a fresh default/fork-none read-only engineering spot review of702888a..b43ef6a against currentca86bf7 contracts; dispatch failed at agent thread limit, so NO independent spot verdict exists. Controller status: running=true, same active run5c4dede7/basee843682; no current-task audit jobs. Keep task open through real execution; close audit only when evidence is complete. No source tracing or product changes in this monitoring pass.
+
+2026-10-03 LAUNCH (authorised; HEAD ca86bf7; audit run 5c4dede7; pinned Windows py3.12.10). RUN = C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1.
+- Ledger: the committed month-end reconstruction (sha256 83402d71…b9f960, 954 rows). Alignment: sha256 ca9e9a66…e543, 129 features.
+- Logs and exact commands: `/mnt/c/Users/swl00/geoxgb_runs/scen-b43ef6a-v1.{commands,prepare,stage1}.log`.
+- Preparation: PID 886199; exit 0, "preparation complete"; 108 scenario inputs, 707 MB.
+- Pre-fit reconciliation (`research/probes/reconcile_prepared.py`; report `scen-b43ef6a-v1.reconcile.json`): exit 0, problems = [].
+  - prepared outputs sha256 972902bb…f5161; git_head ca86bf7 with code equal to HEAD; pinned source hashes match;
+  - 129 features, 648 schedule entries, 108/108 inputs;
+  - keys, masks and per-key weights pass;
+  - Stage 1 N = 5,509 (descriptive only); certified fit ceiling 147,889 (conservative N ≤ 5,714).
+- Stage 1: launched as PID 1361965 (`run_stage1.py --split-mode scen --workers 1`). The first A/H4 roots took 24–39 s each.
+- Coordinator one-candidate numerical spot check (not a full-scope audit or a scientific conclusion), on scenA_h4_2018-02_G1_k0_r50_s42_L1_gt0: the recounted target/confirmation/fit-diagnostic CSVs match `candidate.json` exactly. Crisis F1:
+  - E3: partition 0.6720 vs root 0.6746;
+  - C: 0.6464 vs 0.6288;
+  - F: 0.6512 vs 0.6285.
+- Remaining chain: the 648 Stage 1 roots → scen-develop (72) → scen-select. Final trellis-check and the accepted close audit are outstanding; no close.
+
+2026-10-03 Stage 1 in progress (coordinator check after ~5h44m): 494 completed and 21 failed, all with returncode 3221225477 (0xC0000005, native access violation). PID 1361965 is still live.
+- Identity retained: Claude session b0e22913-4f4b-430f-8d19-dee565d26eec, audit run 5c4dede7bc6e44f0835fbde1ad2f473d, base e84368274241e6becc67d5a7e69dc39db23bda66, launch HEAD ca86bf7, RUN C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1.
+- The failed roots' temp outputs (`%TEMP%\geoxgb_stage1\scen-b43ef6a-v1\<root>\`) are preserved; no retry or concurrent fit.
+- scen-develop/select stay blocked until all 648 have accepted completion evidence. Failure classification is in progress.
+- Failure classification (no retry yet). All 21 failed temp trees are preserved, copied to `/mnt/c/Users/swl00/geoxgb_runs/scen-b43ef6a-v1.failed_stage1/` (769 MB), because the runner deletes temp before a retry.
+  - 20/21 reached the candidate search (`fold_membership.csv.gz` plus `georf/` with 7–39 saved checkpoints). Their GeoRF `log_print` ends mid-print of partition group-id lists, so the crash point varies inside `partition()`.
+  - 1/21 (scenB_h4_2019-02_G1_k0_r80_s43) has only command/run.log: it crashed before fold membership.
+  - All have code 0xC0000005 (native access violation), with no Python traceback (buffered stdout). The ~4% rate is spread across A/B, H4/H8, k 0/1/2 and r80/r50.
+- Smallest remedy: after the current batch exits, rerun the identical command (the runner skips roots that have completion.json; same numerical configuration) with the diagnostic-only environment `PYTHONFAULTHANDLER=1`, `PYTHONUNBUFFERED=1`, propagated to the Windows children via `WSLENV=PYTHONFAULTHANDLER/w:PYTHONUNBUFFERED/w` (`run_root` copies `os.environ`). If a root crashes again, the fault trace attributes it; no package edit is needed to obtain it.
+- Approved recovery: `research/probes/stage1_recovery.sh`, launched detached (PID 2850526), waits for batch PID 1361965.
+  - Env check: `WSLENV` was empty; with the two entries appended, the Windows interpreter saw PYTHONFAULTHANDLER=1 and PYTHONUNBUFFERED=1 (faulthandler enabled). No fit was involved.
+  - On batch exit, in order: preserve newly failed temp trees (`failed_stage1_attempt1/`); snapshot the attempt-1 ledger/log; reconcile completion IDs against the 648 scheduled roots; run ONE identical resume pass (`--workers 1`, plus only the diagnostic env, `WSLENV` appended); write a separate resume ledger slice; preserve resume failures (`failed_stage1_resume1/`); reconcile again.
+  - Logs: `scen-b43ef6a-v1.{recovery,stage1.resume1}.log`. Attempts are distinct from unique completed roots; there is no retry loop.
+- Recovery re-armed FAIL-CLOSED after coordinator review. The pre-fix watcher (wrapper 2850526 and its bash child 2850532, found still waiting) is stopped; neither produced artifacts. The single resume owner is now PID **2859449**, running `stage1_recovery.sh` sha256 929355ad…feecfb.
+  - `set -euo pipefail`.
+  - Every failed root must be either copied and verified with `diff -rq` against its temp tree, or verified against the earlier backup in `failed_stage1/`. A missing temp tree without a backup aborts.
+  - Ledger/log snapshots are byte-checked; reconcile and `cd` are guarded; the Windows env is checked before the fit. All of these abort before any fit.
+  - The resume exit code is captured (nonzero tolerated) so postmortem preservation still runs.
+  - Reconcile is informational; acceptance before development uses `accept_scenario_stage1`.
+- Recovery script defects fixed after coordinator review. Watcher 2859449 (and its sleep child) was stopped before the edit; no instance ran during it.
+  - The earlier `failed_stage1/` backup is reused only for attempt 1; resume 1 always preserves into its own `failed_stage1_resume1/`.
+  - The failed-root list comes from Python JSON parsing with an explicit abort: zero failures succeed, a malformed ledger aborts.
+  - The log snapshot is now byte-compared (`cmp`) as well as the ledger.
+  - Synthetic helper check: 6/6 as expected (zero-failure ok; malformed abort; identical earlier backup reused; mismatched earlier backup abort; repeated failure with different contents saved separately while the earlier backup stayed unchanged; missing temp without backup abort).
+  - Re-armed exactly once: PID **2873827**, sha256 1d6a2d8f…770b5b.
+- 2026-10-03 RESUME STATE (for compaction):
+  - Coordinator reviewed and approved recovery script sha256 1d6a2d8fa87bca63b36fb9e07a138095c223d577afcb3e21ba5fee6e99770b5b as armed. Its independent check (bash syntax; zero-failure, malformed-ledger abort, repeated failure with a new destination and the old backup unchanged) passed, with no fit.
+  - Live: batch PID 1361965 (Stage 1, `--workers 1`) and recovery owner PID 2873827 (the sole resume owner; runs ONE diagnostic resume after the batch exits).
+  - Then: acceptance of all 648 via `accept_scenario_stage1` → scen-develop (72) → scen-select (spec stop rule).
+  - Attempts are preserved: `failed_stage1/` (first 21, 804,609,121 bytes as verified by the coordinator), `failed_stage1_attempt1/`, `failed_stage1_resume1/`. Ledger/log snapshots: `stage1.attempt1.*`, `stage1.resume1.*`.
+  - Logs: `/mnt/c/Users/swl00/geoxgb_runs/scen-b43ef6a-v1.{commands,prepare,stage1,recovery,stage1.resume1}.log`.
+  - Identity: session b0e22913-4f4b-430f-8d19-dee565d26eec, audit run 5c4dede7bc6e44f0835fbde1ad2f473d, base e8436827, launch HEAD ca86bf7, RUN C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1.
+  - Formal trellis-check and the close audit remain later; no close.
+- Coordinator second one-candidate numerical spot check (not aggregate evidence, not a formal audit), on scenB_h8_2020-02_G4_k1_r80_s44_L1_gt0: unique original keys, disjoint F/S/C roles with matching coverage, saved-probability argmax, crisis confusion counts/F1 and selected completion hashes all pass.
+  - Sizes: F 62,393, S 10,298, C 10,298, E3 5,506.
+  - Partition/root crisis F1: F 0.705865/0.701901; S 0.680203/0.672854; C 0.670280/0.665458; E3 0.630685/0.627067.
+  - Recovery sha256 1d6a2d8f…770b5b and sole watcher 2873827 were reverified; there are no launch changes.
+- 2026-10-03 08:53 MILESTONE: original batch PID 1361965 exited with 627 completed and 21 failed (0xC0000005).
+  - Recovery owner 2873827 handled all 21 failed roots, with no ABORT. Each one matched its earlier `failed_stage1/` backup, so that backup was reused and `failed_stage1_attempt1/` is empty by design. It also wrote the attempt-1 ledger and log snapshots; the coordinator independently confirmed the bytes are identical and the ledger prefix is unchanged.
+  - after_attempt1 reconcile: 627 exact schedule completions, no unexpected IDs; the 21 missing roots match the failed list.
+  - 08:54:47: launched the sole diagnostic resume, child PID 3436146: identical `--split-mode scen --workers 1`, plus PYTHONFAULTHANDLER=1 / PYTHONUNBUFFERED=1. Log: `stage1.resume1.log`.
+  - Ledger at ~08:59: 632 completed. The first failed root, scenA_h4_2018-10_G1_k2_r50_s44, completed in 34.1 s; scenA_h4_2020-02/06/10 have also completed.
+  - Native crash attribution stays unknown unless a trace supports one. No further launch. Acceptance of all 648 comes before scen-develop.
+- 2026-10-03 09:12 Stage 1 RECOVERY TERMINAL. Resume exit was 0, and after_resume1 reconcile gave 648 scheduled, 648 completed, unexpected [], missing [].
+  - The resume ledger slice holds 21 rows, all completed: exactly the original 21 failures. `failed_stage1_resume1/` is empty. The resume log has no faulthandler or fatal-error output.
+  - The coordinator verified that attempt1 (648 lines) plus resume1 (21 lines) concatenate byte-exactly to the live ledger.
+  - Attempt record: **669 candidate attempts** (648 + 21). Attempt 1: 627 completed, 21 failed natively with 0xC0000005. Resume 1: 21 completed, 0 failed.
+  - The crash did not recur under the identical configuration. Native failure attribution remains **unknown**: no trace was captured, because the crashes happened before faulthandler was enabled.
+- 2026-10-03 accept_scenario_stage1 (pinned Windows Python, existing function) PASSED: 648/648 accepted, all `completed`, in 4m22s.
+- 2026-10-03 09:20 DEVELOPMENT LAUNCHED with `research/probes/dev_launch.sh` (sha256 681f49f2b06afd85508cd1159a6d284dfe66d5c3a5bea1b230bfb868c4a0986f), PID 3552757, HEAD ca86bf7.
+  - Steps, in order:
+    1. Rerun acceptance and save the summary to `scen-b43ef6a-v1.stage1_acceptance.json` (asserts 648/648 completed; records the 669 attempts and the unknown attribution).
+    2. `run_experiment.py scen-develop` (72 folds; existing fold records accepted by identity, never recomputed).
+    3. `scen-select` (D4 rule, written once).
+  - The run stops on the first failure, with no retry. The diagnostic env (PYTHONFAULTHANDLER=1, PYTHONUNBUFFERED=1, appended to WSLENV) has no numerical effect.
+  - Logs: `scen-b43ef6a-v1.{develop,select,develop.nohup}.log`. A first launch attempt at 09:19 was a no-op: the path with spaces was unquoted, so bash could not find the script and nothing ran.
+- Coordinator independent spot check of the first development fold (A/h4/k0/2019-02) PASSED. This is narrow numerical evidence, not a full audit or the 72-fold selection.
+  - Checked: fold output hashes; unique prediction keys; pooled matching; hard argmax; fallback probability equality; paired-count/F1 recount for all 17 cluster gates; exact Fraction gain > 1/100 and the support decision; global routing of unsupported dates.
+  - Rows: 5,718 forecast rows, of which 5,365 have genuine truth and matched persistence and 353 are unlabelled but retained. 4 clusters enabled, covering 920 local rows.
+  - Single-fold crisis F1: system 0.7913513513513514; pooled 0.7920043219881145; matched persistence 0.7841218053289831.
+  - Development process 3573472 live; no retuning.
+- Coordinator narrow artifact check PASSED: A/h4/k1/2019-02 versus k0. It verifies the saved records; it is not a fresh numerical replay of the hidden inputs.
+  - k1 matches k0: same map_id a3b56f2886757e8e5065 and the same 5,718 forecast/truth keys. All k1 fold output hashes verified.
+  - Persistence source months are all strictly before the masked 2018-10. Ages are consistent: 5,364 age 4, 348 absent, 6 older.
+  - Six gate internal origins match the saved global SHA records: 2016-06, 2016-10, 2017-02, 2017-06, 2017-10 and 2018-02. Each has scenario_k = intensity_k = 1, excluded=[2018-10] and masked={own origin, 2018-10}.
+  - Validation dates fall at internal origin + H4, before the outer origin.
+- 2026-10-03 documentation-only reconciliation of implement.md (coordinator request). Section 3 is split into historical items (done, with evidence references) and actual-2025 items (open). The stale blanket statement "Real data stays blocked by D7" is replaced with the Stage 1 and acceptance evidence. Section 5 now separates synthetic coverage from the formal trellis-check and the independent audit, both still outstanding. The section 6 648/72 item stays unticked until all 72 folds and selection finish. No product or test edit, no launch; the sole launcher 3552757 is unchanged.
+- implement.md review corrections: added an open item to reconcile the saved fold, role and internal-gate ledgers against lawful keys and masks; narrowed the impact-analysis claim to the recorded checkpoints plus the disclosed fallback.
+- Coordinator narrow saved-artifact check PASSED: A/h4/k2/2019-02. This verifies saved metadata and rows only; it is not a numerical replay of the hidden features and not a formal audit.
+  - All fold output hashes verified. Same map and the same 5,718 unique forecast/truth keys as k0. Hard argmax holds; the 353 unlabelled rows are retained.
+  - Persistence sources are all strictly before the hidden 2018-06. Ages are consistent: 5,364 age 8, 348 missing, 6 older.
+  - Six internal origins match the saved booster SHA records: 2016-02, 2016-06, 2016-10, 2017-02, 2017-06 and 2017-10. Each has scenario_k = intensity_k = 2 and exclusions [2018-06, 2018-10]. Each masks its own origin, its own previous four-month cycle and the outer exclusions.
+  - Validation dates fall at internal origin + 4, before 2018-06.
+  - The checker initially assumed source months were stored as strings; the CSV stores zero-based integer month indices. The checker was corrected and rerun with a PASS; no product defect, no change.
+- Coordinator saved-record spot check PASSED: B/h4/k0/2019-02. This verifies metadata and byte-level weights only; it is not a fresh fit and not proof of independent samples.
+  - All fold output hashes verified. Root: original-key support 81,979 against 245,937 fitting rows (3×).
+  - All 5 saved locals likewise have 3× rows over original support. Weights are float32(1/3) at both min and max; the weight hashes equal directly repeated float32 bytes; total weight conserves the original n within float32 rounding.
+  - All 5 locals' parent/prefix metadata point to the same global, with 200 + 20 rounds.
+  - The Kish ESS reported on variant rows must not be read as original-key support.
+- Next-phase readiness written to research/next-phase-readiness.md (documentation only, no fit): commands, the per-H stop path, expected artifacts (57 historical folds if both horizons are released), pre-launch checks and the missing actual-2025 inputs.
+- Readiness review corrections (coordinator): no exact fit count is recorded, so the evidence and the conservative bound are cited instead; the extension's documented contract is separated from its enforced checks (Scaffold enforces the complete grid; the manifest month range, origin-month reach and covariate missingness are not enforced, so they become an explicit pre-actual check); the ledger-ending-2024-10 reconciliation is kept as a pre-actual check. No product edit.
+- Fit-budget limitation, for the final check: 147,889 / 40,824 is the pre-launch schedule bound. The 21 failed partial attempts are kept separate, with conservative overhead ≤ 21 × 63 = 1,323 (63 = 40,824 / 648), giving an operational total of ≤ 149,212 in two components. The exact actual fit count is unavailable; no additional fit authorisation is implied.
+- Actual-2025 local readiness addendum (metadata/keys only): the extension needs a complete grid only for 2025-01..05. The annual refs (GDP 2023; CC 2023/2022) are inside the pinned panel. The combined panel has all sources but its 2996 duplicates refuse it as-is. A truncated extension is assemblable; it was not assembled in this metadata-only pass and is pending pre-actual checks. The overlap-value equality over all 69 schema sources is unchecked. The 2024-10 availability rows can be built from the ledger; Feb/Jun-2025 missed_cycles evidence is missing (branch stopped). The Oct-2025 crosswalk is unresolved (DRC and Ethiopia unmatched); no June truth or expert table exists locally. See research/next-phase-readiness.md.
+- Addendum correction (coordinator review): static sources are read at O (fourclass_features.py:197, 215–217), so the extension scaffold must reach 2025-06 for all 5,718 areas, while monthly dynamic input ends at 2025-05. The missingness check is now split by kind (static at O versus monthly at O−1). The all-69-source overlap issue stays explicit. Wording is now "not assembled in this metadata-only pass; pending pre-actual checks", with no new permission gate.
+- Stage 1 diagnostic summary (saved artifacts only; no fit or RUN write): research/stage1-diagnostics.md, probe research/probes/stage1_diagnostics.py (6m11s; reuses accept_scenario_stage1, scenario_candidate_row, crisis_plan_weights and diagnostics), outputs stage1_diagnostics_{ledger.csv,summary.json}. All 648 scored with no NA; F/S/C/E3 roles disjoint on original keys. Partition-minus-root crisis F1 is positive within 2018-2020 (F/S/C positive in 87-98% of candidates) but about zero out of time on E3 (medians -.0020..+.0050; 24-80% > 0). This negative transfer result is preserved. Root-only 9/324 (A), 14/324 (B); E3 root fallback 0.6-0.9% of rows; genuine unique partitions 319 (A), 315 (B); positive E4 weight 148 (A), 182 (B). Candidate distributions only, not the selection statistic.
+- 2026-10-03 16:51 DEVELOPMENT + SELECTION COMPLETE. Launcher 3552757 exited 0.
+  - scen-develop finished in 26,808 s: 72/72 fold records, no traceback or fatal output. Routes: 66 `learned_map`; 6 `no_prior_candidates` (A and B × k0/1/2 at H8 2019-02, origin 2018-06), which use the pooled global.
+  - scen-select finished in 7 s: `scenario_development/selection.json`, sha c0b3c967127c9a91c557343d5d9af3114c4c0975558b4c1a9d70ac4644ab9b8b. All 72 fold_records equal the current fold.json SHAs.
+  - D4 decisions, pooled crisis F1 from exact fractions in selection.json. "Parity" is matched normal model minus matched persistence.
+    - **H4: winner A.**
+      - A: normal .6283 vs persistence .6416, parity −.0133 (qualifies); k1 .5484, k2 .5658, mean .5571.
+      - B: normal .6003, parity −.0413. Fails `normal_parity_below_-0.02`; k1 .5017, k2 .5259, mean .5138.
+    - **H8: winner A.**
+      - A: normal .5478 vs persistence .5428, parity +.0050 (qualifies); k1 .5651, k2 .5483, mean .5567.
+      - B: normal .4933, parity −.0495. Fails `normal_parity_below_-0.02`; k1 .4943, k2 .4882, mean .4912.
+    - A won both horizons as the only qualifier, not through ranking or a tie.
+  - Negative results preserved:
+    - B fails the normal-parity screen at both horizons.
+    - A's H4 normal F1 is below matched persistence (−.0133, within the −0.02 screen; no superiority claim).
+    - Interruption persistence, descriptive only and not part of the rule:
+      - H4 k1: A .5484 vs persistence .5428;
+      - H4 k2: A .5658 vs .5679;
+      - H8 k1: A .5651 vs .5679;
+      - H8 k2: A .5483 vs .5378.
+    - These are single pooled numbers without uncertainty.
+  - Next, after coordinator review of the full selection: scen-freeze (no fit), then scen-historical (57 folds expected), per research/next-phase-readiness.md.
+- Coordinator selection review PASSED. This is a bounded selection checkpoint, not the full Trellis audit; the independent sub-agent dispatch failed on the thread limit, so no audit pass is claimed.
+  - Independent recompute from all 411,696 forecast rows (21,288 unlabelled rows retained), using stdlib csv/gzip/Fraction and no producer helper.
+  - Passed: the 72 IDs and fold hashes; all 354 output hashes; the identities; A/B key/truth/persistence equality; hard argmax; nonlocal = pooled probabilities; shared maps; 66 learned / 6 no-prior folds; every count, rational, tie and qualifier.
+  - Exact copies preserved: checker `research/probes/check_scenario_selection.py` (sha 17d7430d…73ec) and report `research/scenario_selection_review.json` (sha 3d48f0c8…b36a).
+- Correction to the earlier descriptive interruption numbers. Comparisons against persistence must use MATCHED model counts (the ranking separately uses all-genuine model F1). Matched model minus persistence:
+  - A H4: k1 +.0071434384, k2 −.0004691156;
+  - A H8: k1 −.0012399598, k2 +.0118776020.
+
+  These supersede the unmatched figures in the 16:51 entry; the signs are unchanged.
+- stage1-diagnostics.md corrected: the zero-weight share is about 20%–76% per cell (B h8 k2 43/54 positive), not 52%–76%.
+- scen-freeze launched via `research/probes/phase_launch.sh` (sha d65fadf7…9766). Prechecks passed: package HEAD ca86bf7 clean, no live fit, 318 GB free, no scenario_final/historical/report folders. Frozen maps and the historical calendar are verified before scen-historical.
+- 2026-10-03 17:03 scen-freeze finished in 353 s with no fit. `scenario_final/frozen.json` was accepted by `_accept_frozen`: it is bound to selection c0b3c967…b8b, with cutoff 2020-12.
+  - Both horizons released strategy A on the same map `8965af6d6a724ba5d61d` (learned_map, accepted by `accept_consensus`, 5,510 areas mapped): H4 with G1 + L1, H8 with G4 + L1.
+  - The read-only calendar (`historical_targets`) matches design.md:28:
+    - H4: 10 targets, 2021-10..2024-10; excluded 2021-02 and 2021-06 (origin_or_missed_cycle_not_after_2020-12_freeze);
+    - H8: 9 targets, 2022-02..2024-10; excluded 2021-02, 2021-06 and 2021-10;
+    - that is 57 folds.
+  - The earlier wait loop self-matched `pgrep -f`, which the coordinator caught. Its shell had already gone; no fit was affected, and watchers now use exact PIDs.
+- 2026-10-03 17:10 scen-historical → scen-report launched, single launcher **PID 1439211**, via `phase_launch.sh` (sha d65fadf7…9766). The PID is recorded via exec in `scen-b43ef6a-v1.historical.pid`. Same pinned stack and diagnostic env; stops on the first error, no retry.
+  - Logs: `scen-b43ef6a-v1.{historical,report,historical.nohup}.log`. Watcher b6jy9u0gd runs `kill -0 1439211`.
+  - Actual-2025 stays blocked on the remaining input checks.
+- stage1-diagnostics.md: added the absolute F/S/C/E3 root/final levels and the F→C / F→E3 gaps, from the saved ledger only. The root's own F−C (H4 +.004..+.012; H8 +.027..+.035) is as large as or larger than the partition-minus-root C gains, and final F−C ≈ root F−C. The out-of-time F−E3 drop (up to +.25) mixes overfit with temporal shift. B's E3 levels are below A's in every cell.
+- Covariate-only pre-actual check (research/probes/extension_overlap_check.py; summary json; 33 s; usecols keys + 69 sources): all 1,029,240 pinned keys are shared. The 51 admitted sources match exactly. 2 of the 18 excluded (Tair_zscore, Rainf_zscore) mismatch on every key, so load_extension, which compares all 69, would refuse the combined panel: Blocker 1, needing a reviewed resolution with no manufactured agreement. Static (28) and FLDAS (2) are complete at the required months. The 19 ACLED sources are missing for 1,304 areas at 2025-01 and for all 5,718 at 2025-05 (pinned 2024 baseline 0), so Oct-2025 H4 would have no ACLED at all: Blocker/limitation 2, a disclosed coverage shift with no imputation. Details in next-phase-readiness.md.
+- Covariate probe CORRECTED (coordinator caught a semantic bug): the comparison now uses np.isclose(equal_nan=True, rtol=0, atol=1e-9), as load_extension's np.allclose does. Rerun on all 1,029,240 shared keys: admitted 51/51 still match exactly. Excluded Tair_zscore and Rainf_zscore still mismatch on every key, with 0 same-signed-inf pairs; 997,920 / 997,380 keys have both values finite and different (max |diff| 13.80 / 12.25), 30,780 / 30,960 involve an inf and 540 / 1,080 differ in NaN pattern. Blocker 1 STANDS on corrected evidence. The ACLED missingness limitation is unchanged.
+- Adversarial review of the two-source covariate splice: VALID WITH CONDITIONS, no counterexample. No spec requires a single raw file; load_extension appends only months after 2024-12, so the pinned panel stays authoritative; excluded sources never enter features. A product edit would change code_identity and invalidate every accepted record. Must be disclosed: the in-code overlap check becomes true by construction, so the identity evidence is the external probe. Static boundary identity checked now: 28 sources × 5,718 areas, combined 2025-01..06 = pinned 2024-12, 0 differences. The assembly probe/manifest facts are listed in next-phase-readiness.md. No assembly yet.
+- Actual-2025 covariate extension ASSEMBLED and VERIFIED (two-source splice; no fit, no product edit). Directory C:\Users\swl00\geoxgb_runs\scen-b43ef6a-v1.actual-inputs-v1: CSV sha 0d6b78ca…8b05 (40,026 keys = 5,718 × 7), manifest da9b3084…9c9c, assembly_report 26884dff…f0b3, verification_report 103a363f…e943; probes assemble_actual_extension.py (50ac8411…) and verify_actual_extension.py (421860df…). Raw hashes unchanged. Blocks equal their named sources string-for-string; static boundary 0 differences. The real load_extension → Scaffold → covariate_features path under the frozen alignment gives static at O through 2025-06, monthly at exactly 2025-01/05 and annual at pinned 2023-12/2022-12. Dimensions: 129 aligned = 54 covariate (51 sources + 3 calendar) + 75 history. Origin 2024-10 is unchanged with the extension. The ACLED NaN counts match. implement.md: extension item ticked; availability table and ledger reconciliation still open.
+- Manifest wording correction (coordinator): admitted/static agreement is within rtol 0, atol 1e-9, equal_nan, not exact (e.g. Rainf max finite |diff| 1.6e-27). v1 manifest da9b3084…9c9c is preserved. New extension_manifest.v2.json is 72a766c6…81d6; it differs only in source/supersedes. The binding record manifest_binding_v2.json (5a457939…439a) shows load_extension(v2) gives a panel identical to v1, with the CSV unchanged (0d6b78ca…). Readiness and implement wording updated; use v2 for --actual-scaffold.
+- Coordinator independent stdlib scan of the extension (32 s, read-only): raw component SHAs pass; 5,718 overlap rows and 34,308 extension rows are string-equal across all 69 source fields; the full 40,026 source and output key sets are equal with no duplicates. Cited as independent source-block verification, a bounded checkpoint and not a formal trellis-check or close audit.
+- Development ledger reconciliation (implement §3 open item, development part): research/dev-ledger-reconciliation.md, probe research/probes/dev_ledger_reconcile.py (ea3f05da…), summary f3e21605…; 17 s, read-only. **72/72 folds, 0 problems.**
+  - Outer global identity: 72/72 (origin, strategy/k, masks = hidden(O,k), label range within [O−59, O), A/B rows and weights).
+  - Gate calendar: 66 learned folds use the latest six lawful months U < O with internal origin = U − H; the 6 no-prior folds have no gate by design.
+  - 396 internal globals: masks = outer ∪ own hidden. 278 locals continue the outer global with 20 rounds.
+  - Prediction keys 72/72. Matched persistence: latest lawful label ≤ O, never hidden, age = O − source, 0 mismatches.
+  - The expected values come from the same package definitions, so this shows consistency, not independent lineage. Per-key fit lists are not saved (digests only), so per-key mask avoidance rests on the code and its tests.
+  - Three intermediate probe errors were corrected before the result: no-gate folds, any-vs-all identity matching, age from T vs O.
+  - Historical folds are reconciled after scen-historical finishes.
+- Coordinator crosswalk KEY-feasibility note (metadata only; not boundary certification or a truth release). Oct-2025 CS has 5,573 unique fnid/full-name rows.
+  - Exact full-name join against all FEWSNET.csv history, excluding names that map to several area codes: 4,479 one-to-one / 1,094 unmatched-or-ambiguous; 0 duplicate matched area keys; all 20 matched-country names agree.
+  - The earlier 4,480 included the ambiguous Kenyan name "Northwestern Pastoral Zone, Kerio Delta, Turkana Central, Turkana, Kenya", which maps to both 2995 and 2996.
+  - Restricting the lookup to 2024-10 names gives 4,478 / 1,095.
+  - Rules: no join is chosen by resulting score; no labels are duplicated across 2995/2996; no outcome values are opened.
+- Manifest v2 diff independently verified by the coordinator: only the source disclosure and supersedes changed.
+- Reconciliation prose corrected (coordinator): fit_label_months is the DECLARED window [O−59, O−1] set by GlobalStore.get (stage3.py:253), not the empirical min/max of fitted labels. The window check proves only the recorded definition, and the 'endpoint not masked' sub-check is vacuous. Global key identity is pending the coordinator's independent reconstruction of key/label/weight digests against all saved global records (not duplicated here). Local fitted-key provenance remains a separate limitation.
+- Coordinator independent global fitting-key check PASSED: 373/373 scenario_globals records present at probe start, 0 problems. Explicit filters (country release ≤ O, window [O−59, O), outer + own-k masks), independent A/B variant ordering, no package imports, features, fits or RUN writes. All saved fit-key, label and weight digests, original-key support, class counts and rows match. Preserved byte-exact: research/probes/check_scenario_fit_keys.py (eed66e0d…695b) and research/scenario_fit_keys_review.json (80577d3f…4bd3). Proves saved global input identities; not local fit keys, feature values, booster internals or the formal audit. Historical-phase globals written later are outside the 373 and get reconciled at completion. dev-ledger-reconciliation.md updated: hash reconstruction does not necessarily test the same code against itself.
+- Independent LOCAL and GATE reconciliation, development (probe research/probes/local_gate_reconcile.py 607b1869…; output local_gate_reconcile_scenario_development.json 3aabd903…; pandas/numpy only, no package import, no fit, 31 s): **0 problems** across the 66 learned folds.
+  - 278 outer deployed locals: key-digest proof (ordered keys of outer pool ∩ map cluster), plus original support and variant rows.
+  - 7,160 gate blocks: evaluator keys, truth and internal origins.
+  - Internal local support counts and support decisions (6,754 fitted), support-only evidence because internal key lists are not saved.
+  - 1,194 regions: exact-fraction crisis-F1 gains, floors, strict > 1/100, current support, deployed routes and prediction routes.
+  - Negative control (window 58) flags 66/66, so the result is not vacuous.
+  - Reuse on the 57 historical folds after completion.
+- local_gate_reconcile.py strengthened per coordinator (sha 4059c594…; output e24e620e…): every prediction area→cluster checked against the frozen map; region, local and gate-pair cluster sets checked; internal support checked on every row; recorded enabled flag checked against the recomputed gate decision, separately from the deployed route; B native sample_weight blocks (float32 sha/n/sum/min/max) checked against repeated float32(1/3), and A has no weight block. Rerun: 0 problems; 278 locals, 142 B weight blocks, 1,194 regions, 7,160 gate blocks, 377,388 prediction rows. Second negative control (float64 weights) flags all 33 B folds with locals. Outer locals = key-digest proof; internal locals = support counts and decisions only, with no per-key provenance.
+- Coordinator accepted the local/gate checkpoint: probe 4059c594…77d9, result e24e620e…96ea; 72 folds, 278 outer local key digests, 142 B weight blocks, 1,194 decisions, 7,160 gate blocks, 377,388 learned-fold prediction routes, 0 problems. The 6 no-prior folds are covered by the earlier selection/fallback check, not by these route totals. The internal-local support-only limitation is retained.
+- Completion sequence (no completion claim before all of these):
+  1. all 57 historical folds plus scen-report finish;
+  2. rerun the saved-ledger check (dev_ledger_reconcile, adapted to the historical calendar), the coordinator's independent global fit-key checker over all records, and local_gate_reconcile on scenario_historical;
+  3. reconcile the keyed report metrics and coverage;
+  4. the formal whole-task trellis-check and the spot/close audit.
+
+  Actual availability facts are still pending. No further probe expansion and no fit beyond the approved schedule. The exact-PID watcher (b6jy9u0gd, kill -0 1439211) is maintained.
+- 2026-10-03T17:41:20-04:00 Formal read-only trellis-check dispatched (native trellis-check sub-agent, background). Scope: diff e843682..ca86bf7 plus current evidence, R1–R6/AC1–AC7 and the Stage 1/2/3/reporting/actual contracts. No fixes, edits, fits or task-state changes. Report goes to research/trellis-check-progress.md. Items needing historical/actual/evaluation evidence are marked INCOMPLETE. This is not a whole-task pass and not the independent spot/close audit.
+  - Agent handle: trellis-check background agent a887e4af4dd5052fa (Claude Agent tool). 10-minute limit: if it is unfinished at 10 min, partial findings are collected and the agent is stopped.
+- Formal read-only trellis-check (agent a887e4af4dd5052fa) finished in about 526 s, within the 10-minute limit. It received a wrap-up message at about 7.5 min; no stop was needed. Report: research/trellis-check-progress.md. Implementation/current-evidence checkpoint only; NOT a whole-task pass and NOT the independent spot/close audit.
+  - Code identity: `git diff --stat b43ef6a ca86bf7 -- FEWSNETGeoXGBExperiment` is empty, so the 165-test evidence is reused (caveat: a stale smoke-filename fix was verified by digest, not rerun). No tests rerun.
+  - About 30 PASS items:
+    - Stage 1 roles, weights and support; E2 strictness (10,874 decisions, 0 undefined-parent accepts);
+    - Stage 2 crisis E4, NA and routes;
+    - Stage 3 gate, masks and cache;
+    - selection;
+    - reporting/bootstrap and actual/evaluate as code.
+
+    All cited hashes were recomputed and match.
+  - INCOMPLETE: historical report values, actual 2025, truth evaluation, experts, AC4–AC7, and the D18 map-selection-bias disclosure in the final report.
+  - NOT REVIEWED (time limit): line-level prepare_fourclass.write_scenario_inputs, acceptance.accept_fold internals, the full test diff, the README, and the probe bodies.
+  - Findings (none changes a development result):
+    1. stage3.py:253: the declared label window (provenance; closed for development globals by the independent checker; rerun on historical).
+    2. stage3.py:445–457: internal gate locals save no fit-key digest (provenance; support-only).
+    3. run_experiment.py:668–689 load_extension: compares all 69 sources; first/last month not enforced; the splice makes the overlap check true by construction (required behaviour, actual-only, disclosed).
+    4. Fit budget: no realized count against 147,889; 21 crashed partials ≤ 1,323 outside it (provenance; countable at completion).
+  - Limitation L1: ACLED is natively NaN at the 2025 origins, a training/prediction shift that needs a reviewed disclosure before scen-actual.
+  - Previously uncited hash: frozen recipe `scenario_final/frozen.json` sha 2344ab59…573e (verified).
+- Executor addendum appended to research/trellis-check-progress.md; the reviewer text is unchanged. Corrections:
+  1. No exact realized fit count. Stage 1 candidate fit_log exists only for completed candidates; there is no counter for internal/local/crashed fits. Cite the schedule bound 147,889 plus crash overhead ≤ 1,323.
+  2. L1 narrowed to the observed 2025-vs-2024-baseline contrast.
+  3. Post-fix ScenarioDriverSmoke 2/2 (375.880 s, /tmp/smoke_final.log) recorded alongside the pre-fix 163/163 and the digest bridge.
+  4. Finding 3 is a loader limitation for arbitrary input, not a failure of the verified extension.
+  5. Partial historical folds exist; completed historical/report evidence does not.
+  6. Sub-agent a887e4af4dd5052fa is terminal (about 526 s, within the 10-min bound).
+  7. The NOT REVIEWED areas need a bounded follow-up at the final check.
+- 2026-10-03T17:53:17-04:00 Follow-up formal read-only trellis-check dispatched: trellis-check background agent a9bf05248ad5de381, started 2026-10-03T17:53:17-04:00, 10-minute bound. Scope: the previously NOT REVIEWED items only (write_scenario_inputs line-level plus callers; scen-* acceptance functions incl. whether the legacy accept_fold is used; test diff coverage against the contracts; README; the 4 relied-on probe bodies). Report: research/trellis-check-followup.md. No fixes or edits; historical/actual outputs stay INCOMPLETE.
+- Follow-up trellis-check (agent a9bf05248ad5de381, started 17:53) finished on its own after about 221 s, within the 10-minute bound; no stop was needed. Report: research/trellis-check-followup.md. Read-only; no tests rerun, no fit, run dir untouched. Not a whole-task pass and not the spot/close audit.
+  - PASS: write_scenario_inputs plus its dataflow (window, release, B w/3 grouped variants, per-variant history with the outer exclusion, F/S/C split on original keys before augmentation, real-run refusals, pinned feature order). Acceptance (with one finding). README commands and interfaces.
+  - Findings (none result-affecting):
+    - scen_select (run_experiment.py:796) and scen_report (:997) call accept_fold with a partial identity (strategy/horizon/k/target only). Evidence-only, because scen-develop accepted every fold with the full identity.
+    - No negative test for accept_scenario_stage1 against the real completion writer (test gap).
+    - No scenario-path C-label permutation test.
+    - No select/report mismatched-fold refusal test.
+    - Five-level/80-round limits not retested on the scenario path.
+    - README still says real fitting is blocked by data-readiness.md (stale for 2018–2024).
+    - check_scenario_fit_keys.py takes the inherited outer exclusion from the record under test.
+    - check_scenario_selection.py takes truth/persistence from the saved predictions.
+    - dev_ledger_reconcile.py imports package code (consistency only).
+    - Stage 1 acceptance does not flag unexpected root folders; the inventory check ignores unrecorded files.
+  - Executor cross-reference (not a reviewer conclusion):
+    - The fit-key probe's inherited-exclusion dependence is covered for development by two other checks. dev_ledger_reconcile checks each internal global's excluded_months = hidden(O,k) (package-based, consistency). local_gate_reconcile derives the internal pool's outer mask from the fold origin independently.
+    - For persistence, dev_ledger_reconcile recomputes the latest lawful source month (package-based).
+  - Still INCOMPLETE: historical (live), actual 2025, truth evaluation, report bootstrap values, experts.
+  - Still NOT REVIEWED (time-bounded): most new test bodies, scen_report past line 1000, scen_evaluate, line-by-line local_gate_reconcile / check_scenario_selection, S-row weight handling inside run_candidate. Carried to a bounded follow-up at the final check.
+- Follow-up triage (coordinator):
+  - F1/F3/F4: generic acceptance/inventory limitations, no live-run invalidation. The final check must compare each fold's map_id/phase/prepared SHA with the frozen/current expected values.
+  - F2a is exercised by the 648 accepted roots; the missing negative test is kept as test debt. F2d: inherited limits via source/config.
+  - F5: README status corrected (FEWSNETGeoXGBExperiment/README.md: historical D7 resolved by the user-confirmed reconstructed reference_month_end convention; final-2025 inputs pending). Commands unchanged. README is outside code_identity: identity still fd25e2f7…, 65 files, equal to HEAD and the selection record. The package tree is dirty (README) until committed; phase_launch.sh checks cleanliness only at launch, so the running launcher is unaffected.
+- (A) Scenario-path C-label permutation check (implement §5), synthetic fixture only, no real data. Probe research/probes/c_permutation_check.py; summary c_permutation_check_summary.json; exit 0, **PASS** for A and B.
+  - C labels changed (109 membership labels per strategy; input cells 218 for A, 436 for B). F/S labels and roles unchanged; C keys never F/S (0 overlap; B's 420 C variant rows unused).
+  - 6 child fits exercised per run. All 14 checkpoint model files are byte-identical.
+  - The same-input determinism control has 0 differences. The only differing file is confirmation_predictions.csv.gz (the declared C diagnostic). candidate.json is identical apart from the declared 'confirmation'/'timings' blocks.
+  - The initial comparator run reported pass=false. It is preserved in research/probes/c_permutation_check_initial_failed.json (transcribed from the console; the file had been overwritten).
+  - Diagnosis: the identical input produced the same differences. Decompressed CSV columns were equal; candidate.json differed only in the checkpoints.dir scratch path.
+  - Comparator-only corrections: (i) gzip container metadata (compare decompressed content, row order kept); (ii) the scratch checkpoint dir path normalised to relative (checkpoint SHA inventory and model bytes still compared). Plus explicit requirement checks and a nonzero exit.
+  - This was a comparator artifact, NOT a model difference.
+- (B) local_gate_reconcile.py extended (sha 26d6e261…; output 8acfd935…; exits nonzero on problems; exit 0), all 72 folds, 0 problems.
+  - Forecast truth at T: 411,696 rows.
+  - Persistence class/source month/age = latest lawful label ≤ O: 387,768 rows.
+  - 72 outer globals and 396 internal gate globals linked to saved records with origin/strategy/k/excluded/masked derived independently from the fold origin and k.
+  - This closes F6/F7 beyond the package-consistency check. Together with the coordinator's fit-key checker it removes the inherited-exclusion dependence for the development globals.
+  - Negative control (persistence < O; internal mask without the outer exclusion): exit 1, 24 k0 persistence folds and 264 internal globals flagged, as expected.
+  - Uncovered: internal local per-key provenance, features, booster internals, historical folds.
+- Coordinator accepted the bounded verification closures for F2b (C-permutation, summary c19924dd…7ee83) and F6/F7 (extended local/gate, output 8acfd935…74390).
+  - Disclosure: the initial comparator outcome (pass=false) was NOT byte-preserved. The original summary file was overwritten by the corrected run before preservation. research/probes/c_permutation_check_initial_failed.json is a transcript/narrative of the console output and diagnosis, not the original file.
+  - Package diff: README only.
+  - No further probe or test expansion.
+  - Next: await all 57 historical folds plus scen-report, then run the queued final reconciliations and the report recount.
+  - The formal overall check stays incomplete until those and the actual-2025-dependent evidence are resolved. No task closure.
+- Coordinator checkpoint: launcher 1439211 and child 1439316 are live at 21/57; the audit run stays active, no lifecycle change. Completion steps:
+  1. Explicitly verify each historical fold's phase, map_id (frozen 8965af6d6a724ba5d61d) and prepared/availability SHAs against the frozen expectations, in addition to the saved acceptors.
+  2. Reuse the independent key, local and gate checks.
+  3. Recount the metrics.
+  The actual availability question is still pending; it is not inferred from absent files.
+- 2026-10-03 20:29 HISTORICAL + REPORT COMPLETE. Launcher 1439211 exited; scen-historical took 11,761 s and scen-report 14 s, no traceback.
+  - Hashes: historical.json 67153c534d382ed9f30feb0982d37c680d221d243ad819c1dfd8f2a7d5de9d79; report.json 4c0efad070a92accd06d65e0ceb514f0f230af0a40c91f55eb81fe78b6bf7b2b.
+  - Post-run reconciliations, all exit 0 with 0 problems:
+    1. Identity and inventory: probes/historical_identity_check.py f1269cf9… / summary 4bce3b8c…. 57/57 folds equal calendar × k (H4 10, H8 9, design calendar, all with truth); phase, frozen strategy/map, prepared sha, same-H availability digest and selection code/runtime all match; the binding chain holds; the saved acceptors pass (accept_fold 57/57).
+    2. Coordinator fit-key checker (eed66e0d…, unchanged) over ALL globals: scenario_fit_keys_review_final.json 1f02f807…. 654/654 records.
+    3. local_gate_reconcile.py a6924fa6… on scenario_historical: output 7751ff1e…. 57/57 folds; 232 outer locals; 969 regions; 5,764 gate blocks; 325,926 forecast rows; 317,612 persistence rows; 57 outer and 342 internal globals linked. The development rerun with the same probe reproduces 8acfd935… byte-for-byte.
+  - The probe change is compatibility only: the route is read from consensus.json where historical folds lack map_route.
+  - implement.md: ledger-reconciliation and freeze items ticked; the historical item stays open pending the coordinator's metric recount.
+  - Limits: internal-local support-only evidence; features and booster internals not verified.
+  - Actual availability is still pending.
+- Coordinator independent historical metric recount COMPLETE (exit 0, problems = []).
+  - Coverage: 325,926 forecast rows, 138 country rows, 36 paired comparisons (12 unavailable-expert routes). Checked hashes and binding, forecast-to-report row equality, truth, argmax, Study1/2 counts and F1/P/R, paired bootstrap CIs and country fields.
+  - Byte-exact copies: research/probes/historical_metric_review.py (759a4a69…a1ff) and research/historical_metric_review.json (88d21073…2bf9).
+- research/historical-results.md written: Study1/Study2 spec tables, matched n/CI/coverage, negative results, caveats (D18, earlier exposure, availability reconstruction, limited bootstrap, fit budget, evidence limits), and a supplementary per-target-month table derived from saved rows with no fits.
+  - Study1 Δ vs persistence: H4 −.015986/+.007265/−.004412; H8 −.046298 (CI [−.0961, −.0015], entirely negative)/−.033383/−.018419.
+  - Δ vs pooled from −.000487 to +.001571.
+  - The Study2 k0 persistence F1 = 0 is mechanical.
+  - No expert table was supplied.
+- implement.md: historical-evaluation item ticked (execution plus recount only). Not a whole-task or audit pass. Actual-2025 is still pending its availability facts; no close.
+- Documentation clarification only (coordinator review of historical-results.md; no numbers changed, no new analysis):
+  1. Study2 denominators labelled. F1/Δ columns are persistence-matched. Model onset recall uses all risk-set keys; persistence recall uses matched keys. The unqualified higher-recall comparison was removed.
+  2. Δ vs pooled is stated as all genuine keys, in both tables.
+  3. 'Model does not beat persistence' replaced by 'no Study1 cell has a positive Δ CI excluding zero'; the H4 k1 positive estimate is kept.
+  4. implement §3 frozen-map pin item reconciled with §6 (ticked: frozen.json 2344ab59…); actual prediction artifacts, availability and truth stay open.
+  Coordinator independently recounted all 57 monthly table cells from saved predictions: 0 discrepancies. Historical checkpoint accepted within scope. Waiting for the pending actual country/product availability facts. Overall task and audit incomplete.
+  - historical-results.md after the clarifications: sha 431ea61b50ad79d694c394d31911eb4a903dfeace242cd913d8189a03dcc3dff. The Study2 interruption statement is scoped to k ≥ 1, with the k0 CI exclusion noted as mechanical.
+- 2026-10-03 ACTUAL-CS AVAILABILITY RESOLVED. The user answered "可以确认" to the explicit all-covered-countries question: no new CS after 2024-10 at the 2025-02 and 2025-06 origins, so missed service cycles are 1 and 2 (0 at 2024-10 under the inherited convention).
+  - Table `research/launch/actual_availability.csv`: sha 673651082fd1ee33be390f66ce7ce596e2756971ae4bb66a318f34316acb556c; 66 rows = 22 countries × 3 origins; evidence=reconstructed; the source cites the user attestation, with no verified-vintage claim.
+  - SD disclosure: its prepared last observed cycle is 2024-06 (ages 4/8/12). No October label is manufactured, and no extra missed SD publication is inferred.
+  - Preflight `research/probes/actual_preflight.py` (388e8e95…) → summary da5f4301…, 0 problems:
+    - the code's actual_gate_intensity gives 22 × 0/1/2;
+    - the ledger has no cycle after 2024-10;
+    - extension v2 (72a766c6…) scaffold through 2025-06;
+    - frozen accepted; scenario_actual absent; code fd25e2f7… = selection.
+  - Initial preparation outcome preserved: the 63-row draft without SD (aee0df58…) was refused by the code for the missing SD (summary d977878b…). This was a preparation outcome, not a source blocker.
+  - D7 addenda added to design.md and prd.md (no metric or scientific contract change); readiness and implement updated.
+  - Launcher `research/probes/actual_launch.sh` (bd713324…): 4 cases, fresh output, pinned Python and env. NOT launched; awaiting coordinator review/commit.
+  - The README modification must be committed first (the launcher checks for a clean tree). The CSV needs `git add -f`.
+  - Truth and expert values stay protected.
+- FROZEN PACKET (pre-commit), after the coordinator's provenance and README corrections:
+  - **Table** research/launch/actual_availability.csv: sha 185e2c790d0b9d11102bceea0a5925947b99116ad4d3531a1148974eb9804b59. 66 rows; the source wording attributes the attestation to the coordinator conversation, relayed via Herdr (44 rows changed, values unchanged).
+    - Superseded v1 kept: launch/actual_availability.v1_superseded.csv 67365108…556c (wording "in the executor session").
+    - Earlier draft kept: launch/actual_availability.pending_SD.csv aee0df58….
+  - **Preflight** rerun on the final table: research/probes/actual_preflight_summary.json 2a78935695bdc681102b3b9d52ded764a9638378ea5760c927a7adf1406154c9. 66 rows, 22 × 0/1/2, problems [].
+    - Superseded: v1 da5f4301… (actual_preflight_summary.v1_superseded.json).
+    - Initial 63-row: d977878b… (actual_preflight_summary.initial_63rows.json).
+    - Probe actual_preflight.py 388e8e95….
+  - **Launcher** research/probes/actual_launch.sh: bd713324cb431ca67bab333a3e037829f84cdd24aeb416d30e80b8e1439b1473. Exact command in next-phase-readiness.md.
+  - **Extension** manifest v2 72a766c6…81d6; CSV 0d6b78ca…8b05.
+  - **README** (documentation-only status, sha c5ff299a1f3db6e5bc4bc5874ea7314eac1f25636f1d4785731ce6ec00b89941): actual CS availability is a prepared user-attested reconstruction (0/1/2, reconstructed, not verified vintages); frozen 2025 predictions, the truth release/crosswalk and expert coverage are pending.
+  - **Code identity** fd25e2f7… (65 files) unchanged.
+  - **Commit needs:** README, the task docs (design/prd/implement/PROGRESS/readiness/historical-results/dev-ledger…), the research probes and JSONs, and `git add -f` for the launch CSVs (*.csv is git-ignored).
+  - NOT launched; awaiting the coordinator commit and release.

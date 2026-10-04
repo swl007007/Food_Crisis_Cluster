@@ -1,0 +1,460 @@
+{
+ "table": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\.trellis\\tasks\\10-02-exogenous-transition-forecast-design\\research\\launch\\actual_availability.pending_SD.csv",
+ "table_sha256": "aee0df58eaea30f43d901e1d7c5585d2be7d33820f6dbf673d5d3d1f58055634",
+ "manifest": "C:\\Users\\swl00\\geoxgb_runs\\scen-b43ef6a-v1.actual-inputs-v1\\extension_manifest.v2.json",
+ "manifest_sha256": "72a766c626d699814aa532f8f973d9c5dde9fd041bf15bb64bd99d6ef44c81d6",
+ "rows": 63,
+ "actual_cases": [
+  [
+   "2025-10",
+   4
+  ],
+  [
+   "2025-10",
+   8
+  ],
+  [
+   "2025-06",
+   4
+  ],
+  [
+   "2025-06",
+   8
+  ]
+ ],
+ "origins_needed": [
+  "2024-10",
+  "2025-02",
+  "2025-06"
+ ],
+ "table_counts": {
+  "2024-10": {
+   "0": [
+    "AF",
+    "BF",
+    "BI",
+    "CD",
+    "CM",
+    "ET",
+    "GT",
+    "HT",
+    "KE",
+    "MG",
+    "ML",
+    "MW",
+    "MZ",
+    "NE",
+    "NG",
+    "SO",
+    "SS",
+    "TD",
+    "UG",
+    "YE",
+    "ZW"
+   ]
+  },
+  "2025-02": {
+   "1": [
+    "AF",
+    "BF",
+    "BI",
+    "CD",
+    "CM",
+    "ET",
+    "GT",
+    "HT",
+    "KE",
+    "MG",
+    "ML",
+    "MW",
+    "MZ",
+    "NE",
+    "NG",
+    "SO",
+    "SS",
+    "TD",
+    "UG",
+    "YE",
+    "ZW"
+   ]
+  },
+  "2025-06": {
+   "2": [
+    "AF",
+    "BF",
+    "BI",
+    "CD",
+    "CM",
+    "ET",
+    "GT",
+    "HT",
+    "KE",
+    "MG",
+    "ML",
+    "MW",
+    "MZ",
+    "NE",
+    "NG",
+    "SO",
+    "SS",
+    "TD",
+    "UG",
+    "YE",
+    "ZW"
+   ]
+  }
+ },
+ "frozen_recipe": {
+  "4": {
+   "released": true,
+   "strategy": "A",
+   "map_id": "8965af6d6a724ba5d61d"
+  },
+  "8": {
+   "released": true,
+   "strategy": "A",
+   "map_id": "8965af6d6a724ba5d61d"
+  }
+ },
+ "cohort_countries": [
+  "AF",
+  "BF",
+  "BI",
+  "CD",
+  "CM",
+  "ET",
+  "GT",
+  "HT",
+  "KE",
+  "MG",
+  "ML",
+  "MW",
+  "MZ",
+  "NE",
+  "NG",
+  "SD",
+  "SO",
+  "SS",
+  "TD",
+  "UG",
+  "YE",
+  "ZW"
+ ],
+ "gate_intensity": {
+  "2024-10": "REFUSED: actual 2024-10: no availability entry for countries ['SD']; run refused",
+  "2025-02": "REFUSED: actual 2025-02: no availability entry for countries ['SD']; run refused",
+  "2025-06": "REFUSED: actual 2025-06: no availability entry for countries ['SD']; run refused"
+ },
+ "ledger_last_cycle": {
+  "AF": "2024-10",
+  "BF": "2024-10",
+  "BI": "2024-10",
+  "CD": "2024-10",
+  "CM": "2024-10",
+  "ET": "2024-10",
+  "GT": "2024-10",
+  "HT": "2024-10",
+  "KE": "2024-10",
+  "MG": "2024-10",
+  "ML": "2024-10",
+  "MW": "2024-10",
+  "MZ": "2024-10",
+  "NE": "2024-10",
+  "NG": "2024-10",
+  "SD": "2024-06",
+  "SO": "2024-10",
+  "SS": "2024-10",
+  "TD": "2024-10",
+  "UG": "2024-10",
+  "YE": "2024-10",
+  "ZW": "2024-10"
+ },
+ "ledger_cycles_after_2024_10": 0,
+ "latest_lawful_cs_by_origin": {
+  "2024-10": {
+   "AF": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "BF": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "BI": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "CD": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "CM": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "ET": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "GT": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "HT": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "KE": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "MG": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "ML": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "MW": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "MZ": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "NE": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "NG": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "SD": {
+    "latest_cs": "2024-06",
+    "age_months": 4
+   },
+   "SO": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "SS": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "TD": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "UG": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "YE": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   },
+   "ZW": {
+    "latest_cs": "2024-10",
+    "age_months": 0
+   }
+  },
+  "2025-02": {
+   "AF": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "BF": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "BI": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "CD": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "CM": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "ET": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "GT": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "HT": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "KE": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "MG": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "ML": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "MW": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "MZ": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "NE": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "NG": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "SD": {
+    "latest_cs": "2024-06",
+    "age_months": 8
+   },
+   "SO": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "SS": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "TD": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "UG": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "YE": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   },
+   "ZW": {
+    "latest_cs": "2024-10",
+    "age_months": 4
+   }
+  },
+  "2025-06": {
+   "AF": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "BF": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "BI": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "CD": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "CM": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "ET": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "GT": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "HT": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "KE": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "MG": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "ML": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "MW": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "MZ": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "NE": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "NG": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "SD": {
+    "latest_cs": "2024-06",
+    "age_months": 12
+   },
+   "SO": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "SS": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "TD": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "UG": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "YE": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   },
+   "ZW": {
+    "latest_cs": "2024-10",
+    "age_months": 8
+   }
+  }
+ },
+ "scaffold": [
+  5718,
+  "2010-01",
+  "2025-06"
+ ],
+ "scenario_actual_exists": false,
+ "code_identity": {
+  "sha256": "fd25e2f7b30d9be34273e95b2b69b387c2fa0892e153244c5bdfc7dba0f05b94",
+  "files": 65
+ },
+ "problems": [
+  "2024-10: actual 2024-10: no availability entry for countries ['SD']; run refused",
+  "2025-02: actual 2025-02: no availability entry for countries ['SD']; run refused",
+  "2025-06: actual 2025-06: no availability entry for countries ['SD']; run refused"
+ ]
+}
