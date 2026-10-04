@@ -1,4 +1,4 @@
-# Implementation-ready identities for supervisor review (2026-10-04)
+# Implementation-ready identities for supervisor review (2026-10-04, refreshed after P2/P3 and P4/P5 reviews)
 
 State: **awaiting supervisor release of formal P6**. No formal fit, Stage1 map,
 Stage3 prediction or report has been produced on project data. P1 has one
@@ -6,17 +6,18 @@ development preparation (`p1-dev-20261004`, superseded by the formal prepare).
 
 ## Code
 
-- Implementation commit: `13e74b5581623dbfc94b9aed629230c8239b20c4` on
-  `ipcch-cumulative-share-geoxgb` (parent chain from foundation `e1f0e65`:
-  cf26c4e P1, 567fb3e P1 fix, 8a83580 P2, 0087683 P3, 791b4fd P2 review fixes,
-  13e74b5 P4/P5). 41 package files; blob ids in
+- Implementation commit: `91552d04826b322073e0a40c17d49313e173cb1b` on `ipcch-cumulative-share-geoxgb`
+  (chain from foundation `e1f0e65`: cf26c4e P1, 567fb3e P1 fix, 8a83580 P2,
+  0087683 P3, 791b4fd P2 review fixes, 13e74b5 P4/P5, 3597834 P2/P3 review
+  fixes, 91552d0 P4/P5 review fixes). Package blob ids in
   `evidence/implementation-ready-code-identity.txt`.
-- Tests on the pinned runtime: **218 passed** (`evidence/P4P5-pytest.log`).
+- Tests on the pinned runtime: **261 passed** (`evidence/P4P5-review-pytest.log`);
+  review evidence in `P2P3-review-evidence.md` and `P4P5-review-evidence.md`.
 - Provenance: `config/source-provenance.json` (sha256 `3a77066b…6fabc`):
   20 copied/adapted components, 5 reference-only sources, 7 new components,
   0 pending.
 
-## Frozen configuration (unchanged since the P0 freeze)
+## Frozen configuration (scientific files unchanged since the P0 freeze)
 
 | File | SHA256 |
 |---|---|
@@ -56,11 +57,11 @@ python -m ipcch_geoxgb report    --run-id p6-formal-<date>
 python -m ipcch_geoxgb replay    --run-id p6-formal-<date>   # must report zero failures
 ```
 
-Stage1 maps are frozen (map SHA256 + freeze record) by `learn-map` before
-`predict` may read them; `predict` refuses a map whose digest differs. After
-`learn-map` I will report the frozen maps/winners and the exact planned Stage3
-request enumeration (R48) before or alongside the Stage3 run, per supervisor
-preference. Any R41 technical failure stops the stage (exit 4) and is reported
+Stage1 maps are frozen by `learn-map` (map SHA256 + freeze record bound to H,
+prepared data, Stage1 summary and selection winner) before `predict` may read
+them. Per the supervisor's instruction, after `learn-map` I stop at a checkpoint
+and report frozen-map diagnostics plus the exact Stage3 request enumeration and
+unique-fit budget (R48) before running `predict`. Any R41 technical failure stops the stage (exit 4) and is reported
 with partial evidence; no retuning, retries with changed settings or skipped
 folds.
 
