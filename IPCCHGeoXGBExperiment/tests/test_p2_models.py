@@ -11,7 +11,7 @@ import pytest
 from ipcch_geoxgb import metrics, projection, quartet
 from ipcch_geoxgb.contract import load_experiment_contract
 from ipcch_geoxgb.errors import ContractError, TechnicalError
-from ipcch_geoxgb.modelstore import ModelStore, array_digest
+from ipcch_geoxgb.modelstore import ModelStore, array_digest, target_digests
 
 CONTRACT = load_experiment_contract()
 
@@ -184,8 +184,11 @@ def test_local_cannot_override_base_score(fitted):
 # ------------------------------------------------------------ store
 
 
-def _identity(X, Y, keys, scope="stage3-global"):
-    return {"scope": scope, "h": 3, "keys": array_digest(keys), "X": array_digest(X), "Y": array_digest(Y), "recipe": "G1"}
+def _identity(X, Y, keys, scope="stage3-global", rounds=5):
+    params, _ = quartet.global_params(CONTRACT, "G1")
+    return {"scope": scope, "h": 3, "keys": array_digest(keys), "X": array_digest(X), "Y": array_digest(Y),
+            "recipe": "G1", "params": params, "rounds": rounds, "n_rows": int(len(Y)),
+            "y_sha256": target_digests(Y)}
 
 
 def test_store_fits_once_then_hits_and_distinct_identities_do_not_collide(tmp_path):
@@ -207,7 +210,7 @@ def test_store_fits_once_then_hits_and_distinct_identities_do_not_collide(tmp_pa
     keys2[[0, 1]] = keys2[[1, 0]]  # same set, different order -> different identity
     _, e3 = store.get_or_fit(_identity(X, Y, keys2), fit, {"use": "U3"})
     assert e3["status"] == "fit" and e3["identity_sha256"] != e1["identity_sha256"]
-    assert store.counts == {"requests": 3, "hits": 1, "fits": 2}
+    assert store.counts == {"requests": 3, "hits": 1, "fits": 2, "failed": 0}
     assert len((tmp_path / "ledger.jsonl").read_text().splitlines()) == 3
 
 

@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 from ipcch_geoxgb import metrics
-from ipcch_geoxgb.artifacts import sha256_file, write_json
+from ipcch_geoxgb.artifacts import record_incomplete, sha256_file, write_json
 from ipcch_geoxgb.errors import TechnicalError
 
 DRAWS = 2000
@@ -134,6 +134,16 @@ def diagnostics(frame: pd.DataFrame, by: str) -> pd.DataFrame:
 
 
 def run_report(run_dir: Path) -> dict:
+    """Report for all H; any exception leaves a durable INCOMPLETE record (R41)."""
+    context: dict = {"stage": "report"}
+    try:
+        return _run_report(run_dir, context)
+    except Exception as error:
+        record_incomplete(run_dir, "report", context, error)
+        raise
+
+
+def _run_report(run_dir: Path, context: dict) -> dict:
     stage3_dir = run_dir / "stage3"
     s3 = json.loads((stage3_dir / "stage3-summary.json").read_text(encoding="utf-8"))
     out = run_dir / "report"
@@ -144,6 +154,7 @@ def run_report(run_dir: Path) -> dict:
                                  "or future-year uncertainty; no multiplicity adjustment"),
               "horizons": {}}
     for h, info in s3["horizons"].items():
+        context.update(H=int(h))
         path = stage3_dir / f"h{int(h):02d}" / "predictions.csv.gz"
         if sha256_file(path) != info["predictions_sha256"]:
             raise TechnicalError(f"H{h} predictions do not match the Stage3 summary digest")

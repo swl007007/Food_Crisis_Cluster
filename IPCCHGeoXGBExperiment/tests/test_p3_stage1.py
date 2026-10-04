@@ -90,7 +90,8 @@ def test_smoothing_ignores_outside_and_isolated_areas():
 def test_component_diagnostics():
     neighbours = {1: [2], 2: [1, 3], 3: [2], 4: [], 5: [9]}
     d = stage1.component_diagnostics(np.array([1, 2, 3, 4, 5]), neighbours)
-    assert d == {"areas": 5, "components": 3, "largest_component": 3, "isolated_areas": 2}
+    assert d == {"areas": 5, "components": 3, "largest_component": 3, "isolated_areas": 2,
+                 "component_sizes": [3, 1, 1]}
 
 
 # ------------------------------------------------------------ support and route gate
@@ -184,7 +185,8 @@ def _run(contract, oracle=True, max_depth=None):
         contract["partition"]["max_member_depth"] = max_depth
     calls = []
 
-    def fit_local(areas, mask):
+    def fit_local(areas, mask, child_id, parent_id):
+        assert child_id.startswith(parent_id) and len(child_id) == len(parent_id) + 1
         calls.append((tuple(areas), int(mask.sum())))
         return f"local{len(calls)}", FakeQuartet(2 if oracle else 1)
 

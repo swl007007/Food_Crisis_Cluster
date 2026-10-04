@@ -21,21 +21,50 @@ import numpy as np
 import pandas as pd
 
 from ipcch_geoxgb import metrics, quartet, stage1
-from ipcch_geoxgb.artifacts import sha256_file, write_json
+from ipcch_geoxgb.artifacts import record_incomplete, sha256_file, write_json
 from ipcch_geoxgb.contract import input_path, load_experiment_contract, load_feature_schema, load_inputs
 from ipcch_geoxgb.errors import ContractError, TechnicalError
 from ipcch_geoxgb.geography import load_adjacency_cache
-from ipcch_geoxgb.modelstore import ModelStore, array_digest
+from ipcch_geoxgb.modelstore import ModelStore, array_digest, target_digests
 from ipcch_geoxgb.preflight import verify_identities
 from ipcch_geoxgb.runtime import probe_runtime
 
 QUARTET_CODE = Path(quartet.__file__)
 
 
-def verify_prepared(prepared: Path) -> dict:
-    """Re-hash every prepared artifact against its manifest entry (identity binding)."""
+FIXED_PREPARED_ARTIFACTS = (
+    "target_ledger.csv.gz",
+    "target_ledger_valid.csv.gz",
+    "stage1_split.csv.gz",
+    "fold_calendar.csv",
+    "coverage_2026.csv",
+    "feature_order.csv",
+)
+
+
+def required_prepared_artifacts(horizons) -> set[str]:
+    """The complete prepared inventory the contract requires (implement.md P1)."""
+    names = set(FIXED_PREPARED_ARTIFACTS)
+    for h in horizons:
+        names |= {f"X_rich561_h{int(h):02d}.npy", f"keys_h{int(h):02d}.csv.gz"}
+    return names
+
+
+def verify_prepared(prepared: Path, horizons) -> dict:
+    """Require the complete artifact inventory and re-hash every entry (identity binding).
+
+    An omitted or unexpected manifest entry is a stop: a consumer must never
+    read a prepared file whose digest the manifest does not bind.
+    """
     manifest_path = prepared / "prepared-manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    claimed = set(manifest.get("artifacts_sha256", {}))
+    required = required_prepared_artifacts(horizons)
+    if claimed != required:
+        raise TechnicalError(
+            f"prepared manifest inventory mismatch: missing {sorted(required - claimed)}, "
+            f"unexpected {sorted(claimed - required)}"
+        )
     for name, digest in manifest["artifacts_sha256"].items():
         if sha256_file(prepared / name) != digest:
             raise TechnicalError(f"prepared artifact {name} does not match its manifest digest")
@@ -79,12 +108,22 @@ def key_digest(frame: pd.DataFrame) -> str:
 
 
 def run_learn_map(run_dir: Path) -> dict:
+    """Stage1 for all H; any exception leaves a durable INCOMPLETE record (R41)."""
+    context: dict = {"stage": "stage1"}
+    try:
+        return _run_learn_map(run_dir, context)
+    except Exception as error:
+        record_incomplete(run_dir, "stage1", context, error)
+        raise
+
+
+def _run_learn_map(run_dir: Path, context: dict) -> dict:
     started = time.time()
     contract = load_experiment_contract()
     schema = load_feature_schema()
     inputs = load_inputs()["inputs"]
     prepared = run_dir / "prepared"
-    bound = verify_prepared(prepared)
+    bound = verify_prepared(prepared, contract["calendar"]["horizons_months"])
     env = environment_identity()
     out = run_dir / "stage1"
     out.mkdir()
@@ -102,6 +141,7 @@ def run_learn_map(run_dir: Path) -> dict:
     summary = {"stage": "P3-stage1", "base_identity": base_identity, "horizons": {}}
 
     for h in contract["calendar"]["horizons_months"]:
+        context.update(H=h, G=None, L=None, candidate=None)
         keys, X = load_horizon(prepared, h)
         roles = split.rename(columns={"month_ord": "target_ord"})[["admin_code", "target_ord", "split_role"]]
         tagged = keys.reset_index().merge(roles, on=["admin_code", "target_ord"], how="left", validate="one_to_one")
@@ -114,25 +154,33 @@ def run_learn_map(run_dir: Path) -> dict:
         Y_fit = fit_keys[Y_COLS].to_numpy(dtype=np.float64)
         fit_identity = {"targets": list(quartet.TARGETS),
                         "fit_scope": "stage1-F (2014-01..2022-12 within-area earliest halves)",
-                        "fit_keys": key_digest(fit_keys), "X": array_digest(X_fit), "Y": array_digest(Y_fit)}
+                        "fit_keys": key_digest(fit_keys), "X": array_digest(X_fit), "Y": array_digest(Y_fit),
+                        "n_rows": int(len(fit_keys)), "y_sha256": target_digests(Y_fit)}
         hdir = out / f"h{h:02d}"
         hdir.mkdir()
         entries = []
+        # exact prepared-row references for every fit request (rows index keys_hNN / X_rich561_hNN)
+        rows_ref = {"keys_artifact_sha256": bound["manifest"]["artifacts_sha256"][f"keys_h{h:02d}.csv.gz"],
+                    "X_artifact_sha256": bound["manifest"]["artifacts_sha256"][f"X_rich561_h{h:02d}.npy"]}
         for gid in contract["model"]["global_recipes"]:
+            context.update(G=gid, L=None, candidate=None)
             gparams, grounds = quartet.global_params(contract, gid)
             g_identity = {**base_identity, "scope": "stage1-global", "H": h, "G": gid, "params": gparams,
                           "rounds": grounds, **fit_identity}
             root_quartet, root_use = store.get_or_fit(
                 g_identity,
                 lambda: quartet.fit_global_quartet(X_fit, Y_fit, gparams, grounds),
-                {"stage": "stage1", "H": h, "G": gid, "purpose": "root_global"},
+                {"stage": "stage1", "H": h, "G": gid, "purpose": "root_global", "node_id": stage1.ROOT_ID,
+                 "prepared_rows": fit_rows.tolist(), **rows_ref},
             )
             root = (root_use["identity_sha256"], root_quartet)
             for lid in contract["model"]["local_recipes"]:
                 lparams, lrounds = quartet.local_params(contract, lid)
                 name = f"{gid}{lid}"
+                context.update(L=lid, candidate=name)
 
-                def fit_local(areas, mask, gid=gid, lid=lid, lparams=lparams, lrounds=lrounds, root=root):
+                def fit_local(areas, mask, child_id, parent_id, gid=gid, lid=lid, lparams=lparams,
+                              lrounds=lrounds, root=root, name=name):
                     child_keys = fit_keys[mask]
                     Xc, Yc = X_fit[mask], Y_fit[mask]
                     identity = {**base_identity, "scope": "stage1-local", "H": h, "G": gid, "L": lid,
@@ -140,11 +188,15 @@ def run_learn_map(run_dir: Path) -> dict:
                                 "params": lparams, "rounds": lrounds,
                                 "region_areas": array_digest(np.asarray(areas, dtype=np.int64)),
                                 "global_identity": root[0], "global_boosters": root[1].booster_shas(),
-                                "fit_keys": key_digest(child_keys), "X": array_digest(Xc), "Y": array_digest(Yc)}
+                                "fit_keys": key_digest(child_keys), "X": array_digest(Xc), "Y": array_digest(Yc),
+                                "n_rows": int(len(child_keys)), "y_sha256": target_digests(Yc)}
                     q, use = store.get_or_fit(
                         identity,
                         lambda: quartet.continue_local_quartet(root[1], Xc, Yc, lparams, lrounds),
-                        {"stage": "stage1", "H": h, "candidate": name, "purpose": "child_local"},
+                        {"stage": "stage1", "H": h, "candidate": name, "purpose": "child_local",
+                         "node_id": child_id, "parent_node_id": parent_id,
+                         "members": [int(a) for a in areas],
+                         "prepared_rows": fit_rows[mask].tolist(), **rows_ref},
                     )
                     return use["identity_sha256"], q
 

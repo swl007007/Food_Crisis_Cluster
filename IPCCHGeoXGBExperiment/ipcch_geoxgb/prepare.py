@@ -21,7 +21,7 @@ import pandas as pd
 
 from ipcch_geoxgb import features as feat
 from ipcch_geoxgb import schedule, targets
-from ipcch_geoxgb.artifacts import sha256_file, write_json
+from ipcch_geoxgb.artifacts import record_incomplete, sha256_file, write_json
 from ipcch_geoxgb.contract import input_path, load_experiment_contract, load_feature_schema, load_inputs
 from ipcch_geoxgb.errors import ContractError
 from ipcch_geoxgb.geography import load_country_lookup
@@ -107,6 +107,15 @@ def build_horizon(
 
 
 def run_prepare(run_dir: Path, inputs_config: dict | None = None) -> dict:
+    """P1 preparation; any exception leaves a durable INCOMPLETE record (R41)."""
+    try:
+        return _run_prepare(run_dir, inputs_config)
+    except Exception as error:
+        record_incomplete(run_dir, "prepared", {"stage": "prepare"}, error)
+        raise
+
+
+def _run_prepare(run_dir: Path, inputs_config: dict | None = None) -> dict:
     started = time.time()
     contract = load_experiment_contract()
     schema = load_feature_schema()

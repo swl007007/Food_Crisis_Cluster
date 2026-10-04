@@ -49,7 +49,12 @@ def _prepared(run):
     split = keys[["admin_code", "target_ord", "phase_truth", "crisis_truth"]].rename(columns={"target_ord": "month_ord"})
     split["split_role"] = np.where(split["month_ord"] < 24000 + N_MONTHS // 2, "fit", "validation")
     split.to_csv(prepared / "stage1_split.csv.gz", index=False)
-    artifacts = {n: sha256_file(prepared / n) for n in ("X_rich561_h01.npy", "keys_h01.csv.gz", "stage1_split.csv.gz")}
+    for name in ("target_ledger.csv.gz", "target_ledger_valid.csv.gz", "fold_calendar.csv", "coverage_2026.csv",
+                 "feature_order.csv"):  # complete inventory; contents unused by learn-map
+        (prepared / name).write_bytes(b"placeholder\n")
+    names = ("X_rich561_h01.npy", "keys_h01.csv.gz", "stage1_split.csv.gz", "target_ledger.csv.gz",
+             "target_ledger_valid.csv.gz", "fold_calendar.csv", "coverage_2026.csv", "feature_order.csv")
+    artifacts = {n: sha256_file(prepared / n) for n in names}
     write_json(prepared / "prepared-manifest.json",
                {"artifacts_sha256": artifacts, "availability_policy": {"id": "observation-month-end-v1"}})
     return keys

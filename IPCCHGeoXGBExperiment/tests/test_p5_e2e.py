@@ -71,7 +71,10 @@ def _write_prepared(run):
     cal["target_month"] = [f"{o // 12:04d}-{o % 12 + 1:02d}" for o in cal["target_ord"]]
     cal["fold_id"] = [f"main_h{H:02d}_{m}" for m in cal["target_month"]]
     cal.to_csv(prepared / "fold_calendar.csv", index=False)  # last fold (M0+48) has no keys -> ledger only
-    names = [f"X_rich561_h{H:02d}.npy", f"keys_h{H:02d}.csv.gz", "stage1_split.csv.gz", "fold_calendar.csv"]
+    for name in ("target_ledger.csv.gz", "target_ledger_valid.csv.gz", "coverage_2026.csv", "feature_order.csv"):
+        (prepared / name).write_bytes(b"placeholder\n")
+    names = [f"X_rich561_h{H:02d}.npy", f"keys_h{H:02d}.csv.gz", "stage1_split.csv.gz", "fold_calendar.csv",
+             "target_ledger.csv.gz", "target_ledger_valid.csv.gz", "coverage_2026.csv", "feature_order.csv"]
     write_json(prepared / "prepared-manifest.json",
                {"artifacts_sha256": {n: sha256_file(prepared / n) for n in names},
                 "availability_policy": {"id": "observation-month-end-v1"}})

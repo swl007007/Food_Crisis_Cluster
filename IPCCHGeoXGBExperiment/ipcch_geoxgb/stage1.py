@@ -158,7 +158,7 @@ def component_diagnostics(areas: np.ndarray, neighbours: dict[int, list[int]]) -
         sizes.append(size)
     isolated = sum(1 for a in members if not any(n in members for n in neighbours.get(a, ())))
     return {"areas": len(members), "components": len(sizes), "largest_component": max(sizes, default=0),
-            "isolated_areas": isolated}
+            "isolated_areas": isolated, "component_sizes": sorted(sizes, reverse=True)}
 
 
 # ----------------------------------------------------------- R28/R29 support
@@ -253,7 +253,7 @@ def search_candidate(
     X_fit: np.ndarray,
     X_val: np.ndarray,
     root: tuple[str, Quartet],
-    fit_local,  # callable(child_areas, rows_mask) -> (digest, Quartet)
+    fit_local,  # callable(child_areas, rows_mask, child_node_id, parent_node_id) -> (digest, Quartet)
     neighbours: dict[int, list[int]],
     contract: dict,
 ) -> tuple[SearchResult, dict[str, Quartet]]:
@@ -277,10 +277,14 @@ def search_candidate(
             if depth >= part["max_member_depth"]:
                 result.terminal.append(node)
                 continue
-            decision, children = _attempt_split(
-                node, fit_keys, val_keys, X_fit, X_val, fit_area, val_area, providers,
-                fit_local, neighbours, fit_floor, val_floor, part,
-            )
+            try:
+                decision, children = _attempt_split(
+                    node, fit_keys, val_keys, X_fit, X_val, fit_area, val_area, providers,
+                    fit_local, neighbours, fit_floor, val_floor, part,
+                )
+            except Exception as error:  # R41: annotate, never convert into a fallback
+                error.add_note(f"stage1 node {node.node_id} (depth {depth}, {len(node.areas)} areas)")
+                raise
             result.decisions.append(decision)
             if children is None:
                 result.terminal.append(node)
@@ -318,6 +322,8 @@ def _attempt_split(node, fit_keys, val_keys, X_fit, X_val, fit_area, val_area, p
     smoothed = smooth(candidate, neighbours, part["smoothing_rounds"])
     side_areas = [np.array(sorted(a for a, v in smoothed.items() if v == k), dtype=np.int64) for k in (0, 1)]
     switched = sum(1 for a in candidate if candidate[a] != smoothed[a])
+    record.update({"child_ids": [node.node_id + "0", node.node_id + "1"],
+                   "child_members": [side_areas[0].tolist(), side_areas[1].tolist()]})
     record.update({"sizes_before_smoothing": [int(len(found.s0)), int(len(found.s1))],
                    "sizes_after_smoothing": [int(len(side_areas[0])), int(len(side_areas[1]))],
                    "smoothing_switched": switched})
@@ -342,7 +348,7 @@ def _attempt_split(node, fit_keys, val_keys, X_fit, X_val, fit_area, val_area, p
         truth_side.append(val_keys["phase_truth"].to_numpy()[rows])
         parent_phase_side.append(route_predictions(providers[node.provider], X_val[rows])[2])
         if eligible[k]:
-            digest, quartet = fit_local(side_areas[k], fit_mask[k])
+            digest, quartet = fit_local(side_areas[k], fit_mask[k], node.node_id + str(k), node.node_id)
             providers[digest] = quartet
             child_quartets[k] = digest
             child_phase[k] = route_predictions(quartet, X_val[rows])[2]

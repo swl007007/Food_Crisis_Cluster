@@ -6,9 +6,10 @@ row's raw predictions.
 
 Method. Pool-adjacent-violators (PAVA) for a non-increasing fit: adjacent
 blocks that violate the order are merged and replaced by the mean of their
-original values, computed with ``math.fsum`` (exactly rounded), so finite
-inputs of any magnitude keep their block structure (an SSE-ranking of
-candidate partitions loses the comparison when |q_raw| is huge). Rows already
+original values, computed with ``math.fsum`` (exactly rounded); if that sum
+would overflow float64 the mean is taken as ``fsum(v / n)`` instead, so every
+finite float64 input has a finite result (an SSE-ranking of candidate
+partitions loses the comparison when |q_raw| is huge). Rows already
 non-increasing are returned unchanged. With constant bounds [0, 1] on every
 coordinate, the bounded optimum is that isotonic solution clipped to [0, 1].
 Clipping *before* the isotonic step is not equivalent and is not used.
@@ -29,6 +30,14 @@ THRESHOLD = 0.20
 N_TARGETS = 4
 
 
+def _block_mean(values: list[float]) -> float:
+    try:
+        return math.fsum(values) / len(values)
+    except OverflowError:  # |sum| beyond float64: scale first (each term then fits)
+        n = len(values)
+        return math.fsum(v / n for v in values)
+
+
 def _pava_row(values: list[float]) -> list[float]:
     blocks: list[list[float]] = []  # each block: its original values
     means: list[float] = []
@@ -38,7 +47,7 @@ def _pava_row(values: list[float]) -> list[float]:
         while len(means) > 1 and means[-2] < means[-1]:  # non-increasing violated
             merged = blocks[-2] + blocks[-1]
             blocks[-2:] = [merged]
-            means[-2:] = [math.fsum(merged) / len(merged)]
+            means[-2:] = [_block_mean(merged)]
     out: list[float] = []
     for block, mean in zip(blocks, means):
         out.extend([mean] * len(block))

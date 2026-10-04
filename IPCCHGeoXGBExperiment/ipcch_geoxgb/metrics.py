@@ -160,6 +160,8 @@ def r_squared(truth, prediction) -> tuple[float | None, str]:
     Constancy is decided on the exact values BEFORE any mean is formed: a
     floating mean of identical values can differ from them in the last bit and
     turn SST into ~1e-33, which would produce a meaningless huge negative R².
+    If a non-constant SST underflows to 0, or SST/SSE overflow, the ratio is
+    not representable in float64 and R² is NA with that reason (never +/-inf).
     """
     y = _finite_vector(truth, "q3 truth")
     f = _finite_vector(prediction, "q3 prediction", n=y.shape[0])
@@ -167,8 +169,15 @@ def r_squared(truth, prediction) -> tuple[float | None, str]:
         return None, "n < 2"
     if np.all(y == y[0]):
         return None, "constant truth (SST = 0)"
-    sst = float(((y - y.mean()) ** 2).sum())
-    return 1.0 - float(((y - f) ** 2).sum()) / sst, ""
+    with np.errstate(over="ignore", under="ignore"):
+        sst = float(((y - y.mean()) ** 2).sum())
+        sse = float(((y - f) ** 2).sum())
+    if not (np.isfinite(sst) and np.isfinite(sse)) or sst == 0.0:
+        return None, "SST/SSE not representable in float64"
+    value = 1.0 - sse / sst
+    if not np.isfinite(value):
+        return None, "SST/SSE not representable in float64"
+    return value, ""
 
 
 def metric_panel(truth_phase, pred_phase, q3_true=None, q3_star=None, q3_raw=None) -> dict:

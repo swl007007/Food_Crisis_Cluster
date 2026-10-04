@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 from ipcch_geoxgb import stage3
-from ipcch_geoxgb.artifacts import sha256_file, write_json
+from ipcch_geoxgb.artifacts import record_incomplete, sha256_file, write_json
 from ipcch_geoxgb.contract import load_experiment_contract, load_feature_schema
 from ipcch_geoxgb.errors import TechnicalError
 from ipcch_geoxgb.learnmap import environment_identity, load_horizon, verify_prepared
@@ -36,11 +36,21 @@ def load_frozen(stage1_dir: Path, h: int) -> tuple[dict, dict]:
 
 
 def run_predict(run_dir: Path) -> dict:
+    """Stage3 for all H; any exception leaves a durable INCOMPLETE record (R41)."""
+    context: dict = {"stage": "stage3"}
+    try:
+        return _run_predict(run_dir, context)
+    except Exception as error:
+        record_incomplete(run_dir, "stage3", context, error)
+        raise
+
+
+def _run_predict(run_dir: Path, context: dict) -> dict:
     started = time.time()
     contract = load_experiment_contract()
     schema = load_feature_schema()
     prepared = run_dir / "prepared"
-    bound = verify_prepared(prepared)
+    bound = verify_prepared(prepared, contract["calendar"]["horizons_months"])
     artifacts = bound["manifest"]["artifacts_sha256"]
     env = environment_identity()
     stage1_dir = run_dir / "stage1"
@@ -57,6 +67,7 @@ def run_predict(run_dir: Path) -> dict:
     }
     summary = {"stage": "P4-stage3", "base_identity": base_identity, "horizons": {}}
     for h in contract["calendar"]["horizons_months"]:
+        context.update(H=h, fold_id=None, origin_ord=None)
         frozen, region_of = load_frozen(stage1_dir, h)
         keys, X = load_horizon(prepared, h)
         ctx = stage3.HorizonContext(
@@ -73,6 +84,8 @@ def run_predict(run_dir: Path) -> dict:
         predictions, ledger = [], []
         with open(hdir / "gate_decisions.jsonl", "w", encoding="utf-8", newline="\n") as gate_log:
             for fold in folds.to_dict("records"):
+                context.update(fold_id=fold["fold_id"], target_ord=int(fold["target_ord"]),
+                               origin_ord=int(fold["origin_ord"]), period=fold["period"])
                 result = stage3.run_fold(ctx, fold)
                 ledger.append(result["ledger"])
                 if result["predictions"] is not None:

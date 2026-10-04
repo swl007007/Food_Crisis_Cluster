@@ -84,10 +84,15 @@ def base_score(booster: xgb.Booster) -> str:
 def resolved_config(booster: xgb.Booster) -> dict:
     """The booster's resolved configuration captured AT FIT TIME.
 
-    A reloaded UBJ model can report reset non-model training defaults, so the
-    record keeps this fit-time snapshot rather than a later reload's view.
+    A reloaded UBJ model can report reset non-model training defaults (e.g.
+    max_depth 6), so the record keeps this fit-time snapshot and its digest
+    rather than a later reload's view.
     """
     return json.loads(booster.save_config())
+
+
+def config_digest(config: dict) -> str:
+    return hashlib.sha256(json.dumps(config, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
 def prefix_identity(booster: xgb.Booster, rounds: int | None = None) -> dict:
@@ -146,6 +151,7 @@ def fit_global(X, y, params: dict, rounds: int) -> tuple[xgb.Booster, dict]:
         "rounds_total": rounds,
         "params": params,
         "resolved_config": resolved_config(booster),
+        "resolved_config_sha256": config_digest(resolved_config(booster)),
         "base_score": base_score(booster),
         "structure_sha256": prefix_identity(booster)["sha256"],
         "booster_sha256": sha(booster),
@@ -194,6 +200,7 @@ def continue_local(parent_bytes: bytes, X, y, params: dict, rounds: int) -> tupl
         "rounds_total": n0 + rounds,
         "params": params,
         "resolved_config": resolved_config(child),
+        "resolved_config_sha256": config_digest(resolved_config(child)),
         "base_score": base_score(child),
         "parent_structure_sha256": parent_prefix["sha256"],
         "child_prefix_structure_sha256": child_prefix["sha256"],
@@ -218,7 +225,16 @@ class Quartet:
     def predict_raw(self, X) -> np.ndarray:
         """(n, 4) raw q2..q5 predictions; any NaN/Inf or shape error stops (R41)."""
         X = check_X(X)
-        return np.column_stack([predict_scalar(self._loaded[q], X) for q in TARGETS]) if len(X) else np.zeros((0, 4))
+        if not len(X):
+            return np.zeros((0, 4))
+        columns = []
+        for q in TARGETS:
+            try:
+                columns.append(predict_scalar(self._loaded[q], X))
+            except Exception as error:
+                error.add_note(f"target {q} prediction")
+                raise
+        return np.column_stack(columns)
 
     def booster_shas(self) -> dict:
         return {q: hashlib.sha256(self.payloads[q]).hexdigest() for q in TARGETS}
@@ -230,7 +246,11 @@ def fit_global_quartet(X, Y, params: dict, rounds: int) -> Quartet:
         raise TechnicalError(f"targets must be (n, 4), got {Y.shape}")
     boosters, records = {}, {}
     for k, q in enumerate(TARGETS):
-        booster, record = fit_global(X, Y[:, k], params, rounds)
+        try:
+            booster, record = fit_global(X, Y[:, k], params, rounds)
+        except Exception as error:
+            error.add_note(f"target {q} global fit")
+            raise
         boosters[q], records[q] = raw(booster), {**record, "target": q}
     return Quartet(boosters, records)
 
@@ -250,7 +270,11 @@ def continue_local_quartet(global_quartet: Quartet, X, Y, params: dict, rounds: 
         raise TechnicalError(f"targets must be (n, 4), got {Y.shape}")
     boosters, records = {}, {}
     for k, q in enumerate(TARGETS):
-        child, record = continue_local(global_quartet.payloads[q], X, Y[:, k], params, rounds)
+        try:
+            child, record = continue_local(global_quartet.payloads[q], X, Y[:, k], params, rounds)
+        except Exception as error:
+            error.add_note(f"target {q} local continuation")
+            raise
         boosters[q], records[q] = raw(child), {**record, "target": q}
     return Quartet(boosters, records)
 

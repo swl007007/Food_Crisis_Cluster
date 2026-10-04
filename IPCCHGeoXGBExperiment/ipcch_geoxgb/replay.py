@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 from ipcch_geoxgb.artifacts import sha256_file
+from ipcch_geoxgb.learnmap import verify_prepared
 from ipcch_geoxgb.modelstore import array_digest
 
 Q = ("q2", "q3", "q4", "q5")
@@ -89,6 +90,11 @@ def replay_run(run_dir: Path, contract: dict) -> dict:
     max_dates = contract["calendar"]["historical_gate_max_dates"]
     records = _model_records(run_dir / "models")
     keys_by_h, regions_by_h = {}, {}
+    try:
+        verify_prepared(prepared, [int(h) for h in summary3["horizons"]])
+        c.check("prepared.inventory_and_digests", True)
+    except Exception as error:  # recorded as a failed check, replay continues
+        c.check("prepared.inventory_and_digests", False, str(error))
 
     for h_str, info in summary3["horizons"].items():
         h = int(h_str)

@@ -88,6 +88,8 @@ def existing_run(run_id: str):
     run_dir = RUNS_DIR / run_id
     if not (run_dir / "prepared" / "prepared-manifest.json").is_file():
         raise ContractError(f"run {run_id!r} has no completed prepare stage")
+    if (run_dir / "RUN_INCOMPLETE.json").exists():
+        raise ContractError(f"run {run_id!r} is marked incomplete (R41); start a new run id after the fix")
     return run_dir
 
 

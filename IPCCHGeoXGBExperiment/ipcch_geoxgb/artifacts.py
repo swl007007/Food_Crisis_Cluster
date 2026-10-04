@@ -37,6 +37,38 @@ def write_json(path: Path | str, payload: object) -> str:
     return sha256_file(path)
 
 
+def record_incomplete(run_dir: Path | str, stage: str, context: dict, error: BaseException) -> Path:
+    """R41: durable incomplete-run record with context, cause and retained partial evidence.
+
+    Writes ``<run>/<stage>/INCOMPLETE.json`` and ``<run>/RUN_INCOMPLETE.json``;
+    the run is not resumed or counted complete afterwards. Partial files are
+    listed, not deleted.
+    """
+    import time  # noqa: PLC0415
+    import traceback  # noqa: PLC0415
+
+    run_dir = Path(run_dir)
+    stage_dir = run_dir / stage
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    partial = sorted(str(p.relative_to(run_dir)).replace("\\", "/") for p in stage_dir.rglob("*") if p.is_file())
+    payload = {
+        "status": "incomplete",
+        "stage": stage,
+        "context": context,
+        "error_type": type(error).__name__,
+        "error": str(error),
+        "notes": list(getattr(error, "__notes__", [])),
+        "traceback": traceback.format_exception(type(error), error, error.__traceback__),
+        "partial_evidence": partial,
+        "recorded_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+    text = json.dumps(payload, indent=2, default=str) + "\n"
+    for path in (stage_dir / "INCOMPLETE.json", run_dir / "RUN_INCOMPLETE.json"):
+        if not path.exists():
+            path.write_text(text, encoding="utf-8")
+    return stage_dir / "INCOMPLETE.json"
+
+
 def new_run_dir(run_id: str, runs_root: Path | str = RUNS_DIR) -> Path:
     """Create a fresh run directory; existing run IDs are immutable."""
     if not _RUN_ID.match(run_id):

@@ -1,0 +1,14 @@
+versions 3.0.0 2.2.6 2.2.3
+fit vs UBJ reload {'eta': ('0.0500000007', '0.300000012'), 'max_depth': ('3', '6'), 'subsample': ('0.800000012', '1')}
+missing_fit_records TechnicalError fit record for q2 is missing
+missing_target TechnicalError fit record for q3 is missing
+incomplete_config TechnicalError q3: resolved config does not match its fit-time digest
+wrong_params TechnicalError q3: recorded requested params differ from the identity
+wrong_train_config TechnicalError q3: resolved config does not match its fit-time digest
+wrong_provenance TechnicalError q3: recorded fitting rows differ from the identity
+null_config TechnicalError q3: params/resolved_config are not objects
+structured object TechnicalError array_digest needs a numeric/fixed-width array, not one holding objects
+clean cache snapshot preserved True hit
+clean local cache hit True
+corrupt local parent TechnicalError q3: local parent digest differs from the identity's global booster
+local as global TechnicalError local continuation requires a global quartet, got kinds {'q2': 'local', 'q3': 'local', 'q4': 'local', 'q5': 'local'}

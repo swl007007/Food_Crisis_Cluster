@@ -28,7 +28,7 @@ import pandas as pd
 
 from ipcch_geoxgb import metrics, projection, quartet, schedule
 from ipcch_geoxgb.errors import ContractError, TechnicalError
-from ipcch_geoxgb.modelstore import ModelStore, array_digest
+from ipcch_geoxgb.modelstore import ModelStore, array_digest, target_digests
 from ipcch_geoxgb.stage1 import meets, support
 
 STAGE3_GAIN = Fraction(1, 100)
@@ -84,6 +84,8 @@ class HorizonContext:
             "fitting_origin": origin,
             "window": [lo, hi],
             "fit_rows": array_digest(np.asarray(rows, dtype=np.int64)),
+            "n_rows": int(len(rows)),
+            "y_sha256": target_digests(self.Y[rows]),
             "fit_keys": array_digest(keys),
             "X_artifact_sha256": self.artifact_sha["X"],
             "keys_artifact_sha256": self.artifact_sha["keys"],
@@ -194,7 +196,11 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
                 if not in_region.any():
                     continue
                 val = u_rows[in_region]
-                local_ref, sup = ctx.local_quartet(v, region, (gv_digest, gv), {**tag, "use": "gate", "gate_month": int(u)})
+                try:
+                    local_ref, sup = ctx.local_quartet(v, region, (gv_digest, gv), {**tag, "use": "gate", "gate_month": int(u)})
+                except Exception as error:
+                    error.add_note(f"stage3 H{h} {fold['fold_id']} gate month {int(u)} region {region}")
+                    raise
                 if local_ref is not None:
                     _, _, phase_l = predict(local_ref[1], ctx.X[val])
                     ok, local_digest = True, local_ref[0]
@@ -218,7 +224,11 @@ def run_fold(ctx: HorizonContext, fold: dict) -> dict:
             if not rows_te.any():
                 decision.update(route="no_current_keys")
             elif decision["enabled"]:
-                local_ref, sup = ctx.local_quartet(origin, region, (g_ref_digest, g_cur), {**tag, "use": "current"})
+                try:
+                    local_ref, sup = ctx.local_quartet(origin, region, (g_ref_digest, g_cur), {**tag, "use": "current"})
+                except Exception as error:
+                    error.add_note(f"stage3 H{h} {fold['fold_id']} current region {region}")
+                    raise
                 decision["current_fit_support"] = sup
                 if local_ref is not None:
                     r, s, p = predict(local_ref[1], ctx.X[eval_rows[rows_te]])
