@@ -11,8 +11,8 @@ Scope: `IPCCHGeoXGBExperiment/` and this task's documentation/evidence.
 | Science/spec/grill | component-complete | R1–R51; source-grounded clarifications in implement.md |
 | Baseline/context/manifests | complete | Committed `6c98f73c` |
 | Audit binding/start | complete | Run `7ced754ea36c48c0a6d24ba2a17addec` active, base_sha `6c98f73c…`, executor session `afc97c82…`/`term_65d044bdb69412`; first attempt refused by in_progress 10-03, user-authorized native archive (housekeeping commit `8160f68`); see audit-start-evidence.md |
-| P0 infrastructure | **awaiting_supervisor_foundation_freeze** | P0 `fe2ea0dc` reviewed; two preflight corrections + LF-normalized evidence committed after it (subject "P0 review corrections ..."); 70 tests pass, preflight `p0-preflight-20261004b` passed; see P0-evidence.md |
-| Foundation freeze | pending | Codex reviews actual P0 artifacts/checks and releases same Claude |
+| P0 infrastructure | component-complete | Accepted `e1f0e6568398d5a6c2164909279abcff89ab6ab5`; Codex full rerun 70 passed; current preflight evidence identity verified |
+| Foundation freeze | component-complete | foundation-freeze.md; same Claude released to implement.md P1–P6 with phase supervision |
 | P1 data/features | pending | Depends on foundation freeze |
 | P2 quartet/metrics | pending | Depends on foundation freeze and data contracts |
 | P3 Stage1 | pending | Depends on P1/P2 |
@@ -28,6 +28,7 @@ validation passed (P0-evidence.md); this is not performance evidence. No audit
 pass is claimed.
 
 Resume: reconcile this ledger with Git, the three authority documents, the live
-Claude identity and audit run `7ced754ea36c48c0a6d24ba2a17addec`. Do not start
-P1 until Codex records the accepted foundation SHA.
-Next: Codex verifies the review-correction commit and records the accepted foundation SHA; Claude waits (no P1, no fitting).
+Claude identity and audit run `7ced754ea36c48c0a6d24ba2a17addec`.
+Next: Claude executes P1 data/features and subsequent released phases under
+implement.md, reporting phase commits/evidence to Codex. Before P6 formal fits,
+report the implementation-ready identity for supervisor verification.

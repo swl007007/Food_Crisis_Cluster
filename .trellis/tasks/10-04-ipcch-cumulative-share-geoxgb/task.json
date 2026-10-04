@@ -30,6 +30,8 @@
     "spec_version": "1.0",
     "execution_authority": "R51",
     "progress_ledger": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/PROGRESS.md",
-    "foundation_freeze": "pending"
+    "foundation_freeze": "e1f0e6568398d5a6c2164909279abcff89ab6ab5",
+    "foundation_review": "foundation-freeze.md",
+    "execution_release": "P1-P6 under implement.md; supervisor phase checks and pre-P6 identity verification"
   }
 }
