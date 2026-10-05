@@ -8,16 +8,37 @@ Four scalar XGBoost regressors (q2..q5 cumulative population shares) share one
 spatial partition map per horizon H ∈ {1, 3, 6, 12}; predictions are projected
 to `1 >= q2 >= q3 >= q4 >= q5 >= 0` and decoded with phase `>= 0.20`.
 
-## Status: P0 foundation only
+## Status: implementation and formal run complete
 
 | Command | Status |
 |---|---|
 | `validate-config` | implemented — validates `config/*.json` against the accepted contract |
 | `runtime-probe` | implemented — compares the interpreter with `config/runtime-lock.json` |
 | `preflight --run-id ID` | implemented — read-only input identity, geometry, cache and raw-key checks |
-| `prepare`, `learn-map`, `predict`, `report` | **not implemented** (P1–P5); exit code 3, nothing written |
+| `prepare --run-id ID` | QC targets, rich561 features, Stage1 F/S split and evaluation calendars |
+| `learn-map --run-id ID` | Stage1 candidate search and frozen winning maps; no consensus Stage2 |
+| `predict --run-id ID` | rolling Stage3, historical local-model gates, matched pooled and persistence |
+| `report --run-id ID` | saved-prediction metrics, coverage and paired country bootstrap |
+| `replay --run-id ID` | independently recomputes saved evidence and model predictions |
 
-No model has been fitted and no scientific result exists in this package yet.
+Formal run `p6-formal-20261004b` completed with implementation frozen at
+`6798df21ea87d4916c7f36fa6e0753c32bb3ef98`: 291 tests passed and saved-artifact
+replay passed 91,880 checks with zero failures. This README was updated after
+the run; executable code and scientific configuration remain frozen.
+
+The spatial layer showed no demonstrated gain over matched pooled predictions.
+Main-period crisis F1 gains over persistence were small, with all four country
+bootstrap intervals including zero. Recall/F2 and paired q3 R² improved while
+precision, binary accuracy and four-class macro F1 fell. The 2026 supplement is
+reported separately and reverses the crisis-F1 difference at H12.
+
+- [Chinese group-meeting report](../docs/notes/2026-10-04_组会讨论稿_IPCCH人口份额与GeoXGB.md)
+- [Complete metric and country tables](../docs/notes/2026-10-04_IPCCH_GeoXGB_指标附表.md)
+- [Archived task and scientific contract](../.trellis/tasks/archive/2026-10/10-04-ipcch-cumulative-share-geoxgb/)
+- [Results and evidence](../.trellis/tasks/archive/2026-10/10-04-ipcch-cumulative-share-geoxgb/P6-results.md)
+- [Final closure](../.trellis/tasks/archive/2026-10/10-04-ipcch-cumulative-share-geoxgb/final-closure.md):
+  supervisor verification retained; close and spot audits waived by the user,
+  not an independent audit pass.
 
 ## Running
 
@@ -31,6 +52,16 @@ directory on the import path explicitly:
 PY=/mnt/c/Users/swl00/AppData/Local/Microsoft/WindowsApps/python3.12.exe
 PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb validate-config
 PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb preflight --run-id <new-id>
+
+# The preflight ID and prepared scientific-run ID are distinct.
+# For a separately authorized new experiment, use fresh IDs; do not overwrite
+# the completed p6-formal-20261004b run.
+PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb prepare --run-id <new-scientific-id>
+PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb learn-map --run-id <new-scientific-id>
+# Inspect the frozen-map and fit-budget checkpoint before predict.
+PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb predict --run-id <new-scientific-id>
+PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb report --run-id <new-scientific-id>
+PYTHONPATH=IPCCHGeoXGBExperiment WSLENV=PYTHONPATH/p "$PY" -m ipcch_geoxgb replay --run-id <new-scientific-id>
 
 # tests (from IPCCHGeoXGBExperiment/)
 PYTHONPATH=. WSLENV=PYTHONPATH/p "$PY" -m pytest -q
@@ -47,12 +78,15 @@ arguments, 3 phase not implemented.
 - `config/experiment-contract.json` — frozen scientific constants (horizons,
   calendar, G1–G4/L1–L2 recipes, gates, support floors, budgets).
 - `config/feature-schema.json` — ordered rich561 names, semantics
-  `ipcch-geoxgb-rich561-ge020-v1` (values are rebuilt in P1 under `>= 0.20`).
+  `ipcch-geoxgb-rich561-ge020-v1` (values are rebuilt by prepare under `>= 0.20`).
 - `config/inputs.json` — read-only external inputs with byte/SHA256 identities.
 - `config/runtime-lock.json` — interpreter and package pins.
-- `config/source-provenance.json` — copied/adapted spans, pending sources and
+- `config/source-provenance.json` — copied/adapted spans, source inventory and
   removed legacy dependencies.
-- `runs/<run-id>/` — run outputs (git-ignored; existing run IDs are immutable).
+- `runs/<run-id>/` — local run outputs (git-ignored; existing run IDs are immutable).
+  Raw inputs, prepared arrays and fitted models are not shipped in Git. The
+  archived task contains compact reports, logs and the final path/size/SHA256
+  inventory; reproducing the full fit requires the pinned external inputs.
 
 ## Inputs and limits
 
