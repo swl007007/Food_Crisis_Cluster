@@ -29,7 +29,9 @@
     "superseded_by": ".trellis/tasks/10-02-exogenous-transition-forecast-design",
     "stopped_at_sha": "097d98b1dda543fd481a57b3728dc3b41c175393",
     "audit_run": "ed632775e46b47598bcfc53ef088bf8e (administratively closed, outcome incomplete, no audit job)",
-    "closure_note": "closure-note-incomplete.md"
+    "closure_note": "closure-note-incomplete.md",
+    "archivedAt": "2026-10-04",
+    "archive_note": "Archived at user request \"10-01的这个任务也可以close掉了。\"; task.py archive sets status=completed, restored to incomplete (user cancellation, see closure-note-incomplete.md)."
   },
   "closedAt": "2026-10-02"
 }
