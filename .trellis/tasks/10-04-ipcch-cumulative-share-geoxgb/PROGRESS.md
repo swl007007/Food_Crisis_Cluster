@@ -18,8 +18,8 @@ Scope: `IPCCHGeoXGBExperiment/` and this task's documentation/evidence.
 | P3 Stage1 | implemented, checked | 175 tests pass (synthetic + end-to-end with real quartets/adjacency, test-only small contract); see P3-evidence.md |
 | P4 Stage3 | implemented, checked | synthetic tests; see P4P5-evidence.md |
 | P5 report/replay | implemented, checked | 218 tests pass incl. end-to-end replay and tamper detection; see P4P5-evidence.md |
-| P6 formal run/delivery | complete on run b; awaiting supervisor acceptance | run a `p6-formal-20261004` R41 file-lock stop (preserved); run b `p6-formal-20261004b` (code 6798df2): learn-map 429 fits; predict 796 fits/0 failed, reconciled with enumeration; report sha 142d717d…; replay passed 91 880 checks/0 failures; GeoXGB≈pooled (|ΔF1|≤.0003), vs persistence ΔF1 +.003..+.008 with CIs incl. 0; see P6-results.md |
-| Controller close audit | pending | Only after complete committed delivery |
+| P6 formal run/delivery | complete on run b; supervisor-accepted (p6-supervisor-acceptance.md); final post-replay inventory added | run a `p6-formal-20261004` R41 file-lock stop (preserved); run b `p6-formal-20261004b` (code 6798df2): learn-map 429 fits; predict 796 fits/0 failed, reconciled with enumeration; report sha 142d717d…; replay passed 91 880 checks/0 failures; GeoXGB≈pooled (|ΔF1|≤.0003), vs persistence ΔF1 +.003..+.008 with CIs incl. 0; see P6-results.md |
+| Controller close audit | released to bound executor | trellis-audit close after evidence commit; queued is not acceptance |
 
 P0 built the independent package foundation. P1 added the QC ledger, phase
 truth, rich561 matrices, F/S split and calendars (development run only). No

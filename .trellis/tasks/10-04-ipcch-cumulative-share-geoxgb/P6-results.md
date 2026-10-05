@@ -137,3 +137,19 @@ Main-period deltas vs persistence (GeoXGB − persistence, E_persist), other met
   the report's `interpretation` field. There is no training/map-selection or
   shared-shock uncertainty and no multiplicity adjustment.
 - 2026 supplementary results are point estimates on four target months only.
+
+## Correction (post-replay inventory, after supervisor acceptance review)
+
+`evidence/p6-formal-20261004b-inventory.json` is a **pre-replay** snapshot, kept
+unchanged. It lists report/ as 25 files / 1 109 403 bytes because replay had
+not yet written `report/replay-independent.json` (11 502 bytes). The labeled
+final inventory is `evidence/p6-formal-20261004b-final-inventory-post-replay.csv`
+(produced by `evidence/final_inventory.py`; written outside the run). It lists
+6416 files / 2 844 204 271 bytes with run-relative path, size and sha256:
+models 6125, prepared 15, report 26 (1 120 905 bytes), stage1 110,
+stage3 140. There are no .tmp or INCOMPLETE files. CSV sha256
+7c96007f7311604200523cbf9e03e65576c5ebb92c5afb98f1e955257aa2b6d0.
+`evidence/p6-formal-20261004b-replay-independent.json` is a byte-identical copy
+of the run's replay result (sha256 1195716881b8509c53efd47b1d22920b6cb5c6d3952185f9ce316953682e30e0).
+This is bookkeeping only: no scientific file, code, fit output or failed run a
+changed. Supervisor note: `p6-supervisor-acceptance.md`.
