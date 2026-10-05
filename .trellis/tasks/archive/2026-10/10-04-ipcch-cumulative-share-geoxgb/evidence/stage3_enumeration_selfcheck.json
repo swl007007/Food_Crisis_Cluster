@@ -1,0 +1,47 @@
+{
+ "enumerated": {
+  "winner": "G1L1",
+  "accepted_split": true,
+  "terminal_regions": 2,
+  "scored_folds": 8,
+  "scheduled_folds": 9,
+  "requests_quartets": {
+   "current_global": 8,
+   "historical_global": 48,
+   "historical_local_exact": 96,
+   "historical_local_unsupported_fallback": 0,
+   "current_local_upper": 16
+  },
+  "requests_total_upper": 168,
+  "gate_region_folds": 16,
+  "gate_region_folds_with_support": 16,
+  "distinct_global_quartets_exact": 17,
+  "distinct_local_quartets_exact": 26,
+  "distinct_current_local_quartets_upper_not_shared": 8,
+  "distinct_scalar_fits_exact": 172,
+  "distinct_scalar_fits_upper": 204
+ },
+ "production": {
+  "current_global": 8,
+  "historical_global": 48,
+  "historical_local": 96,
+  "current_local": 16,
+  "distinct_global": 17,
+  "distinct_local": 34,
+  "statuses": {
+   "fit": 51,
+   "hit": 117
+  }
+ },
+ "production_current_local_distinct": 16,
+ "checks": {
+  "current_global_exact": true,
+  "historical_global_exact": true,
+  "historical_local_exact": true,
+  "current_local_within_upper": true,
+  "distinct_global_exact": true,
+  "distinct_hist_local_exact": true,
+  "distinct_local_within_upper": true
+ },
+ "status": "passed"
+}

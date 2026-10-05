@@ -1,0 +1,26 @@
+FAILED tests/test_review_residuals.py::test_cohort_metadata_rewrites_are_caught_even_with_regenerated_report[country]
+FAILED tests/test_review_residuals.py::test_cohort_metadata_rewrites_are_caught_even_with_regenerated_report[period]
+FAILED tests/test_review_residuals.py::test_persistence_q3_rewrite_is_caught
+FAILED tests/test_review_residuals.py::test_report_evidence_tampers_are_caught[bootstrap_country_counts]
+FAILED tests/test_review_residuals.py::test_report_evidence_tampers_are_caught[bootstrap_defined_counts]
+FAILED tests/test_review_residuals.py::test_report_evidence_tampers_are_caught[confusion_zeroed]
+FAILED tests/test_review_residuals.py::test_report_evidence_tampers_are_caught[delta_removed]
+FAILED tests/test_review_residuals.py::test_report_evidence_tampers_are_caught[na_reason_removed]
+FAILED tests/test_review_residuals.py::test_bootstrap_arm_scores_in_draws_are_caught
+FAILED tests/test_review_residuals.py::test_missing_or_wrong_diagnostics_are_caught
+FAILED tests/test_review_residuals.py::test_pair_detail_tampers_are_caught[stars_removed-<lambda>-pair_columns]
+FAILED tests/test_review_residuals.py::test_pair_detail_tampers_are_caught[stars_099-<lambda>-pair_star]
+FAILED tests/test_review_residuals.py::test_pair_detail_tampers_are_caught[truth_1-<lambda>-pair_truth]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[keys-999999]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[areas-999999]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[target_months-999999]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[crisis_keys-999999]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[noncrisis_keys-999999]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[local_fit_dates-999999]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[counts_global-value6]
+FAILED tests/test_review_residuals.py::test_gate_record_field_tampers_are_caught[counts_local-value7]
+FAILED tests/test_review_residuals.py::test_fit_keys_identity_tamper_is_caught[stage1-global]
+FAILED tests/test_review_residuals.py::test_fit_keys_identity_tamper_is_caught[stage3-global]
+FAILED tests/test_review_residuals.py::test_stage1_child_reference_tamper_is_caught
+FAILED tests/test_review_residuals.py::test_stage1_requests_reconstruct_cleanly
+25 failed, 3 passed in 335.52s (0:05:35)

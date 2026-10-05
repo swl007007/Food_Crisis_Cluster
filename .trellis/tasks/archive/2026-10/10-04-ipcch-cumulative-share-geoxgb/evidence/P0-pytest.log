@@ -1,0 +1,86 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.0, pluggy-1.6.0 -- C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe
+rootdir: C:\Users\swl00\IFPRI Dropbox\Weilun Shi\Google fund\Analysis\2.source_code\Step5_Geo_RF_trial\Food_Crisis_Cluster\IPCCHGeoXGBExperiment
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.9.0
+collecting ... collected 70 items
+
+tests/test_contract.py::test_all_configs_validate PASSED                 [  1%]
+tests/test_contract.py::test_accepted_r43_recipes_and_fixed_parameters PASSED [  2%]
+tests/test_contract.py::test_calendar_support_and_gates PASSED           [  4%]
+tests/test_contract.py::test_schema_order_and_semantics PASSED           [  5%]
+tests/test_contract.py::test_inputs_and_lock PASSED                      [  7%]
+tests/test_contract.py::test_tampered_config_is_rejected[experiment-contract.json-<lambda>-load_experiment_contract0] PASSED [  8%]
+tests/test_contract.py::test_tampered_config_is_rejected[experiment-contract.json-<lambda>-load_experiment_contract1] PASSED [ 10%]
+tests/test_contract.py::test_tampered_config_is_rejected[experiment-contract.json-<lambda>-load_experiment_contract2] PASSED [ 11%]
+tests/test_contract.py::test_tampered_config_is_rejected[experiment-contract.json-<lambda>-load_experiment_contract3] PASSED [ 12%]
+tests/test_contract.py::test_tampered_config_is_rejected[feature-schema.json-<lambda>-load_feature_schema0] PASSED [ 14%]
+tests/test_contract.py::test_tampered_config_is_rejected[feature-schema.json-<lambda>-load_feature_schema1] PASSED [ 15%]
+tests/test_contract.py::test_tampered_config_is_rejected[inputs.json-<lambda>-load_inputs] PASSED [ 17%]
+tests/test_contract.py::test_tampered_config_is_rejected[runtime-lock.json-<lambda>-load_runtime_lock] PASSED [ 18%]
+tests/test_geography.py::test_normalize_area_ids_accepts_exact_integers PASSED [ 20%]
+tests/test_geography.py::test_normalize_area_ids_rejects[1.5] PASSED     [ 21%]
+tests/test_geography.py::test_normalize_area_ids_rejects[] PASSED        [ 22%]
+tests/test_geography.py::test_normalize_area_ids_rejects[None] PASSED    [ 24%]
+tests/test_geography.py::test_normalize_area_ids_rejects[abc] PASSED     [ 25%]
+tests/test_geography.py::test_normalize_area_ids_rejects[nan] PASSED     [ 27%]
+tests/test_geography.py::test_country_lookup_keeps_blank_iso_and_uses_fallback_key PASSED [ 28%]
+tests/test_geography.py::test_country_lookup_rejects[no-country-name] PASSED [ 30%]
+tests/test_geography.py::test_country_lookup_rejects[duplicate-area] PASSED [ 31%]
+tests/test_geography.py::test_valid_cache_passes_and_reports_graph PASSED [ 32%]
+tests/test_geography.py::test_fractional_mapping_entries_are_rejected[index_plus_quarter] PASSED [ 34%]
+tests/test_geography.py::test_fractional_mapping_entries_are_rejected[group_key_fraction] PASSED [ 35%]
+tests/test_geography.py::test_fractional_mapping_entries_are_rejected[area_value_fraction] PASSED [ 37%]
+tests/test_geography.py::test_fractional_mapping_entries_are_rejected[area_key_fraction] PASSED [ 38%]
+tests/test_geography.py::test_fractional_mapping_entries_are_rejected[adjacency_key_fraction] PASSED [ 40%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[asym] PASSED     [ 41%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[self_loop] PASSED [ 42%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[out_of_range] PASSED [ 44%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[duplicate_neighbour] PASSED [ 45%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[reversed_direction] PASSED [ 47%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[not_inverse] PASSED [ 48%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[area_ids_order] PASSED [ 50%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[hash_mismatch] PASSED [ 51%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[extra_key] PASSED [ 52%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[wrong_id_column] PASSED [ 54%]
+tests/test_geography.py::test_corrupt_cache_is_rejected[centroid_shift] PASSED [ 55%]
+tests/test_geography.py::test_cache_row_order_must_match_geometry PASSED [ 57%]
+tests/test_geography.py::test_geometry_reader_keeps_row_order_and_centroids PASSED [ 58%]
+tests/test_geography.py::test_geometry_reader_rejects[duplicate-id] PASSED [ 60%]
+tests/test_geography.py::test_geometry_reader_rejects[wrong-crs] PASSED  [ 61%]
+tests/test_isolation_cli.py::test_import_probe_has_no_legacy_modules[repo_root] PASSED [ 62%]
+tests/test_isolation_cli.py::test_import_probe_has_no_legacy_modules[unrelated] PASSED [ 64%]
+tests/test_isolation_cli.py::test_import_probe_detects_a_legacy_import PASSED [ 65%]
+tests/test_isolation_cli.py::test_cli_validate_config_from_any_directory[repo_root] PASSED [ 67%]
+tests/test_isolation_cli.py::test_cli_validate_config_from_any_directory[unrelated] PASSED [ 68%]
+tests/test_isolation_cli.py::test_unported_phase_fails_explicitly_and_writes_nothing[learn-map] PASSED [ 70%]
+tests/test_isolation_cli.py::test_unported_phase_fails_explicitly_and_writes_nothing[predict] PASSED [ 71%]
+tests/test_isolation_cli.py::test_unported_phase_fails_explicitly_and_writes_nothing[prepare] PASSED [ 72%]
+tests/test_isolation_cli.py::test_unported_phase_fails_explicitly_and_writes_nothing[report] PASSED [ 74%]
+tests/test_isolation_cli.py::test_strict_commands_reject_unknown_arguments PASSED [ 75%]
+tests/test_isolation_cli.py::test_static_imports_are_stdlib_pinned_or_package PASSED [ 77%]
+tests/test_isolation_cli.py::test_run_dir_is_new_and_contained PASSED    [ 78%]
+tests/test_isolation_cli.py::test_write_json_never_overwrites PASSED     [ 80%]
+tests/test_preflight.py::test_identity_match_and_stops PASSED            [ 81%]
+tests/test_preflight.py::test_raw_panel_passes_and_counts_rounding PASSED [ 82%]
+tests/test_preflight.py::test_raw_panel_stops[duplicate-key] PASSED      [ 84%]
+tests/test_preflight.py::test_raw_panel_stops[area-outside-universe] PASSED [ 85%]
+tests/test_preflight.py::test_raw_panel_stops[universe-area-missing] PASSED [ 87%]
+tests/test_preflight.py::test_raw_panel_stops[country-vs-lookup] PASSED  [ 88%]
+tests/test_preflight.py::test_raw_panel_stops[two-countries] PASSED      [ 90%]
+tests/test_preflight.py::test_raw_panel_stops[coordinate-off] PASSED     [ 91%]
+tests/test_preflight.py::test_raw_panel_stops[bad-month] PASSED          [ 92%]
+tests/test_preflight.py::test_raw_panel_stops[blank-lat] PASSED          [ 94%]
+tests/test_preflight.py::test_raw_panel_stops[non-integer-area] PASSED   [ 95%]
+tests/test_preflight.py::test_raw_panel_missing_required_column PASSED   [ 97%]
+tests/test_preflight.py::test_universe_mismatch_stops PASSED             [ 98%]
+tests/test_preflight.py::test_saved_tables_equal_and_stop PASSED         [100%]
+
+============================== warnings summary ===============================
+tests/test_geography.py::test_geometry_reader_keeps_row_order_and_centroids
+  C:\Users\swl00\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\site-packages\geopandas\_compat.py:7: DeprecationWarning: The 'shapely.geos' module is deprecated, and will be removed in a future version. All attributes of 'shapely.geos' are available directly from the top-level 'shapely' namespace (since shapely 2.0.0).
+    import shapely.geos
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 70 passed, 1 warning in 2.98s ========================

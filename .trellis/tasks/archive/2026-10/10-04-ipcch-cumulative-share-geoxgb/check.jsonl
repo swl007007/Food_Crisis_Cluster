@@ -1,0 +1,23 @@
+{"file": ".trellis/spec/backend/index.md", "reason": "Locate project coding guidelines before implementation"}
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Only key/provenance/output discipline applies; IPCCH task overrides ETH/FEWS horizons/features/imputation/Stage2"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/prd.md", "reason": "User R1-R51 requirements and execution authorization"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/design.md", "reason": "Frozen scientific semantics v1.0"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/implement.md", "reason": "Execution phases, source clarifications, P0 freeze and artifact acceptance"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/environment-lock.json", "reason": "Verified numerical interpreter/package versions"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/input-manifest.json", "reason": "Frozen raw/geography file identities"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/source-manifest.json", "reason": "Bounded source references and actual byte/commit identities"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/PROGRESS.md", "reason": "Operational state; reconcile with Git, not approval authority"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/package-boundary.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/feature-reuse.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/scan-statistic.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/scan-candidate-size.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/model-capacity.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/configuration-selection.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/historical-gate-calendar.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/fit-reuse-budget.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/prediction-schedule.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/comparison-uncertainty.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/error-policy.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/geometry-connectivity.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/support-gates.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}
+{"file": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/research/recursive-search-budget.md", "reason": "Accepted research contract/source evidence; R51 supersedes historical planning-only authorization text"}

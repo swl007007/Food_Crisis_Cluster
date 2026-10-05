@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "summary_sha256": "e90bae9da897d65b34a59254cbf64ff66ea7b2745a55a025eea715e3c5da3488",
+  "winners": {
+    "1": "G1L2",
+    "3": "G3L2",
+    "6": "G4L2",
+    "12": "G2L2"
+  },
+  "model_store": {
+    "requests": 429,
+    "hits": 0,
+    "fits": 429,
+    "failed": 0
+  }
+}

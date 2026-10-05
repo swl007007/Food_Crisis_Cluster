@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "summary_sha256": "1df8165ab8aa9e99e6e099af59440ace58c81ffe614cc553bf3dfb2c35d96c09",
+  "horizons": {
+    "1": {
+      "recipe": "G1L2",
+      "local_enabled": true,
+      "regions": 9,
+      "folds": 39,
+      "scored_folds": 36,
+      "prediction_rows": 21414,
+      "local_rows": 944,
+      "predictions_sha256": "4c91986cc5d06a397a99d0d6fc40b915517929f6ba462370f2e45552f6f028d2"
+    },
+    "3": {
+      "recipe": "G3L2",
+      "local_enabled": true,
+      "regions": 7,
+      "folds": 37,
+      "scored_folds": 34,
+      "prediction_rows": 21011,
+      "local_rows": 722,
+      "predictions_sha256": "7f9072d905023e08a98ef0cb8e46281799c26df7457117efa052c240fa711211"
+    },
+    "6": {
+      "recipe": "G4L2",
+      "local_enabled": true,
+      "regions": 6,
+      "folds": 34,
+      "scored_folds": 31,
+      "prediction_rows": 20505,
+      "local_rows": 739,
+      "predictions_sha256": "983862bb38b53f367b5fefc47979564adf0f4df4517db51a05778ae34b125e94"
+    },
+    "12": {
+      "recipe": "G2L2",
+      "local_enabled": true,
+      "regions": 9,
+      "folds": 28,
+      "scored_folds": 25,
+      "prediction_rows": 18179,
+      "local_rows": 348,
+      "predictions_sha256": "ea771dd2c02cd30eb3debc9b3e44c207ad73d0543b20bc5157e0472b305ec615"
+    }
+  },
+  "model_store": {
+    "requests": 3926,
+    "hits": 3130,
+    "fits": 796,
+    "failed": 0
+  }
+}

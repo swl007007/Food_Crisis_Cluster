@@ -1,0 +1,43 @@
+## validate-config (cwd=repo root)
+{
+  "status": "passed",
+  "versions": {
+    "experiment_contract": "ipcch-geoxgb-contract-v1.0",
+    "feature_schema": "ipcch-geoxgb-rich561-ge020-v1",
+    "inputs": "ipcch-geoxgb-inputs-v1",
+    "runtime_lock": "ipcch-geoxgb-runtime-v1"
+  }
+}
+exit=0
+## runtime-probe (cwd=repo root)
+{
+  "lock_version": "ipcch-geoxgb-runtime-v1",
+  "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "packages": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "xgboost": "3.0.0",
+    "geopandas": "1.0.1",
+    "pyogrio": "0.11.0",
+    "shapely": "2.1.0",
+    "pyproj": "3.7.1",
+    "pytest": "9.1.0"
+  },
+  "matches_lock": true,
+  "mismatches": []
+}
+exit=0
+## prepare (expected exit 3)
+NOT IMPLEMENTED: 'prepare' belongs to P1 (population targets, calendar, rich561) and is not implemented in this foundation build; no artifacts were written
+exit=3
+## learn-map (expected exit 3)
+NOT IMPLEMENTED: 'learn-map' belongs to P3 (direct Stage1 maps and frozen winners) and is not implemented in this foundation build; no artifacts were written
+exit=3
+## predict (expected exit 3)
+NOT IMPLEMENTED: 'predict' belongs to P4 (rolling Stage3 and paired baselines) and is not implemented in this foundation build; no artifacts were written
+exit=3
+## report (expected exit 3)
+NOT IMPLEMENTED: 'report' belongs to P5 (reporting and independent replay) and is not implemented in this foundation build; no artifacts were written
+exit=3

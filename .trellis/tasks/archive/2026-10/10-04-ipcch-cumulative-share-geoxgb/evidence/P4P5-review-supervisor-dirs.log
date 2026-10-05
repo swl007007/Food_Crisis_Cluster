@@ -1,0 +1,8 @@
+run: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+missing_boosters: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+changed_fitting_X: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+wrong_full_metrics: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+fabricated_bootstrap_country_counts: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+missing_report: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+omitted_fold_and_predictions: failed (1 failures) first categories: ['prepared.inventory_and_digests']
+missing_gate_decisions: failed (1 failures) first categories: ['prepared.inventory_and_digests']

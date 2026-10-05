@@ -1,0 +1,53 @@
+import sys, json, copy, tempfile
+from pathlib import Path
+
+import numpy as np, pandas as pd, xgboost as xgb
+from ipcch_geoxgb import quartet
+from ipcch_geoxgb.modelstore import ModelStore, array_digest, target_digests
+from ipcch_geoxgb.contract import load_experiment_contract
+print("versions", xgb.__version__, np.__version__, pd.__version__)
+rng=np.random.default_rng(42); X=rng.normal(size=(80,6)); Y=np.sort(rng.uniform(size=(80,4)),axis=1)[:,::-1].copy()
+params,_=quartet.global_params(load_experiment_contract(),"G1")
+identity={"scope":"stage1-global","H":1,"targets":list(quartet.TARGETS),"params":params,"rounds":5,"keys":array_digest(np.arange(80)),"X":array_digest(X),"Y":array_digest(Y),"n_rows":80,"y_sha256":target_digests(Y)}
+root=Path(tempfile.mkdtemp(prefix="probe-",dir="C:/Users/swl00/AppData/Local/Temp/ipcch-review-probe")); store=ModelStore(root/"models",root/"ledger.jsonl")
+g,entry=store.get_or_fit(identity,lambda:quartet.fit_global_quartet(X,Y,params,5),{})
+d=entry["identity_sha256"]; rp=root/"models"/d[:2]/d/"record.json"; original=json.loads(rp.read_text())
+a=g.records["q3"]["resolved_config"]["learner"]["gradient_booster"]["tree_train_param"]
+b=quartet.resolved_config(quartet.from_raw(g.payloads["q3"]))["learner"]["gradient_booster"]["tree_train_param"]
+print("fit vs UBJ reload",{k:(a[k],b[k]) for k in ("eta","max_depth","subsample")})
+def fail(): raise AssertionError("REFIT CALLED")
+for damage in ("missing_fit_records","missing_target","incomplete_config","wrong_params","wrong_train_config","wrong_provenance","null_config"):
+    r=copy.deepcopy(original)
+    rec=r["fit_records"]["q3"]
+    if damage=="missing_fit_records": del r["fit_records"]
+    elif damage=="missing_target": del r["fit_records"]["q3"]
+    elif damage=="incomplete_config": rec["resolved_config"]={"learner":{"objective":{"name":"reg:squarederror"},"learner_model_param":{"base_score":rec["base_score"]}}}
+    elif damage=="wrong_params": rec["params"]["max_depth"]=99
+    elif damage=="wrong_train_config": rec["resolved_config"]["learner"]["gradient_booster"]["tree_train_param"]["max_depth"]="99"
+    elif damage=="wrong_provenance": rec.update(rows=-1,weights="nonunit",y_sha256="")
+    else: rec["resolved_config"]=None
+    rp.write_text(json.dumps(r))
+    try:
+        q,e=store.get_or_fit(identity,fail,{})
+        print(damage,"ACCEPTED",e["status"])
+    except Exception as e: print(damage,type(e).__name__,str(e)[:100])
+# Repeated equal structured object values must not hash pointer addresses.
+dtype=[("admin",object),("month","i8")]
+a=np.array([("".join(["ad","min-key-12345"]),12)],dtype=dtype)
+b=np.array([("".join(["adm","in-key-12345"]),12)],dtype=dtype)
+try: array_digest(a); print("structured object ACCEPTED")
+except Exception as e: print("structured object", type(e).__name__, str(e)[:80])
+
+rp.write_text(json.dumps(original))
+again,e=store.get_or_fit(identity,fail,{})
+print("clean cache snapshot preserved",again.records==g.records,e["status"])
+lparams,_=quartet.local_params(load_experiment_contract(),"L1")
+li={**identity,"scope":"stage1-local","params":lparams,"rounds":2,"global_boosters":g.booster_shas(),"region_areas":[1]}
+l,le=store.get_or_fit(li,lambda:quartet.continue_local_quartet(g,X,Y,lparams,2),{})
+l2,e=store.get_or_fit(li,fail,{})
+print("clean local cache",e["status"],l.records==l2.records)
+ld=le["identity_sha256"]; lrp=root/"models"/ld[:2]/ld/"record.json"; lr=json.loads(lrp.read_text()); lr["fit_records"]["q3"]["parent_booster_sha256"]="0"*64; lrp.write_text(json.dumps(lr))
+try: store.get_or_fit(li,fail,{})
+except Exception as e: print("corrupt local parent",type(e).__name__,str(e))
+try: quartet.continue_local_quartet(l,X,Y,lparams,2)
+except Exception as e: print("local as global",type(e).__name__,str(e))
