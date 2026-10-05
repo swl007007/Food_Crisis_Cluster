@@ -1,0 +1,10 @@
+# Pinned to the existing Windows runtime (config/runtime-lock.json).
+# Do not install or upgrade; this records what the package uses.
+numpy==2.2.6
+pandas==2.2.3
+xgboost==3.0.0
+geopandas==1.0.1
+pyogrio==0.11.0
+shapely==2.1.0
+pyproj==3.7.1
+pytest==9.1.0
