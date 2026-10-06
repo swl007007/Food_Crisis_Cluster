@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "mode": "replicate-parallel",
+  "winners": {
+    "1": "G2R2",
+    "3": "G2R1",
+    "6": "G2R2",
+    "12": "G1R1"
+  },
+  "seconds": 377.5
+}
+exit 0 wall 380s

@@ -74,11 +74,15 @@ Determine whether an MLP improves IPCCH population-share prediction and whether 
 - [x] The design specifies matched comparisons, preprocessing/selection boundaries, viewed-period limitations, persistence, numerical reproducibility, computation inventory and reporting.
 - [x] User approves the final planning summary before execution is released to Claude Opus 5.5 1M (2026-10-05; released through P0, then user checkpoint).
 - [x] Executor implements the approved specification and passes synthetic and runtime preflight checks; supervisor verifies the concrete freeze before project-data fitting (P0 checkpoint reviewed; P1+P2 released 2026-10-05 with replicate-parallel execution).
-- [ ] All three development/Stage3 replicates complete with the frozen recipe and reconciled fit/provider/cohort inventories.
-- [ ] Saved-model replay and independent selection/gate/metric/bootstrap recomputation pass; final manifests and discussion/report updates are delivered.
+- [x] All three development/Stage3 replicates complete with the frozen recipe and reconciled fit/provider/cohort inventories (288 + 3 × 4,324 = 13,260 fits, 0 failed).
+- [x] Saved-model replay and independent selection/gate/metric/bootstrap recomputation pass; final manifests and discussion/report updates are delivered (replay 28,084 checks, 0 failures; results.md; meeting note 7.4; future-direction note section 7).
 
 ## Out of scope and limitations
 
 MLP-driven map relearning, shared multi-output networks, global-weight fine-tuning, K-means/exchange, learned edges, GNN, SMOTE, gate relaxation, early stopping, new seed ensembles and broad hyperparameter search are excluded. There is no new raw-data version, release-vintage reconstruction or donor assignment. The XGB-selected map, reused S and already viewed test period limit interpretation. Pooled recipe selection may not be best for small regional samples; fixed training budgets and stronger regularization do not guarantee convergence or generalization.
 
 PyTorch is not installed in the inspected original Windows or current WSL runtime. A compatible official wheel exists, but actual import, deterministic behavior, CPU/GPU performance and full-run duration remain P0 operational checks. They do not authorize changing model size, seed count or numerical recipe to obtain a favorable result. No implementation or audit lifecycle action has been performed during planning.
+
+## Outcome (2026-10-06)
+
+Executed under the frozen spec (run `mlp-formal-20261005`, code `cd7bcd5`); see [results.md](results.md). The MLP learner is 0.021–0.057 main-period crisis F1 below pooled XGB; G−P stays within ±0.0012 in every seed×H, the ungated supported-cohort L−P is −0.006 to +0.006 with mixed signs, and the MLP system is below persistence at every H. Trellis audit waived for this task; this is not an audit pass.

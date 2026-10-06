@@ -1,0 +1,526 @@
+{
+  "entries": {
+    "G1R1": {
+      "42": "5078/6573",
+      "43": "2567/3256",
+      "44": "873/1108"
+    },
+    "G1R2": {
+      "42": "5066/6547",
+      "43": "2541/3254",
+      "44": "5262/6679"
+    },
+    "G2R1": {
+      "42": "4822/6391",
+      "43": "2455/3209",
+      "44": "2371/3131"
+    },
+    "G2R2": {
+      "42": "1261/1630",
+      "43": "2444/3201",
+      "44": "4760/6259"
+    }
+  },
+  "selection": {
+    "status": "selected",
+    "winner": "G1R1",
+    "ranking": [
+      {
+        "candidate": "G1R1",
+        "mean_f1": "13924618349/17784802728",
+        "mean_f1_float": 0.7829503965808622,
+        "params_quartet": 367880
+      },
+      {
+        "candidate": "G1R2",
+        "mean_f1": "333314416945/426867005706",
+        "mean_f1_float": 0.7808390259484395,
+        "params_quartet": 439816
+      },
+      {
+        "candidate": "G2R2",
+        "mean_f1": "6821293789/8906494410",
+        "mean_f1_float": 0.7658786358571352,
+        "params_quartet": 752136
+      },
+      {
+        "candidate": "G2R1",
+        "mean_f1": "146199726842/192638397567",
+        "mean_f1_float": 0.7589334664764924,
+        "params_quartet": 680200
+      }
+    ],
+    "ineligible": {}
+  },
+  "records": [
+    {
+      "replicate": 42,
+      "candidate": "G1R1",
+      "f1": "5078/6573",
+      "counts": {
+        "tp": 2539,
+        "fp": 679,
+        "fn": 816,
+        "tn": 5524
+      },
+      "base_provider": "1048da6dfcaf328fac3fa454ef1212176ba99468c79446ca5f07395364572738",
+      "pres_provider": "2f639050c9bb6e0465c98f6c99c40ac237682be080b18a552fc52ddc2b24b485",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "f51f6c0b07f81b3e5c11de48fb40c1aa509e490362519fe27c4a29dcfc6f6ac9",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.01352864476511508,
+        "q3": 0.009314743438386399,
+        "q4": 0.002287279868031967,
+        "q5": 0.0001131876601167368
+      },
+      "residual_final_loss": {
+        "q2": 0.010738348689845386,
+        "q3": 0.00779563843704183,
+        "q4": 0.002020202571253224,
+        "q5": 0.00011128821617869977
+      }
+    },
+    {
+      "replicate": 42,
+      "candidate": "G1R2",
+      "f1": "5066/6547",
+      "counts": {
+        "tp": 2533,
+        "fp": 659,
+        "fn": 822,
+        "tn": 5544
+      },
+      "base_provider": "1048da6dfcaf328fac3fa454ef1212176ba99468c79446ca5f07395364572738",
+      "pres_provider": "3415b6b4757fa9cdc8c520e11588cf585378981afd75782aea38b0b0de188d9c",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "7fe9a6d891268f87f90a3e2c8c48a6344b6a3d224affd0e80906f18689d122ac",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.01352864476511508,
+        "q3": 0.009314743438386399,
+        "q4": 0.002287279868031967,
+        "q5": 0.0001131876601167368
+      },
+      "residual_final_loss": {
+        "q2": 0.010743543985635373,
+        "q3": 0.00760827915678374,
+        "q4": 0.002015555061661242,
+        "q5": 0.00011166352272951198
+      }
+    },
+    {
+      "replicate": 42,
+      "candidate": "G2R1",
+      "f1": "4822/6391",
+      "counts": {
+        "tp": 2411,
+        "fp": 625,
+        "fn": 944,
+        "tn": 5578
+      },
+      "base_provider": "300f5653c09a69f9db0763897a0b542a53da83897b30a6617248256d2124a3f9",
+      "pres_provider": "0826fab25c746d6d15bd09d6452bc006cb0bf0d5a0e2649bd5da4da63fcae0a5",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "e48fbfc2dc927beac53ca76f866efb19bff334fe8094a729bd1b7c6523ebc07e",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.012198353878459234,
+        "q3": 0.008462877526914993,
+        "q4": 0.0019950101668744645,
+        "q5": 0.00010234566738760801
+      },
+      "residual_final_loss": {
+        "q2": 0.009737788757550606,
+        "q3": 0.007367734142403231,
+        "q4": 0.0018680726791601577,
+        "q5": 9.562503477141867e-05
+      }
+    },
+    {
+      "replicate": 42,
+      "candidate": "G2R2",
+      "f1": "1261/1630",
+      "counts": {
+        "tp": 2522,
+        "fp": 643,
+        "fn": 833,
+        "tn": 5560
+      },
+      "base_provider": "300f5653c09a69f9db0763897a0b542a53da83897b30a6617248256d2124a3f9",
+      "pres_provider": "a51f3a1a7f3ec36b8832c491f31618580f58d1d6d771c5504264f5a442c10781",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "e836fbf9a4ebd06f2bb5d498c6d5dde7a646b0dccb56c94523a92c200fa9e684",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.012198353878459234,
+        "q3": 0.008462877526914993,
+        "q4": 0.0019950101668744645,
+        "q5": 0.00010234566738760801
+      },
+      "residual_final_loss": {
+        "q2": 0.009511747036528266,
+        "q3": 0.007343557283487669,
+        "q4": 0.001868126104110864,
+        "q5": 9.572491250450727e-05
+      }
+    },
+    {
+      "replicate": 43,
+      "candidate": "G1R1",
+      "f1": "2567/3256",
+      "counts": {
+        "tp": 2567,
+        "fp": 590,
+        "fn": 788,
+        "tn": 5613
+      },
+      "base_provider": "ea2c7a031109278795b4bfff0c366fa33891d8d03232eb5a7e0d6107982dfa25",
+      "pres_provider": "0de59d908a4932f81c626b8a0e8222a3be5fc82e556ce2a295de9f79c4ef5011",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "c65d1d8e8b71ebc7cecd77a894f5321174e608214f171fd390a08772f9e05014",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.01328651585899343,
+        "q3": 0.008960999297464392,
+        "q4": 0.0023299190199448433,
+        "q5": 0.00010579460918445671
+      },
+      "residual_final_loss": {
+        "q2": 0.010571975210006428,
+        "q3": 0.007705678343194143,
+        "q4": 0.0021220182312926394,
+        "q5": 8.770772143209954e-05
+      }
+    },
+    {
+      "replicate": 43,
+      "candidate": "G1R2",
+      "f1": "2541/3254",
+      "counts": {
+        "tp": 2541,
+        "fp": 612,
+        "fn": 814,
+        "tn": 5591
+      },
+      "base_provider": "ea2c7a031109278795b4bfff0c366fa33891d8d03232eb5a7e0d6107982dfa25",
+      "pres_provider": "14cefd4eba9f4cc4a7cfeb4f8186404b9c1a5e3dca28cc917b8bbfb8d67f6f62",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "ced199c2d7cf00680aded7b093104beb8dc57cb83a2c82ae08d3f669da6b1b0f",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.01328651585899343,
+        "q3": 0.008960999297464392,
+        "q4": 0.0023299190199448433,
+        "q5": 0.00010579460918445671
+      },
+      "residual_final_loss": {
+        "q2": 0.01062539530779408,
+        "q3": 0.007662075400811993,
+        "q4": 0.002119587358456523,
+        "q5": 8.737839427725505e-05
+      }
+    },
+    {
+      "replicate": 43,
+      "candidate": "G2R1",
+      "f1": "2455/3209",
+      "counts": {
+        "tp": 2455,
+        "fp": 608,
+        "fn": 900,
+        "tn": 5595
+      },
+      "base_provider": "e6471e494688bd15302563d39f1a11d466407ae90b3506d235569ea319533475",
+      "pres_provider": "28664132bc7e5ec5121f9277e69faee4930ba8eb47c10fc9234cef212ec3fa31",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "999d3d2ef33062d9d9a662c724d8d179e5b2ea24150d99cb5d2ed8cfe16c4dcd",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.012527852837440602,
+        "q3": 0.008354370011110935,
+        "q4": 0.002044021860976936,
+        "q5": 9.988467239516256e-05
+      },
+      "residual_final_loss": {
+        "q2": 0.009870697297295105,
+        "q3": 0.007302373931405422,
+        "q4": 0.0019858209647985836,
+        "q5": 9.218978021252692e-05
+      }
+    },
+    {
+      "replicate": 43,
+      "candidate": "G2R2",
+      "f1": "2444/3201",
+      "counts": {
+        "tp": 2444,
+        "fp": 603,
+        "fn": 911,
+        "tn": 5600
+      },
+      "base_provider": "e6471e494688bd15302563d39f1a11d466407ae90b3506d235569ea319533475",
+      "pres_provider": "88355bf7c3b997298b56c13d5668e8da28ef4ffe166a224f9aaccbaf68e4363c",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "4ae5430312be9dcfa417492205b50c93001796a24217950add436f858aaf5fc8",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.012527852837440602,
+        "q3": 0.008354370011110935,
+        "q4": 0.002044021860976936,
+        "q5": 9.988467239516256e-05
+      },
+      "residual_final_loss": {
+        "q2": 0.009791793674948568,
+        "q3": 0.007188124842715485,
+        "q4": 0.0019083898240774774,
+        "q5": 9.237520800498317e-05
+      }
+    },
+    {
+      "replicate": 44,
+      "candidate": "G1R1",
+      "f1": "873/1108",
+      "counts": {
+        "tp": 2619,
+        "fp": 674,
+        "fn": 736,
+        "tn": 5529
+      },
+      "base_provider": "2ae0b6b71081ef1d215b875ed6a2e252ad3816004b16c9d3d8a3c59b02dd78e3",
+      "pres_provider": "cf62261d8999916bfdec02e416b9573197fde99671ae95744a60b7cd2b30f328",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "609b6616976d80b27dc68094108dddd5b35c5d696b37d076b0c9e9781e5f5160",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.013079326720807112,
+        "q3": 0.009263744084635546,
+        "q4": 0.0020909395271961387,
+        "q5": 9.561385467452285e-05
+      },
+      "residual_final_loss": {
+        "q2": 0.010505228641155431,
+        "q3": 0.007704514959423902,
+        "q4": 0.0018727783202215978,
+        "q5": 9.175452612470491e-05
+      }
+    },
+    {
+      "replicate": 44,
+      "candidate": "G1R2",
+      "f1": "5262/6679",
+      "counts": {
+        "tp": 2631,
+        "fp": 693,
+        "fn": 724,
+        "tn": 5510
+      },
+      "base_provider": "2ae0b6b71081ef1d215b875ed6a2e252ad3816004b16c9d3d8a3c59b02dd78e3",
+      "pres_provider": "18301ce0423e68c6145781aa5235063170069a07a91a5a8d498267892c319347",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "7f6c20d25e136008c88c311be7f53134fdc3f0e26aea4ec7380379d547aa3d0d",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.013079326720807112,
+        "q3": 0.009263744084635546,
+        "q4": 0.0020909395271961387,
+        "q5": 9.561385467452285e-05
+      },
+      "residual_final_loss": {
+        "q2": 0.010517449515050691,
+        "q3": 0.007730060778432061,
+        "q4": 0.0018657217460235516,
+        "q5": 9.111339291205336e-05
+      }
+    },
+    {
+      "replicate": 44,
+      "candidate": "G2R1",
+      "f1": "2371/3131",
+      "counts": {
+        "tp": 2371,
+        "fp": 536,
+        "fn": 984,
+        "tn": 5667
+      },
+      "base_provider": "14943430bfed2b68497afbc7cdeb7f1012025d27e9f336bc985733d127aa5608",
+      "pres_provider": "6d651775628f399ddbaa772ec1d9db09255dda81c6cb6cb192b0ba191e035377",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "e406672391209e06fd0ba5da4732a03775c97c8f477cad1f186c3650b2efb449",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.012093054656221751,
+        "q3": 0.0083698076317312,
+        "q4": 0.002053316313599988,
+        "q5": 0.00011159238049650531
+      },
+      "residual_final_loss": {
+        "q2": 0.009752345235400174,
+        "q3": 0.007130422206290284,
+        "q4": 0.0019594118689165007,
+        "q5": 0.00011188628073331388
+      }
+    },
+    {
+      "replicate": 44,
+      "candidate": "G2R2",
+      "f1": "4760/6259",
+      "counts": {
+        "tp": 2380,
+        "fp": 524,
+        "fn": 975,
+        "tn": 5679
+      },
+      "base_provider": "14943430bfed2b68497afbc7cdeb7f1012025d27e9f336bc985733d127aa5608",
+      "pres_provider": "4bfb11c172cb2c36d96c21ca73602a6e707cb9ea917a60f1269f84f59a3ee4a4",
+      "transform_sha256": "2d2a2aaeeea75563e184bde08d2a3c9d84a43a9c1541676eef8165b7568adb4a",
+      "predictions_sha256": "bd08b75401519dc9b3484aadb5ef645e8d2a09c8760deb9cfe5307c49cef7177",
+      "global_updates": {
+        "q2": 3400,
+        "q3": 3400,
+        "q4": 3400,
+        "q5": 3400
+      },
+      "residual_updates": {
+        "q2": 1360,
+        "q3": 1360,
+        "q4": 1360,
+        "q5": 1360
+      },
+      "global_final_loss": {
+        "q2": 0.012093054656221751,
+        "q3": 0.0083698076317312,
+        "q4": 0.002053316313599988,
+        "q5": 0.00011159238049650531
+      },
+      "residual_final_loss": {
+        "q2": 0.00968830703739536,
+        "q3": 0.007112152267385815,
+        "q4": 0.001956092697908087,
+        "q5": 0.00011183543439944104
+      }
+    }
+  ],
+  "note": "S is adaptive internal development evidence, not independent validation"
+}
