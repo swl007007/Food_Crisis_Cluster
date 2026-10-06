@@ -107,3 +107,47 @@ a third, and should not change fitted tensors because seeds and RNG resets are
 per fit, but it departs from the written "execute fits serially" rule, needs
 per-process ledgers (a small code change and re-test), and would need your
 explicit approval. Without that approval the run stays serial.
+
+## Addendum — replicate-parallel execution and P1+P2 release (2026-10-05)
+
+User decision after P0: run replicates in parallel (PRD R25) and release P1+P2;
+the implementation session stops before the formal development run, which the
+user starts as a goal run.
+
+- Implemented in `ipcch_mlp/parallel.py` (commit `cd7bcd5`): one spawned worker
+  process per replicate for develop and Stage3, per-worker request ledgers,
+  parent-side selection/summary after all workers succeed, no retry on failure.
+- The parallel test exposed a real Windows race: two workers writing the same
+  shared transform with `os.replace` raised `WinError 5`. Transforms now use
+  exclusive create (rename only if absent, else verify), with a 4-process
+  stress test.
+- Synthetic tests: parallel and serial runs produce byte-identical develop and
+  Stage3 artifacts and identical model tensors; a failed worker stops the run
+  before selection. 33 tests pass on CPU; the end-to-end file also passes on CUDA.
+- Three-process synthetic probe on a fixed case list (`evidence/p0-timing-parallel-*.json`),
+  digests identical to a single process:
+
+| Device | 1 process wall | 3 processes wall | Throughput |
+| --- | ---: | ---: | ---: |
+| CUDA | 25.2 s | 33.3 s | 2.27× |
+| CPU | 28.8 s | 35.3 s | 2.45× |
+
+  CUDA keeps the lower three-process wall time, so the frozen device stays CUDA.
+  Expected wall time: Stage3 ≈ 16.5–20.6 h serial ÷ 2.27 ≈ **7–9 h**, development
+  ≈ 0.3 h, plus report and serial replay (inference only).
+- Formal run directory created with a passed preflight (no fitting):
+  `C:\Users\swl00\AppData\Local\Temp\ipcch-mlp-runs\mlp-formal-20261005`
+  (`evidence/formal-preflight.json`; 13,260 fits reproduced; 300 GB free;
+  13.4 GB RAM available at that moment).
+
+Goal-run commands (WSL, from `IPCCHMLPExperiment/`; each stage refuses to run if
+a previous stage left `RUN_INCOMPLETE.json`):
+
+```text
+VP=/mnt/c/Users/swl00/.venvs/ipcch-mlp/Scripts/python.exe
+RUN='C:\Users\swl00\AppData\Local\Temp\ipcch-mlp-runs\mlp-formal-20261005'
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp develop --run-dir "$RUN"
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp predict --run-dir "$RUN"
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp report  --run-dir "$RUN"
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp replay  --run-dir "$RUN"
+```
