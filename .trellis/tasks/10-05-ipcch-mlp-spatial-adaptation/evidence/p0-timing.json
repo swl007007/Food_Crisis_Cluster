@@ -1,0 +1,650 @@
+{
+  "runtime": {
+    "lock_version": "ipcch-mlp-runtime-v1",
+    "executable": "C:\\Users\\swl00\\.venvs\\ipcch-mlp\\Scripts\\python.exe",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "torch": "2.6.0+cu124",
+      "pytest": "9.1.0"
+    },
+    "torch_cuda_build": "12.4",
+    "cuda_available": true,
+    "cuda_device": "NVIDIA GeForce RTX 4070",
+    "cudnn": 90100,
+    "numpy": "2.2.6",
+    "matches_lock": true,
+    "mismatches": []
+  },
+  "results": {
+    "cpu": {
+      "device": "cpu",
+      "cases": [
+        {
+          "n": 500,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 200,
+          "fit_seconds": [
+            0.8246875000186265,
+            0.8322195999789983,
+            0.8145385000389069
+          ],
+          "inference_seconds": 0.0014761000056751072,
+          "save_seconds": 0.005136199994012713,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 500,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 200,
+          "fit_seconds": [
+            1.0884798999759369,
+            1.0746896000346169,
+            1.0605819000047632
+          ],
+          "inference_seconds": 0.0022816999698989093,
+          "save_seconds": 0.0015260999789461493,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 500,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 80,
+          "fit_seconds": [
+            0.17170349997468293,
+            0.17400890000863,
+            0.17108810000354424
+          ],
+          "inference_seconds": 0.003061500028707087,
+          "save_seconds": 0.0031678000232204795,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 500,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 80,
+          "fit_seconds": [
+            0.21715969999786466,
+            0.24665889999596402,
+            0.2354499000357464
+          ],
+          "inference_seconds": 0.0013844000059179962,
+          "save_seconds": 0.0014050999889150262,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 800,
+          "fit_seconds": [
+            3.6773968000197783,
+            3.4449215000495315,
+            3.825101199967321
+          ],
+          "inference_seconds": 0.004710800014436245,
+          "save_seconds": 0.001258100033737719,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 800,
+          "fit_seconds": [
+            4.55169280001428,
+            3.786844399990514,
+            4.084479100012686
+          ],
+          "inference_seconds": 0.007755399972666055,
+          "save_seconds": 0.0019530000281520188,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 320,
+          "fit_seconds": [
+            0.6475996999652125,
+            0.6273818000336178,
+            0.6228550999658182
+          ],
+          "inference_seconds": 0.0021501999581232667,
+          "save_seconds": 0.0006804000004194677,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 320,
+          "fit_seconds": [
+            0.8180213000159711,
+            0.81632039998658,
+            0.8325474000303075
+          ],
+          "inference_seconds": 0.003025999991223216,
+          "save_seconds": 0.0009609999833628535,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 3400,
+          "fit_seconds": [
+            16.32046249997802,
+            16.027376600017305,
+            15.606474700034596
+          ],
+          "inference_seconds": 0.01970100001199171,
+          "save_seconds": 0.001241799967829138,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 3400,
+          "fit_seconds": [
+            18.67824280000059,
+            23.385481800010893,
+            22.05223329999717
+          ],
+          "inference_seconds": 0.04252529999939725,
+          "save_seconds": 0.0015743999974802136,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 1360,
+          "fit_seconds": [
+            3.3199645999702625,
+            3.3449360000086017,
+            3.004792899999302
+          ],
+          "inference_seconds": 0.008528699981980026,
+          "save_seconds": 0.0006859000422991812,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 1360,
+          "fit_seconds": [
+            3.6771640999941155,
+            3.823866300052032,
+            3.986339399998542
+          ],
+          "inference_seconds": 0.010710300004575402,
+          "save_seconds": 0.0010511999716982245,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 7500,
+          "fit_seconds": [
+            35.10461639997084,
+            33.87242900003912,
+            29.58486860000994
+          ],
+          "inference_seconds": 0.04384629998821765,
+          "save_seconds": 0.0013037999742664397,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 7500,
+          "fit_seconds": [
+            39.33273349999217,
+            44.62749449996045,
+            44.022681100002956
+          ],
+          "inference_seconds": 0.0676699000177905,
+          "save_seconds": 0.0017627999768592417,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 3000,
+          "fit_seconds": [
+            5.639528199972119,
+            5.7667231999803334,
+            5.273677599965595
+          ],
+          "inference_seconds": 0.017317199963144958,
+          "save_seconds": 0.0007627000450156629,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 3000,
+          "fit_seconds": [
+            9.416040399984922,
+            8.983008399954997,
+            9.120854300039355
+          ],
+          "inference_seconds": 0.025139200035482645,
+          "save_seconds": 0.000916499993763864,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        }
+      ],
+      "eligible": true,
+      "problems": [],
+      "rng_isolation_identical": true,
+      "probe_wall_seconds": 562.9
+    },
+    "cuda": {
+      "device": "cuda",
+      "cases": [
+        {
+          "n": 500,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 200,
+          "fit_seconds": [
+            1.0375893999589607,
+            1.0168991000391543,
+            1.0762147000059485
+          ],
+          "inference_seconds": 0.002303499961271882,
+          "save_seconds": 0.0016067000105977058,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 500,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 200,
+          "fit_seconds": [
+            0.9363363000447862,
+            1.0168652999564074,
+            1.0561187000130303
+          ],
+          "inference_seconds": 0.002320599975064397,
+          "save_seconds": 0.0021746999700553715,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 500,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 80,
+          "fit_seconds": [
+            0.2900464999838732,
+            0.2952212000382133,
+            0.3076258000219241
+          ],
+          "inference_seconds": 0.0046393999946303666,
+          "save_seconds": 0.0012418999685905874,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 500,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 80,
+          "fit_seconds": [
+            0.30955220002215356,
+            0.3330485000042245,
+            0.299750900012441
+          ],
+          "inference_seconds": 0.0017719999887049198,
+          "save_seconds": 0.001185900007840246,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 800,
+          "fit_seconds": [
+            3.9018874000175856,
+            3.9150533000356518,
+            3.9715038999565877
+          ],
+          "inference_seconds": 0.010742400016169995,
+          "save_seconds": 0.0017556999810039997,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 800,
+          "fit_seconds": [
+            3.4511647000326775,
+            3.3209611999918707,
+            3.536417600000277
+          ],
+          "inference_seconds": 0.009293799987062812,
+          "save_seconds": 0.002012500015553087,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 320,
+          "fit_seconds": [
+            1.0724027000251226,
+            1.0104373000212945,
+            0.6823652000166476
+          ],
+          "inference_seconds": 0.00722279999172315,
+          "save_seconds": 0.0009459999855607748,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 2000,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 320,
+          "fit_seconds": [
+            1.0478268999722786,
+            1.0780535999801941,
+            1.2164523000246845
+          ],
+          "inference_seconds": 0.010303399991244078,
+          "save_seconds": 0.0012774000060744584,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 3400,
+          "fit_seconds": [
+            15.189984399999958,
+            15.49903969996376,
+            14.95708459999878
+          ],
+          "inference_seconds": 0.03435349999926984,
+          "save_seconds": 0.0018509000074118376,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 3400,
+          "fit_seconds": [
+            13.750684599974193,
+            15.032657100004144,
+            17.59768589999294
+          ],
+          "inference_seconds": 0.03746950003551319,
+          "save_seconds": 0.0021118000149726868,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 1360,
+          "fit_seconds": [
+            4.66376639995724,
+            4.6234053000225686,
+            4.573031600040849
+          ],
+          "inference_seconds": 0.02927499997895211,
+          "save_seconds": 0.0010059999767690897,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 8561,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 1360,
+          "fit_seconds": [
+            4.801751299994066,
+            4.864079299964942,
+            4.90410869999323
+          ],
+          "inference_seconds": 0.030896399985067546,
+          "save_seconds": 0.001388799981214106,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "global",
+          "candidate": "G1",
+          "epochs": 100,
+          "updates": 7500,
+          "fit_seconds": [
+            35.65194980002707,
+            33.58727950003231,
+            29.77877159998752
+          ],
+          "inference_seconds": 0.08330170001136139,
+          "save_seconds": 0.0023864000104367733,
+          "state_bytes": 298120,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "global",
+          "candidate": "G2",
+          "epochs": 100,
+          "updates": 7500,
+          "fit_seconds": [
+            36.964460199989844,
+            32.05377479997696,
+            36.47720670001581
+          ],
+          "inference_seconds": 0.0901074000285007,
+          "save_seconds": 0.003582000033929944,
+          "state_bytes": 610440,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "residual",
+          "candidate": "R1",
+          "epochs": 40,
+          "updates": 3000,
+          "fit_seconds": [
+            10.403011100017466,
+            10.06785689998651,
+            8.171536499983631
+          ],
+          "inference_seconds": 0.05756129999645054,
+          "save_seconds": 0.0008870000019669533,
+          "state_bytes": 73744,
+          "repeat_identical": true,
+          "reload_identical": true
+        },
+        {
+          "n": 19052,
+          "role": "residual",
+          "candidate": "R2",
+          "epochs": 40,
+          "updates": 3000,
+          "fit_seconds": [
+            8.711252000008244,
+            7.5073252999573015,
+            4.085145999968518
+          ],
+          "inference_seconds": 0.03998220001813024,
+          "save_seconds": 0.0006882000016048551,
+          "state_bytes": 145680,
+          "repeat_identical": true,
+          "reload_identical": true
+        }
+      ],
+      "eligible": true,
+      "problems": [],
+      "rng_isolation_identical": true,
+      "probe_wall_seconds": 554.4
+    }
+  },
+  "estimates_seconds": {
+    "cpu": {
+      "G1R1": {
+        "stage3_seconds_three_seeds": [
+          56231.67291543799,
+          62859.26053389508
+        ]
+      },
+      "G1R2": {
+        "stage3_seconds_three_seeds": [
+          61347.187157647386,
+          67968.3296785195
+        ]
+      },
+      "G2R1": {
+        "stage3_seconds_three_seeds": [
+          68347.71609765282,
+          79567.90955722645
+        ]
+      },
+      "G2R2": {
+        "stage3_seconds_three_seeds": [
+          73463.23033986214,
+          84676.97870185087
+        ]
+      },
+      "develop_seconds": [
+        2287.134312001057,
+        2609.6877648001537
+      ]
+    },
+    "cuda": {
+      "G1R1": {
+        "stage3_seconds_three_seeds": [
+          61013.200458744526,
+          70483.54963397616
+        ]
+      },
+      "G1R2": {
+        "stage3_seconds_three_seeds": [
+          59333.48153585751,
+          70050.97618713672
+        ]
+      },
+      "G2R1": {
+        "stage3_seconds_three_seeds": [
+          61535.1730800165,
+          74135.01956131346
+        ]
+      },
+      "G2R2": {
+        "stage3_seconds_three_seeds": [
+          59855.45415712947,
+          73702.44611447405
+        ]
+      },
+      "develop_seconds": [
+        2277.9520800020546,
+        2507.1588383931667
+      ]
+    }
+  },
+  "chosen_device": "cuda",
+  "rule": "faster eligible device by the upper full-run estimate; ties choose CPU; synthetic data only",
+  "total_scalar_fits": 13260
+}

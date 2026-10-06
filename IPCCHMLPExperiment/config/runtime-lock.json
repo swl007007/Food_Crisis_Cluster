@@ -1,0 +1,27 @@
+{
+  "lock_version": "ipcch-mlp-runtime-v1",
+  "policy": "Numerical artifacts only from this isolated Windows venv. No install/upgrade/substitute after freeze. Linux Python may handle Git/JSON/docs only.",
+  "interpreter_windows": "C:\\Users\\swl00\\.venvs\\ipcch-mlp\\Scripts\\python.exe",
+  "interpreter_wsl": "/mnt/c/Users/swl00/.venvs/ipcch-mlp/Scripts/python.exe",
+  "base_interpreter_windows": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\python3.12.exe",
+  "python": "3.12.10",
+  "platform_system": "Windows",
+  "packages": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "torch": "2.6.0+cu124",
+    "pytest": "9.1.0"
+  },
+  "numerics": {
+    "dtype": "float32",
+    "cpu_threads": 4,
+    "deterministic_algorithms": true,
+    "cudnn_benchmark": false,
+    "allow_tf32": false,
+    "autocast": false,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "device": "cuda",
+  "device_note": "Frozen 2026-10-05 from the P0 synthetic probe p0-timing-20261005 (timing.json): both devices eligible (repeat, reload and RNG-isolation identical); CUDA has the lower upper full-run estimate (20.59 h vs 23.52 h for Stage3, three seeds). No mid-run device switch.",
+  "gpu": "NVIDIA GeForce RTX 4070 (driver 560.94, CUDA build 12.4, cuDNN 90100)"
+}
