@@ -1,0 +1,83 @@
+{
+  "device": "cuda",
+  "processes": 3,
+  "1": {
+    "wall_seconds": 25.172207599971443,
+    "per_process_fit_seconds": [
+      23.024098600028083
+    ],
+    "identical_across_processes": true,
+    "cases": [
+      {
+        "role": "global",
+        "candidate": "G1",
+        "n": 8561,
+        "seconds": 7.123595300014131,
+        "digest": "6553796d28231d714f75fddb15985b77488ae3589ffd00c30e3a55be07f40041"
+      },
+      {
+        "role": "global",
+        "candidate": "G2",
+        "n": 19052,
+        "seconds": 12.367161000031047,
+        "digest": "5644dd83330d840eb4a55c86b5c8bb779b519007b9f64577e4d624c475e51fef"
+      },
+      {
+        "role": "residual",
+        "candidate": "R1",
+        "n": 19052,
+        "seconds": 3.1911144999903627,
+        "digest": "a50981ee80bbe24866b50ccad5d2274c4e737cf0852915219cbc09db11de2f81"
+      },
+      {
+        "role": "residual",
+        "candidate": "R2",
+        "n": 2000,
+        "seconds": 0.3422277999925427,
+        "digest": "1655ecba34fc9be6d85d92fbc0b340dbaa63b7fc96c3f9f1ae706f83a6d0e0c2"
+      }
+    ]
+  },
+  "3": {
+    "wall_seconds": 33.26918800000567,
+    "per_process_fit_seconds": [
+      30.594570200017188,
+      30.608163200027775,
+      30.7251130999648
+    ],
+    "identical_across_processes": true,
+    "cases": [
+      {
+        "role": "global",
+        "candidate": "G1",
+        "n": 8561,
+        "seconds": 8.725899500015657,
+        "digest": "6553796d28231d714f75fddb15985b77488ae3589ffd00c30e3a55be07f40041"
+      },
+      {
+        "role": "global",
+        "candidate": "G2",
+        "n": 19052,
+        "seconds": 16.491251999977976,
+        "digest": "5644dd83330d840eb4a55c86b5c8bb779b519007b9f64577e4d624c475e51fef"
+      },
+      {
+        "role": "residual",
+        "candidate": "R1",
+        "n": 19052,
+        "seconds": 4.876752000011038,
+        "digest": "a50981ee80bbe24866b50ccad5d2274c4e737cf0852915219cbc09db11de2f81"
+      },
+      {
+        "role": "residual",
+        "candidate": "R2",
+        "n": 2000,
+        "seconds": 0.5006667000125162,
+        "digest": "1655ecba34fc9be6d85d92fbc0b340dbaa63b7fc96c3f9f1ae706f83a6d0e0c2"
+      }
+    ]
+  },
+  "throughput_speedup": 2.26986672472744,
+  "identical_to_single": true,
+  "note": "synthetic data only"
+}

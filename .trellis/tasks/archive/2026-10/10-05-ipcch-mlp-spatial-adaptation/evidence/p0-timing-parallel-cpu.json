@@ -1,0 +1,83 @@
+{
+  "device": "cpu",
+  "processes": 3,
+  "1": {
+    "wall_seconds": 28.792109499976505,
+    "per_process_fit_seconds": [
+      26.681937499903142
+    ],
+    "identical_across_processes": true,
+    "cases": [
+      {
+        "role": "global",
+        "candidate": "G1",
+        "n": 8561,
+        "seconds": 5.746491800004151,
+        "digest": "767481fa9a317c8d5b713292d7ddde96b7336b2f794237212e091aec23df75cc"
+      },
+      {
+        "role": "global",
+        "candidate": "G2",
+        "n": 19052,
+        "seconds": 17.73868519999087,
+        "digest": "a0be90debba4c2cf3035f62c4ed2ed3d08de572448ab419c78cdfc83e5fd8705"
+      },
+      {
+        "role": "residual",
+        "candidate": "R1",
+        "n": 19052,
+        "seconds": 2.8694132999517024,
+        "digest": "12ba82ec4988338f23b1d901e8a93f4795b8af5681ceaa0852bf88e3f55a6eb4"
+      },
+      {
+        "role": "residual",
+        "candidate": "R2",
+        "n": 2000,
+        "seconds": 0.3273471999564208,
+        "digest": "83c3b898d7df699ec66a13863a99b90fcb51a80832b825b487434debef97cb37"
+      }
+    ]
+  },
+  "3": {
+    "wall_seconds": 35.27260520000709,
+    "per_process_fit_seconds": [
+      32.640938099997584,
+      32.72261679999065,
+      32.73066279996419
+    ],
+    "identical_across_processes": true,
+    "cases": [
+      {
+        "role": "global",
+        "candidate": "G1",
+        "n": 8561,
+        "seconds": 8.026326499995776,
+        "digest": "767481fa9a317c8d5b713292d7ddde96b7336b2f794237212e091aec23df75cc"
+      },
+      {
+        "role": "global",
+        "candidate": "G2",
+        "n": 19052,
+        "seconds": 21.09561499999836,
+        "digest": "a0be90debba4c2cf3035f62c4ed2ed3d08de572448ab419c78cdfc83e5fd8705"
+      },
+      {
+        "role": "residual",
+        "candidate": "R1",
+        "n": 19052,
+        "seconds": 3.0860983000020497,
+        "digest": "12ba82ec4988338f23b1d901e8a93f4795b8af5681ceaa0852bf88e3f55a6eb4"
+      },
+      {
+        "role": "residual",
+        "candidate": "R2",
+        "n": 2000,
+        "seconds": 0.43289830000139773,
+        "digest": "83c3b898d7df699ec66a13863a99b90fcb51a80832b825b487434debef97cb37"
+      }
+    ]
+  },
+  "throughput_speedup": 2.448821911796641,
+  "identical_to_single": true,
+  "note": "synthetic data only"
+}

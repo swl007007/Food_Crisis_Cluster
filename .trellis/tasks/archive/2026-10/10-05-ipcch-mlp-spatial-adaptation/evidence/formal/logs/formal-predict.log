@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "mode": "replicate-parallel",
+  "seconds": 11078.6,
+  "new_fits": {
+    "42": 4324,
+    "43": 4324,
+    "44": 4324
+  }
+}
+exit 0 wall 11088s

@@ -1,0 +1,72 @@
+{
+  "source_commit": "6798df2 (ipcch_geoxgb frozen implementation)",
+  "copies": [
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/errors.py",
+      "source_sha256": "23916edd77c486286d65d9c2849b36f4b71517c5728bf9c1da4879d5cef26c1e",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/errors.py",
+      "change": "docstring header only"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/projection.py",
+      "source_sha256": "59bbebf7a433f24ddca5acaeecb36036aa3717966ad6c8a3eeb7c8af07af2ab4",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/projection.py",
+      "change": "docstring header only"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/metrics.py",
+      "source_sha256": "d7006599a29de17de7d37e7d23745ebacbd1725f53eb2c0822316580fac8a620",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/metrics.py",
+      "change": "inlined targets.FOUR_CLASS_LABELS/four_class (raises TechnicalError instead of ContractError)"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/artifacts.py",
+      "source_sha256": "dc8f39108cf69f7a3d4a5ca202559b5177652e66098ad17ddb48c2e5f9d108c2",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/artifacts.py",
+      "change": "run root passed explicitly"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/schedule.py",
+      "source_sha256": "38a0f15a3070033239f33b013c61fdd2f04bcb6b89bb9bd4757ae2f7f6e771b1",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/sources.py",
+      "change": "training_window, historical_gate_dates copied unchanged"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/stage1.py",
+      "source_sha256": "d2ea5c87acb52c670ca1f2c4c6bdd927312fd6d1b14acc8ae340583445afb4cf",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/sources.py",
+      "change": "support, meets copied unchanged"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/stage3.py",
+      "source_sha256": "2c8eb8971145013858ed86f03f083b01c2366f2e79497032a7050abbb0fe9686",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/stage3.py",
+      "change": "run_fold/gate_decision adapted to B/P/L/G: P is the reference and fallback, ungated current L diagnostic"
+    },
+    {
+      "source": "IPCCHGeoXGBExperiment/ipcch_geoxgb/report.py",
+      "source_sha256": "b12abe5e3c82827d18cccfb7bbab57b0a82099608b9eba75b4e33147ad35c5c9",
+      "destination": "IPCCHMLPExperiment/ipcch_mlp/report.py",
+      "change": "panel/flat/deltas/country_counts/_f1_rows/bootstrap_delta copied; MLP arms and diagnostics new"
+    }
+  ],
+  "new_modules": [
+    "contract.py",
+    "runtime.py",
+    "seeds.py",
+    "preprocess.py",
+    "nets.py",
+    "store.py",
+    "quartets.py",
+    "planning.py",
+    "develop.py",
+    "replay.py",
+    "timing.py",
+    "cli.py"
+  ],
+  "no_runtime_imports_from": [
+    "ipcch_geoxgb",
+    "IPCCHGeoXGBExperiment/src",
+    "repository src/ or config/"
+  ]
+}

@@ -2,14 +2,15 @@
 
 ## Goal
 
-Determine whether an MLP improves IPCCH population-share prediction and whether regional residual correction on existing maps adds value beyond matched pooled residual correction. Deliver a reproducible three-seed comparison and preserve negative results. Implementation and execution are reserved for Claude Opus 5.5 1M, with Codex supervision.
+Determine whether an MLP improves IPCCH population-share prediction and whether regional residual correction on existing maps adds value beyond matched pooled residual correction. Deliver a reproducible three-seed comparison and preserve negative results. Implementation and execution are reserved for Claude Opus 5.5 1M; the user supervises this task.
 
 ## Status and authorization
 
 - User approved task creation on 2026-10-05 after requesting grilling, a persisted specification, and subsequent Claude execution.
-- Planning only; no implementation, fitting, audit start, or executor handoff for this task.
-- Scientific requirements R1–R24 reflect the completed grilling decisions and the user-approved Fable review revisions on 2026-10-05. The concrete technical design, reporting completion and execution plan are ready for final user review; they are not an execution release.
-- Final artifacts: `design.md`, `implement.md`, research source/runtime/count evidence, and curated implement/check contexts. No new scientific question remains open; final approval of the complete plan is pending.
+- 2026-10-05 (evening): user approved the final plan and released implementation through the P0 checkpoint. After reviewing P0 the user approved replicate-parallel execution (R25) and released P1+P2. The implementation session stops before the formal development run; the user starts the formal develop → predict → report → replay sequence as a separate goal run. Executor: Claude Opus 5.5 1M (verified session). The user acts as supervisor for this task.
+- 2026-10-05: user waived the Trellis audit lifecycle for this task only. Use native `task.py start`/`archive`; no `trellis-audit start/close`, close audit or spot audit. This waiver does not apply to other tasks and is not an audit pass.
+- Scientific requirements R1–R25 reflect the completed grilling decisions and the user-approved Fable review revisions on 2026-10-05. The concrete technical design, reporting completion and execution plan are approved.
+- Final artifacts: `design.md`, `implement.md`, research source/runtime/count evidence, and curated implement/check contexts. No new scientific question remains open.
 
 ## Background and confirmed facts
 
@@ -46,6 +47,7 @@ Determine whether an MLP improves IPCCH population-share prediction and whether 
 - R21: Additionally fit/predict current-date regional corrections for all mapped regions with current evaluation keys and sufficient original current-fitting support, regardless of historical gate acceptance. Report ungated regional versus pooled-residual performance on exactly the same supported keys, with eligible counts and gate-rejection reasons. Keep G−P as the primary full-cohort deployment contrast and L−P as the supported-cohort diagnostic. Predeclare historical-support eligible main-period counts of 3,211/4,997/3,423/845 for H1/H3/H6/H12 (18.54%/29.53%/20.86%/6.00% of their full cohorts), and recompute them from keys/support rules before fitting. These upper bounds on rows that can change through regional routing are not bounds on F1 gain or significance; current fitting support and gain acceptance may reduce coverage further. This diagnostic cannot select recipes, relax gate thresholds, or be described as an oracle. Do not extrapolate its subset effect to all keys. Include additional current-local fits in the pre-run computation inventory and reuse exact matching models where available.
 - R22: Preserve the previously requested full metric panel and persistence comparison: four-class accuracy/macro-F1, binary accuracy/F1/precision/recall/F2, projected q3 R² with raw q3 R² as a diagnostic. Retain original NA, matched-cohort, availability and country-bootstrap semantics as detailed in design section 8. Report each seed and horizon, not a cross-horizon headline or selected best seed; keep 2026 separate.
 - R23: Deliver keyed predictions, full fit/parent/preprocessing provenance, per-candidate selection records, all gate decisions, diagnostic eligibility, and saved-model replay. Technical incompleteness is distinct from absence of scientific benefit. No positive-effect threshold is a condition of completing the study.
+- R25: Run the three replicates as concurrent processes, one replicate per process, for both development and Stage3 (user decision 2026-10-05 after P0). Within a process every fit stays strictly serial with per-fit identity-derived seeds and RNG resets; replicates never share a model identity. Parallel and serial modes must produce byte-identical artifacts and identical model tensors, which the tests verify; replay re-executes serially and compares byte-for-byte. Recipe selection runs only after all replicate workers finish; a failed worker stops the run without retry. This is an execution change only: no seed, recipe, fit count, or scientific rule changes.
 - R24: Preserve the original package/runtime in an isolated sibling experiment and separate numerical environment. Freeze verified inputs, source/runtime/device identity and reproduce the no-fit inventory before project-data fitting. Planning enumeration is 13,260 unique scalar network fits including all three seeds and diagnostics; changes to this bounded scientific workload require reconciliation, not silent expansion. Exact operational choices and synthetic timing checkpoint are in design sections 9–11 and implement.md, subject to final plan approval.
 
 ## Acceptance Criteria
@@ -70,13 +72,17 @@ Determine whether an MLP improves IPCCH population-share prediction and whether 
 - [x] Ungated current-date regional predictions on the supported mapped cohort are approved as a separately labelled diagnostic.
 - [x] Planning source hashes, original maps/calendar and comparator artifacts are captured in research/source-inventory.json; executor re-verification is required.
 - [x] The design specifies matched comparisons, preprocessing/selection boundaries, viewed-period limitations, persistence, numerical reproducibility, computation inventory and reporting.
-- [ ] User approves the final planning summary before execution is released to Claude Opus 5.5 1M.
-- [ ] Executor implements the approved specification and passes synthetic and runtime preflight checks; supervisor verifies the concrete freeze before project-data fitting.
-- [ ] All three development/Stage3 replicates complete with the frozen recipe and reconciled fit/provider/cohort inventories.
-- [ ] Saved-model replay and independent selection/gate/metric/bootstrap recomputation pass; final manifests and discussion/report updates are delivered.
+- [x] User approves the final planning summary before execution is released to Claude Opus 5.5 1M (2026-10-05; released through P0, then user checkpoint).
+- [x] Executor implements the approved specification and passes synthetic and runtime preflight checks; supervisor verifies the concrete freeze before project-data fitting (P0 checkpoint reviewed; P1+P2 released 2026-10-05 with replicate-parallel execution).
+- [x] All three development/Stage3 replicates complete with the frozen recipe and reconciled fit/provider/cohort inventories (288 + 3 × 4,324 = 13,260 fits, 0 failed).
+- [x] Saved-model replay and independent selection/gate/metric/bootstrap recomputation pass; final manifests and discussion/report updates are delivered (replay 28,084 checks, 0 failures; results.md; meeting note 7.4; future-direction note section 7).
 
 ## Out of scope and limitations
 
 MLP-driven map relearning, shared multi-output networks, global-weight fine-tuning, K-means/exchange, learned edges, GNN, SMOTE, gate relaxation, early stopping, new seed ensembles and broad hyperparameter search are excluded. There is no new raw-data version, release-vintage reconstruction or donor assignment. The XGB-selected map, reused S and already viewed test period limit interpretation. Pooled recipe selection may not be best for small regional samples; fixed training budgets and stronger regularization do not guarantee convergence or generalization.
 
 PyTorch is not installed in the inspected original Windows or current WSL runtime. A compatible official wheel exists, but actual import, deterministic behavior, CPU/GPU performance and full-run duration remain P0 operational checks. They do not authorize changing model size, seed count or numerical recipe to obtain a favorable result. No implementation or audit lifecycle action has been performed during planning.
+
+## Outcome (2026-10-06)
+
+Executed under the frozen spec (run `mlp-formal-20261005`, code `cd7bcd5`); see [results.md](results.md). The MLP learner is 0.021–0.057 main-period crisis F1 below pooled XGB; G−P stays within ±0.0012 in every seed×H, the ungated supported-cohort L−P is −0.006 to +0.006 with mixed signs, and the MLP system is below persistence at every H. Trellis audit waived for this task; this is not an audit pass.
