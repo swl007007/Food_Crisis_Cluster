@@ -1,6 +1,6 @@
 # Execution plan — IPCCH fixed-map MLP
 
-Status: approved 2026-10-05; released through the P0 checkpoint. Executor: verified Claude Opus 5.5 1M session. The user supervises; no substitute model is authorized silently. Trellis audit waived for this task only.
+Status: approved 2026-10-05. P0 checkpoint passed; P1+P2 released with replicate-parallel execution (PRD R25). The formal develop → predict → report → replay sequence is started by the user as a separate goal run. Executor: verified Claude Opus 5.5 1M session. The user supervises; no substitute model is authorized silently. Trellis audit waived for this task only.
 
 ## P0 — Establish identity, isolated package, and runtime
 
@@ -17,6 +17,7 @@ Status: approved 2026-10-05; released through the P0 checkpoint. Executor: verif
 
 ## P1 — Development and recipe freeze
 
+- Run the three replicates as concurrent worker processes (PRD R25); the parent selects only after all three finish.
 - Fit exactly 288 scalar networks across H/seed/target/global size/residual size; globals reused across residual-size candidates.
 - Fit preprocessing and all learners on original F; score complete original S in inference mode. Save raw components, summed/projected outputs, labels, counts, seed scores and exact ranking.
 - Select one recipe per H by mean seed P crisis F1; ties use fewer B+P parameters then fixed candidate ID. Freeze winners and source identity; do not refit on F+S or train development regional networks.
@@ -24,6 +25,7 @@ Status: approved 2026-10-05; released through the P0 checkpoint. Executor: verif
 
 ## P2 — Stage3 with ungated diagnostic
 
+- Run the three replicates as concurrent worker processes with separate ledgers (PRD R25); finalize the Stage3 summary only after all three succeed.
 - Use the fixed original maps and all 138 planned folds for each replicate. Preserve no-valid-target rows and original cohort keys.
 - Fit B/P and all supported historical L quartets at their lawful origins; cache by full identity. Recompute historical gates per seed and origin, with P used on unsupported historical dates.
 - Fit all supported current L quartets with current keys, irrespective of gate; export diagnostic predictions. Build G only using approved gate routes, otherwise P.
@@ -42,18 +44,23 @@ Status: approved 2026-10-05; released through the P0 checkpoint. Executor: verif
 
 ## Required reproducible command surface
 
-The executor must document exact Windows interpreter, environment, config, package and scratch run paths. From the new package, the intended command shape is:
+Locked interpreter `C:\Users\swl00\.venvs\ipcch-mlp\Scripts\python.exe`; package `IPCCHMLPExperiment/`;
+config fixed inside the package (`config/*.json`); scratch runs under
+`C:\Users\swl00\AppData\Local\Temp\ipcch-mlp-runs`. From WSL in `IPCCHMLPExperiment/`:
 
 ```text
-<locked-python> -m pytest tests -q
-<locked-python> run_experiment.py --config <frozen-config> --run-dir <new-run> preflight
-<locked-python> run_experiment.py --config <frozen-config> --run-dir <new-run> develop
-<locked-python> run_experiment.py --config <frozen-config> --run-dir <new-run> predict
-<locked-python> run_experiment.py --config <frozen-config> --run-dir <new-run> report
-<locked-python> run_experiment.py --config <frozen-config> --run-dir <new-run> replay
+VP=/mnt/c/Users/swl00/.venvs/ipcch-mlp/Scripts/python.exe
+RUN='C:\Users\swl00\AppData\Local\Temp\ipcch-mlp-runs\<formal-run-id>'
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m pytest -q
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp preflight --run-dir "$RUN"   # no fitting
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp develop   --run-dir "$RUN"   # P1, 3 replicate workers
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp predict   --run-dir "$RUN"   # P2, 3 replicate workers
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp report    --run-dir "$RUN"
+PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp replay    --run-dir "$RUN"
 ```
 
-These commands describe the implementation target; they do not exist yet and have not been executed. `preflight` must not fit project data. Any synthetic timings are explicit and separately logged.
+`develop`/`predict` accept `--serial` for the serial mode. `run_experiment.py <command> --run-dir DIR`
+is an equivalent wrapper. `preflight` and `timing` never fit project data.
 
 ## Rollback and recovery
 

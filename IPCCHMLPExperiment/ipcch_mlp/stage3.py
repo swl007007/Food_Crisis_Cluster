@@ -206,43 +206,56 @@ class Stage3:
         return {"ledger": ledger, "predictions": pred, "gate": gate_records, "pairs": pairs}
 
 
-def run_stage3(run_dir: Path, engine: Engine, contract: dict, horizons: dict, calendar: pd.DataFrame,
-               winners: dict) -> dict:
-    out = run_dir / "stage3"
-    out.mkdir()
+def run_replicate(run_dir: Path, engine: Engine, contract: dict, horizons: dict, calendar: pd.DataFrame,
+                  winners: dict, rep: int) -> dict:
+    """All H for one replicate; writes ``stage3/rep<rep>/`` and its replicate-summary.json."""
+    rdir = run_dir / "stage3" / f"rep{rep}"
+    rdir.mkdir()
+    fits_before = engine.store.counts["fits"]
+    rsum = {}
+    for h, hz in horizons.items():
+        s3 = Stage3(engine, contract, hz, rep, winners[str(h)])
+        hdir = rdir / f"h{h:02d}"
+        hdir.mkdir()
+        preds, ledger = [], []
+        folds = calendar[calendar["horizon_months"] == h].sort_values(["target_ord", "period"])
+        with open(hdir / "gate_decisions.jsonl", "w", encoding="utf-8", newline="\n") as glog:
+            for fold in folds.to_dict("records"):
+                res = s3.run_fold(fold)
+                ledger.append(res["ledger"])
+                if res["predictions"] is not None:
+                    preds.append(res["predictions"])
+                for d in res["gate"]:
+                    glog.write(json.dumps({"fold_id": fold["fold_id"], **d}, sort_keys=True, default=str) + "\n")
+                if res["pairs"] is not None and len(res["pairs"]):
+                    res["pairs"].to_csv(hdir / f"pairs_{fold['fold_id']}.csv.gz", index=False, compression=GZ)
+        frame = pd.concat(preds, ignore_index=True) if preds else pd.DataFrame()
+        frame.to_csv(hdir / "predictions.csv.gz", index=False, compression=GZ)
+        pd.DataFrame(ledger).to_csv(hdir / "fold_ledger.csv", index=False)
+        rsum[str(h)] = {"recipe": winners[str(h)], "folds": len(ledger),
+                        "scored_folds": sum(1 for r in ledger if r["status"] == "scored"),
+                        "prediction_rows": int(len(frame)),
+                        "local_rows": int((frame["route"] == "local").sum()) if len(frame) else 0,
+                        "local_eligible_rows": int(frame["local_eligible"].sum()) if len(frame) else 0,
+                        "predictions_sha256": sha256_file(hdir / "predictions.csv.gz")}
+    rsum["new_scalar_fits"] = engine.store.counts["fits"] - fits_before
+    write_json(rdir / "replicate-summary.json", rsum)
+    return rsum
+
+
+def finalize_stage3(run_dir: Path, contract: dict, winners: dict) -> dict:
     summary = {"stage": "P2-stage3", "recipes": winners, "replicates": {}}
     for rep in contract["replicates"]:
-        rdir = out / f"rep{rep}"
-        rdir.mkdir()
-        fits_before = engine.store.counts["fits"]
-        rsum = {}
-        for h, hz in horizons.items():
-            s3 = Stage3(engine, contract, hz, rep, winners[str(h)])
-            hdir = rdir / f"h{h:02d}"
-            hdir.mkdir()
-            preds, ledger = [], []
-            folds = calendar[calendar["horizon_months"] == h].sort_values(["target_ord", "period"])
-            with open(hdir / "gate_decisions.jsonl", "w", encoding="utf-8", newline="\n") as glog:
-                for fold in folds.to_dict("records"):
-                    res = s3.run_fold(fold)
-                    ledger.append(res["ledger"])
-                    if res["predictions"] is not None:
-                        preds.append(res["predictions"])
-                    for d in res["gate"]:
-                        glog.write(json.dumps({"fold_id": fold["fold_id"], **d}, sort_keys=True, default=str) + "\n")
-                    if res["pairs"] is not None and len(res["pairs"]):
-                        res["pairs"].to_csv(hdir / f"pairs_{fold['fold_id']}.csv.gz", index=False, compression=GZ)
-            frame = pd.concat(preds, ignore_index=True) if preds else pd.DataFrame()
-            frame.to_csv(hdir / "predictions.csv.gz", index=False, compression=GZ)
-            pd.DataFrame(ledger).to_csv(hdir / "fold_ledger.csv", index=False)
-            rsum[str(h)] = {"recipe": winners[str(h)], "folds": len(ledger),
-                            "scored_folds": sum(1 for r in ledger if r["status"] == "scored"),
-                            "prediction_rows": int(len(frame)),
-                            "local_rows": int((frame["route"] == "local").sum()) if len(frame) else 0,
-                            "local_eligible_rows": int(frame["local_eligible"].sum()) if len(frame) else 0,
-                            "predictions_sha256": sha256_file(hdir / "predictions.csv.gz")}
-        rsum["new_scalar_fits"] = engine.store.counts["fits"] - fits_before
-        summary["replicates"][str(rep)] = rsum
-    summary["store_counts"] = dict(engine.store.counts)
-    write_json(out / "stage3-summary.json", summary)
+        path = run_dir / "stage3" / f"rep{rep}" / "replicate-summary.json"
+        summary["replicates"][str(rep)] = json.loads(path.read_text(encoding="utf-8"))
+    write_json(run_dir / "stage3" / "stage3-summary.json", summary)
     return summary
+
+
+def run_stage3(run_dir: Path, engine: Engine, contract: dict, horizons: dict, calendar: pd.DataFrame,
+               winners: dict) -> dict:
+    """Serial mode: every replicate in this process."""
+    (run_dir / "stage3").mkdir()
+    for rep in contract["replicates"]:
+        run_replicate(run_dir, engine, contract, horizons, calendar, winners, rep)
+    return finalize_stage3(run_dir, contract, winners)

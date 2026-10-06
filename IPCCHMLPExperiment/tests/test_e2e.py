@@ -237,3 +237,63 @@ def test_replay_inventory_counts_store_entries(run):
     counts = replay.inventory(chk, run["root"], c)
     assert not chk.failures, chk.failures
     assert counts["develop"] == 24
+
+
+# ------------------------------------------------------------ replicate-parallel equivalence
+
+def synthetic_context() -> dict:
+    """Loader for spawned workers (and the serial reference): identical small two-replicate world."""
+    runtime.configure(DEVICE, 4)
+    hz, cal, split = world()
+    c = contract_for(hz, split)
+    c["replicates"] = [42, 43]
+    c["training"]["global_epochs"] = 3
+    c["training"]["residual_epochs"] = 8
+    return {"contract": c, "env": {"synthetic": True}, "device": DEVICE, "horizons": {H: hz}, "split": split,
+            "calendar": cal}
+
+
+def test_parallel_replicates_equal_serial(tmp_path):
+    from ipcch_mlp import parallel
+    ctx = synthetic_context()
+    c = ctx["contract"]
+    serial = tmp_path / "serial"
+    serial.mkdir()
+    store = ModelStore(serial / "models", serial / "model_requests.jsonl")
+    engine = Engine(store, c, ctx["env"], DEVICE)
+    develop.run_develop(serial, engine, c, ctx["horizons"], ctx["split"])
+    winners = develop.load_winners(serial)
+    stage3.run_stage3(serial, engine, c, ctx["horizons"], ctx["calendar"], winners)
+    par = tmp_path / "parallel"
+    par.mkdir()
+    parallel.run_develop_parallel(par, c, "test_e2e:synthetic_context")
+    assert develop.load_winners(par) == winners
+    parallel.run_stage3_parallel(par, c, "test_e2e:synthetic_context", winners)
+    chk = replay.Checker()
+    replay.compare_trees(chk, serial / "develop", par / "develop")
+    replay.compare_trees(chk, serial / "stage3", par / "stage3")
+    assert not chk.failures, chk.failures[:5]
+    models = lambda root: {p.name: json.loads((p / "record.json").read_text())["final_state_sha256"]
+                           for p in (root / "models" / "models").glob("*/*")}
+    assert models(serial) == models(par) and len(models(par)) > 0
+    assert sorted(p.name for p in par.glob("model_requests_*.jsonl")) == [
+        "model_requests_develop_rep42.jsonl", "model_requests_develop_rep43.jsonl",
+        "model_requests_stage3_rep42.jsonl", "model_requests_stage3_rep43.jsonl"]
+    c2 = copy.deepcopy(c)
+    n_dev = sum(json.loads(x)["status"] == "fit" for x in (par / "model_requests_develop_rep42.jsonl").read_text().splitlines())
+    n_s3 = sum(json.loads(x)["status"] == "fit" for x in (par / "model_requests_stage3_rep42.jsonl").read_text().splitlines())
+    c2["expected"] = {"development_scalar_fits": 2 * n_dev, "stage3_scalar_fits_per_seed": n_s3,
+                      "total_scalar_fits": 2 * (n_dev + n_s3)}
+    chk2 = replay.Checker()
+    replay.inventory(chk2, par, c2)
+    assert not chk2.failures, chk2.failures
+
+
+def test_failed_worker_stops_without_finalizing(tmp_path):
+    from ipcch_mlp import parallel
+    par = tmp_path / "run"
+    par.mkdir()
+    with pytest.raises(TechnicalError):
+        parallel.run_develop_parallel(par, synthetic_context()["contract"], "test_e2e:no_such_loader")
+    assert not (par / "develop" / "frozen_recipes.json").exists()
+    assert (par / "develop_rep42" / "INCOMPLETE.json").exists()

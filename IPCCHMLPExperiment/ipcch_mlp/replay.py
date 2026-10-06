@@ -138,7 +138,10 @@ def independent_selection(c: Checker, run_dir: Path, contract: dict) -> None:
 
 def inventory(c: Checker, run_dir: Path, contract: dict) -> dict:
     fits: dict = {}
-    for line in (run_dir / "model_requests.jsonl").read_text(encoding="utf-8").splitlines():
+    lines = []
+    for ledger in sorted(run_dir.glob("model_requests*.jsonl")):
+        lines += ledger.read_text(encoding="utf-8").splitlines()
+    for line in lines:
         e = json.loads(line)
         if e["status"] == "failed":
             c.check("ledger:no_failed", False, line)

@@ -57,12 +57,11 @@ def score_rows(truth: np.ndarray, raw: np.ndarray) -> dict:
     return {"star": star, "phase": phase, "counts": counts, "f1": None if f1 is None else str(f1)}
 
 
-def run_develop(run_dir: Path, engine: Engine, contract: dict, horizons: dict, split: pd.DataFrame) -> dict:
+def develop_replicate(run_dir: Path, engine: Engine, contract: dict, horizons: dict, split: pd.DataFrame,
+                      rep: int) -> dict:
+    """One replicate's development fits and S scores; writes ``develop/hNN/records_rep<rep>.json``."""
     out = run_dir / "develop"
-    out.mkdir()
-    reps = contract["replicates"]
-    summary = {"stage": "P1-develop", "horizons": {}}
-    winners = {}
+    result = {}
     for h, hz in horizons.items():
         roles = sources.split_roles(hz, split)
         F = np.flatnonzero(roles == "fit")
@@ -72,49 +71,73 @@ def run_develop(run_dir: Path, engine: Engine, contract: dict, horizons: dict, s
             raise ValueError(f"H{h}: F/S = {len(F)}/{len(S)}, expected {exp['fit_keys']}/{exp['validation_keys']}")
         truth = hz.keys["phase_truth"].to_numpy()[S]
         hdir = out / f"h{h:02d}"
-        hdir.mkdir()
+        hdir.mkdir(exist_ok=True)
+        f1s, records = {}, []
+        for gid in ("G1", "G2"):
+            use = {"stage": "develop", "H": h, "replicate": rep, "candidate_global": gid}
+            gf = engine.global_fit(hz, "develop", rep, gid, "dev-F", F, use)
+            XS = engine.inputs(hz, gf, S)
+            B_S = gf.B.predict(XS, engine.device, engine.train_cfg["inference_batch_size"])
+            for rid in ("R1", "R2"):
+                cid = gid + rid
+                Pq = engine.residual_fit(hz, gf, rid, None, {**use, "candidate": cid})
+                P_S = Pq.predict(XS, engine.device, engine.train_cfg["inference_batch_size"])
+                sc = score_rows(truth, B_S + P_S)
+                f1s[cid] = sc["f1"]
+                frame = pd.DataFrame({"row": S, "admin_code": hz.area[S],
+                                      "target_ord": hz.keys["target_ord"].to_numpy()[S], "phase_truth": truth})
+                for j, q in enumerate(TARGETS):
+                    frame[f"base_{q}"] = B_S[:, j]
+                    frame[f"pres_{q}"] = P_S[:, j]
+                    frame[f"pool_{q}_star"] = sc["star"][:, j]
+                frame["pool_phase"] = sc["phase"]
+                path = hdir / f"S_rep{rep}_{cid}.csv.gz"
+                frame.to_csv(path, index=False, compression=GZ)
+                records.append({"replicate": rep, "candidate": cid, "f1": sc["f1"], "counts": sc["counts"],
+                                "base_provider": gf.B.provider(), "pres_provider": Pq.provider(),
+                                "transform_sha256": gf.transform_sha256, "predictions_sha256": sha256_file(path),
+                                "global_updates": {q: gf.B.records[q]["history"]["updates"] for q in TARGETS},
+                                "residual_updates": {q: Pq.records[q]["history"]["updates"] for q in TARGETS},
+                                "global_final_loss": {q: gf.B.records[q]["history"]["epoch_loss"][-1] for q in TARGETS},
+                                "residual_final_loss": {q: Pq.records[q]["history"]["epoch_loss"][-1] for q in TARGETS}})
+        write_json(hdir / f"records_rep{rep}.json", {"replicate": rep, "f1": f1s, "records": records,
+                                                     "store_counts": dict(engine.store.counts)})
+        result[str(h)] = f1s
+    return result
+
+
+def finalize_develop(run_dir: Path, contract: dict) -> dict:
+    """Merge all replicates' S scores and select one recipe per H (needs every replicate)."""
+    out = run_dir / "develop"
+    summary = {"stage": "P1-develop", "horizons": {}}
+    winners = {}
+    for h in contract["horizons_months"]:
+        hdir = out / f"h{h:02d}"
         entries = {cid: {} for cid in CANDIDATES}
         records = []
-        for rep in reps:
-            for gid in ("G1", "G2"):
-                use = {"stage": "develop", "H": h, "replicate": rep, "candidate_global": gid}
-                gf = engine.global_fit(hz, "develop", rep, gid, "dev-F", F, use)
-                XS = engine.inputs(hz, gf, S)
-                B_S = gf.B.predict(XS, engine.device, engine.train_cfg["inference_batch_size"])
-                for rid in ("R1", "R2"):
-                    cid = gid + rid
-                    Pq = engine.residual_fit(hz, gf, rid, None, {**use, "candidate": cid})
-                    P_S = Pq.predict(XS, engine.device, engine.train_cfg["inference_batch_size"])
-                    sc = score_rows(truth, B_S + P_S)
-                    entries[cid][rep] = sc["f1"]
-                    frame = pd.DataFrame({"row": S, "admin_code": hz.area[S], "target_ord": hz.keys["target_ord"].to_numpy()[S],
-                                          "phase_truth": truth})
-                    for j, q in enumerate(TARGETS):
-                        frame[f"base_{q}"] = B_S[:, j]
-                        frame[f"pres_{q}"] = P_S[:, j]
-                        frame[f"pool_{q}_star"] = sc["star"][:, j]
-                    frame["pool_phase"] = sc["phase"]
-                    path = hdir / f"S_rep{rep}_{cid}.csv.gz"
-                    frame.to_csv(path, index=False, compression=GZ)
-                    records.append({"replicate": rep, "candidate": cid, "f1": sc["f1"], "counts": sc["counts"],
-                                    "base_provider": gf.B.provider(), "pres_provider": Pq.provider(),
-                                    "transform_sha256": gf.transform_sha256, "predictions_sha256": sha256_file(path),
-                                    "global_updates": {q: gf.B.records[q]["history"]["updates"] for q in TARGETS},
-                                    "residual_updates": {q: Pq.records[q]["history"]["updates"] for q in TARGETS},
-                                    "global_final_loss": {q: gf.B.records[q]["history"]["epoch_loss"][-1] for q in TARGETS},
-                                    "residual_final_loss": {q: Pq.records[q]["history"]["epoch_loss"][-1] for q in TARGETS}})
+        for rep in contract["replicates"]:
+            part = json.loads((hdir / f"records_rep{rep}.json").read_text(encoding="utf-8"))
+            for cid in CANDIDATES:
+                entries[cid][rep] = part["f1"][cid]
+            records += part["records"]
         decision = select(entries, contract)
-        if decision["status"] != "selected":
-            write_json(hdir / "selection.json", {"entries": entries, "selection": decision, "records": records})
-            raise ValueError(f"H{h}: selection_unavailable")
-        winners[str(h)] = decision["winner"]
         write_json(hdir / "selection.json", {"entries": entries, "selection": decision, "records": records,
                                              "note": "S is adaptive internal development evidence, not independent validation"})
+        if decision["status"] != "selected":
+            raise ValueError(f"H{h}: selection_unavailable")
+        winners[str(h)] = decision["winner"]
         summary["horizons"][str(h)] = {"winner": decision["winner"], "entries": entries}
     write_json(out / "frozen_recipes.json", {"winners": winners, "contract": contract["contract_version"]})
-    summary["store_counts"] = dict(engine.store.counts)
     write_json(out / "develop-summary.json", summary)
     return summary
+
+
+def run_develop(run_dir: Path, engine: Engine, contract: dict, horizons: dict, split: pd.DataFrame) -> dict:
+    """Serial mode: every replicate in this process, then selection."""
+    (run_dir / "develop").mkdir()
+    for rep in contract["replicates"]:
+        develop_replicate(run_dir, engine, contract, horizons, split, rep)
+    return finalize_develop(run_dir, contract)
 
 
 def load_winners(run_dir: Path) -> dict:

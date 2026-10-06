@@ -272,3 +272,23 @@ def test_projection_threshold_inclusive():
 def test_calendar_cutoffs():
     assert sources.training_window(100) == (65, 100)
     assert sources.historical_gate_dates(np.array([90, 95, 99, 100, 101, 98, 97, 96]), 100).tolist() == [99, 98, 97, 96, 95, 90]
+
+
+def _put_many(root: str, n: int) -> None:
+    store = ModelStore(__import__("pathlib").Path(root), __import__("pathlib").Path(root) / "l.jsonl")
+    t = preprocess.fit_transform(_X())
+    for _ in range(n):
+        store.put_transform(t)
+
+
+def test_concurrent_transform_writes(tmp_path):
+    import multiprocessing as mp
+    ctx = mp.get_context("spawn")
+    procs = [ctx.Process(target=_put_many, args=(str(tmp_path), 25)) for _ in range(4)]
+    for p in procs:
+        p.start()
+    for p in procs:
+        p.join()
+    assert [p.exitcode for p in procs] == [0, 0, 0, 0]
+    files = list((tmp_path / "transforms").iterdir())
+    assert len(files) == 1 and not files[0].name.startswith(".tmp")

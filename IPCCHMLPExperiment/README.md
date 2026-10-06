@@ -33,7 +33,9 @@ PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp report   --run-dir 'C:\...\R
 PYTHONPATH=. WSLENV=PYTHONPATH/p "$VP" -m ipcch_mlp replay   --run-dir 'C:\...\RUN'
 ```
 
-`run_experiment.py <command> --run-dir DIR` is an equivalent wrapper.
+`run_experiment.py <command> --run-dir DIR` is an equivalent wrapper. `develop` and
+`predict` run the three replicates as concurrent worker processes by default
+(PRD R25; byte-identical to `--serial`, which is kept).
 Project-data stages refuse to run until `runtime-lock.json` has a frozen
 device and the run has a passed preflight.
 

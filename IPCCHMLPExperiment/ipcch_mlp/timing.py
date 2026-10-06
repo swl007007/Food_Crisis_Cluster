@@ -130,3 +130,59 @@ def choose_device(results: dict, estimates: dict) -> str:
              for d in eligible}
     best = min(total.values())
     return "cpu" if "cpu" in total and total["cpu"] <= best else min(total, key=total.get)
+
+
+# ------------------------------------------------------------ replicate-parallel probe
+
+PARALLEL_CASES = (("global", "G1", 8561), ("global", "G2", 19052), ("residual", "R1", 19052), ("residual", "R2", 2000))
+
+
+def _parallel_worker(device: str, threads: int, queue) -> None:
+    from ipcch_mlp.contract import load_contract  # noqa: PLC0415
+    runtime.configure(device, threads)
+    contract = load_contract()
+    cfg, arch = contract["training"], contract["architecture"]
+    out = []
+    for role, cid, n in PARALLEL_CASES:
+        X, y = _data(n)
+        widths = arch["global_candidates" if role == "global" else "residual_candidates"][cid]
+        epochs = cfg["global_epochs"] if role == "global" else cfg["residual_epochs"]
+        net, dt, _ = _fit(widths, role, X, y, epochs, cfg, device)
+        out.append({"role": role, "candidate": cid, "n": n, "seconds": dt,
+                    "digest": nets.state_digest(nets.cpu_state(net))})
+    queue.put(out)
+
+
+def probe_parallel(device: str, threads: int, n_procs: int = 3) -> dict:
+    """Same fixed case list in 1 process, then in n_procs concurrent processes (spawn)."""
+    import multiprocessing as mp  # noqa: PLC0415
+    ctx = mp.get_context("spawn")
+    result = {}
+    for k in (1, n_procs):
+        q = ctx.Queue()
+        procs = [ctx.Process(target=_parallel_worker, args=(device, threads, q)) for _ in range(k)]
+        t0 = time.perf_counter()
+        for p in procs:
+            p.start()
+        outs = []
+        import queue as _queue  # noqa: PLC0415
+        while len(outs) < k:
+            try:
+                outs.append(q.get(timeout=5))
+            except _queue.Empty:
+                dead = [p.exitcode for p in procs if p.exitcode not in (None, 0)]
+                if dead:
+                    for p in procs:
+                        p.kill()
+                    raise RuntimeError(f"parallel timing worker failed with exit codes {dead}")
+        for p in procs:
+            p.join()
+        wall = time.perf_counter() - t0
+        digests = {tuple(o["digest"] for o in out) for out in outs}
+        result[str(k)] = {"wall_seconds": wall, "per_process_fit_seconds": [sum(o["seconds"] for o in out) for out in outs],
+                          "identical_across_processes": len(digests) == 1, "cases": outs[0]}
+    single = result["1"]["wall_seconds"]
+    result["throughput_speedup"] = n_procs * single / result[str(n_procs)]["wall_seconds"]
+    result["identical_to_single"] = (result["1"]["cases"] and
+                                     [c["digest"] for c in result["1"]["cases"]] == [c["digest"] for c in result[str(n_procs)]["cases"]])
+    return result

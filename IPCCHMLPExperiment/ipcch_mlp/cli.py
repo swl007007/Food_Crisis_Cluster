@@ -85,6 +85,16 @@ def cmd_timing(a) -> int:
     lock = C.load_runtime_lock()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=False)
+    if a.parallel:
+        device = a.device or runtime.frozen_device(lock)
+        res = timing.probe_parallel(device, lock["numerics"]["cpu_threads"], a.parallel)
+        write_json(out / "timing-parallel.json", {"device": device, "processes": a.parallel, **res,
+                                                   "note": "synthetic data only"})
+        _print({"device": device, "wall_1": round(res["1"]["wall_seconds"], 1),
+                f"wall_{a.parallel}": round(res[str(a.parallel)]["wall_seconds"], 1),
+                "throughput_speedup": round(res["throughput_speedup"], 2),
+                "identical": res["identical_to_single"] and res[str(a.parallel)]["identical_across_processes"]})
+        return 0
     info = runtime.probe(lock)
     if not info["matches_lock"]:
         raise ContractError(f"runtime mismatch: {info['mismatches']}")
@@ -164,6 +174,21 @@ def _project_context(run_dir: Path, need_preflight: bool = True):
     return contract, env, device, horizons
 
 
+def real_context() -> dict:
+    """Worker loader for parallel mode: same checks as the parent, in the child process."""
+    from ipcch_mlp import runtime, sources
+    contract = C.load_contract()
+    lock = C.load_runtime_lock()
+    device = runtime.frozen_device(lock)
+    runtime.configure(device, lock["numerics"]["cpu_threads"])
+    env = runtime.environment_identity(device, lock)
+    return {"contract": contract, "env": env, "device": device, "horizons": _horizons(contract),
+            "split": sources.load_split(), "calendar": sources.load_calendar()}
+
+
+REAL_LOADER = "ipcch_mlp.cli:real_context"
+
+
 def _stage(run_dir: Path, name: str, fn):
     try:
         return fn()
@@ -178,12 +203,17 @@ def cmd_develop(a) -> int:
     from ipcch_mlp.store import ModelStore
     run_dir = Path(a.run_dir)
     contract, env, device, horizons = _project_context(run_dir)
-    store = ModelStore(run_dir / "models", run_dir / "model_requests.jsonl")
-    engine = Engine(store, contract, env, device)
     t0 = time.time()
-    res = _stage(run_dir, "develop", lambda: develop.run_develop(run_dir, engine, contract, horizons, sources.load_split()))
-    _print({"status": "passed", "winners": {h: v["winner"] for h, v in res["horizons"].items()},
-            "store": store.counts, "seconds": round(time.time() - t0, 1)})
+    if a.serial:
+        store = ModelStore(run_dir / "models", run_dir / "model_requests.jsonl")
+        engine = Engine(store, contract, env, device)
+        res = _stage(run_dir, "develop", lambda: develop.run_develop(run_dir, engine, contract, horizons,
+                                                                      sources.load_split()))
+    else:
+        from ipcch_mlp import parallel
+        res = _stage(run_dir, "develop", lambda: parallel.run_develop_parallel(run_dir, contract, REAL_LOADER))
+    _print({"status": "passed", "mode": "serial" if a.serial else "replicate-parallel",
+            "winners": {h: v["winner"] for h, v in res["horizons"].items()}, "seconds": round(time.time() - t0, 1)})
     return 0
 
 
@@ -193,13 +223,18 @@ def cmd_predict(a) -> int:
     from ipcch_mlp.store import ModelStore
     run_dir = Path(a.run_dir)
     contract, env, device, horizons = _project_context(run_dir)
-    store = ModelStore(run_dir / "models", run_dir / "model_requests.jsonl")
-    engine = Engine(store, contract, env, device)
     winners = develop.load_winners(run_dir)
     t0 = time.time()
-    res = _stage(run_dir, "stage3", lambda: stage3.run_stage3(run_dir, engine, contract, horizons,
-                                                               sources.load_calendar(), winners))
-    _print({"status": "passed", "store": store.counts, "seconds": round(time.time() - t0, 1),
+    if a.serial:
+        store = ModelStore(run_dir / "models", run_dir / "model_requests.jsonl")
+        engine = Engine(store, contract, env, device)
+        res = _stage(run_dir, "stage3", lambda: stage3.run_stage3(run_dir, engine, contract, horizons,
+                                                                   sources.load_calendar(), winners))
+    else:
+        from ipcch_mlp import parallel
+        res = _stage(run_dir, "stage3", lambda: parallel.run_stage3_parallel(run_dir, contract, REAL_LOADER, winners))
+    _print({"status": "passed", "mode": "serial" if a.serial else "replicate-parallel",
+            "seconds": round(time.time() - t0, 1),
             "new_fits": {r: v["new_scalar_fits"] for r, v in res["replicates"].items()}})
     return 0
 
@@ -229,12 +264,17 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("probe").set_defaults(func=cmd_probe)
     t = sub.add_parser("timing")
     t.add_argument("--out", required=True)
+    t.add_argument("--parallel", type=int, default=0, help="probe N concurrent processes (synthetic data)")
+    t.add_argument("--device", choices=("cpu", "cuda"), default=None, help="parallel probe device (default: frozen)")
     t.set_defaults(func=cmd_timing)
     for name, fn in (("preflight", cmd_preflight), ("develop", cmd_develop), ("predict", cmd_predict),
                      ("report", cmd_report), ("replay", cmd_replay)):
         s = sub.add_parser(name)
         s.add_argument("--run-dir", required=True)
         s.set_defaults(func=fn)
+        if name in ("develop", "predict"):
+            s.add_argument("--serial", action="store_true",
+                           help="run replicates one after another in this process (default: replicate-parallel)")
     return p
 
 

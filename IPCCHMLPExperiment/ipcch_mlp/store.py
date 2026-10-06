@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import shutil
 import uuid
 from pathlib import Path
@@ -97,21 +98,36 @@ class ModelStore:
     # ------------------------------------------------------------ transforms
 
     def put_transform(self, t: Transform) -> str:
+        """Exclusive create: concurrent replicate workers may write the same transform.
+
+        The file is written under a unique temporary name and renamed into place
+        only if absent (``os.rename`` never replaces on Windows); a loser of the
+        race deletes its copy and verifies the existing file instead.
+        """
         digest = t.digest()
         path = self.root / "transforms" / f"{digest}.npz"
-        if path.exists():
-            if self.get_transform(digest).digest() != digest:
-                raise TechnicalError(f"stored transform {digest} is corrupt")
-            return digest
-        tmp = path.with_suffix(f".tmp-{uuid.uuid4().hex}.npz")
-        np.savez(tmp, **t.to_arrays())
-        os.replace(tmp, path)
+        if not path.exists():
+            tmp = path.with_name(f".tmp-{uuid.uuid4().hex}.npz")
+            np.savez(tmp, **t.to_arrays())
+            try:
+                os.rename(tmp, path)
+            except (FileExistsError, PermissionError):
+                tmp.unlink(missing_ok=True)
+        if self.get_transform(digest).digest() != digest:
+            raise TechnicalError(f"stored transform {digest} is corrupt")
         return digest
 
     def get_transform(self, digest: str) -> Transform:
         path = self.root / "transforms" / f"{digest}.npz"
-        with np.load(path) as data:
-            t = Transform.from_arrays({k: data[k] for k in data.files})
+        for attempt in range(20):  # a just-renamed file can be briefly locked on Windows
+            try:
+                with np.load(path) as data:
+                    t = Transform.from_arrays({k: data[k] for k in data.files})
+                break
+            except PermissionError:
+                if attempt == 19:
+                    raise
+                time.sleep(0.25)
         if t.digest() != digest:
             raise TechnicalError(f"stored transform {digest} is corrupt")
         return t
