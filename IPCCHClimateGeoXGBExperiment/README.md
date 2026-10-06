@@ -25,7 +25,7 @@ calendar, projection/decoding, report and replay logic, pinned runtime):
   width 601 the seed-42 column subsampling otherwise prevents any split.
 
 Formal run `climate-20261005`; results and limits are in the task evidence
-(`.trellis/tasks/10-05-ipcch-climate-perturbation/`).
+(`.trellis/tasks/archive/2026-10/10-05-ipcch-climate-perturbation/`).
 
 ## Running
 

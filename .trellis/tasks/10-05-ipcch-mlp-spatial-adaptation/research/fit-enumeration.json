@@ -1,0 +1,99 @@
+{
+  "method": "Read-only stdlib enumeration; complete fixed maps; regional fits include ungated current diagnostic; support >=500 keys/50 areas/6 target months; histories latest six U<O; no fitting or prediction.",
+  "horizons": {
+    "1": {
+      "planned": 39,
+      "scored": 36,
+      "regions": 9,
+      "requests_quartets": {
+        "current_global": 36,
+        "historical_global": 216,
+        "history_regional": 931,
+        "current_regional": 165
+      },
+      "unique_global_quartets": 43,
+      "unique_pooled_residual_quartets": 43,
+      "unique_historical_regional_quartets": 183,
+      "unique_current_regional_quartets": 165,
+      "unique_current_only_regional_quartets": 12,
+      "unique_regional_quartets": 195,
+      "scalar_fits_per_seed": 1124,
+      "global_pool_min_rows": 10465,
+      "global_pool_max_rows": 19012,
+      "main_keys": 17322,
+      "main_historical_support_eligible_keys": 3211
+    },
+    "3": {
+      "planned": 37,
+      "scored": 34,
+      "regions": 7,
+      "requests_quartets": {
+        "current_global": 34,
+        "historical_global": 204,
+        "history_regional": 736,
+        "current_regional": 134
+      },
+      "unique_global_quartets": 43,
+      "unique_pooled_residual_quartets": 43,
+      "unique_historical_regional_quartets": 143,
+      "unique_current_regional_quartets": 134,
+      "unique_current_only_regional_quartets": 18,
+      "unique_regional_quartets": 161,
+      "scalar_fits_per_seed": 988,
+      "global_pool_min_rows": 10465,
+      "global_pool_max_rows": 19052,
+      "main_keys": 16919,
+      "main_historical_support_eligible_keys": 4997
+    },
+    "6": {
+      "planned": 34,
+      "scored": 31,
+      "regions": 6,
+      "requests_quartets": {
+        "current_global": 31,
+        "historical_global": 186,
+        "history_regional": 614,
+        "current_regional": 118
+      },
+      "unique_global_quartets": 43,
+      "unique_pooled_residual_quartets": 43,
+      "unique_historical_regional_quartets": 129,
+      "unique_current_regional_quartets": 118,
+      "unique_current_only_regional_quartets": 25,
+      "unique_regional_quartets": 154,
+      "scalar_fits_per_seed": 960,
+      "global_pool_min_rows": 10339,
+      "global_pool_max_rows": 19052,
+      "main_keys": 16413,
+      "main_historical_support_eligible_keys": 3423
+    },
+    "12": {
+      "planned": 28,
+      "scored": 25,
+      "regions": 9,
+      "requests_quartets": {
+        "current_global": 25,
+        "historical_global": 150,
+        "history_regional": 723,
+        "current_regional": 148
+      },
+      "unique_global_quartets": 43,
+      "unique_pooled_residual_quartets": 43,
+      "unique_historical_regional_quartets": 157,
+      "unique_current_regional_quartets": 148,
+      "unique_current_only_regional_quartets": 70,
+      "unique_regional_quartets": 227,
+      "scalar_fits_per_seed": 1252,
+      "global_pool_min_rows": 9577,
+      "global_pool_max_rows": 16394,
+      "main_keys": 14087,
+      "main_historical_support_eligible_keys": 845
+    }
+  },
+  "stage3_scalar_fits_per_seed": 4324,
+  "stage3_scalar_fits_three_seeds": 12972,
+  "development_scalar_fits_three_seeds": 288,
+  "total_scalar_fits": 13260,
+  "development_note": "4 horizons x 3 seeds x 4 targets x (2 unique globals + 4 pooled residuals); no development regional fits are required by pooled-only selection.",
+  "review_check_note": "Pool min/max use all 43 required Stage3 origins per H. Historical support counts are from original main prediction routes and require independent keyed preflight reconstruction; they are not current-support intersections or MLP gain decisions. See baseline-and-runtime.md for the supervisor check method."
+}

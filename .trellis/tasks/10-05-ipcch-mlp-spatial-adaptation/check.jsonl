@@ -1,0 +1,7 @@
+{"file": ".trellis/tasks/10-05-ipcch-mlp-spatial-adaptation/prd.md", "reason": "Approved scientific decisions and final requirements; planning approval pending."}
+{"file": ".trellis/tasks/10-05-ipcch-mlp-spatial-adaptation/design.md", "reason": "Complete numerical/data/model/evaluation contracts."}
+{"file": ".trellis/tasks/10-05-ipcch-mlp-spatial-adaptation/implement.md", "reason": "Ordered executor checkpoints and required validation."}
+{"file": ".trellis/tasks/10-05-ipcch-mlp-spatial-adaptation/research/baseline-and-runtime.md", "reason": "Inspected source provenance, runtime constraints and fit-count derivation."}
+{"file": ".trellis/tasks/10-05-ipcch-mlp-spatial-adaptation/research/source-inventory.json", "reason": "Frozen reference artifact and source hashes."}
+{"file": ".trellis/tasks/10-05-ipcch-mlp-spatial-adaptation/research/fit-enumeration.json", "reason": "Exact project-data fitting workload including ungated diagnostics."}
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Applicable isolation, provenance and evidence conventions only; other dataset-specific scientific recipes do not apply."}
