@@ -3,7 +3,7 @@
   "name": "ipcch-mlp-spatial-adaptation",
   "title": "IPCCH MLP spatial adaptation experiment",
   "description": "Grill and specify an IPCCH MLP comparison that separates pooled regression quality from regional adaptation; execution reserved for Claude Opus 5.5 1M.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -12,7 +12,7 @@
   "assignee": "swl007007",
   "createdAt": "2026-10-05",
   "completedAt": null,
-  "branch": null,
+  "branch": "main",
   "base_branch": "main",
   "worktree_path": null,
   "commit": null,
@@ -22,5 +22,7 @@
   "parent": null,
   "relatedFiles": [],
   "notes": "",
-  "meta": {}
+  "meta": {
+    "audit_waiver": "user waived trellis-audit for this task only (2026-10-05); use native task.py start/archive, no trellis-audit start/close"
+  }
 }

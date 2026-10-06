@@ -1,10 +1,10 @@
 # Execution plan — IPCCH fixed-map MLP
 
-Status: planning; requires approval of the final PRD/design summary. Executor must be the verified Claude Opus 5.5 1M session. Codex coordinates and supervises; no substitute model is authorized silently.
+Status: approved 2026-10-05; released through the P0 checkpoint. Executor: verified Claude Opus 5.5 1M session. The user supervises; no substitute model is authorized silently. Trellis audit waived for this task only.
 
 ## P0 — Establish identity, isolated package, and runtime
 
-- Read PRD, design, research inventories and applicable repository instructions. Verify branch/worktree and preserve unrelated edits. Commit approved planning artifacts before implementation; use the enrolled controller lifecycle only with the actual verified executor and a verified base SHA. Do not start/close from an observer or invent historical state.
+- Read PRD, design, research inventories and applicable repository instructions. Verify branch/worktree and preserve unrelated edits. Commit approved planning artifacts before implementation. The audit controller lifecycle is waived for this task (native start/archive).
 - Create `IPCCHMLPExperiment/` with a small `ipcch_mlp` package, a CLI, tests, fixed scientific configuration, source-provenance and runtime locks. Keep original packages unchanged. Do not add a general estimator framework.
 - Reuse minimal attributed copies of schedule/projection/metrics/support/report helpers. Record source-to-destination mapping, hashes and changes. Model, preprocessing, development selection, Stage3 and replay need new/adapted MLP-specific implementations; an old XGB replay pass is not sufficient.
 - Before editing existing symbols, attempt required GitNexus impact analysis; report the known LadybugDB failure if it persists and use scoped source tracing. Do not reindex unrelated source packages to fix this task. Before commits run detect_changes and document its result/failure plus the actual Git scope check.
@@ -12,7 +12,7 @@ Status: planning; requires approval of the final PRD/design summary. Executor mu
 - Implement data/source verification and no-fit request enumeration. Reproduce the planning counts, hashes, 19,052-row maximum global pool, and historical-support eligible main-period counts in design section 8; also enumerate their intersection with current fitting support. Fail before training on mismatch. Reuse existing prepared artifacts, not raw feature regeneration.
 - Implement scalar network fits, preprocessing, additive quartet inference, exact-identity persistence and synthetic tests. The CLI must support at least `preflight`, `develop`, `predict`, `report`, `replay` with explicit config/run paths and immutable run identity.
 - Implement zero-initialized P/L output layers with randomly initialized hidden layers; B initialization remains unchanged. Check initial zero corrections, zero-target behavior, nonzero-target learning, and serial identity-derived RNG isolation across intervening fits/cache hits. Record actual optimizer updates and unseen training-all-missing feature observations as specified in design.
-- Run the fixed synthetic CPU/CUDA timing and determinism probes, including n=19,052; freeze the eligible device, environment and numerical recipe. Report estimated full-run wall time/storage, 13,260 scalar fit inventory, source verification, code identity and synthetic checks to Codex.
+- Run the fixed synthetic CPU/CUDA timing and determinism probes, including n=19,052; freeze the eligible device, environment and numerical recipe. Report estimated full-run wall time/storage, 13,260 scalar fit inventory, source verification, code identity and synthetic checks to the user.
 - **Checkpoint:** supervisor checks concrete frozen code/runtime/count evidence before real-data fitting. No project-data pilot or tuning is implied by P0.
 
 ## P1 — Development and recipe freeze
@@ -37,7 +37,7 @@ Status: planning; requires approval of the final PRD/design summary. Executor mu
 - Run saved-model replay for development, historical and current predictions and independently reconstruct all selection, gate, route, metric and bootstrap results.
 - Validate synthetic negative cases for data/map/model tampering and true adopted-local behavior. Verify production source diff stays within the new package, task evidence and authorized notes.
 - Retain a complete final inventory with hashes, model counts, runtime/code identity, failed/partial-run history and commands. Large scratch model files remain outside Git.
-- Prepare a results note and concise additions to the existing IPCCH meeting/future-direction notes. Report negative results without retuning. Codex checks the delivered evidence before scientific acceptance.
+- Prepare a results note and concise additions to the existing IPCCH meeting/future-direction notes. Report negative results without retuning. The user checks the delivered evidence before scientific acceptance.
 - Commit reviewable deliverables only after required checks; do not infer push/PR/close-audit authorization from this planning task. Follow current user instructions for final lifecycle actions.
 
 ## Required reproducible command surface

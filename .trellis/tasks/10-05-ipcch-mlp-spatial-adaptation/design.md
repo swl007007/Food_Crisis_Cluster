@@ -1,6 +1,6 @@
 # IPCCH fixed-map MLP residual adaptation — design v0.2
 
-Status: proposed execution specification for final user review. PRD R1–R24 records adopted requirements, including the user-approved Fable review revisions on 2026-10-05. No implementation or scientific fitting is released by the existence of this file. Executor: Claude Opus 5.5 1M; Codex supervises.
+Status: approved 2026-10-05. PRD R1–R24 records adopted requirements, including the user-approved Fable review revisions. Implementation is released through the P0 checkpoint; project-data fitting needs the user's explicit release afterwards. Executor: Claude Opus 5.5 1M; the user supervises. Trellis audit waived for this task only.
 
 ## 1. Question and comparisons
 
@@ -145,6 +145,6 @@ Verify both residual architectures initially output exactly zero in train/eval m
 
 Any fitting exception, nonfinite tensor/loss/prediction, required empty global pool, shape/key mismatch, source/schema/map drift, immutable-parent mutation, or model-store integrity failure stops the affected run and writes INCOMPLETE evidence. Do not hide technical failures behind normal P fallback, alter the seed, reduce epochs, clip bad values, or remove a failed date/candidate. Successful partial artifacts remain partial.
 
-After final user approval, the verified Claude Opus 5.5 1M executor implements and performs synthetic validation, then submits P0 runtime/inventory/timing and frozen code evidence to Codex. Codex releases the planned scientific run when these prerequisites match the approved contract; discrepancies are reported before dependent work. This supervisor checkpoint is not a new scientific design or a blanket instruction to tune until positive.
+After final user approval, the verified Claude Opus 5.5 1M executor implements and performs synthetic validation, then submits P0 runtime/inventory/timing and frozen code evidence to the user. The user releases the planned scientific run when these prerequisites match the approved contract; discrepancies are reported before dependent work. This supervisor checkpoint is not a new scientific design or a blanket instruction to tune until positive.
 
-Completion includes full three-seed evidence, no unresolved technical failures, replay, a concise results note and updates to the existing meeting/future-direction notes with appropriate limitations. Source/plan commits and task lifecycle follow the repository rules using the actual verified executor; planning does not start an audit, queue a close audit, or claim lifecycle acceptance.
+Completion includes full three-seed evidence, no unresolved technical failures, replay, a concise results note and updates to the existing meeting/future-direction notes with appropriate limitations. Source/plan commits follow the repository rules. The Trellis audit lifecycle is waived for this task only: native `task.py start`/`archive`, no close or spot audit, and no claim of an audit pass.

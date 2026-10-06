@@ -2,14 +2,15 @@
 
 ## Goal
 
-Determine whether an MLP improves IPCCH population-share prediction and whether regional residual correction on existing maps adds value beyond matched pooled residual correction. Deliver a reproducible three-seed comparison and preserve negative results. Implementation and execution are reserved for Claude Opus 5.5 1M, with Codex supervision.
+Determine whether an MLP improves IPCCH population-share prediction and whether regional residual correction on existing maps adds value beyond matched pooled residual correction. Deliver a reproducible three-seed comparison and preserve negative results. Implementation and execution are reserved for Claude Opus 5.5 1M; the user supervises this task.
 
 ## Status and authorization
 
 - User approved task creation on 2026-10-05 after requesting grilling, a persisted specification, and subsequent Claude execution.
-- Planning only; no implementation, fitting, audit start, or executor handoff for this task.
-- Scientific requirements R1–R24 reflect the completed grilling decisions and the user-approved Fable review revisions on 2026-10-05. The concrete technical design, reporting completion and execution plan are ready for final user review; they are not an execution release.
-- Final artifacts: `design.md`, `implement.md`, research source/runtime/count evidence, and curated implement/check contexts. No new scientific question remains open; final approval of the complete plan is pending.
+- 2026-10-05 (evening): user approved the final plan and released implementation through the P0 checkpoint only. Project-data fitting (P1 onward) waits for the user's explicit release after reviewing the P0 runtime/count/timing evidence. Executor: Claude Opus 5.5 1M (verified session). The user acts as supervisor for this task.
+- 2026-10-05: user waived the Trellis audit lifecycle for this task only. Use native `task.py start`/`archive`; no `trellis-audit start/close`, close audit or spot audit. This waiver does not apply to other tasks and is not an audit pass.
+- Scientific requirements R1–R24 reflect the completed grilling decisions and the user-approved Fable review revisions on 2026-10-05. The concrete technical design, reporting completion and execution plan are approved.
+- Final artifacts: `design.md`, `implement.md`, research source/runtime/count evidence, and curated implement/check contexts. No new scientific question remains open.
 
 ## Background and confirmed facts
 
@@ -70,7 +71,7 @@ Determine whether an MLP improves IPCCH population-share prediction and whether 
 - [x] Ungated current-date regional predictions on the supported mapped cohort are approved as a separately labelled diagnostic.
 - [x] Planning source hashes, original maps/calendar and comparator artifacts are captured in research/source-inventory.json; executor re-verification is required.
 - [x] The design specifies matched comparisons, preprocessing/selection boundaries, viewed-period limitations, persistence, numerical reproducibility, computation inventory and reporting.
-- [ ] User approves the final planning summary before execution is released to Claude Opus 5.5 1M.
+- [x] User approves the final planning summary before execution is released to Claude Opus 5.5 1M (2026-10-05; released through P0, then user checkpoint).
 - [ ] Executor implements the approved specification and passes synthetic and runtime preflight checks; supervisor verifies the concrete freeze before project-data fitting.
 - [ ] All three development/Stage3 replicates complete with the frozen recipe and reconciled fit/provider/cohort inventories.
 - [ ] Saved-model replay and independent selection/gate/metric/bootstrap recomputation pass; final manifests and discussion/report updates are delivered.
