@@ -100,7 +100,7 @@ def main() -> int:
     args = ap.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
     result = {"new_run": str(args.new_run), "old_run": str(args.old_run),
-              "interpretation": report.run_report.__doc__ and
+              "interpretation":
               "pointwise descriptive country-cluster bootstrap conditional on saved predictions; exploratory, "
               "evaluation period already viewed; GeoXGB difference mixes feature and re-learned map effects, "
               "pooled difference isolates the feature recipe under the matched global pipeline",

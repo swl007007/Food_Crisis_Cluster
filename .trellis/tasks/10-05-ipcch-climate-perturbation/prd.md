@@ -18,11 +18,15 @@ Swap the monthly climate/vegetation inputs of the IPCCH cumulative-share GeoXGB 
 
 ## Acceptance Criteria
 
-- [ ] New package tests pass under the pinned runtime; original package unchanged.
-- [ ] Input hashes for both climate files recorded; prepared manifest reports 601 columns and NaN coverage of the new columns.
-- [ ] All pipeline stages exit 0; replay passes with zero failures.
-- [ ] Comparison table and bootstrap written to task evidence; results note states limits (exploratory, viewed period, maps re-learned so map and feature effects are confounded in GeoXGB; pooled isolates the feature effect).
+- [x] New package tests pass under the pinned runtime; original package unchanged.
+- [x] Input hashes for both climate files recorded; prepared manifest reports 601 columns and NaN coverage of the new columns.
+- [x] All pipeline stages exit 0; replay passes with zero failures.
+- [x] Comparison table and bootstrap written to task evidence; results note states limits (exploratory, viewed period, maps re-learned so map and feature effects are confounded in GeoXGB; pooled isolates the feature effect).
 
 ## Out of scope
 
 Hyperparameter changes, new seeds, using the audit-flagged per-source columns, MLP task changes, release-vintage availability checks for the climate data (observation-month-end assumption is inherited).
+
+## Outcome (2026-10-05)
+
+Executed as specified; see [results.md](results.md) and `evidence/`. Main-period crisis F1 changed by −0.0007 to +0.0063 (pooled) with every country-bootstrap interval including zero; Geo−pooled stays within ±0.0006.

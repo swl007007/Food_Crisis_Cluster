@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "summary_sha256": "24483337e0cccd38502da30ab4ad42a76168e74bfb82f7c8db20a961dcb2ff1f",
+  "horizons": {
+    "1": {
+      "recipe": "G1L2",
+      "local_enabled": true,
+      "regions": 7,
+      "folds": 39,
+      "scored_folds": 36,
+      "prediction_rows": 21414,
+      "local_rows": 192,
+      "predictions_sha256": "03820666fe5c46412f18eda7c70db38aaec4b1a5dd817d8f1c713bfd2c750ce5"
+    },
+    "3": {
+      "recipe": "G1L2",
+      "local_enabled": true,
+      "regions": 6,
+      "folds": 37,
+      "scored_folds": 34,
+      "prediction_rows": 21011,
+      "local_rows": 329,
+      "predictions_sha256": "86b530f4875488af3a0fbd32df0c7340ee74fd722590a19999056bb2a3b9106e"
+    },
+    "6": {
+      "recipe": "G4L2",
+      "local_enabled": true,
+      "regions": 2,
+      "folds": 34,
+      "scored_folds": 31,
+      "prediction_rows": 20505,
+      "local_rows": 1129,
+      "predictions_sha256": "5df5845c8bf4c1a1c161a63e789944fe0f833273bb94f34f7134f506953719c9"
+    },
+    "12": {
+      "recipe": "G1L2",
+      "local_enabled": true,
+      "regions": 5,
+      "folds": 28,
+      "scored_folds": 25,
+      "prediction_rows": 18179,
+      "local_rows": 1174,
+      "predictions_sha256": "1d553a32e10d6b59aac789a7e49c3a057210d10801872f63ac43539a601927cd"
+    }
+  },
+  "model_store": {
+    "requests": 3199,
+    "hits": 2558,
+    "fits": 641,
+    "failed": 0
+  }
+}
+exit 0 wall 3224s
