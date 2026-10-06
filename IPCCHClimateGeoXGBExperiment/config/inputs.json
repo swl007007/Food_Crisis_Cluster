@@ -1,0 +1,131 @@
+{
+  "inputs_version": "ipcch-geoxgb-inputs-v1+climate-perturbation-v1",
+  "derived_from": {
+    "path": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/input-manifest.json",
+    "sha256": "b20eeb875a91ae042ec6aaea98c58a01da2d59e9a8de5623c54d0b5dce04ac91"
+  },
+  "access": "read_only; any byte/structure mismatch stops (never edit an expected hash)",
+  "known_limit": "Upstream nearest-neighbor administrative matching and boundary vintage not fully verified; topology validity does not establish identity correctness.",
+  "inputs": {
+    "raw_panel": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\raw\\IPCCH_2026_completed.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/raw/IPCCH_2026_completed.csv",
+      "bytes": 1782567753,
+      "sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+      "role": "population targets and original93 covariates"
+    },
+    "country_lookup_source": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\country_area_id_lookup.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/country_area_id_lookup.csv",
+      "bytes": 214996,
+      "sha256": "e2baf6ae9481b42b127db5ce81f3c53ad784bb08ae56dfa56cea74e416b44c90",
+      "role": "country/area identity"
+    },
+    "reference_coordinates_source": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\1.Source Data\\assembled_IPCCH\\spatial\\unique_area_id_lat_lon.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/spatial/unique_area_id_lat_lon.csv",
+      "bytes": 224352,
+      "sha256": "3bf8f115ec70cd1e1c907031309b797410a8024cdc1d39265be123ae636d2862",
+      "role": "source area coordinates"
+    },
+    "geometry_shp": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\ipcch_admin_geometry_repaired.shp",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.shp",
+      "bytes": 67208080,
+      "sha256": "9df70f3aa719eaa2458a3ff4a92f058da1f5fe1feeb85432e0dd88e515ccfadb",
+      "role": "frozen repaired geometry"
+    },
+    "geometry_shx": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\ipcch_admin_geometry_repaired.shx",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.shx",
+      "bytes": 49916,
+      "sha256": "424554aec24b86d74609a5fe59a01e498c78269c6e6b4b87765e657a4fe6fc83",
+      "role": "geometry component"
+    },
+    "geometry_dbf": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\ipcch_admin_geometry_repaired.dbf",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.dbf",
+      "bytes": 915531,
+      "sha256": "964b8030e5d543fd49d112489035ac5e713a068d04076bf75b0f99c3b034a71e",
+      "role": "geometry component and area key"
+    },
+    "geometry_prj": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\ipcch_admin_geometry_repaired.prj",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.prj",
+      "bytes": 145,
+      "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4",
+      "role": "geometry CRS"
+    },
+    "geometry_cpg": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\ipcch_admin_geometry_repaired.cpg",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.cpg",
+      "bytes": 5,
+      "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+      "role": "geometry encoding"
+    },
+    "adjacency_cache": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\adjacency_cache.pkl",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/adjacency_cache.pkl",
+      "bytes": 631979,
+      "sha256": "e6b9562ac3705da1bf26541fb52a8808819710738d9465ecd63a07d0727e387c",
+      "role": "frozen adjacency and bidirectional area/polygon map"
+    },
+    "saved_reference_coordinates": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\reference_coordinates.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/reference_coordinates.csv",
+      "bytes": 230588,
+      "sha256": "11cbbc354508f59e0564e56c664938fc8e627e837e4638bbd8326bc0f4fea700",
+      "role": "completed-package coordinates"
+    },
+    "saved_country_lookup": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\country_lookup.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/country_lookup.csv",
+      "bytes": 292832,
+      "sha256": "bf23914c36b73a7d0916c839328defef072e0a29a3f3135727c8b1b1f3ac0b40",
+      "role": "completed-package country keys"
+    },
+    "geometry_repair_audit": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\geometry_repair_audit.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/geometry_repair_audit.csv",
+      "bytes": 1656789,
+      "sha256": "6c4430eda6a488fcb77bee88235396fdce7ef0ad9a8d841e9a305c511b310d41",
+      "role": "geography provenance evidence"
+    },
+    "geography_audit": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoRFExperiment\\runs\\ipcch-v1-20260920d\\geography\\geography_audit.json",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/geography_audit.json",
+      "bytes": 17829,
+      "sha256": "c992478a5621575cd297c7af7ca7a74168e33636e5991429cfb1a93a46b9c22a",
+      "role": "geography component binding evidence"
+    },
+    "climate_monthly": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\IPCCH_shared_folder\\climate_monthly_2015_2026_MODELING_READY.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/IPCCH_shared_folder/climate_monthly_2015_2026_MODELING_READY.csv",
+      "bytes": 1084506970,
+      "sha256": "8082b72ea5fa5c30a7b975b89c1fbbb4530f27a9ce6c5ba4d0e1a4f923320c89",
+      "role": "monthly ensemble-mean climate covariates (D2)"
+    },
+    "climate_growing_season": {
+      "path_windows": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\IPCCH_shared_folder\\climate_2015_2026_MODELING_READY.csv",
+      "path_wsl": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/IPCCH_shared_folder/climate_2015_2026_MODELING_READY.csv",
+      "bytes": 186792349,
+      "sha256": "f024a66c8979fb4a8c66fba1f04e7e69355fa75b499793d29001a146d8c2958e",
+      "role": "per-season growing-season climate aggregates (D3)"
+    }
+  },
+  "structural_expectations": {
+    "source": "IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/geography_audit.json (adjacency, centroid_vs_reference_coordinate) and baseline-review.md planning observations",
+    "areas": 6227,
+    "countries": 53,
+    "crs_epsg": 4326,
+    "id_column": "admin_code",
+    "adjacency_edges_undirected": 12411,
+    "adjacency_isolated": 1231,
+    "areas_missing_iso3": 31,
+    "areas_missing_country_code": 15,
+    "centroid_reference_over_1e-6_degrees": 735,
+    "panel_coordinate_tolerance_degrees": 1e-09,
+    "note": "Missing ISO3/country_code and centroid-vs-reference differences are known, allowed diagnostics of the pinned input; they are never repaired."
+  },
+  "note_climate": "Added by task 10-05-ipcch-climate-perturbation; hashes captured 2026-10-05 from IPCCH_shared_folder."
+}

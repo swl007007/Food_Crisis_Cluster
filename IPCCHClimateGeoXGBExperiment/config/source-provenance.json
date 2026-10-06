@@ -1,0 +1,401 @@
+{
+  "provenance_version": "ipcch-geoxgb-provenance-p5",
+  "policy": "Reference allowlist; copy only necessary components with destination/symbol/adaptation provenance. No live legacy imports. No old candidate configs or fitted caches.",
+  "source_manifest": ".trellis/tasks/10-04-ipcch-cumulative-share-geoxgb/source-manifest.json",
+  "verification": "2026-10-04: all 14 sources re-hashed; bytes, sha256 and git blob at the recorded commit all match (see P0-evidence.md)",
+  "notices": "All sources are internal to this repository / sibling IPCCH repository; no third-party license notices apply to the copied spans.",
+  "copied": [
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "76-82",
+      "symbols": [
+        "sha256_file"
+      ],
+      "destination": "ipcch_climate_geoxgb/artifacts.py::sha256_file",
+      "adaptation": "verbatim"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "1191-1216",
+      "symbols": [
+        "normalize_area_ids"
+      ],
+      "destination": "ipcch_climate_geoxgb/geography.py::normalize_area_ids",
+      "adaptation": "verbatim logic; DataContractError -> ContractError; docstring shortened"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "122-136",
+      "symbols": [
+        "load_source_strings"
+      ],
+      "destination": "ipcch_climate_geoxgb/geography.py::read_strings",
+      "adaptation": "same all-string/no-NA read; renamed"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "1363-1416",
+      "symbols": [
+        "load_country_lookup"
+      ],
+      "destination": "ipcch_climate_geoxgb/geography.py::load_country_lookup (+country_key)",
+      "adaptation": "same checks and country_en->country key; audit trimmed; no donor/bootstrap text"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "1322-1360",
+      "symbols": [
+        "load_reference_coordinates"
+      ],
+      "destination": "ipcch_climate_geoxgb/geography.py::load_reference_coordinates",
+      "adaptation": "same checks; column names parameterized to read the saved ref_lat/ref_lon copy; donor-distance role removed (R36 no donor)"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "1254-1319",
+      "symbols": [
+        "load_area_geometry"
+      ],
+      "destination": "ipcch_climate_geoxgb/geography.py::load_geometry",
+      "adaptation": "explicit engine=pyogrio; keeps shapefile row order (cache index order) instead of sorting; additionally requires zero invalid and only areal geometries in the repaired layer"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "1419-1455",
+      "symbols": [
+        "reconcile_area_universe"
+      ],
+      "destination": "ipcch_climate_geoxgb/preflight.py::reconcile_universe",
+      "adaptation": "same three-way set equality; expected count from config/inputs.json"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "bytes": 95845,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHGeoRFExperiment/prepare_data.py",
+      "lines": "1983-2009",
+      "symbols": [
+        "adjacency_cache_payload",
+        "adjacency_cache_is_current"
+      ],
+      "destination": "ipcch_climate_geoxgb/geography.py::CACHE_KEYS/validate_adjacency_cache",
+      "adaptation": "key set and component-hash binding only; validation written fresh (mapping inverse, row order, centroids, symmetry); old adjacency helper never loaded"
+    },
+    {
+      "source": "IPCCHPopulationHistoryExperiment/config/feature-schema.json",
+      "sha256": "c660d360f2d2b26a5ef33b2bc793841db4f6a107d9418558be9d93c65036d344",
+      "bytes": 19086,
+      "repository": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "repository_relative_path": "IPCCHPopulationHistoryExperiment/config/feature-schema.json",
+      "lines": "whole file (names only)",
+      "symbols": [
+        "original_features",
+        "series_order",
+        "windows",
+        "statistic_order",
+        "additional_blocks",
+        "aliases"
+      ],
+      "destination": "config/feature-schema.json",
+      "adaptation": "names/order copied; old status text dropped; new schema_version ipcch-geoxgb-rich561-ge020-v1 with >=0.20 semantics; original93 cross-checked once against IPCCHGeoRFExperiment.prepare_data.FEATURE_COLUMNS at build time (not a runtime import)"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "101-120,171-208,237-289,292-380",
+      "symbols": [
+        "_to_decimal",
+        "_exact_context",
+        "_exact_sum",
+        "_classify_row",
+        "build_target_ledger"
+      ],
+      "destination": "ipcch_climate_geoxgb/targets.py",
+      "adaptation": "QC steps/order unchanged; truth = max phase k with exact 5*sum(P_k..P5) >= S (inclusive, k=2..5) replacing strict 5*P3plus > S; adds normalized q2..q5 and p1..p5; no old count gate; identity verified by caller",
+      "phase": "P1"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "409-545,595-625,627-698,701-760,762-806,808-844,877-1079",
+      "symbols": [
+        "RAW_*_COLUMNS",
+        "FEATURE_COLUMNS",
+        "month_ordinal",
+        "month_label",
+        "load_covariate_panel",
+        "_PanelGrid",
+        "_build_panel_grid",
+        "_gather",
+        "_WindowSummer",
+        "_as_of_index",
+        "assemble_feature_matrix"
+      ],
+      "destination": "ipcch_climate_geoxgb/features.py (original93)",
+      "adaptation": "same inventory/order and own-origin arithmetic; one horizon per call; label/recency history reads crisis_truth (phase>=3); returns ndarray + audit; raw and assembled infinities -> NaN with audit",
+      "phase": "P1"
+    },
+    {
+      "source": "IPCCHPopulationHistoryExperiment/prepare_data.py",
+      "sha256": "d582ebad1112778eff1ce5c2d41a0df92bad6707df2455fd6fd5cde1d62814fc",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "138-180,291-345,366-459,461-531,533-538,540-765,1018-1073",
+      "symbols": [
+        "SERIES_ORDER",
+        "WINDOWS",
+        "STATISTICS",
+        "BLOCK_ORDER",
+        "compute_series",
+        "HistoryIndex",
+        "build_history_index",
+        "_gather_window",
+        "_window_statistics",
+        "_pick",
+        "build_history_block",
+        "check_aliases"
+      ],
+      "destination": "ipcch_climate_geoxgb/features.py (history468)",
+      "adaptation": "formulas unchanged; states = crisis_truth under >=0.20; q2..q5 series = exact-derived normalized shares (targets) instead of float sums of p; no live import of IPCCHGeoRFExperiment; engineered infinities still stop",
+      "phase": "P1"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/prepare_data.py",
+      "sha256": "849506c32c317c7e3b643ba26a3b7bd89d3d1f8296ba54dbb40ae3726a9ed73b",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "2273-2362",
+      "symbols": [
+        "build_stage1_split"
+      ],
+      "destination": "ipcch_climate_geoxgb/schedule.py::stage1_split",
+      "adaptation": "same within-area floor(n/2) F / ceil(n/2) S / singleton rule on original outcomes; adds F-before-S assertion; no inherited count gate",
+      "phase": "P1"
+    },
+    {
+      "source": "IPCCHPopulationHistoryExperiment/prepare_data.py",
+      "sha256": "d582ebad1112778eff1ce5c2d41a0df92bad6707df2455fd6fd5cde1d62814fc",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "768-806",
+      "symbols": [
+        "MAIN_SCHEDULE",
+        "month_range",
+        "build_fold_calendar"
+      ],
+      "destination": "ipcch_climate_geoxgb/schedule.py::main_fold_calendar/supplementary_calendar",
+      "adaptation": "main schedule from config contract (122 folds); development folds dropped (Stage1 uses pooled F/S); adds R47 2026 supplementary calendar and 12-month coverage ledger",
+      "phase": "P1"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/model/native_xgb.py",
+      "sha256": "1c5822ccb6307441fd1552f22f86c70cbb5748ec69e67ed036faa006d0002d57",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "101-130,132-155,177-211,213-270",
+      "symbols": [
+        "raw",
+        "sha",
+        "from_raw",
+        "base_score",
+        "resolved_config",
+        "prefix_identity",
+        "fit_global",
+        "continue_booster"
+      ],
+      "destination": "ipcch_climate_geoxgb/quartet.py",
+      "adaptation": "scalar reg:squarederror quartet (one tree per round) instead of 4-class softprob; explicit global base_score .5; unit weights (no sample-weight/base-margin paths); constant targets recorded and fitted; fresh-copy continuation with byte/rounds/base-score/prefix-structure/prefix-margin checks; explicit finite+shape output checks (R41); XGBmodel/Stage1 store not copied",
+      "phase": "P2"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/metrics/fourclass.py",
+      "sha256": "505f12b5dc597166ab2b4a777f1f2627daa9aaafc07c574916c1a0b50319aeee",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "39-61,170-190,214-227",
+      "symbols": [
+        "confusion",
+        "class_counts",
+        "crisis_counts",
+        "crisis_f1_exact_or_none",
+        "crisis_scan_masses"
+      ],
+      "destination": "ipcch_climate_geoxgb/metrics.py",
+      "adaptation": "phase inputs (1..5) with fixed 1/2/3/4-5 axis; R27 NA policy (undefined -> None with reason, never internal zero; absent class -> macro NA); adds F2, accuracy, R\u00b2 rules and exact strict gain gate; scan masses return raw counts",
+      "phase": "P2"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/partition/partition_opt.py",
+      "sha256": "5c985a6a881931d9366aeb119996353ab69840fe7c66a941b8c9d8d80873269e",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "213-218,573-660,860-904,959-1028",
+      "symbols": [
+        "get_c_b",
+        "swap_partition_polygon",
+        "select_macro_children",
+        "scan"
+      ],
+      "destination": "ipcch_climate_geoxgb/stage1.py (scan, smooth, select_route)",
+      "adaptation": "single crisis column; R46 exact 45-55% prefix with canonical area-ID ties replaces get_top_cells/optimize_size; 1000 iterations, last candidate; synchronous induced-neighbour vote with exact 9*same < 4*total; route selection on exact Fraction F1 with threshold 0 and clarification-1 order; no config imports",
+      "phase": "P3"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/partition/transformation.py",
+      "sha256": "82578beec64c6d2a5a63c42f5eba230e8d3f1962addec77451dcbf92cd40c0ac",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "lines": "318-500,777-886,1060-1128",
+      "symbols": [
+        "partition (level loop, zero-mass guard, support/eligibility, complete-route gate, child inheritance)"
+      ],
+      "destination": "ipcch_climate_geoxgb/stage1.py::search_candidate/_attempt_split + learnmap.py",
+      "adaptation": "membership depth <= 4, no PATH_ROUND_CAP; children continue the ROOT global once (shared root); R28/R29 original-key support incl. 20/20 crisis classes; non-numeric node IDs ('r', 'r0', ...); membership map separate from provider table; no visualization, no bare config/src imports",
+      "phase": "P3"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/experiment/stage3.py",
+      "sha256": "eddccc3b7638a6f201a0de226b3a36183bcfcb8d4d848734e5ba60324f984a94",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P4",
+      "lines": "301-489",
+      "symbols": [
+        "fit_local",
+        "gate_decision",
+        "run_fold",
+        "_run_arm"
+      ],
+      "destination": "ipcch_climate_geoxgb/stage3.py",
+      "adaptation": "quartet regression; H 1/3/6/12, inclusive 36-month window, R37 latest-6 observed U<O with V=U-H; date-major replay; pooled region keys incl. unsupported dates; R28/R29 + >=3 successful local dates; strict exact gain > .01 on crisis F1; unmapped and no-split maps route to same-fold global; empty folds ledger-only; R40 empty-global stop; identities bind verified prepared artifact digests + ordered rows/keys; no augmentation/scenario/independent arm; no 2% unmapped gate"
+    },
+    {
+      "source": "IPCCHGeoRFExperiment/report_results.py",
+      "sha256": "b111c2e6418950ed5a8383cb3d803bc6e88fa22ac487752bdd42b9daf5ef0bda",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P5",
+      "lines": "63-64,1643-1855",
+      "symbols": [
+        "BOOTSTRAP_SEED",
+        "_percentile_interval",
+        "bootstrap_cohort"
+      ],
+      "destination": "ipcch_climate_geoxgb/report.py::bootstrap_delta",
+      "adaptation": "R49: 2000 draws, default_rng(42) reset per H x cohort, every draw kept, interval only if K>=2, point defined and all draws finite; paired multiplicities shared by both arms; per-country counts and all multiplicities saved"
+    }
+  ],
+  "pending": [],
+  "transitive_dependencies": [
+    {
+      "dependency": "GeoRFBaseline/src/adjacency/adjacency_utils.py (imported by IPCCHGeoRFExperiment/prepare_data.py:1895-1906)",
+      "decision": "removed",
+      "reason": "frozen cache validated directly; topology not rebuilt"
+    },
+    {
+      "dependency": "GeoRFBaseline/releases/georf-baseline-v0.1.0.zip via baseline_runtime.py",
+      "decision": "removed",
+      "reason": "no old backend at runtime (R50)"
+    },
+    {
+      "dependency": "IPCCHGeoRFExperiment.prepare_data repair_geometries/prepare_geography",
+      "decision": "removed",
+      "reason": "R39 forbids new repair; repaired layer is a pinned input"
+    }
+  ],
+  "reference_only": [
+    {
+      "source": ".trellis/tasks/archive/2026-09/09-21-ipcch-population-history-xgb/technical-contract.md",
+      "sha256": "73c6dcaa0d24a229f3d223a27295cf7d49210e755b7d9f6fefbf622a3a764861",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P1",
+      "use": "history formulas sections 1-2 cross-read; implemented via the PH code copy above, no text copied"
+    },
+    {
+      "source": "FEWSNETGeoXGBExperiment/src/experiment/plan.py",
+      "sha256": "991e2780bde4e2a01fc1cbed5f626714898417d79c423741e157b4d98dba0816",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P2",
+      "use": "G1-G4/L1-L2 values (24-44) restated in config/experiment-contract.json; booster_params not copied"
+    },
+    {
+      "source": "../IPCCH/src/ipcch/forecasting_weight_decay.py",
+      "sha256": "ca609c40efdfa5823f0dba6e7eab93e42bbe35180261837f6d9475a0e62dec53",
+      "commit": "c06bc0f59ba37a672234595b1f63b53d21652134",
+      "phase": "P2",
+      "use": "cumulative target definitions (132-141) cross-read; targets.py builds exact Q_k/S instead"
+    },
+    {
+      "source": "../IPCCH/src/ipcch/operational_contract.py",
+      "sha256": "3aed60d093130defc2833468e929bb7f03a3cbda3c2a6fa1cadcb912ff86efa0",
+      "commit": "c06bc0f59ba37a672234595b1f63b53d21652134",
+      "phase": "P2",
+      "use": "decode_phase_predictions (224-293) cross-read; its cummax repair is superseded by projection.py bounded isotonic projection (R15)"
+    },
+    {
+      "source": "IPCCHPopulationHistoryExperiment/report_results.py",
+      "sha256": "8bd5ea123c20e5c6a1d8c7bd28e75d39dd12e4c8f09ce18990e9e384d0f3e823",
+      "commit": "0e7cf0126d8bc6ed57109cacf3f0ab9bc2f57bed",
+      "phase": "P5",
+      "use": "structure cross-read only; its valid-draw resampling, cross-H averaging and history-only cohort are NOT used (R49)"
+    }
+  ],
+  "new_components": [
+    {
+      "destination": "ipcch_climate_geoxgb/projection.py",
+      "phase": "P2",
+      "note": "new: exact enumeration of 8 contiguous block partitions + clip; reference PAVA in tests"
+    },
+    {
+      "destination": "ipcch_climate_geoxgb/modelstore.py",
+      "phase": "P2",
+      "note": "new: R48 exact-identity quartet store and request ledger"
+    },
+    {
+      "destination": "ipcch_climate_geoxgb/learnmap.py",
+      "phase": "P3",
+      "note": "new orchestration: prepared re-verification, root reuse across L, R44 selection, frozen map + R38 diagnostics"
+    },
+    {
+      "destination": "ipcch_climate_geoxgb/predict.py",
+      "phase": "P4",
+      "note": "Stage3 orchestration over all scheduled folds with frozen-map verification"
+    },
+    {
+      "destination": "ipcch_climate_geoxgb/replay.py",
+      "phase": "P5",
+      "note": "independent replay with own PAVA/counting/gate/selection code; tamper detection"
+    }
+  ]
+}
