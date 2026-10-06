@@ -1,0 +1,351 @@
+{
+  "stage": "P1-prepare",
+  "schema_version": "ipcch-climate-geoxgb-rich601-ge020-v1",
+  "ordered_names_sha256": "6089733a75a138c8ed70118ac59f54ffc602ee49e05ef74a46d593b91ba833ff",
+  "contract_version": "ipcch-climate-geoxgb-contract-v1.0",
+  "availability_policy": {
+    "id": "observation-month-end-v1",
+    "rule": "covariates, population history and training labels must have observation month <= O = T - H",
+    "persistence": "latest QC-valid observation of the same area with month <= O; phase and q3 from that observation",
+    "limitation": "observation-month convention only; historical release timing/vintages not verified"
+  },
+  "input_identities": {
+    "raw_panel": {
+      "bytes": 1782567753,
+      "sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+      "match": true
+    },
+    "country_lookup_source": {
+      "bytes": 214996,
+      "sha256": "e2baf6ae9481b42b127db5ce81f3c53ad784bb08ae56dfa56cea74e416b44c90",
+      "match": true
+    },
+    "climate_monthly": {
+      "bytes": 1084506970,
+      "sha256": "8082b72ea5fa5c30a7b975b89c1fbbb4530f27a9ce6c5ba4d0e1a4f923320c89",
+      "match": true
+    },
+    "climate_growing_season": {
+      "bytes": 186792349,
+      "sha256": "f024a66c8979fb4a8c66fba1f04e7e69355fa75b499793d29001a146d8c2958e",
+      "match": true
+    }
+  },
+  "ledger": {
+    "rows": 1219868,
+    "valid": 42695,
+    "areas_total": 6227,
+    "areas_with_valid": 6224,
+    "p5_filled_valid": 84,
+    "invalid_reasons": {
+      "missing_phase_1_to_4": 1176232,
+      "sum_out_of_bounds": 577,
+      "population_not_positive": 363,
+      "phase_share_out_of_bounds": 1
+    },
+    "phase_counts": {
+      "1": 8404,
+      "2": 16484,
+      "3": 15163,
+      "4": 2599,
+      "5": 45
+    },
+    "crisis": 17807,
+    "noncrisis": 24888,
+    "normalized_q_exactly_0_20": {
+      "q2": 282,
+      "q3": 2601,
+      "q4": 1376,
+      "q5": 14
+    }
+  },
+  "panel": {
+    "panel_rows": 1219868,
+    "panel_areas": 6227,
+    "panel_month_min": "2010-01",
+    "panel_month_max": "2026-04",
+    "non_numeric_coerced_to_nan": {},
+    "source_infinities_converted": {},
+    "climate_monthly": {
+      "rows": 871780,
+      "areas": 6227,
+      "month_min": "2015-01",
+      "month_max": "2026-08",
+      "non_numeric_coerced_to_nan": {},
+      "source_infinities_converted": {},
+      "nan_fraction": {
+        "prcp_anom_month_ensmean": 0.0003211819495744339,
+        "prcp_z_month_ensmean": 0.00039574204501135606,
+        "rainy_days_month_ensmean": 0.0003211819495744339,
+        "cdd_month_ensmean": 0.0003211819495744339,
+        "tmean_anom_month_ensmean": 0.0028906375461699055,
+        "tmax_anom_month_ensmean": 0.0028906375461699055,
+        "hot_days_p95_month_ensmean": 0.0028906375461699055,
+        "gdd_month_ensmean": 0.0028906375461699055,
+        "edd_month_ensmean": 0.0028906375461699055,
+        "sm_z_month_ensmean": 0.003824359356718438,
+        "spi03_month_ensmean": 0.007461744935648902,
+        "spei03_month_ensmean": 0.058236022849801554,
+        "ndvi_anom_month_ensmean": 0.009087155016173805,
+        "evi_anom_month_ensmean": 0.009087155016173805
+      }
+    },
+    "climate_merge": {
+      "both": 846248,
+      "panel_only": 373620,
+      "climate_only": 25532,
+      "merged_rows": 1245400
+    },
+    "climate_growing_season": {
+      "rows": 149448,
+      "usable_rows": 149448,
+      "areas": 6227,
+      "season_years": [
+        2015,
+        2026
+      ],
+      "end_month_min": "2015-01",
+      "end_month_max": "2026-12",
+      "non_numeric_coerced_to_nan": {},
+      "source_infinities_converted": {},
+      "nan_fraction": {
+        "prcp_anom": 0.0007293506771586104,
+        "prcp_z": 0.000983619720571704,
+        "rainy_days": 0.0007761897114715486,
+        "cdd": 0.0007761897114715486,
+        "tmean_anom": 0.0032988062737540815,
+        "tmax_anom": 0.0032988062737540815,
+        "hot_days_p95": 0.0032988062737540815,
+        "gdd": 0.0032988062737540815,
+        "edd": 0.0032988062737540815,
+        "sm_z": 0.00425566083186125,
+        "spi03": 0.0010304587548846421,
+        "spei03": 0.002181360740859697,
+        "ndvi_anom": 0.007380493549595846,
+        "evi_anom": 0.007380493549595846
+      }
+    }
+  },
+  "history_index": {
+    "observations": 42695,
+    "max_observations_per_area": 25
+  },
+  "horizons": {
+    "1": {
+      "rows": 42695,
+      "rows_with_missing_origin_panel_row": 0,
+      "rows_without_label_history": 6224,
+      "rows_without_prior_crisis": 22683,
+      "panel_infinities_converted": {},
+      "assembled_infinities_converted": {},
+      "aliases_verified": {
+        "hist_age_obs1": "last_observed_label_age_months",
+        "hist_crisis_obs1": "last_observed_label",
+        "hist_crisis_age": "months_since_last_observed_crisis",
+        "hist_no_crisis": "no_prior_observed_crisis",
+        "hist_support_common_all_age": "last_observed_label_age_months"
+      },
+      "nan_fraction_original": 0.10096291487259484,
+      "nan_fraction_growing_season": 0.02194167935355428,
+      "growing_season": {
+        "rows_with_s1_season": 41978,
+        "rows_with_s2_season": 41720,
+        "nan_fraction": 0.02194167935355428
+      },
+      "climate_monthly_nan_fraction": {
+        "prcp_anom_month_ensmean": 0.017051176952804777,
+        "prcp_z_month_ensmean": 0.01707459889916852,
+        "rainy_days_month_ensmean": 0.017051176952804777,
+        "cdd_month_ensmean": 0.017051176952804777,
+        "tmean_anom_month_ensmean": 0.01855018152008432,
+        "tmax_anom_month_ensmean": 0.01855018152008432,
+        "hot_days_p95_month_ensmean": 0.01855018152008432,
+        "gdd_month_ensmean": 0.01855018152008432,
+        "edd_month_ensmean": 0.01855018152008432,
+        "sm_z_month_ensmean": 0.019416793535542803,
+        "spi03_month_ensmean": 0.017051176952804777,
+        "spei03_month_ensmean": 0.05663426630753016,
+        "ndvi_anom_month_ensmean": 0.01981496662372643,
+        "evi_anom_month_ensmean": 0.01981496662372643
+      },
+      "rows_origin_before_2015_01": 717,
+      "nan_fraction_history468": 0.4015095144150069,
+      "all_nan_columns": [],
+      "persistence_available": 36471
+    },
+    "3": {
+      "rows": 42695,
+      "rows_with_missing_origin_panel_row": 0,
+      "rows_without_label_history": 6254,
+      "rows_without_prior_crisis": 22764,
+      "panel_infinities_converted": {},
+      "assembled_infinities_converted": {},
+      "aliases_verified": {
+        "hist_age_obs1": "last_observed_label_age_months",
+        "hist_crisis_obs1": "last_observed_label",
+        "hist_crisis_age": "months_since_last_observed_crisis",
+        "hist_no_crisis": "no_prior_observed_crisis",
+        "hist_support_common_all_age": "last_observed_label_age_months"
+      },
+      "nan_fraction_original": 0.09715036775866755,
+      "nan_fraction_growing_season": 0.02476870827965804,
+      "growing_season": {
+        "rows_with_s1_season": 41978,
+        "rows_with_s2_season": 41473,
+        "nan_fraction": 0.02476870827965804
+      },
+      "climate_monthly_nan_fraction": {
+        "prcp_anom_month_ensmean": 0.017051176952804777,
+        "prcp_z_month_ensmean": 0.017051176952804777,
+        "rainy_days_month_ensmean": 0.017051176952804777,
+        "cdd_month_ensmean": 0.017051176952804777,
+        "tmean_anom_month_ensmean": 0.01855018152008432,
+        "tmax_anom_month_ensmean": 0.01855018152008432,
+        "hot_days_p95_month_ensmean": 0.01855018152008432,
+        "gdd_month_ensmean": 0.01855018152008432,
+        "edd_month_ensmean": 0.01855018152008432,
+        "sm_z_month_ensmean": 0.01929968380372409,
+        "spi03_month_ensmean": 0.017051176952804777,
+        "spei03_month_ensmean": 0.05729008080571495,
+        "ndvi_anom_month_ensmean": 0.018034898700081976,
+        "evi_anom_month_ensmean": 0.018034898700081976
+      },
+      "rows_origin_before_2015_01": 717,
+      "nan_fraction_history468": 0.3852182494997813,
+      "all_nan_columns": [],
+      "persistence_available": 36441
+    },
+    "6": {
+      "rows": 42695,
+      "rows_with_missing_origin_panel_row": 0,
+      "rows_without_label_history": 7994,
+      "rows_without_prior_crisis": 23986,
+      "panel_infinities_converted": {},
+      "assembled_infinities_converted": {},
+      "aliases_verified": {
+        "hist_age_obs1": "last_observed_label_age_months",
+        "hist_crisis_obs1": "last_observed_label",
+        "hist_crisis_age": "months_since_last_observed_crisis",
+        "hist_no_crisis": "no_prior_observed_crisis",
+        "hist_support_common_all_age": "last_observed_label_age_months"
+      },
+      "nan_fraction_original": 0.08232973325131862,
+      "nan_fraction_growing_season": 0.0251458016161143,
+      "growing_season": {
+        "rows_with_s1_season": 41956,
+        "rows_with_s2_season": 41458,
+        "nan_fraction": 0.0251458016161143
+      },
+      "climate_monthly_nan_fraction": {
+        "prcp_anom_month_ensmean": 0.017051176952804777,
+        "prcp_z_month_ensmean": 0.017051176952804777,
+        "rainy_days_month_ensmean": 0.017051176952804777,
+        "cdd_month_ensmean": 0.017051176952804777,
+        "tmean_anom_month_ensmean": 0.01855018152008432,
+        "tmax_anom_month_ensmean": 0.01855018152008432,
+        "hot_days_p95_month_ensmean": 0.01855018152008432,
+        "gdd_month_ensmean": 0.01855018152008432,
+        "edd_month_ensmean": 0.01855018152008432,
+        "sm_z_month_ensmean": 0.019276261857360345,
+        "spi03_month_ensmean": 0.017051176952804777,
+        "spei03_month_ensmean": 0.08752781356130694,
+        "ndvi_anom_month_ensmean": 0.019229417964632862,
+        "evi_anom_month_ensmean": 0.019229417964632862
+      },
+      "rows_origin_before_2015_01": 717,
+      "nan_fraction_history468": 0.4291659284749811,
+      "all_nan_columns": [],
+      "persistence_available": 34701
+    },
+    "12": {
+      "rows": 42695,
+      "rows_with_missing_origin_panel_row": 0,
+      "rows_without_label_history": 10741,
+      "rows_without_prior_crisis": 26190,
+      "panel_infinities_converted": {},
+      "assembled_infinities_converted": {},
+      "aliases_verified": {
+        "hist_age_obs1": "last_observed_label_age_months",
+        "hist_crisis_obs1": "last_observed_label",
+        "hist_crisis_age": "months_since_last_observed_crisis",
+        "hist_no_crisis": "no_prior_observed_crisis",
+        "hist_support_common_all_age": "last_observed_label_age_months"
+      },
+      "nan_fraction_original": 0.06280242451254496,
+      "nan_fraction_growing_season": 0.033956357106608895,
+      "growing_season": {
+        "rows_with_s1_season": 41458,
+        "rows_with_s2_season": 41197,
+        "nan_fraction": 0.033956357106608895
+      },
+      "climate_monthly_nan_fraction": {
+        "prcp_anom_month_ensmean": 0.023164304953741655,
+        "prcp_z_month_ensmean": 0.0231877269001054,
+        "rainy_days_month_ensmean": 0.023164304953741655,
+        "cdd_month_ensmean": 0.023164304953741655,
+        "tmean_anom_month_ensmean": 0.024663309521021196,
+        "tmax_anom_month_ensmean": 0.024663309521021196,
+        "hot_days_p95_month_ensmean": 0.024663309521021196,
+        "gdd_month_ensmean": 0.024663309521021196,
+        "edd_month_ensmean": 0.024663309521021196,
+        "sm_z_month_ensmean": 0.025483077643752197,
+        "spi03_month_ensmean": 0.023164304953741655,
+        "spei03_month_ensmean": 0.09905141117226841,
+        "ndvi_anom_month_ensmean": 0.025131748448296052,
+        "evi_anom_month_ensmean": 0.025131748448296052
+      },
+      "rows_origin_before_2015_01": 978,
+      "nan_fraction_history468": 0.47102520061297437,
+      "all_nan_columns": [],
+      "persistence_available": 31954
+    }
+  },
+  "stage1_split": {
+    "window": [
+      "2014-01",
+      "2022-12"
+    ],
+    "original_outcomes": 19591,
+    "fit": 8561,
+    "validation": 9558,
+    "singleton_areas": 1472,
+    "multi_outcome_areas": 3264,
+    "zero_outcome_areas": 1491,
+    "crisis_fit": 2564,
+    "crisis_validation": 3355
+  },
+  "folds": {
+    "main_scheduled": 122,
+    "main_nonempty": 110,
+    "main_by_horizon": {
+      "1": 35,
+      "3": 33,
+      "6": 30,
+      "12": 24
+    },
+    "supplementary_folds": 16,
+    "supplementary_months": [
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04"
+    ]
+  },
+  "artifacts_sha256": {
+    "target_ledger.csv.gz": "4eed1792a65a1da1d05220a296e242311422761177dc31a202543c76cbf81ad8",
+    "target_ledger_valid.csv.gz": "21d7701fe60fb9ed3084c34dc7852a9ce56e312c78587238179c5ea8ef63e717",
+    "X_rich601_h01.npy": "e241b6baf6f5a1e648438ab0a64b908e21c5443c4fcc147842b0a778853449ad",
+    "keys_h01.csv.gz": "414cba066f9953e7b70e2f586450537621ea312ad80a9fbc2b84ad367f2e49cd",
+    "X_rich601_h03.npy": "9dc56e1494b7274804e946f2c2b63be5e646c2e0d3d978ffb68150f996d4675b",
+    "keys_h03.csv.gz": "5e44eb8359a4910a5d9d94b80986d3a44faf123d89ebdf2b30e5389bf1267f7a",
+    "X_rich601_h06.npy": "a527bdbae1fe677ee433e08f61e79ec1fc477194b630677b0a48ee43c5921539",
+    "keys_h06.csv.gz": "d325da25a69399b496a33b1f21f3fb2fdd24f387b3074f399e5f2836444495d6",
+    "X_rich601_h12.npy": "801afb4bd4e8a435de87621b3c384d7f92a85fe8769ccbffdddd4f5be2da1557",
+    "keys_h12.csv.gz": "9755df742b15d5b1556671633c2fa80908d8b9b7ffee9c9192b895aa64bba4bd",
+    "stage1_split.csv.gz": "3e076c66c1c9ee6cc0aec0d4955db610dc35fe8b3d279bd4b86b3a88f7910928",
+    "fold_calendar.csv": "061c44f88dbc37a89bf1b2cc19a2047666663fee5aa706b0a90fbd18c06d198c",
+    "coverage_2026.csv": "104f2e9a25cd622946ec693981a7843773f8481aa43e78b3de4528d6fa196b32",
+    "feature_order.csv": "ebf6538ea52ebeba252b7ca1df0febfdc2c88f6e255ee80010d3e9e767ce2bf8"
+  },
+  "elapsed_seconds": 110.4
+}

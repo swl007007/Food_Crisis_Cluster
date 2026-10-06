@@ -1,0 +1,2854 @@
+{
+  "new_run": "C:\\Users\\swl00\\AppData\\Local\\Temp\\ipcch-climate-runs\\climate-20261005",
+  "old_run": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b",
+  "interpretation": "pointwise descriptive country-cluster bootstrap conditional on saved predictions; exploratory, evaluation period already viewed; GeoXGB difference mixes feature and re-learned map effects, pooled difference isolates the feature recipe under the matched global pipeline",
+  "horizons": {
+    "1": {
+      "maps": {
+        "new": {
+          "candidate": "G1L2",
+          "accepted_split": true,
+          "terminal_regions": 7,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r0000": 234,
+            "r0001": 208,
+            "r001": 338,
+            "r010": 439,
+            "r0110": 202,
+            "r0111": 193,
+            "r1": 1650
+          }
+        },
+        "old": {
+          "candidate": "G1L2",
+          "accepted_split": true,
+          "terminal_regions": 9,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r0000": 231,
+            "r0001": 199,
+            "r001": 332,
+            "r010": 388,
+            "r0110": 206,
+            "r0111": 247,
+            "r10": 726,
+            "r110": 398,
+            "r111": 537
+          }
+        }
+      },
+      "main": {
+        "E_all_keys": 17322,
+        "E_persist_keys": 16002,
+        "routes": {
+          "new_local_rows": 47,
+          "old_local_rows": 588
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 923,
+            "crisis_changed": 693
+          },
+          "pool": {
+            "phase_changed": 915,
+            "crisis_changed": 687
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7705807643459185,
+              "binary.precision": 0.7243107769423559,
+              "binary.recall": 0.8386940749697702,
+              "binary.f1": 0.777317045836602,
+              "binary.f2": 0.8130157539384846,
+              "four_class.accuracy": 0.6360697379055537,
+              "four_class.macro_f1": 0.46033583368319037,
+              "q3_r2_projected": 0.29953311021858275,
+              "q3_r2_raw": 0.29953443873722674
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7695993534233923,
+              "binary.precision": 0.7209542497159971,
+              "binary.recall": 0.8441354292623942,
+              "binary.f1": 0.777697320782042,
+              "binary.f2": 0.8162430138203587,
+              "four_class.accuracy": 0.6345110264403648,
+              "four_class.macro_f1": 0.45960026243321117,
+              "q3_r2_projected": 0.30264793002443546,
+              "q3_r2_raw": 0.30276465421872967
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7705807643459185,
+              "binary.precision": 0.7243107769423559,
+              "binary.recall": 0.8386940749697702,
+              "binary.f1": 0.777317045836602,
+              "binary.f2": 0.8130157539384846,
+              "four_class.accuracy": 0.6360697379055537,
+              "four_class.macro_f1": 0.46033583368319037,
+              "q3_r2_projected": 0.2996175156980604,
+              "q3_r2_raw": 0.29961884421670426
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7698302736404572,
+              "binary.precision": 0.720978227221133,
+              "binary.recall": 0.8448609431680774,
+              "binary.f1": 0.7780190412560548,
+              "binary.f2": 0.8167917514203549,
+              "four_class.accuracy": 0.6348574067659624,
+              "four_class.macro_f1": 0.4598038022733203,
+              "q3_r2_projected": 0.30530085086414305,
+              "q3_r2_raw": 0.30541757505843736
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": 0.000981410922526238,
+            "binary.precision": 0.0033565272263588186,
+            "binary.recall": -0.0054413542926239344,
+            "binary.f1": -0.00038027494544001783,
+            "binary.f2": -0.0032272598818741116,
+            "four_class.accuracy": 0.0015587114651888223,
+            "four_class.macro_f1": 0.0007355712499791944,
+            "q3_r2_projected": -0.003114819805852709,
+            "q3_r2_raw": -0.0032302154815029294
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": 0.000750490705461293,
+            "binary.precision": 0.003332549721222877,
+            "binary.recall": -0.0061668681983071405,
+            "binary.f1": -0.0007019954194528166,
+            "binary.f2": -0.003775997481870297,
+            "four_class.accuracy": 0.001212331139591294,
+            "four_class.macro_f1": 0.0005320314098700707,
+            "q3_r2_projected": -0.005683335166082659,
+            "q3_r2_raw": -0.005798730841733102
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.0,
+            "binary.precision": 0.0,
+            "binary.recall": 0.0,
+            "binary.f1": 0.0,
+            "binary.f2": 0.0,
+            "four_class.accuracy": 0.0,
+            "four_class.macro_f1": 0.0,
+            "q3_r2_projected": -8.440547947763388e-05,
+            "q3_r2_raw": -8.440547947752286e-05
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": -0.00023092021706494492,
+            "binary.precision": -2.3977505135941435e-05,
+            "binary.recall": -0.0007255139056832061,
+            "binary.f1": -0.0003217204740127988,
+            "binary.f2": -0.0005487375999961852,
+            "four_class.accuracy": -0.0003463803255975284,
+            "four_class.macro_f1": -0.00020353984010912374,
+            "q3_r2_projected": -0.0026529208397075843,
+            "q3_r2_raw": -0.0026529208397076953
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7790276215473065,
+              "binary.precision": 0.7260454002389486,
+              "binary.recall": 0.8301912568306011,
+              "binary.f1": 0.7746335245379222,
+              "binary.f2": 0.8070385126162019,
+              "four_class.accuracy": 0.6413573303337082,
+              "four_class.macro_f1": 0.46755326213735027,
+              "q3_r2_projected": 0.3105857230703394,
+              "q3_r2_raw": 0.31058722706985553
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7772153480814898,
+              "binary.precision": 0.7217956290608387,
+              "binary.recall": 0.8346994535519126,
+              "binary.f1": 0.774152676591701,
+              "binary.f2": 0.8093787256590277,
+              "four_class.accuracy": 0.6391076115485564,
+              "four_class.macro_f1": 0.466498986298688,
+              "q3_r2_projected": 0.31311937819277236,
+              "q3_r2_raw": 0.31325152020865155
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7790276215473065,
+              "binary.precision": 0.7260454002389486,
+              "binary.recall": 0.8301912568306011,
+              "binary.f1": 0.7746335245379222,
+              "binary.f2": 0.8070385126162019,
+              "four_class.accuracy": 0.6413573303337082,
+              "four_class.macro_f1": 0.46755326213735027,
+              "q3_r2_projected": 0.3106812774691242,
+              "q3_r2_raw": 0.31068278146864037
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7774653168353955,
+              "binary.precision": 0.7218222589401628,
+              "binary.recall": 0.8355191256830601,
+              "binary.f1": 0.7745203571202431,
+              "binary.f2": 0.8100018541572855,
+              "four_class.accuracy": 0.6394825646794151,
+              "four_class.macro_f1": 0.4667337181109982,
+              "q3_r2_projected": 0.31612271704506945,
+              "q3_r2_raw": 0.3162548590609485
+            },
+            "persistence": {
+              "binary.accuracy": 0.7861517310336208,
+              "binary.precision": 0.7597973873633698,
+              "binary.recall": 0.7786885245901639,
+              "binary.f1": 0.7691269734178923,
+              "binary.f2": 0.7748355173726279,
+              "four_class.accuracy": 0.6444194475690539,
+              "four_class.macro_f1": 0.5566823807257771,
+              "q3_r2_projected": 0.19398758573744868,
+              "q3_r2_raw": 0.19398758573744868
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": -0.007124109486314256,
+            "binary.precision": -0.03375198712442118,
+            "binary.recall": 0.05150273224043722,
+            "binary.f1": 0.005506551120029957,
+            "binary.f2": 0.03220299524357395,
+            "four_class.accuracy": -0.0030621172353456627,
+            "four_class.macro_f1": -0.08912911858842687,
+            "q3_r2_projected": 0.1165981373328907,
+            "q3_r2_raw": 0.11659964133240686
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": -0.00893638295213095,
+            "binary.precision": -0.03800175830253105,
+            "binary.recall": 0.05601092896174864,
+            "binary.f1": 0.005025703173808682,
+            "binary.f2": 0.034543208286399785,
+            "four_class.accuracy": -0.005311836020497451,
+            "four_class.macro_f1": -0.09018339442708911,
+            "q3_r2_projected": 0.11913179245532368,
+            "q3_r2_raw": 0.11926393447120287
+          }
+        },
+        "bootstrap": {
+          "new_minus_old_geo_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 53,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": -0.0003802749454399589,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.005357081920677312,
+              0.005861952162391247
+            ],
+            "na_reason": "",
+            "draws_sha256": "c635122c857fde1dd6219378def90dc55826b72bec18f3d55c2d5771211220ae"
+          },
+          "new_minus_old_pool_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 53,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": -0.0007019954194527457,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.005929142334260657,
+              0.005379180784678697
+            ],
+            "na_reason": "",
+            "draws_sha256": "24d156804fb587d5e157037ff1a4a281427e02b09019eb58bc1ea3cbf38662a2"
+          },
+          "new_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.005506551120029921,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.009253169421742572,
+              0.02566441200071053
+            ],
+            "na_reason": ""
+          },
+          "old_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.00502570317380866,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.009821384087624938,
+              0.024184645707394103
+            ],
+            "na_reason": ""
+          }
+        }
+      },
+      "supplementary": {
+        "E_all_keys": 4092,
+        "E_persist_keys": 4089,
+        "routes": {
+          "new_local_rows": 145,
+          "old_local_rows": 356
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 283,
+            "crisis_changed": 270
+          },
+          "pool": {
+            "phase_changed": 276,
+            "crisis_changed": 263
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.738514173998045,
+              "binary.precision": 0.7395498392282959,
+              "binary.recall": 0.8585649108253837,
+              "binary.f1": 0.7946257197696737,
+              "binary.f2": 0.8317929759704251,
+              "four_class.accuracy": 0.6226783968719453,
+              "four_class.macro_f1": 0.3308328006253867,
+              "q3_r2_projected": 0.34637162263875376,
+              "q3_r2_raw": 0.34637162263875376
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7135874877810362,
+              "binary.precision": 0.7192920353982301,
+              "binary.recall": 0.8428038158440481,
+              "binary.f1": 0.7761650114591291,
+              "binary.f2": 0.8148207554735745,
+              "four_class.accuracy": 0.6006842619745846,
+              "four_class.macro_f1": 0.3255794738514626,
+              "q3_r2_projected": 0.34861985981561416,
+              "q3_r2_raw": 0.34861985981561416
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7382697947214076,
+              "binary.precision": 0.7391149179157744,
+              "binary.recall": 0.8589796764827873,
+              "binary.f1": 0.7945520813351238,
+              "binary.f2": 0.8319942150088382,
+              "four_class.accuracy": 0.6226783968719453,
+              "four_class.macro_f1": 0.33080875200157156,
+              "q3_r2_projected": 0.34646006986688693,
+              "q3_r2_raw": 0.34646006986688693
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7130987292277615,
+              "binary.precision": 0.7175518818149842,
+              "binary.recall": 0.8461219411032767,
+              "binary.f1": 0.7765511990864103,
+              "binary.f2": 0.8168495235044446,
+              "four_class.accuracy": 0.5997067448680352,
+              "four_class.macro_f1": 0.32467039010547993,
+              "q3_r2_projected": 0.34975397321026347,
+              "q3_r2_raw": 0.34975397321026347
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": 0.024926686217008776,
+            "binary.precision": 0.020257803830065813,
+            "binary.recall": 0.0157610949813356,
+            "binary.f1": 0.018460708310544582,
+            "binary.f2": 0.016972220496850654,
+            "four_class.accuracy": 0.021994134897360684,
+            "four_class.macro_f1": 0.00525332677392415,
+            "q3_r2_projected": -0.0022482371768604015,
+            "q3_r2_raw": -0.0022482371768604015
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": 0.025171065493646116,
+            "binary.precision": 0.021563036100790245,
+            "binary.recall": 0.012857735379510626,
+            "binary.f1": 0.018000882248713435,
+            "binary.f2": 0.01514469150439357,
+            "four_class.accuracy": 0.022971652003910048,
+            "four_class.macro_f1": 0.006138361896091626,
+            "q3_r2_projected": -0.0032939033433765363,
+            "q3_r2_raw": -0.0032939033433765363
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.00024437927663734094,
+            "binary.precision": 0.0004349213125214302,
+            "binary.recall": -0.00041476565740361515,
+            "binary.f1": 7.363843454988306e-05,
+            "binary.f2": -0.00020123903841307023,
+            "four_class.accuracy": 0.0,
+            "four_class.macro_f1": 2.4048623815164927e-05,
+            "q3_r2_projected": -8.844722813317052e-05,
+            "q3_r2_raw": -8.844722813317052e-05
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": 0.0004887585532746819,
+            "binary.precision": 0.0017401535832458626,
+            "binary.recall": -0.003318125259228588,
+            "binary.f1": -0.00038618762728126477,
+            "binary.f2": -0.002028768030870154,
+            "four_class.accuracy": 0.0009775171065493637,
+            "four_class.macro_f1": 0.0009090837459826417,
+            "q3_r2_projected": -0.0011341133946493054,
+            "q3_r2_raw": -0.0011341133946493054
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7383223281976034,
+              "binary.precision": 0.7392703862660944,
+              "binary.recall": 0.8583887043189369,
+              "binary.f1": 0.7943889315910838,
+              "binary.f2": 0.8315899581589958,
+              "four_class.accuracy": 0.6231352408901932,
+              "four_class.macro_f1": 0.33097550353765026,
+              "q3_r2_projected": 0.3459329354056273,
+              "q3_r2_raw": 0.3459329354056273
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7133773538762533,
+              "binary.precision": 0.7189936215450036,
+              "binary.recall": 0.842607973421927,
+              "binary.f1": 0.7759082217973231,
+              "binary.f2": 0.814597719608158,
+              "four_class.accuracy": 0.6006358522866226,
+              "four_class.macro_f1": 0.3231247410408659,
+              "q3_r2_projected": 0.3479820247140162,
+              "q3_r2_raw": 0.3479820247140162
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7380777696258254,
+              "binary.precision": 0.7388352983208288,
+              "binary.recall": 0.8588039867109635,
+              "binary.f1": 0.7943153447282504,
+              "binary.f2": 0.831791489019387,
+              "four_class.accuracy": 0.6231352408901932,
+              "four_class.macro_f1": 0.33095138316828904,
+              "q3_r2_projected": 0.34602170449053626,
+              "q3_r2_raw": 0.34602170449053626
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7128882367326975,
+              "binary.precision": 0.7172535211267606,
+              "binary.recall": 0.8459302325581395,
+              "binary.f1": 0.776295731707317,
+              "binary.f2": 0.8166292495189224,
+              "four_class.accuracy": 0.5996576179995109,
+              "four_class.macro_f1": 0.3222155229181913,
+              "q3_r2_projected": 0.3491202651128501,
+              "q3_r2_raw": 0.3491202651128501
+            },
+            "persistence": {
+              "binary.accuracy": 0.677671802396674,
+              "binary.precision": 0.7240953947368421,
+              "binary.recall": 0.731312292358804,
+              "binary.f1": 0.7276859504132231,
+              "binary.f2": 0.7298574270557029,
+              "four_class.accuracy": 0.57006603081438,
+              "four_class.macro_f1": 0.3725487272721046,
+              "q3_r2_projected": 0.030576235857257217,
+              "q3_r2_raw": 0.030576235857257217
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": 0.060650525800929334,
+            "binary.precision": 0.01517499152925228,
+            "binary.recall": 0.12707641196013286,
+            "binary.f1": 0.06670298117786067,
+            "binary.f2": 0.10173253110329294,
+            "four_class.accuracy": 0.05306921007581322,
+            "four_class.macro_f1": -0.04157322373445432,
+            "q3_r2_projected": 0.3153566995483701,
+            "q3_r2_raw": 0.3153566995483701
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": 0.03570555147957932,
+            "binary.precision": -0.005101773191838577,
+            "binary.recall": 0.11129568106312293,
+            "binary.f1": 0.04822227138409996,
+            "binary.f2": 0.08474029255245508,
+            "four_class.accuracy": 0.03056982147224263,
+            "four_class.macro_f1": -0.04942398623123867,
+            "q3_r2_projected": 0.31740578885675896,
+            "q3_r2_raw": 0.31740578885675896
+          }
+        }
+      }
+    },
+    "3": {
+      "maps": {
+        "new": {
+          "candidate": "G1L2",
+          "accepted_split": true,
+          "terminal_regions": 6,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r0000": 232,
+            "r0001": 205,
+            "r001": 335,
+            "r01": 841,
+            "r10": 722,
+            "r11": 929
+          }
+        },
+        "old": {
+          "candidate": "G3L2",
+          "accepted_split": true,
+          "terminal_regions": 7,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r00": 765,
+            "r010": 377,
+            "r0110": 217,
+            "r0111": 251,
+            "r100": 302,
+            "r101": 429,
+            "r11": 923
+          }
+        }
+      },
+      "main": {
+        "E_all_keys": 16919,
+        "E_persist_keys": 15907,
+        "routes": {
+          "new_local_rows": 151,
+          "old_local_rows": 580
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 1211,
+            "crisis_changed": 941
+          },
+          "pool": {
+            "phase_changed": 1202,
+            "crisis_changed": 934
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7707902358295408,
+              "binary.precision": 0.7110997442455242,
+              "binary.recall": 0.8683322923173017,
+              "binary.f1": 0.7818897637795276,
+              "binary.f2": 0.8315587988993899,
+              "four_class.accuracy": 0.6486789999408948,
+              "four_class.macro_f1": 0.4677158230373614,
+              "q3_r2_projected": 0.3841359765810731,
+              "q3_r2_raw": 0.3841359765810731
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7623381996571902,
+              "binary.precision": 0.7008874546187979,
+              "binary.recall": 0.868207370393504,
+              "binary.f1": 0.7756263601361532,
+              "binary.f2": 0.8286436474628005,
+              "four_class.accuracy": 0.6412908564335954,
+              "four_class.macro_f1": 0.4627232742532737,
+              "q3_r2_projected": 0.36697607500075713,
+              "q3_r2_raw": 0.36698595873478645
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7710857615698328,
+              "binary.precision": 0.7113338788870703,
+              "binary.recall": 0.8687070580886945,
+              "binary.f1": 0.7821832292896912,
+              "binary.f2": 0.8318977892621303,
+              "four_class.accuracy": 0.6489745256811869,
+              "four_class.macro_f1": 0.46787252052010303,
+              "q3_r2_projected": 0.3841889187479245,
+              "q3_r2_raw": 0.3841889187479245
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7625746202494237,
+              "binary.precision": 0.7009675468655513,
+              "binary.recall": 0.8688319800124922,
+              "binary.f1": 0.7759245830311821,
+              "binary.f2": 0.8291211673263078,
+              "four_class.accuracy": 0.6417045924700041,
+              "four_class.macro_f1": 0.46331828602543107,
+              "q3_r2_projected": 0.3672408349807885,
+              "q3_r2_raw": 0.36725071871481785
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": 0.008452036172350574,
+            "binary.precision": 0.010212289626726379,
+            "binary.recall": 0.00012492192379764955,
+            "binary.f1": 0.00626340364337441,
+            "binary.f2": 0.0029151514365893805,
+            "four_class.accuracy": 0.007388143507299438,
+            "four_class.macro_f1": 0.004992548784087725,
+            "q3_r2_projected": 0.017159901580315995,
+            "q3_r2_raw": 0.01715001784628667
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": 0.008511141320409088,
+            "binary.precision": 0.010366332021519042,
+            "binary.recall": -0.00012492192379764955,
+            "binary.f1": 0.006258646258509137,
+            "binary.f2": 0.0027766219358225097,
+            "four_class.accuracy": 0.007269933211182744,
+            "four_class.macro_f1": 0.00455423449467196,
+            "q3_r2_projected": 0.01694808376713597,
+            "q3_r2_raw": 0.016938200033106643
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": -0.00029552574029201306,
+            "binary.precision": -0.00023413464154609098,
+            "binary.recall": -0.0003747657713928376,
+            "binary.f1": -0.0002934655101636263,
+            "binary.f2": -0.00033899036274043226,
+            "four_class.accuracy": -0.00029552574029201306,
+            "four_class.macro_f1": -0.00015669748274160789,
+            "q3_r2_projected": -5.2942166851366323e-05,
+            "q3_r2_raw": -5.2942166851366323e-05
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": -0.00023642059223349943,
+            "binary.precision": -8.009224675342708e-05,
+            "binary.recall": -0.0006246096189881367,
+            "binary.f1": -0.000298222895028899,
+            "binary.f2": -0.000477519863507303,
+            "four_class.accuracy": -0.00041373603640870726,
+            "four_class.macro_f1": -0.0005950117721573722,
+            "q3_r2_projected": -0.00026475998003139267,
+            "q3_r2_raw": -0.00026475998003139267
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7733073489658641,
+              "binary.precision": 0.707377979568672,
+              "binary.recall": 0.8584022038567493,
+              "binary.f1": 0.7756067205973864,
+              "binary.f2": 0.8232496697490093,
+              "four_class.accuracy": 0.6500282894323254,
+              "four_class.macro_f1": 0.4726167032368956,
+              "q3_r2_projected": 0.394955521951887,
+              "q3_r2_raw": 0.394955521951887
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7668322122336079,
+              "binary.precision": 0.6972120404309674,
+              "binary.recall": 0.8646005509641873,
+              "binary.f1": 0.7719362971161532,
+              "binary.f2": 0.824987514128749,
+              "four_class.accuracy": 0.6449990570189225,
+              "four_class.macro_f1": 0.46938281919030467,
+              "q3_r2_projected": 0.3826216123984776,
+              "q3_r2_raw": 0.38263235881725144
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7736216759917017,
+              "binary.precision": 0.7076381795482919,
+              "binary.recall": 0.8588154269972452,
+              "binary.f1": 0.7759318026258478,
+              "binary.f2": 0.8236242107209849,
+              "four_class.accuracy": 0.650342616458163,
+              "four_class.macro_f1": 0.4727864459207469,
+              "q3_r2_projected": 0.39501308508481725,
+              "q3_r2_raw": 0.39501308508481725
+            },
+            "old_pool": {
+              "binary.accuracy": 0.767083673854278,
+              "binary.precision": 0.6973026973026973,
+              "binary.recall": 0.8652892561983471,
+              "binary.f1": 0.772266273280472,
+              "binary.f2": 0.8255144681857605,
+              "four_class.accuracy": 0.6454391148550952,
+              "four_class.macro_f1": 0.4699949260011644,
+              "q3_r2_projected": 0.38290948149850845,
+              "q3_r2_raw": 0.3829202279172822
+            },
+            "persistence": {
+              "binary.accuracy": 0.7822971019048218,
+              "binary.precision": 0.7550033579583613,
+              "binary.recall": 0.7742424242424243,
+              "binary.f1": 0.7645018701122067,
+              "binary.f2": 0.7703165684527888,
+              "four_class.accuracy": 0.6422329791915509,
+              "four_class.macro_f1": 0.5590915957817829,
+              "q3_r2_projected": 0.19478230226221793,
+              "q3_r2_raw": 0.19478230226221793
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": -0.008989752938957762,
+            "binary.precision": -0.04762537838968928,
+            "binary.recall": 0.08415977961432497,
+            "binary.f1": 0.01110485048517973,
+            "binary.f2": 0.05293310129622042,
+            "four_class.accuracy": 0.007795310240774511,
+            "four_class.macro_f1": -0.08647489254488733,
+            "q3_r2_projected": 0.20017321968966906,
+            "q3_r2_raw": 0.20017321968966906
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": -0.015464889671213955,
+            "binary.precision": -0.05779131752739386,
+            "binary.recall": 0.09035812672176302,
+            "binary.f1": 0.0074344270039464755,
+            "binary.f2": 0.0546709456759602,
+            "four_class.accuracy": 0.0027660778273715936,
+            "four_class.macro_f1": -0.08970877659147825,
+            "q3_r2_projected": 0.18783931013625965,
+            "q3_r2_raw": 0.1878500565550335
+          }
+        },
+        "bootstrap": {
+          "new_minus_old_geo_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 53,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.006263403643374443,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.0012825774172809973,
+              0.016394018089828943
+            ],
+            "na_reason": "",
+            "draws_sha256": "84e1fc7ffcb11e208f442cf55d10d6d0b39a858753d74b9d7bf0096a7b272f16"
+          },
+          "new_minus_old_pool_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 53,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.006258646258509228,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.0017813492048051882,
+              0.017125347581381328
+            ],
+            "na_reason": "",
+            "draws_sha256": "082f995c6583fd674cf81098b2757c2c1382095f4cf0566b68083c23477b9a66"
+          },
+          "new_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.011104850485179701,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.0037749450425168915,
+              0.033203024143834914
+            ],
+            "na_reason": ""
+          },
+          "old_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.007434427003946499,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.009832590470507736,
+              0.032610485655264795
+            ],
+            "na_reason": ""
+          }
+        }
+      },
+      "supplementary": {
+        "E_all_keys": 4092,
+        "E_persist_keys": 4089,
+        "routes": {
+          "new_local_rows": 178,
+          "old_local_rows": 142
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 489,
+            "crisis_changed": 470
+          },
+          "pool": {
+            "phase_changed": 487,
+            "crisis_changed": 469
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.6952590420332356,
+              "binary.precision": 0.7068230277185501,
+              "binary.recall": 0.8249688925756947,
+              "binary.f1": 0.7613397129186603,
+              "binary.f2": 0.7982822282870444,
+              "four_class.accuracy": 0.5850439882697948,
+              "four_class.macro_f1": 0.35200754652617816,
+              "q3_r2_projected": 0.35114787765571553,
+              "q3_r2_raw": 0.35114787765571553
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7231182795698925,
+              "binary.precision": 0.7288681948424068,
+              "binary.recall": 0.8440481128162588,
+              "binary.f1": 0.7822410147991543,
+              "binary.f2": 0.8181891283370859,
+              "four_class.accuracy": 0.6126588465298143,
+              "four_class.macro_f1": 0.369589747566792,
+              "q3_r2_projected": 0.3625594508177782,
+              "q3_r2_raw": 0.3625594508177782
+            },
+            "new_pool": {
+              "binary.accuracy": 0.6945259042033236,
+              "binary.precision": 0.7062166962699823,
+              "binary.recall": 0.8245541269182912,
+              "binary.f1": 0.7608113279755071,
+              "binary.f2": 0.7978168392326832,
+              "four_class.accuracy": 0.5843108504398827,
+              "four_class.macro_f1": 0.3515550396259413,
+              "q3_r2_projected": 0.34966623365001315,
+              "q3_r2_raw": 0.34966623365001315
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7236070381231672,
+              "binary.precision": 0.7293906810035843,
+              "binary.recall": 0.8440481128162588,
+              "binary.f1": 0.7825418188809844,
+              "binary.f2": 0.818320733472736,
+              "four_class.accuracy": 0.6129032258064516,
+              "four_class.macro_f1": 0.3688340839984839,
+              "q3_r2_projected": 0.36260245288617055,
+              "q3_r2_raw": 0.36260245288617055
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": -0.027859237536656867,
+            "binary.precision": -0.022045167123856735,
+            "binary.recall": -0.019079220240564077,
+            "binary.f1": -0.020901301880493994,
+            "binary.f2": -0.019906900050041476,
+            "four_class.accuracy": -0.027614858260019526,
+            "four_class.macro_f1": -0.017582201040613865,
+            "q3_r2_projected": -0.01141157316206265,
+            "q3_r2_raw": -0.01141157316206265
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": -0.02908113391984357,
+            "binary.precision": -0.023173984733601993,
+            "binary.recall": -0.01949398589796758,
+            "binary.f1": -0.021730490905477295,
+            "binary.f2": -0.020503894240052833,
+            "four_class.accuracy": -0.02859237536656889,
+            "four_class.macro_f1": -0.017279044372542574,
+            "q3_r2_projected": -0.012936219236157398,
+            "q3_r2_raw": -0.012936219236157398
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.0007331378299120228,
+            "binary.precision": 0.0006063314485678095,
+            "binary.recall": 0.00041476565740350413,
+            "binary.f1": 0.000528384943153215,
+            "binary.f2": 0.00046538905436122047,
+            "four_class.accuracy": 0.0007331378299120228,
+            "four_class.macro_f1": 0.0004525069002368487,
+            "q3_r2_projected": 0.0014816440057023872,
+            "q3_r2_raw": 0.0014816440057023872
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": -0.0004887585532746819,
+            "binary.precision": -0.000522486161177449,
+            "binary.recall": 0.0,
+            "binary.f1": -0.0003008040818300861,
+            "binary.f2": -0.00013160513565013687,
+            "four_class.accuracy": -0.00024437927663734094,
+            "four_class.macro_f1": 0.0007556635683081403,
+            "q3_r2_projected": -4.3002068392361537e-05,
+            "q3_r2_raw": -4.3002068392361537e-05
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.6950354609929078,
+              "binary.precision": 0.7065101387406617,
+              "binary.recall": 0.824750830564784,
+              "binary.f1": 0.7610653381873922,
+              "binary.f2": 0.7980390581049586,
+              "four_class.accuracy": 0.5852286622646123,
+              "four_class.macro_f1": 0.3522814404983795,
+              "q3_r2_projected": 0.35063855334755945,
+              "q3_r2_raw": 0.35063855334755945
+            },
+            "old_geo": {
+              "binary.accuracy": 0.722915138175593,
+              "binary.precision": 0.7285765507350305,
+              "binary.recall": 0.8438538205980066,
+              "binary.f1": 0.7819896093900327,
+              "binary.f2": 0.8179695676676596,
+              "four_class.accuracy": 0.6131083394472976,
+              "four_class.macro_f1": 0.3700581117375998,
+              "q3_r2_projected": 0.36168696235193576,
+              "q3_r2_raw": 0.36168696235193576
+            },
+            "new_pool": {
+              "binary.accuracy": 0.694301785277574,
+              "binary.precision": 0.7059032716927454,
+              "binary.recall": 0.8243355481727574,
+              "binary.f1": 0.7605363984674329,
+              "binary.f2": 0.7975731276117004,
+              "four_class.accuracy": 0.5844949865492786,
+              "four_class.macro_f1": 0.3518288100667101,
+              "q3_r2_projected": 0.34915151768433805,
+              "q3_r2_raw": 0.34915151768433805
+            },
+            "old_pool": {
+              "binary.accuracy": 0.723404255319149,
+              "binary.precision": 0.7290993900251166,
+              "binary.recall": 0.8438538205980066,
+              "binary.f1": 0.7822906641000963,
+              "binary.f2": 0.8181012964006764,
+              "four_class.accuracy": 0.6133528980190756,
+              "four_class.macro_f1": 0.3692959697380904,
+              "q3_r2_projected": 0.3617301209035485,
+              "q3_r2_raw": 0.3617301209035485
+            },
+            "persistence": {
+              "binary.accuracy": 0.6740034238200049,
+              "binary.precision": 0.7205580631924497,
+              "binary.recall": 0.729235880398671,
+              "binary.f1": 0.7248710010319918,
+              "binary.f2": 0.7274836357610407,
+              "four_class.accuracy": 0.5761799951088286,
+              "four_class.macro_f1": 0.39933683354446287,
+              "q3_r2_projected": 0.0715893446382575,
+              "q3_r2_raw": 0.0715893446382575
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": 0.021032037172902918,
+            "binary.precision": -0.01404792445178804,
+            "binary.recall": 0.095514950166113,
+            "binary.f1": 0.036194337155400436,
+            "binary.f2": 0.07055542234391787,
+            "four_class.accuracy": 0.009048667155783785,
+            "four_class.macro_f1": -0.04705539304608336,
+            "q3_r2_projected": 0.27904920870930194,
+            "q3_r2_raw": 0.27904920870930194
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": 0.048911714355588165,
+            "binary.precision": 0.008018487542580721,
+            "binary.recall": 0.11461794019933558,
+            "binary.f1": 0.057118608358040945,
+            "binary.f2": 0.09048593190661891,
+            "four_class.accuracy": 0.03692834433846903,
+            "four_class.macro_f1": -0.029278721806863084,
+            "q3_r2_projected": 0.29009761771367826,
+            "q3_r2_raw": 0.29009761771367826
+          }
+        }
+      }
+    },
+    "6": {
+      "maps": {
+        "new": {
+          "candidate": "G4L2",
+          "accepted_split": true,
+          "terminal_regions": 2,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r0": 1586,
+            "r1": 1678
+          }
+        },
+        "old": {
+          "candidate": "G4L2",
+          "accepted_split": true,
+          "terminal_regions": 6,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r00": 779,
+            "r01": 829,
+            "r100": 297,
+            "r101": 426,
+            "r110": 388,
+            "r111": 545
+          }
+        }
+      },
+      "main": {
+        "E_all_keys": 16413,
+        "E_persist_keys": 14960,
+        "routes": {
+          "new_local_rows": 1129,
+          "old_local_rows": 509
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 1373,
+            "crisis_changed": 915
+          },
+          "pool": {
+            "phase_changed": 1382,
+            "crisis_changed": 921
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7672576616096997,
+              "binary.precision": 0.7050016274275794,
+              "binary.recall": 0.8551125148045795,
+              "binary.f1": 0.7728353948620361,
+              "binary.f2": 0.8201852927069396,
+              "four_class.accuracy": 0.6330957168098459,
+              "four_class.macro_f1": 0.46610516113856615,
+              "q3_r2_projected": 0.26857492876698386,
+              "q3_r2_raw": 0.2685707726231731
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7612258575519405,
+              "binary.precision": 0.6949978804578211,
+              "binary.recall": 0.863008290564548,
+              "binary.f1": 0.769944232462577,
+              "binary.f2": 0.8232074713797951,
+              "four_class.accuracy": 0.6277950405166636,
+              "four_class.macro_f1": 0.48074135324312073,
+              "q3_r2_projected": 0.2543463981467564,
+              "q3_r2_raw": 0.25434547984560285
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7671358069822701,
+              "binary.precision": 0.7048486820696388,
+              "binary.recall": 0.8551125148045795,
+              "binary.f1": 0.7727434891188013,
+              "binary.f2": 0.8201438848920863,
+              "four_class.accuracy": 0.6329738621824164,
+              "four_class.macro_f1": 0.46605854600319063,
+              "q3_r2_projected": 0.2689615299490862,
+              "q3_r2_raw": 0.2689573738052754
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7611040029245111,
+              "binary.precision": 0.694850603941513,
+              "binary.recall": 0.863008290564548,
+              "binary.f1": 0.7698538475083642,
+              "binary.f2": 0.8231661394788372,
+              "four_class.accuracy": 0.6277341132029489,
+              "four_class.macro_f1": 0.48112245229762707,
+              "q3_r2_projected": 0.25407038927533754,
+              "q3_r2_raw": 0.2540694709741842
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": 0.00603180405775916,
+            "binary.precision": 0.010003746969758365,
+            "binary.recall": -0.00789577575996847,
+            "binary.f1": 0.0028911623994590796,
+            "binary.f2": -0.00302217867285548,
+            "four_class.accuracy": 0.005300676293182316,
+            "four_class.macro_f1": -0.01463619210455458,
+            "q3_r2_projected": 0.014228530620227442,
+            "q3_r2_raw": 0.014225292777570231
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": 0.006031804057759049,
+            "binary.precision": 0.009998078128125809,
+            "binary.recall": -0.00789577575996847,
+            "binary.f1": 0.0028896416104371436,
+            "binary.f2": -0.003022254586750872,
+            "four_class.accuracy": 0.00523974897946744,
+            "four_class.macro_f1": -0.015063906294436435,
+            "q3_r2_projected": 0.014891140673748637,
+            "q3_r2_raw": 0.014887902831091204
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.00012185462742952957,
+            "binary.precision": 0.00015294535794063702,
+            "binary.recall": 0.0,
+            "binary.f1": 9.190574323481027e-05,
+            "binary.f2": 4.140781485328926e-05,
+            "four_class.accuracy": 0.00012185462742952957,
+            "four_class.macro_f1": 4.6615135375516203e-05,
+            "q3_r2_projected": -0.00038660118210231964,
+            "q3_r2_raw": -0.00038660118210231964
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": 0.00012185462742941855,
+            "binary.precision": 0.00014727651630808136,
+            "binary.recall": 0.0,
+            "binary.f1": 9.038495421287429e-05,
+            "binary.f2": 4.133190095789718e-05,
+            "four_class.accuracy": 6.0927313714653764e-05,
+            "four_class.macro_f1": -0.00038109905450633974,
+            "q3_r2_projected": 0.00027600887141887576,
+            "q3_r2_raw": 0.0002760088714186537
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7780748663101604,
+              "binary.precision": 0.7103561921663075,
+              "binary.recall": 0.8441030275643923,
+              "binary.f1": 0.7714757709251101,
+              "binary.f2": 0.8134707504717665,
+              "four_class.accuracy": 0.6425133689839572,
+              "four_class.macro_f1": 0.47938140394430157,
+              "q3_r2_projected": 0.32195537976902344,
+              "q3_r2_raw": 0.3219506809008653
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7719919786096257,
+              "binary.precision": 0.6995055624227441,
+              "binary.recall": 0.8523874077421298,
+              "binary.f1": 0.768416049969448,
+              "binary.f2": 0.8166887952433182,
+              "four_class.accuracy": 0.6387032085561497,
+              "four_class.macro_f1": 0.49609870030748426,
+              "q3_r2_projected": 0.3136370544727858,
+              "q3_r2_raw": 0.3136360162565338
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7779411764705882,
+              "binary.precision": 0.7101761500443543,
+              "binary.recall": 0.8441030275643923,
+              "binary.f1": 0.7713695801789401,
+              "binary.f2": 0.8134235201904375,
+              "four_class.accuracy": 0.642379679144385,
+              "four_class.macro_f1": 0.479326897712357,
+              "q3_r2_projected": 0.3223924647370403,
+              "q3_r2_raw": 0.32238776586888196
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7718582887700535,
+              "binary.precision": 0.6993326742461691,
+              "binary.recall": 0.8523874077421298,
+              "binary.f1": 0.768311723576132,
+              "binary.f2": 0.8166416531978757,
+              "four_class.accuracy": 0.6386363636363637,
+              "four_class.macro_f1": 0.49648341286436626,
+              "q3_r2_projected": 0.31332500336088687,
+              "q3_r2_raw": 0.3133239651446349
+            },
+            "persistence": {
+              "binary.accuracy": 0.7893716577540107,
+              "binary.precision": 0.7560187903699354,
+              "binary.recall": 0.7757192348245218,
+              "binary.f1": 0.7657423239907813,
+              "binary.f2": 0.7716974346679454,
+              "four_class.accuracy": 0.6485294117647059,
+              "four_class.macro_f1": 0.566066820460309,
+              "q3_r2_projected": 0.2273840179508153,
+              "q3_r2_raw": 0.2273840179508153
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": -0.011296791443850318,
+            "binary.precision": -0.045662598203627836,
+            "binary.recall": 0.0683837927398705,
+            "binary.f1": 0.005733446934328756,
+            "binary.f2": 0.041773315803821154,
+            "four_class.accuracy": -0.006016042780748743,
+            "four_class.macro_f1": -0.08668541651600742,
+            "q3_r2_projected": 0.09457136181820813,
+            "q3_r2_raw": 0.09456666295005
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": -0.017379679144385096,
+            "binary.precision": -0.05651322794719127,
+            "binary.recall": 0.07666817291760808,
+            "binary.f1": 0.0026737259786666634,
+            "binary.f2": 0.044991360575372785,
+            "four_class.accuracy": -0.009826203208556206,
+            "four_class.macro_f1": -0.06996812015282472,
+            "q3_r2_projected": 0.08625303652197047,
+            "q3_r2_raw": 0.0862519983057185
+          }
+        },
+        "bootstrap": {
+          "new_minus_old_geo_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 53,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.0028911623994591087,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.004394522282372301,
+              0.014704495385104219
+            ],
+            "na_reason": "",
+            "draws_sha256": "38db34ca3fd5ba6ba081ff011b3200d614648fb745cba2cec7170e63e5ac8c72"
+          },
+          "new_minus_old_pool_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 53,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.002889641610437136,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.0043096063303425716,
+              0.014775336278087244
+            ],
+            "na_reason": "",
+            "draws_sha256": "5de088de09628b00a925dcc41763f1b21d0814545aff9013cf3f1d7c545cb251"
+          },
+          "new_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.005733446934328777,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.008859302591792998,
+              0.0219487914917994
+            ],
+            "na_reason": ""
+          },
+          "old_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Timor-Leste",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.0026737259786666734,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.015068108221577678,
+              0.015709928413007654
+            ],
+            "na_reason": ""
+          }
+        }
+      },
+      "supplementary": {
+        "E_all_keys": 4092,
+        "E_persist_keys": 4089,
+        "routes": {
+          "new_local_rows": 0,
+          "old_local_rows": 230
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 402,
+            "crisis_changed": 367
+          },
+          "pool": {
+            "phase_changed": 407,
+            "crisis_changed": 371
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.6823069403714564,
+              "binary.precision": 0.6723549488054608,
+              "binary.recall": 0.8987971795935297,
+              "binary.f1": 0.7692580759673412,
+              "binary.f2": 0.8420766301391156,
+              "four_class.accuracy": 0.5835777126099707,
+              "four_class.macro_f1": 0.3557573912880013,
+              "q3_r2_projected": 0.29823078332960373,
+              "q3_r2_raw": 0.29823078332960373
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7050342130987293,
+              "binary.precision": 0.6853448275862069,
+              "binary.recall": 0.9232683533803401,
+              "binary.f1": 0.7867114331153914,
+              "binary.f2": 0.8633260937015204,
+              "four_class.accuracy": 0.60386119257087,
+              "four_class.macro_f1": 0.3740036442272693,
+              "q3_r2_projected": 0.3287550850477413,
+              "q3_r2_raw": 0.3287293399050353
+            },
+            "new_pool": {
+              "binary.accuracy": 0.6823069403714564,
+              "binary.precision": 0.6723549488054608,
+              "binary.recall": 0.8987971795935297,
+              "binary.f1": 0.7692580759673412,
+              "binary.f2": 0.8420766301391156,
+              "four_class.accuracy": 0.5835777126099707,
+              "four_class.macro_f1": 0.3557573912880013,
+              "q3_r2_projected": 0.29823078332960373,
+              "q3_r2_raw": 0.29823078332960373
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7025904203323559,
+              "binary.precision": 0.6831288343558283,
+              "binary.recall": 0.9236831190377437,
+              "binary.f1": 0.7853994004584729,
+              "binary.f2": 0.8629107253564786,
+              "four_class.accuracy": 0.6014173998044966,
+              "four_class.macro_f1": 0.37202368026848065,
+              "q3_r2_projected": 0.32648838060206353,
+              "q3_r2_raw": 0.32646134824998696
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": -0.022727272727272818,
+            "binary.precision": -0.01298987878074609,
+            "binary.recall": -0.024471173786810407,
+            "binary.f1": -0.017453357148050186,
+            "binary.f2": -0.021249463562404758,
+            "four_class.accuracy": -0.020283479960899298,
+            "four_class.macro_f1": -0.01824625293926796,
+            "q3_r2_projected": -0.03052430171813758,
+            "q3_r2_raw": -0.030498556575431546
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": -0.02028347996089941,
+            "binary.precision": -0.010773885550367512,
+            "binary.recall": -0.024885939444214022,
+            "binary.f1": -0.016141324491131703,
+            "binary.f2": -0.020834095217363013,
+            "four_class.accuracy": -0.01783968719452589,
+            "four_class.macro_f1": -0.016266288980479326,
+            "q3_r2_projected": -0.0282575972724598,
+            "q3_r2_raw": -0.028230564920383228
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.0,
+            "binary.precision": 0.0,
+            "binary.recall": 0.0,
+            "binary.f1": 0.0,
+            "binary.f2": 0.0,
+            "four_class.accuracy": 0.0,
+            "four_class.macro_f1": 0.0,
+            "q3_r2_projected": 0.0,
+            "q3_r2_raw": 0.0
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": 0.0024437927663734094,
+            "binary.precision": 0.0022159932303785768,
+            "binary.recall": -0.00041476565740361515,
+            "binary.f1": 0.0013120326569184826,
+            "binary.f2": 0.00041536834504174447,
+            "four_class.accuracy": 0.0024437927663734094,
+            "four_class.macro_f1": 0.001979963958788633,
+            "q3_r2_projected": 0.0022667044456777807,
+            "q3_r2_raw": 0.002267991655048318
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.6820738566886769,
+              "binary.precision": 0.6720496894409937,
+              "binary.recall": 0.8986710963455149,
+              "binary.f1": 0.7690120824449183,
+              "binary.f2": 0.8418923124805477,
+              "four_class.accuracy": 0.5837613108339448,
+              "four_class.macro_f1": 0.3560785318367273,
+              "q3_r2_projected": 0.29709950937258134,
+              "q3_r2_raw": 0.29709950937258134
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7048178038640255,
+              "binary.precision": 0.6850539291217257,
+              "binary.recall": 0.9231727574750831,
+              "binary.f1": 0.7864850521846807,
+              "binary.f2": 0.8631668866972121,
+              "four_class.accuracy": 0.6040596722915138,
+              "four_class.macro_f1": 0.3743433021607992,
+              "q3_r2_projected": 0.3274130419107042,
+              "q3_r2_raw": 0.32738720308220604
+            },
+            "new_pool": {
+              "binary.accuracy": 0.6820738566886769,
+              "binary.precision": 0.6720496894409937,
+              "binary.recall": 0.8986710963455149,
+              "binary.f1": 0.7690120824449183,
+              "binary.f2": 0.8418923124805477,
+              "four_class.accuracy": 0.5837613108339448,
+              "four_class.macro_f1": 0.3560785318367273,
+              "q3_r2_projected": 0.29709950937258134,
+              "q3_r2_raw": 0.29709950937258134
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7023722181462461,
+              "binary.precision": 0.6828369665336199,
+              "binary.recall": 0.9235880398671097,
+              "binary.f1": 0.7851721094439541,
+              "binary.f2": 0.8627511831794553,
+              "four_class.accuracy": 0.6016140865737344,
+              "four_class.macro_f1": 0.37236300855514415,
+              "q3_r2_projected": 0.3251380889964196,
+              "q3_r2_raw": 0.3251109582744349
+            },
+            "persistence": {
+              "binary.accuracy": 0.6786500366837858,
+              "binary.precision": 0.7292539815590947,
+              "binary.recall": 0.7225913621262459,
+              "binary.f1": 0.7259073842302879,
+              "binary.f2": 0.7239141288067898,
+              "four_class.accuracy": 0.5712888236732697,
+              "four_class.macro_f1": 0.39521979563690857,
+              "q3_r2_projected": 0.07320389111831971,
+              "q3_r2_raw": 0.07320389111831971
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": 0.003423820004891165,
+            "binary.precision": -0.05720429211810096,
+            "binary.recall": 0.17607973421926904,
+            "binary.f1": 0.043104698214630366,
+            "binary.f2": 0.1179781836737579,
+            "four_class.accuracy": 0.012472487160675061,
+            "four_class.macro_f1": -0.03914126380018129,
+            "q3_r2_projected": 0.22389561825426163,
+            "q3_r2_raw": 0.22389561825426163
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": 0.02616776718023972,
+            "binary.precision": -0.04420005243736902,
+            "binary.recall": 0.20058139534883723,
+            "binary.f1": 0.06057766795439279,
+            "binary.f2": 0.13925275789042224,
+            "four_class.accuracy": 0.032770848618244086,
+            "four_class.macro_f1": -0.02087649347610937,
+            "q3_r2_projected": 0.2542091507923845,
+            "q3_r2_raw": 0.2541833119638863
+          }
+        }
+      }
+    },
+    "12": {
+      "maps": {
+        "new": {
+          "candidate": "G1L2",
+          "accepted_split": true,
+          "terminal_regions": 5,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r0000": 250,
+            "r0001": 187,
+            "r001": 328,
+            "r01": 819,
+            "r1": 1680
+          }
+        },
+        "old": {
+          "candidate": "G2L2",
+          "accepted_split": true,
+          "terminal_regions": 9,
+          "mapped_areas": 3264,
+          "region_sizes": {
+            "r0000": 226,
+            "r0001": 189,
+            "r0010": 173,
+            "r0011": 180,
+            "r010": 438,
+            "r011": 395,
+            "r100": 292,
+            "r101": 434,
+            "r11": 937
+          }
+        }
+      },
+      "main": {
+        "E_all_keys": 14087,
+        "E_persist_keys": 12404,
+        "routes": {
+          "new_local_rows": 976,
+          "old_local_rows": 111
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 1056,
+            "crisis_changed": 763
+          },
+          "pool": {
+            "phase_changed": 1041,
+            "crisis_changed": 750
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7355008163555051,
+              "binary.precision": 0.6773045438367541,
+              "binary.recall": 0.8501861504095309,
+              "binary.f1": 0.7539619651347068,
+              "binary.f2": 0.8088922893819603,
+              "four_class.accuracy": 0.629232625825229,
+              "four_class.macro_f1": 0.43072688071102067,
+              "q3_r2_projected": 0.24168090386278807,
+              "q3_r2_raw": 0.24168083355950154
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7398310499041669,
+              "binary.precision": 0.6834696823869105,
+              "binary.recall": 0.8460163812360387,
+              "binary.f1": 0.7561056764490584,
+              "binary.f2": 0.8076026384624133,
+              "four_class.accuracy": 0.6313622488819479,
+              "four_class.macro_f1": 0.464308398458629,
+              "q3_r2_projected": 0.25213036654819143,
+              "q3_r2_raw": 0.2521310081440705
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7347199545680415,
+              "binary.precision": 0.676547308513161,
+              "binary.recall": 0.8497393894266567,
+              "binary.f1": 0.7533170506304047,
+              "binary.f2": 0.8083526945089817,
+              "four_class.accuracy": 0.6285937389082132,
+              "four_class.macro_f1": 0.4307080923253299,
+              "q3_r2_projected": 0.24106414102618534,
+              "q3_r2_raw": 0.2410640707228987
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7402569745155108,
+              "binary.precision": 0.6840077071290944,
+              "binary.recall": 0.845867460908414,
+              "binary.f1": 0.756375258006525,
+              "binary.f2": 0.8076441815493118,
+              "four_class.accuracy": 0.6317881734932916,
+              "four_class.macro_f1": 0.4645595688812117,
+              "q3_r2_projected": 0.25251923611585303,
+              "q3_r2_raw": 0.2525200263731546
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": -0.004330233548661799,
+            "binary.precision": -0.006165138550156435,
+            "binary.recall": 0.0041697691734922104,
+            "binary.f1": -0.0021437113143515374,
+            "binary.f2": 0.0012896509195470252,
+            "four_class.accuracy": -0.0021296230567189323,
+            "four_class.macro_f1": -0.033581517747608314,
+            "q3_r2_projected": -0.010449462685403366,
+            "q3_r2_raw": -0.010450174584568983
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": -0.005537019947469246,
+            "binary.precision": -0.007460398615933395,
+            "binary.recall": 0.0038719285182426955,
+            "binary.f1": -0.003058207376120392,
+            "binary.f2": 0.0007085129596698936,
+            "four_class.accuracy": -0.0031944345850783984,
+            "four_class.macro_f1": -0.033851476555881777,
+            "q3_r2_projected": -0.011455095089667688,
+            "q3_r2_raw": -0.011455955650255922
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.0007808617874636159,
+            "binary.precision": 0.000757235323593064,
+            "binary.recall": 0.00044676098287421695,
+            "binary.f1": 0.000644914504302152,
+            "binary.f2": 0.0005395948729786104,
+            "four_class.accuracy": 0.0006388869170157463,
+            "four_class.macro_f1": 1.878838569074892e-05,
+            "q3_r2_projected": 0.0006167628366027245,
+            "q3_r2_raw": 0.0006167628366028355
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": -0.00042592461134383086,
+            "binary.precision": -0.0005380247421838957,
+            "binary.recall": 0.00014892032762470198,
+            "binary.f1": -0.00026958155746670265,
+            "binary.f2": -4.154308689852115e-05,
+            "four_class.accuracy": -0.00042592461134371984,
+            "four_class.macro_f1": -0.0002511704225827138,
+            "q3_r2_projected": -0.0003888695676615983,
+            "q3_r2_raw": -0.00038901822908410377
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.7537084811351177,
+              "binary.precision": 0.6879872942535374,
+              "binary.recall": 0.8420215585792543,
+              "binary.f1": 0.7572506952721494,
+              "binary.f2": 0.8059332927406806,
+              "four_class.accuracy": 0.6432602386326991,
+              "four_class.macro_f1": 0.4467233946701388,
+              "q3_r2_projected": 0.29888562527372364,
+              "q3_r2_raw": 0.29888554324056704
+            },
+            "old_geo": {
+              "binary.accuracy": 0.7578200580457917,
+              "binary.precision": 0.6935413325557661,
+              "binary.recall": 0.8406078812511044,
+              "binary.f1": 0.7600255631890078,
+              "binary.f2": 0.8064078657399559,
+              "four_class.accuracy": 0.6460012899064818,
+              "four_class.macro_f1": 0.4821415730373511,
+              "q3_r2_projected": 0.2989212453714424,
+              "q3_r2_raw": 0.2989219940154646
+            },
+            "new_pool": {
+              "binary.accuracy": 0.7528216704288939,
+              "binary.precision": 0.6870581445678834,
+              "binary.recall": 0.841491429581198,
+              "binary.f1": 0.7564733915806195,
+              "binary.f2": 0.8052896810633476,
+              "four_class.accuracy": 0.6425346662366979,
+              "four_class.macro_f1": 0.44668475818614994,
+              "q3_r2_projected": 0.2981659576047182,
+              "q3_r2_raw": 0.2981658755715617
+            },
+            "old_pool": {
+              "binary.accuracy": 0.7583037729764592,
+              "binary.precision": 0.6942052255145235,
+              "binary.recall": 0.8404311715850857,
+              "binary.f1": 0.7603517186250999,
+              "binary.f2": 0.806457082782243,
+              "four_class.accuracy": 0.6464850048371493,
+              "four_class.macro_f1": 0.4824140693963224,
+              "q3_r2_projected": 0.2993749965359054,
+              "q3_r2_raw": 0.2993759186450151
+            },
+            "persistence": {
+              "binary.accuracy": 0.7709609803289261,
+              "binary.precision": 0.7420962199312715,
+              "binary.recall": 0.7632090475349002,
+              "binary.f1": 0.7525045735691263,
+              "binary.f2": 0.7588909193140286,
+              "four_class.accuracy": 0.6166559174459851,
+              "four_class.macro_f1": 0.5293229338617274,
+              "q3_r2_projected": 0.04671631121769193,
+              "q3_r2_raw": 0.04671631121769193
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": -0.017252499193808446,
+            "binary.precision": -0.054108925677734065,
+            "binary.recall": 0.07881251104435416,
+            "binary.f1": 0.004746121703023132,
+            "binary.f2": 0.04704237342665196,
+            "four_class.accuracy": 0.026604321186713964,
+            "four_class.macro_f1": -0.08259953919158858,
+            "q3_r2_projected": 0.2521693140560317,
+            "q3_r2_raw": 0.2521692320228751
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": -0.01314092228313446,
+            "binary.precision": -0.048554887375505396,
+            "binary.recall": 0.07739883371620426,
+            "binary.f1": 0.0075209896198815684,
+            "binary.f2": 0.0475169464259273,
+            "four_class.accuracy": 0.02934537246049662,
+            "four_class.macro_f1": -0.04718136082437624,
+            "q3_r2_projected": 0.25220493415375045,
+            "q3_r2_raw": 0.25220568279777267
+          }
+        },
+        "bootstrap": {
+          "new_minus_old_geo_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": -0.002143711314351547,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.012262735372381192,
+              0.009904300132982671
+            ],
+            "na_reason": "",
+            "draws_sha256": "bf97114848414abf3fcfc213aec5191ca9493b783232f3740597111f537d706f"
+          },
+          "new_minus_old_pool_E_all": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "Ecuador",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 52,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": -0.003058207376120421,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.013474330750713637,
+              0.008928626272800097
+            ],
+            "na_reason": "",
+            "draws_sha256": "53e1a2117167cd8edacdcbe061fa939c81ccedc2d4d48bd3075a045f209273c0"
+          },
+          "new_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 51,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.004746121703023153,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.01314667577124956,
+              0.03180777813764462
+            ],
+            "na_reason": ""
+          },
+          "old_geo_minus_persistence_E_persist": {
+            "countries": [
+              "Afghanistan",
+              "Angola",
+              "Bangladesh",
+              "Benin",
+              "Burkina Faso",
+              "Burundi",
+              "Cabo Verde",
+              "Cameroon",
+              "Central African Republic",
+              "Chad",
+              "Congo, The Democratic Republic of the",
+              "C\u00f4te d'Ivoire",
+              "Djibouti",
+              "Dominican Republic",
+              "El Salvador",
+              "Eswatini",
+              "Ethiopia",
+              "Gambia",
+              "Ghana",
+              "Guatemala",
+              "Guinea",
+              "Guinea-Bissau",
+              "Haiti",
+              "Honduras",
+              "Kenya",
+              "Lebanon",
+              "Lesotho",
+              "Liberia",
+              "Madagascar",
+              "Malawi",
+              "Mali",
+              "Mauritania",
+              "Mozambique",
+              "Namibia",
+              "Niger",
+              "Nigeria",
+              "Pakistan",
+              "Palestine, State of",
+              "Senegal",
+              "Sierra Leone",
+              "Somalia",
+              "South Africa",
+              "South Sudan",
+              "Sudan",
+              "Tajikistan",
+              "Tanzania, United Republic of",
+              "Togo",
+              "Uganda",
+              "Yemen",
+              "Zambia",
+              "Zimbabwe"
+            ],
+            "K": 51,
+            "draws": 2000,
+            "seed": 42,
+            "rng": "numpy.random.default_rng",
+            "percentile_method": "linear",
+            "percentiles": [
+              2.5,
+              97.5
+            ],
+            "point_delta": 0.007520989619881598,
+            "defined_draws": 2000,
+            "undefined_draws": 0,
+            "interval": [
+              -0.0072799646365410975,
+              0.030469467313107852
+            ],
+            "na_reason": ""
+          }
+        }
+      },
+      "supplementary": {
+        "E_all_keys": 4092,
+        "E_persist_keys": 4040,
+        "routes": {
+          "new_local_rows": 198,
+          "old_local_rows": 237
+        },
+        "label_flips": {
+          "geo": {
+            "phase_changed": 434,
+            "crisis_changed": 388
+          },
+          "pool": {
+            "phase_changed": 426,
+            "crisis_changed": 380
+          }
+        },
+        "E_all": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.6434506353861192,
+              "binary.precision": 0.6398354876615746,
+              "binary.recall": 0.9033596018249689,
+              "binary.f1": 0.7490971625107481,
+              "binary.f2": 0.8346106683016554,
+              "four_class.accuracy": 0.5496089931573802,
+              "four_class.macro_f1": 0.2736708925890725,
+              "q3_r2_projected": 0.3285569610376694,
+              "q3_r2_raw": 0.3285569610376694
+            },
+            "old_geo": {
+              "binary.accuracy": 0.6840175953079178,
+              "binary.precision": 0.66796875,
+              "binary.recall": 0.9220240564081295,
+              "binary.f1": 0.7746994249869316,
+              "binary.f2": 0.856845513413506,
+              "four_class.accuracy": 0.5828445747800587,
+              "four_class.macro_f1": 0.32366853936507417,
+              "q3_r2_projected": 0.2293805943511389,
+              "q3_r2_raw": 0.2293805943511389
+            },
+            "new_pool": {
+              "binary.accuracy": 0.6432062561094819,
+              "binary.precision": 0.6394019349164468,
+              "binary.recall": 0.9046038987971796,
+              "binary.f1": 0.7492270697354861,
+              "binary.f2": 0.8353121409421678,
+              "four_class.accuracy": 0.5493646138807429,
+              "four_class.macro_f1": 0.27312327182686563,
+              "q3_r2_projected": 0.3308373510603422,
+              "q3_r2_raw": 0.3308373510603422
+            },
+            "old_pool": {
+              "binary.accuracy": 0.6837732160312805,
+              "binary.precision": 0.6675667566756676,
+              "binary.recall": 0.9228535877229366,
+              "binary.f1": 0.7747214484679665,
+              "binary.f2": 0.8572859674809278,
+              "four_class.accuracy": 0.5828445747800587,
+              "four_class.macro_f1": 0.3234990144125761,
+              "q3_r2_projected": 0.2299447229510908,
+              "q3_r2_raw": 0.2299447229510908
+            }
+          },
+          "delta_new_minus_old_geo": {
+            "binary.accuracy": -0.040566959921798595,
+            "binary.precision": -0.02813326233842539,
+            "binary.recall": -0.018664454583160572,
+            "binary.f1": -0.02560226247618347,
+            "binary.f2": -0.022234845111850587,
+            "four_class.accuracy": -0.03323558162267848,
+            "four_class.macro_f1": -0.04999764677600166,
+            "q3_r2_projected": 0.09917636668653051,
+            "q3_r2_raw": 0.09917636668653051
+          },
+          "delta_new_minus_old_pool": {
+            "binary.accuracy": -0.040566959921798595,
+            "binary.precision": -0.02816482175922075,
+            "binary.recall": -0.018249688925756957,
+            "binary.f1": -0.025494378732480394,
+            "binary.f2": -0.02197382653876001,
+            "four_class.accuracy": -0.03347996089931582,
+            "four_class.macro_f1": -0.05037574258571048,
+            "q3_r2_projected": 0.10089262810925137,
+            "q3_r2_raw": 0.10089262810925137
+          },
+          "delta_new_geo_minus_new_pool": {
+            "binary.accuracy": 0.00024437927663734094,
+            "binary.precision": 0.0004335527451277965,
+            "binary.recall": -0.0012442969722107344,
+            "binary.f1": -0.00012990722473804617,
+            "binary.f2": -0.0007014726405123461,
+            "four_class.accuracy": 0.00024437927663734094,
+            "four_class.macro_f1": 0.0005476207622068796,
+            "q3_r2_projected": -0.0022803900226727736,
+            "q3_r2_raw": -0.0022803900226727736
+          },
+          "delta_old_geo_minus_old_pool": {
+            "binary.accuracy": 0.00024437927663734094,
+            "binary.precision": 0.00040199332433243917,
+            "binary.recall": -0.0008295313148071193,
+            "binary.f1": -2.202348103497176e-05,
+            "binary.f2": -0.0004404540674217694,
+            "four_class.accuracy": 0.0,
+            "four_class.macro_f1": 0.00016952495249805688,
+            "q3_r2_projected": -0.0005641285999519186,
+            "q3_r2_raw": -0.0005641285999519186
+          }
+        },
+        "E_persist": {
+          "panels": {
+            "new_geo": {
+              "binary.accuracy": 0.6504950495049505,
+              "binary.precision": 0.6479880774962742,
+              "binary.recall": 0.903950103950104,
+              "binary.f1": 0.7548611111111111,
+              "binary.f2": 0.8377649325626204,
+              "four_class.accuracy": 0.555940594059406,
+              "four_class.macro_f1": 0.27616604292836905,
+              "q3_r2_projected": 0.33154923956463234,
+              "q3_r2_raw": 0.33154923956463234
+            },
+            "old_geo": {
+              "binary.accuracy": 0.6903465346534653,
+              "binary.precision": 0.675700365408039,
+              "binary.recall": 0.9226611226611227,
+              "binary.f1": 0.7801019511337669,
+              "binary.f2": 0.8598109113453193,
+              "four_class.accuracy": 0.5883663366336633,
+              "four_class.macro_f1": 0.32354380623368767,
+              "q3_r2_projected": 0.22953540395780936,
+              "q3_r2_raw": 0.22953540395780936
+            },
+            "new_pool": {
+              "binary.accuracy": 0.6502475247524753,
+              "binary.precision": 0.6475312314098751,
+              "binary.recall": 0.9051975051975052,
+              "binary.f1": 0.7549852609675741,
+              "binary.f2": 0.8384686488984748,
+              "four_class.accuracy": 0.5556930693069307,
+              "four_class.macro_f1": 0.2756126959959798,
+              "q3_r2_projected": 0.33387749446936577,
+              "q3_r2_raw": 0.33387749446936577
+            },
+            "old_pool": {
+              "binary.accuracy": 0.69009900990099,
+              "binary.precision": 0.6752812404986318,
+              "binary.recall": 0.9234927234927235,
+              "binary.f1": 0.7801194239550404,
+              "binary.f2": 0.8602525369896971,
+              "four_class.accuracy": 0.5883663366336633,
+              "four_class.macro_f1": 0.32337149842995916,
+              "q3_r2_projected": 0.23011137349226596,
+              "q3_r2_raw": 0.23011137349226596
+            },
+            "persistence": {
+              "binary.accuracy": 0.7660891089108911,
+              "binary.precision": 0.7894528152260111,
+              "binary.recall": 0.8278586278586278,
+              "binary.f1": 0.8081997158514309,
+              "binary.f2": 0.8198814033931807,
+              "four_class.accuracy": 0.6386138613861386,
+              "four_class.macro_f1": 0.4829233828734141,
+              "q3_r2_projected": 0.24617628256254398,
+              "q3_r2_raw": 0.24617628256254398
+            }
+          },
+          "delta_new_geo_minus_persistence": {
+            "binary.accuracy": -0.11559405940594059,
+            "binary.precision": -0.1414647377297369,
+            "binary.recall": 0.07609147609147615,
+            "binary.f1": -0.05333860474031982,
+            "binary.f2": 0.017883529169439694,
+            "four_class.accuracy": -0.08267326732673264,
+            "four_class.macro_f1": -0.20675733994504503,
+            "q3_r2_projected": 0.08537295700208836,
+            "q3_r2_raw": 0.08537295700208836
+          },
+          "delta_old_geo_minus_persistence": {
+            "binary.accuracy": -0.07574257425742581,
+            "binary.precision": -0.11375244981797206,
+            "binary.recall": 0.09480249480249481,
+            "binary.f1": -0.02809776471766401,
+            "binary.f2": 0.039929507952138565,
+            "four_class.accuracy": -0.05024752475247529,
+            "four_class.macro_f1": -0.1593795766397264,
+            "q3_r2_projected": -0.01664087860473462,
+            "q3_r2_raw": -0.01664087860473462
+          }
+        }
+      }
+    }
+  }
+}

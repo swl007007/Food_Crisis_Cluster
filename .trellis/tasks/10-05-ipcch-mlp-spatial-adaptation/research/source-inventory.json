@@ -1,0 +1,230 @@
+{
+  "source_run": "p6-formal-20261004b",
+  "verification": "All 14 prepared artifacts rehashed against original manifest; other hashes captured from present source bytes. No model fits or predictions.",
+  "files": {
+    "IPCCHGeoXGBExperiment/config/experiment-contract.json": {
+      "bytes": 4194,
+      "sha256": "49a367ce6fbabb7efda3d2f86a78bac8c3f3f1e31790958d290505cd0b6ffd72"
+    },
+    "IPCCHGeoXGBExperiment/config/feature-schema.json": {
+      "bytes": 37049,
+      "sha256": "a6093121691e5dce5958f7713872561d89f9d3e19646dcce9c62ce16d62c643d"
+    },
+    "IPCCHGeoXGBExperiment/config/inputs.json": {
+      "bytes": 9128,
+      "sha256": "49826724a8812b66f1941c69cbbd15e816f9a9a43e03f01633a0a27be473d550"
+    },
+    "IPCCHGeoXGBExperiment/config/runtime-lock.json": {
+      "bytes": 875,
+      "sha256": "b700a32be856d150ab2f0d49d4b25d45a63d5ce4387ac5a3501119cda3d89b84"
+    },
+    "IPCCHGeoXGBExperiment/config/source-provenance.json": {
+      "bytes": 19718,
+      "sha256": "3a77066b5ed2e4ba99b4b23dde4a190eb485857f52871a5b16798ec8c306fabc"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/__init__.py": {
+      "bytes": 778,
+      "sha256": "5d8e32fb754ad17b7852f23512e8ba687c28284fdb9ddc0e29c1786301c004e7"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/__main__.py": {
+      "bytes": 64,
+      "sha256": "24d3d35ed571e279eb567fd37bdb14a2555b9a9002a367927dd4c3514703c1f5"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/artifacts.py": {
+      "bytes": 3134,
+      "sha256": "dc8f39108cf69f7a3d4a5ca202559b5177652e66098ad17ddb48c2e5f9d108c2"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/cli.py": {
+      "bytes": 8713,
+      "sha256": "07653d6f3f42f69346fd18ae863edd4b686c99a67a109b0a742e4bae0aeadd53"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/contract.py": {
+      "bytes": 7145,
+      "sha256": "e838ff2861569a085a034be0ff8682540b148734d9909cb1e61ded4499c656c1"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/errors.py": {
+      "bytes": 842,
+      "sha256": "23916edd77c486286d65d9c2849b36f4b71517c5728bf9c1da4879d5cef26c1e"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/features.py": {
+      "bytes": 33128,
+      "sha256": "b3fc637b871adeac732fcc285bed6f53ae329be323485e45928213c9eb8fb958"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/geography.py": {
+      "bytes": 14156,
+      "sha256": "441fecf06eaf7294280392c524316023a11a199860cfdfd8ddc6cae12c10131e"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/learnmap.py": {
+      "bytes": 15462,
+      "sha256": "651b5222c8a500e2f2d09f1ce0c725cefe54b23be9456cec2cd2ad48d5d1ba79"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/metrics.py": {
+      "bytes": 9384,
+      "sha256": "d7006599a29de17de7d37e7d23745ebacbd1725f53eb2c0822316580fac8a620"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/modelstore.py": {
+      "bytes": 14131,
+      "sha256": "4b75060335119596ccfd17a0b2155ca7339d2a5598a6d56cff8c5286aba2e671"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/predict.py": {
+      "bytes": 7861,
+      "sha256": "731f774c3f6f141b3a49f02fdee28f743558d754f8bf9a8c4187ee312a969ed5"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/preflight.py": {
+      "bytes": 11634,
+      "sha256": "bf53efc3e7f7d3ada9e8a2da5548ec6aa091231a7405506169697a4e307df149"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/prepare.py": {
+      "bytes": 9488,
+      "sha256": "1dc973c9266f154ad67da002a66153e5909b8fa451fa2353aae8ed04ac9b64f3"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/projection.py": {
+      "bytes": 3633,
+      "sha256": "59bbebf7a433f24ddca5acaeecb36036aa3717966ad6c8a3eeb7c8af07af2ab4"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/quartet.py": {
+      "bytes": 11926,
+      "sha256": "3ec3dbbf4e2aff6ccaf507b63e21ea4924895dfe344f3bde1833adaa3e4f927b"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/replay.py": {
+      "bytes": 47046,
+      "sha256": "f32d30e66c8760dfb54b9fddf6997b66280de0fd3125cdec0fd529b6abf363ec"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/report.py": {
+      "bytes": 14971,
+      "sha256": "b12abe5e3c82827d18cccfb7bbab57b0a82099608b9eba75b4e33147ad35c5c9"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/runtime.py": {
+      "bytes": 1385,
+      "sha256": "cdc4a814fd634d5d6b2278d7614591ee7f94112b49ccc6e4578cb9b7bc0a32eb"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/schedule.py": {
+      "bytes": 6353,
+      "sha256": "38a0f15a3070033239f33b013c61fdd2f04bcb6b89bb9bd4757ae2f7f6e771b1"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/stage1.py": {
+      "bytes": 17695,
+      "sha256": "d2ea5c87acb52c670ca1f2c4c6bdd927312fd6d1b14acc8ae340583445afb4cf"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/stage3.py": {
+      "bytes": 16320,
+      "sha256": "2c8eb8971145013858ed86f03f083b01c2366f2e79497032a7050abbb0fe9686"
+    },
+    "IPCCHGeoXGBExperiment/ipcch_geoxgb/targets.py": {
+      "bytes": 10227,
+      "sha256": "87bfb4e04d2af0b7a04de48df480dfa0daf13e1345309c16355f4024292ebc3b"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h01.npy": {
+      "bytes": 191615288,
+      "sha256": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h03.npy": {
+      "bytes": 191615288,
+      "sha256": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h06.npy": {
+      "bytes": 191615288,
+      "sha256": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h12.npy": {
+      "bytes": 191615288,
+      "sha256": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/coverage_2026.csv": {
+      "bytes": 523,
+      "sha256": "104f2e9a25cd622946ec693981a7843773f8481aa43e78b3de4528d6fa196b32"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/feature_order.csv": {
+      "bytes": 23704,
+      "sha256": "c0148ff83fe1f87cedc4d7f638da5429b33af1a377d2f0c69d3405537507e5fb"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/fold_calendar.csv": {
+      "bytes": 9423,
+      "sha256": "061c44f88dbc37a89bf1b2cc19a2047666663fee5aa706b0a90fbd18c06d198c"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h01.csv.gz": {
+      "bytes": 661342,
+      "sha256": "414cba066f9953e7b70e2f586450537621ea312ad80a9fbc2b84ad367f2e49cd"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h03.csv.gz": {
+      "bytes": 661568,
+      "sha256": "5e44eb8359a4910a5d9d94b80986d3a44faf123d89ebdf2b30e5389bf1267f7a"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h06.csv.gz": {
+      "bytes": 640168,
+      "sha256": "d325da25a69399b496a33b1f21f3fb2fdd24f387b3074f399e5f2836444495d6"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h12.csv.gz": {
+      "bytes": 648650,
+      "sha256": "9755df742b15d5b1556671633c2fa80908d8b9b7ffee9c9192b895aa64bba4bd"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/prepared-manifest.json": {
+      "bytes": 6906,
+      "sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/stage1_split.csv.gz": {
+      "bytes": 66643,
+      "sha256": "3e076c66c1c9ee6cc0aec0d4955db610dc35fe8b3d279bd4b86b3a88f7910928"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/target_ledger.csv.gz": {
+      "bytes": 6882306,
+      "sha256": "4eed1792a65a1da1d05220a296e242311422761177dc31a202543c76cbf81ad8"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/target_ledger_valid.csv.gz": {
+      "bytes": 2636368,
+      "sha256": "21d7701fe60fb9ed3084c34dc7852a9ce56e312c78587238179c5ea8ef63e717"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_h01.json": {
+      "bytes": 11628,
+      "sha256": "2d40675c6f27fd45d6b22ebaa8e61bfcd2d31e342b04ba7b4431053c91f36caa"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_h03.json": {
+      "bytes": 10590,
+      "sha256": "08ff0afa30a656b5a47ac9800477785d55d9e5680c87399b26d967416666b80f"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_h06.json": {
+      "bytes": 10531,
+      "sha256": "5afaa039865145fa24f80ad4fdb6df4ee8e9c39d2a343a681002f684569c3e72"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_h12.json": {
+      "bytes": 11720,
+      "sha256": "9e77b11dbb0ab4b479c6abf4396d409c01fb885a0903961930bba7c35e1dea03"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_map_h01.csv": {
+      "bytes": 38148,
+      "sha256": "77ef44da88ba551f2284f93ed780023ff86a7961818755b007beabb5f83f1b5b"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_map_h03.csv": {
+      "bytes": 36771,
+      "sha256": "16f354ff369c26637c8debf88990f57d2e8f0ebc16d26b53e3b975855f9d3051"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_map_h06.csv": {
+      "bytes": 36383,
+      "sha256": "04ffe8363e99fa88e6a559b61550b1d82f3441279b1d62c1e24adae2ab8ea7a2"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/frozen_map_h12.csv": {
+      "bytes": 37822,
+      "sha256": "f61be8bd90c9555d5815947d5ee6ee62181fcd0861e595ab4f8a5a9370ac5143"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage1/stage1-summary.json": {
+      "bytes": 72128,
+      "sha256": "e90bae9da897d65b34a59254cbf64ff66ea7b2745a55a025eea715e3c5da3488"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage3/h01/predictions.csv.gz": {
+      "bytes": 1150653,
+      "sha256": "4c91986cc5d06a397a99d0d6fc40b915517929f6ba462370f2e45552f6f028d2"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage3/h03/predictions.csv.gz": {
+      "bytes": 1173944,
+      "sha256": "7f9072d905023e08a98ef0cb8e46281799c26df7457117efa052c240fa711211"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage3/h06/predictions.csv.gz": {
+      "bytes": 1294499,
+      "sha256": "983862bb38b53f367b5fefc47979564adf0f4df4517db51a05778ae34b125e94"
+    },
+    "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/stage3/h12/predictions.csv.gz": {
+      "bytes": 1152767,
+      "sha256": "ea771dd2c02cd30eb3debc9b3e44c207ad73d0543b20bc5157e0472b305ec615"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "summary_sha256": "f49ccb3a577ed59b871a85961c200140a53160bb3397ea0bbab8cc32d6dff24d",
+  "winners": {
+    "1": "G1L2",
+    "3": "G1L2",
+    "6": "G4L2",
+    "12": "G1L2"
+  },
+  "model_store": {
+    "requests": 451,
+    "hits": 0,
+    "fits": 451,
+    "failed": 0
+  }
+}
+exit 0 wall 929s
