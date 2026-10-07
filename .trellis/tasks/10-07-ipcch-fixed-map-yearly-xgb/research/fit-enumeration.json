@@ -1,0 +1,505 @@
+{
+  "method": "No-fit stdlib enumeration from frozen keys/calendar/maps; no gain estimated.",
+  "source_run": "IPCCHGeoXGBExperiment/runs/p6-formal-20261004b",
+  "horizons": [
+    {
+      "H": 1,
+      "map_sha256": "77ef44da88ba551f2284f93ed780023ff86a7961818755b007beabb5f83f1b5b",
+      "candidate": "G1L2",
+      "origins": [
+        "2021-12",
+        "2023-01",
+        "2023-12",
+        "2024-12",
+        "2025-12"
+      ],
+      "global_quartets": 5,
+      "local_quartets": 45,
+      "scalar_fits": 200,
+      "main": {
+        "global_quartets": 4,
+        "local_quartets": 36,
+        "scalar_fits": 160
+      },
+      "unsupported_local_requests": [],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2023,
+          "anchor": "2023-02",
+          "fit_origin": "2023-01",
+          "eval_keys": 3235,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 2039,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-12"
+          ],
+          "gate_support_regions": [
+            "r0001",
+            "r10"
+          ],
+          "gate_support_current_keys": 414
+        },
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-12",
+          "eval_keys": 4295,
+          "global_fit_keys": 24516,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11"
+          ],
+          "historical_origins": [
+            "2023-01"
+          ],
+          "gate_support_regions": [
+            "r0000",
+            "r0001",
+            "r001",
+            "r10"
+          ],
+          "gate_support_current_keys": 826
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-12",
+          "eval_keys": 9792,
+          "global_fit_keys": 28811,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09",
+            "2024-10",
+            "2024-11"
+          ],
+          "historical_origins": [
+            "2023-12"
+          ],
+          "gate_support_regions": [
+            "r10",
+            "r111"
+          ],
+          "gate_support_current_keys": 2167
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-12",
+          "eval_keys": 4092,
+          "global_fit_keys": 38603,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2025-05",
+            "2025-06",
+            "2025-07",
+            "2025-08",
+            "2025-09",
+            "2025-10"
+          ],
+          "historical_origins": [
+            "2024-12"
+          ],
+          "gate_support_regions": [
+            "r0000",
+            "r0001",
+            "r001",
+            "r0111",
+            "r10",
+            "r110",
+            "r111"
+          ],
+          "gate_support_current_keys": 1808
+        }
+      ]
+    },
+    {
+      "H": 3,
+      "map_sha256": "16f354ff369c26637c8debf88990f57d2e8f0ebc16d26b53e3b975855f9d3051",
+      "candidate": "G3L2",
+      "origins": [
+        "2021-10",
+        "2023-01",
+        "2023-10",
+        "2024-10",
+        "2025-10"
+      ],
+      "global_quartets": 5,
+      "local_quartets": 35,
+      "scalar_fits": 160,
+      "main": {
+        "global_quartets": 4,
+        "local_quartets": 28,
+        "scalar_fits": 128
+      },
+      "unsupported_local_requests": [],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2023,
+          "anchor": "2023-04",
+          "fit_origin": "2023-01",
+          "eval_keys": 2832,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 1962,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-10"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r101"
+          ],
+          "gate_support_current_keys": 699
+        },
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-10",
+          "eval_keys": 4295,
+          "global_fit_keys": 24459,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2023-04",
+            "2023-05",
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09"
+          ],
+          "historical_origins": [
+            "2023-01"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 1173
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-10",
+          "eval_keys": 9792,
+          "global_fit_keys": 28735,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2024-04",
+            "2024-05",
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09"
+          ],
+          "historical_origins": [
+            "2023-10"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 2894
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-10",
+          "eval_keys": 4092,
+          "global_fit_keys": 38603,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2025-04",
+            "2025-05",
+            "2025-06",
+            "2025-07",
+            "2025-08",
+            "2025-09"
+          ],
+          "historical_origins": [
+            "2024-10"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r0111",
+            "r100",
+            "r101",
+            "r11"
+          ],
+          "gate_support_current_keys": 1809
+        }
+      ]
+    },
+    {
+      "H": 6,
+      "map_sha256": "04ffe8363e99fa88e6a559b61550b1d82f3441279b1d62c1e24adae2ab8ea7a2",
+      "candidate": "G4L2",
+      "origins": [
+        "2021-07",
+        "2022-07",
+        "2023-01",
+        "2023-07",
+        "2024-07",
+        "2025-07"
+      ],
+      "global_quartets": 6,
+      "local_quartets": 36,
+      "scalar_fits": 168,
+      "main": {
+        "global_quartets": 5,
+        "local_quartets": 30,
+        "scalar_fits": 140
+      },
+      "unsupported_local_requests": [],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2023,
+          "anchor": "2023-07",
+          "fit_origin": "2023-01",
+          "eval_keys": 2326,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 1618,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-07"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r101"
+          ],
+          "gate_support_current_keys": 489
+        },
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-07",
+          "eval_keys": 4295,
+          "global_fit_keys": 22477,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2023-01",
+            "2023-02",
+            "2023-03",
+            "2023-04",
+            "2023-05",
+            "2023-06"
+          ],
+          "historical_origins": [
+            "2022-07"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r101"
+          ],
+          "gate_support_current_keys": 835
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-07",
+          "eval_keys": 9792,
+          "global_fit_keys": 27145,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06"
+          ],
+          "historical_origins": [
+            "2023-07"
+          ],
+          "gate_support_regions": [
+            "r00"
+          ],
+          "gate_support_current_keys": 1107
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-07",
+          "eval_keys": 4092,
+          "global_fit_keys": 34003,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2025-01",
+            "2025-02",
+            "2025-03",
+            "2025-04",
+            "2025-05",
+            "2025-06"
+          ],
+          "historical_origins": [
+            "2024-07"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r01",
+            "r100",
+            "r101",
+            "r110",
+            "r111"
+          ],
+          "gate_support_current_keys": 1829
+        }
+      ]
+    },
+    {
+      "H": 12,
+      "map_sha256": "f61be8bd90c9555d5815947d5ee6ee62181fcd0861e595ab4f8a5a9370ac5143",
+      "candidate": "G2L2",
+      "origins": [
+        "2021-01",
+        "2022-01",
+        "2023-01",
+        "2024-01",
+        "2025-01"
+      ],
+      "global_quartets": 5,
+      "local_quartets": 44,
+      "scalar_fits": 196,
+      "main": {
+        "global_quartets": 4,
+        "local_quartets": 35,
+        "scalar_fits": 156
+      },
+      "unsupported_local_requests": [
+        {
+          "fit_origin": "2021-01",
+          "region": "r0011",
+          "keys_areas_months": [
+            443,
+            164,
+            27
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-01",
+          "eval_keys": 4295,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-01"
+          ],
+          "gate_support_regions": [
+            "r0001",
+            "r101"
+          ],
+          "gate_support_current_keys": 236
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-01",
+          "eval_keys": 9792,
+          "global_fit_keys": 25959,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11",
+            "2023-12"
+          ],
+          "historical_origins": [
+            "2022-01"
+          ],
+          "gate_support_regions": [
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 1773
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-01",
+          "eval_keys": 4092,
+          "global_fit_keys": 30783,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09",
+            "2024-10",
+            "2024-11"
+          ],
+          "historical_origins": [
+            "2023-01"
+          ],
+          "gate_support_regions": [
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 901
+        }
+      ]
+    }
+  ],
+  "total_global_quartets": 21,
+  "total_local_quartets": 160,
+  "total_scalar_fits": 724
+}

@@ -1,0 +1,7 @@
+{"file": ".trellis/tasks/10-07-ipcch-fixed-map-yearly-xgb/prd.md", "reason": "Approved requirements and scientific scope; retain the P0 checkpoint before formal fitting."}
+{"file": ".trellis/tasks/10-07-ipcch-fixed-map-yearly-xgb/design.md", "reason": "Annual calendar, weights, gate, cohort, fitting identity and evaluation contract."}
+{"file": ".trellis/tasks/10-07-ipcch-fixed-map-yearly-xgb/implement.md", "reason": "Ordered implementation, P0 checkpoint, bounded run and replay delivery."}
+{"file": ".trellis/tasks/10-07-ipcch-fixed-map-yearly-xgb/research/findings.md", "reason": "Source reuse constraints, computation and runtime/lifecycle findings."}
+{"file": ".trellis/tasks/10-07-ipcch-fixed-map-yearly-xgb/research/fit-enumeration.json", "reason": "No-fit reference: 724 scalar fits, block origins, support and cohort counts."}
+{"file": "docs/notes/2026-10-07_note_IPCCH两套pooled_XGB基线差异.md", "reason": "Explains protocol transfer boundaries and why cross-repository scores are not feature-only comparisons."}
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Isolation, immutable runs, keyed provenance and external model storage only; task design overrides unrelated ETH/FEWS horizons, features, SMOTE and model recipes."}
