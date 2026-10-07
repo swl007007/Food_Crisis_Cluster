@@ -1,0 +1,43 @@
+{
+  "lock_version": "ipcch-yearly-xgb-runtime-v1",
+  "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "packages": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "xgboost": "3.0.0",
+    "geopandas": "1.0.1",
+    "pyogrio": "0.11.0",
+    "shapely": "2.1.0",
+    "pyproj": "3.7.1",
+    "pytest": "9.1.0"
+  },
+  "matches_lock": true,
+  "mismatches": [],
+  "fit_source_sha256": "7783f950a9d1f3af777ada5ead2259a2f16cd977056a6859490aea70665283cb",
+  "source_inventory": {
+    "ipcch_yearly_xgb/__init__.py": "62374596558946b6848ec05ca480bab5079a2ea99ff7aacc55c8e28fec788ac5",
+    "ipcch_yearly_xgb/__main__.py": "02a4089bae850f91ad6d9681c0441fb515b6eb072601e0fc70e9a0135762c03a",
+    "ipcch_yearly_xgb/artifacts.py": "ff362d983272a89c62fd937f3724e0a771b4f1214aa8bc471c34b543504685c1",
+    "ipcch_yearly_xgb/cli.py": "d6b18c471193583a9b02dd7bd708d98040842abb7bf90b01583b5840c005fcf4",
+    "ipcch_yearly_xgb/contract.py": "25ed9dfd00d3044dbec9ee89c21400555c94bdb5a57a910ddcaa501c47a966aa",
+    "ipcch_yearly_xgb/engine.py": "7f2731dc4f76afb25d3a7c1f1a45702c1423716e82010faa2130ed41126bdd48",
+    "ipcch_yearly_xgb/errors.py": "6867fdba02e41b077168a489654efc07aab4c3c15a244874032cf7c52cabf4c0",
+    "ipcch_yearly_xgb/metrics.py": "53c0289a3e7427851aa85773fdd081ee7b2d2e09855aae75839a2653cc1cf305",
+    "ipcch_yearly_xgb/modelstore.py": "1d07915b9b30ee529431d0bde2c9f4af4dc6cec72940b7167949110b8b4f876c",
+    "ipcch_yearly_xgb/planning.py": "83201f5c803f5ba6accb10bf53348e75946b615a3753967b33bbab706cb373b5",
+    "ipcch_yearly_xgb/projection.py": "66a0b8cfbce6b3c860759712559f8adfd25fc4268dfecf5f6c8d9aa9bad57dce",
+    "ipcch_yearly_xgb/quartet.py": "1051746b0dd5d9cca6381ab08598abb55c9d4af4270fdb67a19a9996afcaab02",
+    "ipcch_yearly_xgb/replay.py": "66075b3fb6e1c3a0927deb3458c1a584bd3c39e37017f960f644f91d95e91388",
+    "ipcch_yearly_xgb/report.py": "34ef6a36df37711c2296cd3f1a530f19ebfbbad0dc39dbf4a61a414920a11815",
+    "ipcch_yearly_xgb/run.py": "89716e7e17f6f3b0656c46f096a9490911a46f096ac8628726e45df872300a6c",
+    "ipcch_yearly_xgb/runtime.py": "0e6cacb440e5c4bf811fdfa3778371f6c892002abf84ace9e293a4e6de1911ca",
+    "ipcch_yearly_xgb/schedule.py": "10c6dd580eb9c5bdecca31d42912dbcbb0435da260a197fe8acc04a60ae71bea",
+    "ipcch_yearly_xgb/sources.py": "24edb8302d5491211b4b7c6e35b8f90fb72e90e33536309ff21749c432ac3ecb",
+    "ipcch_yearly_xgb/timing.py": "3fd15bb5cee47306f907f6af941099a97c779fc0948129788e0c522bdbe4adbd",
+    "config/inputs.json": "cd050e71a0445d4c6164d19ec9e0be51ce4bd4d71f10e2d1e01bad16d6ab3f3d",
+    "config/runtime-lock.json": "e7ddc307cf33c965e52469de340733da113bc9476015acc3126a501af9ab7350",
+    "config/yearly-contract.json": "8170238da5512870362d8acac6b60ff6487e67aefc29853bdd1e9524e280242d"
+  }
+}

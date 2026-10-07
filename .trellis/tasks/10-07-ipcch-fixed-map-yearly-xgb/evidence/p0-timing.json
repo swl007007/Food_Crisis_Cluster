@@ -1,0 +1,230 @@
+{
+  "runtime": {
+    "lock_version": "ipcch-yearly-xgb-runtime-v1",
+    "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "xgboost": "3.0.0",
+      "geopandas": "1.0.1",
+      "pyogrio": "0.11.0",
+      "shapely": "2.1.0",
+      "pyproj": "3.7.1",
+      "pytest": "9.1.0"
+    },
+    "matches_lock": true,
+    "mismatches": []
+  },
+  "cases": [
+    {
+      "H": "1",
+      "role": "global",
+      "recipe": "G1",
+      "n": 15438,
+      "fit_seconds": 9.105700999964029,
+      "predict_2000_seconds": 0.0835973999928683,
+      "bytes": 830436
+    },
+    {
+      "H": "1",
+      "role": "local",
+      "recipe": "L2",
+      "n": 978,
+      "fit_seconds": 0.8425405999878421,
+      "bytes": 941476
+    },
+    {
+      "H": "1",
+      "role": "local",
+      "recipe": "L2",
+      "n": 4862,
+      "fit_seconds": 1.529262199997902,
+      "bytes": 941476
+    },
+    {
+      "H": "1",
+      "role": "global",
+      "recipe": "G1",
+      "n": 38603,
+      "fit_seconds": 18.37344810005743,
+      "predict_2000_seconds": 0.11004840000532568,
+      "bytes": 862472
+    },
+    {
+      "H": "1",
+      "role": "local",
+      "recipe": "L2",
+      "n": 978,
+      "fit_seconds": 0.9661724999314174,
+      "bytes": 973512
+    },
+    {
+      "H": "1",
+      "role": "local",
+      "recipe": "L2",
+      "n": 4862,
+      "fit_seconds": 1.6032669000560418,
+      "bytes": 973512
+    },
+    {
+      "H": "3",
+      "role": "global",
+      "recipe": "G3",
+      "n": 15282,
+      "fit_seconds": 12.800678899977356,
+      "predict_2000_seconds": 0.0992662999778986,
+      "bytes": 986301
+    },
+    {
+      "H": "3",
+      "role": "local",
+      "recipe": "L2",
+      "n": 726,
+      "fit_seconds": 0.7991542998934165,
+      "bytes": 1097341
+    },
+    {
+      "H": "3",
+      "role": "local",
+      "recipe": "L2",
+      "n": 6193,
+      "fit_seconds": 1.6142340999795124,
+      "bytes": 1097341
+    },
+    {
+      "H": "3",
+      "role": "global",
+      "recipe": "G3",
+      "n": 38603,
+      "fit_seconds": 21.048697399906814,
+      "predict_2000_seconds": 0.0868672999786213,
+      "bytes": 1061749
+    },
+    {
+      "H": "3",
+      "role": "local",
+      "recipe": "L2",
+      "n": 726,
+      "fit_seconds": 0.9053317999932915,
+      "bytes": 1172789
+    },
+    {
+      "H": "3",
+      "role": "local",
+      "recipe": "L2",
+      "n": 6193,
+      "fit_seconds": 1.7554779999190941,
+      "bytes": 1172789
+    },
+    {
+      "H": "6",
+      "role": "global",
+      "recipe": "G4",
+      "n": 13904,
+      "fit_seconds": 21.413579300045967,
+      "predict_2000_seconds": 0.12024909991305321,
+      "bytes": 1894808
+    },
+    {
+      "H": "6",
+      "role": "local",
+      "recipe": "L2",
+      "n": 653,
+      "fit_seconds": 1.2043380999239162,
+      "bytes": 2005848
+    },
+    {
+      "H": "6",
+      "role": "local",
+      "recipe": "L2",
+      "n": 11473,
+      "fit_seconds": 2.614159799995832,
+      "bytes": 2005848
+    },
+    {
+      "H": "6",
+      "role": "global",
+      "recipe": "G4",
+      "n": 34003,
+      "fit_seconds": 33.63322449999396,
+      "predict_2000_seconds": 0.1079650999745354,
+      "bytes": 1975498
+    },
+    {
+      "H": "6",
+      "role": "local",
+      "recipe": "L2",
+      "n": 653,
+      "fit_seconds": 1.159394899965264,
+      "bytes": 2086538
+    },
+    {
+      "H": "6",
+      "role": "local",
+      "recipe": "L2",
+      "n": 11473,
+      "fit_seconds": 2.539625099976547,
+      "bytes": 2086538
+    },
+    {
+      "H": "12",
+      "role": "global",
+      "recipe": "G2",
+      "n": 13189,
+      "fit_seconds": 15.338409299962223,
+      "predict_2000_seconds": 0.09768970008008182,
+      "bytes": 1611065
+    },
+    {
+      "H": "12",
+      "role": "local",
+      "recipe": "L2",
+      "n": 592,
+      "fit_seconds": 0.9851703000022098,
+      "bytes": 1722105
+    },
+    {
+      "H": "12",
+      "role": "local",
+      "recipe": "L2",
+      "n": 6162,
+      "fit_seconds": 1.7721364999888465,
+      "bytes": 1722105
+    },
+    {
+      "H": "12",
+      "role": "global",
+      "recipe": "G2",
+      "n": 30783,
+      "fit_seconds": 23.713921000016853,
+      "predict_2000_seconds": 0.10109020001254976,
+      "bytes": 1630125
+    },
+    {
+      "H": "12",
+      "role": "local",
+      "recipe": "L2",
+      "n": 592,
+      "fit_seconds": 0.9577672999585047,
+      "bytes": 1741165
+    },
+    {
+      "H": "12",
+      "role": "local",
+      "recipe": "L2",
+      "n": 6162,
+      "fit_seconds": 1.9445283999666572,
+      "bytes": 1741165
+    }
+  ],
+  "estimate_seconds": {
+    "1": 119.1370546797956,
+    "3": 125.06828464999106,
+    "6": 215.89893146633273,
+    "12": 149.7950885650632,
+    "total_fit": 609.8993593611826
+  },
+  "note": "synthetic data only"
+}

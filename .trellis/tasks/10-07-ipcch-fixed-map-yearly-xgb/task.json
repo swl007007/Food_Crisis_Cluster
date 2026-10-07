@@ -3,7 +3,7 @@
   "name": "ipcch-fixed-map-yearly-xgb",
   "title": "IPCCH fixed-map yearly pooled regional XGB",
   "description": "Design and evaluate frozen IPCCH partitions under an explicitly chosen yearly pooled XGB protocol; grill scope, freeze spec, then execute.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
