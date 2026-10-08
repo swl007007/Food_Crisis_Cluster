@@ -59,9 +59,9 @@ def make_fixture(root: Path) -> None:
         d = root / f"stage3/h{int(h):02d}"
         d.mkdir(parents=True)
         with gzip.open(d / "predictions.csv.gz", "wt") as f:
-            f.write("admin_code,target_ord,target_month,period,persistence_available\n")
+            f.write("admin_code,target_ord,target_month,period,persistence_available,phase_truth,q3_truth\n")
             for r in rows:
-                f.write(",".join(map(str, r)) + "\n")
+                f.write(",".join(map(str, r)) + f",{2 + r[0] % 3},{(r[0] % 7) / 10}\n")
         horizons[h] = {
             "main": {"coverage": {"E_all_keys": 6, "countries": 2}, "routes": {"map": {"terminal_regions": 2}},
                      "E_all": {"n": 6, "status": "scored", "geo": panel(6, na="no positive predictions"),

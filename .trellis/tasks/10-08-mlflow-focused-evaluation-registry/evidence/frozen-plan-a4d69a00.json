@@ -1,0 +1,1003 @@
+{
+ "counts": {
+  "dataset_descriptors": 57,
+  "dataset_names": 46,
+  "finite": 4424,
+  "metric_names": [
+   "binary.accuracy",
+   "binary.f1",
+   "binary.f2",
+   "binary.precision",
+   "binary.recall",
+   "four_class.accuracy",
+   "four_class.macro_f1",
+   "n",
+   "q3_r2_projected"
+  ],
+  "model_versions": 100,
+  "models_by_kind": {
+   "diagnostic_local": 16,
+   "fresh_trained": 76,
+   "reused_comparator": 8
+  },
+  "na": 4,
+  "registered_models": 68,
+  "rows": 492,
+  "rows_by_family": {
+   "climate_perturbation": 32,
+   "history_window_sensitivity": 56,
+   "mlp_fixed_map": 248,
+   "p6_geoxgb": 32,
+   "split2024_sensitivity": 28,
+   "yearly_geoxgb": 96
+  }
+ },
+ "datasets": [
+  {
+   "digest": "104602d94705f3e555b293d191e27963",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "104602d94705f3e555b293d191e279633d6f01ebd3b1eea50deda0aa6878bf18",
+   "months": [
+    "2023-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.E_all",
+   "num_rows": 17322,
+   "rows_using": 15
+  },
+  {
+   "digest": "d25941cbc5c0d39c66ec411b527fe223",
+   "families": [
+    "split2024_sensitivity"
+   ],
+   "full_sha256": "d25941cbc5c0d39c66ec411b527fe22334c4a51ec50f35493d7daf0caab328d3",
+   "months": [
+    "2025-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.E_all",
+   "num_rows": 7820,
+   "rows_using": 2
+  },
+  {
+   "digest": "5b0443bfcaf9649b3bf7cef423630eda",
+   "families": [
+    "split2024_sensitivity"
+   ],
+   "full_sha256": "5b0443bfcaf9649b3bf7cef423630eda130d5fe576bc248319979c535aca3f1f",
+   "months": [
+    "2025-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.E_persist",
+   "num_rows": 7682,
+   "rows_using": 2
+  },
+  {
+   "digest": "c4b5e266e4418df73793135ef1e25d15",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "c4b5e266e4418df73793135ef1e25d150dbeced604c704b1b69a714a6a050fcf",
+   "months": [
+    "2023-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.E_persist",
+   "num_rows": 16002,
+   "rows_using": 17
+  },
+  {
+   "digest": "7ebd25a320a2cc048774153d45426181",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "7ebd25a320a2cc048774153d45426181a8baddd983ce8b6de685583a6590158b",
+   "months": [
+    "2023-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.local_eligible",
+   "num_rows": 9943,
+   "rows_using": 3
+  },
+  {
+   "digest": "fb7c1a0eda38e3dd666a7d3b078430c2",
+   "families": [
+    "mlp_fixed_map"
+   ],
+   "full_sha256": "fb7c1a0eda38e3dd666a7d3b078430c2779d1a7c33437276b54e0f9ceab10589",
+   "months": [
+    "2023-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.local_eligible",
+   "num_rows": 9266,
+   "rows_using": 12
+  },
+  {
+   "digest": "4af7e5ca3c886850f1adea8a4a2e3a9a",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "4af7e5ca3c886850f1adea8a4a2e3a9a88989b327d3770dec664e1b5b4a1249c",
+   "months": [
+    "2023-02",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h1.main.local_persist_matched",
+   "num_rows": 9943,
+   "rows_using": 4
+  },
+  {
+   "digest": "fa2dff9550a5fe404c7e0d37d78140ba",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "fa2dff9550a5fe404c7e0d37d78140bafb21374a37696e48e9a95a0b5fb88b30",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h1.selected_dates.all",
+   "num_rows": 4988,
+   "rows_using": 4
+  },
+  {
+   "digest": "edea1e923ea002853bc48243e8ec8383",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "edea1e923ea002853bc48243e8ec83832f67f62b786862e672b84398577d9264",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h1.selected_dates.common_local_support",
+   "num_rows": 3789,
+   "rows_using": 4
+  },
+  {
+   "digest": "0b26cb97cb54082ebf4c928ee9243c01",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "0b26cb97cb54082ebf4c928ee9243c013f4b302fad073c68c3216d6544d5e73e",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h1.selected_dates.mapped",
+   "num_rows": 4075,
+   "rows_using": 4
+  },
+  {
+   "digest": "6be898023fecbf5b88ea2c32944ee95a",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "6be898023fecbf5b88ea2c32944ee95aa7addf888ed1ea2ee039a233a0b2d733",
+   "months": [
+    "2024-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h1.selected_dates.new_local_support",
+   "num_rows": 286,
+   "rows_using": 4
+  },
+  {
+   "digest": "1f07a8fca2b7f61e00dda812d96ae3bb",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "1f07a8fca2b7f61e00dda812d96ae3bbe28afd5d95cd609c67dfdc5ab16f29c3",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h1.supplementary.E_all",
+   "num_rows": 4092,
+   "rows_using": 17
+  },
+  {
+   "digest": "bda6866d7ea3a4a1f28b406a43ec013b",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "bda6866d7ea3a4a1f28b406a43ec013bc82e18b54a087e1c18825d89f7dc4905",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h1.supplementary.E_persist",
+   "num_rows": 4089,
+   "rows_using": 19
+  },
+  {
+   "digest": "16c610c20c08d858b82134c7989eff34",
+   "families": [
+    "mlp_fixed_map",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "16c610c20c08d858b82134c7989eff348bb8e91d21c7407fdc1cd8df3d26e29d",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h1.supplementary.local_eligible",
+   "num_rows": 1829,
+   "rows_using": 15
+  },
+  {
+   "digest": "1350cba31f2a888b3794b6975de4ee88",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "1350cba31f2a888b3794b6975de4ee88565165f60c9e914f59b61e987a8a1d2a",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h1.supplementary.local_persist_matched",
+   "num_rows": 1829,
+   "rows_using": 4
+  },
+  {
+   "digest": "616b1735359b11400bc47c2c8b47a797",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "616b1735359b11400bc47c2c8b47a7975539b6700a70bfc2ddfe5dcf58f8c8d4",
+   "months": [
+    "2024-01",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h12.main.E_all",
+   "num_rows": 14087,
+   "rows_using": 15
+  },
+  {
+   "digest": "0b243bdd09f022e28437c2eace413bbf",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "0b243bdd09f022e28437c2eace413bbfb0b8250a9403cd84ed7698414ba43b1c",
+   "months": [
+    "2024-01",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h12.main.E_persist",
+   "num_rows": 12404,
+   "rows_using": 17
+  },
+  {
+   "digest": "0f76355f17ddc4d5d80674ace7590cf7",
+   "families": [
+    "mlp_fixed_map"
+   ],
+   "full_sha256": "0f76355f17ddc4d5d80674ace7590cf7fc95e97e4202962ff4b52921cf0b4bd2",
+   "months": [
+    "2024-01",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h12.main.local_eligible",
+   "num_rows": 7784,
+   "rows_using": 12
+  },
+  {
+   "digest": "ccf86c374209cb25e93eb48bed8bbfb8",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "ccf86c374209cb25e93eb48bed8bbfb85f5ac332a922ef2f1c53d312278949e5",
+   "months": [
+    "2024-01",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h12.main.local_eligible",
+   "num_rows": 7904,
+   "rows_using": 3
+  },
+  {
+   "digest": "bf104fc9b97c96b5eaa2463a6f5660aa",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "bf104fc9b97c96b5eaa2463a6f5660aac3d008232cc4438d7465f2bd3bbd1bc4",
+   "months": [
+    "2024-01",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h12.main.local_persist_matched",
+   "num_rows": 7904,
+   "rows_using": 4
+  },
+  {
+   "digest": "eb0bc2a936300ce4aa125ab92b3fd95f",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "eb0bc2a936300ce4aa125ab92b3fd95f5bec2c60524477b3be24ad139ae8dae2",
+   "months": [
+    "2024-09",
+    "2025-01"
+   ],
+   "name": "ipcch-eval.h12.selected_dates.all",
+   "num_rows": 3480,
+   "rows_using": 4
+  },
+  {
+   "digest": "f7995264597bd44960d0b17e53cf52bb",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "f7995264597bd44960d0b17e53cf52bb3d25417f0ac6dab68fe2857af0438684",
+   "months": [
+    "2024-09",
+    "2025-01"
+   ],
+   "name": "ipcch-eval.h12.selected_dates.common_local_support",
+   "num_rows": 2704,
+   "rows_using": 4
+  },
+  {
+   "digest": "525e11f24f722e10bd4872d519b0ed52",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "525e11f24f722e10bd4872d519b0ed5240f1cabb1d622cf2261a0baf47cc6c5c",
+   "months": [
+    "2024-09",
+    "2025-01"
+   ],
+   "name": "ipcch-eval.h12.selected_dates.mapped",
+   "num_rows": 2704,
+   "rows_using": 4
+  },
+  {
+   "digest": "f9f803b3a3fc0e3eefda7298283767ec",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "f9f803b3a3fc0e3eefda7298283767ec4d50323b60b120990fdd616d7edc12bb",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h12.supplementary.E_all",
+   "num_rows": 4092,
+   "rows_using": 17
+  },
+  {
+   "digest": "cbd1f31df6494bdafe47d00132167865",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "cbd1f31df6494bdafe47d00132167865adb8a69adc06b33b9f2db20fb61457c2",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h12.supplementary.E_persist",
+   "num_rows": 4040,
+   "rows_using": 19
+  },
+  {
+   "digest": "05540fcc54a0b2f429ba26a02026b266",
+   "families": [
+    "mlp_fixed_map"
+   ],
+   "full_sha256": "05540fcc54a0b2f429ba26a02026b266c897c37961ece92d02622fa4324e5ab5",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h12.supplementary.local_eligible",
+   "num_rows": 1800,
+   "rows_using": 12
+  },
+  {
+   "digest": "b3b4b5cc6b0094cbd21aea0c585d5fa9",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "b3b4b5cc6b0094cbd21aea0c585d5fa9bf93afa32bc6c31476c19e8b1d81b6c3",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h12.supplementary.local_eligible",
+   "num_rows": 1829,
+   "rows_using": 3
+  },
+  {
+   "digest": "5bb5158a08992b095d76b555cc307133",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "5bb5158a08992b095d76b555cc307133c797e30f3684b43602ac63cb69e5ca9a",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h12.supplementary.local_persist_matched",
+   "num_rows": 1829,
+   "rows_using": 4
+  },
+  {
+   "digest": "74e49a87661e586caaf8b89dea181088",
+   "families": [
+    "split2024_sensitivity"
+   ],
+   "full_sha256": "74e49a87661e586caaf8b89dea181088ca367112e16e30248bf44baf7b325c5c",
+   "months": [
+    "2025-04",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h3.main.E_all",
+   "num_rows": 7371,
+   "rows_using": 2
+  },
+  {
+   "digest": "f26710452e6d9fc97a416c0b77c78ac0",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "f26710452e6d9fc97a416c0b77c78ac06f5f77b0530a76f0dabfd4804529ce34",
+   "months": [
+    "2023-04",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h3.main.E_all",
+   "num_rows": 16919,
+   "rows_using": 15
+  },
+  {
+   "digest": "922b7b506021873ec17fd5ffa75e0a9e",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "922b7b506021873ec17fd5ffa75e0a9e415ae6b3d92231dba5d12e4a10c5b4db",
+   "months": [
+    "2023-04",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h3.main.E_persist",
+   "num_rows": 15907,
+   "rows_using": 17
+  },
+  {
+   "digest": "e3539c6d524b0886b0c30c42c13b2973",
+   "families": [
+    "split2024_sensitivity"
+   ],
+   "full_sha256": "e3539c6d524b0886b0c30c42c13b29733618c281de3b4317d39d53f73dd0a021",
+   "months": [
+    "2025-04",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h3.main.E_persist",
+   "num_rows": 7242,
+   "rows_using": 2
+  },
+  {
+   "digest": "ee58bc39220e6f15f3d70d4072745c8b",
+   "families": [
+    "mlp_fixed_map",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "ee58bc39220e6f15f3d70d4072745c8b71ff9ca848c1224a2607b1f1f7105127",
+   "months": [
+    "2023-04",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h3.main.local_eligible",
+   "num_rows": 9866,
+   "rows_using": 15
+  },
+  {
+   "digest": "7755a5f307f28b5ffa34cc9cb7b3788d",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "7755a5f307f28b5ffa34cc9cb7b3788d4471cfcc9c73d1aedd98a55d44f4985b",
+   "months": [
+    "2023-04",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h3.main.local_persist_matched",
+   "num_rows": 9866,
+   "rows_using": 4
+  },
+  {
+   "digest": "646bacf75997abf0e94ed68db917eada",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "646bacf75997abf0e94ed68db917eada125a0b7bcc23fac6e525c4c6dcc85a21",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h3.selected_dates.all",
+   "num_rows": 4988,
+   "rows_using": 4
+  },
+  {
+   "digest": "68f643bd69672841123f3fdc8b446308",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "68f643bd69672841123f3fdc8b446308df664fc1a801af4d7c3097d88f725dae",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h3.selected_dates.common_local_support",
+   "num_rows": 4075,
+   "rows_using": 4
+  },
+  {
+   "digest": "4d80af075d4d647ff8762c10bfe6657f",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "4d80af075d4d647ff8762c10bfe6657f5b110d9be59e5eea27c252289aec63f3",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h3.selected_dates.mapped",
+   "num_rows": 4075,
+   "rows_using": 4
+  },
+  {
+   "digest": "27e0e1ced722b4f817ef17058dcea8f3",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "27e0e1ced722b4f817ef17058dcea8f376af84a1424c1a9fec9a2b3652fbfe05",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h3.supplementary.E_all",
+   "num_rows": 4092,
+   "rows_using": 17
+  },
+  {
+   "digest": "871021dc762550a9ed3533fc9e3f1d8f",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "871021dc762550a9ed3533fc9e3f1d8f54c710a05866e4c7354a021391b33c0e",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h3.supplementary.E_persist",
+   "num_rows": 4089,
+   "rows_using": 19
+  },
+  {
+   "digest": "e1f1247199b0f9987f929cecd95b2f5b",
+   "families": [
+    "mlp_fixed_map",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "e1f1247199b0f9987f929cecd95b2f5be0b6150d1358a655e02828749227c733",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h3.supplementary.local_eligible",
+   "num_rows": 1829,
+   "rows_using": 15
+  },
+  {
+   "digest": "c8a32f1003a01105bb2c7ba1e48e58d5",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "c8a32f1003a01105bb2c7ba1e48e58d52d41d00d23b365ff652b1b1b6339ddb9",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h3.supplementary.local_persist_matched",
+   "num_rows": 1829,
+   "rows_using": 4
+  },
+  {
+   "digest": "6a3acad20a7541c448d7b197fe47d15e",
+   "families": [
+    "split2024_sensitivity"
+   ],
+   "full_sha256": "6a3acad20a7541c448d7b197fe47d15e30150698375b3c0d9ddd907968bfd82f",
+   "months": [
+    "2025-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.E_all",
+   "num_rows": 4860,
+   "rows_using": 2
+  },
+  {
+   "digest": "bc5b2ac07f23218ef367e78df6612613",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "bc5b2ac07f23218ef367e78df66126130f64b63bde22bfe1040e157a1e06c610",
+   "months": [
+    "2023-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.E_all",
+   "num_rows": 16413,
+   "rows_using": 15
+  },
+  {
+   "digest": "4727fc3a801d6ab87ac214c762f170e4",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "4727fc3a801d6ab87ac214c762f170e4a5cc15ff1da42ea2b273a7c8baef99a7",
+   "months": [
+    "2023-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.E_persist",
+   "num_rows": 14960,
+   "rows_using": 17
+  },
+  {
+   "digest": "9beb70b5e80a9011ef916de79c377faf",
+   "families": [
+    "split2024_sensitivity"
+   ],
+   "full_sha256": "9beb70b5e80a9011ef916de79c377faf2364367ce8b617214e053510692b850c",
+   "months": [
+    "2025-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.E_persist",
+   "num_rows": 4771,
+   "rows_using": 2
+  },
+  {
+   "digest": "015595d698c008f43e7dd6d83b1fc7b0",
+   "families": [
+    "mlp_fixed_map"
+   ],
+   "full_sha256": "015595d698c008f43e7dd6d83b1fc7b02b36d697802fe300080daefe01833d56",
+   "months": [
+    "2023-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.local_eligible",
+   "num_rows": 9006,
+   "rows_using": 12
+  },
+  {
+   "digest": "859b91dfc71b93932e4859b413f5da3e",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "859b91dfc71b93932e4859b413f5da3e97352230a24491e697b463b8a66d58e8",
+   "months": [
+    "2023-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.local_eligible",
+   "num_rows": 9522,
+   "rows_using": 3
+  },
+  {
+   "digest": "790f987e5fe255be9e46d8852e7b86bc",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "790f987e5fe255be9e46d8852e7b86bcc2edb661f131685f9c59818167c5fe31",
+   "months": [
+    "2023-07",
+    "2025-10"
+   ],
+   "name": "ipcch-eval.h6.main.local_persist_matched",
+   "num_rows": 9522,
+   "rows_using": 4
+  },
+  {
+   "digest": "2f64769877e98b082a32f7ebeec88caa",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "2f64769877e98b082a32f7ebeec88caa0590a7ead384c13cfab4f7239e3da7a0",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h6.selected_dates.all",
+   "num_rows": 4988,
+   "rows_using": 4
+  },
+  {
+   "digest": "3f2a178508ce541adf70cd4eaff621b2",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "3f2a178508ce541adf70cd4eaff621b2e2713cf1ed10e26afce5eaa605f932dd",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h6.selected_dates.common_local_support",
+   "num_rows": 3832,
+   "rows_using": 4
+  },
+  {
+   "digest": "ccb8862067af548d42058d6e520e492f",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "ccb8862067af548d42058d6e520e492f81b23048f0a73c49eb22af0b6ec3230d",
+   "months": [
+    "2023-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h6.selected_dates.mapped",
+   "num_rows": 4075,
+   "rows_using": 4
+  },
+  {
+   "digest": "c3a8ffa661fc9ec39f53616c76f85f5f",
+   "families": [
+    "history_window_sensitivity"
+   ],
+   "full_sha256": "c3a8ffa661fc9ec39f53616c76f85f5fcbbb8ea1aee3f4033f12987d09968e42",
+   "months": [
+    "2024-09",
+    "2025-09"
+   ],
+   "name": "ipcch-eval.h6.selected_dates.new_local_support",
+   "num_rows": 243,
+   "rows_using": 4
+  },
+  {
+   "digest": "c623ab64b03ad9293975fd8ce9a66bce",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "c623ab64b03ad9293975fd8ce9a66bced674712cb053d53d3ea044a523df473e",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h6.supplementary.E_all",
+   "num_rows": 4092,
+   "rows_using": 17
+  },
+  {
+   "digest": "b4ab84cb423bbba0ad1f2f0f3548d745",
+   "families": [
+    "climate_perturbation",
+    "mlp_fixed_map",
+    "p6_geoxgb",
+    "split2024_sensitivity",
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "b4ab84cb423bbba0ad1f2f0f3548d7454c875f32447581f8bff4e60ee8368f9b",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h6.supplementary.E_persist",
+   "num_rows": 4089,
+   "rows_using": 19
+  },
+  {
+   "digest": "6631cd2ac862c0f997b94301b2ea8c1f",
+   "families": [
+    "mlp_fixed_map"
+   ],
+   "full_sha256": "6631cd2ac862c0f997b94301b2ea8c1fafef9b994ef9fce1ece3b882c9b0ccb3",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h6.supplementary.local_eligible",
+   "num_rows": 1751,
+   "rows_using": 12
+  },
+  {
+   "digest": "d5682dacc717e0e29e6d75519b405335",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "d5682dacc717e0e29e6d75519b4053358374ec729a361dac5cdda6c3cd4a0512",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h6.supplementary.local_eligible",
+   "num_rows": 1829,
+   "rows_using": 3
+  },
+  {
+   "digest": "34e28894d8b8bc9aa66059779a56b343",
+   "families": [
+    "yearly_geoxgb"
+   ],
+   "full_sha256": "34e28894d8b8bc9aa66059779a56b343b60c10b33ad35ff63edca2a8527a7e42",
+   "months": [
+    "2026-01",
+    "2026-04"
+   ],
+   "name": "ipcch-eval.h6.supplementary.local_persist_matched",
+   "num_rows": 1829,
+   "rows_using": 4
+  }
+ ],
+ "na": [
+  {
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/base_global/seed42#selected_dates.new_local_support",
+   "na": {
+    "four_class.macro_f1": {
+     "reason": "class absent from truth and prediction: ['1']",
+     "source_path": "summary.aggregates[H=6,cohort=new_local_support].panels.base_global.four_class.macro_f1"
+    }
+   }
+  },
+  {
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/base_local/seed42#selected_dates.new_local_support",
+   "na": {
+    "four_class.macro_f1": {
+     "reason": "class absent from truth and prediction: ['1']",
+     "source_path": "summary.aggregates[H=6,cohort=new_local_support].panels.base_local.four_class.macro_f1"
+    }
+   }
+  },
+  {
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/exp_global/seed42#selected_dates.new_local_support",
+   "na": {
+    "four_class.macro_f1": {
+     "reason": "class absent from truth and prediction: ['1']",
+     "source_path": "summary.aggregates[H=6,cohort=new_local_support].panels.exp_global.four_class.macro_f1"
+    }
+   }
+  },
+  {
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/exp_local/seed42#selected_dates.new_local_support",
+   "na": {
+    "four_class.macro_f1": {
+     "reason": "class absent from truth and prediction: ['1']",
+     "source_path": "summary.aggregates[H=6,cohort=new_local_support].panels.exp_local.four_class.macro_f1"
+    }
+   }
+  }
+ ],
+ "plan_fingerprint": "a4d69a0082a2ef848d0085d335b2d1ae35e61ae89430aee142f904a081e75fa3",
+ "registered_models": [
+  "ipcch.climate_perturbation.h1.geo",
+  "ipcch.climate_perturbation.h1.pool",
+  "ipcch.climate_perturbation.h12.geo",
+  "ipcch.climate_perturbation.h12.pool",
+  "ipcch.climate_perturbation.h3.geo",
+  "ipcch.climate_perturbation.h3.pool",
+  "ipcch.climate_perturbation.h6.geo",
+  "ipcch.climate_perturbation.h6.pool",
+  "ipcch.history_window_sensitivity.h1.base_global",
+  "ipcch.history_window_sensitivity.h1.base_local",
+  "ipcch.history_window_sensitivity.h1.exp_global",
+  "ipcch.history_window_sensitivity.h1.exp_local",
+  "ipcch.history_window_sensitivity.h12.base_global",
+  "ipcch.history_window_sensitivity.h12.base_local",
+  "ipcch.history_window_sensitivity.h12.exp_global",
+  "ipcch.history_window_sensitivity.h12.exp_local",
+  "ipcch.history_window_sensitivity.h3.base_global",
+  "ipcch.history_window_sensitivity.h3.base_local",
+  "ipcch.history_window_sensitivity.h3.exp_global",
+  "ipcch.history_window_sensitivity.h3.exp_local",
+  "ipcch.history_window_sensitivity.h6.base_global",
+  "ipcch.history_window_sensitivity.h6.base_local",
+  "ipcch.history_window_sensitivity.h6.exp_global",
+  "ipcch.history_window_sensitivity.h6.exp_local",
+  "ipcch.mlp_fixed_map.h1.base",
+  "ipcch.mlp_fixed_map.h1.geo",
+  "ipcch.mlp_fixed_map.h1.local",
+  "ipcch.mlp_fixed_map.h1.pool",
+  "ipcch.mlp_fixed_map.h12.base",
+  "ipcch.mlp_fixed_map.h12.geo",
+  "ipcch.mlp_fixed_map.h12.local",
+  "ipcch.mlp_fixed_map.h12.pool",
+  "ipcch.mlp_fixed_map.h3.base",
+  "ipcch.mlp_fixed_map.h3.geo",
+  "ipcch.mlp_fixed_map.h3.local",
+  "ipcch.mlp_fixed_map.h3.pool",
+  "ipcch.mlp_fixed_map.h6.base",
+  "ipcch.mlp_fixed_map.h6.geo",
+  "ipcch.mlp_fixed_map.h6.local",
+  "ipcch.mlp_fixed_map.h6.pool",
+  "ipcch.p6_geoxgb.h1.geo",
+  "ipcch.p6_geoxgb.h1.pool",
+  "ipcch.p6_geoxgb.h12.geo",
+  "ipcch.p6_geoxgb.h12.pool",
+  "ipcch.p6_geoxgb.h3.geo",
+  "ipcch.p6_geoxgb.h3.pool",
+  "ipcch.p6_geoxgb.h6.geo",
+  "ipcch.p6_geoxgb.h6.pool",
+  "ipcch.split2024_sensitivity.h1.geo",
+  "ipcch.split2024_sensitivity.h1.pool",
+  "ipcch.split2024_sensitivity.h12.geo",
+  "ipcch.split2024_sensitivity.h12.pool",
+  "ipcch.split2024_sensitivity.h3.geo",
+  "ipcch.split2024_sensitivity.h3.pool",
+  "ipcch.split2024_sensitivity.h6.geo",
+  "ipcch.split2024_sensitivity.h6.pool",
+  "ipcch.yearly_geoxgb.h1.geo",
+  "ipcch.yearly_geoxgb.h1.local",
+  "ipcch.yearly_geoxgb.h1.pool",
+  "ipcch.yearly_geoxgb.h12.geo",
+  "ipcch.yearly_geoxgb.h12.local",
+  "ipcch.yearly_geoxgb.h12.pool",
+  "ipcch.yearly_geoxgb.h3.geo",
+  "ipcch.yearly_geoxgb.h3.local",
+  "ipcch.yearly_geoxgb.h3.pool",
+  "ipcch.yearly_geoxgb.h6.geo",
+  "ipcch.yearly_geoxgb.h6.local",
+  "ipcch.yearly_geoxgb.h6.pool"
+ ]
+}

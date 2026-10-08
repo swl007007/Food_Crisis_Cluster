@@ -3,7 +3,7 @@
   "name": "mlflow-focused-evaluation-registry",
   "title": "MLflow focused evaluation and model dataset registration",
   "description": "Reduce evaluation UI load and register existing IPCCH models and dataset lineage without retraining or losing historical evidence.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
