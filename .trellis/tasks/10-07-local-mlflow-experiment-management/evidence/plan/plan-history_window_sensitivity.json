@@ -5,7 +5,7 @@
  "excluded": [],
  "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
  "family": "history_window_sensitivity",
- "fingerprint": "c86f13a9ff0eb1e6a8505b795513021f2cfbf1b15e7e0f47c6575da871401ee8",
+ "fingerprint": "75121c5423d91bcea0ff4ba87fd085496637e021b6d1f6433ef48c9decbe82c8",
  "include_manifest_sha256": "5aba34cafb33d9134e4368f79fd75bc3664a222617ba9accf81aabadf43be47e",
  "inventory": {
   "keys": {
@@ -16,8 +16,8 @@
      "start.json"
     ],
     "matched": 14,
-    "unique": 14,
-    "values": 14
+    "reference_occurrences": 14,
+    "unique_values": 14
    },
    "manifest_sha256": {
     "decision": "required file digest",
@@ -26,8 +26,8 @@
      "start.json"
     ],
     "matched": 1,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    },
    "ordered_names_sha256": {
     "decision": "informational: hash of the ordered feature-name list; no single-file form",
@@ -36,8 +36,8 @@
      "start.json"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    },
    "quartet_code_sha256": {
     "decision": "informational: hash over the package's model-fitting source set; no single-file form",
@@ -46,8 +46,8 @@
      "start.json"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    },
    "sha256": {
     "decision": "required file digest",
@@ -59,8 +59,8 @@
      "start.json"
     ],
     "matched": 0,
-    "unique": 2,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 2
    }
   },
   "ledger_dirs": {

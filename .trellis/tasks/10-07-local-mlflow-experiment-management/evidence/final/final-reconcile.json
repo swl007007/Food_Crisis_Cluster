@@ -1,0 +1,88 @@
+{
+ "command": "reconcile",
+ "experiment_id": "1",
+ "families": [
+  {
+   "artifact_changes": [
+    {
+     "action": "added",
+     "new_sha256": "86ca723fa987dcc6915d4959f5833e2956474b809be9e2996bf7ec0271105805",
+     "path": "manifests/original-inventory-check.json"
+    },
+    {
+     "action": "superseded",
+     "kept_as": "manifests/superseded/plan-summary.d5da27a7d82c6699.json",
+     "new_sha256": "12960df0641da1992271076b63fd59b1ac35998089c1094cd947e36495fd6988",
+     "old_sha256": "b5c0f84e87b5ef0dcdc6ee52b17a6877240283b338a0d81e111c7ff4714f057f",
+     "path": "manifests/plan-summary.json"
+    }
+   ],
+   "children_not_imported": 0,
+   "children_reconciled": 0,
+   "children_unchanged": 12,
+   "parent": "reconciled",
+   "seconds": 48.0,
+   "source_key": "p6_geoxgb/p6-formal-20261004b"
+  },
+  {
+   "artifact_changes": [
+    {
+     "action": "added",
+     "new_sha256": "358baeff933645f0166e451f88ed7f238e4e4bab9c448449b2a9ec3187bf421b",
+     "path": "manifests/original-inventory-check.json"
+    },
+    {
+     "action": "superseded",
+     "kept_as": "manifests/superseded/plan-summary.4cb760b7dee0af26.json",
+     "new_sha256": "66b315e22377efde9ae85dadb4ef8ed9467b70a4039aa80f6b02256e8ac51b15",
+     "old_sha256": "cc0ac5158894b6b6b16373f0f1826d7e9cff0a7a02118d1bbd4487f295d6fc43",
+     "path": "manifests/plan-summary.json"
+    }
+   ],
+   "children_not_imported": 0,
+   "children_reconciled": 24,
+   "children_unchanged": 28,
+   "parent": "reconciled",
+   "seconds": 75.3,
+   "source_key": "mlp_fixed_map/mlp-formal-20261005"
+  },
+  {
+   "artifact_changes": [],
+   "children_not_imported": 0,
+   "children_reconciled": 0,
+   "children_unchanged": 0,
+   "parent": "empty shell rebound",
+   "seconds": 0.1,
+   "source_key": "yearly_geoxgb/yearly-formal-20261007"
+  },
+  {
+   "artifact_changes": [],
+   "children_not_imported": 0,
+   "children_reconciled": 0,
+   "children_unchanged": 0,
+   "parent": "not imported",
+   "seconds": 0.0,
+   "source_key": "climate_perturbation/climate-20261005"
+  },
+  {
+   "artifact_changes": [],
+   "children_not_imported": 0,
+   "children_reconciled": 0,
+   "children_unchanged": 0,
+   "parent": "not imported",
+   "seconds": 0.0,
+   "source_key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf"
+  },
+  {
+   "artifact_changes": [],
+   "children_not_imported": 0,
+   "children_reconciled": 0,
+   "children_unchanged": 0,
+   "parent": "not imported",
+   "seconds": 0.0,
+   "source_key": "split2024_sensitivity/split2024-20261005"
+  }
+ ],
+ "records_planned": 126,
+ "seconds": 379.6
+}

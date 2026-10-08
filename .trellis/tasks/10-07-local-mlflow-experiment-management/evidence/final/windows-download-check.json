@@ -1,0 +1,13 @@
+{
+ "run_id": "13b03ec1429e4a5f81e61eefe7b20a7b",
+ "url": "http://localhost:5000/api/2.0/mlflow-artifacts/artifacts/1/13b03ec1429e4a5f81e61eefe7b20a7b/artifacts/models.tar",
+ "curl": "200 162252800 0.845097",
+ "bytes": 162252800,
+ "sha256_wsl": "adfe8926774131ac48cf54219d2b987a06ef8e3b2279f878dfb5731b7600e54c",
+ "sha256_powershell": "adfe8926774131ac48cf54219d2b987a06ef8e3b2279f878dfb5731b7600e54c",
+ "expected_sha256": "adfe8926774131ac48cf54219d2b987a06ef8e3b2279f878dfb5731b7600e54c",
+ "expected_bytes": 162252800,
+ "match": true,
+ "ui_root_http": "200",
+ "ui_root_has_title": true
+}

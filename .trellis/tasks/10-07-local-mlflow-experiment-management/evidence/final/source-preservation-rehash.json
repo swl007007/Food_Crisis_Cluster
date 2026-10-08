@@ -1,0 +1,17 @@
+{
+ "rehash_plan_hash_cache": {
+  "hits": 0,
+  "misses": 46468,
+  "rehash": true
+ },
+ "records": 126,
+ "fingerprints_identical_to_imported_plan": true,
+ "fingerprints": {
+  "climate_perturbation": "453d67b5cac0e93afb887edddb91c338e4303697049d263644dba0690b5008e8",
+  "history_window_sensitivity": "75121c5423d91bcea0ff4ba87fd085496637e021b6d1f6433ef48c9decbe82c8",
+  "mlp_fixed_map": "fda15d10486dcef478628c259495c1adf8ce9a9537819e961318829f48545f4b",
+  "p6_geoxgb": "22e6a5d24dc77a84984435e67cdf5e38632287579d6a949a4913d5fd74e945b9",
+  "split2024_sensitivity": "5d1fe29f9be8b8dbe7359e08c7297860d8f999af57069def120cb0af8ffd5780",
+  "yearly_geoxgb": "a86e6d33fad07295f9e715b07e06ac586b123a5c9440d64b51dbd1e9caf447b1"
+ }
+}

@@ -34,7 +34,7 @@
  ],
  "extras_manifest_sha256": "b72609bc5127d4070e2a968a9ee3f362a89ae6fed5baf3080b5f1e36b4683966",
  "family": "climate_perturbation",
- "fingerprint": "ce2dc2bce8aaeae3947d003b292c2298894619d8ab8dcb3573790a1a7b65e739",
+ "fingerprint": "453d67b5cac0e93afb887edddb91c338e4303697049d263644dba0690b5008e8",
  "include_manifest_sha256": "1f4393dd9ba88fdc9245f1882b0c8f4d09e187fa87603ba2a01297dcc3f88a0f",
  "inventory": {
   "keys": {
@@ -45,8 +45,8 @@
      "stage1"
     ],
     "matched": 451,
-    "unique": 4,
-    "values": 451
+    "reference_occurrences": 451,
+    "unique_values": 4
    },
    "artifacts_sha256": {
     "decision": "required file digest",
@@ -55,8 +55,8 @@
      "prepared"
     ],
     "matched": 14,
-    "unique": 14,
-    "values": 14
+    "reference_occurrences": 14,
+    "unique_values": 14
    },
    "booster_sha256": {
     "decision": "required file digest",
@@ -66,8 +66,8 @@
      "stage3"
     ],
     "matched": 14600,
-    "unique": 4367,
-    "values": 14600
+    "reference_occurrences": 14600,
+    "unique_values": 4367
    },
    "draws_sha256": {
     "decision": "required file digest",
@@ -77,8 +77,8 @@
      "report"
     ],
     "matched": 16,
-    "unique": 16,
-    "values": 16
+    "reference_occurrences": 16,
+    "unique_values": 16
    },
    "identity_sha256": {
     "bundle_dir_file_counts": [
@@ -91,8 +91,8 @@
      "stage3"
     ],
     "matched": 3650,
-    "unique": 1092,
-    "values": 3650
+    "reference_occurrences": 3650,
+    "unique_values": 1092
    },
    "keys_artifact_sha256": {
     "decision": "required file digest",
@@ -101,8 +101,8 @@
      "stage1"
     ],
     "matched": 451,
-    "unique": 4,
-    "values": 451
+    "reference_occurrences": 451,
+    "unique_values": 4
    },
    "map_sha256": {
     "decision": "required file digest",
@@ -111,8 +111,8 @@
      "stage1"
     ],
     "matched": 40,
-    "unique": 36,
-    "values": 40
+    "reference_occurrences": 40,
+    "unique_values": 36
    },
    "ordered_names_sha256": {
     "decision": "informational: hash of the ordered feature-name list; no single-file form",
@@ -121,8 +121,8 @@
      "prepared"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    },
    "predictions_sha256": {
     "decision": "required file digest",
@@ -132,8 +132,8 @@
      "stage3"
     ],
     "matched": 8,
-    "unique": 4,
-    "values": 8
+    "reference_occurrences": 8,
+    "unique_values": 4
    },
    "prepared_manifest_sha256": {
     "decision": "required file digest",
@@ -143,8 +143,8 @@
      "stage3"
     ],
     "matched": 10,
-    "unique": 1,
-    "values": 10
+    "reference_occurrences": 10,
+    "unique_values": 1
    },
    "quartet_code_sha256": {
     "decision": "informational: hash over the package's model-fitting source set; no single-file form",
@@ -154,8 +154,8 @@
      "stage3"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 1
    },
    "selection_sha256": {
     "decision": "required file digest",
@@ -164,8 +164,8 @@
      "stage1"
     ],
     "matched": 8,
-    "unique": 4,
-    "values": 8
+    "reference_occurrences": 8,
+    "unique_values": 4
    },
    "sha256": {
     "decision": "required file digest",
@@ -177,8 +177,8 @@
      "prepared"
     ],
     "matched": 0,
-    "unique": 4,
-    "values": 4
+    "reference_occurrences": 4,
+    "unique_values": 4
    },
    "stage3_summary_sha256": {
     "decision": "required file digest",
@@ -187,11 +187,19 @@
      "report"
     ],
     "matched": 1,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    }
   },
   "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 1092,
+   "kind": "xgb",
+   "ledger_files": 2,
+   "ledger_reference_occurrences": 3650,
+   "unique_boosters_checked": 4368,
+   "unique_identities": 1092
+  },
   "name_hash_maps": {},
   "path_inventories": {},
   "sources_scanned": 52,

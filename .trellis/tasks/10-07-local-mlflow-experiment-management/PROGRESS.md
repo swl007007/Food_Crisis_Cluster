@@ -35,10 +35,20 @@ Operational log only; approval authority is the supervisor (wN:p1) and the user.
    original-inventory reconciliation (inventory.py + per-family policy), scratch-server
    restore check, deep verified no-op, by_gate key binding (MLP 142 / yearly 42 subsets),
    split E_persist deltas (11 blocks), metric-name collision guard. Tests 15/15.
-6b. [x] Reconcile command prepared and tested (e44128e, tests 18/18), not run. Proposal:
-   evidence/ipcch-mlflow-reconciliation-proposal-a9a2598.md; diff:
-   evidence/reconciliation-diff-before.json. Awaiting supervisor review.
-7. [ ] Reconcile, import yearly/climate/window/split, full verify, verified no-op rerun,
-   Windows artifact download, UI check.
-8. [ ] Backup + scratch-server restore check; env snapshot after install.
-9. [ ] Evidence to supervisor; hold close/push/merge.
+6b. [x] Reconcile command prepared and tested (e44128e, 18/18); supervisor isolated run
+   18/18 (evidence/supervisor-e44128e-tests.log). Delta review item-1 gap closed in
+   ec2686e: exact per-identity model contracts (XGB own boosters; MLP record+state+
+   transform). Tests 22/22 (evidence/tests-item1-fix.log). Note SHA 75e9989.
+7. [x] Refreshed diff (evidence/reconciliation-diff-ec2686e.json) within the release bound
+   (0 metric/param/source/model changes). Applied: reconcile 22:53-22:59 (27 records:
+   P6+MLP parents, 24 MLP children, yearly shell rebound), import 23:00-23:10 (yearly
+   resumed, climate/window/split created), deep verify 23:10-23:19 (126 records, 20,384
+   child metrics, 1,987 artifacts, 8.33 GB, 44,203 tar members), verified no-op import
+   23:19-23:26 (126 noop, 0 writes). API: 126 runs, all complete/FINISHED, no duplicate
+   source keys. Windows curl.exe download of window models.tar via localhost:5000:
+   bytes and SHA (WSL + PowerShell) match. UI rendered in headless Edge (screenshots).
+8. [x] Backup (SQLite backup API + artifacts, 2,039 files, integrity ok) and scratch
+   restore check through an independent server on port 5001 (7 downloads matched).
+   env-after.json: all three frozen environments identical to env-before.json.
+   Cache-free rehash of 46,468 source files: all six plan fingerprints unchanged.
+9. [ ] Final evidence sent to supervisor; hold close/push/merge for acceptance.

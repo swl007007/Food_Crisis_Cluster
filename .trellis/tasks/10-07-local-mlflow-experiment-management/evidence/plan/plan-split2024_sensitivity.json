@@ -34,7 +34,7 @@
  ],
  "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
  "family": "split2024_sensitivity",
- "fingerprint": "16b7b1be6cfac4e184ab0653f7dbd6305c242b0a4eaeca421bb561affd15f490",
+ "fingerprint": "5d1fe29f9be8b8dbe7359e08c7297860d8f999af57069def120cb0af8ffd5780",
  "include_manifest_sha256": "eb6f6c50775e83f2f6c890b340a42827c675e2adfc3dd2bfb325bdab57e97465",
  "inventory": {
   "keys": {
@@ -45,8 +45,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 497,
-    "unique": 4,
-    "values": 497
+    "reference_occurrences": 497,
+    "unique_values": 4
    },
    "artifacts_sha256": {
     "decision": "required file digest",
@@ -55,8 +55,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 14,
-    "unique": 14,
-    "values": 14
+    "reference_occurrences": 14,
+    "unique_values": 14
    },
    "booster_sha256": {
     "decision": "required file digest",
@@ -65,8 +65,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 6892,
-    "unique": 3343,
-    "values": 6892
+    "reference_occurrences": 6892,
+    "unique_values": 3343
    },
    "draws_sha256": {
     "decision": "required file digest",
@@ -75,8 +75,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 6,
-    "unique": 6,
-    "values": 6
+    "reference_occurrences": 6,
+    "unique_values": 6
    },
    "identity_sha256": {
     "bundle_dir_file_counts": [
@@ -88,8 +88,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 1723,
-    "unique": 836,
-    "values": 1723
+    "reference_occurrences": 1723,
+    "unique_values": 836
    },
    "keys_artifact_sha256": {
     "decision": "required file digest",
@@ -98,8 +98,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 497,
-    "unique": 4,
-    "values": 497
+    "reference_occurrences": 497,
+    "unique_values": 4
    },
    "map_sha256": {
     "decision": "required file digest",
@@ -109,8 +109,8 @@
      "stage1-checkpoint.json"
     ],
     "matched": 44,
-    "unique": 36,
-    "values": 44
+    "reference_occurrences": 44,
+    "unique_values": 36
    },
    "ordered_names_sha256": {
     "decision": "informational: hash of the ordered feature-name list; no single-file form",
@@ -119,8 +119,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 1
    },
    "predictions_sha256": {
     "decision": "required file digest",
@@ -129,8 +129,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 8,
-    "unique": 4,
-    "values": 8
+    "reference_occurrences": 8,
+    "unique_values": 4
    },
    "prepared_manifest_sha256": {
     "decision": "required file digest",
@@ -140,8 +140,8 @@
      "stage1-checkpoint.json"
     ],
     "matched": 15,
-    "unique": 1,
-    "values": 15
+    "reference_occurrences": 15,
+    "unique_values": 1
    },
    "quartet_code_sha256": {
     "decision": "informational: hash over the package's model-fitting source set; no single-file form",
@@ -151,8 +151,8 @@
      "stage1-checkpoint.json"
     ],
     "matched": 3,
-    "unique": 1,
-    "values": 3
+    "reference_occurrences": 3,
+    "unique_values": 1
    },
    "selection_sha256": {
     "decision": "required file digest",
@@ -162,8 +162,8 @@
      "stage1-checkpoint.json"
     ],
     "matched": 12,
-    "unique": 4,
-    "values": 12
+    "reference_occurrences": 12,
+    "unique_values": 4
    },
    "sha256": {
     "decision": "required file digest",
@@ -177,8 +177,8 @@
      "final-inventory.json"
     ],
     "matched": 4379,
-    "unique": 4406,
-    "values": 4434
+    "reference_occurrences": 4434,
+    "unique_values": 4406
    },
    "source_file_sha256": {
     "decision": "required file digest",
@@ -190,8 +190,8 @@
      "plan.json"
     ],
     "matched": 24,
-    "unique": 28,
-    "values": 28
+    "reference_occurrences": 28,
+    "unique_values": 28
    },
    "stage3_summary_sha256": {
     "decision": "required file digest",
@@ -200,8 +200,8 @@
      "IPCCHGeoXGBExperiment"
     ],
     "matched": 1,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    },
    "variant_file_sha256": {
     "decision": "required file digest",
@@ -210,11 +210,19 @@
      "plan.json"
     ],
     "matched": 28,
-    "unique": 28,
-    "values": 28
+    "reference_occurrences": 28,
+    "unique_values": 28
    }
   },
   "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 836,
+   "kind": "xgb",
+   "ledger_files": 2,
+   "ledger_reference_occurrences": 1723,
+   "unique_boosters_checked": 3344,
+   "unique_identities": 836
+  },
   "name_hash_maps": {},
   "path_inventories": {
    "final-inventory.json": {

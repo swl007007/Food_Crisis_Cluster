@@ -1,0 +1,327 @@
+{
+ "p6_geoxgb": {
+  "run_id": "8ad47dc9cde2438d98b7bd50903dfe6a",
+  "status": "complete",
+  "old_fp": "d5da27a7d82c66997d42f570fca94e9d29528b1dc7d612c25e761894e2269a11",
+  "new_fp": "22e6a5d24dc77a84984435e67cdf5e38632287579d6a949a4913d5fd74e945b9",
+  "param_diff": {},
+  "tag_diff": {},
+  "artifacts_missing": [
+   "manifests/original-inventory-check.json"
+  ],
+  "artifacts_extra": [],
+  "children": {
+   "same_fp": 12
+  },
+  "examples": []
+ },
+ "mlp_fixed_map": {
+  "run_id": "5ba961810a214cbfa0138eb1dd1cf3c9",
+  "status": "complete",
+  "old_fp": "4cb760b7dee0af267ada01589cf932eaf2f55ce17246ea14d083e75792a0b788",
+  "new_fp": "fda15d10486dcef478628c259495c1adf8ce9a9537819e961318829f48545f4b",
+  "param_diff": {},
+  "tag_diff": {},
+  "artifacts_missing": [
+   "manifests/original-inventory-check.json"
+  ],
+  "artifacts_extra": [],
+  "children": {
+   "same_fp": 28,
+   "(0, 0, 0, ('cohort_keys.main.local_eligible', 'cohort_keys.supplementary.local_eligible'), 0, 0)": 24
+  },
+  "examples": [
+   {
+    "key": "mlp_fixed_map/mlp-formal-20261005/H1/pool/seed42",
+    "tags_added": [
+     "cohort_keys.main.local_eligible.adopted",
+     "cohort_keys.main.local_eligible.gain_rejected",
+     "cohort_keys.main.local_eligible.historical_support_rejected",
+     "cohort_keys.supplementary.local_eligible.adopted",
+     "cohort_keys.supplementary.local_eligible.gain_rejected",
+     "cohort_keys.supplementary.local_eligible.historical_support_rejected"
+    ],
+    "tags_changed": [],
+    "metrics_added": [],
+    "metrics_changed": []
+   },
+   {
+    "key": "mlp_fixed_map/mlp-formal-20261005/H1/local/seed42",
+    "tags_added": [
+     "cohort_keys.main.local_eligible.adopted",
+     "cohort_keys.main.local_eligible.gain_rejected",
+     "cohort_keys.main.local_eligible.historical_support_rejected",
+     "cohort_keys.supplementary.local_eligible.adopted",
+     "cohort_keys.supplementary.local_eligible.gain_rejected",
+     "cohort_keys.supplementary.local_eligible.historical_support_rejected"
+    ],
+    "tags_changed": [],
+    "metrics_added": [],
+    "metrics_changed": []
+   }
+  ]
+ },
+ "yearly_geoxgb": {
+  "run_id": "c19cd67502184f49a8d7fb800365f56b",
+  "status": "in_progress",
+  "old_fp": "1d5474eb53fb937deb9aed952f815490be95c535ca86c85975ac5dbe3fd82710",
+  "new_fp": "a86e6d33fad07295f9e715b07e06ac586b123a5c9440d64b51dbd1e9caf447b1",
+  "param_diff": {
+   "family": [
+    null,
+    "yearly_geoxgb"
+   ],
+   "source_run_id": [
+    null,
+    "yearly-formal-20261007"
+   ],
+   "source_root": [
+    null,
+    "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007"
+   ],
+   "report_sha256": [
+    null,
+    "3246115ed39d013959a4c165b09d01869eef6e170d67ea0892503d9bababd4a2"
+   ],
+   "evaluation_views": [
+    null,
+    "16"
+   ],
+   "archived_files": [
+    null,
+    "52"
+   ],
+   "archived_bytes": [
+    null,
+    "11462929"
+   ],
+   "excluded_files": [
+    null,
+    "46"
+   ],
+   "excluded_bytes": [
+    null,
+    "11381290"
+   ],
+   "shared_files": [
+    null,
+    "33"
+   ],
+   "shared_bytes": [
+    null,
+    "783754630"
+   ],
+   "extras_files": [
+    null,
+    "64"
+   ],
+   "extras_bytes": [
+    null,
+    "1378008"
+   ],
+   "bundle.models.tar.members": [
+    null,
+    "1267"
+   ],
+   "bundle.models.tar.member_bytes": [
+    null,
+    "320464656"
+   ]
+  },
+  "tag_diff": {
+   "source.code_commit": [
+    null,
+    "29c5fee"
+   ],
+   "source.package": [
+    null,
+    "IPCCHYearlyGeoXGBExperiment"
+   ],
+   "source.scientific_acceptance": [
+    null,
+    "supervisor PASS at 76fdedf (doc corrections 5de8fac)"
+   ],
+   "source.lifecycle_status": [
+    null,
+    "closed via trellis-audit; close-audit job 2020a1286705955fcfe26e75 queued at import planning time (not passed)"
+   ],
+   "source.truth": [
+    null,
+    "population-share-derived phase, q>=0.20 after bounded isotonic projection"
+   ],
+   "source.fit_protocol": [
+    null,
+    "annual blocks, full history t<=O, 24-month half-life decay weights, annual frozen gate"
+   ],
+   "source.features": [
+    null,
+    "rich561"
+   ],
+   "source.maps": [
+    null,
+    "original P6 frozen maps"
+   ],
+   "source.periods": [
+    null,
+    "main 2023-2025; supplementary 2026-01..04"
+   ],
+   "execution": [
+    null,
+    "historical import of a completed run; not executed by MLflow"
+   ],
+   "mlflow_timestamps": [
+    null,
+    "MLflow start/metric times are import times, not source execution times"
+   ],
+   "family": [
+    null,
+    "yearly_geoxgb"
+   ],
+   "importer_version": [
+    null,
+    "ipcch-mlflow-import-v1"
+   ],
+   "shared_inputs_parent": [
+    null,
+    "p6_geoxgb"
+   ],
+   "shared_inputs_note": [
+    null,
+    "staged copies of P6 files; identical hashes referenced to the P6 parent archive"
+   ]
+  },
+  "artifacts_missing": [
+   "manifests/excluded.json",
+   "manifests/extras.json",
+   "manifests/include.json",
+   "manifests/models.tar.members.json",
+   "manifests/models.tar.tar.json",
+   "manifests/original-inventory-check.json",
+   "manifests/plan-summary.json",
+   "manifests/shared.json",
+   "manifests/unlisted.json",
+   "models.tar",
+   "source/inputs/source/IPCCHGeoXGBExperiment/config/experiment-contract.json",
+   "source/inputs/source/IPCCHGeoXGBExperiment/config/feature-schema.json",
+   "source/inputs/source/IPCCHGeoXGBExperiment/config/runtime-lock.json",
+   "source/inputs/staging-manifest.json",
+   "source/predict/h01/block_ledger.json",
+   "source/predict/h01/fold_ledger.csv",
+   "source/predict/h01/gate_decisions.jsonl",
+   "source/predict/h01/pairs_main_h01_2023.csv.gz",
+   "source/predict/h01/pairs_main_h01_2024.csv.gz",
+   "source/predict/h01/pairs_main_h01_2025.csv.gz",
+   "source/predict/h01/pairs_supp_h01_2026.csv.gz",
+   "source/predict/h01/predictions.csv.gz",
+   "source/predict/h01/weight_stats.json",
+   "source/predict/h03/block_ledger.json",
+   "source/predict/h03/fold_ledger.csv",
+   "source/predict/h03/gate_decisions.jsonl",
+   "source/predict/h03/pairs_main_h03_2023.csv.gz",
+   "source/predict/h03/pairs_main_h03_2024.csv.gz",
+   "source/predict/h03/pairs_main_h03_2025.csv.gz",
+   "source/predict/h03/pairs_supp_h03_2026.csv.gz",
+   "source/predict/h03/predictions.csv.gz",
+   "source/predict/h03/weight_stats.json",
+   "source/predict/h06/block_ledger.json",
+   "source/predict/h06/fold_ledger.csv",
+   "source/predict/h06/gate_decisions.jsonl",
+   "source/predict/h06/pairs_main_h06_2023.csv.gz",
+   "source/predict/h06/pairs_main_h06_2024.csv.gz",
+   "source/predict/h06/pairs_main_h06_2025.csv.gz",
+   "source/predict/h06/pairs_supp_h06_2026.csv.gz",
+   "source/predict/h06/predictions.csv.gz",
+   "source/predict/h06/weight_stats.json",
+   "source/predict/h12/block_ledger.json",
+   "source/predict/h12/fold_ledger.csv",
+   "source/predict/h12/gate_decisions.jsonl",
+   "source/predict/h12/pairs_main_h12_2024.csv.gz",
+   "source/predict/h12/pairs_main_h12_2025.csv.gz",
+   "source/predict/h12/pairs_supp_h12_2026.csv.gz",
+   "source/predict/h12/predictions.csv.gz",
+   "source/predict/h12/weight_stats.json",
+   "source/predict/model_requests.jsonl",
+   "source/predict/predict-summary.json",
+   "source/preflight/preflight.json",
+   "source/replay/replay.json",
+   "source/report/bootstrap_h01_geo_minus_persistence_E_persist.csv.gz",
+   "source/report/bootstrap_h01_geo_minus_pool_E_all.csv.gz",
+   "source/report/bootstrap_h03_geo_minus_persistence_E_persist.csv.gz",
+   "source/report/bootstrap_h03_geo_minus_pool_E_all.csv.gz",
+   "source/report/bootstrap_h06_geo_minus_persistence_E_persist.csv.gz",
+   "source/report/bootstrap_h06_geo_minus_pool_E_all.csv.gz",
+   "source/report/bootstrap_h12_geo_minus_persistence_E_persist.csv.gz",
+   "source/report/bootstrap_h12_geo_minus_pool_E_all.csv.gz",
+   "source/report/report.json",
+   "source_code/IPCCHYearlyGeoXGBExperiment/README.md",
+   "source_code/IPCCHYearlyGeoXGBExperiment/config/inputs.json",
+   "source_code/IPCCHYearlyGeoXGBExperiment/config/runtime-lock.json",
+   "source_code/IPCCHYearlyGeoXGBExperiment/config/yearly-contract.json",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/__init__.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/__main__.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/artifacts.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/cli.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/contract.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/engine.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/errors.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/freeze.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/metrics.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/modelstore.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/planning.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/projection.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/quartet.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/replay.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/report.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/run.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/runtime.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/schedule.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/sources.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/timing.py",
+   "source_code/IPCCHYearlyGeoXGBExperiment/run_experiment.py",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/PROGRESS.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/design.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/final-acceptance-76fdedf.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/final-inventory-summary.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/final-inventory.tsv",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/block_ledger_h01.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/block_ledger_h03.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/block_ledger_h06.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/block_ledger_h12.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/fold_ledger_h01.csv",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/fold_ledger_h03.csv",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/fold_ledger_h06.csv",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/fold_ledger_h12.csv",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/gate_decisions_h01.jsonl",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/gate_decisions_h03.jsonl",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/gate_decisions_h06.jsonl",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/ledgers/gate_decisions_h12.jsonl",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/logs/formal-predict.log",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/logs/formal-preflight.log",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/logs/formal-replay.log",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/logs/formal-report.log",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/predict-summary.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/preflight.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/replay.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/formal/report.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0-preflight.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0-probe.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0-review-eec001d.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0-timing.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0b-preflight.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0b-staging-manifest.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p0b-tests.txt",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/p1-release-29c5fee.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/implement.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/prd.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/research/enumerate_yearly.py",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/research/findings.md",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/research/fit-enumeration.json",
+   "task_evidence/.trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/results.md"
+  ],
+  "artifacts_extra": [],
+  "children": {
+   "not_imported": 16
+  },
+  "examples": []
+ }
+}

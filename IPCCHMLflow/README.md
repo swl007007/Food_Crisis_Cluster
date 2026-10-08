@@ -29,7 +29,9 @@ afterwards; the data in the store is persistent. Log: `logs/server.log`.
 
 One experiment, `IPCCH`, with 126 records:
 
-- 6 parent records (`record_kind=source_run`), one per source run. These hold the retained
+- 6 parent records (`record_kind=source_run`), one per source run (P6 `8ad47dc9…`,
+  MLP `5ba96181…`, yearly `c19cd675…`, climate `a3cb329b…`, window `13b03ec1…`,
+  split2024 `116eadde…`). These hold the retained
   artifacts once: `source/…` (reports, configs, predictions, ledgers), `models.tar`
   (uncompressed, deterministic, per-member manifest in `manifests/models.tar.members.json`),
   `source_code/…`, `task_evidence/…`, and `manifests/` (included, excluded, shared and
@@ -78,15 +80,30 @@ PY=/home/swl007007/.venvs/ipcch-mlflow/bin/python
 $PY IPCCHMLflow/import_runs.py plan   [--rehash] [--evidence DIR]   # read-only
 $PY IPCCHMLflow/import_runs.py import [--family NAME ...]            # server must be running
 $PY IPCCHMLflow/import_runs.py verify [--shallow]
+$PY IPCCHMLflow/import_runs.py reconcile                           # one-time, see below
 ```
 
 - `plan` hashes every source file (stat-keyed cache in `cache/hashes.json`; `--rehash`
-  ignores it), extracts the evaluation views, and writes full plans to `plans/`.
+  ignores it), reconciles the files against the run's own saved inventories
+  (`inventory.py`, per-family `inventory` policy in `sources.json`), extracts the
+  evaluation views, and writes full plans to `plans/`. Every `*sha256` key in a source's
+  ledgers/manifests needs an explicit decision (required file digest, bundle name,
+  informational, or scoped exemption with a reason); model stores must satisfy their
+  per-identity contract (XGB: own `q*.ubj` with the ledger digest + `record.json`;
+  MLP: `record.json` + `state.pt` + the referenced transform). The result is archived
+  per parent as `manifests/original-inventory-check.json`.
 - `import` creates or resumes records serially. A record is marked
   `import_status=complete` only after its metrics/params/tags and artifacts have been read
   back (artifacts downloaded and hashed; tar members checked).
-- Rerunning with unchanged sources is a verified no-op. If a source changed, the
-  fingerprint differs and the importer stops; reconcile by hand (no overwrite).
+- Rerunning with unchanged sources is a verified no-op (all artifacts downloaded and
+  hashed again). `verify --shallow` is metadata-only (values, tags, names, sizes).
+- If a source or the importer changed, the fingerprint differs and `import` stops.
+  `reconcile` is the explicit one-time path: it refuses any change to a logged metric,
+  param, existing tag or archived source/model artifact; it may add tags and replace
+  manifests/view JSON, keeping the old copies under `manifests/superseded/` or
+  `view/superseded/` with a reconciliation log, and records `import_fingerprint.previous`.
+  Nothing is deleted and run IDs are kept. Used once on 2026-10-07 (27 records; see the
+  task evidence).
 - An interrupted import leaves `import_status=in_progress`; rerun `import` to resume.
 - A file lock (`import.lock`) refuses concurrent imports.
 
@@ -99,7 +116,8 @@ folders are deleted; retraining would still need the original inputs.
 ## Adding a future run
 
 1. Add one family entry to `sources.json` (root, report, prediction pattern, arms with
-   arm kinds, include/bundle/exclude globs, tags).
+   arm kinds, include/bundle/exclude globs, tags, and an `inventory` policy: a decision
+   for every `*sha256` key its ledgers/manifests carry, plus `model_contract`).
 2. If its report schema is new, add an extractor in `extract.py` and a fixture test.
 3. `plan`, check the plan's `unlisted` and `excluded` lists, then `import --family NAME`
    and `verify --family NAME`.
@@ -115,8 +133,10 @@ $PY IPCCHMLflow/backup_restore.py restore-check --backup ~/ipcch-mlflow-backups/
 
 `backup` uses the SQLite online backup API plus a byte copy of `artifacts/` and writes
 `backup-manifest.json` (DB hash and row counts, per-file artifact hashes).
-`restore-check` copies a backup into a new scratch root, checks every hash and count, and
-opens the restored DB with MLflow. To actually restore: stop the server, replace
+`restore-check` copies a backup into a new scratch root, checks every hash and row count,
+starts a temporary server on its own port (default 5001; 5000 is refused) over the scratch
+DB and artifacts, downloads every parent's `manifests/plan-summary.json` and the smallest
+`models.tar` through it, compares hashes with the backup manifest, and stops it. To actually restore: stop the server, replace
 `mlflow.db` and `artifacts/` in the store with the backup copies, start the server.
 
 ## Tests
@@ -124,3 +144,10 @@ opens the restored DB with MLflow. To actually restore: stop the server, replace
 ```bash
 $PY -m unittest discover -s IPCCHMLflow/tests -v
 ```
+
+## UI notes
+
+The UI opens on the GenAI overview; use **Model training → Training runs** (or
+`#/experiments/1/runs`). Parents are nested with their views; the oldest parent (P6) is on
+the next page ("Load more"). The Duration column is import time, not source run time. The
+assistant side panel is a built-in UI feature and is not configured or used here.

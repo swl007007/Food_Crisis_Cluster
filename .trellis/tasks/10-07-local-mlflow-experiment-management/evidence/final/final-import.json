@@ -1,0 +1,62 @@
+{
+ "command": "import",
+ "experiment_id": "1",
+ "families": [
+  {
+   "artifacts_uploaded": 0,
+   "created": 0,
+   "metrics_logged": 0,
+   "noop": 13,
+   "resumed": 0,
+   "seconds": 43.7,
+   "source_key": "p6_geoxgb/p6-formal-20261004b"
+  },
+  {
+   "artifacts_uploaded": 0,
+   "created": 0,
+   "metrics_logged": 0,
+   "noop": 53,
+   "resumed": 0,
+   "seconds": 81.8,
+   "source_key": "mlp_fixed_map/mlp-formal-20261005"
+  },
+  {
+   "artifacts_uploaded": 158,
+   "created": 16,
+   "metrics_logged": 3847,
+   "noop": 0,
+   "resumed": 1,
+   "seconds": 41.4,
+   "source_key": "yearly_geoxgb/yearly-formal-20261007"
+  },
+  {
+   "artifacts_uploaded": 378,
+   "created": 13,
+   "metrics_logged": 1502,
+   "noop": 0,
+   "resumed": 0,
+   "seconds": 120.7,
+   "source_key": "climate_perturbation/climate-20261005"
+  },
+  {
+   "artifacts_uploaded": 62,
+   "created": 17,
+   "metrics_logged": 1440,
+   "noop": 0,
+   "resumed": 0,
+   "seconds": 14.7,
+   "source_key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf"
+  },
+  {
+   "artifacts_uploaded": 276,
+   "created": 13,
+   "metrics_logged": 2085,
+   "noop": 0,
+   "resumed": 0,
+   "seconds": 89.3,
+   "source_key": "split2024_sensitivity/split2024-20261005"
+  }
+ ],
+ "records_planned": 126,
+ "seconds": 629.4
+}

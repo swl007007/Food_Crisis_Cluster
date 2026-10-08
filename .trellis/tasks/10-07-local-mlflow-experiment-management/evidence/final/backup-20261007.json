@@ -1,0 +1,19 @@
+{
+ "artifact_bytes": 8334768125,
+ "artifact_files": 2039,
+ "created_utc": "2026-10-08T03:28:45Z",
+ "db": {
+  "bytes": 14839808,
+  "counts": {
+   "experiments": 2,
+   "integrity": "ok",
+   "latest_metrics": 20528,
+   "params": 810,
+   "runs": 126,
+   "tags": 4063
+  },
+  "sha256": "0d37ce4bfd36831e69ab56fb8971fa6efc3b86917d35081c82bfd984081a2a22"
+ },
+ "seconds": 41.0,
+ "source_store": "/home/swl007007/.local/share/ipcch-mlflow"
+}

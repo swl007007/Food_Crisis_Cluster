@@ -1,0 +1,24 @@
+{
+ "experiment_id": "1",
+ "runs_total_all_lifecycle": 126,
+ "by_kind": {
+  "evaluation_view": 120,
+  "source_run": 6
+ },
+ "by_status": {
+  "complete|FINISHED|active": 126
+ },
+ "duplicate_source_keys": [],
+ "reconciled_records": 27,
+ "parents": {
+  "split2024_sensitivity": "116eadde903a4f19a6597c19cdde575f",
+  "history_window_sensitivity": "13b03ec1429e4a5f81e61eefe7b20a7b",
+  "climate_perturbation": "a3cb329b734242a096a4c4f6ba855df2",
+  "yearly_geoxgb": "c19cd67502184f49a8d7fb800365f56b",
+  "mlp_fixed_map": "5ba961810a214cbfa0138eb1dd1cf3c9",
+  "p6_geoxgb": "8ad47dc9cde2438d98b7bd50903dfe6a"
+ },
+ "other_experiments": [
+  "Default"
+ ]
+}

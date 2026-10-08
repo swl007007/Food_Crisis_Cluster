@@ -1,0 +1,80 @@
+{
+ "command": "verify",
+ "experiment_id": "1",
+ "families": [
+  {
+   "artifact_bytes": 2085700256,
+   "artifacts": 446,
+   "child_metrics": 966,
+   "downloaded_bytes": 2085700256,
+   "metrics": 0,
+   "records": 13,
+   "run_id": "8ad47dc9cde2438d98b7bd50903dfe6a",
+   "seconds": 50.0,
+   "source_key": "p6_geoxgb/p6-formal-20261004b",
+   "tar_members": 6125
+  },
+  {
+   "artifact_bytes": 2618772149,
+   "artifacts": 667,
+   "child_metrics": 10544,
+   "downloaded_bytes": 2618772149,
+   "metrics": 144,
+   "records": 53,
+   "run_id": "5ba961810a214cbfa0138eb1dd1cf3c9",
+   "seconds": 80.4,
+   "source_key": "mlp_fixed_map/mlp-formal-20261005",
+   "tar_members": 26696
+  },
+  {
+   "artifact_bytes": 334598107,
+   "artifacts": 158,
+   "child_metrics": 3847,
+   "downloaded_bytes": 334598107,
+   "metrics": 0,
+   "records": 17,
+   "run_id": "c19cd67502184f49a8d7fb800365f56b",
+   "seconds": 15.6,
+   "source_key": "yearly_geoxgb/yearly-formal-20261007",
+   "tar_members": 1267
+  },
+  {
+   "artifact_bytes": 1614053896,
+   "artifacts": 378,
+   "child_metrics": 1502,
+   "downloaded_bytes": 1614053896,
+   "metrics": 0,
+   "records": 13,
+   "run_id": "a3cb329b734242a096a4c4f6ba855df2",
+   "seconds": 35.7,
+   "source_key": "climate_perturbation/climate-20261005",
+   "tar_members": 5460
+  },
+  {
+   "artifact_bytes": 165909502,
+   "artifacts": 62,
+   "child_metrics": 1440,
+   "downloaded_bytes": 165909502,
+   "metrics": 0,
+   "records": 17,
+   "run_id": "13b03ec1429e4a5f81e61eefe7b20a7b",
+   "seconds": 7.5,
+   "source_key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf",
+   "tar_members": 475
+  },
+  {
+   "artifact_bytes": 1507746368,
+   "artifacts": 276,
+   "child_metrics": 2085,
+   "downloaded_bytes": 1507746368,
+   "metrics": 0,
+   "records": 13,
+   "run_id": "116eadde903a4f19a6597c19cdde575f",
+   "seconds": 28.4,
+   "source_key": "split2024_sensitivity/split2024-20261005",
+   "tar_members": 4180
+  }
+ ],
+ "records_planned": 126,
+ "seconds": 541.0
+}

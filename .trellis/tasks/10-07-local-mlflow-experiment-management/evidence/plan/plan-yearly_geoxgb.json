@@ -328,7 +328,7 @@
  ],
  "extras_manifest_sha256": "87357311c00e3038dea0be474966aa115a8757e8c964b24277d7dda804cc4985",
  "family": "yearly_geoxgb",
- "fingerprint": "8b9ca0b00a50e614a7f38d63a4eb0c996292e1b51b1b0d7745819153923d871c",
+ "fingerprint": "a86e6d33fad07295f9e715b07e06ac586b123a5c9440d64b51dbd1e9caf447b1",
  "include_manifest_sha256": "61703a51eab573fd5338516573efe10720fd6576b8f8b417977bdcf5e1e71d5e",
  "inventory": {
   "keys": {
@@ -339,8 +339,8 @@
      "inputs"
     ],
     "matched": 14,
-    "unique": 14,
-    "values": 14
+    "reference_occurrences": 14,
+    "unique_values": 14
    },
    "booster_sha256": {
     "decision": "required file digest",
@@ -350,8 +350,8 @@
      "replay"
     ],
     "matched": 1448,
-    "unique": 724,
-    "values": 1448
+    "reference_occurrences": 1448,
+    "unique_values": 724
    },
    "draws_sha256": {
     "decision": "required file digest",
@@ -361,8 +361,8 @@
      "report"
     ],
     "matched": 16,
-    "unique": 8,
-    "values": 16
+    "reference_occurrences": 16,
+    "unique_values": 8
    },
    "fit_source_sha256": {
     "decision": "informational: hash over the frozen fit-source inventory; no single-file form",
@@ -373,8 +373,8 @@
      "replay"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 3
+    "reference_occurrences": 3,
+    "unique_values": 1
    },
    "identity_sha256": {
     "bundle_dir_file_counts": [
@@ -387,8 +387,8 @@
      "replay"
     ],
     "matched": 1494,
-    "unique": 181,
-    "values": 1494
+    "reference_occurrences": 1494,
+    "unique_values": 181
    },
    "manifest_sha256": {
     "decision": "required file digest",
@@ -397,8 +397,8 @@
      "preflight"
     ],
     "matched": 1,
-    "unique": 1,
-    "values": 1
+    "reference_occurrences": 1,
+    "unique_values": 1
    },
    "map_sha256": {
     "decision": "required file digest",
@@ -408,8 +408,8 @@
      "preflight"
     ],
     "matched": 44,
-    "unique": 36,
-    "values": 44
+    "reference_occurrences": 44,
+    "unique_values": 36
    },
    "ordered_names_sha256": {
     "decision": "informational: hash of the ordered feature-name list; no single-file form",
@@ -418,8 +418,8 @@
      "inputs"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 1
    },
    "predict_summary_sha256": {
     "decision": "required file digest",
@@ -429,8 +429,8 @@
      "report"
     ],
     "matched": 2,
-    "unique": 2,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 2
    },
    "predictions_sha256": {
     "decision": "required file digest",
@@ -442,8 +442,8 @@
      "report"
     ],
     "matched": 20,
-    "unique": 8,
-    "values": 20
+    "reference_occurrences": 20,
+    "unique_values": 8
    },
    "prepared_manifest_sha256": {
     "decision": "required file digest",
@@ -453,8 +453,8 @@
      "preflight"
     ],
     "matched": 14,
-    "unique": 1,
-    "values": 14
+    "reference_occurrences": 14,
+    "unique_values": 1
    },
    "quartet_code_sha256": {
     "decision": "informational: hash over the package's model-fitting source set; no single-file form",
@@ -463,8 +463,8 @@
      "inputs"
     ],
     "matched": 0,
-    "unique": 1,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 1
    },
    "selection_sha256": {
     "decision": "required file digest",
@@ -473,8 +473,8 @@
      "inputs"
     ],
     "matched": 8,
-    "unique": 4,
-    "values": 8
+    "reference_occurrences": 8,
+    "unique_values": 4
    },
    "sha256": {
     "decision": "required file digest",
@@ -486,11 +486,19 @@
      "inputs"
     ],
     "matched": 36,
-    "unique": 39,
-    "values": 39
+    "reference_occurrences": 39,
+    "unique_values": 39
    }
   },
   "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 181,
+   "kind": "xgb",
+   "ledger_files": 2,
+   "ledger_reference_occurrences": 1494,
+   "unique_boosters_checked": 724,
+   "unique_identities": 181
+  },
   "name_hash_maps": {},
   "path_inventories": {
    "inputs/staging-manifest.json": {

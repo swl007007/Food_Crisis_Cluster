@@ -3415,7 +3415,7 @@
  ],
  "extras_manifest_sha256": "e1a0ad4254f5c4985b24650229848fa70566a2dff99949f3957fff1644eb16b2",
  "family": "mlp_fixed_map",
- "fingerprint": "d79509701ff2b34a23a371dff2b0a3f21dbbefa2c456bc38c4f6fed82dd7a18d",
+ "fingerprint": "fda15d10486dcef478628c259495c1adf8ce9a9537819e961318829f48545f4b",
  "include_manifest_sha256": "760130210e163bdcd06a2d2aa6b4439fc790076f89311aa9982c4cfccd0e66f9",
  "inventory": {
   "keys": {
@@ -3436,8 +3436,8 @@
      "replay"
     ],
     "matched": 128568,
-    "unique": 13260,
-    "values": 128568
+    "reference_occurrences": 128568,
+    "unique_values": 13260
    },
    "predictions_sha256": {
     "decision": "required file digest",
@@ -3448,8 +3448,8 @@
      "stage3"
     ],
     "matched": 240,
-    "unique": 60,
-    "values": 240
+    "reference_occurrences": 240,
+    "unique_values": 60
    },
    "stage3_summary_sha256": {
     "decision": "required file digest",
@@ -3459,8 +3459,8 @@
      "report"
     ],
     "matched": 2,
-    "unique": 2,
-    "values": 2
+    "reference_occurrences": 2,
+    "unique_values": 2
    },
    "transform_sha256": {
     "decision": "names a bundle stem",
@@ -3470,11 +3470,22 @@
      "replay"
     ],
     "matched": 192,
-    "unique": 4,
-    "values": 192
+    "reference_occurrences": 192,
+    "unique_values": 4
    }
   },
   "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 13260,
+   "kind": "mlp",
+   "ledger_files": 7,
+   "ledger_reference_occurrences": 128568,
+   "records_read": 13260,
+   "records_without_transform": 0,
+   "states_present": 13260,
+   "unique_identities": 13260,
+   "unique_transforms_referenced": 176
+  },
   "name_hash_maps": {},
   "path_inventories": {},
   "sources_scanned": 79,
