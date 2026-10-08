@@ -1,0 +1,9 @@
+{
+ "model_id": "m-ebe5de646f78422aa5ba00137c19165a",
+ "bundle_uri": "runs:/13b03ec1429e4a5f81e61eefe7b20a7b/models.tar",
+ "url": "http://localhost:5000/api/2.0/mlflow-artifacts/artifacts/1/13b03ec1429e4a5f81e61eefe7b20a7b/artifacts/models.tar",
+ "curl": "200 162252800",
+ "sha256": "adfe8926774131ac48cf54219d2b987a06ef8e3b2279f878dfb5731b7600e54c",
+ "expected": "adfe8926774131ac48cf54219d2b987a06ef8e3b2279f878dfb5731b7600e54c",
+ "match": true
+}

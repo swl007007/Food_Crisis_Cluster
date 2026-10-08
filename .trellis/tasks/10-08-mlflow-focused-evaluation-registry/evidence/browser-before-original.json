@@ -1,0 +1,164 @@
+[
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs",
+  "seconds_to_ready": 1.6659852999728173,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 13613638,
+  "requests": 50,
+  "js_heap_used_mb": 58.1,
+  "script_seconds": 0.35,
+  "task_seconds": 0.77,
+  "layout_seconds": 0.03,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs",
+  "seconds_to_ready": 1.879761500051245,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 13605798,
+  "requests": 47,
+  "js_heap_used_mb": 56.5,
+  "script_seconds": 0.45,
+  "task_seconds": 1.0,
+  "layout_seconds": 0.05,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs",
+  "seconds_to_ready": 1.805411700042896,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 13605798,
+  "requests": 47,
+  "js_heap_used_mb": 56.8,
+  "script_seconds": 0.44,
+  "task_seconds": 0.99,
+  "layout_seconds": 0.05,
+  "attempt": 3
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs?searchFilter=tags.arm%20%3D%20%27geo%27%20and%20tags.horizon%20%3D%20%271%27",
+  "seconds_to_ready": 1.3236994000617415,
+  "state": {
+   "rows": 15,
+   "matching": 12,
+   "cmp": 21
+  },
+  "search_requests": 2,
+  "search_bytes": 1942543,
+  "all_bytes": 10228042,
+  "requests": 51,
+  "js_heap_used_mb": 26.4,
+  "script_seconds": 0.34,
+  "task_seconds": 0.78,
+  "layout_seconds": 0.04,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs?searchFilter=tags.arm%20%3D%20%27geo%27%20and%20tags.horizon%20%3D%20%271%27",
+  "seconds_to_ready": 1.5651350999251008,
+  "state": {
+   "rows": 15,
+   "matching": 12,
+   "cmp": 21
+  },
+  "search_requests": 2,
+  "search_bytes": 1942543,
+  "all_bytes": 10228042,
+  "requests": 51,
+  "js_heap_used_mb": 26.5,
+  "script_seconds": 0.46,
+  "task_seconds": 1.02,
+  "layout_seconds": 0.05,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs?searchFilter=tags.arm%20%3D%20%27geo%27%20and%20tags.horizon%20%3D%20%271%27",
+  "seconds_to_ready": 1.510711699957028,
+  "state": {
+   "rows": 15,
+   "matching": 12,
+   "cmp": 21
+  },
+  "search_requests": 2,
+  "search_bytes": 1942543,
+  "all_bytes": 10228042,
+  "requests": 51,
+  "js_heap_used_mb": 26.2,
+  "script_seconds": 0.47,
+  "task_seconds": 1.08,
+  "layout_seconds": 0.05,
+  "attempt": 3
+ },
+ {
+  "url": "http://localhost:5000/#/compare-runs?runs=%5B%222c98649506eb40928e136c20b981e438%22%2C%20%228477a1cd28ec4baeb29855a1c59df073%22%2C%20%22cf4105f4476d4b1586cb1f9139c24f65%22%5D&experiments=%5B%221%22%5D",
+  "seconds_to_ready": 0.9470589999109507,
+  "state": {
+   "rows": 0,
+   "matching": null,
+   "cmp": 43
+  },
+  "search_requests": 1,
+  "search_bytes": 172194,
+  "all_bytes": 8200179,
+  "requests": 27,
+  "js_heap_used_mb": 29.3,
+  "script_seconds": 0.31,
+  "task_seconds": 1.05,
+  "layout_seconds": 0.05,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/compare-runs?runs=%5B%222c98649506eb40928e136c20b981e438%22%2C%20%228477a1cd28ec4baeb29855a1c59df073%22%2C%20%22cf4105f4476d4b1586cb1f9139c24f65%22%5D&experiments=%5B%221%22%5D",
+  "seconds_to_ready": 1.0238579000579193,
+  "state": {
+   "rows": 0,
+   "matching": null,
+   "cmp": 43
+  },
+  "search_requests": 1,
+  "search_bytes": 172194,
+  "all_bytes": 8200179,
+  "requests": 27,
+  "js_heap_used_mb": 28.0,
+  "script_seconds": 0.3,
+  "task_seconds": 0.98,
+  "layout_seconds": 0.06,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/compare-runs?runs=%5B%222c98649506eb40928e136c20b981e438%22%2C%20%228477a1cd28ec4baeb29855a1c59df073%22%2C%20%22cf4105f4476d4b1586cb1f9139c24f65%22%5D&experiments=%5B%221%22%5D",
+  "seconds_to_ready": 1.0089802000438794,
+  "state": {
+   "rows": 0,
+   "matching": null,
+   "cmp": 43
+  },
+  "search_requests": 1,
+  "search_bytes": 172194,
+  "all_bytes": 8200179,
+  "requests": 27,
+  "js_heap_used_mb": 31.2,
+  "script_seconds": 0.36,
+  "task_seconds": 0.94,
+  "layout_seconds": 0.04,
+  "attempt": 3
+ }
+]

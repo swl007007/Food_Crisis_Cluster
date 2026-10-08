@@ -1,0 +1,58 @@
+{
+ "apply": {
+  "experiment_id": "2",
+  "inputs_logged": 492,
+  "logged_models_created": 100,
+  "metrics_logged": 4424,
+  "model_versions_created": 100,
+  "registered_models_created": 68,
+  "rows_created": 492
+ },
+ "command": "apply",
+ "counts": {
+  "dataset_descriptors": 57,
+  "dataset_names": 46,
+  "finite": 4424,
+  "metric_names": [
+   "binary.accuracy",
+   "binary.f1",
+   "binary.f2",
+   "binary.precision",
+   "binary.recall",
+   "four_class.accuracy",
+   "four_class.macro_f1",
+   "n",
+   "q3_r2_projected"
+  ],
+  "model_versions": 100,
+  "models_by_kind": {
+   "diagnostic_local": 16,
+   "fresh_trained": 76,
+   "reused_comparator": 8
+  },
+  "na": 4,
+  "registered_models": 68,
+  "rows": 492,
+  "rows_by_family": {
+   "climate_perturbation": 32,
+   "history_window_sensitivity": 56,
+   "mlp_fixed_map": 248,
+   "p6_geoxgb": 32,
+   "split2024_sensitivity": 28,
+   "yearly_geoxgb": 96
+  }
+ },
+ "plan_fingerprint": "a4d69a0082a2ef848d0085d335b2d1ae35e61ae89430aee142f904a081e75fa3",
+ "seconds": 387.7,
+ "verify": {
+  "catalog_status": "complete",
+  "dataset_descriptors": 57,
+  "distinct_metric_names": 9,
+  "logged_models": 100,
+  "metrics": 4424,
+  "model_versions": 100,
+  "original_runs_unchanged": 126,
+  "registered_models": 68,
+  "rows": 492
+ }
+}

@@ -33,5 +33,16 @@ Operational log only; approval authority is the user and the supervisor (wN:p1).
    names, 100 versions (76 fresh, 16 diagnostic-local, 8 reused-comparator), 57 dataset
    descriptors over 46 names. P6/MLP/yearly/climate share main E_all/E_persist descriptors
    (same keys and truth); split2024 main and window are separate.
-5. [ ] Inventory + backup; apply; verify; repeat (no-op).
-6. [ ] Payload/latency and browser checks; Windows Models/Registry/Inputs; docs; evidence.
+5. [x] Pre-apply inventory (126 runs, sha d0147e5f…) and backup 20261008-pre-summary (DB sha
+   97e2b373…, 2,039 files). Apply of a4d69a00 (388 s): 68 registered models, 100 external
+   models, 100 versions, 492 rows, 4,424 metrics, 492 inputs; verify: 57 dataset descriptors,
+   9 metric names, original 126 runs unchanged, catalog_status complete. Post-apply backup
+   20261008-post-summary. Repeat apply: 492 noop, no creates, DB counts identical.
+6. [x] Payload (UI 100-row search): IPCCH 3,817,125 B (unchanged from baseline) vs Summary
+   710,070 B; warm API 0.06 s vs 0.37–0.62 s. Browser (headless Edge, 3 repeats, first rows):
+   original 1.67–1.88 s before / 1.54–1.81 s after; Summary 1.52–1.94 s; filtered Summary
+   1.01–1.39 s vs filtered original 1.32–1.57 s; compare ~0.7–1.1 s both. No first-paint
+   improvement claimed. Windows: Summary list/row/Models/Registry/version screenshots; bundle
+   download via a model tag URI (162,252,800 B, SHA matches model_bundle_sha256).
+   Spec: .trellis/spec/backend/local-mlflow-summary-catalog.md. README updated.
+7. [ ] Supervisor acceptance; close only on supervisor instruction (no auto audit).

@@ -1,0 +1,218 @@
+[
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs",
+  "seconds_to_ready": 1.5193477999418974,
+  "state": {
+   "rows": 301,
+   "matching": 100,
+   "cmp": 307
+  },
+  "search_requests": 2,
+  "search_bytes": 1065937,
+  "all_bytes": 10440897,
+  "requests": 49,
+  "js_heap_used_mb": 72.5,
+  "script_seconds": 0.66,
+  "task_seconds": 1.11,
+  "layout_seconds": 0.07,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs",
+  "seconds_to_ready": 1.938298900029622,
+  "state": {
+   "rows": 301,
+   "matching": 100,
+   "cmp": 307
+  },
+  "search_requests": 2,
+  "search_bytes": 1065937,
+  "all_bytes": 10433057,
+  "requests": 46,
+  "js_heap_used_mb": 64.1,
+  "script_seconds": 0.91,
+  "task_seconds": 1.5,
+  "layout_seconds": 0.1,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs",
+  "seconds_to_ready": 1.7951149999862537,
+  "state": {
+   "rows": 301,
+   "matching": 100,
+   "cmp": 307
+  },
+  "search_requests": 2,
+  "search_bytes": 1065937,
+  "all_bytes": 10433057,
+  "requests": 46,
+  "js_heap_used_mb": 63.1,
+  "script_seconds": 0.82,
+  "task_seconds": 1.38,
+  "layout_seconds": 0.08,
+  "attempt": 3
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs?searchFilter=tags.period%20%3D%20%27main%27%20and%20tags.cohort%20%3D%20%27E_all%27%20and%20tags.horizon%20%3D%20%271%27",
+  "seconds_to_ready": 1.008752099936828,
+  "state": {
+   "rows": 51,
+   "matching": 17,
+   "cmp": 57
+  },
+  "search_requests": 2,
+  "search_bytes": 475670,
+  "all_bytes": 9842790,
+  "requests": 46,
+  "js_heap_used_mb": 27.6,
+  "script_seconds": 0.43,
+  "task_seconds": 0.79,
+  "layout_seconds": 0.05,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs?searchFilter=tags.period%20%3D%20%27main%27%20and%20tags.cohort%20%3D%20%27E_all%27%20and%20tags.horizon%20%3D%20%271%27",
+  "seconds_to_ready": 1.073076399974525,
+  "state": {
+   "rows": 51,
+   "matching": 17,
+   "cmp": 57
+  },
+  "search_requests": 2,
+  "search_bytes": 475670,
+  "all_bytes": 9842790,
+  "requests": 46,
+  "js_heap_used_mb": 27.6,
+  "script_seconds": 0.42,
+  "task_seconds": 0.81,
+  "layout_seconds": 0.05,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs?searchFilter=tags.period%20%3D%20%27main%27%20and%20tags.cohort%20%3D%20%27E_all%27%20and%20tags.horizon%20%3D%20%271%27",
+  "seconds_to_ready": 1.3916364000178874,
+  "state": {
+   "rows": 51,
+   "matching": 17,
+   "cmp": 57
+  },
+  "search_requests": 2,
+  "search_bytes": 475670,
+  "all_bytes": 9842790,
+  "requests": 46,
+  "js_heap_used_mb": 26.9,
+  "script_seconds": 0.39,
+  "task_seconds": 0.73,
+  "layout_seconds": 0.04,
+  "attempt": 3
+ },
+ {
+  "url": "http://localhost:5000/#/compare-runs?runs=%5B%2250729f1917fb4bfa947d7396a9f74c67%22%2C%20%22b6309f5f6c5240c0ae0189027f5d1065%22%2C%20%22c28d63f6d9f54781986c9b6f3296febe%22%5D&experiments=%5B%222%22%5D",
+  "seconds_to_ready": 1.0663810999831185,
+  "state": {
+   "rows": 0,
+   "matching": null,
+   "cmp": 30
+  },
+  "search_requests": 1,
+  "search_bytes": 21454,
+  "all_bytes": 8050807,
+  "requests": 27,
+  "js_heap_used_mb": 38.4,
+  "script_seconds": 0.21,
+  "task_seconds": 0.79,
+  "layout_seconds": 0.04,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/compare-runs?runs=%5B%2250729f1917fb4bfa947d7396a9f74c67%22%2C%20%22b6309f5f6c5240c0ae0189027f5d1065%22%2C%20%22c28d63f6d9f54781986c9b6f3296febe%22%5D&experiments=%5B%222%22%5D",
+  "seconds_to_ready": 0.7304292999906465,
+  "state": {
+   "rows": 0,
+   "matching": null,
+   "cmp": 30
+  },
+  "search_requests": 1,
+  "search_bytes": 21454,
+  "all_bytes": 8050807,
+  "requests": 27,
+  "js_heap_used_mb": 38.3,
+  "script_seconds": 0.22,
+  "task_seconds": 0.71,
+  "layout_seconds": 0.03,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/compare-runs?runs=%5B%2250729f1917fb4bfa947d7396a9f74c67%22%2C%20%22b6309f5f6c5240c0ae0189027f5d1065%22%2C%20%22c28d63f6d9f54781986c9b6f3296febe%22%5D&experiments=%5B%222%22%5D",
+  "seconds_to_ready": 0.7313569999532774,
+  "state": {
+   "rows": 0,
+   "matching": null,
+   "cmp": 30
+  },
+  "search_requests": 1,
+  "search_bytes": 21454,
+  "all_bytes": 8050807,
+  "requests": 27,
+  "js_heap_used_mb": 38.2,
+  "script_seconds": 0.23,
+  "task_seconds": 0.7,
+  "layout_seconds": 0.03,
+  "attempt": 3
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs",
+  "seconds_to_ready": 1.5380032000830397,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 13605798,
+  "requests": 47,
+  "js_heap_used_mb": 49.1,
+  "script_seconds": 0.33,
+  "task_seconds": 0.77,
+  "layout_seconds": 0.04,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs",
+  "seconds_to_ready": 1.8051670000422746,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 13605798,
+  "requests": 47,
+  "js_heap_used_mb": 56.4,
+  "script_seconds": 0.42,
+  "task_seconds": 0.95,
+  "layout_seconds": 0.06,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs",
+  "seconds_to_ready": 1.7351075001060963,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 13605798,
+  "requests": 47,
+  "js_heap_used_mb": 56.4,
+  "script_seconds": 0.44,
+  "task_seconds": 0.95,
+  "layout_seconds": 0.05,
+  "attempt": 3
+ }
+]

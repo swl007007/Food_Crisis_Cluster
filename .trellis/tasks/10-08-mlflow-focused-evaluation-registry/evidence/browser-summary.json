@@ -1,0 +1,133 @@
+{
+ "method": "headless Edge via DevTools (IPCCHMLflow/browser_probe.py, Windows Python websockets), fresh tab, cache disabled, 3 repeats; ready = first runs-grid rows (compare: >3 table rows). Not a GPU desktop session.",
+ "before_original": {
+  "#/experiments/1/runs": {
+   "seconds_to_first_rows": [
+    1.67,
+    1.88,
+    1.81
+   ],
+   "search_bytes": 5339820,
+   "heap_mb": [
+    58.1,
+    56.5,
+    56.8
+   ],
+   "script_s": [
+    0.35,
+    0.45,
+    0.44
+   ]
+  },
+  "#/experiments/1/runs?searchFilter=tags.arm%20%3D%20%27geo%27%20and%20t": {
+   "seconds_to_first_rows": [
+    1.32,
+    1.57,
+    1.51
+   ],
+   "search_bytes": 1942543,
+   "heap_mb": [
+    26.4,
+    26.5,
+    26.2
+   ],
+   "script_s": [
+    0.34,
+    0.46,
+    0.47
+   ]
+  },
+  "#/compare-runs?runs=%5B%222c98649506eb40928e136c20b981e438%22%2C%20%22": {
+   "seconds_to_first_rows": [
+    0.95,
+    1.02,
+    1.01
+   ],
+   "search_bytes": 172194,
+   "heap_mb": [
+    29.3,
+    28.0,
+    31.2
+   ],
+   "script_s": [
+    0.31,
+    0.3,
+    0.36
+   ]
+  }
+ },
+ "after": {
+  "#/experiments/2/runs": {
+   "seconds_to_first_rows": [
+    1.52,
+    1.94,
+    1.8
+   ],
+   "search_bytes": 1065937,
+   "heap_mb": [
+    72.5,
+    64.1,
+    63.1
+   ],
+   "script_s": [
+    0.66,
+    0.91,
+    0.82
+   ]
+  },
+  "#/experiments/2/runs?searchFilter=tags.period%20%3D%20%27main%27%20and": {
+   "seconds_to_first_rows": [
+    1.01,
+    1.07,
+    1.39
+   ],
+   "search_bytes": 475670,
+   "heap_mb": [
+    27.6,
+    27.6,
+    26.9
+   ],
+   "script_s": [
+    0.43,
+    0.42,
+    0.39
+   ]
+  },
+  "#/compare-runs?runs=%5B%2250729f1917fb4bfa947d7396a9f74c67%22%2C%20%22": {
+   "seconds_to_first_rows": [
+    1.07,
+    0.73,
+    0.73
+   ],
+   "search_bytes": 21454,
+   "heap_mb": [
+    38.4,
+    38.3,
+    38.2
+   ],
+   "script_s": [
+    0.21,
+    0.22,
+    0.23
+   ]
+  },
+  "#/experiments/1/runs": {
+   "seconds_to_first_rows": [
+    1.54,
+    1.81,
+    1.74
+   ],
+   "search_bytes": 5339820,
+   "heap_mb": [
+    49.1,
+    56.4,
+    56.4
+   ],
+   "script_s": [
+    0.33,
+    0.42,
+    0.44
+   ]
+  }
+ }
+}

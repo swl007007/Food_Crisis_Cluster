@@ -1,0 +1,48 @@
+{
+ "IPCCH": [
+  {
+   "bytes": 3817125,
+   "seconds": 0.6207,
+   "runs": 100,
+   "metric_entries": 16831,
+   "distinct_metric_names": 1380
+  },
+  {
+   "bytes": 3817125,
+   "seconds": 0.4779,
+   "runs": 100,
+   "metric_entries": 16831,
+   "distinct_metric_names": 1380
+  },
+  {
+   "bytes": 3817125,
+   "seconds": 0.3733,
+   "runs": 100,
+   "metric_entries": 16831,
+   "distinct_metric_names": 1380
+  }
+ ],
+ "IPCCH Summary": [
+  {
+   "bytes": 710070,
+   "seconds": 0.5163,
+   "runs": 100,
+   "metric_entries": 900,
+   "distinct_metric_names": 9
+  },
+  {
+   "bytes": 710070,
+   "seconds": 0.0611,
+   "runs": 100,
+   "metric_entries": 900,
+   "distinct_metric_names": 9
+  },
+  {
+   "bytes": 710070,
+   "seconds": 0.0654,
+   "runs": 100,
+   "metric_entries": 900,
+   "distinct_metric_names": 9
+  }
+ ]
+}

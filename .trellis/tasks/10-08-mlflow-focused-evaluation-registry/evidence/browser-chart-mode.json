@@ -1,0 +1,74 @@
+[
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs?compareRunsMode=CHART",
+  "seconds_to_ready": 1.7662176999729127,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 15243161,
+  "requests": 54,
+  "js_heap_used_mb": 68.3,
+  "script_seconds": 0.39,
+  "task_seconds": 0.98,
+  "layout_seconds": 0.05,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/1/runs?compareRunsMode=CHART",
+  "seconds_to_ready": 1.8234235999407247,
+  "state": {
+   "rows": 16,
+   "matching": 101,
+   "cmp": 19
+  },
+  "search_requests": 2,
+  "search_bytes": 5339820,
+  "all_bytes": 15235321,
+  "requests": 51,
+  "js_heap_used_mb": 68.9,
+  "script_seconds": 0.51,
+  "task_seconds": 1.29,
+  "layout_seconds": 0.07,
+  "attempt": 2
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs?compareRunsMode=CHART",
+  "seconds_to_ready": 1.6581893999828026,
+  "state": {
+   "rows": 301,
+   "matching": 100,
+   "cmp": 304
+  },
+  "search_requests": 2,
+  "search_bytes": 1065937,
+  "all_bytes": 12062580,
+  "requests": 50,
+  "js_heap_used_mb": 64.4,
+  "script_seconds": 0.56,
+  "task_seconds": 1.82,
+  "layout_seconds": 0.15,
+  "attempt": 1
+ },
+ {
+  "url": "http://localhost:5000/#/experiments/2/runs?compareRunsMode=CHART",
+  "seconds_to_ready": 1.659360000048764,
+  "state": {
+   "rows": 301,
+   "matching": 100,
+   "cmp": 304
+  },
+  "search_requests": 2,
+  "search_bytes": 1065937,
+  "all_bytes": 12062580,
+  "requests": 50,
+  "js_heap_used_mb": 48.2,
+  "script_seconds": 0.55,
+  "task_seconds": 1.67,
+  "layout_seconds": 0.13,
+  "attempt": 2
+ }
+]

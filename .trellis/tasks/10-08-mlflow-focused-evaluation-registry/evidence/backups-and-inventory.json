@@ -1,0 +1,35 @@
+{
+ "pre_apply_backup": {
+  "dest": "/home/swl007007/ipcch-mlflow-backups/20261008-pre-summary",
+  "db_sha256": "97e2b373f97390d1d73ece693d952c65a0e59247c42f31ba00550c22c239670c",
+  "counts": {
+   "experiments": 2,
+   "integrity": "ok",
+   "latest_metrics": 20528,
+   "params": 810,
+   "runs": 126,
+   "tags": 4063
+  },
+  "artifact_files": 2039,
+  "artifact_bytes": 8334768125
+ },
+ "post_apply_backup": {
+  "dest": "/home/swl007007/ipcch-mlflow-backups/20261008-post-summary",
+  "db_sha256": "43104fa7bcbdc1e1c5151036c47b69029da5183bb269f6f966cfb63c74fa15b3",
+  "counts": {
+   "experiments": 3,
+   "integrity": "ok",
+   "latest_metrics": 24952,
+   "params": 810,
+   "runs": 618,
+   "tags": 16761
+  },
+  "artifact_files": 2631,
+  "artifact_bytes": 8336154328
+ },
+ "pre_apply_inventory": {
+  "path": "/home/swl007007/.local/share/ipcch-mlflow/summary/inventory-pre-apply.json",
+  "runs": 126,
+  "sha256": "d0147e5f61117970c65199debb94a61a2f04a8be3e4b42cb006b7c047dd4d8c7"
+ }
+}

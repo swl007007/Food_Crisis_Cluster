@@ -21,6 +21,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Local Forecasting Experiments](./local-forecasting-experiments.md) | Isolated no-leak experiment contracts | Active |
 | [Local MLflow Import](./local-mlflow-import.md) | Importing completed runs into the local MLflow store: inventory, cohort identity, reconcile, verify, backup | Active |
+| [Local MLflow Summary/Catalog](./local-mlflow-summary-catalog.md) | IPCCH Summary experiment, external model catalog, row-free evaluation Inputs | Active |
 
 ---
 

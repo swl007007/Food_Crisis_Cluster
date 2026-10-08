@@ -119,6 +119,61 @@ inputs and yearly staged inputs are the P6 prepared files and are referenced to 
 parent (`manifests/shared.json`). Retained artifacts stay readable if the Temp run
 folders are deleted; retraining would still need the original inputs.
 
+## IPCCH Summary, Models and evaluation Inputs
+
+`summary_catalog.py` adds a compact comparison surface without touching the original
+`IPCCH` records (they keep every detailed metric, report and artifact).
+
+- **Experiment `IPCCH Summary`**: 492 rows, one per original evaluation view x saved own
+  panel. Metrics use 9 names only: `binary.accuracy|precision|recall|f1|f2`,
+  `four_class.accuracy|macro_f1`, `q3_r2_projected`, `n`. Period and cohort are tags
+  (`tags.period`, `tags.cohort`); also `tags.family|horizon|arm|seed|arm_kind`.
+  Undefined values are absent (tag `na_metrics`, reasons in `summary/row.json`).
+  Each row links back: `tags.original_run_id`, `original_run_link`, `summary/row.json`.
+- **Default view**: open `#/experiments/<summary id>/runs` and filter, e.g.
+  `tags.period = 'main' AND tags.cohort = 'E_all' AND tags.horizon = '1'`. Compare rows only
+  when `tags.dataset_name` AND `tags.dataset_digest` are equal (same evaluation keys and
+  truth). Persistence appears only on persistence-available cohorts (E_persist type).
+  `selected_dates` rows (window probe) are 11 selected dates, not full periods. No global
+  best-model ranking across unmatched cohorts.
+- **Gaps by design**: split2024 H12 main has no saved panel; the window probe has
+  `new_local_support` only at H1/H6; deltas, intervals, by-gate and per-date diagnostics
+  stay in the original records.
+- **Models / Registry**: 68 registered models `ipcch.{family}.h{H}.{arm}` with 100 versions
+  (one per seed/source run; version numbers are MLflow allocation). Each version points to
+  an external LoggedModel (`{family}-h{H}-{arm}-seed{seed}`) whose Source run is the
+  original IPCCH evaluation view. External = catalog descriptor only: **not loadable, no
+  inference, nothing retrained**. Weights stay in the source parent's `models.tar`
+  (tags `model_bundle_uri`, `model_bundle_sha256`, `member_manifest_uri`); the archive holds
+  several arms. READY status means the descriptor exists, not that the model can be served.
+  Persistence has no model entry.
+- **Inputs (Datasets)**: each Summary row has one evaluation dataset input
+  `ipcch-eval.h{H}.{period}.{cohort}` with a 32-hex digest of a descriptor (keys hash,
+  truth hash, n, month range, truth definition); the full descriptor SHA and hashes are in
+  the input tags and `summary/row.json`. No rows are uploaded; this is not the GenAI
+  Datasets catalog and not a training dataset. Rows of different families share a dataset
+  only when keys and truth match exactly.
+
+```bash
+$PY IPCCHMLflow/summary_catalog.py plan                               # read-only; prints the plan fingerprint
+$PY IPCCHMLflow/summary_catalog.py inventory --out INV.json             # original experiment snapshot
+$PY IPCCHMLflow/backup_restore.py backup --dest BACKUP                  # fresh backup (required)
+$PY IPCCHMLflow/summary_catalog.py apply --plan-fingerprint FP --inventory INV.json --backup BACKUP
+$PY IPCCHMLflow/summary_catalog.py verify --plan-fingerprint FP --inventory INV.json
+```
+
+Measured 2026-10-08 (task evidence): the UI's 100-row search is 0.71 MB for the Summary vs
+3.82 MB for `IPCCH`; in headless Edge both pages show first rows in about 1.5–1.9 s, so the
+Summary reduces payload and server time but not first-paint time. `browser_probe.py`
+(Windows Python with `websockets`, DevTools port 9714) reproduces the browser measurement.
+UI notes: the runs list's Models column shows logged-model outputs, so it reads "-" here; the
+model appears on the run page under Logged models (Input) and per metric.
+
+`apply` refuses a changed plan, a stale backup or a changed original experiment; it is
+serial (import lock), journals new IDs under `summary/`, resumes the same plan, reads each
+row back before marking it complete, and sets the experiment tag `catalog_status=complete`
+last. Re-running is a no-op (no new runs, models, versions, inputs or metric history).
+
 ## Adding a future run
 
 1. Add one family entry to `sources.json` (root, report, prediction pattern, arms with
