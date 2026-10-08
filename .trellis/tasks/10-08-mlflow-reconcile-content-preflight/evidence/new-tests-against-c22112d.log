@@ -1,0 +1,53 @@
+test_same_size_archived_content_change_refused_before_any_write (test_import.ImporterTest.test_same_size_archived_content_change_refused_before_any_write) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+/home/swl007007/.venvs/ipcch-mlflow/lib/python3.12/site-packages/mlflow/store/tracking/sqlalchemy_store.py:327: SADeprecationWarning: The ``noload`` loader strategy is deprecated and will be removed in a future release.  This option produces incorrect results by returning ``None`` for related items. (deprecated since: 2.1)
+  sqlalchemy.orm.configure_mappers()
+2026/10/08 08:58:44 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/08 08:58:44 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.1}
+{"command": "import", "records_planned": 13, "read_dependencies": [], "experiment_id": "1", "seconds": 3.6}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+FAIL
+test_interrupted_reconcile_resumes_same_plan_only (test_import.ImporterTest.test_interrupted_reconcile_resumes_same_plan_only) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/08 08:58:47 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/08 08:58:47 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.2}
+{"command": "import", "records_planned": 13, "read_dependencies": [], "experiment_id": "1", "seconds": 2.8}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "parent": "resumed", "children_reconciled": 2, "children_unchanged": 10, "children_not_imported": 0, "artifact_changes": [], "seconds": 0.6}
+{"command": "reconcile", "records_planned": 13, "read_dependencies": [], "experiment_id": "1", "seconds": 0.6}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "run_id": "686778eabd504c3b8865c45540ec5d2a", "records": 13, "metrics": 0, "artifacts": 41, "artifact_bytes": 28567, "tar_members": 6, "downloaded_bytes": 28567, "child_metrics": 552, "seconds": 0.6}
+{"command": "verify", "records_planned": 13, "read_dependencies": [], "experiment_id": "1", "seconds": 0.6}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "created": 0, "resumed": 0, "noop": 13, "metrics_logged": 0, "artifacts_uploaded": 0, "seconds": 0.6}
+FAIL
+
+======================================================================
+FAIL: test_same_size_archived_content_change_refused_before_any_write (test_import.ImporterTest.test_same_size_archived_content_change_refused_before_any_write)
+----------------------------------------------------------------------
+extract.SourceConflict: fx/fx-run: source/prepared/keys.csv checksum mismatch after download
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/ipcch-old2/IPCCHMLflow/tests/test_import.py", line 375, in test_same_size_archived_content_change_refused_before_any_write
+    with self.assertRaisesRegex(SourceConflict, "content identity differs"):
+AssertionError: "content identity differs" does not match "fx/fx-run: source/prepared/keys.csv checksum mismatch after download"
+
+======================================================================
+FAIL: test_interrupted_reconcile_resumes_same_plan_only (test_import.ImporterTest.test_interrupted_reconcile_resumes_same_plan_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ipcch-old2/IPCCHMLflow/tests/test_import.py", line 422, in test_interrupted_reconcile_resumes_same_plan_only
+    self.assertEqual(resumed_log, first_log)                 # first run's entries kept on resume
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: b'{\n "changes": [],\n "fingerprint": "297d813384ccec1c1080[230 chars]"\n}' != b'{\n "changes": [\n  {\n   "action": "superseded",\n   "ke[559 chars]"\n}'
+
+----------------------------------------------------------------------
+Ran 2 tests in 9.282s
+
+FAILED (failures=2)
+{"command": "import", "records_planned": 13, "read_dependencies": [], "experiment_id": "1", "seconds": 0.6}

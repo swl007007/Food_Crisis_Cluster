@@ -59,7 +59,7 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 | XGB identity lacks its own `q*.ubj` with the ledger digest, or `record.json` | `SourceConflict` |
 | MLP identity lacks `record.json`, `state.pt` or its referenced transform | `SourceConflict` |
 | existing record has a different fingerprint | `import` stops; only `reconcile` may proceed |
-| reconcile would change a metric/param/existing tag/archived source or model, in the parent or ANY child | `SourceConflict` before any write (whole family validated first; store unchanged) |
+| reconcile would change a metric/param/existing tag/archived source or model, in the parent or ANY child | `SourceConflict` before any write (whole family validated first; store unchanged). Archived content is compared by SHA256 per `source/…`/extras file and per `models.tar` member against the record's retained `manifests/*.json` — never by size alone |
 | reconcile interrupted after validation (parent `import_status=reconciling`) | `import` refuses; `reconcile` resumes only when `reconcile_target` equals the current plan fingerprint, else stops |
 | `--family F` | plans F plus transitive read dependencies (`shared_inputs.parent`, `inventory.reference_parents`), dependencies first; writes/verify only F; unknown family refused |
 | equal-size artifact corruption | caught by deep verify, including the repeat-import no-op |
@@ -78,7 +78,7 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 
 ## 6. Tests Required
 
-`$PY -m unittest discover -s IPCCHMLflow/tests -v` (25 tests). Assertion points:
+`$PY -m unittest discover -s IPCCHMLflow/tests -v` (26 tests). Assertion points:
 - NA not logged and present in `na.json`; subset cohort digests differ; count mismatch refused.
 - Interrupted import resumes without duplicates (two interruption points); idempotent no-op.
 - Missing/changed retained booster refused; own booster required even if another
@@ -87,7 +87,9 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 - Reconcile: additive change keeps run IDs + superseded evidence; value change refused;
   empty shell rebound then resumed; a conflict in the LAST child leaves every record and
   artifact unchanged and the original plan importable; an interrupted reconcile resumes
-  the same plan only (one reconciliation log per child).
+  the same plan only (one reconciliation log per child; the parent log keeps the first run's
+  entries). A same-size content change in an archived file or bundle member is refused
+  with the store unchanged.
 - `--family` with a reference-parent-only dependency plans the parent but writes only the
   selected family.
 - Restore check downloads through an independent scratch server and refuses port 5000.

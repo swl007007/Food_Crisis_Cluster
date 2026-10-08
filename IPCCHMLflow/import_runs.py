@@ -620,6 +620,16 @@ def _download_bytes(client, rid: str, path: str) -> bytes:
         return Path(client.download_artifacts(rid, path, tmp)).read_bytes()
 
 
+def _retained_manifest(client, rid: str, have: dict, name: str, old16: str) -> list:
+    """The record's own manifest for ``name``: its superseded copy if a reconcile already replaced
+    it (resume), else the current one. Small JSON downloads only."""
+    stem, _, ext = name.partition(".")
+    for path in (f"manifests/superseded/{stem}.{old16}.{ext}", f"manifests/{name}"):
+        if path in have:
+            return json.loads(_download_bytes(client, rid, path))
+    raise SourceConflict(f"{rid}: retained manifests/{name} missing -- refuse")
+
+
 def _supersede(client, rid: str, have: dict, path: str, new: bytes, old16: str, prefix: str) -> dict | None:
     """Keep the current artifact under ``{prefix}superseded/`` before replacing it. Returns a record or None."""
     if path not in have:
@@ -694,6 +704,17 @@ def reconcile_family(client, exp, plan: dict, run_ids: dict, fail_after: str | N
         for n, info in tar_info.items():
             if have.get(n) != info["bytes"]:
                 raise SourceConflict(f"{skey}: {n} differs -- refuse")
+        # content identity of every archived item, against the record's own retained manifests
+        retained = {"include.json": plan["include"], "extras.json": plan["extras"],
+                    **{f"{n}.members.json": m for n, m in plan["bundle"].items()}}
+        for name, planned in retained.items():
+            kept = _retained_manifest(client, rid, have, name, old_fp[:16])
+            want = {r["path"]: r["sha256"] for r in planned}
+            got = {r["path"]: r["sha256"] for r in kept}
+            if want != got:
+                diff = sorted(k for k in set(want) | set(got) if want.get(k) != got.get(k))
+                raise SourceConflict(f"{skey}: archived content identity differs from retained manifests/{name} "
+                                     f"({len(diff)} paths, e.g. {diff[:3]}) -- refuse")
     todo = []
     for v in plan["views"]:
         cr = find_run(client, exp.experiment_id, v["key"])
@@ -744,10 +765,16 @@ def reconcile_family(client, exp, plan: dict, run_ids: dict, fail_after: str | N
         rec = _supersede(client, rid, have, path, json.dumps(obj, indent=1, sort_keys=True).encode(), old16, "manifests/")
         if rec:
             out["artifact_changes"].append(rec)
+    log_path = f"manifests/superseded/reconciliation-{old16}.json"
     log = {"record": skey, "previous_fingerprint": old_fp, "fingerprint": plan["fingerprint"], "note": RECONCILE_NOTE,
            "changes": out["artifact_changes"]}
-    upload(client, rid, {}, f"manifests/superseded/reconciliation-{old16}.json",
-           data=json.dumps(log, indent=1, sort_keys=True).encode())
+    if log_path in have:   # resume: keep the first run's entries, add only newly completed ones
+        log = json.loads(_download_bytes(client, rid, log_path))
+        seen = {c["path"] for c in log["changes"]}
+        log["changes"] += [c for c in out["artifact_changes"] if c["path"] not in seen]
+    data = json.dumps(log, indent=1, sort_keys=True).encode()
+    if log_path not in have or _download_bytes(client, rid, log_path) != data:
+        upload(client, rid, {}, log_path, data=data)
     client.set_tag(rid, "import_fingerprint", plan["fingerprint"])
     client.set_tag(rid, "reconciliation", RECONCILE_NOTE)
     out["parent"] = "reconciled" if mode == "reconcile" else "resumed"

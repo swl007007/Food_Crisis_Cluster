@@ -362,6 +362,28 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)   # original plan still usable
         self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
 
+    def test_same_size_archived_content_change_refused_before_any_write(self):
+        self.run_cmd("import")
+        before = self.store_state()
+        for rel, changed in (("prepared/keys.csv", "a,b\n3,4\n"),          # archived source file
+                             ("models/h01/booster.json", '{"h": "9"}')):   # models.tar member
+            path = self.base / "src" / rel
+            original = path.read_text()
+            self.assertEqual(len(changed), len(original))
+            path.write_text(changed)
+            try:
+                with self.assertRaisesRegex(SourceConflict, "content identity differs"):
+                    self.run_cmd("reconcile")
+            finally:
+                path.write_text(original)
+            self.assertEqual(self.store_state(), before)        # tags, metrics, params, artifact sizes
+        c, runs = self.client_runs()
+        parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"][0]
+        stored = Path(c.download_artifacts(parent.info.run_id, "source/prepared/keys.csv", str(self.base)))
+        self.assertEqual(stored.read_text(), "a,b\n1,2\n")    # archived bytes unchanged
+        self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)
+        self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
+
     def test_interrupted_reconcile_resumes_same_plan_only(self):
         self.run_cmd("import")
         _, before = self.client_runs()
@@ -374,6 +396,11 @@ class ImporterTest(unittest.TestCase):
             parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"][0]
             self.assertEqual(parent.data.tags["import_status"], "reconciling")
             target = parent.data.tags["reconcile_target"]
+            log_path = [k for k in import_runs.existing_artifacts(c, parent.info.run_id)
+                        if k.startswith("manifests/superseded/reconciliation-")]
+            self.assertEqual(len(log_path), 1)
+            first_log = Path(c.download_artifacts(parent.info.run_id, log_path[0], str(self.base / "l1"))).read_bytes()
+            self.assertIn("plan-summary.json", json.dumps([x["path"] for x in json.loads(first_log)["changes"]]))
             with self.assertRaisesRegex(SourceConflict, "interrupted"):
                 self.run_cmd("import")                           # import refuses, state kept
             _, other = self.patched(tag_value="e" * 64)
@@ -391,6 +418,8 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual(sorted(x.info.run_id for x in before), sorted(x.info.run_id for x in after))
         parent = [x for x in after if x.data.tags.get("record_kind") == "source_run"][0]
         self.assertEqual(parent.data.tags["import_fingerprint"], target)
+        resumed_log = Path(c.download_artifacts(parent.info.run_id, log_path[0], str(self.base / "l2"))).read_bytes()
+        self.assertEqual(resumed_log, first_log)                 # first run's entries kept on resume
         self.assertEqual(parent.data.tags["import_status"], "complete")
         for x in after:
             if x.data.tags.get("arm") == "geo":

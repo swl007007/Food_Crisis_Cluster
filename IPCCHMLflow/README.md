@@ -103,7 +103,8 @@ $PY IPCCHMLflow/import_runs.py reconcile                           # one-time, s
   manifests/view JSON, keeping the old copies under `manifests/superseded/` or
   `view/superseded/` with a reconciliation log, and records `import_fingerprint.previous`.
   Nothing is deleted and run IDs are kept. The parent and every child are validated
-  read-only first; any refused change leaves the whole family untouched. If a reconcile is
+  read-only first (archived files and model-bundle members by SHA256 against the record's
+  retained manifests); any refused change leaves the whole family untouched. If a reconcile is
   interrupted, the parent stays `import_status=reconciling` with `reconcile_target`;
   `import` then stops, and `reconcile` resumes only with that same plan. Used once on
   2026-10-07 (27 records; see the task evidence).
