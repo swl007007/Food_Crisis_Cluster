@@ -27,7 +27,18 @@ Operational log only; approval authority is the supervisor (wN:p1) and the user.
    Fix during planning: one route-reason key contained `:`; leaf names are sanitised to
    `_` (source path kept in provenance). Yearly `inputs/source/**` (3 staged P6 config
    files, 42 KB) added to the archived set.
-6. [ ] Import six families incrementally (each record verified before `complete`).
-7. [ ] Full `verify`, idempotent rerun, Windows artifact download, UI check.
-8. [ ] Backup + scratch restore; env snapshot after install.
+6. [~] Import. P6 (8ad47dc9…, 13 records) and MLP (5ba96181…, 53 records) imported and
+   deep-verified at import. Paused after MLP per supervisor checkpoint review of 8c88f48;
+   an empty yearly parent shell (c19cd675…, in_progress, 0 metrics/params/artifacts) was
+   created in the 1 s before the kill.
+6a. [x] Supervisor fixed list (evidence/supervisor-checkpoint-8c88f48.md), commit a9a2598:
+   original-inventory reconciliation (inventory.py + per-family policy), scratch-server
+   restore check, deep verified no-op, by_gate key binding (MLP 142 / yearly 42 subsets),
+   split E_persist deltas (11 blocks), metric-name collision guard. Tests 15/15.
+6b. [x] Reconcile command prepared and tested (e44128e, tests 18/18), not run. Proposal:
+   evidence/ipcch-mlflow-reconciliation-proposal-a9a2598.md; diff:
+   evidence/reconciliation-diff-before.json. Awaiting supervisor review.
+7. [ ] Reconcile, import yearly/climate/window/split, full verify, verified no-op rerun,
+   Windows artifact download, UI check.
+8. [ ] Backup + scratch-server restore check; env snapshot after install.
 9. [ ] Evidence to supervisor; hold close/push/merge.

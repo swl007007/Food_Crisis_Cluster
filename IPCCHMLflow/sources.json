@@ -88,7 +88,8 @@
       "path": "input_identities\\.|\\.inputs\\.|checks\\.identities\\.|derived_from|source_schema",
       "reason": "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
      }
-    ]
+    ],
+    "model_contract": "xgb"
    }
   },
   {
@@ -188,7 +189,8 @@
       "reason": "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
      }
     ],
-    "note": "MLP ledgers carry identities but no model-file digests: model/transform coverage is path-level (directory/stem per ledger identity), not content-level"
+    "note": "MLP ledgers carry identities but no model-file digests: model/transform coverage is path-level (directory/stem per ledger identity), not content-level",
+    "model_contract": "mlp"
    }
   },
   {
@@ -295,7 +297,8 @@
       "prefix": "inputs/"
      }
     ],
-    "note": "unselected Stage1 candidate maps resolve to the P6 parent's retained stage1 files"
+    "note": "unselected Stage1 candidate maps resolve to the P6 parent's retained stage1 files",
+    "model_contract": "xgb"
    }
   },
   {
@@ -384,7 +387,8 @@
       "path": "input_identities\\.|\\.inputs\\.|checks\\.identities\\.|derived_from|source_schema",
       "reason": "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
      }
-    ]
+    ],
+    "model_contract": "xgb"
    }
   },
   {
@@ -452,7 +456,13 @@
      {
       "file": "fit-ledger.json",
       "field": "artifact",
-      "min_files": 5
+      "members": [
+       "q2.ubj",
+       "q3.ubj",
+       "q4.ubj",
+       "q5.ubj",
+       "record.json"
+      ]
      }
     ],
     "note": "source-hashes.json records repository source at probe time (outside this root); archived as-is, not reconciled to current repository files"
@@ -549,7 +559,8 @@
       "file": "config/source-provenance\\.json$",
       "reason": "provenance of package source copied from repository files at recorded commits (outside the run root); archived as recorded"
      }
-    ]
+    ],
+    "model_contract": "xgb"
    }
   }
  ]

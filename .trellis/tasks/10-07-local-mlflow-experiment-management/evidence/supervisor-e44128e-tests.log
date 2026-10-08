@@ -1,0 +1,145 @@
+test_gate_subsets_bound_to_saved_routes (test_import.ExtractionGuardTest.test_gate_subsets_bound_to_saved_routes) ... ok
+test_same_source_readd_is_idempotent_and_cross_check_needs_equal_values (test_import.ExtractionGuardTest.test_same_source_readd_is_idempotent_and_cross_check_needs_equal_values) ... ok
+test_sanitized_name_collision_refused (test_import.ExtractionGuardTest.test_sanitized_name_collision_refused) ... ok
+test_concurrent_import_refused (test_import.ImporterTest.test_concurrent_import_refused) ... /usr/lib/python3.12/traceback.py:241: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/ipcch-mlflow-test-4nt_g33m/store/import.lock' mode='a+' encoding='UTF-8'>
+  tb.tb_frame.clear()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_conflicting_identity_refused (test_import.ImporterTest.test_conflicting_identity_refused) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+/home/swl007007/.venvs/ipcch-mlflow/lib/python3.12/site-packages/mlflow/store/tracking/sqlalchemy_store.py:327: SADeprecationWarning: The ``noload`` loader strategy is deprecated and will be removed in a future release.  This option produces incorrect results by returning ``None`` for related items. (deprecated since: 2.1)
+  sqlalchemy.orm.configure_mappers()
+2026/10/07 22:40:38 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:40:38 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.4}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 4.4}
+planned fx: {"include": [7, 14041], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+ok
+test_idempotent_rerun_is_noop (test_import.ImporterTest.test_idempotent_rerun_is_noop) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:40:41 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:40:41 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.4}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 3.0}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "created": 0, "resumed": 0, "noop": 13, "metrics_logged": 0, "artifacts_uploaded": 0, "seconds": 0.7}
+ok
+test_import_verify_and_na_not_logged (test_import.ImporterTest.test_import_verify_and_na_not_logged) ... {"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 0.8}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:40:45 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:40:45 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.6}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 3.1}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "run_id": "146c11c8c96747eea279e022311b0c54", "records": 13, "metrics": 0, "artifacts": 41, "artifact_bytes": 28102, "tar_members": 5, "downloaded_bytes": 28102, "child_metrics": 552, "seconds": 0.8}
+ok
+test_interrupted_before_bundle_resumes (test_import.ImporterTest.test_interrupted_before_bundle_resumes) ... {"command": "verify", "records_planned": 13, "experiment_id": "1", "seconds": 0.8}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:40:49 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:40:49 INFO mlflow.store.db.utils: Updating database tables
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "created": 12, "resumed": 1, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 34, "seconds": 1.6}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 1.7}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "run_id": "8f63839a06f34366b3d04378b96b0ad5", "records": 13, "metrics": 0, "artifacts": 41, "artifact_bytes": 28102, "tar_members": 5, "downloaded_bytes": 28102, "child_metrics": 552, "seconds": 0.7}
+ok
+test_interrupted_import_resumes_without_duplicates (test_import.ImporterTest.test_interrupted_import_resumes_without_duplicates) ... {"command": "verify", "records_planned": 13, "experiment_id": "1", "seconds": 0.8}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:41:00 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:41:00 INFO mlflow.store.db.utils: Updating database tables
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "created": 9, "resumed": 1, "noop": 3, "metrics_logged": 414, "artifacts_uploaded": 18, "seconds": 1.4}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 1.4}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "run_id": "486b7febfbce4d8ca115a2788cd5e8ec", "records": 13, "metrics": 0, "artifacts": 41, "artifact_bytes": 28102, "tar_members": 5, "downloaded_bytes": 28102, "child_metrics": 552, "seconds": 0.8}
+ok
+test_missing_or_changed_retained_model_refused (test_import.ImporterTest.test_missing_or_changed_retained_model_refused) ... {"command": "verify", "records_planned": 13, "experiment_id": "1", "seconds": 0.8}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+ok
+test_noop_detects_equal_size_artifact_corruption (test_import.ImporterTest.test_noop_detects_equal_size_artifact_corruption) ... {"command": "plan", "records_planned": 13, "seconds": 0.0}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:41:04 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:41:04 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.4}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 3.2}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+ok
+test_reconcile_additive_change_keeps_runs_and_superseded_evidence (test_import.ImporterTest.test_reconcile_additive_change_keeps_runs_and_superseded_evidence) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:41:08 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:41:08 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.4}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 2.9}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "parent": "reconciled", "children_reconciled": 4, "children_unchanged": 8, "children_not_imported": 0, "artifact_changes": [{"path": "manifests/plan-summary.json", "action": "superseded", "kept_as": "manifests/superseded/plan-summary.0c014a9cebb8bc9f.json", "old_sha256": "0578e1b7357f48edda1bfd801faac32eee677e0ac554405490c9782a1d15126d", "new_sha256": "bcee8cfb7fecdabc71cb541dac7d1672261d6ee98843469dcd0a9e54ee5e39f4"}], "seconds": 1.0}
+{"command": "reconcile", "records_planned": 13, "experiment_id": "1", "seconds": 1.0}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "run_id": "f13de5c0ce524247b77b18c954b48afb", "records": 13, "metrics": 0, "artifacts": 41, "artifact_bytes": 28177, "tar_members": 5, "downloaded_bytes": 28177, "child_metrics": 552, "seconds": 0.8}
+{"command": "verify", "records_planned": 13, "experiment_id": "1", "seconds": 1.0}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "created": 0, "resumed": 0, "noop": 13, "metrics_logged": 0, "artifacts_uploaded": 0, "seconds": 0.9}
+ok
+test_reconcile_rebinds_empty_shell_then_import_resumes_it (test_import.ImporterTest.test_reconcile_rebinds_empty_shell_then_import_resumes_it) ... 2026/10/07 22:41:14 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:41:14 INFO mlflow.store.db.utils: Updating database tables
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 0.9}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "parent": "empty shell rebound", "children_reconciled": 0, "children_unchanged": 0, "children_not_imported": 0, "artifact_changes": [], "seconds": 0.0}
+{"command": "reconcile", "records_planned": 13, "experiment_id": "1", "seconds": 0.0}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "created": 12, "resumed": 1, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.4}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 1.5}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "run_id": "0c585b2b4e864cdbaac903018591d251", "records": 13, "metrics": 0, "artifacts": 41, "artifact_bytes": 28102, "tar_members": 5, "downloaded_bytes": 28102, "child_metrics": 552, "seconds": 0.8}
+ok
+test_reconcile_refuses_value_change (test_import.ImporterTest.test_reconcile_refuses_value_change) ... {"command": "verify", "records_planned": 13, "experiment_id": "1", "seconds": 0.8}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:41:18 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:41:18 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.6}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 3.2}
+planned fx: {"include": [7, 14041], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+ok
+test_split_combined_persist_delta_logged (test_import.ImporterTest.test_split_combined_persist_delta_logged) ... ok
+test_subset_cohort_digests_and_count_check (test_import.ImporterTest.test_subset_cohort_digests_and_count_check) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/07 22:41:21 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/07 22:41:21 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.4}
+ok
+test_unclassified_digest_key_refused (test_import.ImporterTest.test_unclassified_digest_key_refused) ... ok
+test_restore_check_downloads_through_independent_scratch_server (test_import.RestoreScratchServerTest.test_restore_check_downloads_through_independent_scratch_server) ... {"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 3.0}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [5, 62]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+🏃 View run fx H1 pool seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/ee305c21be674ccd95f947a9f9572ec0
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H1 geo seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/b5329cd6a4524b8db00f8b286d12d95d
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H1 persistence seednone at: http://127.0.0.1:44323/#/experiments/1/runs/eadcea9879d64c2b8d2e83a3310914ec
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H3 pool seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/b8e13315fb4c4d9e9786d470288e6966
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H3 geo seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/aa5bcbb40dc1413497ebe09e99d7e494
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H3 persistence seednone at: http://127.0.0.1:44323/#/experiments/1/runs/7e8e7d551adc4048b811691ec57524ff
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H6 pool seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/9601583d8d2c46fc8f2bc26072f93687
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H6 geo seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/7f92630f4a6d43f4bbea39a2f7d2528b
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H6 persistence seednone at: http://127.0.0.1:44323/#/experiments/1/runs/a960a6cca88c4de5aab599df98b8079c
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H12 pool seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/2bf85a8c3a4c474a95c8df921f82d151
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H12 geo seed42 at: http://127.0.0.1:44323/#/experiments/1/runs/07baa77ea840490991dbd0f964e6e0ea
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx H12 persistence seednone at: http://127.0.0.1:44323/#/experiments/1/runs/6581de4a914348c9a2c031ca4fd108e5
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+🏃 View run fx:fx-run at: http://127.0.0.1:44323/#/experiments/1/runs/f26190311a2f4ce5b8bf5a905ff32480
+🧪 View experiment at: http://127.0.0.1:44323/#/experiments/1
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 15.6}
+/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHMLflow/backup_restore.py:157: ResourceWarning: unclosed file <_io.BufferedWriter name='/tmp/ipcch-mlflow-restore-test-q1lev_e4/scratch/scratch-server.log'>
+  proc = scratch_server(scratch, port)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 75.690s
+
+OK
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 15.8}

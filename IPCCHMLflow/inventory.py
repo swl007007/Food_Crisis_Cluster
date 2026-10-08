@@ -13,9 +13,19 @@ family's ``inventory`` policy (sources.json):
   informational_keys    content/identity hashes with no single-file form
   exempt                scoped (key, JSON-path regex[, file regex]) exceptions with a reason
 
-plus optional path inventories ([{path, bytes, sha256}]), name->hash maps and
-ledger artifact-directory lists. Unclassified keys or unmatched required
-values raise SourceConflict.
+plus optional path inventories ([{path, bytes, sha256}]), name->hash maps,
+ledger artifact-directory lists with exact members, and a per-identity model
+contract read from the run's own ledgers (model_requests*.jsonl):
+
+  xgb  each ledger identity has exactly one bundle directory holding record.json
+       and, for every declared booster ``q``, ``q.ubj`` with the declared digest
+       (its own file, not any file with that digest)
+  mlp  each ledger identity has record.json and state.pt; the transform named by
+       record.identity.transform_sha256 exists as <store>/transforms/<digest>.npz
+       (path-level: MLP stores record no file digests for states/transforms)
+
+Counts distinguish reference occurrences from unique values/identities.
+Unclassified keys or unmatched required values raise SourceConflict.
 """
 
 from __future__ import annotations
@@ -81,10 +91,10 @@ def reconcile(fam: dict, root: Path, files: dict, parents: dict) -> dict:
         report["sources_scanned"] += 1
         for obj in _load(root / rel):
             for key, path, val in _leaves(obj):
-                k = report["keys"].setdefault(key, {"values": 0, "unique": set(), "matched": 0, "exempted": 0,
-                                                    "decision": None, "files": set()})
-                k["values"] += 1
-                k["unique"].add(val)
+                k = report["keys"].setdefault(key, {"reference_occurrences": 0, "unique_values": set(), "matched": 0,
+                                                    "exempted": 0, "decision": None, "files": set()})
+                k["reference_occurrences"] += 1
+                k["unique_values"].add(val)
                 k["files"].add(rel.split("/")[0])
                 ex = next((r for kk, rx, fx, r in exempt if kk == key and rx.search(path) and fx.search(rel)), None)
                 if key in required:
@@ -113,7 +123,7 @@ def reconcile(fam: dict, root: Path, files: dict, parents: dict) -> dict:
                 else:
                     failures.append(f"{rel}{path}: digest key {key!r} has no inventory decision")
     for k in report["keys"].values():
-        k["unique"] = len(k["unique"])
+        k["unique_values"] = len(k["unique_values"])
         k["files"] = sorted(k["files"])
         if "exempt_reasons" in k:
             k["exempt_reasons"] = sorted(k["exempt_reasons"])
@@ -147,8 +157,10 @@ def reconcile(fam: dict, root: Path, files: dict, parents: dict) -> dict:
         st = {"entries": len(entries), "matched": 0}
         for e in entries:
             d = PurePosixPath(e[spec["field"]].replace("\\", "/")).name
-            if dir_files.get(d, 0) < spec.get("min_files", 1):
-                failures.append(f"{spec['file']}: artifact dir {d} missing or has too few files")
+            members = {PurePosixPath(m["path"]).name for m in bundle if PurePosixPath(m["path"]).parent.name == d}
+            need = set(spec.get("members", []))
+            if not members or not need <= members:
+                failures.append(f"{spec['file']}: artifact dir {d} missing or lacks {sorted(need - members)}")
             else:
                 st["matched"] += 1
         report["ledger_dirs"][spec["file"]] = st
@@ -156,8 +168,80 @@ def reconcile(fam: dict, root: Path, files: dict, parents: dict) -> dict:
         if kind == "dir" and key in report["keys"]:
             sizes = sorted({dir_files[d] for d in dirs})
             report["keys"][key]["bundle_dir_file_counts"] = sizes
+    if pol.get("model_contract"):
+        report["model_contract"] = model_contract(pol["model_contract"], root, inv_files, bundle, by_path, failures)
     if failures:
         raise SourceConflict(f"{fam['family']}: original-inventory reconciliation failed "
                              f"({len(failures)}): " + "; ".join(failures[:8]))
     report["status"] = "reconciled"
     return report
+
+
+def model_contract(kind: str, root: Path, inv_files: list, bundle: list, by_path: dict, failures: list) -> dict:
+    ledgers = [rel for rel in inv_files if PurePosixPath(rel).name.startswith("model_requests")
+               and rel.endswith(".jsonl")]
+    dirs = defaultdict(set)
+    for m in bundle:
+        parent = PurePosixPath(m["path"]).parent
+        if HEX.match(parent.name):
+            dirs[parent.name].add(str(parent))
+    refs, boosters = 0, defaultdict(dict)
+    for rel in ledgers:
+        for line in _load(root / rel):
+            ident = line.get("identity_sha256")
+            if not ident:
+                continue
+            refs += 1
+            for q, digest in (line.get("booster_sha256") or {}).items() if kind == "xgb" else ():
+                prev = boosters[ident].get(q)
+                if prev is not None and digest is not None and prev != digest:
+                    failures.append(f"{rel}: identity {ident[:12]} declares two digests for {q}")
+                if digest is not None:
+                    boosters[ident][q] = digest
+            boosters.setdefault(ident, {})
+    st = {"kind": kind, "ledger_files": len(ledgers), "ledger_reference_occurrences": refs,
+          "unique_identities": len(boosters), "identities_satisfied": 0}
+    if kind == "xgb":
+        st["unique_boosters_checked"] = 0
+    else:
+        st.update(records_read=0, states_present=0, unique_transforms_referenced=0, records_without_transform=0)
+        transforms = set()
+    for ident, qs in sorted(boosters.items()):
+        paths = dirs.get(ident, set())
+        if len(paths) != 1:
+            failures.append(f"model identity {ident[:12]}: {len(paths)} bundle directories")
+            continue
+        d = next(iter(paths))
+        ok = f"{d}/record.json" in by_path
+        if not ok:
+            failures.append(f"model {ident[:12]}: record.json missing")
+        if kind == "xgb":
+            for q, digest in qs.items():
+                r = by_path.get(f"{d}/{q}.ubj")
+                if r is None or r["sha256"] != digest:
+                    failures.append(f"model {ident[:12]}: own booster {q}.ubj missing or digest differs")
+                    ok = False
+                else:
+                    st["unique_boosters_checked"] += 1
+        else:
+            if f"{d}/state.pt" in by_path:
+                st["states_present"] += 1
+            else:
+                failures.append(f"model {ident[:12]}: state.pt missing")
+                ok = False
+            if f"{d}/record.json" in by_path:
+                rec = json.loads((root / f"{d}/record.json").read_text())
+                st["records_read"] += 1
+                t = (rec.get("identity") or {}).get("transform_sha256")
+                if t is None:
+                    st["records_without_transform"] += 1
+                else:
+                    transforms.add(t)
+                    store = PurePosixPath(d).parents[2]
+                    if f"{store}/transforms/{t}.npz" not in by_path:
+                        failures.append(f"model {ident[:12]}: referenced transform {t[:12]} missing")
+                        ok = False
+        st["identities_satisfied"] += ok
+    if kind == "mlp":
+        st["unique_transforms_referenced"] = len(transforms)
+    return st

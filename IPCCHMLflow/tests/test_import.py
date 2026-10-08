@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import backup_restore  # noqa: E402
 import extract  # noqa: E402
 import import_runs  # noqa: E402
+import inventory  # noqa: E402
 from extract import SourceConflict  # noqa: E402
 
 H = ("1", "3", "6", "12")
@@ -78,6 +79,7 @@ def make_fixture(root: Path) -> None:
     booster = b"fixture booster bytes"
     (root / f"models/ab/{MODEL_ID}").mkdir(parents=True)
     (root / f"models/ab/{MODEL_ID}/q2.ubj").write_bytes(booster)
+    (root / f"models/ab/{MODEL_ID}/record.json").write_text("{}")
     (root / "stage3/model_requests.jsonl").write_text(json.dumps(
         {"identity_sha256": MODEL_ID, "booster_sha256": {"q2": hashlib.sha256(booster).hexdigest()}}) + "\n")
     (root / "report").mkdir()
@@ -96,7 +98,8 @@ def make_cfg(base: Path) -> dict:
         "bundle": {"models.tar": "models/**"},
         "exclude": {"prepared/X_*.npy": "large matrix; referenced by hash"}, "extra": [],
         "tags": {"truth": "synthetic", "periods": "main/supplementary"},
-        "inventory": {"required_digest_keys": ["booster_sha256"], "name_keys": {"identity_sha256": "dir"}}}]}
+        "inventory": {"required_digest_keys": ["booster_sha256"], "name_keys": {"identity_sha256": "dir"},
+                      "model_contract": "xgb"}}]}
 
 
 class ImporterTest(unittest.TestCase):
@@ -134,7 +137,7 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual(r["families"][0]["created"], 13)
         v = self.run_cmd("verify")["families"][0]
         self.assertEqual((v["records"], v["child_metrics"]), (13, 552))
-        self.assertEqual(v["tar_members"], 5)
+        self.assertEqual(v["tar_members"], 6)
         c, runs = self.client_runs()
         geo = [x for x in runs if x.data.tags.get("source_key") == "fx/fx-run/H1/geo/seed42"][0]
         self.assertNotIn("main.E_all.binary.f1", geo.data.metrics)          # undefined -> not logged
@@ -196,7 +199,7 @@ class ImporterTest(unittest.TestCase):
             self.run_cmd("import", "--fail-after", "parent-manifests")
         r = self.run_cmd("import")["families"][0]
         self.assertEqual((r["resumed"], r["created"]), (1, 12))
-        self.assertEqual(self.run_cmd("verify")["families"][0]["tar_members"], 5)
+        self.assertEqual(self.run_cmd("verify")["families"][0]["tar_members"], 6)
 
     def test_idempotent_rerun_is_noop(self):
         self.run_cmd("import")
@@ -214,10 +217,19 @@ class ImporterTest(unittest.TestCase):
         with self.assertRaisesRegex(SourceConflict, "booster_sha256"):
             self.run_cmd("plan")
         model.unlink()                                        # retained model disappeared
-        (model.parent / "record.json").write_text("{}")       # keep the directory itself
         with self.assertRaisesRegex(SourceConflict, "booster_sha256"):
             self.run_cmd("plan")
         self.assertEqual(inv["records_planned"], 13)
+
+    def test_own_booster_required_even_if_another_directory_has_same_digest(self):
+        own = self.base / f"src/models/ab/{MODEL_ID}/q2.ubj"
+        other = self.base / f"src/models/cd/{'cd' + '1' * 62}"
+        other.mkdir(parents=True)
+        (other / "q2.ubj").write_bytes(own.read_bytes())      # same SHA in a different identity directory
+        self.run_cmd("plan")
+        own.unlink()
+        with self.assertRaisesRegex(SourceConflict, "own booster q2.ubj missing"):
+            self.run_cmd("plan")
 
     def test_unclassified_digest_key_refused(self):
         rep = self.base / "src/report/report.json"
@@ -400,3 +412,50 @@ class RestoreScratchServerTest(unittest.TestCase):
             res = backup_restore.restore_check(base / "backup", base / "scratch", port=free_port())
             self.assertEqual(res["ipcch_runs_by_kind"], {"source_run": 1, "evaluation_view": 12})
             self.assertEqual([d["artifact"] for d in res["downloaded"]], ["manifests/plan-summary.json", "models.tar"])
+
+
+class MLPModelContractTest(unittest.TestCase):
+    """Drives inventory.reconcile with the mlp contract on a tiny store layout."""
+    IDENT = "ee" + "2" * 62
+    TRANSFORM = "f" * 64
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(prefix="ipcch-mlflow-mlp-contract-")
+        self.root = Path(self.tmp.name)
+        d = self.root / f"models/models/ee/{self.IDENT}"
+        d.mkdir(parents=True)
+        (d / "record.json").write_text(json.dumps({"identity": {"transform_sha256": self.TRANSFORM}}))
+        (d / "state.pt").write_bytes(b"state")
+        (self.root / "models/transforms").mkdir()
+        (self.root / f"models/transforms/{self.TRANSFORM}.npz").write_bytes(b"transform")
+        (self.root / "model_requests_stage3_rep42.jsonl").write_text(json.dumps({"identity_sha256": self.IDENT}) + "\n")
+        self.fam = {"family": "mlpfx", "inventory": {"name_keys": {"identity_sha256": "dir"}, "model_contract": "mlp"}}
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def reconcile(self):
+        recs = []
+        for p in sorted(self.root.rglob("*")):
+            if p.is_file():
+                recs.append({"path": p.relative_to(self.root).as_posix(), "bytes": p.stat().st_size,
+                             "sha256": hashlib.sha256(p.read_bytes()).hexdigest()})
+        files = {"include": [r for r in recs if not r["path"].startswith("models/")],
+                 "bundle": {"models.tar": [r for r in recs if r["path"].startswith("models/")]},
+                 "excluded": [], "shared": []}
+        return inventory.reconcile(self.fam, self.root, files, {})
+
+    def test_complete_store_reconciles(self):
+        mc = self.reconcile()["model_contract"]
+        self.assertEqual((mc["unique_identities"], mc["states_present"], mc["unique_transforms_referenced"]), (1, 1, 1))
+
+    def test_missing_state_refused(self):
+        (self.root / f"models/models/ee/{self.IDENT}/state.pt").unlink()
+        with self.assertRaisesRegex(SourceConflict, "state.pt missing"):
+            self.reconcile()
+
+    def test_missing_referenced_transform_refused(self):
+        (self.root / f"models/transforms/{self.TRANSFORM}.npz").unlink()
+        (self.root / "models/transforms/other.npz").write_bytes(b"x")   # keep the directory non-empty
+        with self.assertRaisesRegex(SourceConflict, "referenced transform"):
+            self.reconcile()
