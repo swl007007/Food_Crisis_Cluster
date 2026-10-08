@@ -1,0 +1,5 @@
+{"file": ".trellis/tasks/10-07-local-mlflow-experiment-management/prd.md", "reason": "User-adopted scope/storage/host and proposed final acceptance."}
+{"file": ".trellis/tasks/10-07-local-mlflow-experiment-management/design.md", "reason": "Local service, six-source comparison layout, artifact retention and idempotent import contract."}
+{"file": ".trellis/tasks/10-07-local-mlflow-experiment-management/implement.md", "reason": "Ordered isolated install/import/verification and lifecycle transition."}
+{"file": ".trellis/tasks/10-07-local-mlflow-experiment-management/research/findings.md", "reason": "Read-only environment and source location evidence; acceptance differs from lifecycle."}
+{"file": ".trellis/tasks/10-07-local-mlflow-experiment-management/research/report-layout.md", "reason": "Exact six report schemas, sensitivity cohort limits and current MLflow interface references."}
