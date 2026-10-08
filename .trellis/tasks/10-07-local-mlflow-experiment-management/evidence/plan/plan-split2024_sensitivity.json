@@ -34,8 +34,197 @@
  ],
  "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
  "family": "split2024_sensitivity",
- "fingerprint": "61ad0d5b75cf35fd973bd57d022ba8cdc889cb6abe4a354759bffb69a09eea2c",
+ "fingerprint": "16b7b1be6cfac4e184ab0653f7dbd6305c242b0a4eaeca421bb561affd15f490",
  "include_manifest_sha256": "eb6f6c50775e83f2f6c890b340a42827c675e2adfc3dd2bfb325bdab57e97465",
+ "inventory": {
+  "keys": {
+   "X_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 497,
+    "unique": 4,
+    "values": 497
+   },
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 14,
+    "unique": 14,
+    "values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 6892,
+    "unique": 3343,
+    "values": 6892
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 6,
+    "unique": 6,
+    "values": 6
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     5
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 1723,
+    "unique": 836,
+    "values": 1723
+   },
+   "keys_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 497,
+    "unique": 4,
+    "values": 497
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 44,
+    "unique": 36,
+    "values": 44
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 2
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 8,
+    "unique": 4,
+    "values": 8
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 15,
+    "unique": 1,
+    "values": 15
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 3,
+    "unique": 1,
+    "values": 3
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 12,
+    "unique": 4,
+    "values": 12
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "provenance of package source copied from repository files at recorded commits (outside the run root); archived as recorded",
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 55,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "final-inventory.json"
+    ],
+    "matched": 4379,
+    "unique": 4406,
+    "values": 4434
+   },
+   "source_file_sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "pre-patch upstream source identity; the patched copies and calendar-only.patch are archived"
+    ],
+    "exempted": 4,
+    "files": [
+     "plan.json"
+    ],
+    "matched": 24,
+    "unique": 28,
+    "values": 28
+   },
+   "stage3_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 1,
+    "unique": 1,
+    "values": 1
+   },
+   "variant_file_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "plan.json"
+    ],
+    "matched": 28,
+    "unique": 28,
+    "values": 28
+   }
+  },
+  "ledger_dirs": {},
+  "name_hash_maps": {},
+  "path_inventories": {
+   "final-inventory.json": {
+    "entries": 4379,
+    "matched": 4379
+   }
+  },
+  "sources_scanned": 65,
+  "status": "reconciled"
+ },
  "report_sha256": "96ca1ba70235496862cb029127e717e9537ee09660a83bbdac7d7c2eac242e0e",
  "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3",
  "shared": [],
@@ -47,7 +236,7 @@
     1420913441
    ]
   },
-  "child_metrics": 1986,
+  "child_metrics": 2085,
   "child_na": 28,
   "children": 12,
   "excluded": [
@@ -80,9 +269,9 @@
    "na": 2
   },
   {
-   "fingerprint": "773eec240f378bf2414ea7ebd475274762479ebbb9ab5b51bd3345581fea4ebd",
+   "fingerprint": "ab0f5e1e40f9849c122d1ef57e79681ef747ca4634be26ee67bc8349db0f3212",
    "key": "split2024_sensitivity/split2024-20261005/H1/geo/seed42",
-   "metrics": 356,
+   "metrics": 383,
    "na": 0
   },
   {
@@ -98,9 +287,9 @@
    "na": 2
   },
   {
-   "fingerprint": "68cd27a83800edbcc18a0605c5b4d78c6a99ebbb5d38bb1c3113547abac4c46a",
+   "fingerprint": "d52947ee4514224cce67551417d1f07f20a8ffd0b0fe1250e69e7293376ea1b8",
    "key": "split2024_sensitivity/split2024-20261005/H3/geo/seed42",
-   "metrics": 361,
+   "metrics": 388,
    "na": 0
   },
   {
@@ -116,9 +305,9 @@
    "na": 2
   },
   {
-   "fingerprint": "b071009d2cca5746f34771bbf73a31e25b0a545af56e25e08a3f6886e87701f2",
+   "fingerprint": "a7466b9de597813faf659628c454e2c1ef7558d12d98780ea75a3f061dbf3626",
    "key": "split2024_sensitivity/split2024-20261005/H6/geo/seed42",
-   "metrics": 362,
+   "metrics": 389,
    "na": 0
   },
   {
@@ -134,9 +323,9 @@
    "na": 4
   },
   {
-   "fingerprint": "d3f62d563fbcd1f42fde9387072ed98abe5bbe0a413e1beb216a2e3ee9ae1982",
+   "fingerprint": "b8ef8dd99211ea8fc7fea4b0ce11232120a4ab53a23af7377fa79d22ee07dedd",
    "key": "split2024_sensitivity/split2024-20261005/H12/geo/seed42",
-   "metrics": 245,
+   "metrics": 263,
    "na": 8
   },
   {

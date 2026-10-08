@@ -5,8 +5,80 @@
  "excluded": [],
  "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
  "family": "history_window_sensitivity",
- "fingerprint": "dc3af29cfd031446c7d7d0ec53bb74ac2ba08068524203bb98b561dbcd5908fc",
+ "fingerprint": "c86f13a9ff0eb1e6a8505b795513021f2cfbf1b15e7e0f47c6575da871401ee8",
  "include_manifest_sha256": "5aba34cafb33d9134e4368f79fd75bc3664a222617ba9accf81aabadf43be47e",
+ "inventory": {
+  "keys": {
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 14,
+    "unique": 14,
+    "values": 14
+   },
+   "manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 1,
+    "unique": 1,
+    "values": 1
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 1
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 1
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 2,
+    "files": [
+     "start.json"
+    ],
+    "matched": 0,
+    "unique": 2,
+    "values": 2
+   }
+  },
+  "ledger_dirs": {
+   "fit-ledger.json": {
+    "entries": 95,
+    "matched": 95
+   }
+  },
+  "name_hash_maps": {
+   "artifact-hashes.json": {
+    "entries": 494,
+    "matched": 494
+   }
+  },
+  "path_inventories": {},
+  "sources_scanned": 8,
+  "status": "reconciled"
+ },
  "report_sha256": "7473e77cb3296275db4ad8996cab2d2a20fe8ce574c1fb2999fa51356b9bc8b1",
  "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-window-probe-20261005-zckpq9hf",
  "shared": [],

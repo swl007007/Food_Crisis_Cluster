@@ -34,8 +34,169 @@
  ],
  "extras_manifest_sha256": "b72609bc5127d4070e2a968a9ee3f362a89ae6fed5baf3080b5f1e36b4683966",
  "family": "climate_perturbation",
- "fingerprint": "0a7fd28776c356f782eed4a4b1c8500757ffc72e77f09b0a22615db11b435889",
+ "fingerprint": "ce2dc2bce8aaeae3947d003b292c2298894619d8ab8dcb3573790a1a7b65e739",
  "include_manifest_sha256": "1f4393dd9ba88fdc9245f1882b0c8f4d09e187fa87603ba2a01297dcc3f88a0f",
+ "inventory": {
+  "keys": {
+   "X_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 451,
+    "unique": 4,
+    "values": 451
+   },
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "prepared"
+    ],
+    "matched": 14,
+    "unique": 14,
+    "values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 14600,
+    "unique": 4367,
+    "values": 14600
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "compare-p6",
+     "report"
+    ],
+    "matched": 16,
+    "unique": 16,
+    "values": 16
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     5
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 3650,
+    "unique": 1092,
+    "values": 3650
+   },
+   "keys_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 451,
+    "unique": 4,
+    "values": 451
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 40,
+    "unique": 36,
+    "values": 40
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "prepared"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 1
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report",
+     "stage3"
+    ],
+    "matched": 8,
+    "unique": 4,
+    "values": 8
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 10,
+    "unique": 1,
+    "values": 10
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 2
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 8,
+    "unique": 4,
+    "values": 8
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 4,
+    "files": [
+     "prepared"
+    ],
+    "matched": 0,
+    "unique": 4,
+    "values": 4
+   },
+   "stage3_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report"
+    ],
+    "matched": 1,
+    "unique": 1,
+    "values": 1
+   }
+  },
+  "ledger_dirs": {},
+  "name_hash_maps": {},
+  "path_inventories": {},
+  "sources_scanned": 52,
+  "status": "reconciled"
+ },
  "report_sha256": "85f598f3c39292df4f566fd97ef4e927ae861dd0f8692a2fc36e969f49602b73",
  "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005",
  "shared": [],

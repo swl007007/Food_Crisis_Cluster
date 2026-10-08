@@ -34,8 +34,168 @@
  ],
  "extras_manifest_sha256": "001fddd2e2629515a07d63850a94d77b41a9ad8173cbb1038ffcdd6c5cb31913",
  "family": "p6_geoxgb",
- "fingerprint": "d5da27a7d82c66997d42f570fca94e9d29528b1dc7d612c25e761894e2269a11",
+ "fingerprint": "def85c10c376933d46f738cdb995626951452338c219b1441a46e0e6b1d5b625",
  "include_manifest_sha256": "32f638356861c32721273d62100481a4d80135b164f00f682216ec0a323033a2",
+ "inventory": {
+  "keys": {
+   "X_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 429,
+    "unique": 4,
+    "values": 429
+   },
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "prepared"
+    ],
+    "matched": 14,
+    "unique": 14,
+    "values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 17420,
+    "unique": 4899,
+    "values": 17420
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report"
+    ],
+    "matched": 8,
+    "unique": 8,
+    "values": 8
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     5
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 4355,
+    "unique": 1225,
+    "values": 4355
+   },
+   "keys_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 429,
+    "unique": 4,
+    "values": 429
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 40,
+    "unique": 36,
+    "values": 40
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "prepared"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 1
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report",
+     "stage3"
+    ],
+    "matched": 8,
+    "unique": 4,
+    "values": 8
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 10,
+    "unique": 1,
+    "values": 10
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 2
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 8,
+    "unique": 4,
+    "values": 8
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 2,
+    "files": [
+     "prepared"
+    ],
+    "matched": 0,
+    "unique": 2,
+    "values": 2
+   },
+   "stage3_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report"
+    ],
+    "matched": 1,
+    "unique": 1,
+    "values": 1
+   }
+  },
+  "ledger_dirs": {},
+  "name_hash_maps": {},
+  "path_inventories": {},
+  "sources_scanned": 51,
+  "status": "reconciled"
+ },
  "report_sha256": "142d717dedaf8afb573b544743cc6856c0d33d18e1b79a82543bb2dc514691f0",
  "root": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b",
  "shared": [],

@@ -328,8 +328,179 @@
  ],
  "extras_manifest_sha256": "87357311c00e3038dea0be474966aa115a8757e8c964b24277d7dda804cc4985",
  "family": "yearly_geoxgb",
- "fingerprint": "1d5474eb53fb937deb9aed952f815490be95c535ca86c85975ac5dbe3fd82710",
+ "fingerprint": "8b9ca0b00a50e614a7f38d63a4eb0c996292e1b51b1b0d7745819153923d871c",
  "include_manifest_sha256": "61703a51eab573fd5338516573efe10720fd6576b8f8b417977bdcf5e1e71d5e",
+ "inventory": {
+  "keys": {
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 14,
+    "unique": 14,
+    "values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "predict",
+     "replay"
+    ],
+    "matched": 1448,
+    "unique": 724,
+    "values": 1448
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "replay",
+     "report"
+    ],
+    "matched": 16,
+    "unique": 8,
+    "values": 16
+   },
+   "fit_source_sha256": {
+    "decision": "informational: hash over the frozen fit-source inventory; no single-file form",
+    "exempted": 0,
+    "files": [
+     "predict",
+     "preflight",
+     "replay"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 3
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     7
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "predict",
+     "replay"
+    ],
+    "matched": 1494,
+    "unique": 181,
+    "values": 1494
+   },
+   "manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "preflight"
+    ],
+    "matched": 1,
+    "unique": 1,
+    "values": 1
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs",
+     "preflight"
+    ],
+    "matched": 44,
+    "unique": 36,
+    "values": 44
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 2
+   },
+   "predict_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "replay",
+     "report"
+    ],
+    "matched": 2,
+    "unique": 2,
+    "values": 2
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs",
+     "predict",
+     "replay",
+     "report"
+    ],
+    "matched": 20,
+    "unique": 8,
+    "values": 20
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs",
+     "preflight"
+    ],
+    "matched": 14,
+    "unique": 1,
+    "values": 14
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 0,
+    "unique": 1,
+    "values": 2
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 8,
+    "unique": 4,
+    "values": 8
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 3,
+    "files": [
+     "inputs"
+    ],
+    "matched": 36,
+    "unique": 39,
+    "values": 39
+   }
+  },
+  "ledger_dirs": {},
+  "name_hash_maps": {},
+  "path_inventories": {
+   "inputs/staging-manifest.json": {
+    "entries": 36,
+    "matched": 36
+   }
+  },
+  "sources_scanned": 47,
+  "status": "reconciled"
+ },
  "report_sha256": "3246115ed39d013959a4c165b09d01869eef6e170d67ea0892503d9bababd4a2",
  "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007",
  "shared": [
@@ -600,13 +771,13 @@
  "unlisted": [],
  "views": [
   {
-   "fingerprint": "0cd019bf05493a9b683e09e6b60e146cfd8226fe8d6ef4709b01006e0e673b1d",
+   "fingerprint": "aeccfa3433a8b0f0855f936c2ac018168ee2193c87fb8757ac17d39ee9ce8f6a",
    "key": "yearly_geoxgb/yearly-formal-20261007/H1/pool/seed42",
    "metrics": 354,
    "na": 2
   },
   {
-   "fingerprint": "94ef8992968da1316eac741cfa6a2d7d1e81d59bba7c34d640c1f64d3db8316d",
+   "fingerprint": "32312f6f1b8c4cc6eceada47358365f0bc688768514ac9c8c62e829e385dcd41",
    "key": "yearly_geoxgb/yearly-formal-20261007/H1/local/seed42",
    "metrics": 248,
    "na": 8
@@ -624,13 +795,13 @@
    "na": 2
   },
   {
-   "fingerprint": "fd8ec8668435d30ab60e3a82338c3758f4a5016b15cc3c77ad9743554af8d604",
+   "fingerprint": "a4571bc56644494dc26d036ca36630cbe05e83232b536f7cc0ff5fac2787d227",
    "key": "yearly_geoxgb/yearly-formal-20261007/H3/pool/seed42",
    "metrics": 355,
    "na": 1
   },
   {
-   "fingerprint": "f161cbaec2d7b82459a7766fe408554b1f43d5e0f1dc3916fdc8df91d1432479",
+   "fingerprint": "e1c40bf43aca2b6859ecba2ce338f91b67a0b050a168e9eb35ed511d851dcbf5",
    "key": "yearly_geoxgb/yearly-formal-20261007/H3/local/seed42",
    "metrics": 250,
    "na": 6
@@ -648,13 +819,13 @@
    "na": 2
   },
   {
-   "fingerprint": "9383be8dcab7517eb89f76c644dda37736c7761f31e568cb4d4c1af37958ba63",
+   "fingerprint": "cc1de9c8ebd635d02978b80668627c66c91b6f2af0ca40bd5a440fa11f670dec",
    "key": "yearly_geoxgb/yearly-formal-20261007/H6/pool/seed42",
    "metrics": 328,
    "na": 0
   },
   {
-   "fingerprint": "100fb7ee9e84bbfe5ab718558a64606cfa88fb75f550896a314c4e83f9da9d04",
+   "fingerprint": "a540e0b85aae35cb1ce5d4b6823a22f93c839265ca4a08d2d9e374c8b24367aa",
    "key": "yearly_geoxgb/yearly-formal-20261007/H6/local/seed42",
    "metrics": 206,
    "na": 4
@@ -672,13 +843,13 @@
    "na": 2
   },
   {
-   "fingerprint": "bd9e90393f397c58ae9cca6e9d54045d4a9ced93aadd1332adcf082e6bcffbd5",
+   "fingerprint": "a6f67ab8d5a6712816ae8e0a54c1e3bb99835e5f49d4d5d02ba032ab41d91b34",
    "key": "yearly_geoxgb/yearly-formal-20261007/H12/pool/seed42",
    "metrics": 341,
    "na": 1
   },
   {
-   "fingerprint": "d508751a0ad7dde6fe855a0ec1b9620cb431fd4fd55820ad364a5b347f8d8b42",
+   "fingerprint": "95a848734ca6a19efb197cf1a5627ec3907eeeed8ccd566221addb4a0c3d01b5",
    "key": "yearly_geoxgb/yearly-formal-20261007/H12/local/seed42",
    "metrics": 227,
    "na": 6

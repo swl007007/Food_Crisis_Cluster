@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import extract  # noqa: E402
+import inventory  # noqa: E402
 from extract import SourceConflict  # noqa: E402
 
 IMPORTER_VERSION = "ipcch-mlflow-import-v1"
@@ -169,6 +170,8 @@ def plan_family(cfg: dict, fam: dict, hasher: Hasher, plans: dict) -> dict:
                     seen.add(rel)
                     size, digest = hasher(p)
                     extras.append({"path": f"{ex['prefix']}/{rel}", "bytes": size, "sha256": digest, "source": str(p)})
+    inv = inventory.reconcile(fam, root, {"include": include, "bundle": bundle, "excluded": excluded,
+                                          "shared": shared}, plans)
     children, parent_metrics, report_sha = extract.extract(fam, root)
     for c in children:
         for k in c.metrics:
@@ -188,11 +191,12 @@ def plan_family(cfg: dict, fam: dict, hasher: Hasher, plans: dict) -> dict:
         "extras": sorted(extras, key=lambda r: r["path"]),
         "unlisted": sorted(unlisted, key=lambda r: r["path"]),
         "parent_metrics": parent_metrics,
+        "inventory": inv,
         "children": [{"key": v["key"], "fingerprint": v["fingerprint"]} for v in views],
     }
     body["fingerprint"] = sha_bytes(canon({k: body[k] for k in (
         "family", "source_run_id", "config", "report_sha256", "include", "bundle", "excluded", "shared",
-        "extras", "parent_metrics", "children")} | {"importer": IMPORTER_VERSION}))
+        "extras", "parent_metrics", "inventory", "children")} | {"importer": IMPORTER_VERSION}))
     body["views"] = views
     body["totals"] = {
         "include": [len(include), sum(r["bytes"] for r in include)],
@@ -253,7 +257,7 @@ def cmd_plan(cfg: dict, store: Path, evidence: Path | None, rehash: bool, famili
         evidence.mkdir(parents=True, exist_ok=True)
         for k, v in plans.items():
             compact = {kk: v[kk] for kk in ("family", "source_run_id", "root", "report_sha256", "fingerprint",
-                                             "totals", "excluded", "shared", "unlisted")}
+                                             "totals", "excluded", "shared", "unlisted", "inventory")}
             compact["include_manifest_sha256"] = sha_bytes(canon(v["include"]))
             compact["bundle_manifest_sha256"] = {n: sha_bytes(canon(m)) for n, m in v["bundle"].items()}
             compact["extras_manifest_sha256"] = sha_bytes(canon(v["extras"]))
@@ -409,13 +413,13 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
                                  "source or importer changed -- stop for reconciliation")
         if run.data.tags.get("import_status") == "complete":
             run_ids[fam["family"]] = run.info.run_id
-            verify_parent(client, run, plan, deep=False)       # verified no-op: readback + artifact sizes
+            verify_parent(client, run, plan, deep=True)        # verified no-op: full content readback
             stats["noop"] += 1
             for v in plan["views"]:
                 cr = find_run(client, exp.experiment_id, v["key"])
                 if cr is None or cr.data.tags.get("import_status") != "complete":
                     raise SourceConflict(f"{v['key']}: parent complete but child missing/incomplete")
-                verify_child(client, cr, v, run.info.run_id, deep=False)
+                verify_child(client, cr, v, run.info.run_id, deep=True)
                 stats["noop"] += 1
             return stats
         stats["resumed"] += 1
@@ -500,6 +504,7 @@ def parent_manifests(plan: dict, tar_info: dict) -> dict:
     m = {"manifests/include.json": plan["include"], "manifests/excluded.json": plan["excluded"],
          "manifests/shared.json": plan["shared"], "manifests/extras.json": plan["extras"],
          "manifests/unlisted.json": plan["unlisted"],
+         "manifests/original-inventory-check.json": plan["inventory"],
          "manifests/plan-summary.json": {"fingerprint": plan["fingerprint"], "totals": plan["totals"],
                                          "report_sha256": plan["report_sha256"], "config": plan["config"]}}
     for name, members in plan["bundle"].items():
@@ -532,7 +537,7 @@ def import_child(client, exp, v: dict, parent_rid: str) -> dict:
         if run.data.tags.get("mlflow.parentRunId") != parent_rid:
             raise SourceConflict(f"{v['key']}: existing child is linked to a different parent")
         if run.data.tags.get("import_status") == "complete":
-            verify_child(client, run, v, parent_rid, deep=False)
+            verify_child(client, run, v, parent_rid, deep=True)
             st["noop"] = 1
             return st
         st["resumed"] = 1
@@ -701,7 +706,8 @@ def main(argv=None) -> int:
     ap.add_argument("--family", action="append", help="limit to these families (repeatable)")
     ap.add_argument("--evidence", default=None, help="also write plan files here")
     ap.add_argument("--rehash", action="store_true", help="ignore the stat-keyed hash cache")
-    ap.add_argument("--shallow", action="store_true", help="verify: sizes only, no download/hash")
+    ap.add_argument("--shallow", action="store_true",
+                    help="verify: metadata-only (values, tags, artifact names and sizes; no download/hash)")
     ap.add_argument("--out", default=None, help="write command result JSON here")
     ap.add_argument("--fail-after", default=None, help=argparse.SUPPRESS)
     a = ap.parse_args(argv)

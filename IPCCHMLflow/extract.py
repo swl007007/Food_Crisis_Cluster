@@ -52,9 +52,18 @@ class Child:
     def key(self) -> str:
         return f"{self.family}/{self.source_run_id}/H{self.H}/{self.arm}/seed{self.seed}"
 
-    def add(self, name: str, value, src: str) -> None:
-        if name in self.metrics and self.metrics[name] != float(value):
-            raise SourceConflict(f"{self.key}: metric {name} given two different values")
+    def add(self, name: str, value, src: str, cross_check: bool = False) -> None:
+        """Distinct source paths may not share a metric name. The one exception is
+        ``cross_check`` (a panel's n against its cohort n): values must be equal and
+        the panel path is kept as provenance."""
+        prev = self.provenance.get(name)
+        if prev is not None and prev != src:
+            if not cross_check:
+                raise SourceConflict(f"{self.key}: metric name {name} from both {prev} and {src}")
+            if not finite(value) or self.metrics[name] != float(value):
+                raise SourceConflict(f"{self.key}: {name} cross-check {src}={value} != {prev}={self.metrics[name]}")
+        elif prev == src and finite(value) and self.metrics[name] != float(value):
+            raise SourceConflict(f"{self.key}: metric {name} given two different values from {src}")
         if finite(value):
             self.metrics[name] = float(value)
             self.provenance[name] = src
@@ -82,7 +91,7 @@ def add_panel(c: Child, ns: str, panel, src: str) -> None:
         return
     c.panels[ns] = {"source_path": src, "panel": panel}
     if "n" in panel:
-        c.add(f"{ns}.n", panel["n"], f"{src}.n")
+        c.add(f"{ns}.n", panel["n"], f"{src}.n", cross_check=True)
     reasons = {**{f"binary.{k}": v for k, v in (_get(panel, "binary.na_reasons") or {}).items()},
                **{f"four_class.{k}": v for k, v in (_get(panel, "four_class.na_reasons") or {}).items()}}
     for k in REQUESTED:
@@ -280,6 +289,11 @@ def _p6_children(fam: dict, rep: dict, root: Path) -> list:
                                      f"{bsrc}.E_all.delta_geo_minus_pool")
                             add_flat(c, f"{name}.E_all.delta.new_minus_old_geo", be.get("delta_new_minus_old_geo"),
                                      f"{bsrc}.delta_new_minus_old_geo")
+                        if arm == "geo" and be["E_persist"].get("status") == "scored":
+                            add_flat(c, f"{name}.E_persist.delta.geo_minus_persistence",
+                                     be["E_persist"].get("delta_geo_minus_persistence"),
+                                     f"{bsrc}.E_persist.delta_geo_minus_persistence")
+                        if arm == "geo" and be["E_all"].get("status") == "scored":
                             for k in ("local_rows", "unmapped_rows"):
                                 c.add(f"{name}.{k}", be.get(k), f"{bsrc}.{k}")
             out.append(c)
@@ -310,6 +324,27 @@ def _diag(c: Child, period: str, e: dict, src: str, arm: str, comparator: str | 
                          f"{src}.ungated_local_diagnostic.by_gate.{g}.local_minus_pool")
 
 
+def gate_category(route: pd.Series) -> pd.Series:
+    """Same rule as gate_category() in IPCCHMLPExperiment/ipcch_mlp/report.py and
+    IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/report.py (identical in both)."""
+    r = route.fillna("").astype(str)
+    out = pd.Series("other", index=r.index)
+    out[r == "unmapped_area_pool"] = "unmapped"
+    out[r.str.startswith("pool_fallback:")] = "gain_rejected"
+    out[r == "pool_fallback:current_fit_support"] = "current_fit_support"
+    out[r.str.startswith("pool_fallback:gate_support")] = "historical_support_rejected"
+    out[r == "local"] = "adopted"
+    return out
+
+
+def gate_tags(c: Child, period: str, e: dict, sub: pd.DataFrame) -> None:
+    """Bind each by_gate subset to its saved key set (local-eligible rows in that route category)."""
+    le = sub[sub["local_eligible"] == 1]
+    cat = gate_category(le["route"])
+    for g in ((e.get("ungated_local_diagnostic") or {}).get("by_gate") or {}):
+        cohort_tag(c, f"{period}.local_eligible.{g}", le[cat == g])
+
+
 def _mlp_children(fam: dict, rep: dict, root: Path) -> list:
     out = []
     comp = {"geo": ("xgbgeo", "p6geo"), "pool": ("xgbpool", "p6pool")}
@@ -318,7 +353,7 @@ def _mlp_children(fam: dict, rep: dict, root: Path) -> list:
     for seed in fam["seeds"]:
         for H in HORIZONS:
             pred = read_pred(root / fam["predictions"].format(seed=seed, H=int(H)),
-                             ["admin_code", "target_ord", "period", "persistence_available", "local_eligible"])
+                             ["admin_code", "target_ord", "period", "persistence_available", "local_eligible", "route"])
             for arm, kind in fam["arms"].items():
                 if arm == "persistence":
                     continue
@@ -358,6 +393,8 @@ def _mlp_children(fam: dict, rep: dict, root: Path) -> list:
                         c.note(f"{period}.E_all", "local predictions exist only on L-eligible keys (local_eligible cohort)")
                     _diag(c, period, e, src, arm, comp.get(arm))
                     cohort_tag(c, f"{period}.local_eligible", sub[sub["local_eligible"] == 1])
+                    if arm in ("local", "pool"):
+                        gate_tags(c, period, e, sub)
                     if arm == "geo":
                         boot = e.get("bootstrap") or {}
                         for bname, ns in (("geo_minus_pool_E_all", "E_all.contrast.geo_minus_pool"),
@@ -401,7 +438,7 @@ def _yearly_children(fam: dict, rep: dict, root: Path) -> list:
     seed = fam.get("model_seed", "42")
     for H in HORIZONS:
         pred = read_pred(root / fam["predictions"].format(H=int(H)),
-                         ["admin_code", "target_ord", "period", "persistence_available", "local_eligible"])
+                         ["admin_code", "target_ord", "period", "persistence_available", "local_eligible", "route"])
         for arm, kind in fam["arms"].items():
             c = Child(fam["family"], fam["source_run_id"], H, arm, "none" if kind == "persistence_baseline" else seed, kind)
             for period in PERIODS:
@@ -440,6 +477,8 @@ def _yearly_children(fam: dict, rep: dict, root: Path) -> list:
                 if arm != "persistence":
                     _diag(c, period, e, src, arm, comp.get(arm))
                     cohort_tag(c, f"{period}.local_eligible", sub[sub["local_eligible"] == 1])
+                    if arm in ("local", "pool"):
+                        gate_tags(c, period, e, sub)
                 m = e.get("local_persistence_matched") or {}
                 c.add(f"{period}.local_persist_matched.n_keys", m.get("keys"), f"{src}.local_persistence_matched.keys")
                 if arm in ("local", "pool", "geo", "persistence") and isinstance(m.get("panels"), dict):
