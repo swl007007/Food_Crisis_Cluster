@@ -578,7 +578,7 @@ def _run_id_for(client, exp, source_key: str) -> str:
 
 # ------------------------------------------------------------------ one-time reconciliation
 
-RECONCILE_NOTE = "supervisor review of 8c88f48; fixes a9a2598"
+RECONCILE_NOTE = "supervisor review of 8c88f48; fixes a9a2598 + ec2686e"
 
 
 def _download_bytes(client, rid: str, path: str) -> bytes:
