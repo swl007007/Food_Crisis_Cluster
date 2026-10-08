@@ -23,7 +23,7 @@ current keys equal the planning enumeration in every block. Final inventory:
 
 ## Main period 2023–2025 (identical keys and truth)
 
-Crisis F1, E_all. P = annual pooled, G = annual gated GeoXGB.
+Crisis F1, E_all (all evaluation keys). P = annual pooled, G = annual gated GeoXGB.
 
 | H | keys | P | G | P6 pooled | P6 GeoXGB | G−P [95% CI] | P − P6 pooled | G − P6 GeoXGB |
 | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: |
@@ -43,9 +43,9 @@ Gate and coverage, main (decisions counted per region × annual block):
 | 6 | 18 | 7 | 3 | 341 | −.0015 (9,522) | −.0168 |
 | 12 | 18 | 4 | 1 | 56 | −.0071 (7,904) | +.0089 |
 
-Versus persistence on E_persist:
+Versus persistence. Columns 3–5 use E_persist (persistence-available keys); the last column (projected q3 R²) uses E_all and is not a persistence comparison:
 
-| H | keys | G − persistence [95% CI] | P6 GeoXGB − persistence | four-class macro-F1 G / P6 GeoXGB / persistence | projected q3 R² P / P6 pooled |
+| H | E_persist keys | G − persistence [95% CI] (E_persist) | P6 GeoXGB − persistence (E_persist) | four-class macro-F1 G / P6 GeoXGB / persistence (E_persist) | projected q3 R² P / P6 pooled (E_all) |
 | --- | ---: | --- | ---: | --- | --- |
 | 1 | 16,002 | −.0272 [−.0631, +.0076] | +.0050 | .438 / .467 / .557 | .204 / .305 |
 | 3 | 15,907 | +.0077 [−.0102, +.0378] | +.0074 | .482 / .469 / .559 | .300 / .367 |
@@ -60,12 +60,15 @@ H1/H3/H6/H12; G − persistence is +.066, +.064, +.024, −.058.
 
 ## Reading
 
-1. **No geographic increment under the annual protocol.** G−P is within
-   ±.0004 in every main horizon with all intervals including zero. Few
+1. **No clear geographic gain under the annual protocol.** G−P point
+   estimates are near zero (about ±.0004; raw H3 −.000402) in every main
+   horizon, and all intervals include zero. This is not evidence of an exact
+   zero or of equivalence. Few
    region-blocks pass historical support (4–9 per H) and fewer pass the gain
    gate (1–3). The ungated supported-cohort L−P is also slightly negative
-   at every H (−.0071 to −.0015), so the null is not only a coverage effect;
-   adopted regions are mixed (two of four horizons negative).
+   at every H (−.0071 to −.0015), which weakens a coverage-only explanation
+   but does not show the effect is zero; adopted regions are mixed (two of
+   four horizons negative).
 2. **The annual pooled protocol is not uniformly better or worse than P6
    monthly pooled.** It is .026 lower at H1, within ±.005 at H3–H12. This is
    a bundled change (yearly refit, full history, 24-month decay, annual gate
