@@ -1,0 +1,34 @@
+{
+  "run_before": {
+    "id": "c9e5302e995a4df188546d4e98145d46",
+    "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+    "task_id": "mlflow-focused-evaluation-registry",
+    "task_dir": ".trellis/tasks/10-08-mlflow-focused-evaluation-registry",
+    "base_sha": "b77915999dc74322a275a2b1b2f8401754b278e7",
+    "phase": "active",
+    "executor": "{\n  \"agent\": \"claude\",\n  \"agent_session\": {\n    \"agent\": \"claude\",\n    \"kind\": \"id\",\n    \"source\": \"herdr:claude\",\n    \"value\": \"174ea213-be60-4f2a-9bcb-e5e3523ad738\"\n  },\n  \"terminal_id\": \"term_65d3f9b51d7fa2\"\n}",
+    "remediation_for": null,
+    "close_data": null,
+    "error": null,
+    "created": 1791464621.632932
+  },
+  "run_after": {
+    "id": "c9e5302e995a4df188546d4e98145d46",
+    "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+    "task_id": "mlflow-focused-evaluation-registry",
+    "task_dir": ".trellis/tasks/10-08-mlflow-focused-evaluation-registry",
+    "base_sha": "b77915999dc74322a275a2b1b2f8401754b278e7",
+    "phase": "closed",
+    "executor": "{\n  \"agent\": \"claude\",\n  \"agent_session\": {\n    \"agent\": \"claude\",\n    \"kind\": \"id\",\n    \"source\": \"herdr:claude\",\n    \"value\": \"174ea213-be60-4f2a-9bcb-e5e3523ad738\"\n  },\n  \"terminal_id\": \"term_65d3f9b51d7fa2\"\n}",
+    "remediation_for": null,
+    "close_data": "{\"archive_path\": \"/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/.trellis/tasks/archive/2026-10/10-08-mlflow-focused-evaluation-registry\", \"audit_pass\": false, \"audit_queued\": false, \"closed_utc\": \"2026-10-08T13:49:55.420303+00:00\", \"closure_mode\": \"manual-user-waiver-no-audit\", \"closure_receipt\": \"/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/manual-waivers/mlflow-no-audit-close-c9e5302e/receipt.json\", \"completion_sha\": \"4f54c25bcc94a2a5bf84a63d674e8b36ed274b7e\", \"job_id\": null, \"snapshot_path\": \"/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/manual-waivers/mlflow-no-audit-close-c9e5302e/task-snapshot.tar\", \"snapshot_sha256\": \"f35b0014df7fbfab41c996c2788ff20c3163364c2188df7fc0956a4e97150ee8\", \"user_instruction\": \"我已经批准claude修复，最后一轮修复，不做追加audit，手动close gate。\", \"waiver_receipt\": \"/home/swl007007/.local/state/trellis-audit-controller/19ea69ef13d88fde/manual-waivers/mlflow-final-round-20261008T125717Z/receipt.json\"}",
+    "error": null,
+    "created": 1791464621.632932
+  },
+  "intent_sha256": "9852d901eaf5ca3e94e8544bb3804da672067eb30c920e833f15f5b6decc8ba8",
+  "jobs_unchanged": true,
+  "audit_queued": false,
+  "audit_pass": false,
+  "native_status": "completed",
+  "created_utc": "2026-10-08T13:49:55.420303+00:00"
+}

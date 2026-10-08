@@ -48,5 +48,6 @@ Operational log only; approval authority is the user and the supervisor (wN:p1).
 7. [x] Supervisor delivery acceptance PASS at e6bf94e (evidence/supervisor-acceptance-e6bf94e.md,
    independent readback supervisor-delivery-check-e6bf94e.json). Limitation unchanged: payload and
    server latency improved, no clear first-paint improvement.
-8. [ ] Non-audited closure on supervisor instruction (native archive --no-commit, then the
-   supervisor records the no-job closure). No trellis-audit close, no audit, no push/merge.
+8. [x] Closure: user-waived, no audit, after supervisor delivery acceptance (NOT an audit pass).
+   Native archive --no-commit; supervisor recorded run c9e5302e closed with job_id=null,
+   audit_queued=false, audit_pass=false (evidence/non-audit-closure.md, no-audit-close-receipt.json).
