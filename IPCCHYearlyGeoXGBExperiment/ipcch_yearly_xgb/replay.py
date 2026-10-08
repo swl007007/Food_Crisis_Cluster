@@ -241,6 +241,18 @@ def verify_horizon(c: Checker, hz, calendar, contract: dict, hdir: Path, models_
         rows = np.flatnonzero(sel).astype(np.int64)
         w = np.array([0.5 ** ((o - int(t)) / 24.0) for t in t_all[rows]], dtype=np.float64)
         c.check(f"model {d[:12]}:n_rows", ident["n_rows"] == len(rows))
+        mdir = models_root / d[:2] / d
+        side_rows = np.load(mdir / "fit_rows.npy", allow_pickle=False)
+        side_keys = np.load(mdir / "fit_keys.npy", allow_pickle=False)
+        c.check(f"model {d[:12]}:sidecar_rows", np.array_equal(side_rows, rows))
+        c.check(f"model {d[:12]}:sidecar_keys", np.array_equal(side_keys, np.column_stack(
+            [area_all[rows], t_all[rows]]).astype(np.int64)))
+        Xsel = np.ascontiguousarray(np.asarray(hz.X[rows], dtype=np.float64))
+        c.check(f"model {d[:12]}:X_fit", ident["X_fit_sha256"] == hashlib.sha256(
+            f"{Xsel.dtype.str}|{Xsel.shape}|".encode() + Xsel.tobytes()).hexdigest())
+        for j, q in enumerate(TARGETS):
+            yq = np.ascontiguousarray(hz.keys[q].to_numpy(dtype=np.float64)[rows])
+            c.check(f"model {d[:12]}:y_{q}", ident["y_sha256"][q] == hashlib.sha256(yq.tobytes()).hexdigest())
         c.check(f"model {d[:12]}:weights_protocol", ident["weights"]["protocol_sha256"] == _sha(w, np.float64))
         c.check(f"model {d[:12]}:weights_effective", ident["weights"]["effective_float32_sha256"] ==
                 _sha(w.astype(np.float32), np.float32))
@@ -254,6 +266,130 @@ def verify_horizon(c: Checker, hz, calendar, contract: dict, hdir: Path, models_
             c.check(f"model {d[:12]}:parent_boosters", parent["booster_sha256"] == ident["global_boosters"])
 
 
+def ind_panel(truth, pred, q3_true, q3_star, q3_raw) -> dict:
+    """Independent metric panel from keyed values (fixed 1/2/3/4-5 axis; NA when a denominator is zero)."""
+    truth, pred = np.asarray(truth, dtype=np.int64), np.asarray(pred, dtype=np.int64)
+    n = len(truth)
+    ti, pi = np.minimum(truth, 4) - 1, np.minimum(pred, 4) - 1
+    conf = [[0] * 4 for _ in range(4)]
+    for a, b in zip(ti.tolist(), pi.tolist()):
+        conf[a][b] += 1
+    per = []
+    for k in range(4):
+        tp = conf[k][k]
+        fp = sum(conf[r][k] for r in range(4)) - tp
+        fn = sum(conf[k]) - tp
+        per.append(None if 2 * tp + fp + fn == 0 else 2 * tp / (2 * tp + fp + fn))
+    tp, fp, fn, tn = ind_counts(truth, pred)
+
+    def ratio(a, b):
+        return None if b == 0 else a / b
+
+    def r2(y, f):
+        y, f = np.asarray(y, dtype=np.float64), np.asarray(f, dtype=np.float64)
+        if len(y) < 2 or bool(np.all(y == y[0])):
+            return None
+        mean = math.fsum(y.tolist()) / len(y)
+        sst = math.fsum(((y - mean) ** 2).tolist())
+        sse = math.fsum(((y - f) ** 2).tolist())
+        return None if sst == 0 else 1 - sse / sst
+    return {"confusion": conf, "counts": {"tp": tp, "fp": fp, "fn": fn, "tn": tn},
+            "binary.accuracy": ratio(tp + tn, n), "binary.precision": ratio(tp, tp + fp),
+            "binary.recall": ratio(tp, tp + fn), "binary.f1": ratio(2 * tp, 2 * tp + fp + fn),
+            "binary.f2": ratio(5 * tp, 5 * tp + 4 * fn + fp),
+            "four_class.accuracy": ratio(sum(conf[k][k] for k in range(4)), n),
+            "four_class.macro_f1": None if any(v is None for v in per) else sum(per) / 4,
+            "q3_r2_projected": r2(q3_true, q3_star), "q3_r2_raw": r2(q3_true, q3_raw)}
+
+
+SCALAR_KEYS = ("binary.accuracy", "binary.precision", "binary.recall", "binary.f1", "binary.f2",
+               "four_class.accuracy", "four_class.macro_f1", "q3_r2_projected", "q3_r2_raw")
+
+
+def _close(a, b) -> bool:
+    if a is None or b is None:
+        return a is None and b is None
+    return abs(a - b) <= 1e-12 * max(1.0, abs(a), abs(b))
+
+
+def _arm_cols(arm: str):
+    if arm == "persistence":
+        return "persistence_phase", "persistence_q3", "persistence_q3"
+    return f"{arm}_phase", f"{arm}_q3_star", f"{arm}_q3_raw"
+
+
+def ind_category(route) -> np.ndarray:
+    out = []
+    for r in map(str, route):
+        if r == "local":
+            out.append("adopted")
+        elif r == "unmapped_area_pool":
+            out.append("unmapped")
+        elif r.startswith("pool_fallback:gate_support"):
+            out.append("historical_support_rejected")
+        elif r == "pool_fallback:current_fit_support":
+            out.append("current_fit_support")
+        elif r.startswith("pool_fallback:"):
+            out.append("gain_rejected")
+        else:
+            out.append("other")
+    return np.array(out, dtype=object)
+
+
+def verify_cohort(c: Checker, name: str, frame: pd.DataFrame, entry: dict, arms: tuple, deltas: dict) -> None:
+    """Every reported panel value and delta of one cohort against independent recomputation."""
+    c.check(f"{name}:n", entry.get("n", 0) == len(frame), f"{entry.get('n')} vs {len(frame)}")
+    if not len(frame):
+        return
+    ind = {}
+    for arm in arms:
+        ph, qs, qr = _arm_cols(arm)
+        ind[arm] = ind_panel(frame["phase_truth"], frame[ph], frame["q3_truth"], frame[qs], frame[qr])
+        got = entry["panels"][arm]
+        c.check(f"{name}/{arm}:confusion", got["four_class"]["confusion_rows_truth_cols_pred"] == ind[arm]["confusion"])
+        c.check(f"{name}/{arm}:counts", got["binary"]["counts"] == ind[arm]["counts"])
+        flat = report.flat(got)
+        for k in SCALAR_KEYS:
+            c.check(f"{name}/{arm}:{k}", _close(flat[k], ind[arm][k]), f"{flat[k]} vs {ind[arm][k]}")
+    for dname, (a, b) in deltas.items():
+        got = entry["deltas"][dname] if "deltas" in entry else entry[dname]
+        for k in SCALAR_KEYS:
+            va, vb = ind[a][k], ind[b][k]
+            exp = None if va is None or vb is None else va - vb
+            c.check(f"{name}/{dname}:{k}", _close(got[k], exp), f"{got[k]} vs {exp}")
+
+
+def verify_metrics(c: Checker, pred: pd.DataFrame, entry: dict, tag: str) -> None:
+    e = pred
+    ep = e[e["persistence_available"] == 1]
+    verify_cohort(c, f"{tag}/E_all", e, entry["E_all"], ("pool", "geo", "p6pool", "p6geo"),
+                  {"geo_minus_pool": ("geo", "pool"), "pool_minus_p6pool": ("pool", "p6pool"),
+                   "geo_minus_p6geo": ("geo", "p6geo")})
+    verify_cohort(c, f"{tag}/E_persist", ep, entry["E_persist"], ("pool", "geo", "p6pool", "p6geo", "persistence"),
+                  {f"{a}_minus_persistence": (a, "persistence") for a in ("pool", "geo", "p6pool", "p6geo")})
+    diag = e[e["local_eligible"] == 1]
+    dentry = entry["ungated_local_diagnostic"]
+    c.check(f"{tag}/diag:keys", dentry["keys"] == len(diag))
+    if len(diag):
+        all_entry = {**dentry["all"], "deltas": {"local_minus_pool": dentry["all"]["local_minus_pool"]}}
+        verify_cohort(c, f"{tag}/diag", diag, all_entry, ("local", "pool", "geo", "p6pool", "p6geo"),
+                      {"local_minus_pool": ("local", "pool")})
+        cat = ind_category(diag["route"])
+        c.check(f"{tag}/diag:groups", sorted(set(cat)) == sorted(dentry["by_gate"]))
+        for g in sorted(set(cat)):
+            ge = dentry["by_gate"].get(g, {})
+            verify_cohort(c, f"{tag}/diag/{g}", diag[cat == g],
+                          {**ge, "deltas": {"local_minus_pool": ge.get("local_minus_pool")}}, ("local", "pool"),
+                          {"local_minus_pool": ("local", "pool")})
+    lp = e[(e["local_eligible"] == 1) & (e["persistence_available"] == 1)]
+    le = entry["local_persistence_matched"]
+    c.check(f"{tag}/local_persist:keys", le["keys"] == len(lp))
+    if len(lp):
+        verify_cohort(c, f"{tag}/local_persist", lp, le, ("local", "pool", "geo", "persistence"),
+                      {"local_minus_persistence": ("local", "persistence"),
+                       "pool_minus_persistence": ("pool", "persistence"), "local_minus_pool": ("local", "pool")})
+
+
 def verify_report(c: Checker, run_dir: Path, rep: dict, horizons: list, p6_loader) -> None:
     for h in horizons:
         pred = report.attach_p6(report.read_predictions(run_dir / "predict" / f"h{h:02d}" / "predictions.csv.gz"),
@@ -263,13 +399,7 @@ def verify_report(c: Checker, run_dir: Path, rep: dict, horizons: list, p6_loade
             entry = rep["horizons"][str(h)][period]
             if not len(e):
                 continue
-            for arm in ("pool", "geo", "p6pool", "p6geo"):
-                tp, fp, fn, tn = ind_counts(e["phase_truth"], e[f"{arm}_phase"])
-                got = entry["E_all"]["panels"][arm]["binary"]["counts"]
-                c.check(f"report H{h}/{period}/{arm}:counts", got == {"tp": tp, "fp": fp, "fn": fn, "tn": tn})
-                f1 = ind_f1(tp, fp, fn)
-                c.check(f"report H{h}/{period}/{arm}:f1", (f1 is None and entry["E_all"]["panels"][arm]["binary"]["f1"]
-                                                          is None) or float(f1) == entry["E_all"]["panels"][arm]["binary"]["f1"])
+            verify_metrics(c, e, entry, f"report H{h}/{period}")
             if period == "main":
                 ep = e[e["persistence_available"] == 1]
                 for name, frame, other in (("geo_minus_pool_E_all", e, "pool_phase"),
@@ -298,7 +428,7 @@ def verify_report(c: Checker, run_dir: Path, rep: dict, horizons: list, p6_loade
 
 
 def run_replay(run_dir: Path, horizons: dict, calendar, contract: dict, env: dict, source_inventory: dict,
-               expect_fits: int | None = None, p6_loader=None) -> dict:
+               p6_loader, expect_fits: int | None = None) -> dict:
     out = run_dir / "replay"
     out.mkdir()
     c = Checker()
@@ -306,7 +436,7 @@ def run_replay(run_dir: Path, horizons: dict, calendar, contract: dict, env: dic
     run.run_predict(out, horizons, calendar, contract, env, source_inventory, readonly=True,
                     models_root=run_dir / "models")
     compare_trees(c, run_dir / "predict", out / "predict")
-    report.run_report(out, contract, p6_loader=p6_loader)
+    report.run_report(out, contract, p6_loader)
     compare_trees(c, run_dir / "report", out / "report")
     lines = []
     for p in sorted((run_dir / "predict").glob("model_requests*.jsonl")):
@@ -314,7 +444,7 @@ def run_replay(run_dir: Path, horizons: dict, calendar, contract: dict, env: dic
     for h, hz in horizons.items():
         verify_horizon(c, hz, calendar, contract, run_dir / "predict" / f"h{h:02d}", run_dir / "models", lines)
     rep = json.loads((run_dir / "report" / "report.json").read_text(encoding="utf-8"))
-    verify_report(c, run_dir, rep, list(horizons), p6_loader or report.sources.load_p6_predictions)
+    verify_report(c, run_dir, rep, list(horizons), p6_loader)
     fits = {e["identity_sha256"] for e in lines if e["status"] == "fit"}
     stored = {p.name for p in (run_dir / "models").glob("*/*") if p.is_dir() and not p.name.endswith(".tmp")}
     c.check("inventory:store_equals_fits", stored == fits, f"{len(stored)} stored vs {len(fits)} fitted")

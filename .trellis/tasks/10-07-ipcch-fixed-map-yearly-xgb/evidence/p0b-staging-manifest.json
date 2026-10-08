@@ -1,0 +1,186 @@
+{
+ "files": {
+  "run/prepared/X_rich561_h01.npy": {
+   "bytes": 191615288,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\X_rich561_h01.npy",
+   "sha256": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219"
+  },
+  "run/prepared/X_rich561_h03.npy": {
+   "bytes": 191615288,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\X_rich561_h03.npy",
+   "sha256": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0"
+  },
+  "run/prepared/X_rich561_h06.npy": {
+   "bytes": 191615288,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\X_rich561_h06.npy",
+   "sha256": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c"
+  },
+  "run/prepared/X_rich561_h12.npy": {
+   "bytes": 191615288,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\X_rich561_h12.npy",
+   "sha256": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0"
+  },
+  "run/prepared/coverage_2026.csv": {
+   "bytes": 523,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\coverage_2026.csv",
+   "sha256": "104f2e9a25cd622946ec693981a7843773f8481aa43e78b3de4528d6fa196b32"
+  },
+  "run/prepared/feature_order.csv": {
+   "bytes": 23704,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\feature_order.csv",
+   "sha256": "c0148ff83fe1f87cedc4d7f638da5429b33af1a377d2f0c69d3405537507e5fb"
+  },
+  "run/prepared/fold_calendar.csv": {
+   "bytes": 9423,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\fold_calendar.csv",
+   "sha256": "061c44f88dbc37a89bf1b2cc19a2047666663fee5aa706b0a90fbd18c06d198c"
+  },
+  "run/prepared/keys_h01.csv.gz": {
+   "bytes": 661342,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\keys_h01.csv.gz",
+   "sha256": "414cba066f9953e7b70e2f586450537621ea312ad80a9fbc2b84ad367f2e49cd"
+  },
+  "run/prepared/keys_h03.csv.gz": {
+   "bytes": 661568,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\keys_h03.csv.gz",
+   "sha256": "5e44eb8359a4910a5d9d94b80986d3a44faf123d89ebdf2b30e5389bf1267f7a"
+  },
+  "run/prepared/keys_h06.csv.gz": {
+   "bytes": 640168,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\keys_h06.csv.gz",
+   "sha256": "d325da25a69399b496a33b1f21f3fb2fdd24f387b3074f399e5f2836444495d6"
+  },
+  "run/prepared/keys_h12.csv.gz": {
+   "bytes": 648650,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\keys_h12.csv.gz",
+   "sha256": "9755df742b15d5b1556671633c2fa80908d8b9b7ffee9c9192b895aa64bba4bd"
+  },
+  "run/prepared/prepared-manifest.json": {
+   "bytes": 6906,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\prepared-manifest.json",
+   "sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32"
+  },
+  "run/prepared/stage1_split.csv.gz": {
+   "bytes": 66643,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\stage1_split.csv.gz",
+   "sha256": "3e076c66c1c9ee6cc0aec0d4955db610dc35fe8b3d279bd4b86b3a88f7910928"
+  },
+  "run/prepared/target_ledger.csv.gz": {
+   "bytes": 6882306,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\target_ledger.csv.gz",
+   "sha256": "4eed1792a65a1da1d05220a296e242311422761177dc31a202543c76cbf81ad8"
+  },
+  "run/prepared/target_ledger_valid.csv.gz": {
+   "bytes": 2636368,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\prepared\\target_ledger_valid.csv.gz",
+   "sha256": "21d7701fe60fb9ed3084c34dc7852a9ce56e312c78587238179c5ea8ef63e717"
+  },
+  "run/stage1/frozen_h01.json": {
+   "bytes": 11628,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_h01.json",
+   "sha256": "2d40675c6f27fd45d6b22ebaa8e61bfcd2d31e342b04ba7b4431053c91f36caa"
+  },
+  "run/stage1/frozen_h03.json": {
+   "bytes": 10590,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_h03.json",
+   "sha256": "08ff0afa30a656b5a47ac9800477785d55d9e5680c87399b26d967416666b80f"
+  },
+  "run/stage1/frozen_h06.json": {
+   "bytes": 10531,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_h06.json",
+   "sha256": "5afaa039865145fa24f80ad4fdb6df4ee8e9c39d2a343a681002f684569c3e72"
+  },
+  "run/stage1/frozen_h12.json": {
+   "bytes": 11720,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_h12.json",
+   "sha256": "9e77b11dbb0ab4b479c6abf4396d409c01fb885a0903961930bba7c35e1dea03"
+  },
+  "run/stage1/frozen_map_h01.csv": {
+   "bytes": 38148,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_map_h01.csv",
+   "sha256": "77ef44da88ba551f2284f93ed780023ff86a7961818755b007beabb5f83f1b5b"
+  },
+  "run/stage1/frozen_map_h03.csv": {
+   "bytes": 36771,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_map_h03.csv",
+   "sha256": "16f354ff369c26637c8debf88990f57d2e8f0ebc16d26b53e3b975855f9d3051"
+  },
+  "run/stage1/frozen_map_h06.csv": {
+   "bytes": 36383,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_map_h06.csv",
+   "sha256": "04ffe8363e99fa88e6a559b61550b1d82f3441279b1d62c1e24adae2ab8ea7a2"
+  },
+  "run/stage1/frozen_map_h12.csv": {
+   "bytes": 37822,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\frozen_map_h12.csv",
+   "sha256": "f61be8bd90c9555d5815947d5ee6ee62181fcd0861e595ab4f8a5a9370ac5143"
+  },
+  "run/stage1/h01/selection.json": {
+   "bytes": 4096,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\h01\\selection.json",
+   "sha256": "f70e0e747b6d43112c99a136dd6a6d95d528df9a53b47c475d9e27eb1f93999b"
+  },
+  "run/stage1/h03/selection.json": {
+   "bytes": 4104,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\h03\\selection.json",
+   "sha256": "4b13f12a8893193bd3c87231430618607c0a432b2d8c766a11636331bdac1f2f"
+  },
+  "run/stage1/h06/selection.json": {
+   "bytes": 4099,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\h06\\selection.json",
+   "sha256": "48c444aa48c591409bf4e837509d81a37f917a1bf185c7de182f5b3329816adc"
+  },
+  "run/stage1/h12/selection.json": {
+   "bytes": 4103,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\h12\\selection.json",
+   "sha256": "411db67182fb828b4ebd4c6cc3dfc8dcd76d4f7cf8bc28e451915e2a22d434a3"
+  },
+  "run/stage1/stage1-summary.json": {
+   "bytes": 72128,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage1\\stage1-summary.json",
+   "sha256": "e90bae9da897d65b34a59254cbf64ff66ea7b2745a55a025eea715e3c5da3488"
+  },
+  "run/stage3/h01/predictions.csv.gz": {
+   "bytes": 1150653,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage3\\h01\\predictions.csv.gz",
+   "sha256": "4c91986cc5d06a397a99d0d6fc40b915517929f6ba462370f2e45552f6f028d2"
+  },
+  "run/stage3/h03/predictions.csv.gz": {
+   "bytes": 1173944,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage3\\h03\\predictions.csv.gz",
+   "sha256": "7f9072d905023e08a98ef0cb8e46281799c26df7457117efa052c240fa711211"
+  },
+  "run/stage3/h06/predictions.csv.gz": {
+   "bytes": 1294499,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage3\\h06\\predictions.csv.gz",
+   "sha256": "983862bb38b53f367b5fefc47979564adf0f4df4517db51a05778ae34b125e94"
+  },
+  "run/stage3/h12/predictions.csv.gz": {
+   "bytes": 1152767,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage3\\h12\\predictions.csv.gz",
+   "sha256": "ea771dd2c02cd30eb3debc9b3e44c207ad73d0543b20bc5157e0472b305ec615"
+  },
+  "run/stage3/stage3-summary.json": {
+   "bytes": 1891,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\runs\\p6-formal-20261004b\\stage3\\stage3-summary.json",
+   "sha256": "1df8165ab8aa9e99e6e099af59440ace58c81ffe614cc553bf3dfb2c35d96c09"
+  },
+  "source/IPCCHGeoXGBExperiment/config/experiment-contract.json": {
+   "bytes": 4194,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\config\\experiment-contract.json",
+   "sha256": "49a367ce6fbabb7efda3d2f86a78bac8c3f3f1e31790958d290505cd0b6ffd72"
+  },
+  "source/IPCCHGeoXGBExperiment/config/feature-schema.json": {
+   "bytes": 37049,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\config\\feature-schema.json",
+   "sha256": "a6093121691e5dce5958f7713872561d89f9d3e19646dcce9c62ce16d62c643d"
+  },
+  "source/IPCCHGeoXGBExperiment/config/runtime-lock.json": {
+   "bytes": 875,
+   "origin": "C:\\Users\\swl00\\IFPRI Dropbox\\Weilun Shi\\Google fund\\Analysis\\2.source_code\\Step5_Geo_RF_trial\\Food_Crisis_Cluster\\IPCCHGeoXGBExperiment\\config\\runtime-lock.json",
+   "sha256": "b700a32be856d150ab2f0d49d4b25d45a63d5ce4387ac5a3501119cda3d89b84"
+  }
+ },
+ "inputs_version": "ipcch-yearly-xgb-inputs-v1",
+ "source_run": "p6-formal-20261004b"
+}

@@ -193,12 +193,24 @@ def horizon_period(pred: pd.DataFrame, gates: list, blocks: list, period: str) -
             cp = cohort(part, ("local", "pool"))
             dentry["by_gate"][name] = {**cp, "local_minus_pool": deltas(cp["panels"]["local"], cp["panels"]["pool"])}
     entry["ungated_local_diagnostic"] = dentry
+    # local vs persistence on exactly the keys that are L-eligible AND persistence-available
+    lp = e_all[(e_all["local_eligible"] == 1) & (e_all["persistence_available"] == 1)]
+    lentry = {"keys": int(len(lp)), "areas": int(lp["admin_code"].nunique()),
+              "share_of_diagnostic_keys": (len(lp) / len(diag)) if len(diag) else None}
+    if len(lp):
+        lc = cohort(lp, ("local", "pool", "geo", "persistence"))
+        lentry.update(lc)
+        pl = lc["panels"]
+        lentry["deltas"] = {"local_minus_persistence": deltas(pl["local"], pl["persistence"]),
+                            "pool_minus_persistence": deltas(pl["pool"], pl["persistence"]),
+                            "local_minus_pool": deltas(pl["local"], pl["pool"])}
+    entry["local_persistence_matched"] = lentry
     return entry
 
 
-def run_report(run_dir: Path, contract: dict, predict_name: str = "predict", out_name: str = "report",
-               p6_loader=None) -> dict:
-    p6_loader = p6_loader or sources.load_p6_predictions
+def run_report(run_dir: Path, contract: dict, p6_loader, predict_name: str = "predict",
+               out_name: str = "report") -> dict:
+    """``p6_loader(h)`` must read the run's staged P6 comparator predictions."""
     pdir = run_dir / predict_name
     summary = json.loads((pdir / "predict-summary.json").read_text(encoding="utf-8"))
     out = run_dir / out_name

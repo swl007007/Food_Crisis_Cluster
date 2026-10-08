@@ -172,7 +172,7 @@ def test_gates_unchanged_by_later_outcomes(run_dir, tmp_path):
 
 def test_replay_passes_with_zero_fits(run_dir):
     res = replay.run_replay(run_dir["root"], {H: run_dir["hz"]}, run_dir["cal"], run_dir["c"], ENV,
-                            {"synthetic": "inventory"}, p6_loader=lambda h: p6_like(run_dir["hz"]))
+                            {"synthetic": "inventory"}, lambda h: p6_like(run_dir["hz"]))
     assert res["status"] == "passed", res["failures"][:5]
     assert res["checks_passed"] > 200
 
@@ -185,7 +185,7 @@ def _copy(r, tmp_path):
 
 def _replay(r, dst):
     return replay.run_replay(dst, {H: r["hz"]}, r["cal"], r["c"], ENV, {"synthetic": "inventory"},
-                             p6_loader=lambda h: p6_like(r["hz"]))
+                             lambda h: p6_like(r["hz"]))
 
 
 def test_replay_catches_within_block_route_change(run_dir, tmp_path):
@@ -232,3 +232,57 @@ def test_replay_catches_corrupt_model_and_wrong_parent(run_dir, tmp_path):
     some.write_bytes(some.read_bytes()[:-8] + b"\x00" * 8)
     with pytest.raises(TechnicalError):
         _replay(run_dir, dst2)
+
+
+def test_replay_catches_changed_fit_input_x(run_dir, tmp_path):
+    dst = _copy(run_dir, tmp_path)
+    hz = run_dir["hz"]
+    X2 = np.array(hz.X, copy=True)
+    X2[0, 5] = 123.0  # a row inside every fitting pool
+    hz2 = sources.Horizon(h=H, keys=hz.keys, X=X2, region_of=hz.region_of, x_sha256="syn-x", keys_sha256="syn-k",
+                          map_sha256="syn-map", lineage={})
+    with pytest.raises(TechnicalError):  # the reconstructed identity no longer exists: replay refuses to fit
+        replay.run_replay(dst, {H: hz2}, run_dir["cal"], run_dir["c"], ENV, {"synthetic": "inventory"},
+                          lambda h: p6_like(hz))
+
+
+def test_replay_catches_tampered_fit_sidecar(run_dir, tmp_path):
+    dst = _copy(run_dir, tmp_path)
+    side = next((dst / "models").glob("*/*/fit_keys.npy"))
+    k = np.load(side)
+    k[0, 1] += 1
+    np.save(side, k)
+    with pytest.raises(TechnicalError):
+        _replay(run_dir, dst)
+
+
+def test_report_local_persistence_cohort(run_dir):
+    rep = json.loads((run_dir["root"] / "report" / "report.json").read_text())
+    p = _pred(run_dir)
+    for period in ("main", "supplementary"):
+        e = p[p["period"] == period]
+        lp = rep["horizons"]["3"][period]["local_persistence_matched"]
+        assert lp["keys"] == int(((e["local_eligible"] == 1) & (e["persistence_available"] == 1)).sum())
+        assert set(lp["panels"]) == {"local", "pool", "geo", "persistence"}
+        assert "local_minus_persistence" in lp["deltas"]
+
+
+@pytest.mark.parametrize("path", [
+    ("main", "E_persist", "panels", "persistence", "binary", "recall"),
+    ("main", "E_all", "panels", "geo", "four_class", "macro_f1"),
+    ("supplementary", "local_persistence_matched", "panels", "local", "q3_r2_raw"),
+    ("main", "E_persist", "deltas", "geo_minus_persistence", "binary.f2"),
+    ("main", "ungated_local_diagnostic", "all", "panels", "local", "binary", "precision"),
+])
+def test_independent_metric_checker_catches_mutation(run_dir, path):
+    rep = json.loads((run_dir["root"] / "report" / "report.json").read_text())
+    chk = replay.Checker()
+    replay.verify_report(chk, run_dir["root"], rep, [H], lambda h: p6_like(run_dir["hz"]))
+    assert not chk.failures, chk.failures[:3]
+    node = rep["horizons"]["3"]
+    for k in path[:-1]:
+        node = node[k]
+    node[path[-1]] = (node[path[-1]] or 0.0) + 0.01
+    chk = replay.Checker()
+    replay.verify_report(chk, run_dir["root"], rep, [H], lambda h: p6_like(run_dir["hz"]))
+    assert chk.failures

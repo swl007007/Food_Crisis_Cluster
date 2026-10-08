@@ -3,7 +3,11 @@
 Change: fit records must carry decay-weight evidence whose protocol and
 effective digests equal the identity's ``weights`` binding (the original
 required ``"unit"``); identities must bind those weights; a read-only mode
-refuses to fit (replay). Everything else is the original logic.
+refuses to fit (replay); each entry also stores a fit-provenance sidecar
+(``fit_rows.npy`` ordered row references and ``fit_keys.npy`` canonical
+(admin_code, target_ord) keys) whose array digests must equal the identity's
+``fit_rows``/``fit_keys`` on write and on every load. Everything else is the
+original logic.
 
 Original docstring follows.
 
@@ -223,6 +227,22 @@ class ModelStore:
         with open(self.ledger_path, "a", encoding="utf-8", newline="\n") as handle:
             handle.write(canonical(entry) + "\n")
 
+    @staticmethod
+    def check_sidecar(directory: Path, identity: dict) -> dict:
+        """Load and validate the fit-provenance sidecar against the identity."""
+        out = {}
+        for name, field in (("fit_rows", "fit_rows"), ("fit_keys", "fit_keys")):
+            path = directory / f"{name}.npy"
+            if not path.is_file():
+                raise TechnicalError(f"model entry {directory.name} lacks {name}.npy provenance")
+            arr = np.load(path, allow_pickle=False)
+            if array_digest(arr) != identity.get(field):
+                raise TechnicalError(f"model entry {directory.name} {name}.npy does not match the identity")
+            out[name] = arr
+        if len(out["fit_rows"]) != identity.get("n_rows") or out["fit_keys"].shape != (identity.get("n_rows"), 2):
+            raise TechnicalError(f"model entry {directory.name} provenance shape differs from n_rows")
+        return out
+
     def _load(self, digest: str, identity: dict) -> Quartet:
         directory = self._dir(digest)
         record_path = directory / "record.json"
@@ -241,9 +261,11 @@ class ModelStore:
                 raise TechnicalError(f"model entry {digest} {q} bytes do not match the recorded digest")
             payloads[q] = payload
         validate_fit_records(identity, payloads, record.get("fit_records") or {})
+        self.check_sidecar(directory, identity)
         return Quartet(payloads, record["fit_records"])
 
-    def get_or_fit(self, identity: dict, fit: Callable[[], Quartet], use: dict) -> tuple[Quartet, dict]:
+    def get_or_fit(self, identity: dict, fit: Callable[[], Quartet], use: dict,
+                   sidecar: dict | None = None) -> tuple[Quartet, dict]:
         """Return the quartet for ``identity``, fitting it once if absent.
 
         ``use`` describes this scientific request (stage/H/date/region/purpose)
@@ -253,7 +275,7 @@ class ModelStore:
         directory = self._dir(digest)
         self.counts["requests"] += 1
         try:
-            quartet, status = self._get_or_fit(digest, directory, identity, fit)
+            quartet, status = self._get_or_fit(digest, directory, identity, fit, sidecar)
         except Exception as error:
             self.counts["failed"] = self.counts.get("failed", 0) + 1
             self._log({"identity_sha256": digest, "status": "failed", "error_type": type(error).__name__,
@@ -263,7 +285,7 @@ class ModelStore:
         self._log(entry)
         return quartet, entry
 
-    def _get_or_fit(self, digest, directory, identity, fit):
+    def _get_or_fit(self, digest, directory, identity, fit, sidecar=None):
         if directory.exists():
             quartet = self._load(digest, identity)
             self.counts["hits"] += 1
@@ -279,6 +301,11 @@ class ModelStore:
             tmp.mkdir(parents=True)
             for q in TARGETS:
                 (tmp / f"{q}.ubj").write_bytes(quartet.payloads[q])
+            if sidecar is None:
+                raise TechnicalError("a new model entry needs its fit-provenance sidecar")
+            for name in ("fit_rows", "fit_keys"):
+                np.save(tmp / f"{name}.npy", np.ascontiguousarray(sidecar[name], dtype=np.int64), allow_pickle=False)
+            self.check_sidecar(tmp, identity)
             record = {
                 "identity": identity,
                 "identity_sha256": digest,

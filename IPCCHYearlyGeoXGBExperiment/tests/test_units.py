@@ -109,19 +109,30 @@ def test_store_binds_weights_and_readonly_refuses(tmp_path):
     from ipcch_yearly_xgb.modelstore import target_digests
     wid = {"protocol_sha256": hashlib.sha256(w.tobytes()).hexdigest(),
            "effective_float32_sha256": hashlib.sha256(w.astype(np.float32).tobytes()).hexdigest()}
+    from ipcch_yearly_xgb.modelstore import array_digest
+    rows = np.arange(len(w), dtype=np.int64)
+    keys = np.column_stack([rows, rows + 24000]).astype(np.int64)
+    side = {"fit_rows": rows, "fit_keys": keys}
     ident = {"scope": "yearly-global", "params": gp, "rounds": gr, "n_rows": len(w), "y_sha256": target_digests(Y),
-             "weights": wid}
+             "weights": wid, "fit_rows": array_digest(rows), "fit_keys": array_digest(keys)}
     store = ModelStore(tmp_path / "m", tmp_path / "l.jsonl")
-    store.get_or_fit(ident, lambda: quartet.fit_global_quartet(X, Y, w, gp, gr), {})
+    with pytest.raises(TechnicalError):  # a new entry without provenance is refused
+        store.get_or_fit(ident, lambda: quartet.fit_global_quartet(X, Y, w, gp, gr), {})
+    store.get_or_fit(ident, lambda: quartet.fit_global_quartet(X, Y, w, gp, gr), {}, sidecar=side)
     _, e = store.get_or_fit(ident, lambda: pytest.fail("refit"), {})
     assert e["status"] == "hit"
     bad = {**ident, "weights": {**wid, "protocol_sha256": "0" * 64}}
     with pytest.raises(TechnicalError):  # records' weights disagree with the identity
-        store.get_or_fit(bad, lambda: quartet.fit_global_quartet(X, Y, w, gp, gr), {})
+        store.get_or_fit(bad, lambda: quartet.fit_global_quartet(X, Y, w, gp, gr), {}, sidecar=side)
     ro = ModelStore(tmp_path / "m", tmp_path / "ro.jsonl", readonly=True)
     with pytest.raises(TechnicalError):
         ro.get_or_fit({**ident, "n_rows": len(w)} | {"extra": 1}, lambda: pytest.fail("fit"), {})
     d = identity_digest(ident)
+    np.save(tmp_path / "m" / d[:2] / d / "fit_rows.npy", rows[::-1].copy())  # tampered provenance
+    with pytest.raises(TechnicalError):
+        store.get_or_fit(ident, lambda: pytest.fail("refit"), {})
+    np.save(tmp_path / "m" / d[:2] / d / "fit_rows.npy", rows)
+    store.get_or_fit(ident, lambda: pytest.fail("refit"), {})
     (tmp_path / "m" / d[:2] / d / "q3.ubj").write_bytes(b"corrupt")
     with pytest.raises(TechnicalError):
         store.get_or_fit(ident, lambda: pytest.fail("refit"), {})
@@ -161,3 +172,60 @@ def test_gate_strict_gain_and_support():
     assert engine.gate_decision(p, c)["reason"] == "gate_support:local_fit_dates"
     assert metrics.gain_passes({"tp": 1, "fp": 0, "fn": 0, "tn": 0}, {"tp": 99, "fp": 2, "fn": 0, "tn": 0},
                                Fraction(1, 100))[0] is False  # exactly 1/100 fails
+
+
+# ------------------------------------------------------------ source freeze and staging
+
+def test_source_freeze_rejects_evaluator_change_and_controls_reconciliation(tmp_path):
+    from ipcch_yearly_xgb import freeze, runtime
+    saved = runtime.source_inventory()
+    assert freeze.check_sources(tmp_path, saved, dict(saved))["status"] == "identical"
+    for changed in ("ipcch_yearly_xgb/projection.py", "ipcch_yearly_xgb/metrics.py", "ipcch_yearly_xgb/report.py"):
+        cur = {**saved, changed: "f" * 64}
+        with pytest.raises(ContractError):
+            freeze.check_sources(tmp_path, saved, cur)
+    cur = {**saved, "ipcch_yearly_xgb/report.py": "f" * 64}
+    rec = {"changes": {"ipcch_yearly_xgb/report.py": {"old": saved["ipcch_yearly_xgb/report.py"], "new": "f" * 64,
+                                                      "reason": "report-only fix", "authorized_by": "supervisor"}}}
+    (tmp_path / "source-reconciliation.json").write_text(json.dumps(rec))
+    assert freeze.check_sources(tmp_path, saved, cur)["status"] == "reconciled"
+    cur2 = {**saved, "ipcch_yearly_xgb/engine.py": "f" * 64}
+    rec["changes"]["ipcch_yearly_xgb/engine.py"] = {"old": saved["ipcch_yearly_xgb/engine.py"], "new": "f" * 64,
+                                                    "reason": "x", "authorized_by": "y"}
+    (tmp_path / "source-reconciliation.json").write_text(json.dumps(rec))
+    with pytest.raises(ContractError):  # fit-defining sources can never be reconciled
+        freeze.check_sources(tmp_path, saved, cur2)
+
+
+def test_cli_context_stops_on_source_mismatch_before_any_work(tmp_path):
+    from ipcch_yearly_xgb import cli, runtime
+    run = tmp_path / "run"
+    (run / "preflight").mkdir(parents=True)
+    inv = {**runtime.source_inventory(), "ipcch_yearly_xgb/projection.py": "0" * 64}
+    (run / "preflight" / "preflight.json").write_text(json.dumps({"source_inventory": inv, "env": {}}))
+    with pytest.raises(ContractError, match="projection.py"):
+        cli._context(run)
+    assert not (run / "predict").exists() and not (run / "models").exists()
+
+
+def test_staging_copies_verifies_and_detects_tampering(tmp_path, monkeypatch):
+    import platform
+    from ipcch_yearly_xgb import sources
+    from ipcch_yearly_xgb.artifacts import sha256_file
+    repo = tmp_path / "repo"
+    (repo / "runs/p6/prepared").mkdir(parents=True)
+    (repo / "cfg").mkdir()
+    (repo / "runs/p6/prepared/a.csv").write_bytes(b"x,y\n1,2\n")
+    (repo / "cfg/c.json").write_bytes(b"{}")
+    key = "repo_root_windows" if platform.system() == "Windows" else "repo_root_wsl"
+    inputs = {"inputs_version": "t", "source_run": "p6", key: str(repo), "run_relative": "runs/p6",
+              "run_files": {"prepared/a.csv": {"bytes": (repo / "runs/p6/prepared/a.csv").stat().st_size, "sha256": sha256_file(repo / "runs/p6/prepared/a.csv")}},
+              "source_config_files": {"cfg/c.json": {"bytes": 2, "sha256": sha256_file(repo / "cfg/c.json")}}}
+    out = sources.stage(tmp_path / "staged", inputs)
+    assert out["files"] == 2 and (tmp_path / "staged/run/prepared/a.csv").is_file()
+    assert sources.roots(inputs, tmp_path / "staged")[0] == tmp_path / "staged" / "run"
+    (tmp_path / "staged/run/prepared/a.csv").write_bytes(b"x,y\n1,3\n")
+    with pytest.raises(ContractError):
+        sources.verify(inputs, staged=tmp_path / "staged")
+    with pytest.raises(ContractError):  # never re-stage over an existing snapshot
+        sources.stage(tmp_path / "staged", inputs)

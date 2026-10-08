@@ -1,6 +1,11 @@
 """Read-only access to the verified p6-formal-20261004b inputs (design sections 1, 6).
 
-``verify`` rehashes all 33 pinned run files and the 3 original config files.
+``stage`` copies the 33 pinned run files and the 3 original config files once
+into a hash-verified snapshot outside Dropbox (``<run>/inputs/run/<rel>`` and
+``<run>/inputs/source/<rel>``, source-relative paths preserved, plus
+``staging-manifest.json``); every loader takes that snapshot (``staged``)
+and ``verify`` rehashes it. Without ``staged`` the loaders read the original
+Dropbox locations (used only by staging itself and planning checks).
 ``load_horizon`` re-validates frozen-map lineage against the original P6
 contract, adapted from ipcch_geoxgb/predict.py ``load_frozen`` at 6798df2:
 the record must be for this H, bound to the pinned prepared manifest, the
@@ -13,7 +18,9 @@ with pandas defaults exactly as ipcch_geoxgb/learnmap.py ``load_horizon``.
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -25,10 +32,39 @@ from ipcch_yearly_xgb.errors import ContractError, TechnicalError
 TARGETS = ("q2", "q3", "q4", "q5")
 
 
-def verify(inputs: dict | None = None) -> dict:
+def roots(inputs: dict, staged: Path | None = None) -> tuple[Path, Path]:
+    """(run-file base, source-config base): the staged snapshot if given, else the original locations."""
+    if staged is not None:
+        return Path(staged) / "run", Path(staged) / "source"
+    return run_root(inputs), repo_root(inputs)
+
+
+def stage(dest: Path, inputs: dict | None = None) -> dict:
+    """Copy the 36 pinned inputs once into ``dest`` (outside Dropbox) and verify the copies."""
+    inputs = inputs or load_inputs()
+    verify(inputs)  # originals first
+    dest = Path(dest)
+    if dest.exists():
+        raise ContractError(f"staging directory already exists: {dest}")
+    manifest = {"inputs_version": inputs["inputs_version"], "source_run": inputs["source_run"], "files": {}}
+    for kind, base, group in (("run", run_root(inputs), inputs["run_files"]),
+                              ("source", repo_root(inputs), inputs["source_config_files"])):
+        for rel, entry in group.items():
+            target = dest / kind / rel
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(base / rel, target)
+            manifest["files"][f"{kind}/{rel}"] = {"origin": str(base / rel), "sha256": entry["sha256"],
+                                                  "bytes": entry["bytes"]}
+    observed = verify(inputs, staged=dest)
+    (dest / "staging-manifest.json").write_text(json.dumps(manifest, indent=1, sort_keys=True), encoding="utf-8")
+    return {"files": len(observed), "manifest": manifest}
+
+
+def verify(inputs: dict | None = None, staged: Path | None = None) -> dict:
     inputs = inputs or load_inputs()
     observed = {}
-    for base, group in ((run_root(inputs), inputs["run_files"]), (repo_root(inputs), inputs["source_config_files"])):
+    run_base, src_base = roots(inputs, staged)
+    for base, group in ((run_base, inputs["run_files"]), (src_base, inputs["source_config_files"])):
         for rel, entry in group.items():
             path = base / rel
             if not path.is_file():
@@ -53,8 +89,8 @@ def meets(record: dict, floor: dict) -> bool:
     return all(record[k] >= v for k, v in floor.items())
 
 
-def frozen_lineage(h: int, inputs: dict, recipe: str) -> tuple[dict, dict]:
-    root, repo = run_root(inputs), repo_root(inputs)
+def frozen_lineage(h: int, inputs: dict, recipe: str, staged: Path | None = None) -> tuple[dict, dict]:
+    root, repo = roots(inputs, staged)
     orig_contract = json.loads((repo / "IPCCHGeoXGBExperiment/config/experiment-contract.json").read_text("utf-8"))
     schema = json.loads((repo / "IPCCHGeoXGBExperiment/config/feature-schema.json").read_text("utf-8"))
     schema_identity = [schema["schema_version"], schema["ordered_names_sha256"]]
@@ -122,10 +158,10 @@ class Horizon:
         return np.isin(self.area[rows], self.regions[node])
 
 
-def load_horizon(h: int, recipe: str, inputs: dict | None = None) -> Horizon:
+def load_horizon(h: int, recipe: str, inputs: dict | None = None, staged: Path | None = None) -> Horizon:
     inputs = inputs or load_inputs()
-    root = run_root(inputs)
-    record, lineage = frozen_lineage(h, inputs, recipe)
+    root = roots(inputs, staged)[0]
+    record, lineage = frozen_lineage(h, inputs, recipe, staged)
     keys = pd.read_csv(root / f"prepared/keys_h{h:02d}.csv.gz")
     X = np.load(root / f"prepared/X_rich561_h{h:02d}.npy", mmap_mode="r")
     if len(keys) != X.shape[0] or X.shape[1] != 561:
@@ -143,11 +179,11 @@ def load_horizon(h: int, recipe: str, inputs: dict | None = None) -> Horizon:
                    map_sha256=record["map_sha256"], lineage=lineage)
 
 
-def load_calendar(inputs: dict | None = None) -> pd.DataFrame:
+def load_calendar(inputs: dict | None = None, staged: Path | None = None) -> pd.DataFrame:
     inputs = inputs or load_inputs()
-    return pd.read_csv(run_root(inputs) / "prepared/fold_calendar.csv")
+    return pd.read_csv(roots(inputs, staged)[0] / "prepared/fold_calendar.csv")
 
 
-def load_p6_predictions(h: int, inputs: dict | None = None) -> pd.DataFrame:
+def load_p6_predictions(h: int, inputs: dict | None = None, staged: Path | None = None) -> pd.DataFrame:
     inputs = inputs or load_inputs()
-    return pd.read_csv(run_root(inputs) / f"stage3/h{h:02d}/predictions.csv.gz", float_precision="round_trip")
+    return pd.read_csv(roots(inputs, staged)[0] / f"stage3/h{h:02d}/predictions.csv.gz", float_precision="round_trip")

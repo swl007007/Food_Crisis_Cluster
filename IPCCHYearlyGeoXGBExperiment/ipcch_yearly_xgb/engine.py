@@ -94,6 +94,7 @@ class Engine:
             "fit_pool": "t<=fit_origin, no lower bound",
             "fit_rows": array_digest(np.asarray(rows, dtype=np.int64)), "n_rows": int(len(rows)),
             "fit_keys": array_digest(keys), "y_sha256": target_digests(hz.Y[rows]),
+            "X_fit_sha256": array_digest(np.ascontiguousarray(np.asarray(hz.X[rows], dtype=np.float64))),
             "X_artifact_sha256": hz.x_sha256, "keys_artifact_sha256": hz.keys_sha256,
             "schema": hz.lineage.get("schema"), "prepared_manifest_sha256": hz.lineage.get("prepared_manifest_sha256"),
             "weights": {"formula": "0.5**((O-t)/24)", "half_life_months": self.half_life,
@@ -102,6 +103,11 @@ class Engine:
                             np.ascontiguousarray(w.astype(np.float32)).tobytes()).hexdigest()},
         }
         return ident, w
+
+    def _sidecar(self, rows: np.ndarray) -> dict:
+        hz = self.hz
+        return {"fit_rows": np.asarray(rows, dtype=np.int64),
+                "fit_keys": np.column_stack([hz.area[rows], hz.t[rows]]).astype(np.int64)}
 
     def global_quartet(self, origin: int, use: dict):
         hz = self.hz
@@ -113,7 +119,7 @@ class Engine:
                  "rounds": self.grounds}
         q, entry = self.store.get_or_fit(
             ident, lambda: quartet.fit_global_quartet(np.asarray(hz.X[rows]), hz.Y[rows], w, self.gparams, self.grounds),
-            {"H": hz.h, "role": "global", "fit_origin": int(origin), **use})
+            {"H": hz.h, "role": "global", "fit_origin": int(origin), **use}, sidecar=self._sidecar(rows))
         self.weight_stats[entry["identity_sha256"]] = {"n": int(len(rows)), "sum": float(w.sum()),
                                                        "ess": float(w.sum() ** 2 / (w ** 2).sum())}
         return entry["identity_sha256"], q, rows, w
@@ -143,7 +149,8 @@ class Engine:
         q, entry = self.store.get_or_fit(
             ident, lambda: quartet.continue_local_quartet(gq, np.asarray(hz.X[rows]), hz.Y[rows], w, self.lparams,
                                                           self.lrounds),
-            {"H": hz.h, "role": "local", "fit_origin": int(origin), "region": node, **use})
+            {"H": hz.h, "role": "local", "fit_origin": int(origin), "region": node, **use},
+            sidecar=self._sidecar(rows))
         self.weight_stats[entry["identity_sha256"]] = {"n": int(len(rows)), "sum": float(w.sum()),
                                                        "ess": float(w.sum() ** 2 / (w ** 2).sum())}
         return (entry["identity_sha256"], q), sup

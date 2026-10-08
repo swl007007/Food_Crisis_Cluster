@@ -16,7 +16,7 @@ from pathlib import Path
 
 from ipcch_yearly_xgb import CONFIG_DIR
 from ipcch_yearly_xgb import contract as C
-from ipcch_yearly_xgb.artifacts import record_incomplete, write_json
+from ipcch_yearly_xgb.artifacts import record_incomplete, sha256_file, write_json
 from ipcch_yearly_xgb.errors import ContractError, TechnicalError
 
 
@@ -24,9 +24,9 @@ def _print(obj) -> None:
     print(json.dumps(obj, indent=2, default=str))
 
 
-def _horizons(contract):
+def _horizons(contract, staged=None):
     from ipcch_yearly_xgb import sources
-    return {h: sources.load_horizon(h, contract["recipes"][str(h)]) for h in contract["horizons_months"]}
+    return {h: sources.load_horizon(h, contract["recipes"][str(h)], staged=staged) for h in contract["horizons_months"]}
 
 
 def _enumerate(contract, horizons, calendar):
@@ -103,15 +103,20 @@ def cmd_preflight(a) -> int:
         info = runtime.probe()
         if not info["matches_lock"]:
             raise ContractError(f"runtime mismatch: {info['mismatches']}")
-        verified = sources.verify()
-        calendar = sources.load_calendar()
-        horizons = _horizons(contract)
+        staged = run_dir / "inputs"
+        staging = sources.stage(staged)  # 36 pinned inputs copied outside Dropbox and re-verified
+        verified = sources.verify(staged=staged)
+        calendar = sources.load_calendar(staged=staged)
+        horizons = _horizons(contract, staged)
         enumeration, total, problems = _enumerate(contract, horizons, calendar)
         if problems:
             raise ContractError(f"enumeration mismatch: {problems}")
         disk = shutil.disk_usage(run_dir)
         rep = {"stage": "preflight", "runtime": info, "env": runtime.environment_identity(),
                "source_inventory": runtime.source_inventory(), "inputs_verified": verified,
+               "staged_inputs": {"dir": "inputs", "files": staging["files"],
+                                 "manifest_sha256": sha256_file(
+                                     staged / "staging-manifest.json")},
                "lineage": {h: hz.lineage | {"map_sha256": hz.map_sha256} for h, hz in horizons.items()},
                "enumeration": enumeration, "total_scalar_fits": total, "disk_free_gb": round(disk.free / 2**30, 1),
                "contract": contract["contract_version"]}
@@ -124,27 +129,32 @@ def cmd_preflight(a) -> int:
     return 0
 
 
-def _context(run_dir: Path):
-    from ipcch_yearly_xgb import runtime, sources
+def _context(run_dir: Path) -> dict:
+    """Verification shared by predict/report/replay; nothing here fits a model."""
+    from ipcch_yearly_xgb import freeze, runtime, sources
     if not (run_dir / "preflight" / "preflight.json").is_file():
         raise ContractError("run has no passed preflight")
     if (run_dir / "RUN_INCOMPLETE.json").exists():
         raise ContractError("run is marked incomplete")
+    pre = json.loads((run_dir / "preflight" / "preflight.json").read_text(encoding="utf-8"))
+    sources_check = freeze.check_sources(run_dir, pre["source_inventory"])  # complete inventory, before anything else
     contract = C.load_contract()
     env = runtime.environment_identity()
-    pre = json.loads((run_dir / "preflight" / "preflight.json").read_text(encoding="utf-8"))
     if pre["env"] != env:
         raise ContractError("runtime/fit-source identity differs from the run's preflight")
-    sources.verify()
-    return contract, env, runtime.source_inventory(), _horizons(contract), sources.load_calendar()
+    staged = run_dir / "inputs"
+    sources.verify(staged=staged)
+    return {"contract": contract, "env": env, "inventory": pre["source_inventory"], "sources_check": sources_check,
+            "staged": staged, "horizons": _horizons(contract, staged), "calendar": sources.load_calendar(staged=staged),
+            "p6_loader": lambda h: sources.load_p6_predictions(h, staged=staged)}
 
 
 def cmd_predict(a) -> int:
     from ipcch_yearly_xgb import run
     _check_config(a)
     run_dir = Path(a.run_dir)
-    contract, env, inv, horizons, calendar = _context(run_dir)
-    res = run.run_predict(run_dir, horizons, calendar, contract, env, inv)
+    ctx = _context(run_dir)
+    res = run.run_predict(run_dir, ctx["horizons"], ctx["calendar"], ctx["contract"], ctx["env"], ctx["inventory"])
     _print({"status": "passed", "store": res["store_counts"], "seconds": res["elapsed_seconds"],
             "horizons": res["horizons"]})
     return 0
@@ -154,8 +164,9 @@ def cmd_report(a) -> int:
     from ipcch_yearly_xgb import report
     _check_config(a)
     run_dir = Path(a.run_dir)
+    ctx = _context(run_dir)
     try:
-        res = report.run_report(run_dir, C.load_contract())
+        res = report.run_report(run_dir, ctx["contract"], p6_loader=ctx["p6_loader"])
     except Exception as error:
         record_incomplete(run_dir, "report", {"stage": "report"}, error)
         raise
@@ -167,9 +178,9 @@ def cmd_replay(a) -> int:
     from ipcch_yearly_xgb import replay
     _check_config(a)
     run_dir = Path(a.run_dir)
-    contract, env, inv, horizons, calendar = _context(run_dir)
-    res = replay.run_replay(run_dir, horizons, calendar, contract, env, inv,
-                            expect_fits=contract["expected"]["total_scalar_fits"])
+    ctx = _context(run_dir)
+    res = replay.run_replay(run_dir, ctx["horizons"], ctx["calendar"], ctx["contract"], ctx["env"], ctx["inventory"],
+                            expect_fits=ctx["contract"]["expected"]["total_scalar_fits"], p6_loader=ctx["p6_loader"])
     _print({k: v for k, v in res.items() if k != "failures"} | {"first_failures": res["failures"][:10]})
     return 0 if res["status"] == "passed" else 1
 

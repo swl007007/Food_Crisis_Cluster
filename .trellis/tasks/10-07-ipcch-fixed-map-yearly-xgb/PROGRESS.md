@@ -33,3 +33,27 @@ Resource estimate for P1: ≈ 10 min of fitting plus prediction, report and repl
 Interpreter `C:\Users\swl00\AppData\Local\Microsoft\WindowsApps\python3.12.exe`; commands as in the package README (`run_experiment.py --run-dir … preflight|predict|report|replay`).
 
 STOP: no project-data fit or pilot has been run. Awaiting Codex release for P1.
+
+## P0 supervisor review and repair (2026-10-07)
+
+- Supervisor review of `eec001d`: HOLD P1 with a fixed repair list (copied to `evidence/p0-review-eec001d.md`). No science/timing/weight/root error was found; inputs (36), source inventory (22) and the 724 inventory were independently verified.
+- Supervisor reran the synthetic suite with the locked Windows Python from `IPCCHYearlyGeoXGBExperiment/` with `PYTHONPATH=. WSLENV=PYTHONPATH/p`: `python -m pytest -q -p no:cacheprovider` → 24 passed in 37.27 s. An initial invocation from the repository root without the package PYTHONPATH failed at collection only; the documented invocation passed.
+
+Repairs (no scientific contract, recipe, map or inventory change):
+
+1. Fit provenance: each model entry stores `fit_rows.npy` (ordered row references) and `fit_keys.npy` (canonical admin/target keys); their array digests must equal the identity's `fit_rows`/`fit_keys` on write and every load. Identities also bind `X_fit_sha256`, the digest (dtype/shape header included) of the actual selected float64 X rows. Replay recomputes rows/keys/X/y from the reconstructed inputs and compares with sidecar and identity.
+2. Complete source freeze: new `freeze.py`. predict/report/replay compare the preflight's complete source inventory with the current one before any other work; a difference stops unless a pre-written `source-reconciliation.json` authorizes it file by file (old/new hash, reason, authorizer). Fit-defining sources can never be reconciled. `report` now runs the same context verification (runtime, staged inputs, freeze) without fitting.
+3. Input staging: preflight copies the 36 pinned inputs once into `<run>/inputs/{run,source}/<relative path>` (outside Dropbox), verifies the copies and writes `staging-manifest.json`; lineage, training data, maps, calendar and P6 comparators are read only from that snapshot. The report has no Dropbox fallback.
+4. Report: new `local_persistence_matched` cohort per H × period (L-eligible ∩ persistence-available keys) with local/pool/geo/persistence panels, deltas and coverage; the full-cohort G−P stays primary.
+5. Independent metrics in replay: a separately written panel (four-class confusion/accuracy/macro-F1, binary accuracy/precision/recall/F1/F2, projected/raw q3 R², NA semantics) checks every reported panel and delta of E_all, E_persist, the local diagnostic (all and each gate group) and the new matched cohort; counts and NA status exact, floats within 1e-12 relative.
+
+Checks:
+
+| Check | Result |
+| --- | --- |
+| Tests | 35 passed (24 existing + 11 focused: provenance-less entry refused, sidecar tamper, selected-X change, fitted-key tamper, evaluator/projection/report source mismatch, reconciliation rules incl. fit sources, CLI stops before any work, staging copy/verify/tamper/no re-stage, local-persistence cohort, 5 non-F1 metric/cohort mutations caught) |
+| Preflight `p0b-preflight-20261007` | passed: 36 inputs staged (748 MB) and verified; lineage valid; inventory unchanged: 21 + 160 quartets = 724 scalar fits; main full keys 17,322/16,919/16,413/14,087; diagnostic 9,943/9,866/9,522/7,904 |
+| fit_source_sha256 | `d7a693959b5ed6fd7c1907b4d1401d713d7ea3a4d44c419c2424cd5a72a3ed36` (23-file inventory in the preflight) |
+| Timing | not rerun: the fitting path (quartet weights/XGBoost calls) is unchanged; only provenance files and checks were added |
+
+STOP: no project-data fit. Awaiting supervisor delta review and P1 release.
