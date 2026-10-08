@@ -1,0 +1,27 @@
+{
+  "summary_experiment_id": "2",
+  "experiment_status": "complete",
+  "summary_runs": 492,
+  "metric_names": [
+    "binary.accuracy",
+    "binary.f1",
+    "binary.f2",
+    "binary.precision",
+    "binary.recall",
+    "four_class.accuracy",
+    "four_class.macro_f1",
+    "n",
+    "q3_r2_projected"
+  ],
+  "finite_metric_values": 4424,
+  "input_attachments": 492,
+  "dataset_identities": 57,
+  "logged_models": 100,
+  "registered_models": 68,
+  "versions": 100,
+  "original_runs": 126,
+  "original_metrics": 20528,
+  "statuses": {
+    "FINISHED": 492
+  }
+}

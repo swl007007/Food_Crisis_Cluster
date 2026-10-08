@@ -1,6 +1,7 @@
 # Local MLflow Summary, External Model Catalog and Evaluation Inputs
 
-Contract for `IPCCHMLflow/summary_catalog.py` (task 10-08-mlflow-focused-evaluation-registry).
+Contract for `IPCCHMLflow/summary_catalog.py` (task 10-08-mlflow-focused-evaluation-registry,
+delivery accepted by the supervisor at e6bf94e; live store holds plan a4d69a00).
 Builds on [local-mlflow-import.md](./local-mlflow-import.md); the original `IPCCH` records are
 read-only input.
 

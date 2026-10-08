@@ -45,4 +45,8 @@ Operational log only; approval authority is the user and the supervisor (wN:p1).
    improvement claimed. Windows: Summary list/row/Models/Registry/version screenshots; bundle
    download via a model tag URI (162,252,800 B, SHA matches model_bundle_sha256).
    Spec: .trellis/spec/backend/local-mlflow-summary-catalog.md. README updated.
-7. [ ] Supervisor acceptance; close only on supervisor instruction (no auto audit).
+7. [x] Supervisor delivery acceptance PASS at e6bf94e (evidence/supervisor-acceptance-e6bf94e.md,
+   independent readback supervisor-delivery-check-e6bf94e.json). Limitation unchanged: payload and
+   server latency improved, no clear first-paint improvement.
+8. [ ] Non-audited closure on supervisor instruction (native archive --no-commit, then the
+   supervisor records the no-job closure). No trellis-audit close, no audit, no push/merge.
