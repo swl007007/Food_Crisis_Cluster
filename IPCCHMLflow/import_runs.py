@@ -3,6 +3,8 @@
   plan    read-only: hash every source file, extract evaluation views, write plans
   import  create/resume parent source_run + child evaluation_view records
   verify  read back every metric/param/tag and download+hash every artifact
+  reconcile  one-time additive reconciliation of imported records to a changed plan
+             (refuses value changes; superseded manifests/views kept; nothing deleted)
 
 Records are keyed by a stable ``source_key`` tag; ``import_fingerprint`` binds
 the exact inputs. Same fingerprint -> verified no-op; different -> conflict
@@ -23,7 +25,7 @@ import sys
 import tarfile
 import tempfile
 import time
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import extract  # noqa: E402
@@ -574,6 +576,142 @@ def _run_id_for(client, exp, source_key: str) -> str:
     return _RID_CACHE[source_key]
 
 
+# ------------------------------------------------------------------ one-time reconciliation
+
+RECONCILE_NOTE = "supervisor review of 8c88f48; fixes a9a2598"
+
+
+def _download_bytes(client, rid: str, path: str) -> bytes:
+    with tempfile.TemporaryDirectory(prefix="ipcch-mlflow-recon-") as tmp:
+        return Path(client.download_artifacts(rid, path, tmp)).read_bytes()
+
+
+def _supersede(client, rid: str, have: dict, path: str, new: bytes, old16: str, prefix: str) -> dict | None:
+    """Keep the current artifact under ``{prefix}superseded/`` before replacing it. Returns a record or None."""
+    if path not in have:
+        upload(client, rid, have, path, data=new)
+        return {"path": path, "action": "added", "new_sha256": sha_bytes(new)}
+    old = _download_bytes(client, rid, path)
+    if old == new:
+        return None
+    name = PurePosixPath(path).name
+    stem, _, ext = name.partition(".")
+    keep = f"{prefix}superseded/{stem}.{old16}.{ext}"
+    upload(client, rid, {}, keep, data=old)
+    upload(client, rid, {}, path, data=new)
+    return {"path": path, "action": "superseded", "kept_as": keep, "old_sha256": sha_bytes(old), "new_sha256": sha_bytes(new)}
+
+
+def reconcile_family(client, exp, plan: dict, run_ids: dict) -> dict:
+    """One-time, additive reconciliation of already-imported records to a changed plan.
+
+    Refuses if any logged metric, param or existing tag value would change, or if any
+    archived source/model artifact differs in size. Replaced manifests/view JSON are kept
+    under ``superseded/``; the previous fingerprint is recorded. Nothing is deleted."""
+    fam = plan["config"]
+    skey = f"{fam['family']}/{fam['source_run_id']}"
+    out = {"source_key": skey, "parent": None, "children_reconciled": 0, "children_unchanged": 0,
+           "children_not_imported": 0, "artifact_changes": []}
+    run = find_run(client, exp.experiment_id, skey)
+    if run is None:
+        out["parent"] = "not imported"
+        return out
+    rid, tags = run.info.run_id, run.data.tags
+    run_ids[fam["family"]] = rid
+    old_fp = tags.get("import_fingerprint")
+    if old_fp == plan["fingerprint"] and tags.get("import_status") == "complete":
+        out["parent"] = "unchanged"
+    elif tags.get("import_status") == "in_progress" and not run.data.metrics and not run.data.params \
+            and not existing_artifacts(client, rid):
+        client.set_tag(rid, "import_fingerprint.previous", old_fp)
+        client.set_tag(rid, "import_fingerprint", plan["fingerprint"])
+        client.set_tag(rid, "reconciliation", f"{RECONCILE_NOTE}: empty in_progress shell rebound; resumed by import")
+        out["parent"] = "empty shell rebound"
+        return out
+    elif tags.get("import_status") == "complete":
+        if run.data.metrics != plan["parent_metrics"]:
+            raise SourceConflict(f"{skey}: parent metrics would change -- refuse")
+        for k, v in parent_params(plan).items():
+            if run.data.params.get(k) != str(v):
+                raise SourceConflict(f"{skey}: param {k} would change -- refuse")
+        for k, v in parent_tags(plan, run_ids).items():
+            if k in ("import_status", "import_fingerprint", "shared_inputs_parent_run_id"):
+                continue
+            if k in tags and tags[k] != str(v):
+                raise SourceConflict(f"{skey}: tag {k} would change -- refuse")
+        have = existing_artifacts(client, rid)
+        for r in plan["include"]:
+            if have.get(f"source/{r['path']}") != r["bytes"]:
+                raise SourceConflict(f"{skey}: archived source/{r['path']} differs -- refuse")
+        for r in plan["extras"]:
+            if have.get(r["path"]) != r["bytes"]:
+                raise SourceConflict(f"{skey}: archived {r['path']} differs -- refuse")
+        tar_info = {n: {"bytes": int(tags[f"bundle.{n}.bytes"]), "sha256": tags[f"bundle.{n}.sha256"]} for n in plan["bundle"]}
+        for n, info in tar_info.items():
+            if have.get(n) != info["bytes"]:
+                raise SourceConflict(f"{skey}: {n} differs -- refuse")
+        client.set_tag(rid, "import_status", "reconciling")
+        old16 = old_fp[:16]
+        for path, obj in parent_manifests(plan, tar_info).items():
+            rec = _supersede(client, rid, have, path, json.dumps(obj, indent=1, sort_keys=True).encode(), old16, "manifests/")
+            if rec:
+                out["artifact_changes"].append(rec)
+        log = {"record": skey, "previous_fingerprint": old_fp, "fingerprint": plan["fingerprint"], "note": RECONCILE_NOTE,
+               "changes": out["artifact_changes"]}
+        upload(client, rid, {}, f"manifests/superseded/reconciliation-{old16}.json",
+               data=json.dumps(log, indent=1, sort_keys=True).encode())
+        client.set_tag(rid, "import_fingerprint.previous", old_fp)
+        client.set_tag(rid, "import_fingerprint", plan["fingerprint"])
+        client.set_tag(rid, "reconciliation", RECONCILE_NOTE)
+        out["parent"] = "reconciled"
+    else:
+        raise SourceConflict(f"{skey}: parent in state {tags.get('import_status')} with different content -- stop")
+    comp = {}
+    for v in plan["views"]:
+        cr = find_run(client, exp.experiment_id, v["key"])
+        if cr is None:
+            out["children_not_imported"] += 1
+            continue
+        if cr.data.tags.get("import_fingerprint") == v["fingerprint"]:
+            out["children_unchanged"] += 1
+            continue
+        if cr.data.tags.get("import_status") != "complete" or cr.data.tags.get("mlflow.parentRunId") != rid:
+            raise SourceConflict(f"{v['key']}: child not complete or mislinked -- stop")
+        if cr.data.metrics != v["metrics"]:
+            raise SourceConflict(f"{v['key']}: metrics would change -- refuse")
+        for k, x in v["params"].items():
+            if cr.data.params.get(k) != str(x):
+                raise SourceConflict(f"{v['key']}: param {k} would change -- refuse")
+        for k, x in v["tags"].items():
+            if k in cr.data.tags and cr.data.tags[k] != str(x):
+                raise SourceConflict(f"{v['key']}: tag {k} would change -- refuse")
+        crid, c_old = cr.info.run_id, cr.data.tags["import_fingerprint"]
+        client.set_tag(crid, "import_status", "reconciling")
+        have = existing_artifacts(client, crid)
+        changes = [c for c in (
+            _supersede(client, crid, have, "view/evaluation_view.json", v["view_json"].encode(), c_old[:16], "view/"),
+            _supersede(client, crid, have, "view/na.json", json.dumps(v["na"], indent=1, sort_keys=True).encode(),
+                       c_old[:16], "view/")) if c]
+        upload(client, crid, {}, f"view/superseded/reconciliation-{c_old[:16]}.json", data=json.dumps(
+            {"record": v["key"], "previous_fingerprint": c_old, "fingerprint": v["fingerprint"], "note": RECONCILE_NOTE,
+             "tags_added": sorted(k for k in v["tags"] if k not in cr.data.tags), "changes": changes},
+            indent=1, sort_keys=True).encode())
+        cp = v["tags"].get("comparator_parent")
+        if cp and cp not in comp:
+            comp[cp] = _run_id_for(client, exp, cp)
+        log_values(client, client.get_run(crid), {}, {}, {**child_tags(v, rid, comp.get(cp)),
+                                                          "import_status": "reconciling",
+                                                          "import_fingerprint.previous": c_old,
+                                                          "reconciliation": RECONCILE_NOTE})
+        verify_child(client, client.get_run(crid), v, rid, deep=True)
+        client.set_tag(crid, "import_status", "complete")
+        out["children_reconciled"] += 1
+    if out["parent"] == "reconciled":
+        verify_parent(client, client.get_run(rid), plan, deep=True)
+        client.set_tag(rid, "import_status", "complete")
+    return out
+
+
 # ------------------------------------------------------------------ verify
 
 def _sha_file(p: Path) -> str:
@@ -612,9 +750,12 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
     for path, obj in parent_manifests(plan, tar_info).items():
         data = json.dumps(obj, indent=1, sort_keys=True).encode()
         want[path] = {"bytes": len(data), "sha256": sha_bytes(data)}
-    if set(want) != set(have):
+    extra = set(have) - set(want)
+    if run.data.tags.get("import_fingerprint.previous"):
+        extra = {p for p in extra if not p.startswith("manifests/superseded/")}
+    if set(want) - set(have) or extra:
         raise SourceConflict(f"{skey}: artifact set mismatch missing={sorted(set(want) - set(have))[:5]} "
-                             f"extra={sorted(set(have) - set(want))[:5]}")
+                             f"extra={sorted(extra)[:5]}")
     with tempfile.TemporaryDirectory(prefix="ipcch-mlflow-verify-") as tmp:
         for path, r in sorted(want.items()):
             if have[path] != r["bytes"]:
@@ -649,6 +790,8 @@ def verify_child(client, cr, v: dict, parent_rid: str, deep: bool) -> int:
     have = existing_artifacts(client, cr.info.run_id)
     na_bytes = json.dumps(v["na"], indent=1, sort_keys=True).encode()
     want = {"view/evaluation_view.json": v["view_json"].encode(), "view/na.json": na_bytes}
+    if cr.data.tags.get("import_fingerprint.previous"):
+        have = {k: n for k, n in have.items() if not k.startswith("view/superseded/")}
     if {k: len(b) for k, b in want.items()} != have:
         raise SourceConflict(f"{v['key']}: child artifact set/sizes differ")
     if deep:
@@ -698,7 +841,7 @@ class Lock:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["plan", "import", "verify"])
+    ap.add_argument("command", choices=["plan", "import", "verify", "reconcile"])
     ap.add_argument("--sources", default=str(Path(__file__).resolve().parent / "sources.json"))
     ap.add_argument("--store", default=str(DEFAULT_ROOT))
     ap.add_argument("--tracking-uri", default="http://127.0.0.1:5000")
@@ -732,6 +875,8 @@ def main(argv=None) -> int:
                 t1 = time.time()
                 if a.command == "import":
                     s = import_family(client, exp, plans[fam["family"]], store, run_ids, a.fail_after)
+                elif a.command == "reconcile":
+                    s = reconcile_family(client, exp, plans[fam["family"]], run_ids)
                 else:
                     s = verify_family(client, exp, plans[fam["family"]], deep=not a.shallow)
                 s["seconds"] = round(time.time() - t1, 1)

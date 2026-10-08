@@ -257,6 +257,63 @@ class ImporterTest(unittest.TestCase):
         self.assertNotIn("combined.E_persist.delta.geo_minus_persistence.binary.accuracy", geo.metrics)  # NA
         self.assertEqual(geo.metrics["y2026.E_persist.delta.geo_minus_persistence.binary.f1"], 0.01)
 
+    def test_reconcile_additive_change_keeps_runs_and_superseded_evidence(self):
+        self.run_cmd("import")
+        _, before = self.client_runs()
+        self.cfg["families"][0]["inventory"]["informational_keys"] = {"unused_sha256": "policy change only"}
+        self.write_cfg()
+        orig = extract.EXTRACTORS["p6"]
+
+        def with_extra_tag(fam, rep, root):
+            out = orig(fam, rep, root)
+            for c in out:
+                if c.arm == "geo":
+                    c.tags["cohort_keys.main.extra_subset"] = "d" * 64
+            return out
+        extract.EXTRACTORS["p6"] = with_extra_tag
+        try:
+            with self.assertRaises(SourceConflict):          # plain import refuses a changed fingerprint
+                self.run_cmd("import")
+            r = self.run_cmd("reconcile")["families"][0]
+            self.assertEqual((r["parent"], r["children_reconciled"], r["children_unchanged"]), ("reconciled", 4, 8))
+            self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
+            self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)
+        finally:
+            extract.EXTRACTORS["p6"] = orig
+        c, after = self.client_runs()
+        self.assertEqual(sorted(x.info.run_id for x in before), sorted(x.info.run_id for x in after))
+        parent = [x for x in after if x.data.tags.get("record_kind") == "source_run"][0]
+        old = [x for x in before if x.data.tags.get("record_kind") == "source_run"][0]
+        self.assertEqual(parent.data.tags["import_fingerprint.previous"], old.data.tags["import_fingerprint"])
+        arts = import_runs.existing_artifacts(c, parent.info.run_id)
+        self.assertTrue(any(k.startswith("manifests/superseded/plan-summary.") for k in arts))
+        geo = [x for x in after if x.data.tags.get("source_key") == "fx/fx-run/H1/geo/seed42"][0]
+        self.assertTrue(any(k.startswith("view/superseded/evaluation_view.")
+                            for k in import_runs.existing_artifacts(c, geo.info.run_id)))
+
+    def test_reconcile_refuses_value_change(self):
+        self.run_cmd("import")
+        rep = self.base / "src/report/report.json"
+        obj = json.loads(rep.read_text())
+        obj["horizons"]["3"]["main"]["E_all"]["pool"]["binary"]["f1"] = 0.77
+        rep.write_text(json.dumps(obj))
+        with self.assertRaisesRegex(SourceConflict, "would change"):
+            self.run_cmd("reconcile")
+
+    def test_reconcile_rebinds_empty_shell_then_import_resumes_it(self):
+        c = import_runs._client(self.uri)
+        exp = import_runs.get_experiment(c, "IPCCH-test", self.art)
+        shell = c.create_run(exp.experiment_id, tags={"source_key": "fx/fx-run", "import_fingerprint": "0" * 64,
+                                                       "import_status": "in_progress", "record_kind": "source_run"})
+        self.assertEqual(self.run_cmd("reconcile")["families"][0]["parent"], "empty shell rebound")
+        r = self.run_cmd("import")["families"][0]
+        self.assertEqual((r["resumed"], r["created"]), (1, 12))
+        _, runs = self.client_runs()
+        parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"]
+        self.assertEqual([x.info.run_id for x in parent], [shell.info.run_id])
+        self.assertEqual(parent[0].data.tags["import_fingerprint.previous"], "0" * 64)
+        self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
+
     def test_concurrent_import_refused(self):
         with import_runs.Lock(self.store / "import.lock"):
             with self.assertRaises(SystemExit):
