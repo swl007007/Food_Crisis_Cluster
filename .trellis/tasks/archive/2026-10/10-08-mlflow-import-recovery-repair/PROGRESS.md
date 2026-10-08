@@ -20,4 +20,8 @@ base b7572b5, executor 174ea213 / term_65d3f9b51d7fa2. Operational log only.
 6. [x] Real window-only plan on a scratch store (--rehash, 7,036 files): records 17, P6 read
    dependency, both fingerprints equal the accepted import plan. Live store read-only check:
    126 runs complete, 20,528 metrics, parent fingerprints equal; no tracking writes.
-7. [ ] Commit, controller close, archive bookkeeping; await accepted gate resolution.
+7. [x] Repair commit c22112d. trellis-audit close: run ecf63239 closed; close-audit job
+   14cfd4ce3da73a32c59993bc queued (status pending, not passed), remediates 938a8227,
+   audited/completion c22112d, snapshot sha256 8deb8d1a…; native archive (status completed).
+8. [ ] Await accepted controller result and gate resolution of 938a8227 before the parent
+   task starts. Queued/running is not pass.
