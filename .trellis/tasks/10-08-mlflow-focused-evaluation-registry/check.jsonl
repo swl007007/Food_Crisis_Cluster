@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/backend/local-mlflow-import.md", "reason": "Preserve accepted import identities and scopes"}
+{"file": ".trellis/tasks/10-08-mlflow-focused-evaluation-registry/research/ui-load.md", "reason": "Measured payload and UI caveats"}
+{"file": ".trellis/tasks/10-08-mlflow-focused-evaluation-registry/research/datasets.md", "reason": "Native metadata Inputs and dataset identity"}
+{"file": ".trellis/tasks/10-08-mlflow-focused-evaluation-registry/research/summary-enumeration.md", "reason": "Finite compact panels and registry counts"}
+{"file": ".trellis/tasks/10-08-mlflow-focused-evaluation-registry/research/audit-prerequisite.md", "reason": "Required bounded repair dependency"}
