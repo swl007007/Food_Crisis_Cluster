@@ -7,4 +7,5 @@
    no trellis-audit close; supervisor waived gates 938a8227 and 14cfd4ce (waived, not passed).
 3. [x] R1 content-identity preflight; R2 parent log preserved on resume. Tests 26/26; the two
    changed regressions fail on c22112d. Spec and README updated.
-4. [ ] Explicit non-audited closure with the supervisor (no controller close); then parent.
+4. [x] Non-audited closure: native archive (no commit) then supervisor recorded run 497d0907 closed
+   without audit (evidence/non-audit-closure.md). Parent next.

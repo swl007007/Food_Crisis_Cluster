@@ -21,6 +21,8 @@ Proposed whitelist yields492 Summary records, at most9 metric names across the w
 
 The prior task close audit938a82278edb625c94c67468 has an open major gate: A01 reconciliation can mutate parent before detecting a child conflict. A02 omits inventory reference dependencies from per-family planning. Both are bounded code defects; the audit independently verified all currently imported child values and found no current data corruption. Resolve them through a dedicated repair child before ordinary feature execution; never clear controller state manually.
 
+**Dependency status (2026-10-08, after execution):** repair child completed in two rounds (c22112d, then final 659f72d; tests 26/26). Gates 938a8227 and 14cfd4ce were WAIVED by the user (status waived, gate_open 0, resolved_by null) and the final repair run 497d0907 was closed without audit under the user's explicit override — a user waiver, not an audit pass. Records: archive/2026-10/10-08-mlflow-import-recovery-repair and archive/2026-10/10-08-mlflow-reconcile-content-preflight (evidence/non-audit-closure.md).
+
 ## Acceptance
 
 - Original126 runs, source values/artifacts and historical identities unchanged by the feature operation; no original metric deletion.
