@@ -326,6 +326,97 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual(parent[0].data.tags["import_fingerprint.previous"], "0" * 64)
         self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
 
+    # ---- A01: whole-family validation before any reconciliation write
+    def store_state(self):
+        c, runs = self.client_runs()
+        return {r.info.run_id: (dict(r.data.tags), dict(r.data.metrics), dict(r.data.params), r.info.status,
+                                import_runs.existing_artifacts(c, r.info.run_id)) for r in runs}
+
+    def patched(self, tag_value="d" * 64, late_metric=None):
+        """Extractor patch: an additive tag on every geo view, optionally a changed metric on the
+        LAST view of the family (H12 persistence), i.e. a conflict found after valid earlier views."""
+        orig = extract.EXTRACTORS["p6"]
+
+        def wrapped(fam, rep, root):
+            out = orig(fam, rep, root)
+            for c in out:
+                if c.arm == "geo":
+                    c.tags["cohort_keys.main.extra_subset"] = tag_value
+            if late_metric is not None:
+                assert out[-1].H == "12" and out[-1].arm == "persistence"
+                out[-1].metrics["main.E_persist.binary.f1"] = late_metric
+            return out
+        return orig, wrapped
+
+    def test_late_child_conflict_refused_before_any_write(self):
+        self.run_cmd("import")
+        before = self.store_state()
+        orig, wrapped = self.patched(late_metric=0.77)
+        extract.EXTRACTORS["p6"] = wrapped
+        try:
+            with self.assertRaisesRegex(SourceConflict, "H12/persistence.*metrics would change"):
+                self.run_cmd("reconcile")
+        finally:
+            extract.EXTRACTORS["p6"] = orig
+        self.assertEqual(self.store_state(), before)            # parent, children, artifacts untouched
+        self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)   # original plan still usable
+        self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
+
+    def test_interrupted_reconcile_resumes_same_plan_only(self):
+        self.run_cmd("import")
+        _, before = self.client_runs()
+        orig, wrapped = self.patched()
+        extract.EXTRACTORS["p6"] = wrapped
+        try:
+            with self.assertRaises(import_runs.Interrupt):
+                self.run_cmd("reconcile", "--fail-after", "reconcile-child-2")
+            c, runs = self.client_runs()
+            parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"][0]
+            self.assertEqual(parent.data.tags["import_status"], "reconciling")
+            target = parent.data.tags["reconcile_target"]
+            with self.assertRaisesRegex(SourceConflict, "interrupted"):
+                self.run_cmd("import")                           # import refuses, state kept
+            _, other = self.patched(tag_value="e" * 64)
+            extract.EXTRACTORS["p6"] = other
+            with self.assertRaisesRegex(SourceConflict, "only that plan may resume"):
+                self.run_cmd("reconcile")
+            extract.EXTRACTORS["p6"] = wrapped
+            r = self.run_cmd("reconcile")["families"][0]
+            self.assertEqual((r["parent"], r["children_reconciled"], r["children_unchanged"]), ("resumed", 2, 10))
+            self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
+            self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)
+        finally:
+            extract.EXTRACTORS["p6"] = orig
+        c, after = self.client_runs()
+        self.assertEqual(sorted(x.info.run_id for x in before), sorted(x.info.run_id for x in after))
+        parent = [x for x in after if x.data.tags.get("record_kind") == "source_run"][0]
+        self.assertEqual(parent.data.tags["import_fingerprint"], target)
+        self.assertEqual(parent.data.tags["import_status"], "complete")
+        for x in after:
+            if x.data.tags.get("arm") == "geo":
+                logs = [k for k in import_runs.existing_artifacts(c, x.info.run_id)
+                        if k.startswith("view/superseded/reconciliation-")]
+                self.assertEqual(len(logs), 1)
+
+    # ---- A02: read dependencies planned, writes limited to the selection
+    def test_selected_family_plans_reference_parent_without_writing_it(self):
+        make_fixture(self.base / "src2")
+        fam2 = json.loads(json.dumps(self.cfg["families"][0]))
+        fam2.update({"family": "fy", "source_run_id": "fy-run", "root": "{temp}/src2"})
+        fam2["inventory"]["reference_parents"] = ["fx"]
+        self.cfg["families"] = [fam2, self.cfg["families"][0]]   # dependent listed before its parent
+        self.write_cfg()
+        p = self.run_cmd("plan", "--family", "fy")
+        self.assertEqual((p["records_planned"], p["read_dependencies"]), (13, ["fx"]))
+        r = self.run_cmd("import", "--family", "fy")
+        self.assertEqual([f["source_key"] for f in r["families"]], ["fy/fy-run"])
+        _, runs = self.client_runs()
+        self.assertEqual({x.data.tags.get("family") for x in runs}, {"fy"})
+        self.assertEqual(len(runs), 13)
+        self.assertEqual(self.run_cmd("verify", "--family", "fy")["families"][0]["records"], 13)
+        with self.assertRaisesRegex(SourceConflict, "unknown family"):
+            self.run_cmd("plan", "--family", "nope")
+
     def test_concurrent_import_refused(self):
         with import_runs.Lock(self.store / "import.lock"):
             with self.assertRaises(SystemExit):

@@ -102,8 +102,13 @@ $PY IPCCHMLflow/import_runs.py reconcile                           # one-time, s
   param, existing tag or archived source/model artifact; it may add tags and replace
   manifests/view JSON, keeping the old copies under `manifests/superseded/` or
   `view/superseded/` with a reconciliation log, and records `import_fingerprint.previous`.
-  Nothing is deleted and run IDs are kept. Used once on 2026-10-07 (27 records; see the
-  task evidence).
+  Nothing is deleted and run IDs are kept. The parent and every child are validated
+  read-only first; any refused change leaves the whole family untouched. If a reconcile is
+  interrupted, the parent stays `import_status=reconciling` with `reconcile_target`;
+  `import` then stops, and `reconcile` resumes only with that same plan. Used once on
+  2026-10-07 (27 records; see the task evidence).
+- `--family F` also plans F's read dependencies (`shared_inputs.parent`,
+  `inventory.reference_parents`, e.g. P6 for the window probe) but writes/verifies only F.
 - An interrupted import leaves `import_status=in_progress`; rerun `import` to resume.
 - A file lock (`import.lock`) refuses concurrent imports.
 

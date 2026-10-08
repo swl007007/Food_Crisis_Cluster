@@ -3,7 +3,7 @@
   "name": "mlflow-import-recovery-repair",
   "title": "Repair MLflow reconciliation refusal and family dependencies",
   "description": "Resolve accepted audit findings A01 and A02 before the approved focused Summary and registry task.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

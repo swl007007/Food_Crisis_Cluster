@@ -1,0 +1,64 @@
+test_late_child_conflict_refused_before_any_write (test_import.ImporterTest.test_late_child_conflict_refused_before_any_write) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+/home/swl007007/.venvs/ipcch-mlflow/lib/python3.12/site-packages/mlflow/store/tracking/sqlalchemy_store.py:327: SADeprecationWarning: The ``noload`` loader strategy is deprecated and will be removed in a future release.  This option produces incorrect results by returning ``None`` for related items. (deprecated since: 2.1)
+  sqlalchemy.orm.configure_mappers()
+2026/10/08 08:40:26 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/08 08:40:26 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.1}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 3.4}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+FAIL
+test_interrupted_reconcile_resumes_same_plan_only (test_import.ImporterTest.test_interrupted_reconcile_resumes_same_plan_only) ... planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+2026/10/08 08:40:29 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/08 08:40:29 INFO mlflow.store.db.utils: Updating database tables
+{"source_key": "fx/fx-run", "created": 13, "resumed": 0, "noop": 0, "metrics_logged": 552, "artifacts_uploaded": 41, "seconds": 1.1}
+{"command": "import", "records_planned": 13, "experiment_id": "1", "seconds": 2.5}
+planned fx: {"include": [7, 14040], "bundle": {"models.tar": [6, 64]}, "excluded": [1, 64], "shared": [0, 0], "extras": [0, 0], "unlisted": [0, 0], "children": 12, "child_metrics": 552, "child_na": 24} (0s)
+{"source_key": "fx/fx-run", "parent": "reconciled", "children_reconciled": 4, "children_unchanged": 8, "children_not_imported": 0, "artifact_changes": [{"path": "manifests/plan-summary.json", "action": "superseded", "kept_as": "manifests/superseded/plan-summary.b4b0de79e64252cd.json", "old_sha256": "4b0bd3f18e506e824c03ab41e8f1843ccac5371b476e1307584e2cf109093da3", "new_sha256": "82c65308e1098c326097f7fc06f73ab36a83470ec4bf9995917c84615ce0e0df"}], "seconds": 0.6}
+FAIL
+test_selected_family_plans_reference_parent_without_writing_it (test_import.ImporterTest.test_selected_family_plans_reference_parent_without_writing_it) ... ERROR
+
+======================================================================
+ERROR: test_selected_family_plans_reference_parent_without_writing_it (test_import.ImporterTest.test_selected_family_plans_reference_parent_without_writing_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ipcch-old/IPCCHMLflow/tests/test_import.py", line 409, in test_selected_family_plans_reference_parent_without_writing_it
+    p = self.run_cmd("plan", "--family", "fy")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipcch-old/IPCCHMLflow/tests/test_import.py", line 125, in run_cmd
+    import_runs.main([command, "--sources", str(self.sources), "--store", str(self.store),
+  File "/tmp/ipcch-old/IPCCHMLflow/import_runs.py", line 861, in main
+    plans = cmd_plan(cfg, store, Path(a.evidence) if a.evidence else None, a.rehash, a.family)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipcch-old/IPCCHMLflow/import_runs.py", line 243, in cmd_plan
+    plans[fam["family"]] = plan_family(cfg, fam, hasher, plans)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipcch-old/IPCCHMLflow/import_runs.py", line 175, in plan_family
+    inv = inventory.reconcile(fam, root, {"include": include, "bundle": bundle, "excluded": excluded,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ipcch-old/IPCCHMLflow/inventory.py", line 73, in reconcile
+    raise SourceConflict(f"{fam['family']}: reference parent {pf} not planned")
+extract.SourceConflict: fy: reference parent fx not planned
+
+======================================================================
+FAIL: test_late_child_conflict_refused_before_any_write (test_import.ImporterTest.test_late_child_conflict_refused_before_any_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ipcch-old/IPCCHMLflow/tests/test_import.py", line 361, in test_late_child_conflict_refused_before_any_write
+    self.assertEqual(self.store_state(), before)            # parent, children, artifacts untouched
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'006[2464 chars]t': '30114c05e2539d0026c40881879c0508f3ae0c38d[40828 chars]82})} != {'006[2464 chars]t': '03d0e2d6283214a5531f0027421ca84d445a9ee5b[38920 chars]82})}
+Diff is 98721 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_interrupted_reconcile_resumes_same_plan_only (test_import.ImporterTest.test_interrupted_reconcile_resumes_same_plan_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/ipcch-old/IPCCHMLflow/tests/test_import.py", line 371, in test_interrupted_reconcile_resumes_same_plan_only
+    with self.assertRaises(import_runs.Interrupt):
+AssertionError: Interrupt not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 7.376s
+
+FAILED (failures=2, errors=1)
+{"command": "reconcile", "records_planned": 13, "experiment_id": "1", "seconds": 0.6}

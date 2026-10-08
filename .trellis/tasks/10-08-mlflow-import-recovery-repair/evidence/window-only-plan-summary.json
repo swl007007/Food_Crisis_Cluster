@@ -1,0 +1,81 @@
+{
+ "families": {
+  "history_window_sensitivity": {
+   "fingerprint": "75121c5423d91bcea0ff4ba87fd085496637e021b6d1f6433ef48c9decbe82c8",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      475,
+      161882134
+     ]
+    },
+    "child_metrics": 1440,
+    "child_na": 4,
+    "children": 16,
+    "excluded": [
+     0,
+     0
+    ],
+    "extras": [
+     0,
+     0
+    ],
+    "include": [
+     20,
+     3577963
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "p6_geoxgb": {
+   "fingerprint": "22e6a5d24dc77a84984435e67cdf5e38632287579d6a949a4913d5fd74e945b9",
+   "role": "read dependency",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      6125,
+      2001306904
+     ]
+    },
+    "child_metrics": 966,
+    "child_na": 16,
+    "children": 12,
+    "excluded": [
+     4,
+     766461152
+    ],
+    "extras": [
+     125,
+     1972063
+    ],
+    "include": [
+     287,
+     76436215
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  }
+ },
+ "hash_cache": {
+  "hits": 0,
+  "misses": 7036,
+  "rehash": true
+ },
+ "importer": "ipcch-mlflow-import-v1",
+ "records": 17
+}

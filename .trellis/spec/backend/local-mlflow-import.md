@@ -59,7 +59,9 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 | XGB identity lacks its own `q*.ubj` with the ledger digest, or `record.json` | `SourceConflict` |
 | MLP identity lacks `record.json`, `state.pt` or its referenced transform | `SourceConflict` |
 | existing record has a different fingerprint | `import` stops; only `reconcile` may proceed |
-| reconcile would change a metric/param/existing tag/archived source or model | `SourceConflict` (refuse) |
+| reconcile would change a metric/param/existing tag/archived source or model, in the parent or ANY child | `SourceConflict` before any write (whole family validated first; store unchanged) |
+| reconcile interrupted after validation (parent `import_status=reconciling`) | `import` refuses; `reconcile` resumes only when `reconcile_target` equals the current plan fingerprint, else stops |
+| `--family F` | plans F plus transitive read dependencies (`shared_inputs.parent`, `inventory.reference_parents`), dependencies first; writes/verify only F; unknown family refused |
 | equal-size artifact corruption | caught by deep verify, including the repeat-import no-op |
 | second importer while one runs | refused by `import.lock` |
 | restore-check on port 5000 | refused; scratch checks use their own server |
@@ -76,14 +78,18 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 
 ## 6. Tests Required
 
-`$PY -m unittest discover -s IPCCHMLflow/tests -v` (22 tests). Assertion points:
+`$PY -m unittest discover -s IPCCHMLflow/tests -v` (25 tests). Assertion points:
 - NA not logged and present in `na.json`; subset cohort digests differ; count mismatch refused.
 - Interrupted import resumes without duplicates (two interruption points); idempotent no-op.
 - Missing/changed retained booster refused; own booster required even if another
   directory holds the same digest; MLP missing `state.pt` / referenced transform refused.
 - Unclassified digest key refused; name collision refused; gate subsets bound to routes.
 - Reconcile: additive change keeps run IDs + superseded evidence; value change refused;
-  empty shell rebound then resumed.
+  empty shell rebound then resumed; a conflict in the LAST child leaves every record and
+  artifact unchanged and the original plan importable; an interrupted reconcile resumes
+  the same plan only (one reconciliation log per child).
+- `--family` with a reference-parent-only dependency plans the parent but writes only the
+  selected family.
 - Restore check downloads through an independent scratch server and refuses port 5000.
 
 ## 7. Wrong vs Correct
@@ -94,6 +100,15 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 assert ledger_digest in all_planned_hashes
 # Correct: bind each ledger identity to its own directory and members.
 r = by_path.get(f"{identity_dir}/{q}.ubj"); assert r and r["sha256"] == ledger_digest
+```
+
+```python
+# Wrong: mutate while validating — a late child conflict strands the parent half-reconciled.
+set_tag(parent, "import_fingerprint", new_fp)
+for child in children: validate(child)          # raises after the parent already changed
+# Correct: validate parent and every child read-only, then write; record the target first.
+todo = [validate(child) for child in children]   # may raise; nothing written yet
+set_tag(parent, "reconcile_target", new_fp); set_tag(parent, "import_status", "reconciling")
 ```
 
 ```text
