@@ -1,0 +1,126 @@
+# IPCCH local MLflow
+
+A local MLflow 3.17.0 tracking server that gives one view over six completed IPCCH
+runs. It imports saved reports, predictions and models; nothing is retrained and no
+model is loaded. Records are historical imports — MLflow did not execute these runs,
+and MLflow start/metric times are import times, not source execution times.
+
+| Item | Value |
+|---|---|
+| URL (WSL and Windows browser) | http://localhost:5000 (bound to 127.0.0.1 only) |
+| venv | `/home/swl007007/.venvs/ipcch-mlflow` (uv, Python 3.12, `requirements.lock`) |
+| Store | `/home/swl007007/.local/share/ipcch-mlflow/` — `mlflow.db` (SQLite), `artifacts/`, `logs/`, `plans/`, `cache/` |
+| Source list | `sources.json` (finite: six families) |
+
+## Start / stop / status
+
+```bash
+IPCCHMLflow/manage.sh start    # transient user unit "ipcch-mlflow"; waits for /health
+IPCCHMLflow/manage.sh status
+IPCCHMLflow/manage.sh stop
+```
+
+The server is started on demand with `systemd-run --user`. It is not enabled at boot and
+user linger is not changed, so **it stops when WSL shuts down** (`wsl --shutdown`, Windows
+restart, or WSL idle shutdown after the last terminal closes). Run `manage.sh start` again
+afterwards; the data in the store is persistent. Log: `logs/server.log`.
+
+## Layout in the UI
+
+One experiment, `IPCCH`, with 126 records:
+
+- 6 parent records (`record_kind=source_run`), one per source run. These hold the retained
+  artifacts once: `source/…` (reports, configs, predictions, ledgers), `models.tar`
+  (uncompressed, deterministic, per-member manifest in `manifests/models.tar.members.json`),
+  `source_code/…`, `task_evidence/…`, and `manifests/` (included, excluded, shared and
+  unlisted files with bytes and SHA256).
+- 120 child records (`record_kind=evaluation_view`), one per family × horizon × arm × seed,
+  nested under their parent. Persistence views have `seed=none`; MLP persistence is stored
+  once per horizon after checking it is identical across seeds.
+
+Filter with tags such as `tags.family = 'yearly_geoxgb'`, `tags.arm = 'geo'`,
+`tags.arm_kind = 'persistence_baseline'`.
+
+`arm_kind` distinguishes `fresh_trained`, `persistence_baseline`, `diagnostic_local`
+(ungated local predictions) and `reused_comparator` (window-probe base arms).
+
+### Metric names
+
+`{period}.{cohort}[.{group}].{metric}`, for example `main.E_all.binary.f1` or
+`supplementary.E_persist.four_class.macro_f1`.
+
+- period: `main`, `supplementary`; split2024 adds `combined`, `y2025`, `y2026`; the window
+  probe uses `selected_dates` (aggregate over its 11 dates) and `selected_date_YYYY-MM` —
+  these are not full-period results.
+- cohort: `E_all`, `E_persist` (persistence-available keys), `local_eligible[.{gate}]`,
+  `local_persist_matched` (yearly), window cohorts `all|mapped|common_local_support|new_local_support`.
+- group: `delta.{a_minus_b}`, `contrast.{name}` (country cluster bootstrap: `point_delta`,
+  `ci_lower`, `ci_upper`, `K`, `defined_draws`; pointwise, conditional on saved predictions),
+  `comparator.{p6geo|p6pool}` (P6 panels recomputed on the same keys in MLP/yearly),
+  `matched_old.p6{geo|pool}` (climate/split2024 comparisons with the old P6 panels).
+
+The same metric name in two records does **not** mean the same evaluation keys. Each
+record tags `cohort_keys.{period}.{cohort}` with the SHA256 of its sorted
+`admin_code|target_ord` key set; compare those digests before comparing numbers.
+
+Undefined values (empty cohorts, absent classes, undefined deltas) are never logged as
+metrics. Each child has `view/na.json` (metric, source path, reason) and
+`view/evaluation_view.json` (every logged value with its source JSON path, plus the raw
+source panels).
+
+Source scientific acceptance, lifecycle/audit status and import completion are separate
+tags: `source.scientific_acceptance`, `source.lifecycle_status`, `import_status`.
+
+## Import and verify
+
+```bash
+PY=/home/swl007007/.venvs/ipcch-mlflow/bin/python
+$PY IPCCHMLflow/import_runs.py plan   [--rehash] [--evidence DIR]   # read-only
+$PY IPCCHMLflow/import_runs.py import [--family NAME ...]            # server must be running
+$PY IPCCHMLflow/import_runs.py verify [--shallow]
+```
+
+- `plan` hashes every source file (stat-keyed cache in `cache/hashes.json`; `--rehash`
+  ignores it), extracts the evaluation views, and writes full plans to `plans/`.
+- `import` creates or resumes records serially. A record is marked
+  `import_status=complete` only after its metrics/params/tags and artifacts have been read
+  back (artifacts downloaded and hashed; tar members checked).
+- Rerunning with unchanged sources is a verified no-op. If a source changed, the
+  fingerprint differs and the importer stops; reconcile by hand (no overwrite).
+- An interrupted import leaves `import_status=in_progress`; rerun `import` to resume.
+- A file lock (`import.lock`) refuses concurrent imports.
+
+Excluded on purpose (listed with path, bytes and SHA256 in `manifests/excluded.json`):
+large prepared feature matrices (`X_rich*.npy`) and replay re-execution duplicates. MLP
+inputs and yearly staged inputs are the P6 prepared files and are referenced to the P6
+parent (`manifests/shared.json`). Retained artifacts stay readable if the Temp run
+folders are deleted; retraining would still need the original inputs.
+
+## Adding a future run
+
+1. Add one family entry to `sources.json` (root, report, prediction pattern, arms with
+   arm kinds, include/bundle/exclude globs, tags).
+2. If its report schema is new, add an extractor in `extract.py` and a fixture test.
+3. `plan`, check the plan's `unlisted` and `excluded` lists, then `import --family NAME`
+   and `verify --family NAME`.
+
+## Backup and restore check
+
+Stop imports first (the backup takes the import lock).
+
+```bash
+$PY IPCCHMLflow/backup_restore.py backup --dest ~/ipcch-mlflow-backups/$(date +%Y%m%d)
+$PY IPCCHMLflow/backup_restore.py restore-check --backup ~/ipcch-mlflow-backups/YYYYMMDD --dest /tmp/ipcch-mlflow-restore
+```
+
+`backup` uses the SQLite online backup API plus a byte copy of `artifacts/` and writes
+`backup-manifest.json` (DB hash and row counts, per-file artifact hashes).
+`restore-check` copies a backup into a new scratch root, checks every hash and count, and
+opens the restored DB with MLflow. To actually restore: stop the server, replace
+`mlflow.db` and `artifacts/` in the store with the backup copies, start the server.
+
+## Tests
+
+```bash
+$PY -m unittest discover -s IPCCHMLflow/tests -v
+```

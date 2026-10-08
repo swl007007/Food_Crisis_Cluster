@@ -3,7 +3,7 @@
   "name": "local-mlflow-experiment-management",
   "title": "Local MLflow experiment management",
   "description": "Install isolated local MLflow and consolidate existing research experiments with reproducible provenance and matched metric semantics.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

@@ -1,0 +1,149 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "334c5aa99ff6ac811e72f403e3354295163a2f06a7ade9bf670f52c70e5e1744"
+ },
+ "excluded": [
+  {
+   "bytes": 191615288,
+   "path": "prepared/X_rich561_h01.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219",
+   "source": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h01.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "prepared/X_rich561_h03.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0",
+   "source": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h03.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "prepared/X_rich561_h06.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c",
+   "source": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h06.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "prepared/X_rich561_h12.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0",
+   "source": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/X_rich561_h12.npy"
+  }
+ ],
+ "extras_manifest_sha256": "001fddd2e2629515a07d63850a94d77b41a9ad8173cbb1038ffcdd6c5cb31913",
+ "family": "p6_geoxgb",
+ "fingerprint": "d5da27a7d82c66997d42f570fca94e9d29528b1dc7d612c25e761894e2269a11",
+ "include_manifest_sha256": "32f638356861c32721273d62100481a4d80135b164f00f682216ec0a323033a2",
+ "report_sha256": "142d717dedaf8afb573b544743cc6856c0d33d18e1b79a82543bb2dc514691f0",
+ "root": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b",
+ "shared": [],
+ "source_run_id": "p6-formal-20261004b",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    6125,
+    2001306904
+   ]
+  },
+  "child_metrics": 966,
+  "child_na": 16,
+  "children": 12,
+  "excluded": [
+   4,
+   766461152
+  ],
+  "extras": [
+   125,
+   1972063
+  ],
+  "include": [
+   287,
+   76436215
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "a5f956c4845561f6f2957d09994c8ae7e09337cc86c498090a4b6cb27668310a",
+   "key": "p6_geoxgb/p6-formal-20261004b/H1/pool/seed42",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "e45e88de2a9774e55b86f5d957c27390886e8dad253ad6683dbb32d30401b715",
+   "key": "p6_geoxgb/p6-formal-20261004b/H1/geo/seed42",
+   "metrics": 188,
+   "na": 0
+  },
+  {
+   "fingerprint": "bf1afcddf7bed2b1df7209ff380ae268bd844bc531c420c0ca62dab28c1c7d88",
+   "key": "p6_geoxgb/p6-formal-20261004b/H1/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "89268ad4b6d30c20393938dc47ddbcc17438260c872b2936e75a3cb24e454f03",
+   "key": "p6_geoxgb/p6-formal-20261004b/H3/pool/seed42",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "e00e69d8f2a94163ee4637de36e4e7f3df7d7172879f6c45411f156dbbf65aac",
+   "key": "p6_geoxgb/p6-formal-20261004b/H3/geo/seed42",
+   "metrics": 180,
+   "na": 0
+  },
+  {
+   "fingerprint": "8767e7aa10902c17e45ce42724608d416abbea1e1f605de24e39c320cc633216",
+   "key": "p6_geoxgb/p6-formal-20261004b/H3/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "fb65beb4452e6518f49c25b1e93fb0adeb4ea08fa24010284070a31389f3ee46",
+   "key": "p6_geoxgb/p6-formal-20261004b/H6/pool/seed42",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "cfc6a5ddc9c08ca106499afb1b94b01d50b70a11d00cf6278aae9831b8974dde",
+   "key": "p6_geoxgb/p6-formal-20261004b/H6/geo/seed42",
+   "metrics": 184,
+   "na": 0
+  },
+  {
+   "fingerprint": "b19df8d89d34fb259eb1c0e8e76b1c84ddb3ae3fb2929206e5f28a21afb7d913",
+   "key": "p6_geoxgb/p6-formal-20261004b/H6/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "d1ab89945b269bef3a53eb3c8fa30ebac2de810c90d2f1d2a312e5801304e1d1",
+   "key": "p6_geoxgb/p6-formal-20261004b/H12/pool/seed42",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "f35829150c11e78c34bfe907ffae87ef1a5aab8c7d37c3e3b0453f8b22467703",
+   "key": "p6_geoxgb/p6-formal-20261004b/H12/geo/seed42",
+   "metrics": 190,
+   "na": 0
+  },
+  {
+   "fingerprint": "0d2b1f1d18bd64992c78fad7556ad584ef686165855d38b12d410fec2b743d38",
+   "key": "p6_geoxgb/p6-formal-20261004b/H12/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  }
+ ]
+}

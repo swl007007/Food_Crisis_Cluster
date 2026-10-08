@@ -1,0 +1,149 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "c74e8e7a82a31139f6ecd4ba0716e1049ab5de4042faaa36c9cac85a943f9a8f"
+ },
+ "excluded": [
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h01.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "e241b6baf6f5a1e648438ab0a64b908e21c5443c4fcc147842b0a778853449ad",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h01.npy"
+  },
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h03.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "9dc56e1494b7274804e946f2c2b63be5e646c2e0d3d978ffb68150f996d4675b",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h03.npy"
+  },
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h06.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "a527bdbae1fe677ee433e08f61e79ec1fc477194b630677b0a48ee43c5921539",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h06.npy"
+  },
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h12.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "801afb4bd4e8a435de87621b3c384d7f92a85fe8769ccbffdddd4f5be2da1557",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h12.npy"
+  }
+ ],
+ "extras_manifest_sha256": "b72609bc5127d4070e2a968a9ee3f362a89ae6fed5baf3080b5f1e36b4683966",
+ "family": "climate_perturbation",
+ "fingerprint": "0a7fd28776c356f782eed4a4b1c8500757ffc72e77f09b0a22615db11b435889",
+ "include_manifest_sha256": "1f4393dd9ba88fdc9245f1882b0c8f4d09e187fa87603ba2a01297dcc3f88a0f",
+ "report_sha256": "85f598f3c39292df4f566fd97ef4e927ae861dd0f8692a2fc36e969f49602b73",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005",
+ "shared": [],
+ "source_run_id": "climate-20261005",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    5460,
+    1529203461
+   ]
+  },
+  "child_metrics": 1502,
+  "child_na": 16,
+  "children": 12,
+  "excluded": [
+   4,
+   821110752
+  ],
+  "extras": [
+   47,
+   1312315
+  ],
+  "include": [
+   297,
+   78234503
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "039733848d64650bf429e209b322dca9c5d615a1f9b4a91376d073ec8f714414",
+   "key": "climate_perturbation/climate-20261005/H1/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "7a46db5444c6f4e99106da344ac4bdc3ce3ebd698fde9296bc96ba6a9203953b",
+   "key": "climate_perturbation/climate-20261005/H1/geo/seed42",
+   "metrics": 278,
+   "na": 0
+  },
+  {
+   "fingerprint": "5a83c3977ab89c1154957c8a151c718ce02e457c4d967be6a266320b6f0ebaa4",
+   "key": "climate_perturbation/climate-20261005/H1/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "6f16d2e76e2d32cf1c7eacf0eca8d362c47efe2c7c193347a1a9bf8350d76ba3",
+   "key": "climate_perturbation/climate-20261005/H3/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "a8d9d37419cca8e51c80f9f8c4603f89c00dd8b2b509cc6154e2f31303329038",
+   "key": "climate_perturbation/climate-20261005/H3/geo/seed42",
+   "metrics": 276,
+   "na": 0
+  },
+  {
+   "fingerprint": "d5531e4eae0b24e3d224f780e59e680248eaa837ca2d75fde1908e75613912b5",
+   "key": "climate_perturbation/climate-20261005/H3/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "94e8c825080948a55e478e304906a44392e29cb6982549a9a98a66c6231257e5",
+   "key": "climate_perturbation/climate-20261005/H6/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "b3c137b002281f4b36c24cccbafe7c06e4bf710c3ed65ff2ec7f9288a2dfa69c",
+   "key": "climate_perturbation/climate-20261005/H6/geo/seed42",
+   "metrics": 267,
+   "na": 0
+  },
+  {
+   "fingerprint": "64a77b8d8fe592c01e8171fdb5f1749d75a85ceb30d31c70ffea71279a50ab59",
+   "key": "climate_perturbation/climate-20261005/H6/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "4bb3acd6e4e9ca77930d14825c2020f1578f8b7c632e4bd294ad505a9d0788fa",
+   "key": "climate_perturbation/climate-20261005/H12/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "3d91ae069c1398a649fd87dbd55d4513edc69540643c4b5621c230d69da2cf4f",
+   "key": "climate_perturbation/climate-20261005/H12/geo/seed42",
+   "metrics": 281,
+   "na": 0
+  },
+  {
+   "fingerprint": "05e257c70917d77fa74f2fbb2daaf0d172838c96bd1044891bba1d9b877aa1ff",
+   "key": "climate_perturbation/climate-20261005/H12/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  }
+ ]
+}

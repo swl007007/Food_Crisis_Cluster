@@ -1,0 +1,215 @@
+{
+ "families": {
+  "climate_perturbation": {
+   "fingerprint": "0a7fd28776c356f782eed4a4b1c8500757ffc72e77f09b0a22615db11b435889",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      5460,
+      1529203461
+     ]
+    },
+    "child_metrics": 1502,
+    "child_na": 16,
+    "children": 12,
+    "excluded": [
+     4,
+     821110752
+    ],
+    "extras": [
+     47,
+     1312315
+    ],
+    "include": [
+     297,
+     78234503
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "history_window_sensitivity": {
+   "fingerprint": "dc3af29cfd031446c7d7d0ec53bb74ac2ba08068524203bb98b561dbcd5908fc",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      475,
+      161882134
+     ]
+    },
+    "child_metrics": 1440,
+    "child_na": 4,
+    "children": 16,
+    "excluded": [
+     0,
+     0
+    ],
+    "extras": [
+     0,
+     0
+    ],
+    "include": [
+     20,
+     3577963
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "mlp_fixed_map": {
+   "fingerprint": "4cb760b7dee0af267ada01589cf932eaf2f55ce17246ea14d083e75792a0b788",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      26696,
+      2403432127
+     ]
+    },
+    "child_metrics": 10544,
+    "child_na": 74,
+    "children": 52,
+    "excluded": [
+     487,
+     184593322
+    ],
+    "extras": [
+     59,
+     5127896
+    ],
+    "include": [
+     494,
+     184417814
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "p6_geoxgb": {
+   "fingerprint": "d5da27a7d82c66997d42f570fca94e9d29528b1dc7d612c25e761894e2269a11",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      6125,
+      2001306904
+     ]
+    },
+    "child_metrics": 966,
+    "child_na": 16,
+    "children": 12,
+    "excluded": [
+     4,
+     766461152
+    ],
+    "extras": [
+     125,
+     1972063
+    ],
+    "include": [
+     287,
+     76436215
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "split2024_sensitivity": {
+   "fingerprint": "61ad0d5b75cf35fd973bd57d022ba8cdc889cb6abe4a354759bffb69a09eea2c",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      4180,
+      1420913441
+     ]
+    },
+    "child_metrics": 1986,
+    "child_na": 28,
+    "children": 12,
+    "excluded": [
+     4,
+     766461152
+    ],
+    "extras": [
+     0,
+     0
+    ],
+    "include": [
+     242,
+     78291063
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "yearly_geoxgb": {
+   "fingerprint": "1d5474eb53fb937deb9aed952f815490be95c535ca86c85975ac5dbe3fd82710",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      1267,
+      320464656
+     ]
+    },
+    "child_metrics": 3847,
+    "child_na": 36,
+    "children": 16,
+    "excluded": [
+     46,
+     11381290
+    ],
+    "extras": [
+     64,
+     1378008
+    ],
+    "include": [
+     52,
+     11462929
+    ],
+    "shared": [
+     33,
+     783754630
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  }
+ },
+ "hash_cache": {
+  "hits": 46468,
+  "misses": 0,
+  "rehash": false
+ },
+ "importer": "ipcch-mlflow-import-v1",
+ "records": 126
+}

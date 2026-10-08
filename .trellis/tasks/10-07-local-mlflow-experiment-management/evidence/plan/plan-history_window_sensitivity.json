@@ -1,0 +1,144 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "ac765e85453748a926de3f2fb12da5c8e016486d09422d72072ff71ef674439f"
+ },
+ "excluded": [],
+ "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+ "family": "history_window_sensitivity",
+ "fingerprint": "dc3af29cfd031446c7d7d0ec53bb74ac2ba08068524203bb98b561dbcd5908fc",
+ "include_manifest_sha256": "5aba34cafb33d9134e4368f79fd75bc3664a222617ba9accf81aabadf43be47e",
+ "report_sha256": "7473e77cb3296275db4ad8996cab2d2a20fe8ce574c1fb2999fa51356b9bc8b1",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-window-probe-20261005-zckpq9hf",
+ "shared": [],
+ "source_run_id": "ipcch-window-probe-20261005-zckpq9hf",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    475,
+    161882134
+   ]
+  },
+  "child_metrics": 1440,
+  "child_na": 4,
+  "children": 16,
+  "excluded": [
+   0,
+   0
+  ],
+  "extras": [
+   0,
+   0
+  ],
+  "include": [
+   20,
+   3577963
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "e501fcfd31f6a5022afa7e981b4be753cc4f9579314dc82c32f928a25d3d506c",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/base_global/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "9b7722bc74dc73dd7ed4267ede6819bbd09c06d5a7c67f2de54fd2f1ed23c6bc",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/exp_global/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "76ec07f2a214d7e29c3a4ed8cea2826fb59ce8aa2a0d3302812f956b631d27f8",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/base_local/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "2b2182b68b26c53e8e82901403cc2e529170e3f401cfc12de50aa953668011be",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/exp_local/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "ba6c7bd10538445b1d381306de757c8dc54f922ef3e77196fe2b3913155fbaa6",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/base_global/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "de5d4acb42f8937ae6c456276e4907e355d1ba5a079a068fd7d6759ce432e2ed",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/exp_global/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "03531299a1b65b4c2978a485db7aae7c39f85362f7d60e53c49dbc7106210a1f",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/base_local/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "26789be01eaa2023bc73ae7a3886461d0c2c6a4299d266d3f313e3d9b29451c5",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/exp_local/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "d2c83f081cd19be0ade468e9c7189ecc431769844634193a6c1010f8fe3e1d3a",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/base_global/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "555b1a0ea0db3223f645d21775f775285027bf7bea3cd415419671b88469e1ff",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/exp_global/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "0feef47433df0815febdccfce458a6555a6fb8060c4d3843d5afd48c0fe08603",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/base_local/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "b238ddf8e28fd66fa63c51a1a7fbb18977e1681647838dbeafa426877c4cc76f",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/exp_local/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "124bd9d4347df288e4bd8a69138a9cd4ea2fa382ca86d415474cec086e03b1af",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/base_global/seed42",
+   "metrics": 72,
+   "na": 0
+  },
+  {
+   "fingerprint": "184a74729e8a56157c0beb059c6fb0468d34c3ca4c9211da5578efca1b3d1c8e",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/exp_global/seed42",
+   "metrics": 72,
+   "na": 0
+  },
+  {
+   "fingerprint": "052cd428c5a429ca31f2fd7bf012b4ff4b7d7d7b11255df9c02ada2c4270e9ae",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/base_local/seed42",
+   "metrics": 72,
+   "na": 0
+  },
+  {
+   "fingerprint": "3324af011d5d823eff7c6ca7a08ceb1db7da9760db37b30380a83468d507b5ed",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/exp_local/seed42",
+   "metrics": 72,
+   "na": 0
+  }
+ ]
+}

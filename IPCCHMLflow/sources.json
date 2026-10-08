@@ -1,0 +1,97 @@
+{
+  "schema_version": "ipcch-mlflow-sources-v1",
+  "experiment": "IPCCH",
+  "repo_root": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
+  "temp_root": "/mnt/c/Users/swl00/AppData/Local/Temp",
+  "families": [
+    {
+      "family": "p6_geoxgb", "source_run_id": "p6-formal-20261004b", "format": "p6",
+      "root": "{repo}/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b",
+      "report": "report/report.json", "predictions": "stage3/h{H:02d}/predictions.csv.gz",
+      "arms": {"pool": "fresh_trained", "geo": "fresh_trained", "persistence": "persistence_baseline"},
+      "model_seed": "42",
+      "include": ["report/**", "stage1/**", "stage3/**", "prepared/**"],
+      "bundle": {"models.tar": "models/**"},
+      "exclude": {"prepared/X_rich561_h*.npy": "large prepared feature matrix; referenced by path and SHA256"},
+      "extra": [
+        {"base": "{repo}", "paths": ["IPCCHGeoXGBExperiment/ipcch_geoxgb/*.py", "IPCCHGeoXGBExperiment/config/*.json", "IPCCHGeoXGBExperiment/README.md"], "prefix": "source_code"},
+        {"base": "{repo}", "paths": [".trellis/tasks/archive/2026-10/10-04-ipcch-cumulative-share-geoxgb/*.md", ".trellis/tasks/archive/2026-10/10-04-ipcch-cumulative-share-geoxgb/*.json", ".trellis/tasks/archive/2026-10/10-04-ipcch-cumulative-share-geoxgb/evidence/**"], "prefix": "task_evidence"}
+      ],
+      "tags": {"code_commit": "6798df2", "package": "IPCCHGeoXGBExperiment", "scientific_acceptance": "supervisor accepted (task 10-04 final-closure)", "lifecycle_status": "archived; close and spot audits waived by the user (not an audit pass)", "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection", "fit_protocol": "monthly refit, 36-month window, unit weights", "features": "rich561", "maps": "learned through 2022 (stage1 of this run)", "periods": "main 2023-2025; supplementary 2026-01..04"}
+    },
+    {
+      "family": "mlp_fixed_map", "source_run_id": "mlp-formal-20261005", "format": "mlp",
+      "root": "{temp}/ipcch-mlp-runs/mlp-formal-20261005",
+      "report": "report/report.json", "predictions": "stage3/rep{seed}/h{H:02d}/predictions.csv.gz",
+      "arms": {"base": "fresh_trained", "pool": "fresh_trained", "local": "diagnostic_local", "geo": "fresh_trained", "persistence": "persistence_baseline"},
+      "seeds": ["42", "43", "44"],
+      "include": ["develop/**", "stage3/**", "report/**", "preflight/**", "model_requests_*.jsonl", "replay/replay.json"],
+      "bundle": {"models.tar": "models/**"},
+      "exclude": {"replay/develop/**": "replay re-execution duplicate (verified by replay.json)", "replay/stage3/**": "replay re-execution duplicate (verified by replay.json)", "replay/report/**": "replay re-execution duplicate (verified by replay.json)", "replay/model_requests.jsonl": "replay request ledger duplicate"},
+      "shared_inputs": {"parent": "p6_geoxgb", "note": "inputs are the pinned P6 prepared files (IPCCHMLPExperiment/config/inputs.json); not copied again"},
+      "extra": [
+        {"base": "{repo}", "paths": ["IPCCHMLPExperiment/ipcch_mlp/*.py", "IPCCHMLPExperiment/config/*.json", "IPCCHMLPExperiment/scripts/*.py", "IPCCHMLPExperiment/README.md", "IPCCHMLPExperiment/run_experiment.py"], "prefix": "source_code"},
+        {"base": "{repo}", "paths": [".trellis/tasks/archive/2026-10/10-05-ipcch-mlp-spatial-adaptation/*.md", ".trellis/tasks/archive/2026-10/10-05-ipcch-mlp-spatial-adaptation/research/**", ".trellis/tasks/archive/2026-10/10-05-ipcch-mlp-spatial-adaptation/evidence/**"], "prefix": "task_evidence"}
+      ],
+      "tags": {"code_commit": "cd7bcd5", "package": "IPCCHMLPExperiment", "scientific_acceptance": "completed under user supervision; replay passed", "lifecycle_status": "archived; Trellis audit waived by the user for this task (not an audit pass)", "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection", "fit_protocol": "monthly refit, 36-month window; B global MLP, P pooled residual, L regional residual, G gated", "features": "rich561 + 561 missingness flags", "maps": "original P6 frozen maps", "periods": "main 2023-2025; supplementary 2026-01..04"}
+    },
+    {
+      "family": "yearly_geoxgb", "source_run_id": "yearly-formal-20261007", "format": "yearly",
+      "root": "{temp}/ipcch-yearly-xgb-runs/yearly-formal-20261007",
+      "report": "report/report.json", "predictions": "predict/h{H:02d}/predictions.csv.gz",
+      "arms": {"pool": "fresh_trained", "local": "diagnostic_local", "geo": "fresh_trained", "persistence": "persistence_baseline"},
+      "model_seed": "42",
+      "include": ["preflight/**", "predict/**", "report/**", "replay/replay.json", "inputs/staging-manifest.json", "inputs/source/**"],
+      "bundle": {"models.tar": "models/**"},
+      "exclude": {"replay/predict/**": "replay re-execution duplicate (verified by replay.json)", "replay/report/**": "replay re-execution duplicate (verified by replay.json)"},
+      "shared_inputs": {"parent": "p6_geoxgb", "match": "inputs/run/", "note": "staged copies of P6 files; identical hashes referenced to the P6 parent archive"},
+      "extra": [
+        {"base": "{repo}", "paths": ["IPCCHYearlyGeoXGBExperiment/ipcch_yearly_xgb/*.py", "IPCCHYearlyGeoXGBExperiment/config/*.json", "IPCCHYearlyGeoXGBExperiment/README.md", "IPCCHYearlyGeoXGBExperiment/run_experiment.py"], "prefix": "source_code"},
+        {"base": "{repo}", "paths": [".trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/*.md", ".trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/research/**", ".trellis/tasks/archive/2026-10/10-07-ipcch-fixed-map-yearly-xgb/evidence/**"], "prefix": "task_evidence"}
+      ],
+      "tags": {"code_commit": "29c5fee", "package": "IPCCHYearlyGeoXGBExperiment", "scientific_acceptance": "supervisor PASS at 76fdedf (doc corrections 5de8fac)", "lifecycle_status": "closed via trellis-audit; close-audit job 2020a1286705955fcfe26e75 queued at import planning time (not passed)", "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection", "fit_protocol": "annual blocks, full history t<=O, 24-month half-life decay weights, annual frozen gate", "features": "rich561", "maps": "original P6 frozen maps", "periods": "main 2023-2025; supplementary 2026-01..04"}
+    },
+    {
+      "family": "climate_perturbation", "source_run_id": "climate-20261005", "format": "p6",
+      "root": "{temp}/ipcch-climate-runs/climate-20261005",
+      "report": "report/report.json", "predictions": "stage3/h{H:02d}/predictions.csv.gz",
+      "comparison": "compare-p6/comparison.json",
+      "arms": {"pool": "fresh_trained", "geo": "fresh_trained", "persistence": "persistence_baseline"},
+      "model_seed": "42",
+      "include": ["report/**", "stage1/**", "stage3/**", "prepared/**", "compare-p6/**"],
+      "bundle": {"models.tar": "models/**"},
+      "exclude": {"prepared/X_rich601_h*.npy": "large prepared feature matrix; referenced by path and SHA256"},
+      "extra": [
+        {"base": "{repo}", "paths": ["IPCCHClimateGeoXGBExperiment/ipcch_climate_geoxgb/*.py", "IPCCHClimateGeoXGBExperiment/config/*.json", "IPCCHClimateGeoXGBExperiment/scripts/*.py", "IPCCHClimateGeoXGBExperiment/README.md"], "prefix": "source_code"},
+        {"base": "{repo}", "paths": [".trellis/tasks/archive/2026-10/10-05-ipcch-climate-perturbation/*.md", ".trellis/tasks/archive/2026-10/10-05-ipcch-climate-perturbation/evidence/**"], "prefix": "task_evidence"}
+      ],
+      "tags": {"code_commit": "60ebd62", "package": "IPCCHClimateGeoXGBExperiment", "scientific_acceptance": "user-reviewed exploratory perturbation; replay passed", "lifecycle_status": "archived; no audit", "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection", "fit_protocol": "monthly refit, 36-month window, unit weights", "features": "rich601 (shared-folder climate replaces monthly climate columns)", "maps": "RELEARNED through 2022 on rich601 (not the P6 maps)", "periods": "main 2023-2025; supplementary 2026-01..04"}
+    },
+    {
+      "family": "history_window_sensitivity", "source_run_id": "ipcch-window-probe-20261005-zckpq9hf", "format": "window",
+      "root": "{temp}/ipcch-window-probe-20261005-zckpq9hf",
+      "report": "summary.json", "predictions": "predictions_h{H:02d}_{U}.csv.gz",
+      "arms": {"base_global": "reused_comparator", "exp_global": "fresh_trained", "base_local": "reused_comparator", "exp_local": "fresh_trained"},
+      "model_seed": "42",
+      "include": ["*.json", "*.csv.gz", "run_probe.py"],
+      "bundle": {"models.tar": "models/**"},
+      "exclude": {},
+      "extra": [],
+      "tags": {"code_commit": "unknown (Git HEAD not recorded); run_probe.py and source-hashes.json are the code identity", "package": "run_probe.py (P6 package imports)", "scientific_acceptance": "exploratory read-only diagnostic sensitivity", "lifecycle_status": "no Trellis task", "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection", "fit_protocol": "fixed P6 maps/recipes; 36-month window (base) vs full history (exp); no historical gate", "features": "rich561", "maps": "original P6 frozen maps", "periods": "11 selected dates only (selected_dates namespace); not full main/supplementary performance", "source_started_utc": "2026-10-05T18:39:41.831067Z", "source_elapsed_seconds": "291.1202557"}
+    },
+    {
+      "family": "split2024_sensitivity", "source_run_id": "split2024-20261005", "format": "p6",
+      "root": "{temp}/ipcch-split2024-20261005-3moikuh3",
+      "report": "IPCCHGeoXGBExperiment/runs/split2024-20261005/report/report.json",
+      "predictions": "IPCCHGeoXGBExperiment/runs/split2024-20261005/stage3/h{H:02d}/predictions.csv.gz",
+      "combined": "combined-and-matched-report.json",
+      "arms": {"pool": "fresh_trained", "geo": "fresh_trained", "persistence": "persistence_baseline"},
+      "model_seed": "42",
+      "include": ["*.json", "*.patch", "*.py", "*.log", "IPCCHGeoXGBExperiment/config/**", "IPCCHGeoXGBExperiment/ipcch_geoxgb/**", "IPCCHGeoXGBExperiment/runs/split2024-20261005/report/**", "IPCCHGeoXGBExperiment/runs/split2024-20261005/stage1/**", "IPCCHGeoXGBExperiment/runs/split2024-20261005/stage3/**", "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/**", "IPCCHGeoXGBExperiment/runs/split2024-preflight-20261005/**"],
+      "bundle": {"models.tar": "IPCCHGeoXGBExperiment/runs/split2024-20261005/models/**"},
+      "exclude": {"IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h*.npy": "large prepared feature matrix; referenced by path and SHA256", "IPCCHGeoXGBExperiment/ipcch_geoxgb/__pycache__/**": "bytecode cache"},
+      "extra": [],
+      "tags": {"code_commit": "afc88390e4750da52c4e44ed8662b83925642003 + calendar-only.patch", "package": "IPCCHGeoXGBExperiment (patched copy in source root)", "scientific_acceptance": "exploratory sensitivity; replay passed", "lifecycle_status": "no Trellis task", "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection", "fit_protocol": "monthly refit, 36-month window, unit weights; Stage1 through 2024-12, origins >= 2025-01", "features": "rich561", "maps": "RELEARNED through 2024 (not the P6 maps)", "periods": "main 2025 / supplementary 2026 in report.json; combined/2025/2026 in combined-and-matched-report.json", "source_elapsed_seconds": "3330.344"}
+    }
+  ]
+}

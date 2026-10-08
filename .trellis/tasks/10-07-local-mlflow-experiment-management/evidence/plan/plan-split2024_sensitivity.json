@@ -1,0 +1,149 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "99b72bddd73fa538cb1dc880dedd345b7bd3f466275d41316a58593cb59b0165"
+ },
+ "excluded": [
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h01.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h01.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h03.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h03.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h06.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h06.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h12.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h12.npy"
+  }
+ ],
+ "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+ "family": "split2024_sensitivity",
+ "fingerprint": "61ad0d5b75cf35fd973bd57d022ba8cdc889cb6abe4a354759bffb69a09eea2c",
+ "include_manifest_sha256": "eb6f6c50775e83f2f6c890b340a42827c675e2adfc3dd2bfb325bdab57e97465",
+ "report_sha256": "96ca1ba70235496862cb029127e717e9537ee09660a83bbdac7d7c2eac242e0e",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3",
+ "shared": [],
+ "source_run_id": "split2024-20261005",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    4180,
+    1420913441
+   ]
+  },
+  "child_metrics": 1986,
+  "child_na": 28,
+  "children": 12,
+  "excluded": [
+   4,
+   766461152
+  ],
+  "extras": [
+   0,
+   0
+  ],
+  "include": [
+   242,
+   78291063
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "09024d13f7edb063214745a05096397709841b8decf8c89d1b03e9cd19fb506b",
+   "key": "split2024_sensitivity/split2024-20261005/H1/pool/seed42",
+   "metrics": 112,
+   "na": 2
+  },
+  {
+   "fingerprint": "773eec240f378bf2414ea7ebd475274762479ebbb9ab5b51bd3345581fea4ebd",
+   "key": "split2024_sensitivity/split2024-20261005/H1/geo/seed42",
+   "metrics": 356,
+   "na": 0
+  },
+  {
+   "fingerprint": "f9494653fc8fde9236cafcd2835477cf54372596c788c3f588cf759271771304",
+   "key": "split2024_sensitivity/split2024-20261005/H1/persistence/seednone",
+   "metrics": 70,
+   "na": 2
+  },
+  {
+   "fingerprint": "88a0ee1629750212ae1250214ac836cf2ca768a8f395ce96f2c5b68a18ef8641",
+   "key": "split2024_sensitivity/split2024-20261005/H3/pool/seed42",
+   "metrics": 112,
+   "na": 2
+  },
+  {
+   "fingerprint": "68cd27a83800edbcc18a0605c5b4d78c6a99ebbb5d38bb1c3113547abac4c46a",
+   "key": "split2024_sensitivity/split2024-20261005/H3/geo/seed42",
+   "metrics": 361,
+   "na": 0
+  },
+  {
+   "fingerprint": "b8842181f4a9fe379a2bd66393f5f1fd947de43d47eac489b3ba072a070a1b56",
+   "key": "split2024_sensitivity/split2024-20261005/H3/persistence/seednone",
+   "metrics": 70,
+   "na": 2
+  },
+  {
+   "fingerprint": "fcdd68a43403f6bcdece5306700315449a6af3e41311b918e0db91035e4fa4ed",
+   "key": "split2024_sensitivity/split2024-20261005/H6/pool/seed42",
+   "metrics": 112,
+   "na": 2
+  },
+  {
+   "fingerprint": "b071009d2cca5746f34771bbf73a31e25b0a545af56e25e08a3f6886e87701f2",
+   "key": "split2024_sensitivity/split2024-20261005/H6/geo/seed42",
+   "metrics": 362,
+   "na": 0
+  },
+  {
+   "fingerprint": "dbf6a349dd65c9b1495d1d26805f73eca10fe37f18662f76e7936907943f4088",
+   "key": "split2024_sensitivity/split2024-20261005/H6/persistence/seednone",
+   "metrics": 70,
+   "na": 2
+  },
+  {
+   "fingerprint": "1c87b6672a392b7ad2e432a87ddca248a3937ffecfb983219ec3b1b21e55c5b0",
+   "key": "split2024_sensitivity/split2024-20261005/H12/pool/seed42",
+   "metrics": 72,
+   "na": 4
+  },
+  {
+   "fingerprint": "d3f62d563fbcd1f42fde9387072ed98abe5bbe0a413e1beb216a2e3ee9ae1982",
+   "key": "split2024_sensitivity/split2024-20261005/H12/geo/seed42",
+   "metrics": 245,
+   "na": 8
+  },
+  {
+   "fingerprint": "a5195fcabce90ed0e5de49158085f10d9b29f98937c5d952fe90804a9170925e",
+   "key": "split2024_sensitivity/split2024-20261005/H12/persistence/seednone",
+   "metrics": 44,
+   "na": 4
+  }
+ ]
+}
