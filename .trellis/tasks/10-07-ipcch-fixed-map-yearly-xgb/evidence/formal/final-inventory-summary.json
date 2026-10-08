@@ -1,0 +1,32 @@
+{
+ "run": "yearly-formal-20261007",
+ "files": 1398,
+ "bytes": 1127063505,
+ "by_top_level": {
+  "inputs": {
+   "files": 37,
+   "bytes": 783810023
+  },
+  "models": {
+   "files": 1267,
+   "bytes": 320464656
+  },
+  "predict": {
+   "files": 37,
+   "bytes": 9869179
+  },
+  "preflight": {
+   "files": 1,
+   "bytes": 26082
+  },
+  "replay": {
+   "files": 47,
+   "bytes": 11381452
+  },
+  "report": {
+   "files": 9,
+   "bytes": 1512113
+  }
+ },
+ "coverage": "every file under the run directory, including staged inputs, models, predict, report, replay (replay outputs included); computed after replay"
+}

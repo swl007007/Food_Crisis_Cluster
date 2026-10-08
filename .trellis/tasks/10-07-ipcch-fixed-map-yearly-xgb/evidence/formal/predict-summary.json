@@ -1,0 +1,85 @@
+{
+  "stage": "predict",
+  "env": {
+    "lock": "ipcch-yearly-xgb-runtime-v1",
+    "python": "3.12.10",
+    "xgboost": "3.0.0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "fit_source_sha256": "d7a693959b5ed6fd7c1907b4d1401d713d7ea3a4d44c419c2424cd5a72a3ed36"
+  },
+  "source_inventory": {
+    "ipcch_yearly_xgb/__init__.py": "62374596558946b6848ec05ca480bab5079a2ea99ff7aacc55c8e28fec788ac5",
+    "ipcch_yearly_xgb/__main__.py": "02a4089bae850f91ad6d9681c0441fb515b6eb072601e0fc70e9a0135762c03a",
+    "ipcch_yearly_xgb/artifacts.py": "ff362d983272a89c62fd937f3724e0a771b4f1214aa8bc471c34b543504685c1",
+    "ipcch_yearly_xgb/cli.py": "261213c8344797df59ee1065fcecfefb9a41e850fb2907870c1a358496054b6a",
+    "ipcch_yearly_xgb/contract.py": "25ed9dfd00d3044dbec9ee89c21400555c94bdb5a57a910ddcaa501c47a966aa",
+    "ipcch_yearly_xgb/engine.py": "c9ffc0a90702df6e21be4894bfaf774686a0f4f6852c1cdf4403705c15ef5be9",
+    "ipcch_yearly_xgb/errors.py": "6867fdba02e41b077168a489654efc07aab4c3c15a244874032cf7c52cabf4c0",
+    "ipcch_yearly_xgb/freeze.py": "a00186997ab27df3ea267855382473e38e7ffbaed46cd230f495c3c76e57141f",
+    "ipcch_yearly_xgb/metrics.py": "53c0289a3e7427851aa85773fdd081ee7b2d2e09855aae75839a2653cc1cf305",
+    "ipcch_yearly_xgb/modelstore.py": "4446906a94692e5182c5d64a04f7100be3fdad80c81ab35b9f71c3a52a9ec132",
+    "ipcch_yearly_xgb/planning.py": "83201f5c803f5ba6accb10bf53348e75946b615a3753967b33bbab706cb373b5",
+    "ipcch_yearly_xgb/projection.py": "66a0b8cfbce6b3c860759712559f8adfd25fc4268dfecf5f6c8d9aa9bad57dce",
+    "ipcch_yearly_xgb/quartet.py": "1051746b0dd5d9cca6381ab08598abb55c9d4af4270fdb67a19a9996afcaab02",
+    "ipcch_yearly_xgb/replay.py": "68a5d1cb4acd0692f2aa42323d7ff0fab911a166decad214ed1051594e651f97",
+    "ipcch_yearly_xgb/report.py": "21593caa49f1ae7683973921890befd1051ff6c308b4d058cf6f8587accf134a",
+    "ipcch_yearly_xgb/run.py": "89716e7e17f6f3b0656c46f096a9490911a46f096ac8628726e45df872300a6c",
+    "ipcch_yearly_xgb/runtime.py": "0e6cacb440e5c4bf811fdfa3778371f6c892002abf84ace9e293a4e6de1911ca",
+    "ipcch_yearly_xgb/schedule.py": "10c6dd580eb9c5bdecca31d42912dbcbb0435da260a197fe8acc04a60ae71bea",
+    "ipcch_yearly_xgb/sources.py": "a37af225ee03f81317ce078769ca551acd85a8ad43e1e1e1b6c3205bb61c89f7",
+    "ipcch_yearly_xgb/timing.py": "3fd15bb5cee47306f907f6af941099a97c779fc0948129788e0c522bdbe4adbd",
+    "config/inputs.json": "cd050e71a0445d4c6164d19ec9e0be51ce4bd4d71f10e2d1e01bad16d6ab3f3d",
+    "config/runtime-lock.json": "e7ddc307cf33c965e52469de340733da113bc9476015acc3126a501af9ab7350",
+    "config/yearly-contract.json": "8170238da5512870362d8acac6b60ff6487e67aefc29853bdd1e9524e280242d"
+  },
+  "horizons": {
+    "1": {
+      "recipe": "G1L2",
+      "blocks": 4,
+      "folds": 39,
+      "scored_folds": 36,
+      "prediction_rows": 21414,
+      "local_rows": 407,
+      "diagnostic_rows": 11772,
+      "predictions_sha256": "7f6b00e1234c7d705c5439e4d36a336f2361d347d0c0d3870a629143d87230a6"
+    },
+    "3": {
+      "recipe": "G3L2",
+      "blocks": 4,
+      "folds": 37,
+      "scored_folds": 34,
+      "prediction_rows": 21011,
+      "local_rows": 1237,
+      "diagnostic_rows": 11695,
+      "predictions_sha256": "43fdae3191e95484b7bdf79d09da9af88cb2c4975bd537d1ae0a92c3686c8345"
+    },
+    "6": {
+      "recipe": "G4L2",
+      "blocks": 4,
+      "folds": 34,
+      "scored_folds": 31,
+      "prediction_rows": 20505,
+      "local_rows": 341,
+      "diagnostic_rows": 11351,
+      "predictions_sha256": "641af8a1de6dfa092ab435b51b8da92afc824f4f30c2c93fff5fd6afc8e5e703"
+    },
+    "12": {
+      "recipe": "G2L2",
+      "blocks": 3,
+      "folds": 28,
+      "scored_folds": 25,
+      "prediction_rows": 18179,
+      "local_rows": 56,
+      "diagnostic_rows": 9733,
+      "predictions_sha256": "73da2940517ee4b36bc02629c7dbe159c68a4966ffe45cafe865a537a893e03f"
+    }
+  },
+  "store_counts": {
+    "requests": 747,
+    "hits": 566,
+    "fits": 181,
+    "failed": 0
+  },
+  "elapsed_seconds": 591.4
+}

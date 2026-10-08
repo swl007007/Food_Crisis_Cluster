@@ -57,3 +57,13 @@ Checks:
 | Timing | not rerun: the fitting path (quartet weights/XGBoost calls) is unchanged; only provenance files and checks were added |
 
 STOP: no project-data fit. Awaiting supervisor delta review and P1 release.
+
+## P1/P2 formal run (2026-10-07)
+
+- Supervisor P1 release at `29c5fee` (copied to `evidence/p1-release-29c5fee.md`; supervisor reran 35 tests, verified 23 source and 36 staged input hashes).
+- Run `yearly-formal-20261007` under `C:\Users\swl00\AppData\Local\Temp\ipcch-yearly-xgb-runs\` (outside Dropbox), code `29c5fee`, `fit_source_sha256` `d7a69395…` equal in the run preflight; 36 inputs staged (manifest `1af1be0b…`).
+- preflight passed → predict exit 0, 591 s: 181 quartets = 724 scalar fits, 0 failed, 747 requests (181 fit + 566 in-memory reuse); per H 5/45, 5/35, 6/36, 5/44; 78 identities shared by current and gate (planned 9 + 69). Reported to wN:p1 after predict.
+- report passed; replay passed: 10,246 checks, 0 failures, zero fits, 724-fit inventory exact.
+- Final inventory: 1,398 files, 1.13 GB (`evidence/formal/final-inventory.tsv`, `final-inventory-summary.json`), computed after replay and covering inputs, models, predict, report and replay.
+- Results: `results.md`. Discussion-note additions: 10-04 meeting note §7.5, 10-05 future-direction note §8, 10-07 baseline note follow-up.
+- No source reconciliation, retuning, lifecycle close, push or PR.

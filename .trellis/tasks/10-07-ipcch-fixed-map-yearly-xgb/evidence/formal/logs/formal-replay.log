@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "checks_passed": 10246,
+  "n_failures": 0,
+  "unique_quartets": 181,
+  "scalar_fits": 724,
+  "replay_requests": 747,
+  "first_failures": []
+}
+exit 0 wall 126s

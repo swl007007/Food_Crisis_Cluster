@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "checks_passed": 10246,
+  "n_failures": 0,
+  "failures": [],
+  "unique_quartets": 181,
+  "scalar_fits": 724,
+  "replay_requests": 747
+}

@@ -1,0 +1,821 @@
+{
+  "stage": "preflight",
+  "runtime": {
+    "lock_version": "ipcch-yearly-xgb-runtime-v1",
+    "executable": "C:\\Users\\swl00\\AppData\\Local\\Microsoft\\WindowsApps\\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\\python.exe",
+    "python": "3.12.10",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "xgboost": "3.0.0",
+      "geopandas": "1.0.1",
+      "pyogrio": "0.11.0",
+      "shapely": "2.1.0",
+      "pyproj": "3.7.1",
+      "pytest": "9.1.0"
+    },
+    "matches_lock": true,
+    "mismatches": []
+  },
+  "env": {
+    "lock": "ipcch-yearly-xgb-runtime-v1",
+    "python": "3.12.10",
+    "xgboost": "3.0.0",
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "fit_source_sha256": "d7a693959b5ed6fd7c1907b4d1401d713d7ea3a4d44c419c2424cd5a72a3ed36"
+  },
+  "source_inventory": {
+    "ipcch_yearly_xgb/__init__.py": "62374596558946b6848ec05ca480bab5079a2ea99ff7aacc55c8e28fec788ac5",
+    "ipcch_yearly_xgb/__main__.py": "02a4089bae850f91ad6d9681c0441fb515b6eb072601e0fc70e9a0135762c03a",
+    "ipcch_yearly_xgb/artifacts.py": "ff362d983272a89c62fd937f3724e0a771b4f1214aa8bc471c34b543504685c1",
+    "ipcch_yearly_xgb/cli.py": "261213c8344797df59ee1065fcecfefb9a41e850fb2907870c1a358496054b6a",
+    "ipcch_yearly_xgb/contract.py": "25ed9dfd00d3044dbec9ee89c21400555c94bdb5a57a910ddcaa501c47a966aa",
+    "ipcch_yearly_xgb/engine.py": "c9ffc0a90702df6e21be4894bfaf774686a0f4f6852c1cdf4403705c15ef5be9",
+    "ipcch_yearly_xgb/errors.py": "6867fdba02e41b077168a489654efc07aab4c3c15a244874032cf7c52cabf4c0",
+    "ipcch_yearly_xgb/freeze.py": "a00186997ab27df3ea267855382473e38e7ffbaed46cd230f495c3c76e57141f",
+    "ipcch_yearly_xgb/metrics.py": "53c0289a3e7427851aa85773fdd081ee7b2d2e09855aae75839a2653cc1cf305",
+    "ipcch_yearly_xgb/modelstore.py": "4446906a94692e5182c5d64a04f7100be3fdad80c81ab35b9f71c3a52a9ec132",
+    "ipcch_yearly_xgb/planning.py": "83201f5c803f5ba6accb10bf53348e75946b615a3753967b33bbab706cb373b5",
+    "ipcch_yearly_xgb/projection.py": "66a0b8cfbce6b3c860759712559f8adfd25fc4268dfecf5f6c8d9aa9bad57dce",
+    "ipcch_yearly_xgb/quartet.py": "1051746b0dd5d9cca6381ab08598abb55c9d4af4270fdb67a19a9996afcaab02",
+    "ipcch_yearly_xgb/replay.py": "68a5d1cb4acd0692f2aa42323d7ff0fab911a166decad214ed1051594e651f97",
+    "ipcch_yearly_xgb/report.py": "21593caa49f1ae7683973921890befd1051ff6c308b4d058cf6f8587accf134a",
+    "ipcch_yearly_xgb/run.py": "89716e7e17f6f3b0656c46f096a9490911a46f096ac8628726e45df872300a6c",
+    "ipcch_yearly_xgb/runtime.py": "0e6cacb440e5c4bf811fdfa3778371f6c892002abf84ace9e293a4e6de1911ca",
+    "ipcch_yearly_xgb/schedule.py": "10c6dd580eb9c5bdecca31d42912dbcbb0435da260a197fe8acc04a60ae71bea",
+    "ipcch_yearly_xgb/sources.py": "a37af225ee03f81317ce078769ca551acd85a8ad43e1e1e1b6c3205bb61c89f7",
+    "ipcch_yearly_xgb/timing.py": "3fd15bb5cee47306f907f6af941099a97c779fc0948129788e0c522bdbe4adbd",
+    "config/inputs.json": "cd050e71a0445d4c6164d19ec9e0be51ce4bd4d71f10e2d1e01bad16d6ab3f3d",
+    "config/runtime-lock.json": "e7ddc307cf33c965e52469de340733da113bc9476015acc3126a501af9ab7350",
+    "config/yearly-contract.json": "8170238da5512870362d8acac6b60ff6487e67aefc29853bdd1e9524e280242d"
+  },
+  "inputs_verified": {
+    "prepared/prepared-manifest.json": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32",
+    "prepared/X_rich561_h01.npy": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219",
+    "prepared/X_rich561_h03.npy": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0",
+    "prepared/X_rich561_h06.npy": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c",
+    "prepared/X_rich561_h12.npy": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0",
+    "prepared/coverage_2026.csv": "104f2e9a25cd622946ec693981a7843773f8481aa43e78b3de4528d6fa196b32",
+    "prepared/feature_order.csv": "c0148ff83fe1f87cedc4d7f638da5429b33af1a377d2f0c69d3405537507e5fb",
+    "prepared/fold_calendar.csv": "061c44f88dbc37a89bf1b2cc19a2047666663fee5aa706b0a90fbd18c06d198c",
+    "prepared/keys_h01.csv.gz": "414cba066f9953e7b70e2f586450537621ea312ad80a9fbc2b84ad367f2e49cd",
+    "prepared/keys_h03.csv.gz": "5e44eb8359a4910a5d9d94b80986d3a44faf123d89ebdf2b30e5389bf1267f7a",
+    "prepared/keys_h06.csv.gz": "d325da25a69399b496a33b1f21f3fb2fdd24f387b3074f399e5f2836444495d6",
+    "prepared/keys_h12.csv.gz": "9755df742b15d5b1556671633c2fa80908d8b9b7ffee9c9192b895aa64bba4bd",
+    "prepared/stage1_split.csv.gz": "3e076c66c1c9ee6cc0aec0d4955db610dc35fe8b3d279bd4b86b3a88f7910928",
+    "prepared/target_ledger.csv.gz": "4eed1792a65a1da1d05220a296e242311422761177dc31a202543c76cbf81ad8",
+    "prepared/target_ledger_valid.csv.gz": "21d7701fe60fb9ed3084c34dc7852a9ce56e312c78587238179c5ea8ef63e717",
+    "stage1/frozen_h01.json": "2d40675c6f27fd45d6b22ebaa8e61bfcd2d31e342b04ba7b4431053c91f36caa",
+    "stage1/frozen_map_h01.csv": "77ef44da88ba551f2284f93ed780023ff86a7961818755b007beabb5f83f1b5b",
+    "stage1/h01/selection.json": "f70e0e747b6d43112c99a136dd6a6d95d528df9a53b47c475d9e27eb1f93999b",
+    "stage3/h01/predictions.csv.gz": "4c91986cc5d06a397a99d0d6fc40b915517929f6ba462370f2e45552f6f028d2",
+    "stage1/frozen_h03.json": "08ff0afa30a656b5a47ac9800477785d55d9e5680c87399b26d967416666b80f",
+    "stage1/frozen_map_h03.csv": "16f354ff369c26637c8debf88990f57d2e8f0ebc16d26b53e3b975855f9d3051",
+    "stage1/h03/selection.json": "4b13f12a8893193bd3c87231430618607c0a432b2d8c766a11636331bdac1f2f",
+    "stage3/h03/predictions.csv.gz": "7f9072d905023e08a98ef0cb8e46281799c26df7457117efa052c240fa711211",
+    "stage1/frozen_h06.json": "5afaa039865145fa24f80ad4fdb6df4ee8e9c39d2a343a681002f684569c3e72",
+    "stage1/frozen_map_h06.csv": "04ffe8363e99fa88e6a559b61550b1d82f3441279b1d62c1e24adae2ab8ea7a2",
+    "stage1/h06/selection.json": "48c444aa48c591409bf4e837509d81a37f917a1bf185c7de182f5b3329816adc",
+    "stage3/h06/predictions.csv.gz": "983862bb38b53f367b5fefc47979564adf0f4df4517db51a05778ae34b125e94",
+    "stage1/frozen_h12.json": "9e77b11dbb0ab4b479c6abf4396d409c01fb885a0903961930bba7c35e1dea03",
+    "stage1/frozen_map_h12.csv": "f61be8bd90c9555d5815947d5ee6ee62181fcd0861e595ab4f8a5a9370ac5143",
+    "stage1/h12/selection.json": "411db67182fb828b4ebd4c6cc3dfc8dcd76d4f7cf8bc28e451915e2a22d434a3",
+    "stage3/h12/predictions.csv.gz": "ea771dd2c02cd30eb3debc9b3e44c207ad73d0543b20bc5157e0472b305ec615",
+    "stage1/stage1-summary.json": "e90bae9da897d65b34a59254cbf64ff66ea7b2745a55a025eea715e3c5da3488",
+    "stage3/stage3-summary.json": "1df8165ab8aa9e99e6e099af59440ace58c81ffe614cc553bf3dfb2c35d96c09",
+    "IPCCHGeoXGBExperiment/config/experiment-contract.json": "49a367ce6fbabb7efda3d2f86a78bac8c3f3f1e31790958d290505cd0b6ffd72",
+    "IPCCHGeoXGBExperiment/config/feature-schema.json": "a6093121691e5dce5958f7713872561d89f9d3e19646dcce9c62ce16d62c643d",
+    "IPCCHGeoXGBExperiment/config/runtime-lock.json": "b700a32be856d150ab2f0d49d4b25d45a63d5ce4387ac5a3501119cda3d89b84"
+  },
+  "staged_inputs": {
+    "dir": "inputs",
+    "files": 36,
+    "manifest_sha256": "1af1be0b654c6982b3af0bc9fc27c6664c354d86a117532b93a8b2cf5761cc93"
+  },
+  "lineage": {
+    "1": {
+      "schema": [
+        "ipcch-geoxgb-rich561-ge020-v1",
+        "deca3a096530e9932bcf6a7963f3ef47d0644ca659e9367edf51b8d5cfae03fe"
+      ],
+      "prepared_manifest_sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32",
+      "source_contract_version": "ipcch-geoxgb-contract-v1.0",
+      "map_sha256": "77ef44da88ba551f2284f93ed780023ff86a7961818755b007beabb5f83f1b5b"
+    },
+    "3": {
+      "schema": [
+        "ipcch-geoxgb-rich561-ge020-v1",
+        "deca3a096530e9932bcf6a7963f3ef47d0644ca659e9367edf51b8d5cfae03fe"
+      ],
+      "prepared_manifest_sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32",
+      "source_contract_version": "ipcch-geoxgb-contract-v1.0",
+      "map_sha256": "16f354ff369c26637c8debf88990f57d2e8f0ebc16d26b53e3b975855f9d3051"
+    },
+    "6": {
+      "schema": [
+        "ipcch-geoxgb-rich561-ge020-v1",
+        "deca3a096530e9932bcf6a7963f3ef47d0644ca659e9367edf51b8d5cfae03fe"
+      ],
+      "prepared_manifest_sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32",
+      "source_contract_version": "ipcch-geoxgb-contract-v1.0",
+      "map_sha256": "04ffe8363e99fa88e6a559b61550b1d82f3441279b1d62c1e24adae2ab8ea7a2"
+    },
+    "12": {
+      "schema": [
+        "ipcch-geoxgb-rich561-ge020-v1",
+        "deca3a096530e9932bcf6a7963f3ef47d0644ca659e9367edf51b8d5cfae03fe"
+      ],
+      "prepared_manifest_sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32",
+      "source_contract_version": "ipcch-geoxgb-contract-v1.0",
+      "map_sha256": "f61be8bd90c9555d5815947d5ee6ee62181fcd0861e595ab4f8a5a9370ac5143"
+    }
+  },
+  "enumeration": {
+    "1": {
+      "origins": [
+        "2021-12",
+        "2023-01",
+        "2023-12",
+        "2024-12",
+        "2025-12"
+      ],
+      "global_quartets": 5,
+      "local_quartets": 45,
+      "scalar_fits": 200,
+      "main": {
+        "global_quartets": 4,
+        "local_quartets": 36,
+        "scalar_fits": 160
+      },
+      "unsupported_local_requests": [],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2023,
+          "anchor": "2023-02",
+          "fit_origin": "2023-01",
+          "eval_keys": 3235,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 2039,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-12"
+          ],
+          "gate_support_regions": [
+            "r0001",
+            "r10"
+          ],
+          "gate_support_current_keys": 414
+        },
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-12",
+          "eval_keys": 4295,
+          "global_fit_keys": 24516,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11"
+          ],
+          "historical_origins": [
+            "2023-01"
+          ],
+          "gate_support_regions": [
+            "r0000",
+            "r0001",
+            "r001",
+            "r10"
+          ],
+          "gate_support_current_keys": 826
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-12",
+          "eval_keys": 9792,
+          "global_fit_keys": 28811,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09",
+            "2024-10",
+            "2024-11"
+          ],
+          "historical_origins": [
+            "2023-12"
+          ],
+          "gate_support_regions": [
+            "r10",
+            "r111"
+          ],
+          "gate_support_current_keys": 2167
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-12",
+          "eval_keys": 4092,
+          "global_fit_keys": 38603,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2025-05",
+            "2025-06",
+            "2025-07",
+            "2025-08",
+            "2025-09",
+            "2025-10"
+          ],
+          "historical_origins": [
+            "2024-12"
+          ],
+          "gate_support_regions": [
+            "r0000",
+            "r0001",
+            "r001",
+            "r0111",
+            "r10",
+            "r110",
+            "r111"
+          ],
+          "gate_support_current_keys": 1808
+        }
+      ],
+      "global_pool_sizes": {
+        "2021-12": 15438,
+        "2023-01": 21281,
+        "2023-12": 24516,
+        "2024-12": 28811,
+        "2025-12": 38603
+      },
+      "local_pool_sizes": {
+        "2021-12/r0000": 1023,
+        "2021-12/r0001": 1173,
+        "2021-12/r001": 989,
+        "2021-12/r010": 2057,
+        "2021-12/r0110": 1579,
+        "2021-12/r0111": 2679,
+        "2021-12/r10": 1948,
+        "2021-12/r110": 978,
+        "2021-12/r111": 2076,
+        "2023-01/r0000": 1244,
+        "2023-01/r0001": 1625,
+        "2023-01/r001": 1334,
+        "2023-01/r010": 3075,
+        "2023-01/r0110": 2153,
+        "2023-01/r0111": 3320,
+        "2023-01/r10": 3124,
+        "2023-01/r110": 1096,
+        "2023-01/r111": 2572,
+        "2023-12/r0000": 1390,
+        "2023-12/r0001": 1785,
+        "2023-12/r001": 1551,
+        "2023-12/r010": 3428,
+        "2023-12/r0110": 2341,
+        "2023-12/r0111": 3551,
+        "2023-12/r10": 3378,
+        "2023-12/r110": 1198,
+        "2023-12/r111": 2960,
+        "2024-12/r0000": 1531,
+        "2024-12/r0001": 2022,
+        "2024-12/r001": 1744,
+        "2024-12/r010": 4111,
+        "2024-12/r0110": 2669,
+        "2024-12/r0111": 3953,
+        "2024-12/r10": 3633,
+        "2024-12/r110": 1305,
+        "2024-12/r111": 3245,
+        "2025-12/r0000": 1844,
+        "2025-12/r0001": 2368,
+        "2025-12/r001": 2143,
+        "2025-12/r010": 4861,
+        "2025-12/r0110": 3067,
+        "2025-12/r0111": 4400,
+        "2025-12/r10": 4862,
+        "2025-12/r110": 1758,
+        "2025-12/r111": 4183
+      }
+    },
+    "3": {
+      "origins": [
+        "2021-10",
+        "2023-01",
+        "2023-10",
+        "2024-10",
+        "2025-10"
+      ],
+      "global_quartets": 5,
+      "local_quartets": 35,
+      "scalar_fits": 160,
+      "main": {
+        "global_quartets": 4,
+        "local_quartets": 28,
+        "scalar_fits": 128
+      },
+      "unsupported_local_requests": [],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2023,
+          "anchor": "2023-04",
+          "fit_origin": "2023-01",
+          "eval_keys": 2832,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 1962,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-10"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r101"
+          ],
+          "gate_support_current_keys": 699
+        },
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-10",
+          "eval_keys": 4295,
+          "global_fit_keys": 24459,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2023-04",
+            "2023-05",
+            "2023-06",
+            "2023-07",
+            "2023-08",
+            "2023-09"
+          ],
+          "historical_origins": [
+            "2023-01"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 1173
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-10",
+          "eval_keys": 9792,
+          "global_fit_keys": 28735,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2024-04",
+            "2024-05",
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09"
+          ],
+          "historical_origins": [
+            "2023-10"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 2894
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-10",
+          "eval_keys": 4092,
+          "global_fit_keys": 38603,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2025-04",
+            "2025-05",
+            "2025-06",
+            "2025-07",
+            "2025-08",
+            "2025-09"
+          ],
+          "historical_origins": [
+            "2024-10"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r0111",
+            "r100",
+            "r101",
+            "r11"
+          ],
+          "gate_support_current_keys": 1809
+        }
+      ],
+      "global_pool_sizes": {
+        "2021-10": 15282,
+        "2023-01": 21281,
+        "2023-10": 24459,
+        "2024-10": 28735,
+        "2025-10": 38603
+      },
+      "local_pool_sizes": {
+        "2021-10/r00": 2885,
+        "2021-10/r010": 2091,
+        "2021-10/r0110": 1749,
+        "2021-10/r0111": 2852,
+        "2021-10/r100": 1061,
+        "2021-10/r101": 726,
+        "2021-10/r11": 3034,
+        "2023-01/r00": 3993,
+        "2023-01/r010": 3080,
+        "2023-01/r0110": 2343,
+        "2023-01/r0111": 3489,
+        "2023-01/r100": 1401,
+        "2023-01/r101": 1543,
+        "2023-01/r11": 3694,
+        "2023-10/r00": 4501,
+        "2023-10/r010": 3425,
+        "2023-10/r0110": 2542,
+        "2023-10/r0111": 3720,
+        "2023-10/r100": 1584,
+        "2023-10/r101": 1620,
+        "2023-10/r11": 4190,
+        "2024-10/r00": 5083,
+        "2024-10/r010": 4083,
+        "2024-10/r0110": 2891,
+        "2024-10/r0111": 4109,
+        "2024-10/r100": 1767,
+        "2024-10/r101": 1682,
+        "2024-10/r11": 4566,
+        "2025-10/r00": 6193,
+        "2025-10/r010": 4811,
+        "2025-10/r0110": 3309,
+        "2025-10/r0111": 4536,
+        "2025-10/r100": 2174,
+        "2025-10/r101": 2488,
+        "2025-10/r11": 5975
+      }
+    },
+    "6": {
+      "origins": [
+        "2021-07",
+        "2022-07",
+        "2023-01",
+        "2023-07",
+        "2024-07",
+        "2025-07"
+      ],
+      "global_quartets": 6,
+      "local_quartets": 36,
+      "scalar_fits": 168,
+      "main": {
+        "global_quartets": 5,
+        "local_quartets": 30,
+        "scalar_fits": 140
+      },
+      "unsupported_local_requests": [],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2023,
+          "anchor": "2023-07",
+          "fit_origin": "2023-01",
+          "eval_keys": 2326,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 1618,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-07"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r101"
+          ],
+          "gate_support_current_keys": 489
+        },
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-07",
+          "eval_keys": 4295,
+          "global_fit_keys": 22477,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2023-01",
+            "2023-02",
+            "2023-03",
+            "2023-04",
+            "2023-05",
+            "2023-06"
+          ],
+          "historical_origins": [
+            "2022-07"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r100",
+            "r101"
+          ],
+          "gate_support_current_keys": 835
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-07",
+          "eval_keys": 9792,
+          "global_fit_keys": 27145,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2024-01",
+            "2024-02",
+            "2024-03",
+            "2024-04",
+            "2024-05",
+            "2024-06"
+          ],
+          "historical_origins": [
+            "2023-07"
+          ],
+          "gate_support_regions": [
+            "r00"
+          ],
+          "gate_support_current_keys": 1107
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-07",
+          "eval_keys": 4092,
+          "global_fit_keys": 34003,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2025-01",
+            "2025-02",
+            "2025-03",
+            "2025-04",
+            "2025-05",
+            "2025-06"
+          ],
+          "historical_origins": [
+            "2024-07"
+          ],
+          "gate_support_regions": [
+            "r00",
+            "r01",
+            "r100",
+            "r101",
+            "r110",
+            "r111"
+          ],
+          "gate_support_current_keys": 1829
+        }
+      ],
+      "global_pool_sizes": {
+        "2021-07": 13904,
+        "2022-07": 17536,
+        "2023-01": 21281,
+        "2023-07": 22477,
+        "2024-07": 27145,
+        "2025-07": 34003
+      },
+      "local_pool_sizes": {
+        "2021-07/r00": 2914,
+        "2021-07/r01": 5687,
+        "2021-07/r100": 967,
+        "2021-07/r101": 653,
+        "2021-07/r110": 862,
+        "2021-07/r111": 1950,
+        "2022-07/r00": 3814,
+        "2022-07/r01": 7021,
+        "2022-07/r100": 1245,
+        "2022-07/r101": 992,
+        "2022-07/r110": 1072,
+        "2022-07/r111": 2358,
+        "2023-01/r00": 4290,
+        "2023-01/r01": 8545,
+        "2023-01/r100": 1386,
+        "2023-01/r101": 1511,
+        "2023-01/r110": 1108,
+        "2023-01/r111": 2703,
+        "2023-07/r00": 4595,
+        "2023-07/r01": 8546,
+        "2023-07/r100": 1483,
+        "2023-07/r101": 1572,
+        "2023-07/r110": 1188,
+        "2023-07/r111": 2838,
+        "2024-07/r00": 5189,
+        "2024-07/r01": 9990,
+        "2024-07/r100": 1653,
+        "2024-07/r101": 1628,
+        "2024-07/r110": 1229,
+        "2024-07/r111": 3242,
+        "2025-07/r00": 5942,
+        "2025-07/r01": 11473,
+        "2025-07/r100": 1981,
+        "2025-07/r101": 2070,
+        "2025-07/r110": 1551,
+        "2025-07/r111": 3971
+      }
+    },
+    "12": {
+      "origins": [
+        "2021-01",
+        "2022-01",
+        "2023-01",
+        "2024-01",
+        "2025-01"
+      ],
+      "global_quartets": 5,
+      "local_quartets": 44,
+      "scalar_fits": 196,
+      "main": {
+        "global_quartets": 4,
+        "local_quartets": 35,
+        "scalar_fits": 156
+      },
+      "unsupported_local_requests": [
+        {
+          "fit_origin": "2021-01",
+          "region": "r0011",
+          "keys_areas_months": [
+            443,
+            164,
+            27
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "period": "main",
+          "year": 2024,
+          "anchor": "2024-01",
+          "fit_origin": "2023-01",
+          "eval_keys": 4295,
+          "global_fit_keys": 21281,
+          "diagnostic_keys": 2631,
+          "historical_dates": [
+            "2022-07",
+            "2022-08",
+            "2022-09",
+            "2022-10",
+            "2022-11",
+            "2022-12"
+          ],
+          "historical_origins": [
+            "2021-01"
+          ],
+          "gate_support_regions": [
+            "r0001",
+            "r101"
+          ],
+          "gate_support_current_keys": 236
+        },
+        {
+          "period": "main",
+          "year": 2025,
+          "anchor": "2025-01",
+          "fit_origin": "2024-01",
+          "eval_keys": 9792,
+          "global_fit_keys": 25959,
+          "diagnostic_keys": 5273,
+          "historical_dates": [
+            "2023-07",
+            "2023-08",
+            "2023-09",
+            "2023-10",
+            "2023-11",
+            "2023-12"
+          ],
+          "historical_origins": [
+            "2022-01"
+          ],
+          "gate_support_regions": [
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 1773
+        },
+        {
+          "period": "supplementary",
+          "year": 2026,
+          "anchor": "2026-01",
+          "fit_origin": "2025-01",
+          "eval_keys": 4092,
+          "global_fit_keys": 30783,
+          "diagnostic_keys": 1829,
+          "historical_dates": [
+            "2024-06",
+            "2024-07",
+            "2024-08",
+            "2024-09",
+            "2024-10",
+            "2024-11"
+          ],
+          "historical_origins": [
+            "2023-01"
+          ],
+          "gate_support_regions": [
+            "r100",
+            "r11"
+          ],
+          "gate_support_current_keys": 901
+        }
+      ],
+      "global_pool_sizes": {
+        "2021-01": 13189,
+        "2022-01": 16366,
+        "2023-01": 21281,
+        "2024-01": 25959,
+        "2025-01": 30783
+      },
+      "local_pool_sizes": {
+        "2021-01/r0000": 889,
+        "2021-01/r0001": 637,
+        "2021-01/r0010": 736,
+        "2021-01/r010": 2198,
+        "2021-01/r011": 3418,
+        "2021-01/r100": 840,
+        "2021-01/r101": 592,
+        "2021-01/r11": 2609,
+        "2022-01/r0000": 1117,
+        "2022-01/r0001": 837,
+        "2022-01/r0010": 949,
+        "2022-01/r0011": 651,
+        "2022-01/r010": 2882,
+        "2022-01/r011": 4081,
+        "2022-01/r100": 1108,
+        "2022-01/r101": 681,
+        "2022-01/r11": 3122,
+        "2023-01/r0000": 1337,
+        "2023-01/r0001": 1125,
+        "2023-01/r0010": 1131,
+        "2023-01/r0011": 855,
+        "2023-01/r010": 3679,
+        "2023-01/r011": 4828,
+        "2023-01/r100": 1311,
+        "2023-01/r101": 1536,
+        "2023-01/r11": 3741,
+        "2024-01/r0000": 1522,
+        "2024-01/r0001": 1321,
+        "2024-01/r0010": 1278,
+        "2024-01/r0011": 1034,
+        "2024-01/r010": 4462,
+        "2024-01/r011": 5498,
+        "2024-01/r100": 1519,
+        "2024-01/r101": 1633,
+        "2024-01/r11": 4310,
+        "2025-01/r0000": 1700,
+        "2025-01/r0001": 1517,
+        "2025-01/r0010": 1469,
+        "2025-01/r0011": 1164,
+        "2025-01/r010": 5274,
+        "2025-01/r011": 6162,
+        "2025-01/r100": 1809,
+        "2025-01/r101": 1738,
+        "2025-01/r11": 4856
+      }
+    }
+  },
+  "total_scalar_fits": 724,
+  "disk_free_gb": 300.2,
+  "contract": "ipcch-yearly-xgb-contract-v1.0"
+}

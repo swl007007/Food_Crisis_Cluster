@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "store": {
+    "requests": 747,
+    "hits": 566,
+    "fits": 181,
+    "failed": 0
+  },
+  "seconds": 591.4,
+  "horizons": {
+    "1": {
+      "recipe": "G1L2",
+      "blocks": 4,
+      "folds": 39,
+      "scored_folds": 36,
+      "prediction_rows": 21414,
+      "local_rows": 407,
+      "diagnostic_rows": 11772,
+      "predictions_sha256": "7f6b00e1234c7d705c5439e4d36a336f2361d347d0c0d3870a629143d87230a6"
+    },
+    "3": {
+      "recipe": "G3L2",
+      "blocks": 4,
+      "folds": 37,
+      "scored_folds": 34,
+      "prediction_rows": 21011,
+      "local_rows": 1237,
+      "diagnostic_rows": 11695,
+      "predictions_sha256": "43fdae3191e95484b7bdf79d09da9af88cb2c4975bd537d1ae0a92c3686c8345"
+    },
+    "6": {
+      "recipe": "G4L2",
+      "blocks": 4,
+      "folds": 34,
+      "scored_folds": 31,
+      "prediction_rows": 20505,
+      "local_rows": 341,
+      "diagnostic_rows": 11351,
+      "predictions_sha256": "641af8a1de6dfa092ab435b51b8da92afc824f4f30c2c93fff5fd6afc8e5e703"
+    },
+    "12": {
+      "recipe": "G2L2",
+      "blocks": 3,
+      "folds": 28,
+      "scored_folds": 25,
+      "prediction_rows": 18179,
+      "local_rows": 56,
+      "diagnostic_rows": 9733,
+      "predictions_sha256": "73da2940517ee4b36bc02629c7dbe159c68a4966ffe45cafe865a537a893e03f"
+    }
+  }
+}
+exit 0 wall 593s

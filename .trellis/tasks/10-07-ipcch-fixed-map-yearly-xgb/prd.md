@@ -58,8 +58,8 @@ Design: `design.md`; ordered plan: `implement.md`; workload and reuse evidence: 
 - [x] Global/local decay weights use the same block origin and absolute scale, without local renormalization.
 - [x] Scientific choices R1–R13 are resolved; complete design/plan specifies cutoffs, map-conditioning limits, comparators and delivery checks (R4, R6, R14–R15).
 - [x] User approves the complete final planning summary, including execution responsibility and P0 checkpoint (R6); approval quoted above.
-- [ ] Implementation passes relevant synthetic checks; preflight reproduces 15 current blocks, 724 scalar fits, frozen inputs and exact supported/evaluation counts (R9–R15).
-- [ ] Main full-cohort keys are 17,322/16,919/16,413/14,087 for H1/H3/H6/H12, and 2026 has 4,092 per H; all 138 calendar folds, including 12 empty folds, remain represented (R2, R9).
-- [ ] Main ungated local diagnostic keys are 9,943/9,866/9,522/7,904, with 1,829 per H in 2026; statistical fallback retains full-cohort rows and gates remain fixed within each block (R10–R12).
-- [ ] Approved runs deliver keyed predictions, fitted-model/weight provenance, matched metrics, bootstrap evidence, passing saved-model replay and complete final inventory, including negative outcomes (R5, R13–R15).
-- [ ] Results and limitations are documented for discussion without attributing pooled protocol changes to geography (R2, R14).
+- [x] Implementation passes relevant synthetic checks; preflight reproduces 15 current blocks, 724 scalar fits, frozen inputs and exact supported/evaluation counts (R9–R15).
+- [x] Main full-cohort keys are 17,322/16,919/16,413/14,087 for H1/H3/H6/H12, and 2026 has 4,092 per H; all 138 calendar folds, including 12 empty folds, remain represented (R2, R9).
+- [x] Main ungated local diagnostic keys are 9,943/9,866/9,522/7,904, with 1,829 per H in 2026; statistical fallback retains full-cohort rows and gates remain fixed within each block (R10–R12).
+- [x] Approved runs deliver keyed predictions, fitted-model/weight provenance, matched metrics, bootstrap evidence, passing saved-model replay and complete final inventory, including negative outcomes (R5, R13–R15).
+- [x] Results and limitations are documented for discussion without attributing pooled protocol changes to geography (R2, R14).
