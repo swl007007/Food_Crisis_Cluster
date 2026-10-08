@@ -20,6 +20,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Local Forecasting Experiments](./local-forecasting-experiments.md) | Isolated no-leak experiment contracts | Active |
+| [Local MLflow Import](./local-mlflow-import.md) | Importing completed runs into the local MLflow store: inventory, cohort identity, reconcile, verify, backup | Active |
 
 ---
 

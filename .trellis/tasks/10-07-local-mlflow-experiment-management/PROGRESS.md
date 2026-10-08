@@ -27,8 +27,9 @@ Operational log only; approval authority is the supervisor (wN:p1) and the user.
    Fix during planning: one route-reason key contained `:`; leaf names are sanitised to
    `_` (source path kept in provenance). Yearly `inputs/source/**` (3 staged P6 config
    files, 42 KB) added to the archived set.
-6. [~] Import. P6 (8ad47dc9…, 13 records) and MLP (5ba96181…, 53 records) imported and
-   deep-verified at import. Paused after MLP per supervisor checkpoint review of 8c88f48;
+6. [x] Import (completed in step 7). P6 (8ad47dc9…, 13 records) and MLP (5ba96181…, 53
+   records) were imported and deep-verified first, then paused after MLP per the supervisor
+   checkpoint review of 8c88f48;
    an empty yearly parent shell (c19cd675…, in_progress, 0 metrics/params/artifacts) was
    created in the 1 s before the kill.
 6a. [x] Supervisor fixed list (evidence/supervisor-checkpoint-8c88f48.md), commit a9a2598:
@@ -43,7 +44,9 @@ Operational log only; approval authority is the supervisor (wN:p1) and the user.
    (0 metric/param/source/model changes). Applied: reconcile 22:53-22:59 (27 records:
    P6+MLP parents, 24 MLP children, yearly shell rebound), import 23:00-23:10 (yearly
    resumed, climate/window/split created), deep verify 23:10-23:19 (126 records, 20,384
-   child metrics, 1,987 artifacts, 8.33 GB, 44,203 tar members), verified no-op import
+   child metrics, 1,987 artifacts, 8,326,780,278 bytes downloaded and hashed, 44,203 tar
+   members; the backup's 8,334,768,125 bytes / 2,039 files additionally include the 52
+   superseded/ reconciliation files, which deep verify does not download), verified no-op import
    23:19-23:26 (126 noop, 0 writes). API: 126 runs, all complete/FINISHED, no duplicate
    source keys. Windows curl.exe download of window models.tar via localhost:5000:
    bytes and SHA (WSL + PowerShell) match. UI rendered in headless Edge (screenshots).
@@ -51,4 +54,6 @@ Operational log only; approval authority is the supervisor (wN:p1) and the user.
    restore check through an independent server on port 5001 (7 downloads matched).
    env-after.json: all three frozen environments identical to env-before.json.
    Cache-free rehash of 46,468 source files: all six plan fingerprints unchanged.
-9. [ ] Final evidence sent to supervisor; hold close/push/merge for acceptance.
+9. [x] Supervisor ACCEPTED efc5d11 (evidence/supervisor-acceptance-efc5d11.md; independent
+   tests 22/22 and live check in evidence/final/supervisor-final-*). Spec captured in
+   .trellis/spec/backend/local-mlflow-import.md. Controller close next; no push/merge.

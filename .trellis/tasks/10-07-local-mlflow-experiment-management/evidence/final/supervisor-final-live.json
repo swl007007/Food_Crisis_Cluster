@@ -1,0 +1,52 @@
+{
+  "head": "efc5d11",
+  "health": "OK",
+  "records": 126,
+  "kinds": {
+    "evaluation_view": 120,
+    "source_run": 6
+  },
+  "metrics": 20528,
+  "all_complete_finished": true,
+  "source_keys_unique": true,
+  "env_packages_unchanged": true,
+  "downloaded_parent_manifests_match_backup": [
+    {
+      "family": "split2024_sensitivity",
+      "run_id": "116eadde903a4f19a6597c19cdde575f",
+      "manifest_sha256": "742183cfd6572ec906512fb66c45020bb722074c3888a7c3747c67aef42c7f9c"
+    },
+    {
+      "family": "history_window_sensitivity",
+      "run_id": "13b03ec1429e4a5f81e61eefe7b20a7b",
+      "manifest_sha256": "79da332addab685bdc23836fe7586ccd9ff5f1fe54d800eb94c67d0823d20a7d"
+    },
+    {
+      "family": "climate_perturbation",
+      "run_id": "a3cb329b734242a096a4c4f6ba855df2",
+      "manifest_sha256": "327dbf9c1a2a70b8fac708747c9f7b1ce1ce31d01fe64b58cc7faaf554248771"
+    },
+    {
+      "family": "yearly_geoxgb",
+      "run_id": "c19cd67502184f49a8d7fb800365f56b",
+      "manifest_sha256": "108bf2d0b2f118a7ad23df66defdae682668785e994607ada5256803ac00b3eb"
+    },
+    {
+      "family": "mlp_fixed_map",
+      "run_id": "5ba961810a214cbfa0138eb1dd1cf3c9",
+      "manifest_sha256": "66b315e22377efde9ae85dadb4ef8ed9467b70a4039aa80f6b02256e8ac51b15"
+    },
+    {
+      "family": "p6_geoxgb",
+      "run_id": "8ad47dc9cde2438d98b7bd50903dfe6a",
+      "manifest_sha256": "12960df0641da1992271076b63fd59b1ac35998089c1094cd947e36495fd6988"
+    }
+  ],
+  "executor_deep_verify_totals": {
+    "records": 126,
+    "artifacts": 1987,
+    "downloaded_bytes": 8326780278,
+    "child_metrics": 20384,
+    "tar_members": 44203
+  }
+}
