@@ -1,0 +1,878 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "8406c44ba3467962657a71bcf2b6ba2971330c2cde226eff223f0486b20d4c86"
+ },
+ "excluded": [
+  {
+   "bytes": 3228,
+   "path": "replay/predict/h01/block_ledger.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "a20498318dd76fcec6832dc27b354a625f6a54ea9c9295fb8a58079a4ac39050",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/block_ledger.json"
+  },
+  {
+   "bytes": 2295,
+   "path": "replay/predict/h01/fold_ledger.csv",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "3620eb6f4197c555b413b49ae3f54ea13d6e261ce98a01bcbef673b295d147d6",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/fold_ledger.csv"
+  },
+  {
+   "bytes": 29626,
+   "path": "replay/predict/h01/gate_decisions.jsonl",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "08f51eda1800891f998b184e58a59b51cc2552cf540f691fdce17f9c3b71e6df",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/gate_decisions.jsonl"
+  },
+  {
+   "bytes": 144783,
+   "path": "replay/predict/h01/pairs_main_h01_2023.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "07832fb02e8fefb6bef37f86522c5192bcbe608fe866323bdb999d5b33df6d05",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/pairs_main_h01_2023.csv.gz"
+  },
+  {
+   "bytes": 127673,
+   "path": "replay/predict/h01/pairs_main_h01_2024.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "a6bc7a96bcc3772cc419c913c712a516ff9220506a693b93b94e3e71e0e6b997",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/pairs_main_h01_2024.csv.gz"
+  },
+  {
+   "bytes": 92427,
+   "path": "replay/predict/h01/pairs_main_h01_2025.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "2388f94de572fdcfbfb81864ce9d647295e81a2c477b749f0e3bdf18bc4d8c96",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/pairs_main_h01_2025.csv.gz"
+  },
+  {
+   "bytes": 203391,
+   "path": "replay/predict/h01/pairs_supp_h01_2026.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "0353a72de2a1c9f3ffaff81eaccb327de51ce3b25240c6ca61b1cdbcc068b610",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/pairs_supp_h01_2026.csv.gz"
+  },
+  {
+   "bytes": 1851216,
+   "path": "replay/predict/h01/predictions.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "7f6b00e1234c7d705c5439e4d36a336f2361d347d0c0d3870a629143d87230a6",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/predictions.csv.gz"
+  },
+  {
+   "bytes": 7452,
+   "path": "replay/predict/h01/weight_stats.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "91e860a0a3d728266729d676c83129fee094858f8b6027341c0c975d622eda49",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h01/weight_stats.json"
+  },
+  {
+   "bytes": 3180,
+   "path": "replay/predict/h03/block_ledger.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "31eeaa77b00b671cd30a775ecc3ddac19858e08f41a0417c029ff00114bb6c5c",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/block_ledger.json"
+  },
+  {
+   "bytes": 2184,
+   "path": "replay/predict/h03/fold_ledger.csv",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "eaeeb875d2a276a3274a2b5cddcaef776ebbbf730a50eef1537000c8b4089fe3",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/fold_ledger.csv"
+  },
+  {
+   "bytes": 23014,
+   "path": "replay/predict/h03/gate_decisions.jsonl",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "4ddcee4391ce943933c16c4f4d40a6fbb79448a53712084bf995ea0fd1861e54",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/gate_decisions.jsonl"
+  },
+  {
+   "bytes": 147459,
+   "path": "replay/predict/h03/pairs_main_h03_2023.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "11a0b550f4ee8035aca07b17b81bd923b9aab3045b53808f9f4cdbf6353709b8",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/pairs_main_h03_2023.csv.gz"
+  },
+  {
+   "bytes": 142813,
+   "path": "replay/predict/h03/pairs_main_h03_2024.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "ff8802e82c4647acfbb7a19f31f2cd394bda49021c438611bed4b62e3a8f3113",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/pairs_main_h03_2024.csv.gz"
+  },
+  {
+   "bytes": 111639,
+   "path": "replay/predict/h03/pairs_main_h03_2025.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "a0077d6edd95f032a9552b7eeaba5cb192d771c89acc31a76557b87b0cdf5603",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/pairs_main_h03_2025.csv.gz"
+  },
+  {
+   "bytes": 198942,
+   "path": "replay/predict/h03/pairs_supp_h03_2026.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "307c7dac51a005962a99b22f4096f6cd0839e5d2ac606342176d3d45b1ed3f57",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/pairs_supp_h03_2026.csv.gz"
+  },
+  {
+   "bytes": 1819085,
+   "path": "replay/predict/h03/predictions.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "43fdae3191e95484b7bdf79d09da9af88cb2c4975bd537d1ae0a92c3686c8345",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/predictions.csv.gz"
+  },
+  {
+   "bytes": 5971,
+   "path": "replay/predict/h03/weight_stats.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "577cb8344a1a75f9e65fa413af17eddf4275d5bdc712a25745339e5255930cf9",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h03/weight_stats.json"
+  },
+  {
+   "bytes": 3112,
+   "path": "replay/predict/h06/block_ledger.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "7783de5ca311625a19fde93ae8b0d94577e41d6046b6ec4d8adde373a2b9c913",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/block_ledger.json"
+  },
+  {
+   "bytes": 2016,
+   "path": "replay/predict/h06/fold_ledger.csv",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "3baeeb662f3ea2734bf435f65b96cd0a59d2486e4958543d0a19556e57525108",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/fold_ledger.csv"
+  },
+  {
+   "bytes": 19718,
+   "path": "replay/predict/h06/gate_decisions.jsonl",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "a0603246437411830731a89115018ea06007fb0957e4553fa34ce5eb26c019b0",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/gate_decisions.jsonl"
+  },
+  {
+   "bytes": 163372,
+   "path": "replay/predict/h06/pairs_main_h06_2023.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "5bf2c8ec49532b702deba5e51d58f2b32cc12aa5ee644cdf1b0c406aba09dc1f",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/pairs_main_h06_2023.csv.gz"
+  },
+  {
+   "bytes": 145310,
+   "path": "replay/predict/h06/pairs_main_h06_2024.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "ee7b916bc6021798225c721da8ddd295e2bee82683b2d748bfdf3bc51e708953",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/pairs_main_h06_2024.csv.gz"
+  },
+  {
+   "bytes": 102218,
+   "path": "replay/predict/h06/pairs_main_h06_2025.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "1ce1678667907d54af51ec0ba574817d48f4ff93e1681f72c106153a149c69ea",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/pairs_main_h06_2025.csv.gz"
+  },
+  {
+   "bytes": 218360,
+   "path": "replay/predict/h06/pairs_supp_h06_2026.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "4d4d24baa3f8a225b879264aa9a7320ae258c0bd81fea385d40febb9d4193995",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/pairs_supp_h06_2026.csv.gz"
+  },
+  {
+   "bytes": 1943326,
+   "path": "replay/predict/h06/predictions.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "641af8a1de6dfa092ab435b51b8da92afc824f4f30c2c93fff5fd6afc8e5e703",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/predictions.csv.gz"
+  },
+  {
+   "bytes": 6247,
+   "path": "replay/predict/h06/weight_stats.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "d0b9c63eb279a5b708c8d6a90a8ed613983485dd7b9e6ef7e3258523199d63d6",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h06/weight_stats.json"
+  },
+  {
+   "bytes": 2398,
+   "path": "replay/predict/h12/block_ledger.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "1a55334864876317193762b8a3e990b2f16af58537936d710039f52628c3897f",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/block_ledger.json"
+  },
+  {
+   "bytes": 1709,
+   "path": "replay/predict/h12/fold_ledger.csv",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "e24187ed8934df7e4ab1593a4853761427a8720da76d40aadb20b7f7076c9e54",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/fold_ledger.csv"
+  },
+  {
+   "bytes": 22169,
+   "path": "replay/predict/h12/gate_decisions.jsonl",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "8b8c3ceb8ed0b33f9b10fa6cebc967d0f2aaa052e15245227a3e1fc5270c37cc",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/gate_decisions.jsonl"
+  },
+  {
+   "bytes": 158076,
+   "path": "replay/predict/h12/pairs_main_h12_2024.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "33d6e0ada643282868bef49354a393fead7fa707bc1fc942b59a2e130937a118",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/pairs_main_h12_2024.csv.gz"
+  },
+  {
+   "bytes": 118772,
+   "path": "replay/predict/h12/pairs_main_h12_2025.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "8fa062020407bd97d943bbedf87e84c299c7654296874cb7a42dbb273fc94522",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/pairs_main_h12_2025.csv.gz"
+  },
+  {
+   "bytes": 111058,
+   "path": "replay/predict/h12/pairs_supp_h12_2026.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "a53bb9f5cf3005d10f07a612a44f8606e1d24a44a48ad97c99e92527da21246e",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/pairs_supp_h12_2026.csv.gz"
+  },
+  {
+   "bytes": 1710927,
+   "path": "replay/predict/h12/predictions.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "73da2940517ee4b36bc02629c7dbe159c68a4966ffe45cafe865a537a893e03f",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/predictions.csv.gz"
+  },
+  {
+   "bytes": 7282,
+   "path": "replay/predict/h12/weight_stats.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "8a0484235e0037450c53292b7228157f3660357a7454e57d7a54de9c294f4131",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/h12/weight_stats.json"
+  },
+  {
+   "bytes": 212773,
+   "path": "replay/predict/model_requests.jsonl",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "0810809217186fc020a352a0bd3eb893d64f392fb8e63e88e9b54360b653a01f",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/model_requests.jsonl"
+  },
+  {
+   "bytes": 3956,
+   "path": "replay/predict/predict-summary.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "9f087f4d5a1237a9b9cb20d9f9395b9e17b6b36da8fb5194efc76d26dd835c7d",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/predict/predict-summary.json"
+  },
+  {
+   "bytes": 103957,
+   "path": "replay/report/bootstrap_h01_geo_minus_persistence_E_persist.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "fbafa31f66285d25596c8f73e7ed353c26e842cb9bc9fca6afb1bec10c225600",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h01_geo_minus_persistence_E_persist.csv.gz"
+  },
+  {
+   "bytes": 105376,
+   "path": "replay/report/bootstrap_h01_geo_minus_pool_E_all.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "c5d8a6190db4b19b13a538c19e990fa3e6cecb3dd2ce7a5e65b779efff49477e",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h01_geo_minus_pool_E_all.csv.gz"
+  },
+  {
+   "bytes": 104041,
+   "path": "replay/report/bootstrap_h03_geo_minus_persistence_E_persist.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "d782c8c5165aa00858ca795b9e4a0fbb6e1f3c4b7dccfce5484d05a88911f489",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h03_geo_minus_persistence_E_persist.csv.gz"
+  },
+  {
+   "bytes": 105443,
+   "path": "replay/report/bootstrap_h03_geo_minus_pool_E_all.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "80d37bd1f4e71987d5ac218c7b1f9a6d51a8350ab3cac239bd89589039ce8fd7",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h03_geo_minus_pool_E_all.csv.gz"
+  },
+  {
+   "bytes": 104204,
+   "path": "replay/report/bootstrap_h06_geo_minus_persistence_E_persist.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "a79dd7949e3af9f29c0b0f9415f119d8ae2a4a154826f597e8e334fd04b57587",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h06_geo_minus_persistence_E_persist.csv.gz"
+  },
+  {
+   "bytes": 104891,
+   "path": "replay/report/bootstrap_h06_geo_minus_pool_E_all.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "91683eef19af7bbc2adb5e7e901670d9c7efa2a86ea0f449831bc851e23423b3",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h06_geo_minus_pool_E_all.csv.gz"
+  },
+  {
+   "bytes": 103060,
+   "path": "replay/report/bootstrap_h12_geo_minus_persistence_E_persist.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "e937270d875b788c1c287f34780c71c0f6a8acdef15b6ce9659c41cead020687",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h12_geo_minus_persistence_E_persist.csv.gz"
+  },
+  {
+   "bytes": 92244,
+   "path": "replay/report/bootstrap_h12_geo_minus_pool_E_all.csv.gz",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "679dbcc6e04825e9c742ab13cb176b73e21c59a4949af922b61ddf3d1bb22eb9",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/bootstrap_h12_geo_minus_pool_E_all.csv.gz"
+  },
+  {
+   "bytes": 688897,
+   "path": "replay/report/report.json",
+   "reason": "replay re-execution duplicate (verified by replay.json)",
+   "sha256": "9c0655ab9ac9afb23f6bfeeb1c37e94397f2bd0d032901f12653703b5c280eda",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007/replay/report/report.json"
+  }
+ ],
+ "extras_manifest_sha256": "87357311c00e3038dea0be474966aa115a8757e8c964b24277d7dda804cc4985",
+ "family": "yearly_geoxgb",
+ "fingerprint": "d3981815effb5811cecc0f3982f361dd3f3532926fde075a9d052891f9093d39",
+ "include_manifest_sha256": "61703a51eab573fd5338516573efe10720fd6576b8f8b417977bdcf5e1e71d5e",
+ "inventory": {
+  "keys": {
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 14,
+    "reference_occurrences": 14,
+    "unique_values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "predict",
+     "replay"
+    ],
+    "matched": 1448,
+    "reference_occurrences": 1448,
+    "unique_values": 724
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "replay",
+     "report"
+    ],
+    "matched": 16,
+    "reference_occurrences": 16,
+    "unique_values": 8
+   },
+   "fit_source_sha256": {
+    "decision": "informational: hash over the frozen fit-source inventory; no single-file form",
+    "exempted": 0,
+    "files": [
+     "predict",
+     "preflight",
+     "replay"
+    ],
+    "matched": 0,
+    "reference_occurrences": 3,
+    "unique_values": 1
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     7
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "predict",
+     "replay"
+    ],
+    "matched": 1494,
+    "reference_occurrences": 1494,
+    "unique_values": 181
+   },
+   "manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "preflight"
+    ],
+    "matched": 1,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs",
+     "preflight"
+    ],
+    "matched": 44,
+    "reference_occurrences": 44,
+    "unique_values": 36
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 0,
+    "reference_occurrences": 2,
+    "unique_values": 1
+   },
+   "predict_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "replay",
+     "report"
+    ],
+    "matched": 2,
+    "reference_occurrences": 2,
+    "unique_values": 2
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs",
+     "predict",
+     "replay",
+     "report"
+    ],
+    "matched": 20,
+    "reference_occurrences": 20,
+    "unique_values": 8
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs",
+     "preflight"
+    ],
+    "matched": 14,
+    "reference_occurrences": 14,
+    "unique_values": 1
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 0,
+    "reference_occurrences": 2,
+    "unique_values": 1
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "inputs"
+    ],
+    "matched": 8,
+    "reference_occurrences": 8,
+    "unique_values": 4
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 3,
+    "files": [
+     "inputs"
+    ],
+    "matched": 36,
+    "reference_occurrences": 39,
+    "unique_values": 39
+   }
+  },
+  "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 181,
+   "kind": "xgb",
+   "ledger_files": 2,
+   "ledger_reference_occurrences": 1494,
+   "unique_boosters_checked": 724,
+   "unique_identities": 181
+  },
+  "name_hash_maps": {},
+  "path_inventories": {
+   "inputs/staging-manifest.json": {
+    "entries": 36,
+    "matched": 36
+   }
+  },
+  "sources_scanned": 47,
+  "status": "reconciled"
+ },
+ "report_sha256": "3246115ed39d013959a4c165b09d01869eef6e170d67ea0892503d9bababd4a2",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-yearly-xgb-runs/yearly-formal-20261007",
+ "shared": [
+  {
+   "bytes": 191615288,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/X_rich561_h01.npy",
+   "path": "inputs/run/prepared/X_rich561_h01.npy",
+   "sha256": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219"
+  },
+  {
+   "bytes": 191615288,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/X_rich561_h03.npy",
+   "path": "inputs/run/prepared/X_rich561_h03.npy",
+   "sha256": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0"
+  },
+  {
+   "bytes": 191615288,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/X_rich561_h06.npy",
+   "path": "inputs/run/prepared/X_rich561_h06.npy",
+   "sha256": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c"
+  },
+  {
+   "bytes": 191615288,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/X_rich561_h12.npy",
+   "path": "inputs/run/prepared/X_rich561_h12.npy",
+   "sha256": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0"
+  },
+  {
+   "bytes": 523,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/coverage_2026.csv",
+   "path": "inputs/run/prepared/coverage_2026.csv",
+   "sha256": "104f2e9a25cd622946ec693981a7843773f8481aa43e78b3de4528d6fa196b32"
+  },
+  {
+   "bytes": 23704,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/feature_order.csv",
+   "path": "inputs/run/prepared/feature_order.csv",
+   "sha256": "c0148ff83fe1f87cedc4d7f638da5429b33af1a377d2f0c69d3405537507e5fb"
+  },
+  {
+   "bytes": 9423,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/fold_calendar.csv",
+   "path": "inputs/run/prepared/fold_calendar.csv",
+   "sha256": "061c44f88dbc37a89bf1b2cc19a2047666663fee5aa706b0a90fbd18c06d198c"
+  },
+  {
+   "bytes": 661342,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/keys_h01.csv.gz",
+   "path": "inputs/run/prepared/keys_h01.csv.gz",
+   "sha256": "414cba066f9953e7b70e2f586450537621ea312ad80a9fbc2b84ad367f2e49cd"
+  },
+  {
+   "bytes": 661568,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/keys_h03.csv.gz",
+   "path": "inputs/run/prepared/keys_h03.csv.gz",
+   "sha256": "5e44eb8359a4910a5d9d94b80986d3a44faf123d89ebdf2b30e5389bf1267f7a"
+  },
+  {
+   "bytes": 640168,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/keys_h06.csv.gz",
+   "path": "inputs/run/prepared/keys_h06.csv.gz",
+   "sha256": "d325da25a69399b496a33b1f21f3fb2fdd24f387b3074f399e5f2836444495d6"
+  },
+  {
+   "bytes": 648650,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/keys_h12.csv.gz",
+   "path": "inputs/run/prepared/keys_h12.csv.gz",
+   "sha256": "9755df742b15d5b1556671633c2fa80908d8b9b7ffee9c9192b895aa64bba4bd"
+  },
+  {
+   "bytes": 6906,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/prepared-manifest.json",
+   "path": "inputs/run/prepared/prepared-manifest.json",
+   "sha256": "d4cb9bfd773e84c22ccafba10e79258a4adda8817e55131260a9414f7c3cac32"
+  },
+  {
+   "bytes": 66643,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/stage1_split.csv.gz",
+   "path": "inputs/run/prepared/stage1_split.csv.gz",
+   "sha256": "3e076c66c1c9ee6cc0aec0d4955db610dc35fe8b3d279bd4b86b3a88f7910928"
+  },
+  {
+   "bytes": 6882306,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/target_ledger.csv.gz",
+   "path": "inputs/run/prepared/target_ledger.csv.gz",
+   "sha256": "4eed1792a65a1da1d05220a296e242311422761177dc31a202543c76cbf81ad8"
+  },
+  {
+   "bytes": 2636368,
+   "parent": "p6_geoxgb",
+   "parent_path": "prepared/target_ledger_valid.csv.gz",
+   "path": "inputs/run/prepared/target_ledger_valid.csv.gz",
+   "sha256": "21d7701fe60fb9ed3084c34dc7852a9ce56e312c78587238179c5ea8ef63e717"
+  },
+  {
+   "bytes": 11628,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_h01.json",
+   "path": "inputs/run/stage1/frozen_h01.json",
+   "sha256": "2d40675c6f27fd45d6b22ebaa8e61bfcd2d31e342b04ba7b4431053c91f36caa"
+  },
+  {
+   "bytes": 10590,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_h03.json",
+   "path": "inputs/run/stage1/frozen_h03.json",
+   "sha256": "08ff0afa30a656b5a47ac9800477785d55d9e5680c87399b26d967416666b80f"
+  },
+  {
+   "bytes": 10531,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_h06.json",
+   "path": "inputs/run/stage1/frozen_h06.json",
+   "sha256": "5afaa039865145fa24f80ad4fdb6df4ee8e9c39d2a343a681002f684569c3e72"
+  },
+  {
+   "bytes": 11720,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_h12.json",
+   "path": "inputs/run/stage1/frozen_h12.json",
+   "sha256": "9e77b11dbb0ab4b479c6abf4396d409c01fb885a0903961930bba7c35e1dea03"
+  },
+  {
+   "bytes": 38148,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_map_h01.csv",
+   "path": "inputs/run/stage1/frozen_map_h01.csv",
+   "sha256": "77ef44da88ba551f2284f93ed780023ff86a7961818755b007beabb5f83f1b5b"
+  },
+  {
+   "bytes": 36771,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_map_h03.csv",
+   "path": "inputs/run/stage1/frozen_map_h03.csv",
+   "sha256": "16f354ff369c26637c8debf88990f57d2e8f0ebc16d26b53e3b975855f9d3051"
+  },
+  {
+   "bytes": 36383,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_map_h06.csv",
+   "path": "inputs/run/stage1/frozen_map_h06.csv",
+   "sha256": "04ffe8363e99fa88e6a559b61550b1d82f3441279b1d62c1e24adae2ab8ea7a2"
+  },
+  {
+   "bytes": 37822,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/frozen_map_h12.csv",
+   "path": "inputs/run/stage1/frozen_map_h12.csv",
+   "sha256": "f61be8bd90c9555d5815947d5ee6ee62181fcd0861e595ab4f8a5a9370ac5143"
+  },
+  {
+   "bytes": 4096,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/h01/selection.json",
+   "path": "inputs/run/stage1/h01/selection.json",
+   "sha256": "f70e0e747b6d43112c99a136dd6a6d95d528df9a53b47c475d9e27eb1f93999b"
+  },
+  {
+   "bytes": 4104,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/h03/selection.json",
+   "path": "inputs/run/stage1/h03/selection.json",
+   "sha256": "4b13f12a8893193bd3c87231430618607c0a432b2d8c766a11636331bdac1f2f"
+  },
+  {
+   "bytes": 4099,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/h06/selection.json",
+   "path": "inputs/run/stage1/h06/selection.json",
+   "sha256": "48c444aa48c591409bf4e837509d81a37f917a1bf185c7de182f5b3329816adc"
+  },
+  {
+   "bytes": 4103,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/h12/selection.json",
+   "path": "inputs/run/stage1/h12/selection.json",
+   "sha256": "411db67182fb828b4ebd4c6cc3dfc8dcd76d4f7cf8bc28e451915e2a22d434a3"
+  },
+  {
+   "bytes": 72128,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage1/stage1-summary.json",
+   "path": "inputs/run/stage1/stage1-summary.json",
+   "sha256": "e90bae9da897d65b34a59254cbf64ff66ea7b2745a55a025eea715e3c5da3488"
+  },
+  {
+   "bytes": 1150653,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage3/h01/predictions.csv.gz",
+   "path": "inputs/run/stage3/h01/predictions.csv.gz",
+   "sha256": "4c91986cc5d06a397a99d0d6fc40b915517929f6ba462370f2e45552f6f028d2"
+  },
+  {
+   "bytes": 1173944,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage3/h03/predictions.csv.gz",
+   "path": "inputs/run/stage3/h03/predictions.csv.gz",
+   "sha256": "7f9072d905023e08a98ef0cb8e46281799c26df7457117efa052c240fa711211"
+  },
+  {
+   "bytes": 1294499,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage3/h06/predictions.csv.gz",
+   "path": "inputs/run/stage3/h06/predictions.csv.gz",
+   "sha256": "983862bb38b53f367b5fefc47979564adf0f4df4517db51a05778ae34b125e94"
+  },
+  {
+   "bytes": 1152767,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage3/h12/predictions.csv.gz",
+   "path": "inputs/run/stage3/h12/predictions.csv.gz",
+   "sha256": "ea771dd2c02cd30eb3debc9b3e44c207ad73d0543b20bc5157e0472b305ec615"
+  },
+  {
+   "bytes": 1891,
+   "parent": "p6_geoxgb",
+   "parent_path": "stage3/stage3-summary.json",
+   "path": "inputs/run/stage3/stage3-summary.json",
+   "sha256": "1df8165ab8aa9e99e6e099af59440ace58c81ffe614cc553bf3dfb2c35d96c09"
+  }
+ ],
+ "source_run_id": "yearly-formal-20261007",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    1267,
+    320464656
+   ]
+  },
+  "child_metrics": 3847,
+  "child_na": 36,
+  "children": 16,
+  "excluded": [
+   46,
+   11381290
+  ],
+  "extras": [
+   64,
+   1378008
+  ],
+  "include": [
+   52,
+   11462929
+  ],
+  "shared": [
+   33,
+   783754630
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "1e5baca6fc88116badeb723f4c08ed9fca2797ab8b25f69a2cbf3df230ecacd0",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H1/pool/seed42",
+   "metrics": 354,
+   "na": 2
+  },
+  {
+   "fingerprint": "ef783e1ec0eb69af1db57da4b4eb818bff3589ad11324dc6e23bc8e5b43b82d0",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H1/local/seed42",
+   "metrics": 248,
+   "na": 8
+  },
+  {
+   "fingerprint": "36ff4c02349b679a802bbc7b59621b7c10f9d33f0f4aef1bc100933c1ce180ee",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H1/geo/seed42",
+   "metrics": 328,
+   "na": 0
+  },
+  {
+   "fingerprint": "d47f9acc80a555727547de0493f56e9c2346e0b739d94f4b409e56e2c2074e68",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H1/persistence/seednone",
+   "metrics": 58,
+   "na": 2
+  },
+  {
+   "fingerprint": "c84a57b8f606df5eb9306292b20584199fec559c14d316551e68b89fd8ac881c",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H3/pool/seed42",
+   "metrics": 355,
+   "na": 1
+  },
+  {
+   "fingerprint": "ef6ffd285fc4d11ba23a4776b14f99d0d0c0d3ad7056fc7853aa89258793684c",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H3/local/seed42",
+   "metrics": 250,
+   "na": 6
+  },
+  {
+   "fingerprint": "acf7c5772805d6805f42bb63c9f0350541a9e6e172900ccfbed24d0a4552f068",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H3/geo/seed42",
+   "metrics": 328,
+   "na": 0
+  },
+  {
+   "fingerprint": "5c80c376a8b645da13e6b0626f724248b30278e9ed9580e7b2087b41e6ef2706",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H3/persistence/seednone",
+   "metrics": 58,
+   "na": 2
+  },
+  {
+   "fingerprint": "c1bbb70a7d8196072baff6913225558e08dfd441817a6d76b36d49aa25ccc237",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H6/pool/seed42",
+   "metrics": 328,
+   "na": 0
+  },
+  {
+   "fingerprint": "90e7c5ddfc6f44497d36c92a51d375abbaee5c6d183956b33cb50b8c21df20e2",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H6/local/seed42",
+   "metrics": 206,
+   "na": 4
+  },
+  {
+   "fingerprint": "03bea48a5912881d3c6c3ab25279c4da98e68bfba007bf3dbbe70dcd62c2f870",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H6/geo/seed42",
+   "metrics": 324,
+   "na": 0
+  },
+  {
+   "fingerprint": "ee60538aa2690fe7327dbc5f3a134f8c635c5b81e45eb06f868daf0cb548b98f",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H6/persistence/seednone",
+   "metrics": 58,
+   "na": 2
+  },
+  {
+   "fingerprint": "8a91e7c9e1284fd4284b3d4d47e6341848e90fb5c75012ed3e5c2da442733990",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H12/pool/seed42",
+   "metrics": 341,
+   "na": 1
+  },
+  {
+   "fingerprint": "178dab316b4a8fce25b3ccd30a2266c8f612d2e3c416c269ae1d5c58160fbc9e",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H12/local/seed42",
+   "metrics": 227,
+   "na": 6
+  },
+  {
+   "fingerprint": "48c6482b502660be40558b9c8af8c5fb7efeeb6f40569603bcb7da7dafc2cf30",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H12/geo/seed42",
+   "metrics": 326,
+   "na": 0
+  },
+  {
+   "fingerprint": "8a19dfbd1fffd52af20b3a8d394f092cbd7127084a3798e8bc3876833c60614a",
+   "key": "yearly_geoxgb/yearly-formal-20261007/H12/persistence/seednone",
+   "metrics": 58,
+   "na": 2
+  }
+ ]
+}

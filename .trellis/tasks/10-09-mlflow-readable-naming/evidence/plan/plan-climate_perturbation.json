@@ -1,0 +1,318 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "c74e8e7a82a31139f6ecd4ba0716e1049ab5de4042faaa36c9cac85a943f9a8f"
+ },
+ "excluded": [
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h01.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "e241b6baf6f5a1e648438ab0a64b908e21c5443c4fcc147842b0a778853449ad",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h01.npy"
+  },
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h03.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "9dc56e1494b7274804e946f2c2b63be5e646c2e0d3d978ffb68150f996d4675b",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h03.npy"
+  },
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h06.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "a527bdbae1fe677ee433e08f61e79ec1fc477194b630677b0a48ee43c5921539",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h06.npy"
+  },
+  {
+   "bytes": 205277688,
+   "path": "prepared/X_rich601_h12.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "801afb4bd4e8a435de87621b3c384d7f92a85fe8769ccbffdddd4f5be2da1557",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005/prepared/X_rich601_h12.npy"
+  }
+ ],
+ "extras_manifest_sha256": "b72609bc5127d4070e2a968a9ee3f362a89ae6fed5baf3080b5f1e36b4683966",
+ "family": "climate_perturbation",
+ "fingerprint": "f267149c466300a19c2a12542f139aca36c7341bae5b319e6be86bdd8400aa79",
+ "include_manifest_sha256": "1f4393dd9ba88fdc9245f1882b0c8f4d09e187fa87603ba2a01297dcc3f88a0f",
+ "inventory": {
+  "keys": {
+   "X_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 451,
+    "reference_occurrences": 451,
+    "unique_values": 4
+   },
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "prepared"
+    ],
+    "matched": 14,
+    "reference_occurrences": 14,
+    "unique_values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 14600,
+    "reference_occurrences": 14600,
+    "unique_values": 4367
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "compare-p6",
+     "report"
+    ],
+    "matched": 16,
+    "reference_occurrences": 16,
+    "unique_values": 16
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     5
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 3650,
+    "reference_occurrences": 3650,
+    "unique_values": 1092
+   },
+   "keys_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 451,
+    "reference_occurrences": 451,
+    "unique_values": 4
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 40,
+    "reference_occurrences": 40,
+    "unique_values": 36
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "prepared"
+    ],
+    "matched": 0,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report",
+     "stage3"
+    ],
+    "matched": 8,
+    "reference_occurrences": 8,
+    "unique_values": 4
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 10,
+    "reference_occurrences": 10,
+    "unique_values": 1
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "stage1",
+     "stage3"
+    ],
+    "matched": 0,
+    "reference_occurrences": 2,
+    "unique_values": 1
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "stage1"
+    ],
+    "matched": 8,
+    "reference_occurrences": 8,
+    "unique_values": 4
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 4,
+    "files": [
+     "prepared"
+    ],
+    "matched": 0,
+    "reference_occurrences": 4,
+    "unique_values": 4
+   },
+   "stage3_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "report"
+    ],
+    "matched": 1,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   }
+  },
+  "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 1092,
+   "kind": "xgb",
+   "ledger_files": 2,
+   "ledger_reference_occurrences": 3650,
+   "unique_boosters_checked": 4368,
+   "unique_identities": 1092
+  },
+  "name_hash_maps": {},
+  "path_inventories": {},
+  "sources_scanned": 52,
+  "status": "reconciled"
+ },
+ "report_sha256": "85f598f3c39292df4f566fd97ef4e927ae861dd0f8692a2fc36e969f49602b73",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-climate-runs/climate-20261005",
+ "shared": [],
+ "source_run_id": "climate-20261005",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    5460,
+    1529203461
+   ]
+  },
+  "child_metrics": 1502,
+  "child_na": 16,
+  "children": 12,
+  "excluded": [
+   4,
+   821110752
+  ],
+  "extras": [
+   47,
+   1312315
+  ],
+  "include": [
+   297,
+   78234503
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "7496c8194f7c257a2748765c01be211c194f32bcdc701d259c05f4ab3a160458",
+   "key": "climate_perturbation/climate-20261005/H1/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "368972aacb670b7a549b918b000506ec000518a5e84af094c5b0cbbaf47aba07",
+   "key": "climate_perturbation/climate-20261005/H1/geo/seed42",
+   "metrics": 278,
+   "na": 0
+  },
+  {
+   "fingerprint": "24b85bc697d6e59ac77e04c2c6db9a610c2564f9b8e9b04ae6700511239bd063",
+   "key": "climate_perturbation/climate-20261005/H1/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "1d520b0bdababe4c765d10c531fd7fb907140cabf30b78501deb48d64ce6ba81",
+   "key": "climate_perturbation/climate-20261005/H3/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "5e84a76a04efe620b49160cb6c5e59e8ffc63567a3df85a1872ef58c30fbc48d",
+   "key": "climate_perturbation/climate-20261005/H3/geo/seed42",
+   "metrics": 276,
+   "na": 0
+  },
+  {
+   "fingerprint": "bac861ee194e2692207c7a120b161f886b250c0b4004ebf09f97eab7a2502664",
+   "key": "climate_perturbation/climate-20261005/H3/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "9877fc6b56960f9580bb50f32e51746243accb74a6fe37c332ee96d6052f32ea",
+   "key": "climate_perturbation/climate-20261005/H6/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "a38ad63ff2f300860a0933615cc073c4fc69d8d3aaf7c02b318ac7f2dedaa802",
+   "key": "climate_perturbation/climate-20261005/H6/geo/seed42",
+   "metrics": 267,
+   "na": 0
+  },
+  {
+   "fingerprint": "98c3912a734f98754e223d363dd3763b5c8e7c8b63b6fd52359a2d2e8516560c",
+   "key": "climate_perturbation/climate-20261005/H6/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  },
+  {
+   "fingerprint": "d2ced22db6e6a1cad4b38c92ab5dc0e345aabefda31db71aabf4ee85dd7241d2",
+   "key": "climate_perturbation/climate-20261005/H12/pool/seed42",
+   "metrics": 72,
+   "na": 2
+  },
+  {
+   "fingerprint": "db5591d72c5af97ea43111c8d4c829246e2c4934266eb21782ac25d3d29b8dd2",
+   "key": "climate_perturbation/climate-20261005/H12/geo/seed42",
+   "metrics": 281,
+   "na": 0
+  },
+  {
+   "fingerprint": "05da50e6fea0c071186fb11d6e877096e8c7cf071748931bf0f873e4aab54040",
+   "key": "climate_perturbation/climate-20261005/H12/persistence/seednone",
+   "metrics": 28,
+   "na": 2
+  }
+ ]
+}

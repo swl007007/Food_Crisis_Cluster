@@ -1,0 +1,221 @@
+{
+ "families": {
+  "climate_perturbation": {
+   "fingerprint": "f267149c466300a19c2a12542f139aca36c7341bae5b319e6be86bdd8400aa79",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      5460,
+      1529203461
+     ]
+    },
+    "child_metrics": 1502,
+    "child_na": 16,
+    "children": 12,
+    "excluded": [
+     4,
+     821110752
+    ],
+    "extras": [
+     47,
+     1312315
+    ],
+    "include": [
+     297,
+     78234503
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "history_window_sensitivity": {
+   "fingerprint": "3061b0bad6e4811987da84d5c5443508723272332f7e945194cbe89332582533",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      475,
+      161882134
+     ]
+    },
+    "child_metrics": 1440,
+    "child_na": 4,
+    "children": 16,
+    "excluded": [
+     0,
+     0
+    ],
+    "extras": [
+     0,
+     0
+    ],
+    "include": [
+     20,
+     3577963
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "mlp_fixed_map": {
+   "fingerprint": "82f68be9f899d8ddb276370fdb9343ec154ec29b0f755558dfdb5fb28109ac60",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      26696,
+      2403432127
+     ]
+    },
+    "child_metrics": 10544,
+    "child_na": 74,
+    "children": 52,
+    "excluded": [
+     487,
+     184593322
+    ],
+    "extras": [
+     59,
+     5127896
+    ],
+    "include": [
+     494,
+     184417814
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "p6_geoxgb": {
+   "fingerprint": "cb3e76e946968c00cb62d20255a64c4a7d62f00e76867806a2527d6e6fb85786",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      6125,
+      2001306904
+     ]
+    },
+    "child_metrics": 966,
+    "child_na": 16,
+    "children": 12,
+    "excluded": [
+     4,
+     766461152
+    ],
+    "extras": [
+     125,
+     1972063
+    ],
+    "include": [
+     287,
+     76436215
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "split2024_sensitivity": {
+   "fingerprint": "c1b4074265aad10fff70267c920113bf61ff7366d62d0632d42b832ae10d5ca1",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      4180,
+      1420913441
+     ]
+    },
+    "child_metrics": 2085,
+    "child_na": 28,
+    "children": 12,
+    "excluded": [
+     4,
+     766461152
+    ],
+    "extras": [
+     0,
+     0
+    ],
+    "include": [
+     242,
+     78291063
+    ],
+    "shared": [
+     0,
+     0
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  },
+  "yearly_geoxgb": {
+   "fingerprint": "d3981815effb5811cecc0f3982f361dd3f3532926fde075a9d052891f9093d39",
+   "role": "selected",
+   "totals": {
+    "bundle": {
+     "models.tar": [
+      1267,
+      320464656
+     ]
+    },
+    "child_metrics": 3847,
+    "child_na": 36,
+    "children": 16,
+    "excluded": [
+     46,
+     11381290
+    ],
+    "extras": [
+     64,
+     1378008
+    ],
+    "include": [
+     52,
+     11462929
+    ],
+    "shared": [
+     33,
+     783754630
+    ],
+    "unlisted": [
+     0,
+     0
+    ]
+   }
+  }
+ },
+ "hash_cache": {
+  "hits": 46468,
+  "misses": 0,
+  "rehash": false
+ },
+ "importer": "ipcch-mlflow-import-v2",
+ "records": 126
+}

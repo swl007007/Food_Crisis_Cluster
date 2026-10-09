@@ -1,0 +1,346 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "99b72bddd73fa538cb1dc880dedd345b7bd3f466275d41316a58593cb59b0165"
+ },
+ "excluded": [
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h01.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "a6dae5d1c73626cd86c9754c6796c81afc920ac7912fb938e636481b2a383219",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h01.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h03.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "74eeb649b0d79a1aa69fca438821c9c6d694ec86d1879ca78a4d19c54292edf0",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h03.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h06.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "711bebb89058796fa241504cb9b149ccc0202df4ba298990c00fbe15dfc7cb4c",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h06.npy"
+  },
+  {
+   "bytes": 191615288,
+   "path": "IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h12.npy",
+   "reason": "large prepared feature matrix; referenced by path and SHA256",
+   "sha256": "8c20acdb28ace12ce29c4b4e88877e01af8e4705479e46fd2cdc30ee97cf21a0",
+   "source": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/X_rich561_h12.npy"
+  }
+ ],
+ "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+ "family": "split2024_sensitivity",
+ "fingerprint": "c1b4074265aad10fff70267c920113bf61ff7366d62d0632d42b832ae10d5ca1",
+ "include_manifest_sha256": "eb6f6c50775e83f2f6c890b340a42827c675e2adfc3dd2bfb325bdab57e97465",
+ "inventory": {
+  "keys": {
+   "X_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 497,
+    "reference_occurrences": 497,
+    "unique_values": 4
+   },
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 14,
+    "reference_occurrences": 14,
+    "unique_values": 14
+   },
+   "booster_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 6892,
+    "reference_occurrences": 6892,
+    "unique_values": 3343
+   },
+   "draws_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 6,
+    "reference_occurrences": 6,
+    "unique_values": 6
+   },
+   "identity_sha256": {
+    "bundle_dir_file_counts": [
+     5
+    ],
+    "decision": "names a bundle dir",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 1723,
+    "reference_occurrences": 1723,
+    "unique_values": 836
+   },
+   "keys_artifact_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 497,
+    "reference_occurrences": 497,
+    "unique_values": 4
+   },
+   "map_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 44,
+    "reference_occurrences": 44,
+    "unique_values": 36
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 0,
+    "reference_occurrences": 2,
+    "unique_values": 1
+   },
+   "predictions_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 8,
+    "reference_occurrences": 8,
+    "unique_values": 4
+   },
+   "prepared_manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 15,
+    "reference_occurrences": 15,
+    "unique_values": 1
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 3,
+    "reference_occurrences": 3,
+    "unique_values": 1
+   },
+   "selection_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "stage1-checkpoint.json"
+    ],
+    "matched": 12,
+    "reference_occurrences": 12,
+    "unique_values": 4
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "provenance of package source copied from repository files at recorded commits (outside the run root); archived as recorded",
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 55,
+    "files": [
+     "IPCCHGeoXGBExperiment",
+     "final-inventory.json"
+    ],
+    "matched": 4379,
+    "reference_occurrences": 4434,
+    "unique_values": 4406
+   },
+   "source_file_sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "pre-patch upstream source identity; the patched copies and calendar-only.patch are archived"
+    ],
+    "exempted": 4,
+    "files": [
+     "plan.json"
+    ],
+    "matched": 24,
+    "reference_occurrences": 28,
+    "unique_values": 28
+   },
+   "stage3_summary_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "IPCCHGeoXGBExperiment"
+    ],
+    "matched": 1,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   },
+   "variant_file_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "plan.json"
+    ],
+    "matched": 28,
+    "reference_occurrences": 28,
+    "unique_values": 28
+   }
+  },
+  "ledger_dirs": {},
+  "model_contract": {
+   "identities_satisfied": 836,
+   "kind": "xgb",
+   "ledger_files": 2,
+   "ledger_reference_occurrences": 1723,
+   "unique_boosters_checked": 3344,
+   "unique_identities": 836
+  },
+  "name_hash_maps": {},
+  "path_inventories": {
+   "final-inventory.json": {
+    "entries": 4379,
+    "matched": 4379
+   }
+  },
+  "sources_scanned": 65,
+  "status": "reconciled"
+ },
+ "report_sha256": "96ca1ba70235496862cb029127e717e9537ee09660a83bbdac7d7c2eac242e0e",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-split2024-20261005-3moikuh3",
+ "shared": [],
+ "source_run_id": "split2024-20261005",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    4180,
+    1420913441
+   ]
+  },
+  "child_metrics": 2085,
+  "child_na": 28,
+  "children": 12,
+  "excluded": [
+   4,
+   766461152
+  ],
+  "extras": [
+   0,
+   0
+  ],
+  "include": [
+   242,
+   78291063
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "9f44282d52d2eb76781f98a566e97f5e136dd7a27e88851505419b7fd14c45cf",
+   "key": "split2024_sensitivity/split2024-20261005/H1/pool/seed42",
+   "metrics": 112,
+   "na": 2
+  },
+  {
+   "fingerprint": "51a0e4749bee7eb39386b0211c9ae7b12179eef080b17cc265adfaa33ed3d6a4",
+   "key": "split2024_sensitivity/split2024-20261005/H1/geo/seed42",
+   "metrics": 383,
+   "na": 0
+  },
+  {
+   "fingerprint": "91df3f8bfce7e96a18ad3678715331fb6b0b77ec9fa499f27a10292cd06025f6",
+   "key": "split2024_sensitivity/split2024-20261005/H1/persistence/seednone",
+   "metrics": 70,
+   "na": 2
+  },
+  {
+   "fingerprint": "cb285f06a7d2d0702c48239064ca02440fb7c4b96745cb95332ecb8890a0d186",
+   "key": "split2024_sensitivity/split2024-20261005/H3/pool/seed42",
+   "metrics": 112,
+   "na": 2
+  },
+  {
+   "fingerprint": "90cd08bbe69fc4933f2c880fbc59d626d9e7ff6fbda41635c612f8e1a159d502",
+   "key": "split2024_sensitivity/split2024-20261005/H3/geo/seed42",
+   "metrics": 388,
+   "na": 0
+  },
+  {
+   "fingerprint": "2fbd2591bec7cb41a93c8a007b2dd5b5bb24e9bd534ba55e4b5acb19429feef6",
+   "key": "split2024_sensitivity/split2024-20261005/H3/persistence/seednone",
+   "metrics": 70,
+   "na": 2
+  },
+  {
+   "fingerprint": "e03aa32e709b7fa3b4fa7fdea644f908e26dcfc64c9151a8ef71579cf6a0f744",
+   "key": "split2024_sensitivity/split2024-20261005/H6/pool/seed42",
+   "metrics": 112,
+   "na": 2
+  },
+  {
+   "fingerprint": "5e3d95a6a6b4112877567039f196b3185d0927dad42d1cee441591d9482d3c8a",
+   "key": "split2024_sensitivity/split2024-20261005/H6/geo/seed42",
+   "metrics": 389,
+   "na": 0
+  },
+  {
+   "fingerprint": "98ff01edfe81988fa44c4898810032751bde9543533ab3604344932761f1cf49",
+   "key": "split2024_sensitivity/split2024-20261005/H6/persistence/seednone",
+   "metrics": 70,
+   "na": 2
+  },
+  {
+   "fingerprint": "1cb55050a4295ac509c40c29a495fffdc2b0301cc2905e053e918aac98001f3c",
+   "key": "split2024_sensitivity/split2024-20261005/H12/pool/seed42",
+   "metrics": 72,
+   "na": 4
+  },
+  {
+   "fingerprint": "3b6957df8e251d4842737f143084885f0f4fef6be74f4bb52a5aff2df8c0940a",
+   "key": "split2024_sensitivity/split2024-20261005/H12/geo/seed42",
+   "metrics": 263,
+   "na": 8
+  },
+  {
+   "fingerprint": "62b70888c30c3629805d016b6926a6cdc188dbfa300f358c3a2b58c8355f8f70",
+   "key": "split2024_sensitivity/split2024-20261005/H12/persistence/seednone",
+   "metrics": 44,
+   "na": 4
+  }
+ ]
+}

@@ -1,0 +1,23 @@
+{
+ "command": "plan",
+ "counts": {
+  "datasets": 74,
+  "finite": 5658,
+  "metric_names": 140,
+  "model_versions": 100,
+  "na": 4,
+  "registered_models": 68,
+  "rows": 136,
+  "rows_by_family": {
+   "geoxgb_climate_swap": 12,
+   "geoxgb_maps_2024": 12,
+   "geoxgb_reference": 12,
+   "geoxgb_window_probe": 16,
+   "geoxgb_yearly_refit": 16,
+   "mlp_residual_fixed_maps": 68
+  },
+  "training_datasets": 8
+ },
+ "plan_fingerprint": "ec4e98e9e523b90c4f7d9ab03936e8505a109c00fe1a325da1ef01480cbe63a0",
+ "seconds": 25.9
+}

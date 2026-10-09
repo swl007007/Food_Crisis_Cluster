@@ -1,0 +1,216 @@
+{
+ "bundle_manifest_sha256": {
+  "models.tar": "ac765e85453748a926de3f2fb12da5c8e016486d09422d72072ff71ef674439f"
+ },
+ "excluded": [],
+ "extras_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+ "family": "history_window_sensitivity",
+ "fingerprint": "3061b0bad6e4811987da84d5c5443508723272332f7e945194cbe89332582533",
+ "include_manifest_sha256": "5aba34cafb33d9134e4368f79fd75bc3664a222617ba9accf81aabadf43be47e",
+ "inventory": {
+  "keys": {
+   "artifacts_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 14,
+    "reference_occurrences": 14,
+    "unique_values": 14
+   },
+   "manifest_sha256": {
+    "decision": "required file digest",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 1,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   },
+   "ordered_names_sha256": {
+    "decision": "informational: hash of the ordered feature-name list; no single-file form",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 0,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   },
+   "quartet_code_sha256": {
+    "decision": "informational: hash over the package's model-fitting source set; no single-file form",
+    "exempted": 0,
+    "files": [
+     "start.json"
+    ],
+    "matched": 0,
+    "reference_occurrences": 1,
+    "unique_values": 1
+   },
+   "sha256": {
+    "decision": "required file digest",
+    "exempt_reasons": [
+     "raw/external input outside the run root; referenced by path and hash, not retained (R7)"
+    ],
+    "exempted": 2,
+    "files": [
+     "start.json"
+    ],
+    "matched": 0,
+    "reference_occurrences": 2,
+    "unique_values": 2
+   }
+  },
+  "ledger_dirs": {
+   "fit-ledger.json": {
+    "entries": 95,
+    "matched": 95
+   }
+  },
+  "name_hash_maps": {
+   "artifact-hashes.json": {
+    "entries": 494,
+    "matched": 494
+   }
+  },
+  "path_inventories": {},
+  "sources_scanned": 8,
+  "status": "reconciled"
+ },
+ "report_sha256": "7473e77cb3296275db4ad8996cab2d2a20fe8ce574c1fb2999fa51356b9bc8b1",
+ "root": "/mnt/c/Users/swl00/AppData/Local/Temp/ipcch-window-probe-20261005-zckpq9hf",
+ "shared": [],
+ "source_run_id": "ipcch-window-probe-20261005-zckpq9hf",
+ "totals": {
+  "bundle": {
+   "models.tar": [
+    475,
+    161882134
+   ]
+  },
+  "child_metrics": 1440,
+  "child_na": 4,
+  "children": 16,
+  "excluded": [
+   0,
+   0
+  ],
+  "extras": [
+   0,
+   0
+  ],
+  "include": [
+   20,
+   3577963
+  ],
+  "shared": [
+   0,
+   0
+  ],
+  "unlisted": [
+   0,
+   0
+  ]
+ },
+ "unlisted": [],
+ "views": [
+  {
+   "fingerprint": "b9f36f03d1e320c22ce7088b919c8c9d7de1a7d8d19cbbb57e4345bd7b73b67e",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/base_global/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "2b13492bff647a63341257067178eca73cd2ebf5852dd6e5dd435c3cda78d583",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/exp_global/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "94b2c85b8e0b241e801b63d763e504f82bde2062decaf2e7e276504d6db27824",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/base_local/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "f30bc9c284f21ede0ae510c9e9e3c40c4d1856ea1f9ab79c096fcdff141bde10",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H1/exp_local/seed42",
+   "metrics": 101,
+   "na": 0
+  },
+  {
+   "fingerprint": "33622765188d4fe25a1045a8d01dc200f4af14c29aa85bf7681ae6819993c49a",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/base_global/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "3195a2ca3758bc6c37dfb725d1e769afc47e94f071dd1a5841a98169a889c558",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/exp_global/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "876ead8463f89ad6e32660f6e17b80c3cb53077b073c400bd0f50196c1f548a9",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/base_local/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "27dbbbc7dcdc1fe374c82e2664b4eb9a852fc1064f9b77b75df41ce0d4566c3f",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H3/exp_local/seed42",
+   "metrics": 87,
+   "na": 0
+  },
+  {
+   "fingerprint": "5c203e3f0afd7e18ddf2908a445c132a2168ce7fe131b44fc12011a3c0139039",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/base_global/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "9959ce570774d73526bab5a79236a12449f76aa891356e9876c9e16afe8b70a7",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/exp_global/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "d59ca91701141335e0c8f69cca7878f35f049153649a3afd0d402e6e82b79101",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/base_local/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "8decb8b0cf3fd74dedbb3d79a5a09f6198fe65d7bb79ca849c70e0e761ae6008",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H6/exp_local/seed42",
+   "metrics": 100,
+   "na": 1
+  },
+  {
+   "fingerprint": "29c5c4f857fde373de97d10813ee31873f2631356829d4daeeafce9aa84c33c7",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/base_global/seed42",
+   "metrics": 72,
+   "na": 0
+  },
+  {
+   "fingerprint": "0b23295c88097a65d00f712824d6f2cb4bec694b5f2cb1eccfa728e4a055658f",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/exp_global/seed42",
+   "metrics": 72,
+   "na": 0
+  },
+  {
+   "fingerprint": "3e15eecf5ea3976f3ee66cc1f497e9a3bcf908f17b61bea72783d6c5252dfbdc",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/base_local/seed42",
+   "metrics": 72,
+   "na": 0
+  },
+  {
+   "fingerprint": "535e42dcdf1812477881c6a13b71cb50e729088d48438237ac704c130977e447",
+   "key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf/H12/exp_local/seed42",
+   "metrics": 72,
+   "na": 0
+  }
+ ]
+}
