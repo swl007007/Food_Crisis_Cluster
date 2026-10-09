@@ -1,0 +1,43 @@
+{
+ "apply": {
+  "experiment_id": "2",
+  "inputs_logged": 868,
+  "logged_models_created": 100,
+  "metrics_logged": 5658,
+  "model_versions_created": 100,
+  "registered_models_created": 68,
+  "rows_created": 136
+ },
+ "command": "apply",
+ "counts": {
+  "datasets": 74,
+  "finite": 5658,
+  "metric_names": 140,
+  "model_versions": 100,
+  "na": 4,
+  "registered_models": 68,
+  "rows": 136,
+  "rows_by_family": {
+   "geoxgb_climate_swap": 12,
+   "geoxgb_maps_2024": 12,
+   "geoxgb_reference": 12,
+   "geoxgb_window_probe": 16,
+   "geoxgb_yearly_refit": 16,
+   "mlp_residual_fixed_maps": 68
+  },
+  "training_datasets": 8
+ },
+ "plan_fingerprint": "c7abf4cdc2f5abe8f85300ad41fcf08085ceb14f170b81121e5f1605365158dc",
+ "seconds": 207.4,
+ "verify": {
+  "catalog_status": "complete",
+  "datasets": 74,
+  "detailed_runs_unchanged": 126,
+  "distinct_metric_names": 140,
+  "logged_models": 100,
+  "metrics": 5658,
+  "model_versions": 100,
+  "registered_models": 68,
+  "rows": 136
+ }
+}
