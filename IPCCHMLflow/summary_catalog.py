@@ -268,7 +268,7 @@ def build_plan(client, cfg: dict, store: Path) -> dict:
         train = training_dataset(family, H)
         rows.append({"projection_key": naming.record_key(family, old_arm, H, seed), "family": family,
                      "old_arm": old_arm, "H": H, "seed": seed, "aggregation": "single_seed" if naming.multi_seed(family)
-                     else "single_run", "tags": {k: v for k, v in t.items() if not k.startswith(("_prov.", "mlflow."))},
+                     and seed != "none" else "single_run", "tags": {k: v for k, v in t.items() if not k.startswith(("_prov.", "mlflow."))},
                      "original_run_id": child.info.run_id, "original_source_key": t[T_KEY],
                      "family_run_id": parent.info.run_id, "model_keys": [model_key] if model_key else [],
                      "values": values, "value_sources": sources, "value_inputs": inputs, "na": row_na,
@@ -437,10 +437,10 @@ def dashboard_description(plan: dict) -> str:
         "period span and cohort). GeoXGB maps to 2024 has a different primary period (2025 only), so its primary "
         "values are not comparable with the other families' primary values. The window probe covers selected months "
         "only. No global best-model ranking is implied.",
-        "**Start here.** Filter `tags.lead_months = '03' AND tags.seed != 'mean'` (or `tags.family = "
-        "'geoxgb_reference'`), then chart metric primary.persistence_available.binary.f1 grouped by tag arm, or "
-        "primary.persistence_available.binary.f1.minus_persistence with ci_low/ci_high. For the MLP use "
-        "`tags.seed = 'mean'`.",
+        "**Start here.** Filter `tags.lead_months = '03' AND tags.aggregation != 'single_seed'` (one row per "
+        "family x arm; the MLP as its mean of 3 seeds), or `tags.family = 'geoxgb_reference'`. Then chart "
+        "primary.persistence_available.binary.f1 grouped by tag arm, or "
+        "primary.persistence_available.binary.f1.minus_persistence with its ci_low / ci_high.",
         "**Models tab:** external catalog descriptors only (not loadable). Details, gate-decision subsets, coverage "
         "and per-period diagnostics stay in 'IPCCH - detailed runs' (tag _prov.original_run_id).",
     ])

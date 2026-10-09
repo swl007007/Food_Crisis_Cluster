@@ -1,8 +1,10 @@
 # Local MLflow Import of Completed Runs
 
 Contract for `IPCCHMLflow/` (task 10-07-local-mlflow-experiment-management, accepted at
-efc5d11). Use it when adding a completed run family to the local MLflow store or when
-changing extraction/inventory/verification code.
+efc5d11; names, tags and descriptions replaced by the readable vocabulary of `naming.py` and
+the store rebuilt in task 10-09-mlflow-readable-naming). Use it when adding a completed run
+family to the local MLflow store or when changing extraction/naming/inventory/verification
+code.
 
 ## 1. Scope / Trigger
 
@@ -15,52 +17,66 @@ changing extraction/inventory/verification code.
 
 ```bash
 PY=/home/swl007007/.venvs/ipcch-mlflow/bin/python   # uv venv, MLflow 3.17.0, requirements.lock
-IPCCHMLflow/manage.sh start|stop|status             # transient user unit, 127.0.0.1:5000
+IPCCHMLflow/manage.sh start|stop|status             # user unit or setsid fallback, 127.0.0.1:5000
 $PY IPCCHMLflow/import_runs.py plan [--rehash] [--family F] [--evidence DIR]
 $PY IPCCHMLflow/import_runs.py import [--family F]
 $PY IPCCHMLflow/import_runs.py verify [--shallow]
-$PY IPCCHMLflow/import_runs.py reconcile             # one-time, additive only
+$PY IPCCHMLflow/rebuild_check.py --old OLD/mlflow.db --new NEW/mlflow.db --out R.json
 $PY IPCCHMLflow/backup_restore.py backup --dest DIR
 $PY IPCCHMLflow/backup_restore.py restore-check --backup DIR --dest SCRATCH [--port 5001]
 ```
 
 Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,cache/,logs/}`.
+Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming/`.
 
 ## 3. Contracts
 
-- One experiment `IPCCH`. Parent `record_kind=source_run` per source run (artifacts kept
-  once); child `record_kind=evaluation_view` per family x H x arm x seed, linked by
-  `mlflow.parentRunId`. Persistence views use `seed=none`.
-- Identity tags: `source_key` (stable), `import_fingerprint` (sha256 over plan content +
-  importer version), `import_status` in {`in_progress`, `reconciling`, `complete`},
-  optional `import_fingerprint.previous` after a reconcile.
-- Metric names `{period}.{cohort}[.{group}].{metric}`, MLflow-safe `[\w\-. /]`. Only finite
-  source values are metrics; undefined values go to `view/na.json` with source path and
-  reason. Every logged value has its source JSON path in `view/evaluation_view.json`.
-- Cohort identity: `cohort_keys.{period}.{cohort}` = sha256 of sorted
-  `admin_code|target_ord`; its key count must equal the reported n. Gate subsets
-  (`local_eligible.{gate}`) are derived with the source report's own `gate_category` rule.
+- Experiment `IPCCH - detailed runs`. Parent `record_kind=family` per source run (run name =
+  long family title; artifacts kept once); child `record_kind=evaluation` per family x lead x
+  arm x seed (run name `<family short title> | <arm> | <lead>[ | <window>][ | seed N]`),
+  linked by `mlflow.parentRunId`. Persistence views use `seed=none`.
+- Vocabulary lives only in `naming.py`: family slug/title, arm (`persistence`, `pooled`,
+  `partitioned_gated`, `regional_ungated`, `global_base`; `reference_<arm>` for reference-run
+  panels), `arm_role`, `window`, `lead_months` (`03`), period roles (`primary`, `holdout`,
+  `combined`, `year_2025|2026`, `selected_months`, `target_month_YYYY-MM`) with actual scored
+  spans, cohorts (`all_scored`, `persistence_available`, `regional_model_fitted`, ...). Visible
+  tags are this vocabulary plus `status`, `features`, `maps`, `training_window`,
+  `period.<role>` and the description (`mlflow.note.content`); everything else (hashes,
+  fingerprints, original IDs and names, source tags) is under `_prov.`.
+- Identity tags: `_prov.source_key` (stable extractor key), `_prov.import_fingerprint`
+  (sha256 over plan content incl. readable names + importer version), `_prov.import_status`
+  in {`in_progress`, `complete`}.
+- `extract.py` keeps the source reports' own names; `naming.metric_name` translates them and
+  refuses any name without a rule; `check_one_to_one` refuses two source names that land on
+  one readable name in a record, and an NA name equal to a logged metric. Only finite source
+  values are metrics; undefined values go to `view/na.json` (readable name, original name,
+  source path, reason). `view/evaluation_view.json` maps every value to its original name and
+  source JSON path.
+- Cohort identity: `_prov.cohort_keys.<period_role>.<cohort>` = sha256 of sorted
+  `admin_code|target_ord`; its key count must equal the reported n. Gate subsets are derived
+  with the source report's own `gate_category` rule.
 - Source inventory policy (`sources.json` -> `inventory`): every `*sha256` key in the run's
   own ledgers/manifests has an explicit decision — `required_digest_keys`, `name_keys`,
   `informational_keys`, or a scoped `exempt` (key + JSON-path regex [+ file regex] +
   reason) — plus `model_contract` (`xgb` or `mlp`).
-- Provenance tags `execution` and `mlflow_timestamps` state that MLflow times are import
-  times. `source.scientific_acceptance`, `source.lifecycle_status` and `import_status`
-  are separate fields.
+- Provenance tags `_prov.execution` and `_prov.mlflow_timestamps` state that MLflow times are
+  import times. `status` (short), `_prov.source.scientific_acceptance`,
+  `_prov.source.lifecycle_status` and `_prov.import_status` are separate fields; the family
+  description quotes the accepted conclusion and full status wording.
 
 ## 4. Validation & Error Matrix
 
 | Condition | Result |
 |---|---|
 | reported cohort n != prediction key count (incl. gate subsets) | `SourceConflict` at plan |
-| two different source paths map to one metric name | `SourceConflict` (only panel-n vs cohort-n is an equal-value cross-check) |
+| two different source paths map to one source metric name | `SourceConflict` (only panel-n vs cohort-n is an equal-value cross-check) |
+| metric / NA entry / namespace / extractor tag without a naming rule | `SourceConflict` at plan |
+| two source names map to one readable name in a record | `SourceConflict` at plan |
 | `*sha256` key without an inventory decision | `SourceConflict` |
 | required digest matches no planned file (own or reference parent) | `SourceConflict` |
 | XGB identity lacks its own `q*.ubj` with the ledger digest, or `record.json` | `SourceConflict` |
 | MLP identity lacks `record.json`, `state.pt` or its referenced transform | `SourceConflict` |
-| existing record has a different fingerprint | `import` stops; only `reconcile` may proceed |
-| reconcile would change a metric/param/existing tag/archived source or model, in the parent or ANY child | `SourceConflict` before any write (whole family validated first; store unchanged). Archived content is compared by SHA256 per `source/…`/extras file and per `models.tar` member against the record's retained `manifests/*.json` — never by size alone |
-| reconcile interrupted after validation (parent `import_status=reconciling`) | `import` refuses; `reconcile` resumes only when `reconcile_target` equals the current plan fingerprint, else stops |
+| existing record has a different fingerprint (source, vocabulary or importer changed) | `import` stops; rebuild into a fresh store (old store kept whole) |
 | `--family F` | plans F plus transitive read dependencies (`shared_inputs.parent`, `inventory.reference_parents`), dependencies first; writes/verify only F; unknown family refused |
 | equal-size artifact corruption | caught by deep verify, including the repeat-import no-op |
 | second importer while one runs | refused by `import.lock` |
@@ -69,29 +85,30 @@ Store: `/home/swl007007/.local/share/ipcch-mlflow/{mlflow.db,artifacts/,plans/,c
 ## 5. Good / Base / Bad Cases
 
 - Good: plan shows 0 unlisted files; every exemption names a reason; import marks
-  `complete` only after deep readback; repeat import = all `noop`, 0 writes.
+  `complete` only after deep readback; repeat import = all `noop`, 0 writes; after a
+  vocabulary change, `rebuild_check.py` finds every old value unchanged under its new name.
 - Base: path-level-only coverage where the source stores no file digests (MLP states and
   transforms), documented in the policy `note`.
 - Bad: counting surviving files as coverage; reporting ledger reference occurrences as
-  unique models; claiming backup bytes (which include `superseded/` files) as
-  deep-verify downloaded bytes.
+  unique models; renaming by hand in the UI (logged-model and dataset names cannot be
+  renamed; the next import would conflict).
 
 ## 6. Tests Required
 
-`$PY -m unittest discover -s IPCCHMLflow/tests -v` (26 tests). Assertion points:
-- NA not logged and present in `na.json`; subset cohort digests differ; count mismatch refused.
+`$PY -m unittest discover -s IPCCHMLflow/tests -v` (39 tests). Assertion points:
+- NA not logged and present in `na.json` under its readable name; subset cohort digests
+  differ; count mismatch refused.
 - Interrupted import resumes without duplicates (two interruption points); idempotent no-op.
 - Missing/changed retained booster refused; own booster required even if another
   directory holds the same digest; MLP missing `state.pt` / referenced transform refused.
 - Unclassified digest key refused; name collision refused; gate subsets bound to routes.
-- Reconcile: additive change keeps run IDs + superseded evidence; value change refused;
-  empty shell rebound then resumed; a conflict in the LAST child leaves every record and
-  artifact unchanged and the original plan importable; an interrupted reconcile resumes
-  the same plan only (one reconciliation log per child; the parent log keeps the first run's
-  entries). A same-size content change in an archived file or bundle member is refused
-  with the store unchanged.
+- Naming: every old metric pattern maps (panels, gates, reference panels, deltas, bootstrap,
+  coverage/routes, seed summaries, window cells); unknown names refused; one-to-one per
+  record; run/model names respect MLflow character rules; dataset names carry actual spans.
 - `--family` with a reference-parent-only dependency plans the parent but writes only the
   selected family.
+- Rebuild check: equal values pass; a changed value, an unexplained dashboard value or a
+  dataset name with two digests is reported.
 - Restore check downloads through an independent scratch server and refuses port 5000.
 
 ## 7. Wrong vs Correct
@@ -105,17 +122,14 @@ r = by_path.get(f"{identity_dir}/{q}.ubj"); assert r and r["sha256"] == ledger_d
 ```
 
 ```python
-# Wrong: mutate while validating — a late child conflict strands the parent half-reconciled.
-set_tag(parent, "import_fingerprint", new_fp)
-for child in children: validate(child)          # raises after the parent already changed
-# Correct: validate parent and every child read-only, then write; record the target first.
-todo = [validate(child) for child in children]   # may raise; nothing written yet
-set_tag(parent, "reconcile_target", new_fp); set_tag(parent, "import_status", "reconciling")
+# Wrong: one tag/arm name with different meanings per family ("pool" = pooled XGB in one,
+# MLP base + pooled residual in another), or codes in names ("E_persist", "H6", "p6geo").
+# Correct: role-based names from naming.py, meaning in the description, code in _prov.
+naming.arm("mlp_fixed_map", "pool")   # ('pooled', None, 'candidate') + MLP_ARM_MEANING text
 ```
 
 ```text
 Wrong: stop an importer between families with a log-watcher kill — the next family's
        create_run can land in the same second (it did: an empty yearly shell).
-Correct: run one family per `import --family F` invocation when a pause point is needed;
-       if a shell exists, rebind it with `reconcile` and resume under the same run ID.
+Correct: run one family per `import --family F` invocation when a pause point is needed.
 ```

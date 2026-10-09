@@ -67,7 +67,7 @@ FAMILIES = {
     },
     "climate_perturbation": {
         "slug": "geoxgb_climate_swap", "short": "GeoXGB climate swap",
-        "long": "GeoXGB climate-input swap (rich601, maps relearned on 2014-2022)",
+        "long": "GeoXGB climate swap (rich601 climate inputs, maps relearned on 2014-2022)",
         "model_type": "GeoXGB", "status": "exploratory",
         "features": "rich601 (shared-folder monthly and growing-season climate replace the monthly climate columns)",
         "maps": "relearned in this run on rich601, target months 2014-01..2022-12",
@@ -84,7 +84,7 @@ FAMILIES = {
     },
     "split2024_sensitivity": {
         "slug": "geoxgb_maps_2024", "short": "GeoXGB maps to 2024",
-        "long": "GeoXGB maps relearned through 2024 (evaluated 2025-2026)",
+        "long": "GeoXGB maps to 2024 (maps relearned on 2014-2024, evaluated 2025-2026)",
         "model_type": "GeoXGB", "status": "exploratory", "features": "rich561",
         "maps": "relearned in this run on target months 2014-01..2024-12",
         "training_window": MONTHLY_36, "seeds": ("42",),
@@ -105,7 +105,7 @@ FAMILIES = {
     },
     "history_window_sensitivity": {
         "slug": "geoxgb_window_probe", "short": "GeoXGB window probe",
-        "long": "GeoXGB training-window probe (36-month vs full history, selected months)",
+        "long": "GeoXGB window probe (36-month vs full-history training window, selected months)",
         "model_type": "GeoXGB", "status": "exploratory", "features": "rich561", "maps": REFERENCE_MAPS,
         "training_window": "36-month window vs all history from 2014-01, both ending at the forecast origin",
         "periods": {}, "seeds": ("42",),
@@ -124,7 +124,7 @@ FAMILIES = {
     },
     "mlp_fixed_map": {
         "slug": "mlp_residual_fixed_maps", "short": "MLP residual on fixed maps",
-        "long": "MLP with residual correction on fixed reference maps (3 seeds)",
+        "long": "MLP residual on fixed maps (global MLP + residual correction on the reference maps, 3 seeds)",
         "model_type": "MLP", "status": "user_accepted",
         "features": "rich561 plus 561 missingness flags (1,122 inputs)", "maps": REFERENCE_MAPS,
         "training_window": MONTHLY_36, "periods": STANDARD_PERIODS, "seeds": ("42", "43", "44"),

@@ -120,6 +120,10 @@ class NamesTest(unittest.TestCase):
         with self.assertRaises(SourceConflict):
             naming.arm("p6_geoxgb", "local")
 
+    def test_long_titles_start_with_the_short_title(self):
+        for fam, f in naming.FAMILIES.items():      # truncated run names must still read the same
+            self.assertTrue(f["long"].startswith(f["short"] + " ("), fam)
+
     def test_lead(self):
         self.assertEqual((naming.lead_label("3"), naming.lead_tag("3"), naming.lead_label("12")),
                          ("3-month", "03", "12-month"))
