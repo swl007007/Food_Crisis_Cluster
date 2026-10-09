@@ -1,15 +1,15 @@
 """Finite, idempotent import of the six completed IPCCH runs into local MLflow.
 
   plan    read-only: hash every source file, extract evaluation views, write plans
-  import  create/resume parent source_run + child evaluation_view records
+  import  create/resume one parent run per family + one child run per arm x lead x seed
   verify  read back every metric/param/tag and download+hash every artifact
-  reconcile  one-time additive reconciliation of imported records to a changed plan
-             (refuses value changes; superseded manifests/views kept; nothing deleted)
 
-Records are keyed by a stable ``source_key`` tag; ``import_fingerprint`` binds
-the exact inputs. Same fingerprint -> verified no-op; different -> conflict
-(stop). An interrupted record (import_status=in_progress) resumes against the
-same fingerprint. Originals are only read.
+Names, tags and descriptions use the readable vocabulary in naming.py; the extractor's own
+names stay in provenance (``_prov.*`` tags and view/evaluation_view.json). Records are keyed
+by a stable ``_prov.source_key`` tag; ``_prov.import_fingerprint`` binds the exact inputs.
+Same fingerprint -> verified no-op; different -> conflict (stop). An interrupted record
+(``_prov.import_status=in_progress``) resumes against the same fingerprint. Originals are
+only read.
 """
 
 from __future__ import annotations
@@ -25,14 +25,18 @@ import sys
 import tarfile
 import tempfile
 import time
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import extract  # noqa: E402
 import inventory  # noqa: E402
+import naming  # noqa: E402
 from extract import SourceConflict  # noqa: E402
 
-IMPORTER_VERSION = "ipcch-mlflow-import-v1"
+IMPORTER_VERSION = "ipcch-mlflow-import-v2"
+PROV = "_prov."
+T_KEY, T_FP, T_STATUS = f"{PROV}source_key", f"{PROV}import_fingerprint", f"{PROV}import_status"
+NOTE = "mlflow.note.content"
 DEFAULT_ROOT = Path("/home/swl007007/.local/share/ipcch-mlflow")
 METRIC_NAME = re.compile(r"^[\w\-. /]{1,250}$")
 CHUNK = 1 << 20
@@ -175,6 +179,8 @@ def plan_family(cfg: dict, fam: dict, hasher: Hasher, plans: dict) -> dict:
     inv = inventory.reconcile(fam, root, {"include": include, "bundle": bundle, "excluded": excluded,
                                           "shared": shared}, plans)
     children, parent_metrics, report_sha = extract.extract(fam, root)
+    names = naming.check_one_to_one(fam["family"], parent_metrics)
+    parent_metrics = {names[k]: v for k, v in parent_metrics.items()}
     for c in children:
         for k in c.metrics:
             if not METRIC_NAME.match(k):
@@ -214,20 +220,78 @@ def plan_family(cfg: dict, fam: dict, hasher: Hasher, plans: dict) -> dict:
     return body
 
 
+def ns_label(family: str, old: str) -> str:
+    """Readable name for an extractor namespace or NA entry (full metric, cohort or period)."""
+    try:
+        return naming.metric_name(family, old)
+    except SourceConflict:
+        pass
+    if old in naming.FAMILIES[family]["periods"]:
+        return naming.period_role(family, old)
+    for probe, leaf in ((".n", ".n_rows"), (".K", ".countries")):
+        try:
+            new = naming.metric_name(family, old + probe)
+        except SourceConflict:
+            continue
+        if new.endswith(leaf):
+            return new[: -len(leaf)]
+    raise SourceConflict(f"{family}: no readable name for namespace {old!r}")
+
+
+def family_tags(fam: dict) -> dict:
+    f = naming.FAMILIES[fam["family"]]
+    return {"family": f["slug"], "family_title": f["short"], "model_type": f["model_type"], "status": f["status"],
+            "features": f["features"], "maps": f["maps"], "training_window": f["training_window"],
+            **{f"{PROV}source.{k}": str(v) for k, v in fam["tags"].items()},
+            f"{PROV}source_run_id": fam["source_run_id"], f"{PROV}original_family": fam["family"]}
+
+
 def view_record(fam: dict, c) -> dict:
-    tags = {**{f"source.{k}": str(v) for k, v in fam["tags"].items()}, **c.tags,
-            "record_kind": "evaluation_view", "source_key": c.key,
-            "parent_source_key": f"{fam['family']}/{fam['source_run_id']}",
-            "family": fam["family"], "horizon": c.H, "arm": c.arm, "seed": c.seed, "arm_kind": c.arm_kind}
-    params = {"family": fam["family"], "source_run_id": fam["source_run_id"], "horizon_months": c.H,
-              "arm": c.arm, "seed": c.seed, "arm_kind": c.arm_kind}
-    doc = {"key": c.key, "metrics": c.metrics, "provenance": c.provenance, "na": c.na, "panels": c.panels,
+    """One child record in the readable vocabulary; the extractor's names stay in provenance."""
+    family = fam["family"]
+    names = naming.check_one_to_one(family, c.metrics)
+    metrics = {names[k]: v for k, v in c.metrics.items()}
+    na = [{**x, "metric": ns_label(family, x["metric"]), "original_metric": x["metric"]} for x in c.na]
+    clash = {x["metric"] for x in na} & set(metrics)
+    if clash:
+        raise SourceConflict(f"{c.key}: NA entry and logged metric share a readable name: {sorted(clash)[:3]}")
+    new_arm, window, role = naming.arm(family, c.arm)
+    tags = {**family_tags(fam), "record_kind": "evaluation", "arm": new_arm, "arm_role": role,
+            "lead_months": naming.lead_tag(c.H), "seed": c.seed,
+            NOTE: naming.view_description(family, c.arm, c.H, c.seed, fam["source_run_id"]),
+            T_KEY: c.key, f"{PROV}parent_source_key": f"{family}/{fam['source_run_id']}",
+            f"{PROV}original_arm": c.arm, f"{PROV}arm_kind": c.arm_kind}
+    if window:
+        tags["window"] = window
+    for old_period, (role_name, spans) in naming.FAMILIES[family]["periods"].items():
+        if spans.get(c.H):
+            tags[f"period.{role_name}"] = spans[c.H]
+    dates = sorted({m.group(1) for k in c.metrics for m in [re.match(r"selected_date_(\d{4}-\d{2})\.", k)] if m})
+    if dates:
+        tags["period.selected_months"] = ", ".join(dates)
+    for k, v in c.tags.items():
+        head, _, rest = k.partition(".")
+        if head == "cohort_keys":
+            tags[f"{PROV}cohort_keys.{ns_label(family, rest)}"] = v
+        elif head == "bootstrap":
+            tags[f"{PROV}method.{ns_label(family, rest)}"] = v
+        elif k in ("comparator_parent", "scope_note", "dedup"):
+            tags[f"{PROV}{k}"] = v
+        else:
+            raise SourceConflict(f"{c.key}: no readable name for extractor tag {k!r}")
+    params = {"family": naming.FAMILIES[family]["slug"], "arm": new_arm, "lead_months": str(int(c.H)),
+              "seed": c.seed, **({"window": window} if window else {})}
+    doc = {"record_key": naming.record_key(family, c.arm, c.H, c.seed), "source_key": c.key,
+           "metrics": metrics, "original_names": {names[k]: k for k in c.metrics},
+           "provenance": {names[k]: v for k, v in c.provenance.items()}, "na": na,
+           "panels": {ns_label(family, k): {**v, "original_namespace": k} for k, v in c.panels.items()},
            "params": params, "tags": tags}
     view_json = json.dumps(doc, sort_keys=True, indent=1, default=str).encode()
-    fp = sha_bytes(canon({"metrics": c.metrics, "params": params, "tags": tags, "na": c.na,
+    fp = sha_bytes(canon({"metrics": metrics, "params": params, "tags": tags, "na": na,
                           "view_sha256": sha_bytes(view_json), "importer": IMPORTER_VERSION}))
-    return {"key": c.key, "H": c.H, "arm": c.arm, "seed": c.seed, "metrics": c.metrics, "na": c.na,
-            "params": params, "tags": tags, "view_json": view_json.decode(), "fingerprint": fp}
+    return {"key": c.key, "H": c.H, "arm": c.arm, "seed": c.seed, "metrics": metrics, "na": na,
+            "params": params, "tags": tags, "view_json": view_json.decode(), "fingerprint": fp,
+            "run_name": naming.run_name(family, c.arm, c.H, c.seed)}
 
 
 def family_dependencies(fam: dict) -> list:
@@ -369,7 +433,7 @@ def get_experiment(client, name: str, artifact_location: str | None):
 
 
 def find_run(client, exp_id: str, source_key: str):
-    runs = client.search_runs([exp_id], filter_string=f"tags.source_key = '{source_key}'", max_results=5)
+    runs = client.search_runs([exp_id], filter_string=f"tags.`{T_KEY}` = '{source_key}'", max_results=5)
     if len(runs) > 1:
         raise SourceConflict(f"{source_key}: {len(runs)} MLflow records share this source key")
     return runs[0] if runs else None
@@ -428,9 +492,10 @@ class Interrupt(RuntimeError):
 
 
 PROVENANCE_TAGS = {
-    "execution": "historical import of a completed run; not executed by MLflow",
-    "mlflow_timestamps": "MLflow start/metric times are import times, not source execution times",
+    f"{PROV}execution": "historical import of a completed run; not executed by MLflow",
+    f"{PROV}mlflow_timestamps": "MLflow start/metric times are import times, not source execution times",
 }
+BUNDLE_SHA, BUNDLE_BYTES = PROV + "bundle.{}.sha256", PROV + "bundle.{}.bytes"
 
 
 def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_after: str | None = None) -> dict:
@@ -440,29 +505,26 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
     stats = {"source_key": skey, "created": 0, "resumed": 0, "noop": 0, "metrics_logged": 0, "artifacts_uploaded": 0}
     run = find_run(client, exp.experiment_id, skey)
     if run is not None:
-        fp = run.data.tags.get("import_fingerprint")
-        if run.data.tags.get("import_status") == "reconciling":
-            raise SourceConflict(f"{skey}: reconciliation to {run.data.tags.get('reconcile_target')} was interrupted; "
-                                 "resume it with `reconcile` using that plan -- import stops")
+        fp = run.data.tags.get(T_FP)
         if fp != plan["fingerprint"]:
             raise SourceConflict(f"{skey}: existing record fingerprint {fp} != planned {plan['fingerprint']}; "
-                                 "source or importer changed -- stop for reconciliation")
-        if run.data.tags.get("import_status") == "complete":
+                                 "source or importer changed -- stop")
+        if run.data.tags.get(T_STATUS) == "complete":
             run_ids[fam["family"]] = run.info.run_id
             verify_parent(client, run, plan, deep=True)        # verified no-op: full content readback
             stats["noop"] += 1
             for v in plan["views"]:
                 cr = find_run(client, exp.experiment_id, v["key"])
-                if cr is None or cr.data.tags.get("import_status") != "complete":
+                if cr is None or cr.data.tags.get(T_STATUS) != "complete":
                     raise SourceConflict(f"{v['key']}: parent complete but child missing/incomplete")
                 verify_child(client, cr, v, run.info.run_id, deep=True)
                 stats["noop"] += 1
             return stats
         stats["resumed"] += 1
     else:
-        run = client.create_run(exp.experiment_id, run_name=f"{fam['family']}:{fam['source_run_id']}",
-                                tags={"source_key": skey, "import_fingerprint": plan["fingerprint"],
-                                      "import_status": "in_progress", "record_kind": "source_run"})
+        run = client.create_run(exp.experiment_id, run_name=naming.FAMILIES[fam["family"]]["long"],
+                                tags={T_KEY: skey, T_FP: plan["fingerprint"], T_STATUS: "in_progress",
+                                      "record_kind": "family"})
         run = client.get_run(run.info.run_id)
         stats["created"] += 1
     rid = run.info.run_id
@@ -479,8 +541,8 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
     tar_info = {}
     for name, members in plan["bundle"].items():
         tags = client.get_run(rid).data.tags
-        if have.get(name) is not None and tags.get(f"bundle.{name}.sha256"):
-            tar_info[name] = {"bytes": int(tags[f"bundle.{name}.bytes"]), "sha256": tags[f"bundle.{name}.sha256"]}
+        if have.get(name) is not None and tags.get(BUNDLE_SHA.format(name)):
+            tar_info[name] = {"bytes": int(tags[BUNDLE_BYTES.format(name)]), "sha256": tags[BUNDLE_SHA.format(name)]}
             continue
         stage = store / "staging"
         stage.mkdir(parents=True, exist_ok=True)
@@ -491,8 +553,8 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
         finally:
             tmp.unlink(missing_ok=True)
         stats["artifacts_uploaded"] += 1
-        client.set_tag(rid, f"bundle.{name}.sha256", info["sha256"])
-        client.set_tag(rid, f"bundle.{name}.bytes", str(info["bytes"]))
+        client.set_tag(rid, BUNDLE_SHA.format(name), info["sha256"])
+        client.set_tag(rid, BUNDLE_BYTES.format(name), str(info["bytes"]))
         tar_info[name] = info
     for path, obj in parent_manifests(plan, tar_info).items():
         data = json.dumps(obj, indent=1, sort_keys=True).encode()
@@ -504,14 +566,14 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
         cs = import_child(client, exp, v, rid)
         for k in ("created", "resumed", "noop", "metrics_logged", "artifacts_uploaded"):
             stats[k] += cs[k]
-    client.set_tag(rid, "import_status", "complete")
+    client.set_tag(rid, T_STATUS, "complete")
     client.set_terminated(rid, "FINISHED")
     return stats
 
 
 def parent_params(plan: dict) -> dict:
     fam, t = plan["config"], plan["totals"]
-    p = {"family": fam["family"], "source_run_id": fam["source_run_id"], "source_root": plan["root"],
+    p = {"source_run_id": fam["source_run_id"], "source_root": plan["root"],
          "report_sha256": plan["report_sha256"], "evaluation_views": t["children"],
          "archived_files": t["include"][0], "archived_bytes": t["include"][1],
          "excluded_files": t["excluded"][0], "excluded_bytes": t["excluded"][1],
@@ -519,20 +581,21 @@ def parent_params(plan: dict) -> dict:
          "extras_files": t["extras"][0], "extras_bytes": t["extras"][1]}
     for name, (n, b) in t["bundle"].items():
         p[f"bundle.{name}.members"], p[f"bundle.{name}.member_bytes"] = n, b
-    return p
+    return {"family": naming.FAMILIES[fam["family"]]["slug"], **{f"{PROV}{k}": v for k, v in p.items()}}
 
 
 def parent_tags(plan: dict, run_ids: dict) -> dict:
     fam = plan["config"]
-    tags = {**{f"source.{k}": str(v) for k, v in fam["tags"].items()}, **PROVENANCE_TAGS,
-            "source_key": f"{fam['family']}/{fam['source_run_id']}", "import_fingerprint": plan["fingerprint"],
-            "import_status": "in_progress", "record_kind": "source_run", "family": fam["family"],
-            "importer_version": IMPORTER_VERSION}
+    tags = {**family_tags(fam), **PROVENANCE_TAGS, "record_kind": "family",
+            "periods": naming.periods_text(fam["family"]),
+            NOTE: naming.family_description(fam["family"], fam["source_run_id"]),
+            T_KEY: f"{fam['family']}/{fam['source_run_id']}", T_FP: plan["fingerprint"],
+            T_STATUS: "in_progress", f"{PROV}importer_version": IMPORTER_VERSION}
     si = fam.get("shared_inputs")
     if si:
-        tags["shared_inputs_parent"] = si["parent"]
-        tags["shared_inputs_parent_run_id"] = run_ids.get(si["parent"], "")
-        tags["shared_inputs_note"] = si["note"]
+        tags[f"{PROV}shared_inputs_parent"] = naming.FAMILIES[si["parent"]]["slug"]
+        tags[f"{PROV}shared_inputs_parent_run_id"] = run_ids.get(si["parent"], "")
+        tags[f"{PROV}shared_inputs_note"] = si["note"]
     return tags
 
 
@@ -556,11 +619,14 @@ def _log_renamed(client, rid: str, tmp: Path, name: str) -> None:
         client.log_artifact(rid, str(link), None)
 
 
+COMPARATOR = f"{PROV}comparator_parent"
+
+
 def child_tags(v: dict, parent_rid: str, comparator_rid: str | None) -> dict:
-    tags = {**v["tags"], **PROVENANCE_TAGS, "import_fingerprint": v["fingerprint"], "mlflow.parentRunId": parent_rid,
-            "importer_version": IMPORTER_VERSION}
-    if v["tags"].get("comparator_parent"):
-        tags["comparator_parent_run_id"] = comparator_rid or ""
+    tags = {**v["tags"], **PROVENANCE_TAGS, T_FP: v["fingerprint"], "mlflow.parentRunId": parent_rid,
+            f"{PROV}importer_version": IMPORTER_VERSION}
+    if v["tags"].get(COMPARATOR):
+        tags[f"{COMPARATOR}_run_id"] = comparator_rid or ""
     return tags
 
 
@@ -568,32 +634,31 @@ def import_child(client, exp, v: dict, parent_rid: str) -> dict:
     st = {"created": 0, "resumed": 0, "noop": 0, "metrics_logged": 0, "artifacts_uploaded": 0}
     run = find_run(client, exp.experiment_id, v["key"])
     if run is not None:
-        if run.data.tags.get("import_fingerprint") != v["fingerprint"]:
-            raise SourceConflict(f"{v['key']}: existing child fingerprint differs -- stop for reconciliation")
+        if run.data.tags.get(T_FP) != v["fingerprint"]:
+            raise SourceConflict(f"{v['key']}: existing child fingerprint differs -- stop")
         if run.data.tags.get("mlflow.parentRunId") != parent_rid:
             raise SourceConflict(f"{v['key']}: existing child is linked to a different parent")
-        if run.data.tags.get("import_status") == "complete":
+        if run.data.tags.get(T_STATUS) == "complete":
             verify_child(client, run, v, parent_rid, deep=True)
             st["noop"] = 1
             return st
         st["resumed"] = 1
     else:
-        run = client.create_run(exp.experiment_id, run_name=f"{v['tags']['family']} H{v['H']} {v['arm']} seed{v['seed']}",
-                                tags={"source_key": v["key"], "import_fingerprint": v["fingerprint"],
-                                      "import_status": "in_progress", "mlflow.parentRunId": parent_rid,
-                                      "record_kind": "evaluation_view"})
+        run = client.create_run(exp.experiment_id, run_name=v["run_name"],
+                                tags={T_KEY: v["key"], T_FP: v["fingerprint"], T_STATUS: "in_progress",
+                                      "mlflow.parentRunId": parent_rid, "record_kind": "evaluation"})
         run = client.get_run(run.info.run_id)
         st["created"] = 1
     rid = run.info.run_id
-    comp = _run_id_for(client, exp, v["tags"]["comparator_parent"]) if v["tags"].get("comparator_parent") else None
+    comp = _run_id_for(client, exp, v["tags"][COMPARATOR]) if v["tags"].get(COMPARATOR) else None
     st["metrics_logged"] = log_values(client, run, v["metrics"], v["params"],
-                                      {**child_tags(v, parent_rid, comp), "import_status": "in_progress"})
+                                      {**child_tags(v, parent_rid, comp), T_STATUS: "in_progress"})
     have = existing_artifacts(client, rid)
     st["artifacts_uploaded"] += upload(client, rid, have, "view/evaluation_view.json", data=v["view_json"].encode())
     st["artifacts_uploaded"] += upload(client, rid, have, "view/na.json",
                                        data=json.dumps(v["na"], indent=1, sort_keys=True).encode())
     verify_child(client, client.get_run(rid), v, parent_rid, deep=True)   # readback before completion
-    client.set_tag(rid, "import_status", "complete")
+    client.set_tag(rid, T_STATUS, "complete")
     client.set_terminated(rid, "FINISHED")
     return st
 
@@ -610,204 +675,9 @@ def _run_id_for(client, exp, source_key: str) -> str:
     return _RID_CACHE[source_key]
 
 
-# ------------------------------------------------------------------ one-time reconciliation
-
-RECONCILE_NOTE = "supervisor review of 8c88f48; fixes a9a2598 + ec2686e"
-
-
 def _download_bytes(client, rid: str, path: str) -> bytes:
-    with tempfile.TemporaryDirectory(prefix="ipcch-mlflow-recon-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="ipcch-mlflow-dl-") as tmp:
         return Path(client.download_artifacts(rid, path, tmp)).read_bytes()
-
-
-def _retained_manifest(client, rid: str, have: dict, name: str, old16: str) -> list:
-    """The record's own manifest for ``name``: its superseded copy if a reconcile already replaced
-    it (resume), else the current one. Small JSON downloads only."""
-    stem, _, ext = name.partition(".")
-    for path in (f"manifests/superseded/{stem}.{old16}.{ext}", f"manifests/{name}"):
-        if path in have:
-            return json.loads(_download_bytes(client, rid, path))
-    raise SourceConflict(f"{rid}: retained manifests/{name} missing -- refuse")
-
-
-def _supersede(client, rid: str, have: dict, path: str, new: bytes, old16: str, prefix: str) -> dict | None:
-    """Keep the current artifact under ``{prefix}superseded/`` before replacing it. Returns a record or None."""
-    if path not in have:
-        upload(client, rid, have, path, data=new)
-        return {"path": path, "action": "added", "new_sha256": sha_bytes(new)}
-    old = _download_bytes(client, rid, path)
-    if old == new:
-        return None
-    name = PurePosixPath(path).name
-    stem, _, ext = name.partition(".")
-    keep = f"{prefix}superseded/{stem}.{old16}.{ext}"
-    upload(client, rid, {}, keep, data=old)
-    upload(client, rid, {}, path, data=new)
-    return {"path": path, "action": "superseded", "kept_as": keep, "old_sha256": sha_bytes(old), "new_sha256": sha_bytes(new)}
-
-
-def reconcile_family(client, exp, plan: dict, run_ids: dict, fail_after: str | None = None) -> dict:
-    """One-time, additive reconciliation of already-imported records to a changed plan.
-
-    Phase 1 is read-only: the parent and every child are validated against the plan and the
-    whole family is refused (no record touched) if any logged metric, param or existing tag
-    value would change, or an archived source/model artifact differs. Phase 2 writes: it first
-    records ``reconcile_target`` (plan fingerprint) and ``import_fingerprint.previous`` on the
-    parent, so an interruption leaves an explicit state that only the same plan may resume.
-    Replaced manifests/view JSON are kept under ``superseded/``. Nothing is deleted."""
-    fam = plan["config"]
-    skey = f"{fam['family']}/{fam['source_run_id']}"
-    out = {"source_key": skey, "parent": None, "children_reconciled": 0, "children_unchanged": 0,
-           "children_not_imported": 0, "artifact_changes": []}
-    run = find_run(client, exp.experiment_id, skey)
-    if run is None:
-        out["parent"] = "not imported"
-        return out
-    rid, tags = run.info.run_id, run.data.tags
-    run_ids[fam["family"]] = rid
-    status, cur_fp, target = tags.get("import_status"), tags.get("import_fingerprint"), tags.get("reconcile_target")
-
-    # ---- phase 1: validate everything, write nothing
-    if status == "reconciling":
-        if target != plan["fingerprint"]:
-            raise SourceConflict(f"{skey}: interrupted reconciliation targets {target}; only that plan may resume "
-                                 f"(this plan is {plan['fingerprint']}) -- stop")
-        old_fp, mode = tags.get("import_fingerprint.previous"), "resume"
-    elif status == "complete" and cur_fp == plan["fingerprint"]:
-        old_fp, mode = cur_fp, "unchanged"
-    elif status == "in_progress" and not run.data.metrics and not run.data.params and not existing_artifacts(client, rid):
-        old_fp, mode = cur_fp, "empty shell"
-    elif status == "complete":
-        old_fp, mode = cur_fp, "reconcile"
-    else:
-        raise SourceConflict(f"{skey}: parent in state {status} with different content -- stop")
-    tar_info, have = {}, {}
-    if mode in ("reconcile", "resume"):
-        if run.data.metrics != plan["parent_metrics"]:
-            raise SourceConflict(f"{skey}: parent metrics would change -- refuse")
-        for k, v in parent_params(plan).items():
-            if run.data.params.get(k) != str(v):
-                raise SourceConflict(f"{skey}: param {k} would change -- refuse")
-        for k, v in parent_tags(plan, run_ids).items():
-            if k in ("import_status", "import_fingerprint", "shared_inputs_parent_run_id"):
-                continue
-            if k in tags and tags[k] != str(v):
-                raise SourceConflict(f"{skey}: tag {k} would change -- refuse")
-        have = existing_artifacts(client, rid)
-        for r in plan["include"]:
-            if have.get(f"source/{r['path']}") != r["bytes"]:
-                raise SourceConflict(f"{skey}: archived source/{r['path']} differs -- refuse")
-        for r in plan["extras"]:
-            if have.get(r["path"]) != r["bytes"]:
-                raise SourceConflict(f"{skey}: archived {r['path']} differs -- refuse")
-        tar_info = {n: {"bytes": int(tags[f"bundle.{n}.bytes"]), "sha256": tags[f"bundle.{n}.sha256"]} for n in plan["bundle"]}
-        for n, info in tar_info.items():
-            if have.get(n) != info["bytes"]:
-                raise SourceConflict(f"{skey}: {n} differs -- refuse")
-        # content identity of every archived item, against the record's own retained manifests
-        retained = {"include.json": plan["include"], "extras.json": plan["extras"],
-                    **{f"{n}.members.json": m for n, m in plan["bundle"].items()}}
-        for name, planned in retained.items():
-            kept = _retained_manifest(client, rid, have, name, old_fp[:16])
-            want = {r["path"]: r["sha256"] for r in planned}
-            got = {r["path"]: r["sha256"] for r in kept}
-            if want != got:
-                diff = sorted(k for k in set(want) | set(got) if want.get(k) != got.get(k))
-                raise SourceConflict(f"{skey}: archived content identity differs from retained manifests/{name} "
-                                     f"({len(diff)} paths, e.g. {diff[:3]}) -- refuse")
-    todo = []
-    for v in plan["views"]:
-        cr = find_run(client, exp.experiment_id, v["key"])
-        if cr is None:
-            out["children_not_imported"] += 1
-            continue
-        ct = cr.data.tags
-        if mode == "empty shell":
-            raise SourceConflict(f"{v['key']}: child exists under an empty parent shell -- stop")
-        if ct.get("mlflow.parentRunId") != rid:
-            raise SourceConflict(f"{v['key']}: child mislinked -- stop")
-        if ct.get("import_fingerprint") == v["fingerprint"] and ct.get("import_status") == "complete":
-            out["children_unchanged"] += 1
-            continue
-        if mode == "unchanged":
-            raise SourceConflict(f"{v['key']}: child differs under an unchanged parent -- stop")
-        if ct.get("import_status") not in ("complete", "reconciling"):
-            raise SourceConflict(f"{v['key']}: child in state {ct.get('import_status')} -- stop")
-        if cr.data.metrics != v["metrics"]:
-            raise SourceConflict(f"{v['key']}: metrics would change -- refuse")
-        for k, x in v["params"].items():
-            if cr.data.params.get(k) != str(x):
-                raise SourceConflict(f"{v['key']}: param {k} would change -- refuse")
-        for k, x in v["tags"].items():
-            if k in ct and ct[k] != str(x):
-                raise SourceConflict(f"{v['key']}: tag {k} would change -- refuse")
-        c_old = ct["import_fingerprint"] if ct["import_fingerprint"] != v["fingerprint"] else ct.get("import_fingerprint.previous")
-        if not c_old:
-            raise SourceConflict(f"{v['key']}: interrupted child lacks its previous fingerprint -- stop")
-        todo.append((v, cr, c_old))
-
-    # ---- phase 2: writes (only after the whole family validated)
-    if mode == "unchanged":
-        out["parent"] = "unchanged"
-        return out
-    if mode == "empty shell":
-        client.set_tag(rid, "import_fingerprint.previous", old_fp)
-        client.set_tag(rid, "import_fingerprint", plan["fingerprint"])
-        client.set_tag(rid, "reconciliation", f"{RECONCILE_NOTE}: empty in_progress shell rebound; resumed by import")
-        out["parent"] = "empty shell rebound"
-        return out
-    if mode == "reconcile":
-        client.set_tag(rid, "import_fingerprint.previous", old_fp)
-        client.set_tag(rid, "reconcile_target", plan["fingerprint"])
-        client.set_tag(rid, "import_status", "reconciling")
-    old16 = old_fp[:16]
-    for path, obj in parent_manifests(plan, tar_info).items():
-        rec = _supersede(client, rid, have, path, json.dumps(obj, indent=1, sort_keys=True).encode(), old16, "manifests/")
-        if rec:
-            out["artifact_changes"].append(rec)
-    log_path = f"manifests/superseded/reconciliation-{old16}.json"
-    log = {"record": skey, "previous_fingerprint": old_fp, "fingerprint": plan["fingerprint"], "note": RECONCILE_NOTE,
-           "changes": out["artifact_changes"]}
-    if log_path in have:   # resume: keep the first run's entries, add only newly completed ones
-        log = json.loads(_download_bytes(client, rid, log_path))
-        seen = {c["path"] for c in log["changes"]}
-        log["changes"] += [c for c in out["artifact_changes"] if c["path"] not in seen]
-    data = json.dumps(log, indent=1, sort_keys=True).encode()
-    if log_path not in have or _download_bytes(client, rid, log_path) != data:
-        upload(client, rid, {}, log_path, data=data)
-    client.set_tag(rid, "import_fingerprint", plan["fingerprint"])
-    client.set_tag(rid, "reconciliation", RECONCILE_NOTE)
-    out["parent"] = "reconciled" if mode == "reconcile" else "resumed"
-    comp = {}
-    for i, (v, cr, c_old) in enumerate(todo):
-        if fail_after == "reconcile-child-2" and i == 2:
-            raise Interrupt("injected interruption during child reconciliation")
-        crid = cr.info.run_id
-        client.set_tag(crid, "import_status", "reconciling")
-        chave = existing_artifacts(client, crid)
-        changes = [c for c in (
-            _supersede(client, crid, chave, "view/evaluation_view.json", v["view_json"].encode(), c_old[:16], "view/"),
-            _supersede(client, crid, chave, "view/na.json", json.dumps(v["na"], indent=1, sort_keys=True).encode(),
-                       c_old[:16], "view/")) if c]
-        log_path = f"view/superseded/reconciliation-{c_old[:16]}.json"
-        if log_path not in chave:   # a resumed child keeps its first reconciliation log
-            upload(client, crid, {}, log_path, data=json.dumps(
-                {"record": v["key"], "previous_fingerprint": c_old, "fingerprint": v["fingerprint"], "note": RECONCILE_NOTE,
-                 "tags_added": sorted(k for k in v["tags"] if k not in cr.data.tags), "changes": changes},
-                indent=1, sort_keys=True).encode())
-        cp = v["tags"].get("comparator_parent")
-        if cp and cp not in comp:
-            comp[cp] = _run_id_for(client, exp, cp)
-        log_values(client, client.get_run(crid), {}, {}, {**child_tags(v, rid, comp.get(cp)),
-                                                          "import_status": "reconciling",
-                                                          "import_fingerprint.previous": c_old,
-                                                          "reconciliation": RECONCILE_NOTE})
-        verify_child(client, client.get_run(crid), v, rid, deep=True)
-        client.set_tag(crid, "import_status", "complete")
-        out["children_reconciled"] += 1
-    verify_parent(client, client.get_run(rid), plan, deep=True)
-    client.set_tag(rid, "import_status", "complete")
-    return out
 
 
 # ------------------------------------------------------------------ verify
@@ -825,7 +695,7 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
     skey = f"{fam['family']}/{fam['source_run_id']}"
     rid = run.info.run_id
     out = {"metrics": 0, "artifacts": 0, "artifact_bytes": 0, "tar_members": 0, "downloaded_bytes": 0}
-    if run.data.tags.get("import_fingerprint") != plan["fingerprint"]:
+    if run.data.tags.get(T_FP) != plan["fingerprint"]:
         raise SourceConflict(f"{skey}: fingerprint readback mismatch")
     for k, v in plan["parent_metrics"].items():
         if run.data.metrics.get(k) != v:
@@ -835,7 +705,7 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
         if run.data.params.get(k) != str(v):
             raise SourceConflict(f"{skey}: param {k} readback mismatch")
     for k, v in parent_tags(plan, {}).items():
-        if k in ("import_status", "shared_inputs_parent_run_id"):
+        if k in (T_STATUS, f"{PROV}shared_inputs_parent_run_id"):
             continue
         if run.data.tags.get(k) != str(v):
             raise SourceConflict(f"{skey}: tag {k} readback mismatch")
@@ -843,14 +713,13 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
     want = {f"source/{r['path']}": r for r in plan["include"]} | {r["path"]: r for r in plan["extras"]}
     tar_info = {}
     for name, members in plan["bundle"].items():
-        tar_info[name] = {"bytes": int(run.data.tags[f"bundle.{name}.bytes"]), "sha256": run.data.tags[f"bundle.{name}.sha256"]}
+        tar_info[name] = {"bytes": int(run.data.tags[BUNDLE_BYTES.format(name)]),
+                          "sha256": run.data.tags[BUNDLE_SHA.format(name)]}
         want[name] = {**tar_info[name], "members": members}
     for path, obj in parent_manifests(plan, tar_info).items():
         data = json.dumps(obj, indent=1, sort_keys=True).encode()
         want[path] = {"bytes": len(data), "sha256": sha_bytes(data)}
     extra = set(have) - set(want)
-    if run.data.tags.get("import_fingerprint.previous"):
-        extra = {p for p in extra if not p.startswith("manifests/superseded/")}
     if set(want) - set(have) or extra:
         raise SourceConflict(f"{skey}: artifact set mismatch missing={sorted(set(want) - set(have))[:5]} "
                              f"extra={sorted(extra)[:5]}")
@@ -872,7 +741,7 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
 
 
 def verify_child(client, cr, v: dict, parent_rid: str, deep: bool) -> int:
-    if cr.data.tags.get("import_fingerprint") != v["fingerprint"] or cr.data.tags.get("mlflow.parentRunId") != parent_rid:
+    if cr.data.tags.get(T_FP) != v["fingerprint"] or cr.data.tags.get("mlflow.parentRunId") != parent_rid:
         raise SourceConflict(f"{v['key']}: child fingerprint/parent link readback mismatch")
     if set(cr.data.metrics) != set(v["metrics"]):
         raise SourceConflict(f"{v['key']}: metric key set differs (NA must not be logged)")
@@ -888,8 +757,6 @@ def verify_child(client, cr, v: dict, parent_rid: str, deep: bool) -> int:
     have = existing_artifacts(client, cr.info.run_id)
     na_bytes = json.dumps(v["na"], indent=1, sort_keys=True).encode()
     want = {"view/evaluation_view.json": v["view_json"].encode(), "view/na.json": na_bytes}
-    if cr.data.tags.get("import_fingerprint.previous"):
-        have = {k: n for k, n in have.items() if not k.startswith("view/superseded/")}
     if {k: len(b) for k, b in want.items()} != have:
         raise SourceConflict(f"{v['key']}: child artifact set/sizes differ")
     if deep:
@@ -904,13 +771,13 @@ def verify_family(client, exp, plan: dict, deep: bool = True) -> dict:
     fam = plan["config"]
     skey = f"{fam['family']}/{fam['source_run_id']}"
     run = find_run(client, exp.experiment_id, skey)
-    if run is None or run.data.tags.get("import_status") != "complete":
+    if run is None or run.data.tags.get(T_STATUS) != "complete":
         raise SourceConflict(f"{skey}: parent record missing or incomplete")
     out = {"source_key": skey, "run_id": run.info.run_id, "records": 1, **verify_parent(client, run, plan, deep)}
     out["child_metrics"] = 0
     for v in plan["views"]:
         cr = find_run(client, exp.experiment_id, v["key"])
-        if cr is None or cr.data.tags.get("import_status") != "complete":
+        if cr is None or cr.data.tags.get(T_STATUS) != "complete":
             raise SourceConflict(f"{v['key']}: child record missing or incomplete")
         out["child_metrics"] += verify_child(client, cr, v, run.info.run_id, deep)
         out["records"] += 1
@@ -939,7 +806,7 @@ class Lock:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["plan", "import", "verify", "reconcile"])
+    ap.add_argument("command", choices=["plan", "import", "verify"])
     ap.add_argument("--sources", default=str(Path(__file__).resolve().parent / "sources.json"))
     ap.add_argument("--store", default=str(DEFAULT_ROOT))
     ap.add_argument("--tracking-uri", default="http://127.0.0.1:5000")
@@ -976,8 +843,6 @@ def main(argv=None) -> int:
                 t1 = time.time()
                 if a.command == "import":
                     s = import_family(client, exp, plans[fam["family"]], store, run_ids, a.fail_after)
-                elif a.command == "reconcile":
-                    s = reconcile_family(client, exp, plans[fam["family"]], run_ids, a.fail_after)
                 else:
                     s = verify_family(client, exp, plans[fam["family"]], deep=not a.shallow)
                 s["seconds"] = round(time.time() - t1, 1)

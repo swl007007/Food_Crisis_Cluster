@@ -48,14 +48,17 @@ def boot(point):
             "interval": [point - 0.01, point + 0.01], "na_reason": ""}
 
 
+FIRST = {"1": "2023-02", "3": "2023-04", "6": "2023-07", "12": "2024-01"}   # GeoXGB reference primary spans
+
+
 def make_fixture(root: Path) -> None:
-    rows = []
-    for i in range(6):  # 6 keys; persistence available for the first 4 (subset cohort)
-        rows.append((100 + i, 24300 + i, "2025-01", "main", 1 if i < 4 else 0))
-    rows += [(200, 24400, "2026-01", "supplementary", 1), (201, 24401, "2026-02", "supplementary", 1),
-             (202, 24402, "2026-03", "supplementary", 1)]
     horizons = {}
     for h in H:
+        # 6 keys spanning the real primary period (first..2025-10); persistence for the first 4 (subset cohort)
+        months = [FIRST[h], FIRST[h], "2024-06", "2025-01", "2025-03", "2025-10"]
+        rows = [(100 + i, 24300 + i, months[i], "main", 1 if i < 4 else 0) for i in range(6)]
+        rows += [(200, 24400, "2026-01", "supplementary", 1), (201, 24401, "2026-02", "supplementary", 1),
+                 (202, 24402, "2026-04", "supplementary", 1)]
         d = root / f"stage3/h{int(h):02d}"
         d.mkdir(parents=True)
         with gzip.open(d / "predictions.csv.gz", "wt") as f:
@@ -87,11 +90,15 @@ def make_fixture(root: Path) -> None:
     (root / "prepared").mkdir()
     (root / "prepared/X_big_h01.npy").write_bytes(b"\0" * 64)
     (root / "prepared/keys.csv").write_text("a,b\n1,2\n")
+    for h in H:   # training pool files (feature matrix excluded by hash, key table archived)
+        (root / f"prepared/X_rich561_h{int(h):02d}.npy").write_bytes(bytes([int(h)]) * 32)
+        with gzip.open(root / f"prepared/keys_h{int(h):02d}.csv.gz", "wt") as f:
+            f.write(f"admin_code,target_ord\n1,{h}\n")
 
 
 def make_cfg(base: Path) -> dict:
     return {"experiment": "IPCCH-test", "repo_root": str(base), "temp_root": str(base), "families": [{
-        "family": "fx", "source_run_id": "fx-run", "format": "p6", "root": "{temp}/src",
+        "family": "p6_geoxgb", "source_run_id": "fx-run", "format": "p6", "root": "{temp}/src",
         "report": "report/report.json", "predictions": "stage3/h{H:02d}/predictions.csv.gz",
         "arms": {"pool": "fresh_trained", "geo": "fresh_trained", "persistence": "persistence_baseline"},
         "model_seed": "42", "include": ["report/**", "stage3/**", "prepared/**"],
@@ -139,29 +146,30 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual((v["records"], v["child_metrics"]), (13, 552))
         self.assertEqual(v["tar_members"], 6)
         c, runs = self.client_runs()
-        geo = [x for x in runs if x.data.tags.get("source_key") == "fx/fx-run/H1/geo/seed42"][0]
-        self.assertNotIn("main.E_all.binary.f1", geo.data.metrics)          # undefined -> not logged
-        self.assertNotIn("main.E_all.delta.geo_minus_pool.binary.f1", geo.data.metrics)
-        self.assertEqual(geo.data.metrics["main.E_all.delta.geo_minus_pool.binary.accuracy"], 0.0)  # defined zero kept
+        geo = [x for x in runs if x.data.tags.get("_prov.source_key") == "p6_geoxgb/fx-run/H1/geo/seed42"][0]
+        self.assertNotIn("primary.all_scored.binary.f1", geo.data.metrics)          # undefined -> not logged
+        self.assertNotIn("primary.all_scored.delta.partitioned_gated_minus_pooled.binary.f1", geo.data.metrics)
+        self.assertEqual(geo.data.metrics["primary.all_scored.delta.partitioned_gated_minus_pooled.binary.accuracy"], 0.0)  # defined zero kept
         na = json.loads(Path(c.download_artifacts(geo.info.run_id, "view/na.json", str(self.base))).read_text())
         reasons = {x["metric"]: x["reason"] for x in na}
-        self.assertEqual(reasons["main.E_all.binary.f1"], "no positive predictions")
-        parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"][0]
+        self.assertEqual(reasons["primary.all_scored.binary.f1"], "no positive predictions")
+        parent = [x for x in runs if x.data.tags.get("record_kind") == "family"][0]
         excl = json.loads(Path(c.download_artifacts(parent.info.run_id, "manifests/excluded.json", str(self.base))).read_text())
-        self.assertEqual([e["path"] for e in excl], ["prepared/X_big_h01.npy"])
+        self.assertEqual([e["path"] for e in excl], ["prepared/X_big_h01.npy"] + [f"prepared/X_rich561_h{h}.npy" for h in ("01", "03", "06", "12")])
         arts = import_runs.existing_artifacts(c, parent.info.run_id)
         self.assertNotIn("source/prepared/X_big_h01.npy", arts)
 
     def test_subset_cohort_digests_and_count_check(self):
         self.run_cmd("import")
         _, runs = self.client_runs()
-        geo = [x for x in runs if x.data.tags.get("source_key") == "fx/fx-run/H1/geo/seed42"][0]
+        geo = [x for x in runs if x.data.tags.get("_prov.source_key") == "p6_geoxgb/fx-run/H1/geo/seed42"][0]
         t, m = geo.data.tags, geo.data.metrics
-        self.assertNotEqual(t["cohort_keys.main.E_all"], t["cohort_keys.main.E_persist"])
-        self.assertEqual((m["main.E_all.n"], m["main.E_persist.n"]), (6.0, 4.0))
-        pers = [x for x in runs if x.data.tags.get("source_key") == "fx/fx-run/H1/persistence/seednone"][0]
-        self.assertEqual(pers.data.tags["cohort_keys.main.E_persist"], t["cohort_keys.main.E_persist"])
-        self.assertNotIn("main.E_all.n", pers.data.metrics)
+        self.assertNotEqual(t["_prov.cohort_keys.primary.all_scored"], t["_prov.cohort_keys.primary.persistence_available"])
+        self.assertEqual((m["primary.all_scored.n_rows"], m["primary.persistence_available.n_rows"]), (6.0, 4.0))
+        pers = [x for x in runs if x.data.tags.get("_prov.source_key") == "p6_geoxgb/fx-run/H1/persistence/seednone"][0]
+        self.assertEqual(pers.data.tags["_prov.cohort_keys.primary.persistence_available"],
+                         t["_prov.cohort_keys.primary.persistence_available"])
+        self.assertNotIn("primary.all_scored.n_rows", pers.data.metrics)
         rep = self.base / "src/report/report.json"
         obj = json.loads(rep.read_text())
         obj["horizons"]["1"]["main"]["E_persist"]["n"] = 5      # disagrees with the 4 persistence keys
@@ -186,8 +194,8 @@ class ImporterTest(unittest.TestCase):
             self.run_cmd("import", "--fail-after", "child-3")
         _, partial = self.client_runs()
         self.assertEqual(len(partial), 4)                       # parent + 3 children
-        parent = [x for x in partial if x.data.tags.get("record_kind") == "source_run"][0]
-        self.assertEqual(parent.data.tags["import_status"], "in_progress")
+        parent = [x for x in partial if x.data.tags.get("record_kind") == "family"][0]
+        self.assertEqual(parent.data.tags["_prov.import_status"], "in_progress")
         r = self.run_cmd("import")["families"][0]
         self.assertEqual((r["resumed"], r["noop"], r["created"]), (1, 3, 9))
         _, runs = self.client_runs()
@@ -257,7 +265,7 @@ class ImporterTest(unittest.TestCase):
                                   "delta_geo_minus_persistence": {"binary.f1": f1, "binary.accuracy": None}},
                     "local_rows": 0, "unmapped_rows": 1, "old_split_matched": {"geo": panel(n_all), "pool": panel(n_all)},
                     "delta_new_minus_old_geo": delta()}
-        comb = {"horizons": {h: {"combined": block(9, 7, 0.0147), "2025": block(6, 4, 0.02), "2026": block(3, 3, 0.01)}
+        comb = {"horizons": {h: {"combined": block(9, 7, 0.0147), "2025": block(3, 1, 0.02), "2026": block(3, 3, 0.01)}
                              for h in H}}
         (self.base / "src/combined.json").write_text(json.dumps(comb))
         fam = self.cfg["families"][0]
@@ -269,180 +277,22 @@ class ImporterTest(unittest.TestCase):
         self.assertNotIn("combined.E_persist.delta.geo_minus_persistence.binary.accuracy", geo.metrics)  # NA
         self.assertEqual(geo.metrics["y2026.E_persist.delta.geo_minus_persistence.binary.f1"], 0.01)
 
-    def test_reconcile_additive_change_keeps_runs_and_superseded_evidence(self):
-        self.run_cmd("import")
-        _, before = self.client_runs()
-        self.cfg["families"][0]["inventory"]["informational_keys"] = {"unused_sha256": "policy change only"}
-        self.write_cfg()
-        orig = extract.EXTRACTORS["p6"]
-
-        def with_extra_tag(fam, rep, root):
-            out = orig(fam, rep, root)
-            for c in out:
-                if c.arm == "geo":
-                    c.tags["cohort_keys.main.extra_subset"] = "d" * 64
-            return out
-        extract.EXTRACTORS["p6"] = with_extra_tag
-        try:
-            with self.assertRaises(SourceConflict):          # plain import refuses a changed fingerprint
-                self.run_cmd("import")
-            r = self.run_cmd("reconcile")["families"][0]
-            self.assertEqual((r["parent"], r["children_reconciled"], r["children_unchanged"]), ("reconciled", 4, 8))
-            self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
-            self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)
-        finally:
-            extract.EXTRACTORS["p6"] = orig
-        c, after = self.client_runs()
-        self.assertEqual(sorted(x.info.run_id for x in before), sorted(x.info.run_id for x in after))
-        parent = [x for x in after if x.data.tags.get("record_kind") == "source_run"][0]
-        old = [x for x in before if x.data.tags.get("record_kind") == "source_run"][0]
-        self.assertEqual(parent.data.tags["import_fingerprint.previous"], old.data.tags["import_fingerprint"])
-        arts = import_runs.existing_artifacts(c, parent.info.run_id)
-        self.assertTrue(any(k.startswith("manifests/superseded/plan-summary.") for k in arts))
-        geo = [x for x in after if x.data.tags.get("source_key") == "fx/fx-run/H1/geo/seed42"][0]
-        self.assertTrue(any(k.startswith("view/superseded/evaluation_view.")
-                            for k in import_runs.existing_artifacts(c, geo.info.run_id)))
-
-    def test_reconcile_refuses_value_change(self):
-        self.run_cmd("import")
-        rep = self.base / "src/report/report.json"
-        obj = json.loads(rep.read_text())
-        obj["horizons"]["3"]["main"]["E_all"]["pool"]["binary"]["f1"] = 0.77
-        rep.write_text(json.dumps(obj))
-        with self.assertRaisesRegex(SourceConflict, "would change"):
-            self.run_cmd("reconcile")
-
-    def test_reconcile_rebinds_empty_shell_then_import_resumes_it(self):
-        c = import_runs._client(self.uri)
-        exp = import_runs.get_experiment(c, "IPCCH-test", self.art)
-        shell = c.create_run(exp.experiment_id, tags={"source_key": "fx/fx-run", "import_fingerprint": "0" * 64,
-                                                       "import_status": "in_progress", "record_kind": "source_run"})
-        self.assertEqual(self.run_cmd("reconcile")["families"][0]["parent"], "empty shell rebound")
-        r = self.run_cmd("import")["families"][0]
-        self.assertEqual((r["resumed"], r["created"]), (1, 12))
-        _, runs = self.client_runs()
-        parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"]
-        self.assertEqual([x.info.run_id for x in parent], [shell.info.run_id])
-        self.assertEqual(parent[0].data.tags["import_fingerprint.previous"], "0" * 64)
-        self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
-
-    # ---- A01: whole-family validation before any reconciliation write
-    def store_state(self):
-        c, runs = self.client_runs()
-        return {r.info.run_id: (dict(r.data.tags), dict(r.data.metrics), dict(r.data.params), r.info.status,
-                                import_runs.existing_artifacts(c, r.info.run_id)) for r in runs}
-
-    def patched(self, tag_value="d" * 64, late_metric=None):
-        """Extractor patch: an additive tag on every geo view, optionally a changed metric on the
-        LAST view of the family (H12 persistence), i.e. a conflict found after valid earlier views."""
-        orig = extract.EXTRACTORS["p6"]
-
-        def wrapped(fam, rep, root):
-            out = orig(fam, rep, root)
-            for c in out:
-                if c.arm == "geo":
-                    c.tags["cohort_keys.main.extra_subset"] = tag_value
-            if late_metric is not None:
-                assert out[-1].H == "12" and out[-1].arm == "persistence"
-                out[-1].metrics["main.E_persist.binary.f1"] = late_metric
-            return out
-        return orig, wrapped
-
-    def test_late_child_conflict_refused_before_any_write(self):
-        self.run_cmd("import")
-        before = self.store_state()
-        orig, wrapped = self.patched(late_metric=0.77)
-        extract.EXTRACTORS["p6"] = wrapped
-        try:
-            with self.assertRaisesRegex(SourceConflict, "H12/persistence.*metrics would change"):
-                self.run_cmd("reconcile")
-        finally:
-            extract.EXTRACTORS["p6"] = orig
-        self.assertEqual(self.store_state(), before)            # parent, children, artifacts untouched
-        self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)   # original plan still usable
-        self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
-
-    def test_same_size_archived_content_change_refused_before_any_write(self):
-        self.run_cmd("import")
-        before = self.store_state()
-        for rel, changed in (("prepared/keys.csv", "a,b\n3,4\n"),          # archived source file
-                             ("models/h01/booster.json", '{"h": "9"}')):   # models.tar member
-            path = self.base / "src" / rel
-            original = path.read_text()
-            self.assertEqual(len(changed), len(original))
-            path.write_text(changed)
-            try:
-                with self.assertRaisesRegex(SourceConflict, "content identity differs"):
-                    self.run_cmd("reconcile")
-            finally:
-                path.write_text(original)
-            self.assertEqual(self.store_state(), before)        # tags, metrics, params, artifact sizes
-        c, runs = self.client_runs()
-        parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"][0]
-        stored = Path(c.download_artifacts(parent.info.run_id, "source/prepared/keys.csv", str(self.base)))
-        self.assertEqual(stored.read_text(), "a,b\n1,2\n")    # archived bytes unchanged
-        self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)
-        self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
-
-    def test_interrupted_reconcile_resumes_same_plan_only(self):
-        self.run_cmd("import")
-        _, before = self.client_runs()
-        orig, wrapped = self.patched()
-        extract.EXTRACTORS["p6"] = wrapped
-        try:
-            with self.assertRaises(import_runs.Interrupt):
-                self.run_cmd("reconcile", "--fail-after", "reconcile-child-2")
-            c, runs = self.client_runs()
-            parent = [x for x in runs if x.data.tags.get("record_kind") == "source_run"][0]
-            self.assertEqual(parent.data.tags["import_status"], "reconciling")
-            target = parent.data.tags["reconcile_target"]
-            log_path = [k for k in import_runs.existing_artifacts(c, parent.info.run_id)
-                        if k.startswith("manifests/superseded/reconciliation-")]
-            self.assertEqual(len(log_path), 1)
-            first_log = Path(c.download_artifacts(parent.info.run_id, log_path[0], str(self.base / "l1"))).read_bytes()
-            self.assertIn("plan-summary.json", json.dumps([x["path"] for x in json.loads(first_log)["changes"]]))
-            with self.assertRaisesRegex(SourceConflict, "interrupted"):
-                self.run_cmd("import")                           # import refuses, state kept
-            _, other = self.patched(tag_value="e" * 64)
-            extract.EXTRACTORS["p6"] = other
-            with self.assertRaisesRegex(SourceConflict, "only that plan may resume"):
-                self.run_cmd("reconcile")
-            extract.EXTRACTORS["p6"] = wrapped
-            r = self.run_cmd("reconcile")["families"][0]
-            self.assertEqual((r["parent"], r["children_reconciled"], r["children_unchanged"]), ("resumed", 2, 10))
-            self.assertEqual(self.run_cmd("verify")["families"][0]["records"], 13)
-            self.assertEqual(self.run_cmd("import")["families"][0]["noop"], 13)
-        finally:
-            extract.EXTRACTORS["p6"] = orig
-        c, after = self.client_runs()
-        self.assertEqual(sorted(x.info.run_id for x in before), sorted(x.info.run_id for x in after))
-        parent = [x for x in after if x.data.tags.get("record_kind") == "source_run"][0]
-        self.assertEqual(parent.data.tags["import_fingerprint"], target)
-        resumed_log = Path(c.download_artifacts(parent.info.run_id, log_path[0], str(self.base / "l2"))).read_bytes()
-        self.assertEqual(resumed_log, first_log)                 # first run's entries kept on resume
-        self.assertEqual(parent.data.tags["import_status"], "complete")
-        for x in after:
-            if x.data.tags.get("arm") == "geo":
-                logs = [k for k in import_runs.existing_artifacts(c, x.info.run_id)
-                        if k.startswith("view/superseded/reconciliation-")]
-                self.assertEqual(len(logs), 1)
-
     # ---- A02: read dependencies planned, writes limited to the selection
     def test_selected_family_plans_reference_parent_without_writing_it(self):
         make_fixture(self.base / "src2")
         fam2 = json.loads(json.dumps(self.cfg["families"][0]))
-        fam2.update({"family": "fy", "source_run_id": "fy-run", "root": "{temp}/src2"})
-        fam2["inventory"]["reference_parents"] = ["fx"]
+        fam2.update({"family": "climate_perturbation", "source_run_id": "fy-run", "root": "{temp}/src2"})
+        fam2["inventory"]["reference_parents"] = ["p6_geoxgb"]
         self.cfg["families"] = [fam2, self.cfg["families"][0]]   # dependent listed before its parent
         self.write_cfg()
-        p = self.run_cmd("plan", "--family", "fy")
-        self.assertEqual((p["records_planned"], p["read_dependencies"]), (13, ["fx"]))
-        r = self.run_cmd("import", "--family", "fy")
-        self.assertEqual([f["source_key"] for f in r["families"]], ["fy/fy-run"])
+        p = self.run_cmd("plan", "--family", "climate_perturbation")
+        self.assertEqual((p["records_planned"], p["read_dependencies"]), (13, ["p6_geoxgb"]))
+        r = self.run_cmd("import", "--family", "climate_perturbation")
+        self.assertEqual([f["source_key"] for f in r["families"]], ["climate_perturbation/fy-run"])
         _, runs = self.client_runs()
-        self.assertEqual({x.data.tags.get("family") for x in runs}, {"fy"})
+        self.assertEqual({x.data.tags.get("family") for x in runs}, {"geoxgb_climate_swap"})
         self.assertEqual(len(runs), 13)
-        self.assertEqual(self.run_cmd("verify", "--family", "fy")["families"][0]["records"], 13)
+        self.assertEqual(self.run_cmd("verify", "--family", "climate_perturbation")["families"][0]["records"], 13)
         with self.assertRaisesRegex(SourceConflict, "unknown family"):
             self.run_cmd("plan", "--family", "nope")
 
@@ -458,7 +308,7 @@ if __name__ == "__main__":
 
 class ExtractionGuardTest(unittest.TestCase):
     def child(self):
-        return extract.Child("fx", "run", "1", "pool", "42", "fresh_trained")
+        return extract.Child("p6_geoxgb", "run", "1", "pool", "42", "fresh_trained")
 
     def test_sanitized_name_collision_refused(self):
         c = self.child()
@@ -505,7 +355,7 @@ class RestoreScratchServerTest(unittest.TestCase):
             base = Path(tmp)
             make_fixture(base / "src")
             cfg = make_cfg(base)
-            cfg["experiment"] = "IPCCH"
+            cfg["experiment"] = "IPCCH - detailed runs"
             (base / "sources.json").write_text(json.dumps(cfg))
             store = base / "store"
             (store / "artifacts").mkdir(parents=True)
@@ -530,7 +380,7 @@ class RestoreScratchServerTest(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 backup_restore.restore_check(base / "backup", base / "scratch-live", port=5000)
             res = backup_restore.restore_check(base / "backup", base / "scratch", port=free_port())
-            self.assertEqual(res["ipcch_runs_by_kind"], {"source_run": 1, "evaluation_view": 12})
+            self.assertEqual(res["ipcch_runs_by_kind"], {"family": 1, "evaluation": 12})
             self.assertEqual([d["artifact"] for d in res["downloaded"]], ["manifests/plan-summary.json", "models.tar"])
 
 
