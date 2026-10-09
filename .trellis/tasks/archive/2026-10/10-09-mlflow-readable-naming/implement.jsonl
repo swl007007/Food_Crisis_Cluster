@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/local-mlflow-import.md", "reason": "Import contract being renamed"}
+{"file": ".trellis/spec/backend/local-mlflow-summary-catalog.md", "reason": "Summary contract replaced by the dashboard"}

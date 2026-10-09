@@ -116,7 +116,7 @@ def download_checks(uri: str, man: dict, experiment: str) -> dict:
         kinds[k] = kinds.get(k, 0) + 1
     targets = []
     for r in runs:
-        if r.data.tags.get("record_kind") != "source_run":
+        if r.data.tags.get("record_kind") != "family":
             continue
         base = r.info.artifact_uri.split("mlflow-artifacts:/", 1)[-1].lstrip("/")
         targets.append((r, "manifests/plan-summary.json", f"{base}/manifests/plan-summary.json"))
@@ -131,14 +131,14 @@ def download_checks(uri: str, man: dict, experiment: str) -> dict:
                 raise SystemExit(f"{store_rel} not in backup manifest")
             local = Path(client.download_artifacts(r.info.run_id, art, tmp))
             if sha(local) != want["sha256"]:
-                raise SystemExit(f"{art} of {r.data.tags.get('source_key')} differs after scratch download")
-            checked.append({"source_key": r.data.tags.get("source_key"), "artifact": art, "bytes": want["bytes"],
+                raise SystemExit(f"{art} of {r.data.tags.get('zz_prov.source_key')} differs after scratch download")
+            checked.append({"source_key": r.data.tags.get("zz_prov.source_key"), "artifact": art, "bytes": want["bytes"],
                             "sha256": want["sha256"]})
             local.unlink()
     return {"ipcch_runs_by_kind": kinds, "downloaded": checked}
 
 
-def restore_check(backup_dir: Path, scratch: Path, port: int = 5001, experiment: str = "IPCCH") -> dict:
+def restore_check(backup_dir: Path, scratch: Path, port: int = 5001, experiment: str = "IPCCH - detailed runs") -> dict:
     if scratch.exists():
         raise SystemExit(f"scratch restore root exists: {scratch}")
     man = json.loads((backup_dir / "backup-manifest.json").read_text())
@@ -171,7 +171,7 @@ def main(argv=None) -> int:
     ap.add_argument("--dest", required=True, help="backup dir (backup) or scratch root (restore-check)")
     ap.add_argument("--backup", help="backup dir to restore from (restore-check)")
     ap.add_argument("--port", type=int, default=5001, help="scratch server port (restore-check; never 5000)")
-    ap.add_argument("--experiment", default="IPCCH")
+    ap.add_argument("--experiment", default="IPCCH - detailed runs")
     ap.add_argument("--out", default=None)
     a = ap.parse_args(argv)
     res = backup(Path(a.store), Path(a.dest)) if a.command == "backup" else \
