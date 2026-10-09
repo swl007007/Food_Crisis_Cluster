@@ -117,12 +117,13 @@ def compare(old: dict, new: dict) -> dict:
             if k in explained[t["_prov.original_source_key"]]:
                 continue
             ns, _, contrast = k.partition(".binary.f1.minus_")
-            other, _, suffix = contrast.partition(".")
-            role, coh = ns.split(".", 1)
-            srcs = contrast_values({"metrics": src["metrics"]}, role, coh, t["arm"], other) if contrast else {}
-            s = srcs.get(f".{suffix}" if suffix else "")
-            if s is None and coh in COHORTS and not contrast:
-                s = k                                      # a dashboard panel value absent from the old Summary
+            if contrast:
+                other, _, suffix = contrast.partition(".")
+                role, coh = ns.split(".", 1)
+                s = contrast_values({"metrics": src["metrics"]}, role, coh, t["arm"], other).get(
+                    f".{suffix}" if suffix else "")
+            else:
+                s = k if k.split(".")[1] in COHORTS else None   # panel value absent from the old Summary
             if s is None or src["metrics"].get(s) != v:
                 bad(f"dashboard {t['_prov.projection_key']}: {k} has no matching source value ({s})")
             else:
@@ -135,8 +136,8 @@ def compare(old: dict, new: dict) -> dict:
     rep["datasets"] = {"names": len(new["datasets"]), "names_with_several_digests": len(multi)}
 
     def counts(runs, fam_key, arm_key, lead_key):
-        return Counter(f"{r['tags'].get(fam_key)}|{r['tags'].get(arm_key)}|{r['tags'].get(lead_key)}"
-                       for r in runs if r["tags"].get(lead_key))
+        return Counter(f"{r['tags'].get(fam_key)}|{r['tags'].get(arm_key)}|{r['tags'].get('window', '')}|"
+                       f"{r['tags'].get(lead_key)}" for r in runs if r["tags"].get(lead_key))
     rep["counts"] = {
         "old_detailed_by_family_arm_lead": len(counts(old["experiments"][OLD_DETAIL].values(), "family", "arm", "horizon")),
         "new_detailed_by_family_arm_lead": len(counts(new["experiments"][NEW_DETAIL].values(), "family", "arm", "lead_months")),

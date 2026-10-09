@@ -110,7 +110,8 @@ class DashboardTest(unittest.TestCase):
 
     def test_seed_means(self):
         r = {"family": "mlp_fixed_map", "old_arm": "pool", "H": "1", "tags": {"arm": "pooled"},
-             "family_run_id": "p", "model_keys": ["k"], "training_dataset": "t", "original_source_key": "s"}
+             "family_run_id": "p", "model_keys": ["k"], "training_dataset": "t", "training_files": {},
+             "original_source_key": "s"}
         rows = [{**r, "seed": s, "original_run_id": f"r{s}", "values": {"a": v, "b": 1.0, "a.ci_low": 0.0},
                  "value_inputs": {"a": "d1", "b": "d1" if s != "44" else "d2", "a.ci_low": "d1"}, "na": {}}
                 for s, v in (("42", 0.1), ("43", 0.2), ("44", 0.6))]

@@ -106,9 +106,9 @@ def eval_descriptor(family: str, H: str, period: str, old_cohort: str, frame: pd
                    zip(frame["admin_code"], frame["target_ord"], frame["phase_truth"], frame["q3_truth"]))
     keys, n = key_digest(frame)
     months = sorted(set(frame["target_month"].astype(str)))
-    role = "selected_months" if period == "selected_dates" else naming.period_role(family, period)
+    # identity of the rows only: the period role is how a row uses them (H12 combined = holdout rows)
     d = {"schema": "ipcch-evaluation-dataset-v2", "context": "evaluation", "lead_months": int(H),
-         "period_role": role, "period": naming.span_label(family, H, period, dates),
+         "period": naming.span_label(family, H, period, dates),
          "cohort": naming.COHORTS[old_cohort], "cohort_definition": naming.COHORT_MEANING[naming.COHORTS[old_cohort]],
          "num_rows": n, "keys_sha256": keys, "truth_sha256": sha("\n".join(lines).encode()),
          "truth_columns": list(TRUTH_COLUMNS), "truth_definition": truth,
@@ -199,9 +199,11 @@ def build_plan(client, cfg: dict, store: Path) -> dict:
         if x not in files or k not in files:
             raise SourceConflict(f"{family} H{H}: training pool files {x} / {k} not in {pool['from']} manifests")
         desc = {"schema": "ipcch-training-pool-v1", "context": "training", "lead_months": int(H),
-                "features": pool["features"], "x_path": x, "x_sha256": files[x], "keys_path": k,
-                "keys_sha256": files[k], "first_target_month": "2014-01", "definition": naming.TRAINING_POOL_TEXT}
-        return add_dataset(desc, naming.training_dataset_name(pool["features"], H))
+                "features": pool["features"], "x_sha256": files[x], "keys_sha256": files[k],
+                "first_target_month": "2014-01", "definition": naming.TRAINING_POOL_TEXT}
+        files_used = {"family_run": naming.FAMILIES[pool["from"]]["slug"], "x_path": x, "keys_path": k,
+                      **({"note": pool["note"]} if pool.get("note") else {})}
+        return add_dataset(desc, naming.training_dataset_name(pool["features"], H)), files_used
 
     for child in children:
         t = child.data.tags
@@ -265,14 +267,14 @@ def build_plan(client, cfg: dict, store: Path) -> dict:
                 "member_manifest_uri": f"runs:/{parent.info.run_id}/manifests/models.tar.members.json",
                 "source_code_uri": f"runs:/{parent.info.run_id}/source_code",
                 "code_commit": parent.data.tags.get(f"{PROV}source.code_commit")})
-        train = training_dataset(family, H)
+        train, train_files = training_dataset(family, H)
         rows.append({"projection_key": naming.record_key(family, old_arm, H, seed), "family": family,
                      "old_arm": old_arm, "H": H, "seed": seed, "aggregation": "single_seed" if naming.multi_seed(family)
                      and seed != "none" else "single_run", "tags": {k: v for k, v in t.items() if not k.startswith(("_prov.", "mlflow."))},
                      "original_run_id": child.info.run_id, "original_source_key": t[T_KEY],
                      "family_run_id": parent.info.run_id, "model_keys": [model_key] if model_key else [],
                      "values": values, "value_sources": sources, "value_inputs": inputs, "na": row_na,
-                     "training_dataset": train["name"]})
+                     "training_dataset": train["name"], "training_files": train_files})
     rows += seed_means(rows)
     counts = {"rows": len(rows), "finite": sum(len(r["values"]) for r in rows),
               "na": sum(len(r["na"]) for r in rows), "model_versions": len(models),
@@ -322,7 +324,7 @@ def seed_means(rows: list) -> list:
                     "original_source_key": ";".join(r["original_source_key"] for r in rs),
                     "family_run_id": base["family_run_id"], "model_keys": [m for r in rs for m in r["model_keys"]],
                     "values": values, "value_sources": sources, "value_inputs": inputs, "na": na,
-                    "training_dataset": base["training_dataset"]})
+                    "training_dataset": base["training_dataset"], "training_files": base["training_files"]})
     return out
 
 
@@ -455,6 +457,7 @@ def _row_doc(row: dict, plan: dict, model_ids: list) -> bytes:
            "value_datasets": row["value_inputs"], "na": row["na"],
            "datasets": {n: {"digest": ds[n]["digest"], "full_sha256": ds[n]["full_sha256"],
                             "descriptor": ds[n]["descriptor"]} for n in used},
+           "training_files": row["training_files"],
            "model_ids": model_ids, "original_run_id": row["original_run_id"],
            "original_source_key": row["original_source_key"], "plan_fingerprint": plan["fingerprint"]}
     return json.dumps(doc, indent=1, sort_keys=True).encode()
@@ -465,8 +468,8 @@ def _dataset_entity(ds: dict):
     d = ds["descriptor"]
     if d["context"] == "training":
         schema = {"mlflow_colspec": [{"name": "features", "type": "double"}, {"name": "q2..q5 targets", "type": "double"}]}
-        source = {"authority": "prepared training pool of the imported IPCCH runs", "x_path": d["x_path"],
-                  "x_sha256": d["x_sha256"], "keys_path": d["keys_path"], "keys_sha256": d["keys_sha256"]}
+        source = {"authority": "prepared training pool of the imported IPCCH runs (file paths per row in "
+                               "dashboard/row.json)", "x_sha256": d["x_sha256"], "keys_sha256": d["keys_sha256"]}
         profile = {"lead_months": d["lead_months"], "features": d["features"]}
     else:
         schema = {"mlflow_colspec": [{"name": "admin_code", "type": "long"}, {"name": "target_ord", "type": "long"},

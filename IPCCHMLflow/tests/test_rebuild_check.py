@@ -45,6 +45,17 @@ class RebuildCheckTest(unittest.TestCase):
         self.assertEqual((rep["detailed"]["values_equal"], rep["summary"]["values_equal"],
                           rep["dashboard_extra"]["contrast_values"]), (3, 2, 1))
 
+    def test_panel_value_new_in_dashboard_checked_against_detailed(self):
+        old, new = stores()
+        new["experiments"][rc.NEW_DETAIL]["n1"]["metrics"]["combined.all_scored.binary.f1"] = 0.4
+        dash = new["experiments"][rc.NEW_DASHBOARD]["d1"]["metrics"]
+        dash["combined.all_scored.binary.f1"] = 0.4
+        rep = rc.compare(old, new)
+        self.assertFalse(any("combined" in p for p in rep["problems"] if "dashboard" in p), rep["problems"])
+        self.assertEqual(rep["dashboard_extra"]["panel_values_new_in_dashboard"], 1)
+        dash["combined.all_scored.binary.f1"] = 0.41
+        self.assertTrue(any("combined.all_scored.binary.f1" in p for p in rc.compare(old, new)["problems"]))
+
     def test_changed_detailed_value_reported(self):
         old, new = stores()
         new["experiments"][rc.NEW_DETAIL]["n1"]["metrics"]["primary.persistence_available.binary.f1"] = 0.51
