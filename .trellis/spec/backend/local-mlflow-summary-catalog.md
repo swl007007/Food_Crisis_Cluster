@@ -33,13 +33,13 @@ datasets=[DatasetInput(Dataset, tags)], models=[LoggedModelInput, ...])`,
 - Experiment `IPCCH - dashboard`; one run per detailed child (family x lead x arm x seed) plus
   one `seed=mean` run per MLP arm x lead (136 rows). Run name = `naming.run_name`; tags = the
   child's readable tags + `record_kind=dashboard_row`, `aggregation` (`single_run`,
-  `single_seed`, `mean_of_3_seeds`), description, `_prov.*` links.
+  `single_seed`, `mean_of_3_seeds`), description, `zz_prov.*` links.
 - Metrics: `<role>.<cohort>.<leaf>` for role in primary|holdout|combined|selected_months,
   the seven main cohorts and 9 leaves (`binary.accuracy|precision|recall|f1|f2`,
   `four_class.accuracy|macro_f1`, `share_phase3plus_r2`, `n_rows`); contrasts
   `<role>.<cohort>.binary.f1.minus_persistence|minus_pooled[.ci_low|.ci_high]` for the row's own
   arm, from the saved bootstrap (with interval) else the delta block. Gate subsets, reference
-  panels and year blocks stay in the detailed records. NA stays absent (`_prov.na_metrics`,
+  panels and year blocks stay in the detailed records. NA stays absent (`zz_prov.na_metrics`,
   reasons in `dashboard/row.json`).
 - Seed mean: a metric is averaged only when all seeds have it on the same evaluation dataset;
   intervals are never averaged; otherwise NA with a reason. The mean row links all three
@@ -55,8 +55,8 @@ datasets=[DatasetInput(Dataset, tags)], models=[LoggedModelInput, ...])`,
   manifests, or from the reference run for families that read its files in place).
 - Models: registered `IPCCH <family> | <arm> | <lead>` (+ window), versions = seeds; external
   LoggedModel `<family> | <arm> | <lead> | seed N` (no `.`/`/`/`:`/`%`/quotes), source run =
-  the detailed child. Persistence has no model. Stable keys `_prov.projection_key` on rows,
-  models and versions; all objects carry `_prov.dashboard_plan_fingerprint`.
+  the detailed child. Persistence has no model. Stable keys `zz_prov.projection_key` on rows,
+  models and versions; all objects carry `zz_prov.dashboard_plan_fingerprint`.
 - Experiment tag `catalog_status` = `incomplete` during apply, `complete` after full verify;
   the experiment description is the reading guide (vocabulary, comparability, filters).
 
@@ -69,7 +69,7 @@ datasets=[DatasetInput(Dataset, tags)], models=[LoggedModelInput, ...])`,
 | backup DB row counts != current store | refuse ("fresh backup") |
 | detailed experiment differs from the pre-apply inventory (before or after) | refuse / verify fails |
 | prediction artifact SHA != family run manifest | `SourceConflict` |
-| recomputed keys hash or n != `_prov.cohort_keys.*` / panel n_rows | `SourceConflict` |
+| recomputed keys hash or n != `zz_prov.cohort_keys.*` / panel n_rows | `SourceConflict` |
 | scored months outside / different from the named span | `SourceConflict` |
 | one dataset name with two contents | `SourceConflict` |
 | incomplete seed set for a mean | `SourceConflict` |

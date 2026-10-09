@@ -5,10 +5,10 @@
   verify  read back every metric/param/tag and download+hash every artifact
 
 Names, tags and descriptions use the readable vocabulary in naming.py; the extractor's own
-names stay in provenance (``_prov.*`` tags and view/evaluation_view.json). Records are keyed
-by a stable ``_prov.source_key`` tag; ``_prov.import_fingerprint`` binds the exact inputs.
+names stay in provenance (``zz_prov.*`` tags and view/evaluation_view.json). Records are keyed
+by a stable ``zz_prov.source_key`` tag; ``zz_prov.import_fingerprint`` binds the exact inputs.
 Same fingerprint -> verified no-op; different -> conflict (stop). An interrupted record
-(``_prov.import_status=in_progress``) resumes against the same fingerprint. Originals are
+(``zz_prov.import_status=in_progress``) resumes against the same fingerprint. Originals are
 only read.
 """
 
@@ -34,7 +34,7 @@ import naming  # noqa: E402
 from extract import SourceConflict  # noqa: E402
 
 IMPORTER_VERSION = "ipcch-mlflow-import-v2"
-PROV = "_prov."
+PROV = "zz_prov."
 T_KEY, T_FP, T_STATUS = f"{PROV}source_key", f"{PROV}import_fingerprint", f"{PROV}import_status"
 NOTE = "mlflow.note.content"
 DEFAULT_ROOT = Path("/home/swl007007/.local/share/ipcch-mlflow")
@@ -43,6 +43,12 @@ CHUNK = 1 << 20
 
 
 # ------------------------------------------------------------------ helpers
+
+def ordered(tags: dict) -> dict:
+    """Tags in key order: the run page lists tags in insertion order, so writing them sorted at
+    create time puts the readable tags first and the zz_prov.* provenance last."""
+    return {k: tags[k] for k in sorted(tags)}
+
 
 def canon(obj) -> bytes:
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True, default=str).encode()
@@ -523,8 +529,7 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
         stats["resumed"] += 1
     else:
         run = client.create_run(exp.experiment_id, run_name=naming.FAMILIES[fam["family"]]["long"],
-                                tags={T_KEY: skey, T_FP: plan["fingerprint"], T_STATUS: "in_progress",
-                                      "record_kind": "family"})
+                                tags=ordered(parent_tags(plan, run_ids)))
         run = client.get_run(run.info.run_id)
         stats["created"] += 1
     rid = run.info.run_id
@@ -643,14 +648,13 @@ def import_child(client, exp, v: dict, parent_rid: str) -> dict:
             st["noop"] = 1
             return st
         st["resumed"] = 1
-    else:
+    comp = _run_id_for(client, exp, v["tags"][COMPARATOR]) if v["tags"].get(COMPARATOR) else None
+    if run is None:
         run = client.create_run(exp.experiment_id, run_name=v["run_name"],
-                                tags={T_KEY: v["key"], T_FP: v["fingerprint"], T_STATUS: "in_progress",
-                                      "mlflow.parentRunId": parent_rid, "record_kind": "evaluation"})
+                                tags=ordered({**child_tags(v, parent_rid, comp), T_STATUS: "in_progress"}))
         run = client.get_run(run.info.run_id)
         st["created"] = 1
     rid = run.info.run_id
-    comp = _run_id_for(client, exp, v["tags"][COMPARATOR]) if v["tags"].get(COMPARATOR) else None
     st["metrics_logged"] = log_values(client, run, v["metrics"], v["params"],
                                       {**child_tags(v, parent_rid, comp), T_STATUS: "in_progress"})
     have = existing_artifacts(client, rid)

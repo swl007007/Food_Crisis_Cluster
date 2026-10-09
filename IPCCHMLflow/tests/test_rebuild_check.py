@@ -22,15 +22,15 @@ def stores():
         rc.OLD_SUMMARY: {"s1": {"name": "y", "tags": {"projection_key": f"{KEY}#main.E_persist", "family": "p6_geoxgb"},
                                 "metrics": {"binary.f1": 0.5, "n": 4.0}}}}, "datasets": {}}
     new = {"experiments": {
-        rc.NEW_DETAIL: {"n1": {"name": "x", "tags": {"_prov.source_key": KEY, "family": "geoxgb_reference",
+        rc.NEW_DETAIL: {"n1": {"name": "x", "tags": {"zz_prov.source_key": KEY, "family": "geoxgb_reference",
                                                      "arm": "partitioned_gated", "lead_months": "01"},
                                "metrics": {"primary.persistence_available.binary.f1": 0.5,
                                            "primary.persistence_available.n_rows": 4.0,
                                            "primary.persistence_available.bootstrap.partitioned_gated_minus_persistence"
                                            ".binary.f1.delta": 0.1}}},
-        rc.NEW_DASHBOARD: {"d1": {"name": "z", "tags": {"_prov.original_source_key": KEY, "seed": "42",
+        rc.NEW_DASHBOARD: {"d1": {"name": "z", "tags": {"zz_prov.original_source_key": KEY, "seed": "42",
                                                         "family": "geoxgb_reference", "arm": "partitioned_gated",
-                                                        "lead_months": "01", "_prov.projection_key": "k"},
+                                                        "lead_months": "01", "zz_prov.projection_key": "k"},
                                   "metrics": {"primary.persistence_available.binary.f1": 0.5,
                                               "primary.persistence_available.n_rows": 4.0,
                                               "primary.persistence_available.binary.f1.minus_persistence": 0.1}}}},

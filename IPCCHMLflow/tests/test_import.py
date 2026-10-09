@@ -109,6 +109,19 @@ def make_cfg(base: Path) -> dict:
                       "model_contract": "xgb"}}]}
 
 
+def assert_provenance_listed_last(test, db: Path, run_id: str) -> None:
+    """The run page lists tags in insertion order: every zz_prov.* tag must follow the readable ones."""
+    import sqlite3
+    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        keys = [k for (k,) in con.execute("select key from tags where run_uuid = ? order by rowid", (run_id,))
+                if not k.startswith("mlflow.")]
+    finally:
+        con.close()
+    prov = [i for i, k in enumerate(keys) if k.startswith("zz_prov.")]
+    test.assertTrue(prov and min(prov) == len(keys) - len(prov), keys)
+
+
 class ImporterTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(prefix="ipcch-mlflow-test-")
@@ -146,7 +159,7 @@ class ImporterTest(unittest.TestCase):
         self.assertEqual((v["records"], v["child_metrics"]), (13, 552))
         self.assertEqual(v["tar_members"], 6)
         c, runs = self.client_runs()
-        geo = [x for x in runs if x.data.tags.get("_prov.source_key") == "p6_geoxgb/fx-run/H1/geo/seed42"][0]
+        geo = [x for x in runs if x.data.tags.get("zz_prov.source_key") == "p6_geoxgb/fx-run/H1/geo/seed42"][0]
         self.assertNotIn("primary.all_scored.binary.f1", geo.data.metrics)          # undefined -> not logged
         self.assertNotIn("primary.all_scored.delta.partitioned_gated_minus_pooled.binary.f1", geo.data.metrics)
         self.assertEqual(geo.data.metrics["primary.all_scored.delta.partitioned_gated_minus_pooled.binary.accuracy"], 0.0)  # defined zero kept
@@ -162,13 +175,15 @@ class ImporterTest(unittest.TestCase):
     def test_subset_cohort_digests_and_count_check(self):
         self.run_cmd("import")
         _, runs = self.client_runs()
-        geo = [x for x in runs if x.data.tags.get("_prov.source_key") == "p6_geoxgb/fx-run/H1/geo/seed42"][0]
+        geo = [x for x in runs if x.data.tags.get("zz_prov.source_key") == "p6_geoxgb/fx-run/H1/geo/seed42"][0]
         t, m = geo.data.tags, geo.data.metrics
-        self.assertNotEqual(t["_prov.cohort_keys.primary.all_scored"], t["_prov.cohort_keys.primary.persistence_available"])
+        for run in (geo, [x for x in runs if x.data.tags.get("record_kind") == "family"][0]):
+            assert_provenance_listed_last(self, self.base / "mlflow.db", run.info.run_id)
+        self.assertNotEqual(t["zz_prov.cohort_keys.primary.all_scored"], t["zz_prov.cohort_keys.primary.persistence_available"])
         self.assertEqual((m["primary.all_scored.n_rows"], m["primary.persistence_available.n_rows"]), (6.0, 4.0))
-        pers = [x for x in runs if x.data.tags.get("_prov.source_key") == "p6_geoxgb/fx-run/H1/persistence/seednone"][0]
-        self.assertEqual(pers.data.tags["_prov.cohort_keys.primary.persistence_available"],
-                         t["_prov.cohort_keys.primary.persistence_available"])
+        pers = [x for x in runs if x.data.tags.get("zz_prov.source_key") == "p6_geoxgb/fx-run/H1/persistence/seednone"][0]
+        self.assertEqual(pers.data.tags["zz_prov.cohort_keys.primary.persistence_available"],
+                         t["zz_prov.cohort_keys.primary.persistence_available"])
         self.assertNotIn("primary.all_scored.n_rows", pers.data.metrics)
         rep = self.base / "src/report/report.json"
         obj = json.loads(rep.read_text())
@@ -195,7 +210,7 @@ class ImporterTest(unittest.TestCase):
         _, partial = self.client_runs()
         self.assertEqual(len(partial), 4)                       # parent + 3 children
         parent = [x for x in partial if x.data.tags.get("record_kind") == "family"][0]
-        self.assertEqual(parent.data.tags["_prov.import_status"], "in_progress")
+        self.assertEqual(parent.data.tags["zz_prov.import_status"], "in_progress")
         r = self.run_cmd("import")["families"][0]
         self.assertEqual((r["resumed"], r["noop"], r["created"]), (1, 3, 9))
         _, runs = self.client_runs()

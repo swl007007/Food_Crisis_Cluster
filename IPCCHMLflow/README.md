@@ -115,7 +115,9 @@ of one refit).
   `primary.all_scored.binary.f1.minus_pooled`.
 
 Provenance (hashes, fingerprints, original IDs and the old report names) is kept in tags with
-the prefix `_prov.`, which sort to the end of the column list. Each detailed child also has
+the prefix `zz_prov.`. The run page lists tags in the order they were written, so every run
+is created with its tags in key order: readable tags first, `zz_prov.*` last (tag names allow
+only letters, digits, `_ - . / space`, so `zz_` is the shortest prefix that sorts last). Each detailed child also has
 `view/evaluation_view.json` (every value with its readable name, original name and source JSON
 path) and `view/na.json` (undefined values with reasons; they are never logged as metrics).
 Each dashboard row has `dashboard/row.json` (values, sources, datasets, models).
@@ -138,7 +140,7 @@ $PY IPCCHMLflow/import_runs.py verify [--shallow]
   decision; model stores must satisfy their per-identity contract (XGB: own `q*.ubj` with the
   ledger digest + `record.json`; MLP: `record.json` + `state.pt` + the referenced transform).
 - `import` creates or resumes records serially. A record is marked
-  `_prov.import_status=complete` only after its metrics/params/tags and artifacts have been
+  `zz_prov.import_status=complete` only after its metrics/params/tags and artifacts have been
   read back (artifacts downloaded and hashed; tar members checked).
 - Rerunning with unchanged sources is a verified no-op. `verify --shallow` is metadata-only.
 - If a source, the vocabulary or the importer changed, the fingerprint differs and `import`

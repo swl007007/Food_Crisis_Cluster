@@ -9,8 +9,8 @@
    "downloaded_bytes": 2085700256,
    "metrics": 0,
    "records": 13,
-   "run_id": "6541cf9457f44ff7be29ab2b17daa74b",
-   "seconds": 46.2,
+   "run_id": "bdbafe393d694439a1c35ccec4d5816a",
+   "seconds": 59.3,
    "source_key": "p6_geoxgb/p6-formal-20261004b",
    "tar_members": 6125
   },
@@ -21,8 +21,8 @@
    "downloaded_bytes": 2618772149,
    "metrics": 144,
    "records": 53,
-   "run_id": "9ffcbaa34d3c46dba6035ef8388e6440",
-   "seconds": 52.9,
+   "run_id": "744b0d2512824623bd2cf58217c95d18",
+   "seconds": 78.9,
    "source_key": "mlp_fixed_map/mlp-formal-20261005",
    "tar_members": 26696
   },
@@ -33,8 +33,8 @@
    "downloaded_bytes": 334598107,
    "metrics": 0,
    "records": 17,
-   "run_id": "c8a1dda2f9ae46dc9123ff26d26fd19f",
-   "seconds": 10.8,
+   "run_id": "a6dc32cda52f45a7a5f12e87a72c6749",
+   "seconds": 11.5,
    "source_key": "yearly_geoxgb/yearly-formal-20261007",
    "tar_members": 1267
   },
@@ -45,8 +45,8 @@
    "downloaded_bytes": 1614053896,
    "metrics": 0,
    "records": 13,
-   "run_id": "bb4f2d54516241e7bd271bb28c7dcfdf",
-   "seconds": 26.7,
+   "run_id": "0d829cbc36114d2b922bbd0b2ea41ccd",
+   "seconds": 39.3,
    "source_key": "climate_perturbation/climate-20261005",
    "tar_members": 5460
   },
@@ -57,8 +57,8 @@
    "downloaded_bytes": 165909502,
    "metrics": 0,
    "records": 17,
-   "run_id": "8eac01ef0b1d435fb86a924770a074fa",
-   "seconds": 4.5,
+   "run_id": "e9cfa99f94dd4a67b0e3b6ed511708ad",
+   "seconds": 4.9,
    "source_key": "history_window_sensitivity/ipcch-window-probe-20261005-zckpq9hf",
    "tar_members": 475
   },
@@ -69,13 +69,13 @@
    "downloaded_bytes": 1507746368,
    "metrics": 0,
    "records": 13,
-   "run_id": "1646e425662947f9a0d9648c0e98c7c4",
-   "seconds": 20.1,
+   "run_id": "9dcddedc0e8e4bc38fd24cb4ce29298f",
+   "seconds": 20.5,
    "source_key": "split2024_sensitivity/split2024-20261005",
    "tar_members": 4180
   }
  ],
  "read_dependencies": [],
  "records_planned": 126,
- "seconds": 572.7
+ "seconds": 759.8
 }

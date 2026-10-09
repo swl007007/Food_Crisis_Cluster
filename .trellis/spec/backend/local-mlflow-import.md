@@ -42,9 +42,12 @@ Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming
   spans, cohorts (`all_scored`, `persistence_available`, `regional_model_fitted`, ...). Visible
   tags are this vocabulary plus `status`, `features`, `maps`, `training_window`,
   `period.<role>` and the description (`mlflow.note.content`); everything else (hashes,
-  fingerprints, original IDs and names, source tags) is under `_prov.`.
-- Identity tags: `_prov.source_key` (stable extractor key), `_prov.import_fingerprint`
-  (sha256 over plan content incl. readable names + importer version), `_prov.import_status`
+  fingerprints, original IDs and names, source tags) is under `zz_prov.`.
+- Runs are created with their full tag set in key order (`import_runs.ordered`): the MLflow run
+  page lists tags in insertion order, so readable tags come first and `zz_prov.*` last. The
+  test reads the SQLite `tags` rowid order.
+- Identity tags: `zz_prov.source_key` (stable extractor key), `zz_prov.import_fingerprint`
+  (sha256 over plan content incl. readable names + importer version), `zz_prov.import_status`
   in {`in_progress`, `complete`}.
 - `extract.py` keeps the source reports' own names; `naming.metric_name` translates them and
   refuses any name without a rule; `check_one_to_one` refuses two source names that land on
@@ -52,16 +55,16 @@ Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming
   values are metrics; undefined values go to `view/na.json` (readable name, original name,
   source path, reason). `view/evaluation_view.json` maps every value to its original name and
   source JSON path.
-- Cohort identity: `_prov.cohort_keys.<period_role>.<cohort>` = sha256 of sorted
+- Cohort identity: `zz_prov.cohort_keys.<period_role>.<cohort>` = sha256 of sorted
   `admin_code|target_ord`; its key count must equal the reported n. Gate subsets are derived
   with the source report's own `gate_category` rule.
 - Source inventory policy (`sources.json` -> `inventory`): every `*sha256` key in the run's
   own ledgers/manifests has an explicit decision — `required_digest_keys`, `name_keys`,
   `informational_keys`, or a scoped `exempt` (key + JSON-path regex [+ file regex] +
   reason) — plus `model_contract` (`xgb` or `mlp`).
-- Provenance tags `_prov.execution` and `_prov.mlflow_timestamps` state that MLflow times are
-  import times. `status` (short), `_prov.source.scientific_acceptance`,
-  `_prov.source.lifecycle_status` and `_prov.import_status` are separate fields; the family
+- Provenance tags `zz_prov.execution` and `zz_prov.mlflow_timestamps` state that MLflow times are
+  import times. `status` (short), `zz_prov.source.scientific_acceptance`,
+  `zz_prov.source.lifecycle_status` and `zz_prov.import_status` are separate fields; the family
   description quotes the accepted conclusion and full status wording.
 
 ## 4. Validation & Error Matrix
@@ -95,7 +98,7 @@ Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming
 
 ## 6. Tests Required
 
-`$PY -m unittest discover -s IPCCHMLflow/tests -v` (39 tests). Assertion points:
+`$PY -m unittest discover -s IPCCHMLflow/tests -v` (41 tests). Assertion points:
 - NA not logged and present in `na.json` under its readable name; subset cohort digests
   differ; count mismatch refused.
 - Interrupted import resumes without duplicates (two interruption points); idempotent no-op.
@@ -124,8 +127,14 @@ r = by_path.get(f"{identity_dir}/{q}.ubj"); assert r and r["sha256"] == ledger_d
 ```python
 # Wrong: one tag/arm name with different meanings per family ("pool" = pooled XGB in one,
 # MLP base + pooled residual in another), or codes in names ("E_persist", "H6", "p6geo").
-# Correct: role-based names from naming.py, meaning in the description, code in _prov.
+# Correct: role-based names from naming.py, meaning in the description, code in zz_prov.
 naming.arm("mlp_fixed_map", "pool")   # ('pooled', None, 'candidate') + MLP_ARM_MEANING text
+```
+
+```text
+Wrong: "_prov." prefix and identity tags passed to create_run first -- the run page lists tags in
+       insertion order, so provenance showed at the top ('_' also sorts before 'a').
+Correct: create_run(tags=ordered(full_tags)) with prefix "zz_prov."; later batches are sorted too.
 ```
 
 ```text

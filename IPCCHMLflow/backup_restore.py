@@ -131,8 +131,8 @@ def download_checks(uri: str, man: dict, experiment: str) -> dict:
                 raise SystemExit(f"{store_rel} not in backup manifest")
             local = Path(client.download_artifacts(r.info.run_id, art, tmp))
             if sha(local) != want["sha256"]:
-                raise SystemExit(f"{art} of {r.data.tags.get('_prov.source_key')} differs after scratch download")
-            checked.append({"source_key": r.data.tags.get("_prov.source_key"), "artifact": art, "bytes": want["bytes"],
+                raise SystemExit(f"{art} of {r.data.tags.get('zz_prov.source_key')} differs after scratch download")
+            checked.append({"source_key": r.data.tags.get("zz_prov.source_key"), "artifact": art, "bytes": want["bytes"],
                             "sha256": want["sha256"]})
             local.unlink()
     return {"ipcch_runs_by_kind": kinds, "downloaded": checked}

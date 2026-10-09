@@ -1,9 +1,9 @@
 {
- "artifact_bytes": 8336203337,
+ "artifact_bytes": 8336208841,
  "artifact_files": 1987,
- "created_utc": "2026-10-09T17:13:57Z",
+ "created_utc": "2026-10-09T19:02:36Z",
  "db": {
-  "bytes": 17014784,
+  "bytes": 17006592,
   "counts": {
    "experiments": 2,
    "integrity": "ok",
@@ -12,8 +12,8 @@
    "runs": 126,
    "tags": 5659
   },
-  "sha256": "92d891ae29f17b3719d4bfc3d2ab04b448aaab1925d30121d60700fb9cf9c1e4"
+  "sha256": "5d4e17b0400d4fa6e8a131109c6d18fd8d734021963b841d7d2affc62ecd8899"
  },
- "seconds": 78.6,
+ "seconds": 90.7,
  "source_store": "/home/swl007007/.local/share/ipcch-mlflow"
 }

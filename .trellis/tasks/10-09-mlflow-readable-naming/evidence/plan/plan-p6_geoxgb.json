@@ -34,7 +34,7 @@
  ],
  "extras_manifest_sha256": "001fddd2e2629515a07d63850a94d77b41a9ad8173cbb1038ffcdd6c5cb31913",
  "family": "p6_geoxgb",
- "fingerprint": "cb3e76e946968c00cb62d20255a64c4a7d62f00e76867806a2527d6e6fb85786",
+ "fingerprint": "776228cbd59a6777d864af83bab6555d848540462a091a0fa51300c01a58c456",
  "include_manifest_sha256": "32f638356861c32721273d62100481a4d80135b164f00f682216ec0a323033a2",
  "inventory": {
   "keys": {
@@ -242,73 +242,73 @@
  "unlisted": [],
  "views": [
   {
-   "fingerprint": "c0b70d94992a81bd41fbcfdb0af88f128bdbd506beac92a9695bd66514e46d04",
+   "fingerprint": "42e363de4c2f6fbeebb662a02703d1c4a2e32274e186379142fbd50576c5d25a",
    "key": "p6_geoxgb/p6-formal-20261004b/H1/pool/seed42",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "26093e67682d74c6a937af73b0ad36bd297c9361d38480f1c1f544bd6104e5ea",
+   "fingerprint": "20919e5fba8b3bccc42bb5cb1e6014df10b72364955e7b68fa9401ee5f422ef4",
    "key": "p6_geoxgb/p6-formal-20261004b/H1/geo/seed42",
    "metrics": 188,
    "na": 0
   },
   {
-   "fingerprint": "9a407764e20e69425a72a36fed96e8a7d3d1c21e010066b59ea80b18092ff778",
+   "fingerprint": "eac5275dcdb3e9af3250ed0fe99f7bb572bc18e2fe0e6ecf3e5f8658d153d9b2",
    "key": "p6_geoxgb/p6-formal-20261004b/H1/persistence/seednone",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "76d636be43b6b1b669ccba9d33d14023c5b6838aa74c9cc00ad7b7b59d117c0c",
+   "fingerprint": "a0de1bf869ceef1b1168748b8431ed6d0b7183ebe78da85a5d6a6f4f5b7b6d0f",
    "key": "p6_geoxgb/p6-formal-20261004b/H3/pool/seed42",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "d993920cf7063cf21d343fe9208513fd19be138f249e45ffe58e5c547d65b790",
+   "fingerprint": "32c09671cd2a06ae4db718248eea5b05ab072d62fc4935d3c5dee588825c3543",
    "key": "p6_geoxgb/p6-formal-20261004b/H3/geo/seed42",
    "metrics": 180,
    "na": 0
   },
   {
-   "fingerprint": "ae35fdfa9d1b287bc97c7436f6586bcc24e1336ab682ca0e5888c733c976e89c",
+   "fingerprint": "0c0bf64e9ca06b0d9b417c6bb98268fbda7358b1038aa888782164e799406417",
    "key": "p6_geoxgb/p6-formal-20261004b/H3/persistence/seednone",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "bd4b9ef67d4f4b647ce4160df426b3e5c9e6cd63321858208035e3c644bc76a4",
+   "fingerprint": "187d6098367f100105f2e9a2da9a9336e2b589347ded68989bda09da8a995995",
    "key": "p6_geoxgb/p6-formal-20261004b/H6/pool/seed42",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "8b65932f8f452db19b6a92dc2d55ffa21d5a48867ffcb7545887e4cdf8d93b7a",
+   "fingerprint": "4855dd05fcfec65ce1b1e2a507cf1dd43a7751974a42b21bb4cf73988453a403",
    "key": "p6_geoxgb/p6-formal-20261004b/H6/geo/seed42",
    "metrics": 184,
    "na": 0
   },
   {
-   "fingerprint": "ee68a5b98f11f7d5ea7776ca63db7de2233933119dc72f6e386ad72b102e5ae9",
+   "fingerprint": "2d2e1e8ce866e8875e72196fca8527fb738475b56a47823235afc30ba4ec4176",
    "key": "p6_geoxgb/p6-formal-20261004b/H6/persistence/seednone",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "a7001fe5c3e73f9f54830e4e8f689358c7568d0cf27bfaf706c2379128bc08e0",
+   "fingerprint": "485f171a60133b89f3ea70d6b5f7d9ba620c7c4364b551db0cb43b6bbf8471fb",
    "key": "p6_geoxgb/p6-formal-20261004b/H12/pool/seed42",
    "metrics": 28,
    "na": 2
   },
   {
-   "fingerprint": "2a66a277fe9f53a989293d18782ca91921c95526c2049aed22e44e5ec0e09cdb",
+   "fingerprint": "fc766ae0d72b9ae94f5e564a0f35c80ae83576ac947408daee8f780b47ef3d2e",
    "key": "p6_geoxgb/p6-formal-20261004b/H12/geo/seed42",
    "metrics": 190,
    "na": 0
   },
   {
-   "fingerprint": "876f3d464403be688213cfc3efb56f8d3fe6cc130a1f81fa6b09f8b6404f211a",
+   "fingerprint": "65079c0ecbb2ba2f0512bc1085e42518f1051f77d5911f5aac6404699966398f",
    "key": "p6_geoxgb/p6-formal-20261004b/H12/persistence/seednone",
    "metrics": 28,
    "na": 2

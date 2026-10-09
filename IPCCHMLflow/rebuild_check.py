@@ -57,7 +57,7 @@ def load(db: Path) -> dict:
 def compare(old: dict, new: dict) -> dict:
     rep = {"detailed": Counter(), "summary": Counter(), "dashboard_extra": Counter(), "problems": []}
     bad = rep["problems"].append
-    new_detail = {r["tags"]["_prov.source_key"]: r for r in new["experiments"][NEW_DETAIL].values()}
+    new_detail = {r["tags"]["zz_prov.source_key"]: r for r in new["experiments"][NEW_DETAIL].values()}
     for r in old["experiments"][OLD_DETAIL].values():
         key, family = r["tags"]["source_key"], r["tags"]["family"]
         n = new_detail.get(key)
@@ -78,7 +78,7 @@ def compare(old: dict, new: dict) -> dict:
         bad(f"new detailed store has {len(new_detail)} records, old {rep['detailed']['records']}")
 
     dash = list(new["experiments"][NEW_DASHBOARD].values())
-    by_source = {r["tags"]["_prov.original_source_key"]: r for r in dash if r["tags"]["seed"] != "mean"}
+    by_source = {r["tags"]["zz_prov.original_source_key"]: r for r in dash if r["tags"]["seed"] != "mean"}
     explained = defaultdict(set)
     for r in old["experiments"][OLD_SUMMARY].values():
         key, ns = r["tags"]["projection_key"].split("#")
@@ -99,7 +99,7 @@ def compare(old: dict, new: dict) -> dict:
 
     seeds = defaultdict(list)
     for d in dash:
-        if d["tags"]["seed"] not in ("mean", "none") and naming.multi_seed(d["tags"]["_prov.original_source_key"].split("/")[0]):
+        if d["tags"]["seed"] not in ("mean", "none") and naming.multi_seed(d["tags"]["zz_prov.original_source_key"].split("/")[0]):
             seeds[(d["tags"]["family"], d["tags"]["arm"], d["tags"]["lead_months"])].append(d)
     for d in dash:
         t = d["tags"]
@@ -108,13 +108,13 @@ def compare(old: dict, new: dict) -> dict:
             for k, v in d["metrics"].items():
                 vals = [g["metrics"].get(k) for g in group]
                 if len(group) != 3 or None in vals or abs(sum(vals) / 3 - v) > 1e-12:
-                    bad(f"dashboard {t['_prov.projection_key']}: seed mean {k} {v!r} vs {vals}")
+                    bad(f"dashboard {t['zz_prov.projection_key']}: seed mean {k} {v!r} vs {vals}")
                 else:
                     rep["dashboard_extra"]["seed_mean_values"] += 1
             continue
-        src = new_detail[t["_prov.original_source_key"]]
+        src = new_detail[t["zz_prov.original_source_key"]]
         for k, v in d["metrics"].items():
-            if k in explained[t["_prov.original_source_key"]]:
+            if k in explained[t["zz_prov.original_source_key"]]:
                 continue
             ns, _, contrast = k.partition(".binary.f1.minus_")
             if contrast:
@@ -125,7 +125,7 @@ def compare(old: dict, new: dict) -> dict:
             else:
                 s = k if k.split(".")[1] in COHORTS else None   # panel value absent from the old Summary
             if s is None or src["metrics"].get(s) != v:
-                bad(f"dashboard {t['_prov.projection_key']}: {k} has no matching source value ({s})")
+                bad(f"dashboard {t['zz_prov.projection_key']}: {k} has no matching source value ({s})")
             else:
                 rep["dashboard_extra"]["contrast_values" if contrast else "panel_values_new_in_dashboard"] += 1
     rep["dashboard_rows"] = len(dash)

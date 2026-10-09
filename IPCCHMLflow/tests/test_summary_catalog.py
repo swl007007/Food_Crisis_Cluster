@@ -17,7 +17,7 @@ import backup_restore  # noqa: E402
 import import_runs  # noqa: E402
 import summary_catalog as sc  # noqa: E402
 from extract import SourceConflict  # noqa: E402
-from test_import import make_cfg, make_fixture  # noqa: E402
+from test_import import assert_provenance_listed_last, make_cfg, make_fixture  # noqa: E402
 
 GEO1 = "geoxgb_reference/lead01/partitioned_gated/seed42"
 
@@ -66,7 +66,7 @@ class DashboardTest(unittest.TestCase):
         client = import_runs._client(self.uri)
         exp = client.get_experiment_by_name(sc.DASHBOARD_EXPERIMENT)
         runs = client.search_runs([exp.experiment_id], max_results=1000)
-        return client, {r.data.tags["_prov.projection_key"]: r for r in runs}
+        return client, {r.data.tags["zz_prov.projection_key"]: r for r in runs}
 
     def test_wide_rows_names_datasets_and_models(self):
         plan, inv, bk = self.prepare()
@@ -79,11 +79,12 @@ class DashboardTest(unittest.TestCase):
         client, rows = self.rows()
         geo = client.get_run(rows[GEO1].info.run_id)
         self.assertEqual(geo.info.run_name, "GeoXGB reference | partitioned_gated | 1-month")
+        assert_provenance_listed_last(self, self.store / "mlflow.db", geo.info.run_id)
         t, m = geo.data.tags, geo.data.metrics
         self.assertEqual((t["family"], t["arm"], t["arm_role"], t["lead_months"], t["period.primary"]),
                          ("geoxgb_reference", "partitioned_gated", "candidate", "01", "2023-02..2025-10"))
         self.assertNotIn("primary.all_scored.binary.f1", m)                     # NA stays absent
-        self.assertIn("primary.all_scored.binary.f1", t["_prov.na_metrics"])
+        self.assertIn("primary.all_scored.binary.f1", t["zz_prov.na_metrics"])
         self.assertEqual(m["primary.persistence_available.binary.f1"], 0.5)
         self.assertEqual(m["primary.persistence_available.binary.f1.minus_persistence"], 0.1)   # bootstrap point
         self.assertAlmostEqual(m["primary.persistence_available.binary.f1.minus_persistence.ci_low"], 0.09)
@@ -99,10 +100,10 @@ class DashboardTest(unittest.TestCase):
         pdata = {(d.dataset.name, d.dataset.digest) for d in pers.inputs.dataset_inputs}
         self.assertTrue({(d.dataset.name, d.dataset.digest) for d in geo.inputs.dataset_inputs
                          if "persistence_available" in d.dataset.name} <= pdata)      # same rows -> same dataset
-        mid = geo.data.tags["_prov.model_ids"]
+        mid = geo.data.tags["zz_prov.model_ids"]
         lm = client.get_logged_model(mid)
         self.assertEqual(lm.name, "GeoXGB reference | partitioned_gated | 1-month | seed 42")
-        self.assertEqual(lm.source_run_id, geo.data.tags["_prov.original_run_id"])
+        self.assertEqual(lm.source_run_id, geo.data.tags["zz_prov.original_run_id"])
         rm = client.get_registered_model("IPCCH GeoXGB reference | partitioned_gated | 1-month")
         self.assertIn("Regional model where the historical gate", rm.description)
         exp = client.get_experiment_by_name(sc.DASHBOARD_EXPERIMENT)

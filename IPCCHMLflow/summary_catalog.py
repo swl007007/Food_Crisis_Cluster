@@ -270,7 +270,7 @@ def build_plan(client, cfg: dict, store: Path) -> dict:
         train, train_files = training_dataset(family, H)
         rows.append({"projection_key": naming.record_key(family, old_arm, H, seed), "family": family,
                      "old_arm": old_arm, "H": H, "seed": seed, "aggregation": "single_seed" if naming.multi_seed(family)
-                     and seed != "none" else "single_run", "tags": {k: v for k, v in t.items() if not k.startswith(("_prov.", "mlflow."))},
+                     and seed != "none" else "single_run", "tags": {k: v for k, v in t.items() if not k.startswith(("zz_prov.", "mlflow."))},
                      "original_run_id": child.info.run_id, "original_source_key": t[T_KEY],
                      "family_run_id": parent.info.run_id, "model_keys": [model_key] if model_key else [],
                      "values": values, "value_sources": sources, "value_inputs": inputs, "na": row_na,
@@ -375,8 +375,8 @@ def row_description(row: dict) -> str:
          "differences copied from the family's report (ci_low/ci_high = 95% country-cluster bootstrap where saved)."),
         f"**Status:** {f['status_text']}",
         (f"**Caveats + original:** values copied from the detailed run(s) "
-         f"(tag _prov.original_run_id), no rescoring. Undefined values are absent and listed in "
-         "tag _prov.na_metrics and dashboard/row.json. Family conclusion: see the family run in "
+         f"(tag zz_prov.original_run_id), no rescoring. Undefined values are absent and listed in "
+         "tag zz_prov.na_metrics and dashboard/row.json. Family conclusion: see the family run in "
          "'IPCCH - detailed runs'."),
     ])
 
@@ -444,7 +444,7 @@ def dashboard_description(plan: dict) -> str:
         "primary.persistence_available.binary.f1 grouped by tag arm, or "
         "primary.persistence_available.binary.f1.minus_persistence with its ci_low / ci_high.",
         "**Models tab:** external catalog descriptors only (not loadable). Details, gate-decision subsets, coverage "
-        "and per-period diagnostics stay in 'IPCCH - detailed runs' (tag _prov.original_run_id).",
+        "and per-period diagnostics stay in 'IPCCH - detailed runs' (tag zz_prov.original_run_id).",
     ])
 
 
@@ -622,8 +622,7 @@ def apply_plan(client, plan: dict, store: Path, journal: Journal, fail_after: st
         run = have.get(row["projection_key"])
         if run is None:
             run = client.create_run(eid, run_name=row_name(row),
-                                    tags={f"{PROV}projection_key": row["projection_key"], ROW_STATUS: "in_progress",
-                                          FP_TAG: plan["fingerprint"]})
+                                    tags=import_runs.ordered({**tags, ROW_STATUS: "in_progress"}))
             stats["rows_created"] += 1
         elif run.data.tags.get(FP_TAG) != plan["fingerprint"]:
             raise SourceConflict(f"{row['projection_key']}: dashboard row of another plan -- stop")
