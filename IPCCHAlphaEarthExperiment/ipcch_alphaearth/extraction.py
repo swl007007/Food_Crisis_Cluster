@@ -23,6 +23,9 @@ from ipcch_alphaearth import aemoments
 from ipcch_alphaearth.artifacts import digest, write_json
 from ipcch_alphaearth.errors import ContractError, TechnicalError
 
+#: |negative geodesic area| up to this is floating-point zero (1e-5 of a 10 m pixel); larger negatives stop.
+SLIVER_TOLERANCE_M2 = 1e-3
+
 EXPORT_COLUMNS = ["admin_code", "piece_id", "asset_id", "status", "valid_area",
                   *[f"S_{b}" for b in aemoments.BANDS], *[f"Q_{b}" for b in aemoments.BANDS]]
 
@@ -65,7 +68,10 @@ def geodesic_area(geom) -> float:
     for part in parts:
         area, _ = geod.geometry_area_perimeter(orient(part, sign=1.0))
         if area < 0:
-            raise ContractError("oriented polygon has negative geodesic area")
+            # degenerate intersection slivers (planar area ~1e-18 deg2) can carry a floating-point negative geodesic sign
+            if area < -SLIVER_TOLERANCE_M2:
+                raise ContractError(f"oriented polygon has negative geodesic area {area} m2")
+            area = 0.0
         total += float(area)
     return total
 

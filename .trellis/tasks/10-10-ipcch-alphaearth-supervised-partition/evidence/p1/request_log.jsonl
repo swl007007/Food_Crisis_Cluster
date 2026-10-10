@@ -1,0 +1,14 @@
+{"n": 1, "utc": "2026-10-10T21:19:34Z", "purpose": "initialize existing project", "attempt": 1, "status": "ok", "seconds": 0.76, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T21:19:34Z", "purpose": "collection asset metadata", "attempt": 1, "status": "ok", "seconds": 0.12, "response_bytes": 202}
+{"n": 3, "utc": "2026-10-10T21:19:39Z", "purpose": "2017 image counts (global, study boxes)", "attempt": 1, "status": "ok", "seconds": 5.08, "response_bytes": 42}
+{"n": 4, "utc": "2026-10-10T21:19:46Z", "purpose": "version/time histograms", "attempt": 1, "status": "error", "seconds": 6.76, "response_bytes": 0, "error": "User memory limit exceeded."}
+{"n": 5, "utc": "2026-10-10T21:19:52Z", "purpose": "version/time histograms", "attempt": 2, "status": "error", "seconds": 6.63, "response_bytes": 0, "error": "User memory limit exceeded."}
+{"n": 6, "utc": "2026-10-10T21:20:22Z", "purpose": "initialize existing project (listing phase)", "attempt": 1, "status": "ok", "seconds": 0.97, "response_bytes": 0}
+{"n": 7, "utc": "2026-10-10T21:20:22Z", "purpose": "listImages page 0", "attempt": 1, "status": "ok", "seconds": 0.19, "response_bytes": 14}
+{"n": 8, "utc": "2026-10-10T21:21:36Z", "purpose": "initialize existing project (listing phase; may issue >1 HTTP request: token refresh + discovery)", "attempt": 1, "status": "ok", "seconds": 0.73, "response_bytes": 0}
+{"n": 9, "utc": "2026-10-10T21:21:39Z", "purpose": "listImages page 0", "attempt": 1, "status": "ok", "seconds": 2.69, "response_bytes": 5265091}
+{"n": 10, "utc": "2026-10-10T21:21:43Z", "purpose": "listImages page 300", "attempt": 1, "status": "ok", "seconds": 3.41, "response_bytes": 5267694}
+{"n": 11, "utc": "2026-10-10T21:21:45Z", "purpose": "listImages page 600", "attempt": 1, "status": "ok", "seconds": 2.94, "response_bytes": 5270016}
+{"n": 12, "utc": "2026-10-10T21:21:52Z", "purpose": "listImages page 900", "attempt": 1, "status": "ok", "seconds": 6.34, "response_bytes": 5269488}
+{"n": 13, "utc": "2026-10-10T21:21:55Z", "purpose": "listImages page 1200", "attempt": 1, "status": "ok", "seconds": 2.98, "response_bytes": 5262952}
+{"n": 14, "utc": "2026-10-10T21:21:56Z", "purpose": "listImages page 1500", "attempt": 1, "status": "ok", "seconds": 1.56, "response_bytes": 3211740}

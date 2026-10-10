@@ -1,0 +1,18 @@
+{
+ "collection": "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL",
+ "project": "manuel-remote-sensing",
+ "year": 2017,
+ "release": "P1-METADATA-20261010",
+ "collection_asset": {
+  "type": "IMAGE_COLLECTION",
+  "name": "projects/earthengine-public/assets/GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL",
+  "id": "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL",
+  "updateTime": "2026-02-24T19:20:03.680511Z"
+ },
+ "counts": {
+  "global_2017": 10562,
+  "study_2017": 1683
+ },
+ "stopped": "'version/time histograms' failed twice: User memory limit exceeded.",
+ "requests_used": 5
+}

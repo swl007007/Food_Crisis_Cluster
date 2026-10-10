@@ -77,6 +77,13 @@ class OrientationFreeArea(unittest.TestCase):
         self.assertAlmostEqual(aligned, extraction.geodesic_area(Polygon(sq1)) + extraction.geodesic_area(Polygon(sq2)), places=3)
         self.assertGreater(aligned, 0)
 
+    def test_degenerate_sliver_is_numerical_zero_but_real_negatives_stop(self):
+        from shapely.geometry import Polygon
+
+        sliver = Polygon([(25.0, -18.0), (25.0 + 1e-9, -18.0), (25.0 + 2e-9, -18.0 + 1e-18), (25.0, -18.0)])
+        self.assertGreaterEqual(extraction.geodesic_area(sliver), 0.0)
+        self.assertLess(extraction.geodesic_area(sliver), extraction.SLIVER_TOLERANCE_M2)
+
 
 class MockImage:
     """Numeric stand-in for the ee.Image algebra used by the mask: arrays shaped (bands, pixels)."""

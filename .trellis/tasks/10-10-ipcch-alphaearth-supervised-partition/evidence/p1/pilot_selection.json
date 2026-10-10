@@ -1,0 +1,33 @@
+{
+ "selection_rules": {
+  "small_single_piece": "single-piece admin with polygon area closest to 50 km2",
+  "median_single_piece": "single-piece admin with area closest to the all-admin median (also split into 2 halves for batching invariance)",
+  "island_coastal": "Cabo Verde admin closest to the Cabo Verde median area (water/mask edge, coverage near .80)",
+  "cross_zone_overlap": "500-5000 km2 admin spanning >=2 UTM zones with the largest footprint-overlap share (ownership/first-owner test)",
+  "multipolygon": "lowest admin_code MultiPolygon (>=2 parts) with 100-3000 km2",
+  "stress_largest_piece": "the single largest ownership piece (tile-bounded)",
+  "all_masked_fixture": "first listed open-ocean coordinate (geographic knowledge) inside a tile footprint and >1 degree from every admin; 2x2 km square; not an admin"
+ },
+ "selection": {
+  "small_single_piece": 3447,
+  "median_single_piece": 3649,
+  "island_coastal": 101208,
+  "cross_zone_overlap": 1722,
+  "multipolygon": 2,
+  "stress_largest_piece": {
+   "admin_code": 20,
+   "asset_id": "xuasuttrjby0u6nah",
+   "pixels_est": 268594721.10519165
+  },
+  "all_masked_fixture": {
+   "name": "red_sea_center",
+   "asset_id": "xzki2wh0491tllh8g",
+   "square_deg": [
+    38.491,
+    19.491,
+    38.509,
+    19.509
+   ]
+  }
+ }
+}

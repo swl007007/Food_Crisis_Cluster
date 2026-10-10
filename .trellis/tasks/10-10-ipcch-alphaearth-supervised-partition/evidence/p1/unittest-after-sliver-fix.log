@@ -1,0 +1,12 @@
+........................................../home/swl007007/.venvs/ipcch-geo/lib/python3.12/site-packages/xgboost/core.py:751: UserWarning: [17:30:21] WARNING: /__w/xgboost/xgboost/src/common/error_msg.cc:56: Empty dataset at worker: 0
+  return func(**kwargs)
+..............................
+----------------------------------------------------------------------
+Ran 72 tests in 276.269s
+
+OK
+submitted 2 pieces; ledger /tmp/tmp8vsgtz3m/ledger.json
+
+real	4m45.211s
+user	87m56.564s
+sys	0m38.506s

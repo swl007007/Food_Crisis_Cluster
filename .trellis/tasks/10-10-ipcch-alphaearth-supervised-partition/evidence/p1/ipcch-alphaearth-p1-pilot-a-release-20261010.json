@@ -1,0 +1,26 @@
+{
+  "release_id": "P1-PILOT-A-20261010",
+  "checked_utc": "2026-10-10T21:32:39.176694+00:00",
+  "user_authorization": "necessary EE queries and downloads only; no IAM or cloud writes",
+  "request_path": "/tmp/ipcch-alphaearth-p1-pilot-a-released-request.json",
+  "request_sha256": "f1bddf08dad12279bf6617163f76d8ef735d314e1fadf3226fcc7c59a0d70937",
+  "parent_proposal_sha256": "3ce8ed9e012c38569b62572f78b940d01d76d9ae0308c31f0cf411a6115a86e3",
+  "scripts_sha256": {
+    "scripts/ee_pilot.py": "1c406793406b0722831fc96906b215b8bfd73aa6ea4362664541add384576558",
+    "scripts/ee_metadata.py": "86904862b265b64849d8e4979a52bdaff1220963768b94fdfdec4a2fc2d9eb38",
+    "ipcch_alphaearth/extraction.py": "4e5832a6dd6a0b213d6de695c3a7ae1ebe53810c72b6f2550ee78066c03dc456"
+  },
+  "limits": {
+    "max_pixels": 2000000,
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "max_high_level_calls": 6,
+    "concurrency": 1,
+    "outer_timeout_s": 600
+  },
+  "total_geodesic_area_m2": 55000365.286596626,
+  "execution_condition": "Retain metadata checkpoint and successful relevant tests; verify these script hashes before the run. No automatic B/C, no fits, no cloud object writes. One fresh local output directory, hard outer timeout 600s; preserve failures and raw responses.",
+  "notes": "Does not assume free tier or invent monetary allowance. 6 high-level calls includes initialization and retries, not exact HTTP count."
+}

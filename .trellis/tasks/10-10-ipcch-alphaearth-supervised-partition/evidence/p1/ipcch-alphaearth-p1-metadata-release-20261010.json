@@ -1,0 +1,28 @@
+{
+  "release_id": "P1-METADATA-20261010",
+  "implementation_sha": "f0001136b9ef5b78fcca1bd110a484e05be5496a",
+  "user_preauthorization": "预授权云端操作，但只授权必要的EE以及最多GCS的查询和下载，不涉及其他IAM。",
+  "scope": [
+    "local existing EE and SDK configuration, no secret outputs",
+    "existing enabled EE project initialization",
+    "2017 collection and asset metadata: bands versions footprints native grids",
+    "existing GCS object metadata only if needed"
+  ],
+  "limits": {
+    "remote_requests": 20,
+    "concurrent": 1,
+    "retries_per_failed_request": 1,
+    "timeouts": "bounded; exact values retained by executor",
+    "stop": "repeated auth, quota or service errors"
+  },
+  "prohibited": [
+    "raster reductions at this checkpoint",
+    "batch exports",
+    "GCS or Drive writes",
+    "IAM changes",
+    "billing or API changes",
+    "project or bucket creation",
+    "project-data model fitting"
+  ],
+  "next": "geometry-only concrete direct-EE-to-local pilot proposal for supervisor review; no additional task or lifecycle mutation"
+}

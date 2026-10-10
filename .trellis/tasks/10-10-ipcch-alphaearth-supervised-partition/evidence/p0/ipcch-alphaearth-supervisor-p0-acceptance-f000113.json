@@ -1,0 +1,19 @@
+{
+  "checked_utc": "2026-10-10T21:16:50.913694+00:00",
+  "pass": true,
+  "scope": "P0 supervisor delivery acceptance, not independent close audit or scientific result",
+  "implementation_sha": "f0001136b9ef5b78fcca1bd110a484e05be5496a",
+  "base_sha": "50e1f228a8034e65c8883f913e4359e8bec4df39",
+  "changed_paths": 83,
+  "package_paths": 45,
+  "task_paths": 38,
+  "tested_source_files_exact": 45,
+  "clean_tree": true,
+  "final_suite": "71 pass; log sha matches tested snapshot",
+  "supervisor_final_search_tests": "8 pass",
+  "prepared_manifest_sha256": "c6eacae67573b2da8e4e99e38beeea80ddc2533968a00e13e4583ea1e5ed0277",
+  "contract_sha256": "47a0638d34b9fb8bebc10b410891ebe4f9992fc066a305850359024d607b4cfc",
+  "project_fits_or_ee_by_supervisor": false,
+  "earlier_bounded_findings": "closed via retained point-check evidence",
+  "limits": "Live EE behavior, actual resources and project-data numerical results not yet validated"
+}

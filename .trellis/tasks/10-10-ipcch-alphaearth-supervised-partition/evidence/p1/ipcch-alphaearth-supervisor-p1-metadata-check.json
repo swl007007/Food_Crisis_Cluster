@@ -1,0 +1,97 @@
+{
+  "checked_utc": "2026-10-10T21:27:26.111785+00:00",
+  "scope": "independent local check of retained P1 metadata, no extra cloud calls",
+  "pass": true,
+  "list_images_sha256": "b233255bdf3a7d8d9cb042b9f50ed04a00501fcd5652442e663f488c2783b6ad",
+  "unique_assets": 1683,
+  "native_band_names": [
+    "A00",
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "A10",
+    "A11",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17",
+    "A18",
+    "A19",
+    "A20",
+    "A21",
+    "A22",
+    "A23",
+    "A24",
+    "A25",
+    "A26",
+    "A27",
+    "A28",
+    "A29",
+    "A30",
+    "A31",
+    "A32",
+    "A33",
+    "A34",
+    "A35",
+    "A36",
+    "A37",
+    "A38",
+    "A39",
+    "A40",
+    "A41",
+    "A42",
+    "A43",
+    "A44",
+    "A45",
+    "A46",
+    "A47",
+    "A48",
+    "A49",
+    "A50",
+    "A51",
+    "A52",
+    "A53",
+    "A54",
+    "A55",
+    "A56",
+    "A57",
+    "A58",
+    "A59",
+    "A60",
+    "A61",
+    "A62",
+    "A63"
+  ],
+  "versions": {
+    "MODEL_VERSION": {
+      "2.1": 1683
+    },
+    "DATASET_VERSION": {
+      "1.1": 1683
+    },
+    "PROCESSING_SOFTWARE_VERSION": {
+      "1.02": 1683
+    }
+  },
+  "unique_crs": 39,
+  "high_level_calls": 14,
+  "retained_errors": [
+    {
+      "n": 4,
+      "error": "User memory limit exceeded."
+    },
+    {
+      "n": 5,
+      "error": "User memory limit exceeded."
+    }
+  ],
+  "limits": "Metadata consistency only; pixels, masks, costs and extraction behavior not yet checked"
+}
