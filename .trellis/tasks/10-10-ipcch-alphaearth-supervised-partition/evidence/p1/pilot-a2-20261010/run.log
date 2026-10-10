@@ -1,0 +1,10 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 1, "utc": "2026-10-10T21:38:38Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.89, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T21:38:47Z", "purpose": "A:piece:3447:x7kfwxt1zhh4tk7kr:00", "attempt": 1, "status": "ok", "seconds": 7.87, "response_bytes": 3878}
+{"n": 3, "utc": "2026-10-10T21:38:47Z", "purpose": "A:all_masked_fixture:None:xzki2wh0491tllh8g:01", "attempt": 1, "status": "ok", "seconds": 0.84, "response_bytes": 1740}
+{"calls_used": 3, "seconds_per_pixel_conservative": 1.3731023129142964e-05, "done": 2, "skipped": 0, "failed": 0, "stopped": null}
+
+real	0m10.081s
+user	0m0.248s
+sys	0m0.022s
+exit=0

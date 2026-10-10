@@ -1,0 +1,3 @@
+{"n": 1, "utc": "2026-10-10T21:38:38Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.89, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T21:38:47Z", "purpose": "A:piece:3447:x7kfwxt1zhh4tk7kr:00", "attempt": 1, "status": "ok", "seconds": 7.87, "response_bytes": 3878}
+{"n": 3, "utc": "2026-10-10T21:38:47Z", "purpose": "A:all_masked_fixture:None:xzki2wh0491tllh8g:01", "attempt": 1, "status": "ok", "seconds": 0.84, "response_bytes": 1740}

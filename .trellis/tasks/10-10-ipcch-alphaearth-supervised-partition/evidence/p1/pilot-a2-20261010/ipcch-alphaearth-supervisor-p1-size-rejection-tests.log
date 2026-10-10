@@ -1,0 +1,19 @@
+test_rate_limit_is_fatal_and_memory_retries_once (test_extraction_offline.BudgetClassification.test_rate_limit_is_fatal_and_memory_retries_once) ... {"n": 1, "utc": "2026-10-10T21:37:50Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-10T21:37:50Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+{"n": 2, "utc": "2026-10-10T21:37:50Z", "purpose": "probe", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+ok
+test_too_many_pixels_is_nonretryable_not_fatal_service (test_extraction_offline.BudgetClassification.test_too_many_pixels_is_nonretryable_not_fatal_service) ... {"n": 1, "utc": "2026-10-10T21:37:50Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000."}
+ok
+test_resumed_running_task_blocks_new_start (test_extraction_offline.Concurrency.test_resumed_running_task_blocks_new_start) ... ok
+test_unreleased_request_refused (test_extraction_offline.Concurrency.test_unreleased_request_refused) ... ok
+test_nan_and_infinities_are_not_valid_area (test_extraction_offline.FiniteMask.test_nan_and_infinities_are_not_valid_area) ... ok
+test_degenerate_sliver_is_numerical_zero_but_real_negatives_stop (test_extraction_offline.OrientationFreeArea.test_degenerate_sliver_is_numerical_zero_but_real_negatives_stop) ... ok
+test_hole_and_multipolygon_winding_invariance (test_extraction_offline.OrientationFreeArea.test_hole_and_multipolygon_winding_invariance) ... ok
+test_complete_admin_set_including_zero_piece_admins (test_extraction_offline.PieceBindingAndCoverage.test_complete_admin_set_including_zero_piece_admins) ... ok
+test_wrong_asset_for_a_valid_piece_id_refused (test_extraction_offline.PieceBindingAndCoverage.test_wrong_asset_for_a_valid_piece_id_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.067s
+
+OK
+submitted 2 pieces; ledger /tmp/tmpfe1zraw9/ledger.json

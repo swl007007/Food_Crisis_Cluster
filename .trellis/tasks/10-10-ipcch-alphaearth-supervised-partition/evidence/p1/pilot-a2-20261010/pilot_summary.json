@@ -1,0 +1,13 @@
+{
+ "release_id": "P1-PILOT-A2-20261010",
+ "request_sha256": "b0b11f13eb1c04d4cf2eb19d03b31a85c54fb42736dc3c477380353c907d6c2c",
+ "done": [
+  "A:piece:3447:x7kfwxt1zhh4tk7kr:00",
+  "A:all_masked_fixture:None:xzki2wh0491tllh8g:01"
+ ],
+ "skipped": {},
+ "failed": [],
+ "seconds_per_pixel_conservative": 1.3731023129142964e-05,
+ "overhead_seconds": 0.8368501663208008,
+ "calls_used": 3
+}

@@ -1,0 +1,33 @@
+{
+  "release_id": "P1-PILOT-A2-20261010",
+  "checked_utc": "2026-10-10T21:38:07.132126+00:00",
+  "implementation_sha": "a04b40f2bb3279f948c22075ac847c985d4345de",
+  "request_path": "/tmp/ipcch-alphaearth-p1-pilot-a2-released-request.json",
+  "request_sha256": "b0b11f13eb1c04d4cf2eb19d03b31a85c54fb42736dc3c477380353c907d6c2c",
+  "previous_failed_request_sha256": "f1bddf08dad12279bf6617163f76d8ef735d314e1fadf3226fcc7c59a0d70937",
+  "physical_geometries_unchanged": true,
+  "request_count": 2,
+  "limits": {
+    "max_pixels": 70000000,
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "max_high_level_calls": 6,
+    "concurrency": 1,
+    "outer_timeout_s": 600
+  },
+  "scripts_sha256": {
+    "scripts/ee_pilot.py": "24aa9369dd30a6af60aacc2aaf7a1e19390965005b7f31f47067ae295976ce5a",
+    "scripts/ee_metadata.py": "d246a6c507debf167b88c3c28c8a87e708b2e26ccfa234aee8b0cc8661cc7360",
+    "ipcch_alphaearth/extraction.py": "4e5832a6dd6a0b213d6de695c3a7ae1ebe53810c72b6f2550ee78066c03dc456"
+  },
+  "independent_units_check": {
+    "projected_polygon_pixels_at_10m": 511944.27677372715,
+    "times_129_bands": 66040811.7038108,
+    "EE_rejected_count": 66040811,
+    "projected_bbox_pixels": 1775136.903959273
+  },
+  "supervisor_tests": "/tmp/ipcch-alphaearth-supervisor-p1-size-rejection-tests.log",
+  "scope": "Fresh local output for same A requests; hard 600s; no B/C, no cloud writes or project-data fits; retain failed A1 untouched. This additional bounded release does not reset or erase A1 call history."
+}
