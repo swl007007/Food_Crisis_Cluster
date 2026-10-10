@@ -1,0 +1,62 @@
+{
+  "release_id": "ipcch-alphaearth-C-amendment-20261010",
+  "user_decision_verbatim": "确认",
+  "decision_context": "User confirmed recommended option C after B/C question; fixed 10 m equal-area grid, nearest first valid whole64-vector, unique discrete cell ownership.",
+  "head_before_amendment": "b2501b6b1fd1941595d311465f4b93fcc4edfa2c",
+  "executor": {
+    "pane": "w14:p2",
+    "session": "3546490e-8e08-43f2-9f1d-9c72bccda1e8",
+    "terminal": "term_65d7ebc256c188"
+  },
+  "active_audit_run": "42ee3def6b9c4222bc769712d47ccbe4",
+  "audit_base_sha": "50e1f228a8034e65c8883f913e4359e8bec4df39",
+  "released": [
+    "Record accepted C amendment in task decisions/design/implement/PROGRESS and commit before code changes",
+    "Implement the smallest connected extraction change and focused offline/synthetic verification",
+    "Prepare but do not execute a concrete bounded C EE pilot manifest, pinned scripts and resource limits"
+  ],
+  "recipe": {
+    "crs": "EPSG:6933",
+    "affine": [
+      10,
+      0,
+      0,
+      0,
+      -10,
+      0
+    ],
+    "resampling": "nearest neighbour only",
+    "priority": "ascending frozen asset ID; first common64-band finite/unmasked vector",
+    "moment_grid": "values, common validity, pixelArea and administrative weighting on the same analysis grid",
+    "coverage": "raw valid area / frozen local geodesic whole-admin area; inclusive 0.80 unchanged",
+    "year": 2017,
+    "descriptors": "64 area-weighted means and64 population SD; no mean-vector renormalization",
+    "estimand_amendment": "area moments of native vectors nearest-sampled onto the fixed grid, not source-native integration"
+  },
+  "implementation_obligations": [
+    "Each analysis cell has at most one source for its entire64-vector; guard against EE mosaic default order reversal and per-band donor mixing.",
+    "Use frozen source geometry; no vertex-only reprojection/repair. Keep current denominator and boundary convention, recording existing edge mismatch separately.",
+    "Chunking must retain the same affine, global asset priority and unique pixel ownership. If splitting work, use grid-aligned windows and preserve admin-boundary weighting; do not create overlapping full-tile sums.",
+    "Bind all candidate asset IDs, recipe/grid and request geometry to plan/result identity. Re-enumerate requests; previous native-grid pilot tables are comparison evidence, not interchangeable C inputs.",
+    "Keep old runs untouched. Refresh code/config/source identity and prepared bindings before future model fitting; no stale-contract reuse.",
+    "Run GitNexus impact before symbol edits and detect_changes before commits; report high/critical results.",
+    "Keep all non-extraction scientific parameters byte-identical or provide exact allowed metadata/recipe delta; no unrelated refactor."
+  ],
+  "focused_checks": [
+    "Independent small two-grid fixture with valid/masked64-vectors proves first-valid whole-vector selection, deterministic input-order handling and mutually exclusive grid-cell weights.",
+    "All-masked output and outside-footprint behavior preserve genuine zeros versus missing/failed outputs.",
+    "Known A/S/Q gives correct means/SD without renormalization; chunked versus whole on one lattice retains weights.",
+    "Requests/provenance enforce the fixed projection/affine, source set, common mask and bestEffort=false.",
+    "Connected preparation/descriptor/verification consumers recognize the C identity; no old-rule artifacts silently accepted."
+  ],
+  "next_checkpoint": "Commit code and focused test evidence, enumerate a small C pilot for known overlap piece1722 and single-zone control3447 plus modest batching/resource checks. Supervisor pins/reviews before bounded live EE computation under existing cloud preauthorization.",
+  "not_released": [
+    "New cloud calls before pilot release",
+    "GCS or Drive writes/exports",
+    "Full extraction",
+    "Project-data model fitting",
+    "Lifecycle close/archive/rebinding",
+    "IAM,billing,bucket or project changes"
+  ],
+  "created_utc": "2026-10-10T22:27:21.366123+00:00"
+}
