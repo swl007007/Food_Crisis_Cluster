@@ -1,0 +1,9 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 1, "utc": "2026-10-10T21:35:42Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.67, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T21:35:42Z", "purpose": "A:piece:3447:x7kfwxt1zhh4tk7kr:00", "attempt": 1, "status": "error", "seconds": 0.22, "response_bytes": 0, "error": "Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000.\nEnsure that you are not aggregating at a higher resolution than you intended; that is a frequent cause of this error. If not, then you may set the 'maxPixels' argument to a limit suitable for your computation; set 'bestEffort' to true to aggregate at whatever scale results in 'maxPixels' total pixels; or both."}
+{"calls_used": 2, "seconds_per_pixel_conservative": null, "done": 0, "skipped": 0, "failed": 0, "stopped": "fatal service error on 'A:piece:3447:x7kfwxt1zhh4tk7kr:00': Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000.\nEnsure that you are not aggregating at a higher resolution than you intended; that is a frequent cause of this error. If not, then you may set the 'maxPixels' argument to a limit suitable for your c"}
+
+real	0m1.540s
+user	0m0.246s
+sys	0m0.051s
+exit=0

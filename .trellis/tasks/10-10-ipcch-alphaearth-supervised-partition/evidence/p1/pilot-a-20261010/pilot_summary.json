@@ -1,0 +1,11 @@
+{
+ "release_id": "P1-PILOT-A-20261010",
+ "request_sha256": "f1bddf08dad12279bf6617163f76d8ef735d314e1fadf3226fcc7c59a0d70937",
+ "done": [],
+ "skipped": {},
+ "failed": [],
+ "stopped": "fatal service error on 'A:piece:3447:x7kfwxt1zhh4tk7kr:00': Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000.\nEnsure that you are not aggregating at a higher resolution than you intended; that is a frequent cause of this error. If not, then you may set the 'maxPixels' argument to a limit suitable for your c",
+ "seconds_per_pixel_conservative": null,
+ "overhead_seconds": null,
+ "calls_used": 2
+}

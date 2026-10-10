@@ -107,8 +107,8 @@ def main(argv=None) -> int:
                 try:
                     res = budget.call(r["request_id"], lambda r=r: reduction(ee, r, limits))
                 except Stop as stop:
-                    if "fatal" in str(stop) or "cap" in str(stop):
-                        raise
+                    if "fatal" in str(stop) or "cap" in str(stop) or "non-retryable" in str(stop):
+                        raise  # size rejections stop the pilot too: limits are never enlarged inside a release
                     summary["failed"].append({"request_id": r["request_id"], "error": str(stop)[:300]})
                     memory_failures.add(r["request_id"])
                     if len(memory_failures) >= 2:

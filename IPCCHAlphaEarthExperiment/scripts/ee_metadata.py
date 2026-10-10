@@ -16,7 +16,9 @@ import time
 from pathlib import Path
 
 COLLECTION = "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL"
-FATAL = ("auth", "permission", "quota", "429", "403", "401", "too many", "rate limit", "not enabled", "billing")
+FATAL = ("auth", "permission", "quota", "429", "403", "401", "too many requests", "rate limit", "not enabled", "billing")
+#: deterministic request-size rejections: never retried (a retry cannot succeed), reported distinctly from service errors
+NONRETRYABLE = ("too many pixels", "maxpixels")
 
 
 class Stop(RuntimeError):
@@ -43,6 +45,8 @@ class Budget:
                 self._log(purpose, attempt, "error", time.time() - t0, 0, msg[:500])
                 if any(k in msg.lower() for k in FATAL):
                     raise Stop(f"fatal service error on '{purpose}': {msg[:300]}") from error
+                if any(k in msg.lower() for k in NONRETRYABLE):
+                    raise Stop(f"non-retryable request-size rejection on '{purpose}': {msg[:300]}") from error
                 if attempt == 2:
                     raise Stop(f"'{purpose}' failed twice: {msg[:300]}") from error
 

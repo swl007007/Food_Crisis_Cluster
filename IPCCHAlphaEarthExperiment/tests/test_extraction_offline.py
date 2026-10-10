@@ -186,3 +186,32 @@ class Concurrency(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BudgetClassification(unittest.TestCase):
+    def run_failing(self, message):
+        import ee_metadata as em
+
+        with tempfile.TemporaryDirectory() as tmp:
+            b = em.Budget(6, Path(tmp) / "log.jsonl")
+            calls = []
+
+            def fail():
+                calls.append(1)
+                raise RuntimeError(message)
+            with self.assertRaises(em.Stop) as ctx:
+                b.call("probe", fail)
+            return str(ctx.exception), len(calls), b.used
+
+    def test_too_many_pixels_is_nonretryable_not_fatal_service(self):
+        msg, calls, used = self.run_failing("Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000.")
+        self.assertIn("non-retryable request-size rejection", msg)
+        self.assertEqual((calls, used), (1, 1))
+
+    def test_rate_limit_is_fatal_and_memory_retries_once(self):
+        msg, calls, _ = self.run_failing("429 Too Many Requests")
+        self.assertIn("fatal service error", msg)
+        self.assertEqual(calls, 1)
+        msg, calls, used = self.run_failing("User memory limit exceeded.")
+        self.assertIn("failed twice", msg)
+        self.assertEqual((calls, used), (2, 2))
