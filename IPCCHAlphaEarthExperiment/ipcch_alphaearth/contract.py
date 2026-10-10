@@ -51,6 +51,12 @@ FROZEN = {
     ("alphaearth", "year"): 2017,
     ("alphaearth", "coverage_threshold"): "0.80",
     ("alphaearth", "best_effort"): False,
+    ("alphaearth", "analysis_grid"): {
+        "amendment": "D30", "crs": "EPSG:6933", "affine": [10, 0, 0, 0, -10, 0], "resampling": "nearest",
+        "priority": "ascending frozen asset id; first candidate whose 64 bands are all unmasked and finite supplies the whole 64-band vector",
+        "weights": "values, common validity, pixelArea and EE fractional admin-boundary weights on the same analysis grid",
+        "windows": "grid-aligned only (cuts on lattice lines); each cell contributes to at most one window",
+        "estimand": "area moments of native vectors nearest-sampled onto the fixed equal-area 10 m grid, not source-native UTM integration"},
     ("evaluation", "main_f1_gain_minimum"): "0.005",
     ("evaluation", "classification_guard"): "0.01",
     ("evaluation", "projected_r2_guard"): "0.02",

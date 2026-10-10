@@ -1,0 +1,24 @@
+{
+  "checked_utc": "2026-10-10T22:43:34.013827+00:00",
+  "scope": "D30 extraction amendment focused supervisor check; not full-extraction acceptance",
+  "test_command": "/home/swl007007/.venvs/ipcch-geo/bin/python -m unittest discover -s tests -p test_c_extraction.py",
+  "test_cwd": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHAlphaEarthExperiment",
+  "tests": 14,
+  "exit_code": 0,
+  "status": "pass",
+  "checked_sources": {
+    "scripts/ee_pilot_c.py": "f16be55ca15c9a7de368371398017cf7fb3bcb8c1154f907025ae35689fb7d06",
+    "ipcch_alphaearth/extraction.py": "de9a3221669c31a88250b828dc9cb2ac365c5ca7bedb1214aeee9684b06d481c",
+    "tests/test_c_extraction.py": "a03eae3dfc1eeb1ac24effb18d5a6d5d7a81305f4736cacb55a6b41ab3f5a4dd"
+  },
+  "observations": [
+    "CSV recipe round-trip and partial-footprint empty candidates now covered by connected tests",
+    "Scientific contract diff confined to alphaearth ownership/analysis_grid; target, temporal, model and evaluation fields unchanged",
+    "Candidate C01 lists6 assets; source shares must be interpreted against all6, not just old two-mask diagnostic"
+  ],
+  "remaining": [
+    "Executor full connected suite and committed source identity",
+    "Bounded live C pilot before any extraction scaling",
+    "Full-volume production export/parse route must use D30 before bulk release; legacy native scripts are comparison-only"
+  ]
+}

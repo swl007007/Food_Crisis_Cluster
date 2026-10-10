@@ -1,0 +1,16 @@
+................................................{"n": 1, "utc": "2026-10-10T22:41:43Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-10T22:41:43Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+{"n": 2, "utc": "2026-10-10T22:41:43Z", "purpose": "probe", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+.{"n": 1, "utc": "2026-10-10T22:41:43Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000."}
+........./home/swl007007/.venvs/ipcch-geo/lib/python3.12/site-packages/xgboost/core.py:751: UserWarning: [18:41:43] WARNING: /__w/xgboost/xgboost/src/common/error_msg.cc:56: Empty dataset at worker: 0
+  return func(**kwargs)
+..............................
+----------------------------------------------------------------------
+Ran 88 tests in 276.376s
+
+OK
+submitted 2 pieces; ledger /tmp/tmp0f25ii6j/ledger.json
+
+real	4m45.282s
+user	86m59.315s
+sys	0m34.774s

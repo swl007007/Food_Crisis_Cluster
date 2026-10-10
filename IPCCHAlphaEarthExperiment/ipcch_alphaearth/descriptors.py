@@ -44,6 +44,11 @@ def descriptor_table(pieces: pd.DataFrame, plan: pd.DataFrame, polygons: pd.Data
                              f"{len(poly_admins - plan_admins)} polygon-only): every declared geometry needs a plan entry")
     if expected_admins is not None and poly_admins != set(expected_admins):
         raise TechnicalError("descriptor table admins differ from the declared geometry admins")
+    from ipcch_alphaearth.extraction import recipe_id  # noqa: PLC0415
+
+    want = recipe_id(contract)
+    if "recipe" not in plan.columns or set(plan["recipe"].dropna()) != {want}:
+        raise TechnicalError(f"piece plan was not built under the frozen extraction recipe {want} (old-rule artifacts are refused)")
     check_piece_binding(pieces, plan)
     area = polygons.set_index("admin_code")["polygon_area_m2"]
     planned = plan.dropna(subset=["piece_id"]).groupby("admin_code")["piece_id"].apply(list)  # zero-piece admins plan []

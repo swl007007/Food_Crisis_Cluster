@@ -162,8 +162,10 @@ class MomentsAndRouting(unittest.TestCase):
         for b in aemoments.BANDS:
             cols[f"S_{b}"] = [0.5, 0.1]
             cols[f"Q_{b}"] = [0.1, 0.02]
-        pieces = pd.DataFrame(cols)
-        plan = pd.DataFrame({"admin_code": [1, 2, 3], "piece_id": ["1|x", "2|x", None], "asset_id": ["x", "x", None]})
+        from ipcch_alphaearth.extraction import recipe_id
+        rid = recipe_id(c)
+        pieces = pd.DataFrame(cols).assign(recipe=rid)
+        plan = pd.DataFrame({"admin_code": [1, 2, 3], "piece_id": ["1|x", "2|x", None], "asset_id": ["x", "x", None], "recipe": rid})
         polys = pd.DataFrame({"admin_code": [1, 2, 3], "polygon_area_m2": [5.0, 5.0, 7.0]})
         table, ledger = descriptors.descriptor_table(pieces, plan, polys, c)
         self.assertEqual(ledger["route_reason"].tolist(), ["usable", "low_coverage", "no_coverage"])

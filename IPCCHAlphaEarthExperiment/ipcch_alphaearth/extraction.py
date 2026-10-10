@@ -2,7 +2,13 @@
 
 * Geometry: the staged frozen repaired shapefile (6,227 admins), exact int64 ids, EPSG:4326, valid, no rebuild.
 * Denominator: full frozen polygon area in m2 (WGS84 geodesic, pyproj), water included.
-* Ownership: deterministic and outcome-independent. For one admin and the actual 2017 asset footprints sorted
+* D30 (current): one fixed analysis grid (EPSG:6933, affine [10,0,0,0,-10,0]); each cell takes the whole 64-band vector
+  of the first valid candidate asset in ascending id (nearest sampling). Work is split only into grid-aligned windows
+  (cuts on lattice lines = exact meridians/parallels for this cylindrical projection) cut from the frozen geographic
+  geometry; plans bind the recipe id and the ordered candidate asset ids (``asset_id`` column = comma-joined ids).
+  ``plan_pieces``/``ownership_pieces`` below implement the superseded first-footprint rule and are kept only for the
+  native-grid pilot comparison evidence.
+* Ownership (superseded by D30): deterministic and outcome-independent. For one admin and the actual 2017 asset footprints sorted
   lexicographically by asset id, piece_k = admin & footprint_k - (footprint_1 | ... | footprint_{k-1}). Overlapping
   full tiles are never summed twice; first-owner masked area stays masked (no fill from another source). Pieces are
   computed here (replayable offline) and sent to EE only for native-grid reduction of that asset.
@@ -14,6 +20,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -25,9 +32,128 @@ from ipcch_alphaearth.errors import ContractError, TechnicalError
 
 #: |negative geodesic area| up to this is floating-point zero (1e-5 of a 10 m pixel); larger negatives stop.
 SLIVER_TOLERANCE_M2 = 1e-3
+#: D30 plans/exports carry the extraction recipe id in this column (checked by check_piece_binding/descriptor_table)
+RECIPE_COLUMN = "recipe"
 
 EXPORT_COLUMNS = ["admin_code", "piece_id", "asset_id", "status", "valid_area",
                   *[f"S_{b}" for b in aemoments.BANDS], *[f"Q_{b}" for b in aemoments.BANDS]]
+
+
+def recipe_id(contract: dict) -> str:
+    g = contract["alphaearth"]["analysis_grid"]
+    return f"{g['amendment']}|{g['crs']}|{','.join(str(v) for v in g['affine'])}|{g['resampling']}|first-valid-ascending-id"
+
+
+class Lattice:
+    """Fixed analysis lattice; cylindrical projections only (x depends on lon, y on lat), no rotation."""
+
+    def __init__(self, crs: str, affine):
+        from pyproj import CRS, Transformer  # noqa: PLC0415
+
+        a = [float(v) for v in affine]
+        if a[1] != 0 or a[3] != 0 or a[0] <= 0 or a[4] >= 0:
+            raise ContractError(f"analysis affine {affine} must be north-up without rotation")
+        self.crs, self.affine = crs, a
+        self.dx, self.x0, self.dy, self.y0 = a[0], a[2], a[4], a[5]
+        self.fw = Transformer.from_crs("EPSG:4326", CRS.from_user_input(crs), always_xy=True)
+        self.bw = Transformer.from_crs(CRS.from_user_input(crs), "EPSG:4326", always_xy=True)
+        x_a, _ = self.fw.transform(10.0, -30.0)
+        x_b, _ = self.fw.transform(10.0, 30.0)
+        _, y_a = self.fw.transform(-80.0, 20.0)
+        _, y_b = self.fw.transform(100.0, 20.0)
+        if abs(x_a - x_b) > 1e-6 or abs(y_a - y_b) > 1e-6:
+            raise ContractError(f"{crs} is not cylindrical: lattice lines would not be meridians/parallels")
+
+    @classmethod
+    def from_contract(cls, contract: dict) -> "Lattice":
+        g = contract["alphaearth"]["analysis_grid"]
+        return cls(g["crs"], g["affine"])
+
+    def col(self, lon: float, up: bool) -> int:
+        x, _ = self.fw.transform(lon, 0.0)
+        v = (x - self.x0) / self.dx
+        return math.ceil(v) if up else math.floor(v)
+
+    def row(self, lat: float, up: bool) -> int:  # rows grow southwards (dy < 0)
+        _, y = self.fw.transform(0.0, lat)
+        v = (y - self.y0) / self.dy
+        return math.ceil(v) if up else math.floor(v)
+
+    def lon(self, col: int) -> float:
+        return self.bw.transform(self.x0 + col * self.dx, 0.0)[0]
+
+    def lat(self, row: int) -> float:
+        return self.bw.transform(0.0, self.y0 + row * self.dy)[1]
+
+
+def lattice_windows(geom, lattice: Lattice, max_cells: int) -> list[dict]:
+    """Split a frozen geographic geometry into grid-aligned windows of at most ``max_cells`` lattice cells.
+
+    Windows are the geometry intersected with lon/lat boxes whose edges are lattice lines (exact meridians/parallels
+    for a cylindrical lattice), so every analysis cell lies in at most one window. The geometry itself is never
+    reprojected or repaired."""
+    from shapely.geometry import box  # noqa: PLC0415
+
+    minx, miny, maxx, maxy = geom.bounds
+    c0, c1 = lattice.col(minx, up=False), lattice.col(maxx, up=True)
+    r0, r1 = lattice.row(maxy, up=False), lattice.row(miny, up=True)
+    side = max(1, int(math.isqrt(int(max_cells))))
+    out = []
+    for i, ca in enumerate(range(c0, c1, side)):
+        cb = min(ca + side, c1)
+        for j, ra in enumerate(range(r0, r1, side)):
+            rb = min(ra + side, r1)
+            part = geom.intersection(box(lattice.lon(ca), lattice.lat(rb), lattice.lon(cb), lattice.lat(ra)))
+            if part.is_empty or part.area == 0 or part.geom_type not in ("Polygon", "MultiPolygon", "GeometryCollection"):
+                continue
+            if part.geom_type == "GeometryCollection":
+                from shapely.geometry import MultiPolygon  # noqa: PLC0415
+
+                polys = [g for g in part.geoms if g.geom_type in ("Polygon", "MultiPolygon")]
+                if not polys:
+                    continue
+                part = MultiPolygon([q for g in polys for q in (g.geoms if g.geom_type == "MultiPolygon" else [g])])
+            out.append({"window": f"w{i:03d}_{j:03d}", "cols": [ca, cb], "rows": [ra, rb], "geometry": part,
+                        "lattice_cells_bbox": (cb - ca) * (rb - ra)})
+    return out
+
+
+def plan_c_requests(geometry, footprints: dict, contract: dict, max_cells: int) -> tuple[pd.DataFrame, list]:
+    """D30 plan: one row per (admin, grid-aligned window) with the ordered candidate asset ids that can own its cells.
+
+    Windows that no footprint reaches contribute genuine zeros and are not request pieces; each admin row records their
+    count/area. Admins with no sourced window keep one explicit zero row (genuine no coverage). The denominator is
+    always the whole frozen admin area. ``asset_id`` carries the comma-joined ascending candidate ids (the source
+    binding checked on export); ``recipe`` carries the D30 recipe id."""
+    lattice = Lattice.from_contract(contract)
+    rid = recipe_id(contract)
+    rows, geoms = [], []
+    for rec in geometry.itertuples(index=False):
+        poly_area = geodesic_area(rec.geometry)
+        if not np.isfinite(poly_area) or poly_area <= 0:
+            raise ContractError(f"admin {rec.admin_code}: polygon area not finite/positive")
+        cand = sorted(a for a, fp in footprints.items() if fp.intersects(rec.geometry))
+        wins = lattice_windows(rec.geometry, lattice, max_cells) if cand else []
+        sourced, empty_n, empty_area = [], 0, 0.0
+        for w in wins:
+            wc = [a for a in cand if footprints[a].intersects(w["geometry"])]
+            if wc:
+                sourced.append((w, wc))
+            else:  # no footprint reaches this window: genuine zero contribution, not a request piece
+                empty_n += 1
+                empty_area += geodesic_area(w["geometry"])
+        for w, wc in sourced:
+            rows.append({"admin_code": int(rec.admin_code), "piece_id": f"{rec.admin_code}|{w['window']}",
+                         "asset_id": ",".join(wc), "recipe": rid, "candidates": len(wc), "cols": w["cols"], "rows": w["rows"],
+                         "window_area_m2": geodesic_area(w["geometry"]), "polygon_area_m2": poly_area,
+                         "no_source_windows": empty_n, "no_source_area_m2": empty_area})
+            geoms.append(w["geometry"])
+        if not sourced:  # no window has a source: one explicit zero-coverage row keeps the admin and its denominator
+            rows.append({"admin_code": int(rec.admin_code), "piece_id": None, "asset_id": None, "recipe": rid, "candidates": 0,
+                         "cols": None, "rows": None, "window_area_m2": 0.0, "polygon_area_m2": poly_area,
+                         "no_source_windows": empty_n, "no_source_area_m2": empty_area})
+            geoms.append(None)
+    return pd.DataFrame(rows), geoms
 
 
 def load_geometry(shp: Path, expected_admins: int | None = 6227):
@@ -156,6 +282,12 @@ def check_piece_binding(pieces: pd.DataFrame, plan: pd.DataFrame) -> None:
     if dup or missing or extra or mismatched:
         raise TechnicalError(f"export binding failed: {len(missing)} missing, {len(dup)} duplicated, {len(extra)} unplanned, "
                              f"{len(mismatched)} with a different admin/asset than planned")
+    if "recipe" in planned.columns:
+        recipes = set(planned["recipe"])
+        if len(recipes) != 1:
+            raise TechnicalError(f"piece plan mixes extraction recipes {sorted(recipes)}")
+        if "recipe" not in pieces.columns or set(pieces["recipe"]) != recipes:
+            raise TechnicalError("exported pieces were not produced under the plan's extraction recipe")
 
 
 def write_plan(out: Path, plan: pd.DataFrame, footprints_meta: dict) -> None:
@@ -165,8 +297,9 @@ def write_plan(out: Path, plan: pd.DataFrame, footprints_meta: dict) -> None:
 
 
 def parse_export_csv(path: Path) -> pd.DataFrame:
-    frame = pd.read_csv(path, float_precision="round_trip")
-    return frame[[c for c in EXPORT_COLUMNS if c in frame.columns]]
+    """Exported/downloaded piece table: frozen columns plus the D30 recipe binding (never dropped)."""
+    frame = pd.read_csv(path, float_precision="round_trip", dtype={"piece_id": str, "asset_id": str, "recipe": str, "status": str})
+    return frame[[c for c in (*EXPORT_COLUMNS, RECIPE_COLUMN) if c in frame.columns]]
 
 
 def request_from_file(path: Path) -> dict:

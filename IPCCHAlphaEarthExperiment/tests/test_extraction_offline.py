@@ -19,20 +19,23 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import extract_alphaearth as xa  # noqa: E402
 
 
+RID = extraction.recipe_id(load_contract())
+
+
 def export_rows(spec):
-    cols = {"admin_code": [], "piece_id": [], "asset_id": [], "status": [], "valid_area": []}
+    cols = {"admin_code": [], "piece_id": [], "asset_id": [], "status": [], "valid_area": [], "recipe": []}
     for b in aemoments.BANDS:
         cols[f"S_{b}"], cols[f"Q_{b}"] = [], []
     for admin, pid, asset, area in spec:
         cols["admin_code"].append(admin), cols["piece_id"].append(pid), cols["asset_id"].append(asset)
-        cols["status"].append("complete"), cols["valid_area"].append(area)
+        cols["status"].append("complete"), cols["valid_area"].append(area), cols["recipe"].append(RID)
         for b in aemoments.BANDS:
             cols[f"S_{b}"].append(0.1 * area), cols[f"Q_{b}"].append(0.02 * area)
     return pd.DataFrame(cols)
 
 
 class PieceBindingAndCoverage(unittest.TestCase):
-    plan = pd.DataFrame({"admin_code": [1, 2, 3], "piece_id": ["1|A", "2|A", None], "asset_id": ["A", "A", None]})
+    plan = pd.DataFrame({"admin_code": [1, 2, 3], "piece_id": ["1|A", "2|A", None], "asset_id": ["A", "A", None], "recipe": RID})
     polys = pd.DataFrame({"admin_code": [1, 2, 3], "polygon_area_m2": [100.0, 100.0, 50.0]})
 
     def test_wrong_asset_for_a_valid_piece_id_refused(self):
