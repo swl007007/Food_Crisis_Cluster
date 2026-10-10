@@ -59,3 +59,11 @@
 - 2026-10-10 D30 implemented (smallest connected change): contract analysis_grid block pinned; extraction Lattice/windows/plan/recipe binding; descriptor_table refuses non-D30 plans; new scripts/ee_pilot_c.py (mask before descending-id mosaic, per-rank area check). Tests 88 OK; supervisor focused checks 14 PASS. Bounded C pilot manifest prepared (10 requests, release_id null): evidence/p1/c-amendment/C-PILOT-PROPOSAL.md.
 - 2026-10-10 C pilot (release ipcch-alphaearth-p1-C-pilot-20261010) stopped before computation: EE cannot parse 'EPSG:6933' (3 of 13 calls, 0 responses). Transport repair within approved C: identical CRS sent as pinned WKT1 with an EE projection-equivalence check (<=1 mm) before reductions; parse errors non-retryable. Tests 89 OK. Rev2 manifest (same 10 requests, +1 check call) prepared for release.
 - 2026-10-10 C pilot rev2 executed (12 of 14 calls): projection check 2.8e-9 m; C01 valid 99.9996% with ranks 1/4/6 owning 135.889/0.015/87.642 km2 (sum = valid area); C02 vs A2 descriptors differ <= 1.4e-4; windows vs whole A rel 7.7e-9; Red Sea exact zeros; 2.0e-6 s/cell. Production plan: 57,801 pieces, 4.67e11 cells; proposal evidence/p1/C-PRODUCTION-PROPOSAL.md (not started).
+- 2026-10-10 Offline production C connection: the runner gained durable per-piece outputs, a hash-bound ledger and
+  resume, a cumulative call cap, and a shared per-attempt stop/deadline control. Ingest (release, plan pin, binding and
+  numerical completeness checks run before COMPLETE) feeds attach_descriptors under fresh bindings; there is a stale
+  check in load_run_inputs and a CLI ingest-extraction command. Sliver maxPixels sizing was fixed before any live run.
+  Supervisor fixed list (per-attempt stop, plan pin, null-before-COMPLETE, barrier fixture) was accepted at the pinned
+  hashes. Tests: 16 focused / 105 full OK. Enumeration: 57,801 pieces for 6,227 admins, 4.67e11 cells, 0 zero-source
+  admins. Full manifest is a DRAFT and held. Small-live S1–S3 proposal (36 pieces, ≤ 84 calls):
+  evidence/p1/c-production-offline/C-PRODUCTION-OFFLINE.md.

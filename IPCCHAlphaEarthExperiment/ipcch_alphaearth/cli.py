@@ -28,6 +28,11 @@ def main(argv=None) -> int:
     p = sub.add_parser("benchmark")
     p.add_argument("--out", required=True)
     p.add_argument("--prepared", help="prepared stage directory (for the enumerated fit-pool sizes)")
+    p = sub.add_parser("ingest-extraction", help="bind a COMPLETE D30 production extraction to a run (local only)")
+    p.add_argument("--run", required=True)
+    p.add_argument("--plan", required=True)
+    p.add_argument("--manifest", required=True)
+    p.add_argument("--outputs", required=True)
     for name in ("develop", "freeze-map", "predict", "report", "replay"):
         p = sub.add_parser(name)
         p.add_argument("--run", required=True)
@@ -57,6 +62,14 @@ def main(argv=None) -> int:
         from ipcch_alphaearth.benchmark import run_benchmark
 
         print(json.dumps(run_benchmark(Path(args.out), Path(args.prepared) if args.prepared else None), indent=2))
+        return 0
+    if args.command == "ingest-extraction":
+        from ipcch_alphaearth.artifacts import require_run_dir
+        from ipcch_alphaearth.contract import load_contract
+        from ipcch_alphaearth.descriptors import ingest_extraction
+
+        run_dir = require_run_dir(args.run)
+        print(json.dumps(ingest_extraction(run_dir, load_contract(), Path(args.plan), Path(args.manifest), Path(args.outputs)), default=str))
         return 0
     if args.command in ("develop", "freeze-map", "predict", "report", "replay"):
         from ipcch_alphaearth import backbone, pipeline, replay, report

@@ -19,6 +19,13 @@ def load_run_inputs(run_dir: Path, contract: dict) -> Inputs:
     require_stage(run_dir, "prepared")
     if not (run_dir / "descriptors" / "COMPLETE.json").exists():
         raise ContractError("descriptors stage is not COMPLETE: AlphaEarth descriptors exist only after the P1 extraction release")
+    from ipcch_alphaearth.contract import config_identity  # noqa: PLC0415
+
+    done = read_json(run_dir / "descriptors" / "COMPLETE.json")
+    if done.get("config_sha256") != config_identity() or done.get("prepared_manifest_sha256") != sha256_file(run_dir / "prepared" / "prepared-manifest.json"):
+        raise ContractError("descriptors stage was built under a different configuration or prepared stage (no stale reuse)")
+    if sha256_file(run_dir / "descriptors" / "descriptor_table.csv.gz") != done["files"]["descriptor_table.csv.gz"]:
+        raise ContractError("descriptor table differs from its COMPLETE record")
     prepared = run_dir / "prepared"
     manifest = read_json(prepared / "prepared-manifest.json")
     for name, sha in manifest["artifacts_sha256"].items():

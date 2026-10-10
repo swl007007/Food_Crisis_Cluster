@@ -7,6 +7,7 @@ to run without a COMPLETE extraction manifest; P0 never contacts EE.
 
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 import numpy as np
@@ -89,9 +90,108 @@ def row_descriptors(admin_codes: np.ndarray, table: pd.DataFrame, contract: dict
     return D, all_finite
 
 
-def attach_descriptors(run_dir: Path, contract: dict) -> None:
-    """P1: build X424 from the frozen descriptor table; requires a COMPLETE extraction stage."""
+def ingest_extraction(run_dir: Path, contract: dict, plan_path: Path, manifest_path: Path, outputs_dir: Path) -> dict:
+    """Bind a COMPLETE D30 production extraction to a run.
+
+    Every check runs BEFORE anything is written to ``extraction/``: the released full-plan manifest; the supplied plan
+    bytes equal the manifest's pinned ``provenance.plan_sha256`` (frozen denominators and geometry provenance); every
+    planned piece present exactly once with a matching binding; every piece numerically complete (no failed, null or
+    nonfinite moments: technical missingness is never low coverage; a completed all-zero piece stays genuine no
+    coverage). A refusal leaves ``extraction/`` absent and records its context under ``extraction_attempts/``."""
+    from ipcch_alphaearth.artifacts import digest, sha256_file, write_csv_gz, write_json  # noqa: PLC0415
+    from ipcch_alphaearth.extraction import load_production_manifest, read_c_outputs, recipe_id, validate_export  # noqa: PLC0415
+
     require_stage(run_dir, "prepared")
-    if not (Path(run_dir) / "extraction" / "COMPLETE.json").exists():
+    out = Path(run_dir) / "extraction"
+    if out.exists():
+        raise ContractError("extraction stage already exists; it is immutable")
+    try:
+        manifest, pieces = load_production_manifest(manifest_path)
+        if not manifest.get("release_id") or manifest.get("sample"):
+            raise ContractError("only the released full-plan production manifest can be ingested (not a sample or an unreleased draft)")
+        plan_sha = sha256_file(plan_path)
+        if plan_sha != (manifest.get("provenance") or {}).get("plan_sha256"):
+            raise ContractError("supplied plan bytes differ from the plan pinned in the production manifest")
+        plan = pd.read_csv(plan_path, float_precision="round_trip", dtype={"piece_id": str, "asset_id": str, "recipe": str})
+        if manifest.get("recipe") != recipe_id(contract) or set(plan["recipe"]) != {recipe_id(contract)}:
+            raise ContractError("plan/manifest were not built under the frozen D30 recipe")
+        planned = {r.piece_id: (int(r.admin_code), str(r.asset_id)) for r in plan.dropna(subset=["piece_id"]).itertuples(index=False)}
+        listed = {r["request_id"]: (int(r["admin_code"]), ",".join(r["candidates"])) for r in pieces}
+        if planned != listed:
+            raise ContractError("manifest pieces differ from the plan (piece set, admin or ordered candidates)")
+        table = read_c_outputs(outputs_dir, manifest, pieces)
+        got, stats = validate_export([table], plan)
+        bad = got[got["status"] != "complete"]
+        if len(bad):
+            raise TechnicalError(f"{len(bad)} pieces are not numerically complete ({bad['status'].value_counts().to_dict()}); "
+                                 "rerun them under a release, never ingest them as coverage")
+    except (ContractError, TechnicalError) as error:
+        attempts = Path(run_dir) / "extraction_attempts"
+        attempts.mkdir(exist_ok=True)
+        context = {"utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "error_type": type(error).__name__, "error": str(error),
+                   "plan": str(plan_path), "manifest": str(manifest_path), "outputs": str(outputs_dir)}
+        if "bad" in locals() and len(bad):
+            context["failed_pieces"] = bad[["piece_id", "admin_code", "status"]].to_dict("records")
+        write_json(attempts / f"refused-{len(list(attempts.glob('refused-*.json'))) + 1:04d}.json", context)
+        raise
+    out.mkdir()
+    files = {"plan.csv.gz": _copy_new(plan_path, out / "plan.csv.gz"), "pieces.csv.gz": write_csv_gz(out / "pieces.csv.gz", got),
+             "manifest.json": write_json(out / "manifest.json", manifest)}
+    record = {"stage": "extraction", "recipe": recipe_id(contract), "manifest_sha256": manifest["request_sha256"],
+              "release_id": manifest["release_id"], "plan_sha256": plan_sha, "provenance": manifest["provenance"], "files": files,
+              **stats, "status_counts": got["status"].value_counts().to_dict(),
+              "plan_digest": digest(plan[["admin_code", "piece_id", "asset_id"]].astype(str).values.tolist())}
+    write_json(out / "COMPLETE.json", record)
+    return record
+
+
+def _copy_new(src: Path, dst: Path) -> str:
+    """Byte copy (the stored plan keeps the manifest-pinned sha), never overwriting."""
+    import shutil  # noqa: PLC0415
+
+    from ipcch_alphaearth.artifacts import sha256_file  # noqa: PLC0415
+
+    if dst.exists():
+        raise ContractError(f"refusing to overwrite existing artifact {dst}")
+    shutil.copyfile(src, dst)
+    return sha256_file(dst)
+
+
+def attach_descriptors(run_dir: Path, contract: dict) -> dict:
+    """P1: descriptor table + coverage ledger from the COMPLETE D30 extraction, bound to the current configuration."""
+    from ipcch_alphaearth.artifacts import read_json, sha256_file, write_csv_gz, write_json  # noqa: PLC0415
+    from ipcch_alphaearth.contract import config_identity  # noqa: PLC0415
+
+    require_stage(run_dir, "prepared")
+    ext = Path(run_dir) / "extraction"
+    if not (ext / "COMPLETE.json").exists():
         raise ContractError("no COMPLETE extraction stage: AlphaEarth descriptors are produced only after the P1 cloud release")
-    raise ContractError("attach_descriptors is implemented at the P1 checkpoint with the approved extraction manifest")
+    out = Path(run_dir) / "descriptors"
+    if (out / "COMPLETE.json").exists():
+        raise ContractError("descriptors stage is COMPLETE; it is immutable")
+    record = read_json(ext / "COMPLETE.json")
+    for name, sha in record["files"].items():
+        if sha256_file(ext / name) != sha:
+            raise ContractError(f"extraction file {name} differs from its COMPLETE record")
+    if record["files"]["plan.csv.gz"] != read_json(ext / "manifest.json")["provenance"]["plan_sha256"]:
+        raise ContractError("stored plan differs from the plan pinned in the production manifest")
+    plan = pd.read_csv(ext / "plan.csv.gz", dtype={"piece_id": str, "asset_id": str, "recipe": str})
+    pieces = pd.read_csv(ext / "pieces.csv.gz", float_precision="round_trip", dtype={"piece_id": str, "asset_id": str, "recipe": str, "status": str})
+    polygons = plan.groupby("admin_code", as_index=False)["polygon_area_m2"].first()
+    keyed = set()
+    for h in contract["calendar"]["horizons_months"]:
+        keyed |= set(pd.read_csv(Path(run_dir) / "prepared" / f"keys_h{h:02d}.csv.gz", usecols=["admin_code"])["admin_code"].astype(int))
+    if not keyed <= set(polygons["admin_code"]):
+        raise ContractError(f"{len(keyed - set(polygons['admin_code']))} prepared admins have no planned geometry")
+    table, ledger = descriptor_table(pieces, plan, polygons, contract, expected_admins=sorted(polygons["admin_code"]))
+    out.mkdir(parents=True, exist_ok=True)
+    files = {"descriptor_table.csv.gz": write_csv_gz(out / "descriptor_table.csv.gz", table),
+             "coverage_ledger.csv.gz": write_csv_gz(out / "coverage_ledger.csv.gz", ledger)}
+    done = {"stage": "descriptors", "recipe": record["recipe"], "config_sha256": config_identity(),
+            "prepared_manifest_sha256": sha256_file(Path(run_dir) / "prepared" / "prepared-manifest.json"),
+            "extraction_complete_sha256": sha256_file(ext / "COMPLETE.json"), "plan_sha256": record["plan_sha256"],
+            "provenance": record["provenance"], "files": files,
+            "admins": int(len(table)), "usable": int(ledger["usable"].sum()),
+            "route_reasons": ledger["route_reason"].value_counts().to_dict()}
+    write_json(out / "COMPLETE.json", done)
+    return done

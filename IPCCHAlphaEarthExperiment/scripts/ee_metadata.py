@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -25,15 +26,26 @@ class Stop(RuntimeError):
     pass
 
 
+class Halt(Stop):
+    """A shared stop condition (published fatal error, invocation wall budget) refused a new attempt before it was sent."""
+
+
 class Budget:
-    def __init__(self, cap: int, log_path: Path):
+    def __init__(self, cap: int, log_path: Path, guard=None, on_fatal=None):
         self.cap, self.used, self.log_path = cap, 0, log_path
+        self._lock = threading.Lock()  # concurrent callers share one cap and one log
+        # optional shared stop control, consulted at EVERY attempt reservation (first attempts and retries alike)
+        self.guard, self.on_fatal = guard, on_fatal
 
     def call(self, purpose: str, fn):
         for attempt in (1, 2):
-            if self.used >= self.cap:
-                raise Stop(f"request cap {self.cap} reached before '{purpose}'")
-            self.used += 1
+            with self._lock:
+                reason = self.guard() if self.guard else None
+                if reason:
+                    raise Halt(f"halted before '{purpose}' attempt {attempt}: {reason}")
+                if self.used >= self.cap:
+                    raise Stop(f"request cap {self.cap} reached before '{purpose}'")
+                self.used += 1
             t0 = time.time()
             try:
                 out = fn()
@@ -44,7 +56,10 @@ class Budget:
                 msg = str(error)
                 self._log(purpose, attempt, "error", time.time() - t0, 0, msg[:500])
                 if any(k in msg.lower() for k in FATAL):
-                    raise Stop(f"fatal service error on '{purpose}': {msg[:300]}") from error
+                    stop = Stop(f"fatal service error on '{purpose}': {msg[:300]}")
+                    if self.on_fatal:
+                        self.on_fatal(str(stop))  # published before raising: no worker may start a new attempt after it
+                    raise stop from error
                 if any(k in msg.lower() for k in NONRETRYABLE):
                     raise Stop(f"non-retryable request-size rejection on '{purpose}': {msg[:300]}") from error
                 if attempt == 2:
@@ -55,7 +70,7 @@ class Budget:
                "status": status, "seconds": round(seconds, 2), "response_bytes": size}
         if error:
             rec["error"] = error
-        with open(self.log_path, "a", encoding="utf-8") as h:
+        with self._lock, open(self.log_path, "a", encoding="utf-8") as h:
             h.write(json.dumps(rec) + "\n")
         print(json.dumps(rec), flush=True)
 

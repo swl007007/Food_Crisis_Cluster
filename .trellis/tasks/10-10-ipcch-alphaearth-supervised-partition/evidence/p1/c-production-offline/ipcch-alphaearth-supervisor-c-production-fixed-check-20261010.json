@@ -1,0 +1,29 @@
+{
+  "scope": "C production delta fixed-list check only; no cloud/full extraction/fit release",
+  "head_at_check": "63b937b1f3ccda20e91f5f6a1c93b850c74be325",
+  "fixed_list": [
+    "Shared per-attempt stop and invocation deadline incl init/projection",
+    "Manifest-bound supplied plan SHA before publication",
+    "Reject null/failed/nonfinite pieces before extraction COMPLETE; preserve refusal record",
+    "Barrier makes two-in-flight fatal regression deterministic"
+  ],
+  "focused_tests": 16,
+  "result": "PASS",
+  "log_path": "/tmp/ipcch-alphaearth-supervisor-c-production-tests-fixed-20261010.log",
+  "log_sha256": "92f9c353200e7fdbb3a84e0ab98ab6696f51e89187c8ccd05791ee120a7befb2",
+  "source_sha256": {
+    "scripts/ee_metadata.py": "982e3640d156acef8f69f0fce0fb494eac8656ff2e640ca6c9b3f633ff200bfc",
+    "scripts/ee_pilot_c.py": "bfec9e1bd158e5f50e3be11ade32d26165e943da94e739de1697e09227a76e1c",
+    "scripts/build_c_production.py": "b9007cfa2e0d6d5e69a8d885451b782ccbac0e4914cdbd9a89d07cf2047be715",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+    "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+    "tests/test_c_production.py": "70c2f27688463ff1cef68978f302313e8375c2c449da6a202e778b30cfc6126e"
+  },
+  "limitations": [
+    "No live SDK/concurrency verification yet",
+    "Inflight requests may finish after stop; outer timeout separate",
+    "Full extraction manifest remains draft"
+  ]
+}

@@ -308,3 +308,107 @@ def request_from_file(path: Path) -> dict:
     if digest(body) != req["request_sha256"]:
         raise ContractError("request manifest body differs from its frozen sha256")
     return req
+
+
+# --------------------------------------------------------------------------- D30 production manifest and output parsing
+
+
+def write_production_manifest(plan: pd.DataFrame, geoms: list, out_dir: Path, contract: dict, *, limits: dict,
+                              grid_crs_wkt: str, projection_check: list, project: str, provenance: dict, select=None,
+                              name: str = "production") -> dict:
+    """Sha-bound production manifest: ``<name>_pieces.jsonl.gz`` (one request per planned piece) + ``<name>_manifest.json``.
+
+    ``select`` (iterable of piece ids) writes a deterministic subset for a bounded live sample; release_id stays None.
+    The per-piece maxPixels guard (129-band stack) is sized from the window's lattice box, never from its geodesic area,
+    so sub-cell sliver windows are not refused for touching one whole cell.
+    """
+    import gzip  # noqa: PLC0415
+
+    from shapely.geometry import mapping  # noqa: PLC0415
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    keep = None if select is None else set(select)
+    rows = []
+    for i, r in enumerate(plan.itertuples(index=False)):
+        if r.piece_id is None or (isinstance(r.piece_id, float) and np.isnan(r.piece_id)):
+            continue
+        if keep is not None and r.piece_id not in keep:
+            continue
+        cells = float(r.window_area_m2) / 100.0
+        cols, rws = (json.loads(v) if isinstance(v, str) else list(v) for v in (r.cols, r.rows))
+        bbox_cells = (cols[1] - cols[0]) * (rws[1] - rws[0])  # lattice box of the window: an upper bound on touched cells
+        rows.append({"request_id": r.piece_id, "admin_code": int(r.admin_code), "candidates": str(r.asset_id).split(","),
+                     "geometry": mapping(geoms[i]), "expected_cells": cells, "bbox_cells": int(bbox_cells),
+                     "max_pixels_band_px": int(math.ceil(129 * bbox_cells * 1.1))})
+    if keep is not None and len(rows) != len(keep):
+        raise ContractError("selected piece ids are not all in the plan")
+    pieces_path = out_dir / f"{name}_pieces.jsonl.gz"
+    with open(pieces_path, "wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as h:
+            for row in rows:
+                h.write((json.dumps(row, sort_keys=True) + "\n").encode())
+    import hashlib  # noqa: PLC0415
+
+    body = {"kind": "c_production", "recipe": recipe_id(contract), "grid": {"crs": contract["alphaearth"]["analysis_grid"]["crs"],
+            "crsTransform": list(contract["alphaearth"]["analysis_grid"]["affine"])}, "grid_crs_wkt": grid_crs_wkt,
+            "projection_check": projection_check, "best_effort": False, "project": project,
+            "collection": contract["alphaearth"]["collection"], "year": contract["alphaearth"]["year"],
+            "provenance": provenance, "sample": keep is not None, "pieces_file": pieces_path.name, "pieces_sha256": hashlib.sha256(pieces_path.read_bytes()).hexdigest(),
+            "n_pieces": len(rows), "expected_cells_total": sum(r["expected_cells"] for r in rows),
+            "limits": {**limits, "max_pixels": max([r["max_pixels_band_px"] for r in rows] + [0])}}
+    manifest = {**body, "request_sha256": digest(body), "release_id": None}
+    write_json(out_dir / f"{name}_manifest.json", manifest)
+    return manifest
+
+
+def load_production_manifest(path: Path) -> tuple[dict, list]:
+    """Production manifest + its pieces, both re-verified (body sha, pieces-file sha, count, unique ascending ids)."""
+    import gzip  # noqa: PLC0415
+    import hashlib  # noqa: PLC0415
+
+    manifest = request_from_file(path)
+    if manifest.get("kind") != "c_production":
+        raise ContractError("not a c_production manifest")
+    pieces_path = Path(path).parent / manifest["pieces_file"]
+    if hashlib.sha256(pieces_path.read_bytes()).hexdigest() != manifest["pieces_sha256"]:
+        raise ContractError("production pieces file differs from its pinned sha256")
+    with gzip.open(pieces_path, "rt", encoding="utf-8") as h:
+        pieces = [json.loads(line) for line in h if line.strip()]
+    if len(pieces) != int(manifest["n_pieces"]) or len({r["request_id"] for r in pieces}) != len(pieces):
+        raise ContractError("production pieces count/uniqueness differs from the manifest")
+    return manifest, pieces
+
+
+def read_c_outputs(out_dir: Path, manifest: dict, pieces: list) -> pd.DataFrame:
+    """Per-piece runner outputs -> export rows (frozen columns + recipe + diagnostics), binding re-checked per piece.
+
+    Pieces without an output are simply absent (``validate_export`` reports them missing). Null or nonfinite sums are
+    kept with status ``null_result``/``nonfinite_result`` so the merge raises a technical failure, never zero coverage."""
+    import hashlib  # noqa: PLC0415
+
+    out_dir = Path(out_dir)
+    rows = []
+    for r in pieces:
+        path = out_dir / "pieces" / (hashlib.sha1(r["request_id"].encode()).hexdigest() + ".json")
+        if not path.exists():
+            continue
+        rec = json.loads(path.read_text())
+        if (rec.get("manifest_sha256") != manifest["request_sha256"] or rec.get("piece_id") != r["request_id"]
+                or rec.get("admin_code") != r["admin_code"] or rec.get("candidates") != r["candidates"] or rec.get("recipe") != manifest["recipe"]
+                or rec.get("response_sha256") != digest(rec.get("response"))):
+            raise TechnicalError(f"output for {r['request_id']} does not match its manifest binding")
+        s = rec["response"]["sums"]
+        values = [s.get("valid_area")] + [s.get(f"S_{b}") for b in aemoments.BANDS] + [s.get(f"Q_{b}") for b in aemoments.BANDS]
+        status = "complete"
+        if any(v is None for v in values):
+            status = "null_result"
+        elif not all(np.isfinite(float(v)) for v in values):
+            status = "nonfinite_result"
+        row = {"admin_code": int(r["admin_code"]), "piece_id": r["request_id"], "asset_id": ",".join(r["candidates"]),
+               "status": status, "valid_area": s.get("valid_area"), "recipe": rec["recipe"],
+               "valid_cells": rec["response"]["count"].get("valid_cells"), "seconds": rec.get("seconds")}
+        for b in aemoments.BANDS:
+            row[f"S_{b}"], row[f"Q_{b}"] = s.get(f"S_{b}"), s.get(f"Q_{b}")
+        rows.append(row)
+    return pd.DataFrame(rows, columns=[*EXPORT_COLUMNS, RECIPE_COLUMN, "valid_cells", "seconds"])
