@@ -75,3 +75,11 @@
   - Rate t ≈ 4.0 s + 1.65e-6 s/cell gives ≈ 279 request-hours for the full plan (≈ 80 h at concurrency 4).
   - Full extraction and fits remain held. Evidence: evidence/p1/c-small-20261010/C-SMALL-result.md. The offline doc's
     request-sha table was corrected to the receipt's body hashes (documentation only).
+- 2026-10-10 Full extraction envelope (held; awaiting release):
+  - Code: `max_invocations` counted at invocation start; null/nonfinite responses stay pending (kept in
+    `failed_responses/`); `check_c_outputs.py` for checkpoint and completeness checks.
+  - Limits: concurrency 4, batch 1; 20 × 6 h request-start windows; hard kill 22,200 s per invocation (≤ 123 h 20 min
+    total); one invocation at a time.
+  - Cumulative calls 59,576; cells ≤ 4.95e11 including re-requests; output ≤ 1 GB outside Dropbox.
+  - Draft manifest body 63d0c7ab… (pieces and plan unchanged). Tests: 108 full OK; supervisor 19-test PASS.
+  - Doc: evidence/p1/c-full-envelope/C-FULL-ENVELOPE.md.

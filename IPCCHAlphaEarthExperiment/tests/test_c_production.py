@@ -19,13 +19,14 @@ from ipcch_alphaearth.contract import config_identity, load_contract
 from ipcch_alphaearth.errors import ContractError, TechnicalError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+import check_c_outputs  # noqa: E402
 import ee_metadata  # noqa: E402
 import ee_pilot_c as epc  # noqa: E402
 
 PROJ = [[45.0, 13.0, 4341882.611290343, 1644631.1629230133]]
 LIMITS = {"tile_scale": 4, "deadline_ms": 120000, "max_high_level_calls": 1000, "concurrency": 1, "batch_size": 1,
           "max_consecutive_failures": 3, "max_failure_fraction": 0.5, "min_attempts_for_fraction": 4, "wall_budget_s": 600,
-          "outer_timeout_s": 900}
+          "outer_timeout_s": 900, "max_invocations": 50}
 
 
 def fake_response(r):
@@ -38,7 +39,7 @@ def fake_response(r):
     for j, b in enumerate(aemoments.BANDS):
         sums[f"S_{b}"] = area * mu[j]
         sums[f"Q_{b}"] = area * (mu[j] ** 2 + 0.01)
-    return {"sums": sums, "count": {"valid_cells": int(0.9 * r["expected_cells"])}, "area_by_rank": {"groups": []}}
+    return {"sums": sums, "count": {"valid_cells": int(0.9 * r["expected_cells"])}, "area_by_rank": {"groups": [{"source_rank": 1, "sum": area}]}}
 
 
 class FakeEE:
@@ -442,6 +443,71 @@ class SharedStop(Patched):
             (d / "production_manifest.json").write_text(json.dumps({**m, "release_id": "r"}))
             with self.assertRaisesRegex(SystemExit, "outer_timeout_s"):
                 epc.load_released(d / "production_manifest.json")
+
+
+class EnvelopeGuards(Patched):
+    def test_null_or_nonfinite_response_stays_pending_and_is_retried_on_resume(self):
+        _, path = self.manifest(limits={"max_consecutive_failures": 99, "max_failure_fraction": 1.0})
+        req = epc.load_released(path)
+        victim = req["requests"][1]["request_id"]
+        orig = fake_response
+
+        def nulled(r):
+            resp = orig(r)
+            if r["request_id"] == victim:
+                resp["sums"]["Q_A10"] = None
+            return resp
+
+        globals()["fake_response"] = nulled
+        try:
+            _, s1 = self.run_once(path, self.tmp / "nul", FakeEE())
+        finally:
+            globals()["fake_response"] = orig
+        self.assertFalse(epc.piece_file(self.tmp / "nul", victim).exists())  # never a done output
+        self.assertEqual(len(list((self.tmp / "nul" / "failed_responses").glob("*.json"))), 1)  # evidence kept
+        self.assertEqual(s1["failed"], 1)
+        self.assertFalse(s1["complete"])
+        _, s2 = self.run_once(path, self.tmp / "nul", FakeEE())
+        self.assertEqual(s2["pending_at_start"], 1)
+        self.assertTrue(s2["complete"])
+        rep = check_c_outputs.check(path, self.tmp / "nul")
+        self.assertTrue(rep["complete"])
+        self.assertEqual(rep["ledger_statuses"], {"ok": len(req["requests"]), "null_result": 1})
+
+    def test_invocation_cap_counts_started_invocations_and_full_manifest_must_state_it(self):
+        _, path = self.manifest(limits={"max_invocations": 2, "max_high_level_calls": 4})
+        out = self.tmp / "inv"
+        for _ in range(2):
+            self.assertEqual(epc.main_production(epc.load_released(path), out, ee=FakeEE()), 0)
+        with self.assertRaisesRegex(SystemExit, "invocation cap"):
+            epc.main_production(epc.load_released(path), out, ee=FakeEE())
+        self.assertEqual(len((out / "invocations.log").read_text().splitlines()), 2)
+        plan, geoms = self.plan()
+        lim = {k: v for k, v in LIMITS.items() if k != "max_invocations"}
+        m = extraction.write_production_manifest(plan, geoms, self.tmp / "nocap", self.contract, limits=lim, grid_crs_wkt=epc.EE_CRS_WKT,
+                                                 projection_check=PROJ, project="p", provenance={"plan_sha256": "x"})
+        (self.tmp / "nocap" / "production_manifest.json").write_text(json.dumps({**m, "release_id": "r"}))
+        with self.assertRaisesRegex(SystemExit, "max_invocations"):
+            epc.load_released(self.tmp / "nocap" / "production_manifest.json")  # full (non-sample) manifest without the cap
+        _, sample = self.manifest(select=[epc.load_released(path)["requests"][0]["request_id"]], name="smp")
+        self.assertEqual(len(epc.load_released(sample)["requests"]), 1)  # samples may omit it
+
+    def test_checker_reports_progress_and_flags_violations(self):
+        _, path = self.manifest(limits={"max_invocations": 3})
+        out = self.tmp / "chk"
+        req = epc.load_released(path)
+        first = req["requests"][0]["request_id"]
+        _, _ = self.run_once(path, out, FakeEE(fail={first}))
+        rep = check_c_outputs.check(path, out)
+        self.assertEqual((rep["done"], rep["pending"], rep["n_violations"], rep["complete"]), (len(req["requests"]) - 1, 1, 0, False))
+        f = epc.piece_file(out, req["requests"][2]["request_id"])
+        rec = json.loads(f.read_text())
+        rec["response"]["count"]["valid_cells"] = 10 ** 12
+        rec["response_sha256"] = epc.digest(rec["response"])
+        f.write_text(json.dumps(rec))
+        rep = check_c_outputs.check(path, out)
+        self.assertEqual(rep["n_violations"], 1)
+        self.assertEqual(check_c_outputs.main(["--request", str(path), "--out", str(out)]), 1)
 
 
 if __name__ == "__main__":

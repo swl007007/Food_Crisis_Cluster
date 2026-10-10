@@ -1,0 +1,192 @@
+{"n": 1, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 3, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 7, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.03, "response_bytes": 7648}
+.{"n": 1, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-10T23:50:26Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 9, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 10, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 11, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 12, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 13, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 14, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 15, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+.{
+ "manifest_sha256": "998e48049f19ff1853c77165921af9cb2eaf7b6672f7793f9b17ff49e012da00",
+ "release_id": "rel-test",
+ "pieces": 14,
+ "done": 13,
+ "pending": 1,
+ "done_cells": 3647290.4497048287,
+ "pending_cells": 399313.75265711785,
+ "ledger_statuses": {
+  "failed": 1,
+  "ok": 13
+ },
+ "call_reservations": 0,
+ "call_cap": 1000,
+ "invocations": 0,
+ "max_invocations": 3,
+ "summed_invocation_seconds": 0,
+ "observed_cells_per_wall_second": null,
+ "projected_remaining_wall_s": null,
+ "projected_within_invocation_cap": true,
+ "piece_seconds_max": 0.017,
+ "last_stop": null,
+ "complete": false,
+ "violations": [
+  "11|w000_002: valid cells above the lattice box"
+ ],
+ "n_violations": 1
+}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+.{"calls_used": 4, "done": 2, "remaining": 12, "complete": false, "stopped": "request cap 4 reached before '11|w000_002'"}
+{"calls_used": 4, "done": null, "remaining": null, "complete": null, "stopped": "request cap 4 reached before 'initialize (may issue >1 HTTP request)'"}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3803}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+.{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "batch[11|w000_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11473}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "batch[11|w001_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11463}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "batch[11|w002_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11442}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "batch[11|w003_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11489}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+.{"calls_used": 5, "done": 3, "remaining": 11, "complete": false, "stopped": "request cap 5 reached before '11|w001_000'"}
+{"calls_used": 5, "done": null, "remaining": null, "complete": null, "stopped": "request cap 5 reached before 'initialize (may issue >1 HTTP request)'"}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+.{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 9, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 10, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 11, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 12, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 13, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 14, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 15, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+...{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-10T23:50:27Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+.{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.08, "response_bytes": 0}
+..{"calls_used": 1, "done": null, "remaining": null, "complete": null, "stopped": "halted before 'projection equivalence check' attempt 1: invocation wall budget 0.05 s reached"}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 2, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.2, "response_bytes": 0, "error": "Computation timed out."}
+.{"n": 1, "utc": "2026-10-10T23:50:27Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.06, "response_bytes": 0, "error": "Computation timed out."}
+.
+----------------------------------------------------------------------
+Ran 19 tests in 1.688s
+
+OK

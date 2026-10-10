@@ -21,7 +21,9 @@ concurrency; stops on fatal service errors, on ``max_consecutive_failures``, on 
 conditions are checked at every attempt reservation (retries included) through one shared ``Control``; a fatal error is
 published before it is raised. The call cap is cumulative over every resume of one output directory (reservation log),
 so a rerun never gets a fresh budget. Invocation wall budget (``wall_budget_s``, from before init) and the outer command
-timeout (``outer_timeout_s``, hard kill) are distinct; the manifest must state both.
+timeout (``outer_timeout_s``, hard kill) are distinct; the manifest must state both. A full (non-sample) manifest must
+also state ``max_invocations`` (counted at invocation start). A null/nonfinite response is never a done output: it is
+kept under ``failed_responses/``, counted as a failure, and the piece stays pending for a resume.
 """
 
 from __future__ import annotations
@@ -71,6 +73,8 @@ def load_released(path: Path) -> dict:
         if not pieces_path.exists() or hashlib.sha256(pieces_path.read_bytes()).hexdigest() != req["pieces_sha256"]:
             raise SystemExit("production pieces file missing or differs from its pinned sha256")
         lim = req["limits"]
+        if not req.get("sample") and "max_invocations" not in lim:
+            raise SystemExit("a full production manifest must state max_invocations")
         if "outer_timeout_s" not in lim or float(lim["outer_timeout_s"]) < float(lim["wall_budget_s"]) + float(lim["deadline_ms"]) / 1000 + 60:
             raise SystemExit("production limits must state outer_timeout_s >= invocation wall_budget_s + deadline + 60 s")
         req["requests"] = load_pieces(pieces_path)
@@ -158,6 +162,17 @@ def valid_output(req: dict, r: dict, path: Path) -> bool:
     return True
 
 
+def numerically_complete(response: dict) -> bool:
+    """All 129 sums present and finite, and a valid-cell count present (an all-zero result is complete: no coverage)."""
+    import math  # noqa: PLC0415
+
+    sums = (response or {}).get("sums") or {}
+    keys = ["valid_area"] + [f"{p}_{b}" for p in "SQ" for b in BANDS]
+    vals = [sums.get(k) for k in keys]
+    return (all(isinstance(v, (int, float)) and math.isfinite(v) for v in vals)
+            and isinstance(((response or {}).get("count") or {}).get("valid_cells"), (int, float)))
+
+
 def write_atomic(path: Path, payload: dict) -> None:
     tmp = path.with_name(path.name + f".tmp{os.getpid()}.{threading.get_ident()}")
     tmp.write_text(json.dumps(payload) + "\n")
@@ -237,14 +252,27 @@ def run_production(req: dict, out: Path, ee, budget: Budget, sleep=time.sleep, c
                 ledger({"piece_id": r["request_id"], "status": "failed", "error": msg[:300]})
             return
         seconds = time.time() - t0
+        n_bad = 0
         for i, r in enumerate(group):
             rec = piece_record(req, r, res[str(i)], seconds, len(group))
+            if not numerically_complete(rec["response"]):  # honest null/nonfinite: kept for evidence, piece stays pending
+                n_bad += 1
+                (out / "failed_responses").mkdir(exist_ok=True)
+                write_atomic(out / "failed_responses" / f"{piece_file(out, r['request_id']).stem}-{time.time_ns()}.json", rec)
+                ledger({"piece_id": r["request_id"], "status": "null_result", "response_sha256": rec["response_sha256"]})
+                continue
             write_atomic(piece_file(out, r["request_id"]), rec)
             ledger({"piece_id": r["request_id"], "status": "ok", "seconds": rec["seconds"], "response_sha256": rec["response_sha256"]})
         with lock:
             state["attempted"] += len(group)
-            state["done"] += len(group)
-            state["consecutive"] = 0
+            state["done"] += len(group) - n_bad
+            state["failed"] += n_bad
+            state["consecutive"] = state["consecutive"] + 1 if n_bad else 0
+            frac = state["failed"] / state["attempted"]
+            if n_bad and state["consecutive"] >= int(limits["max_consecutive_failures"]):
+                control.stop(f"{state['consecutive']} consecutive failed calls (null/nonfinite results)")
+            elif n_bad and state["attempted"] >= int(limits["min_attempts_for_fraction"]) and frac > float(limits["max_failure_fraction"]):
+                control.stop(f"failure fraction {frac:.4f} above limit")
 
     with ThreadPoolExecutor(max_workers=max(1, int(limits["concurrency"]))) as pool:
         list(pool.map(work, groups))
@@ -322,6 +350,16 @@ def main_production(req: dict, out: Path, ee=None) -> int:
     pin = out / "MANIFEST.sha256"
     if pin.exists() and pin.read_text().strip() != req["request_sha256"]:
         raise SystemExit("output directory belongs to a different production manifest")  # before any EE call
+    if "max_invocations" in limits:  # counted at invocation START (a killed invocation still counts)
+        log = out / "invocations.log"
+        used = 0
+        if log.exists():
+            with open(log, encoding="utf-8") as h:
+                used = sum(1 for _ in h)
+        if used >= int(limits["max_invocations"]):
+            raise SystemExit(f"invocation cap {limits['max_invocations']} reached for this output directory; no EE call made")
+        with open(log, "a", encoding="utf-8") as h:
+            h.write(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()) + "\n")
     control = Control(limits["wall_budget_s"])  # invocation wall clock starts before init/projection
     budget = CumulativeBudget(int(limits["max_high_level_calls"]), out)
     budget.guard, budget.on_fatal = control.reason, control.stop

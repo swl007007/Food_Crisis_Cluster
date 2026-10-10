@@ -108,9 +108,12 @@ def main(argv=None) -> int:
     }
 
     # ---------------------------------------------------------------- full production manifest (draft, unreleased)
-    full_limits = {**BASE, "concurrency": 4, "batch_size": 1, "max_high_level_calls": int(np.ceil(len(real) * 1.05)) + 2,
-                   "max_consecutive_failures": 5, "max_failure_fraction": 0.02, "min_attempts_for_fraction": 200,
-                   "wall_budget_s": 4 * 3600, "outer_timeout_s": 4 * 3600 + 600}
+    # envelope (from the released small-live evidence): measured c4 / batch 1 default, 6 h invocations, <= 20 invocations
+    # (120 h aggregate invocation wall vs ~80 h modelled), cumulative calls = pieces + 3% re-requests + 2 per invocation
+    n_inv, wall = 20, 6 * 3600
+    full_limits = {**BASE, "concurrency": 4, "batch_size": 1, "max_invocations": n_inv, "wall_budget_s": wall,
+                   "outer_timeout_s": wall + 600, "max_high_level_calls": len(real) + int(np.ceil(0.03 * len(real))) + 2 * n_inv,
+                   "max_consecutive_failures": 5, "max_failure_fraction": 0.02, "min_attempts_for_fraction": 200}
     full = extraction.write_production_manifest(plan.drop(columns=["vertices", "parts"]), geoms, out, contract, limits=full_limits,
                                                 grid_crs_wkt=epc.EE_CRS_WKT, projection_check=PROJECTION_CHECK, project=a.project,
                                                 provenance={**provenance, "plan_sha256": plan_sha}, name="production")

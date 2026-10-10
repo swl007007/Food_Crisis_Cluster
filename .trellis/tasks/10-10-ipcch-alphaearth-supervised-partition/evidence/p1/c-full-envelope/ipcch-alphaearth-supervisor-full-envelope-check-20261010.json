@@ -1,0 +1,25 @@
+{
+  "scope": "Full-envelope invocation guard and null-result pending delta after96613c1",
+  "review": "Read diff; independent19 focused tests pass; production limit values inspected, no cloud release yet",
+  "source_sha256": {
+    "scripts/ee_pilot_c.py": "f5c59f9dbd4330f10b131d2787523c58312901d7d26613ffd2c391cb750f9c7e",
+    "scripts/build_c_production.py": "5ea13a301ca1a0cea67f1af5689c27c8c7f530082fc3d72d8b66be806d510af8",
+    "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5",
+    "tests/test_c_production.py": "a6dc4473c5b1717e9858969755ca9e2961b14693a299528a426f5c1cc23f658d"
+  },
+  "log": "/tmp/ipcch-alphaearth-supervisor-full-envelope-tests-20261010.log",
+  "log_sha256": "10567d98b13a472acdd6654291af4f28129d851a4c2d903ec898877d79e1fffd",
+  "limits_inspected": {
+    "max_invocations": 20,
+    "invocation_wall_seconds": 21600,
+    "outer_timeout_seconds": 22200,
+    "cumulative_high_level_calls": 59576,
+    "concurrency": 4,
+    "batch_size": 1
+  },
+  "notes": [
+    "Single invocation at a time; already-issued requests may finish",
+    "120h request-start windows; at most123h20m outer-timeout reservation across20 invocations",
+    "No change to reducer, ordered geometry/candidate pieces or scientific recipe"
+  ]
+}
