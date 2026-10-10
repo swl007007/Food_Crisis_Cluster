@@ -1,0 +1,36 @@
+{
+ "release_id": "ipcch-alphaearth-p1-C-pilot2-20261010",
+ "request_sha256": "8ef74cf28c372dad571522d0cd79048dbaf7bb7a87e0a0521710688455b7e773",
+ "recipe": "D30|EPSG:6933|10,0,0,0,-10,0|nearest|first-valid-ascending-id",
+ "done": [
+  "C01:overlap_piece:1722",
+  "C02:control_whole:3447",
+  "C03:window:3447:w000_000",
+  "C03:window:3447:w000_001",
+  "C03:window:3447:w000_002",
+  "C03:window:3447:w000_003",
+  "C03:window:3447:w001_000",
+  "C03:window:3447:w001_001",
+  "C04:all_masked_fixture",
+  "C05:resource_window:3649"
+ ],
+ "failed": [],
+ "projection_check": {
+  "ee": {
+   "0": [
+    4341882.611290343,
+    1644631.1629230147
+   ],
+   "1": [
+    -8896035.039132658,
+    4548060.477689641
+   ],
+   "2": [
+    12282703.475939127,
+    -4177655.9204573347
+   ]
+  },
+  "max_abs_diff_m": 2.7939677238464355e-09
+ },
+ "calls_used": 12
+}

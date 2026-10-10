@@ -1,0 +1,12 @@
+{"n": 1, "utc": "2026-10-10T22:57:52Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.86, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T22:57:53Z", "purpose": "projection equivalence check (transport WKT vs pinned pyproj EPSG:6933)", "attempt": 1, "status": "ok", "seconds": 0.19, "response_bytes": 140}
+{"n": 3, "utc": "2026-10-10T22:58:00Z", "purpose": "C01:overlap_piece:1722", "attempt": 1, "status": "ok", "seconds": 7.1, "response_bytes": 3902}
+{"n": 4, "utc": "2026-10-10T22:58:04Z", "purpose": "C02:control_whole:3447", "attempt": 1, "status": "ok", "seconds": 4.05, "response_bytes": 3796}
+{"n": 5, "utc": "2026-10-10T22:58:06Z", "purpose": "C03:window:3447:w000_000", "attempt": 1, "status": "ok", "seconds": 1.76, "response_bytes": 3810}
+{"n": 6, "utc": "2026-10-10T22:58:08Z", "purpose": "C03:window:3447:w000_001", "attempt": 1, "status": "ok", "seconds": 2.67, "response_bytes": 3809}
+{"n": 7, "utc": "2026-10-10T22:58:10Z", "purpose": "C03:window:3447:w000_002", "attempt": 1, "status": "ok", "seconds": 1.79, "response_bytes": 3824}
+{"n": 8, "utc": "2026-10-10T22:58:13Z", "purpose": "C03:window:3447:w000_003", "attempt": 1, "status": "ok", "seconds": 2.44, "response_bytes": 3817}
+{"n": 9, "utc": "2026-10-10T22:58:16Z", "purpose": "C03:window:3447:w001_000", "attempt": 1, "status": "ok", "seconds": 3.05, "response_bytes": 3822}
+{"n": 10, "utc": "2026-10-10T22:58:17Z", "purpose": "C03:window:3447:w001_001", "attempt": 1, "status": "ok", "seconds": 1.43, "response_bytes": 3818}
+{"n": 11, "utc": "2026-10-10T22:58:18Z", "purpose": "C04:all_masked_fixture", "attempt": 1, "status": "ok", "seconds": 1.18, "response_bytes": 1624}
+{"n": 12, "utc": "2026-10-10T22:58:26Z", "purpose": "C05:resource_window:3649", "attempt": 1, "status": "ok", "seconds": 8.06, "response_bytes": 3802}

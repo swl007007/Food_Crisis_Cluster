@@ -1,0 +1,44 @@
+{
+  "release_id": "ipcch-alphaearth-p1-C-pilot2-20261010",
+  "decision": "RELEASE_C_PILOT_REV2_ONLY",
+  "head": "4ca701d52f74ada593d25d212c1df3c9298bdce6",
+  "source_sha256": {
+    "IPCCHAlphaEarthExperiment/scripts/ee_pilot_c.py": "4f43bbf83fe81989396fc52dfe8a11c0fb9ed338ddcb45918cd60effbd6b48ca",
+    "IPCCHAlphaEarthExperiment/scripts/ee_metadata.py": "6521c981fea4284a31f004049b4ab0e9bd539a3c6bb89a2289b4c4009932727d",
+    "IPCCHAlphaEarthExperiment/ipcch_alphaearth/extraction.py": "de9a3221669c31a88250b828dc9cb2ac365c5ca7bedb1214aeee9684b06d481c"
+  },
+  "request_body_sha256": "8ef74cf28c372dad571522d0cd79048dbaf7bb7a87e0a0521710688455b7e773",
+  "request_file": "/tmp/ipcch-alphaearth-p1-C-pilot2-20261010-released-request.json",
+  "output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-c-pilot2-20261010",
+  "limits": {
+    "max_pixels": 567600518,
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "max_high_level_calls": 14,
+    "concurrency": 1,
+    "outer_timeout_s": 1200
+  },
+  "authority": "Approved C and existing necessary EE query/download authorization; CRS transport repair only.",
+  "evidence": [
+    "Observed original deterministic CRS parse error; first run preserved",
+    "Local WKT matches EPSG6933 and all3 pinned points bit-exact",
+    "Requests and grid unchanged; one extra server projection check",
+    "89-test passing log independently read"
+  ],
+  "instructions": [
+    "Verify pins; fresh dir; timeout1200; limits unchanged",
+    "EE projection coordinates must agree within1mm before reductions; stop otherwise",
+    "Preserve raw results, failures and original run unchanged",
+    "Same10 computations and reporting obligations as initial C pilot",
+    "No further full-suite cycle absent a relevant new change/failure"
+  ],
+  "not_released": [
+    "GCS/Drive writes",
+    "Full extraction",
+    "Project-data model fitting",
+    "IAM/billing changes"
+  ],
+  "created_utc": "2026-10-10T22:57:14.324495+00:00"
+}
