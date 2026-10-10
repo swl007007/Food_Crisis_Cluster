@@ -1,0 +1,1 @@
+{"seconds": 3.21, "response": {"reference_projection": {"type": "Projection", "crs": "EPSG:32637", "transform": [10, 0, 827680, 0, 10, 0]}, "sums": {"both": 3912312.685395035, "donor_only": 87641811.81603713, "neither": 4612.816513270957, "owner_only": 131978724.32616103}}}

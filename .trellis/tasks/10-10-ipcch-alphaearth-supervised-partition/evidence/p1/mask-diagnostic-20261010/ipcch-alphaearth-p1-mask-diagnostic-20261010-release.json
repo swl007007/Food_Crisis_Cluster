@@ -1,0 +1,35 @@
+{
+  "release_id": "ipcch-alphaearth-p1-mask-diagnostic-20261010",
+  "decision": "RELEASE_DIAGNOSTIC_ONLY",
+  "head": "30649a2061edba68662262bd16dff5156ac9da1a",
+  "executor": {
+    "pane": "w14:p2",
+    "session": "3546490e-8e08-43f2-9f1d-9c72bccda1e8",
+    "terminal": "term_65d7ebc256c188"
+  },
+  "script_sha256": "4224a532fe2c998618513c1c5dd19b7d04a815b78ec038d142e864a48adfdc78",
+  "ee_metadata_sha256": "d246a6c507debf167b88c3c28c8a87e708b2e26ccfa234aee8b0cc8661cc7360",
+  "request_body_sha256": "766e531c5d682d9dbc85729c6b0febcd23aad56e1494e9345ee73d2f04b286dc",
+  "request_file": "/tmp/ipcch-alphaearth-p1-mask-diagnostic-20261010-released-request.json",
+  "limits": {
+    "max_pixels": 12000000,
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "max_high_level_calls": 4,
+    "concurrency": 1,
+    "outer_timeout_s": 600
+  },
+  "output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-mask-diagnostic-20261010",
+  "scope": "Two mask-only queries on the frozen owned geometry, reference grids owner and donor. Local raw results and evidence only. Existing necessary-EE query/download preauthorization applies.",
+  "not_released": [
+    "ownership recipe change",
+    "bulk extraction",
+    "model fitting",
+    "cloud writes or export",
+    "IAM or billing changes"
+  ],
+  "review_note": "Four classes are a nearest-neighbour mask diagnostic, not exact native donor value extraction; quantify reference-grid sensitivity. Positive donor_only proves diagnostic coverage lost on this sampled piece, not the extent over the full cohort.",
+  "timestamp_utc": "2026-10-10T21:49:32.717012+00:00"
+}

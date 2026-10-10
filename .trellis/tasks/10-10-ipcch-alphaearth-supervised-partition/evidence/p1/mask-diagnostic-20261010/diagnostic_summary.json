@@ -1,0 +1,53 @@
+{
+ "release_id": "ipcch-alphaearth-p1-mask-diagnostic-20261010",
+ "request_sha256": "766e531c5d682d9dbc85729c6b0febcd23aad56e1494e9345ee73d2f04b286dc",
+ "results": {
+  "x6bdj6bnb7dgiukef": {
+   "seconds": 3.22,
+   "response": {
+    "reference_projection": {
+     "type": "Projection",
+     "crs": "EPSG:32638",
+     "transform": [
+      10,
+      0,
+      8480,
+      0,
+      10,
+      0
+     ]
+    },
+    "sums": {
+     "both": 3912673.564139841,
+     "donor_only": 87638265.55824481,
+     "neither": 0,
+     "owner_only": 132002722.71371672
+    }
+   }
+  },
+  "xt0jtdcoxb1sp5b7v": {
+   "seconds": 3.21,
+   "response": {
+    "reference_projection": {
+     "type": "Projection",
+     "crs": "EPSG:32637",
+     "transform": [
+      10,
+      0,
+      827680,
+      0,
+      10,
+      0
+     ]
+    },
+    "sums": {
+     "both": 3912312.685395035,
+     "donor_only": 87641811.81603713,
+     "neither": 4612.816513270957,
+     "owner_only": 131978724.32616103
+    }
+   }
+  }
+ },
+ "calls_used": 3
+}
