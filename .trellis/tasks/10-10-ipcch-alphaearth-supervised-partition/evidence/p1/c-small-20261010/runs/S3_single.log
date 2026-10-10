@@ -1,0 +1,12 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 1, "utc": "2026-10-10T23:42:00Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.65, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T23:42:01Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.14, "response_bytes": 140}
+{"n": 3, "utc": "2026-10-10T23:42:01Z", "purpose": "1352|w003_005", "attempt": 1, "status": "ok", "seconds": 0.34, "response_bytes": 3826}
+{"n": 4, "utc": "2026-10-10T23:42:03Z", "purpose": "1953|w001_000", "attempt": 1, "status": "ok", "seconds": 2.16, "response_bytes": 3831}
+{"n": 5, "utc": "2026-10-10T23:42:06Z", "purpose": "2280|w005_006", "attempt": 1, "status": "ok", "seconds": 2.23, "response_bytes": 3845}
+{"n": 6, "utc": "2026-10-10T23:42:08Z", "purpose": "2351|w000_000", "attempt": 1, "status": "ok", "seconds": 2.66, "response_bytes": 3829}
+{"n": 7, "utc": "2026-10-10T23:42:09Z", "purpose": "2425|w000_002", "attempt": 1, "status": "ok", "seconds": 1.14, "response_bytes": 3830}
+{"n": 8, "utc": "2026-10-10T23:42:11Z", "purpose": "3957|w001_001", "attempt": 1, "status": "ok", "seconds": 1.31, "response_bytes": 3825}
+{"n": 9, "utc": "2026-10-10T23:42:11Z", "purpose": "100052|w000_002", "attempt": 1, "status": "ok", "seconds": 0.15, "response_bytes": 3830}
+{"n": 10, "utc": "2026-10-10T23:42:11Z", "purpose": "100594|w000_002", "attempt": 1, "status": "ok", "seconds": 0.13, "response_bytes": 3822}
+{"calls_used": 10, "done": 8, "remaining": 0, "complete": true, "stopped": null}

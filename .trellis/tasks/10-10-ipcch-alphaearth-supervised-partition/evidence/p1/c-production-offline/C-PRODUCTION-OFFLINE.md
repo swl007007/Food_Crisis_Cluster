@@ -4,6 +4,19 @@ Scope: offline only, under the existing implementation authorization. No EE/GCS 
 manifest is a held DRAFT (`release_id` null). The four sample manifests below are proposed for one bounded small-live
 release.
 
+> **Hash correction (2026-10-10, after commit 96613c1; documentation only).** The first version of this file and the
+> checkpoint message quoted `request_sha256` body hashes from a build made before `outer_timeout_s` was added to the
+> limits:
+> - full: 3d19a0a5…
+> - S1: 66e9ed9f…
+> - S2: b60bdad2…
+> - S3_batching: 2890a322…
+> - S3_single: 4324fdc7…
+>
+> The committed manifest files, the manifest file-sha column and `production_report.json` were always the current
+> build. The values below are recomputed from those files and equal the supervisor release receipt
+> `codex-C-small-20261010`. No geometry re-enumeration or code change was involved.
+
 ## Code (pinned; equal to supervisor receipt `ipcch-alphaearth-supervisor-c-production-fixed-check-20261010.json`)
 
 | file | sha256 |
@@ -116,7 +129,7 @@ Builder: `PYTHONPATH=.:scripts python scripts/build_c_production.py --geometry <
   descriptor denominator is always the whole frozen polygon area.
 
 **Full manifest — DRAFT, held, unreleased:**
-- `production_manifest.json` fb1b643f…: request_sha256 3d19a0a5ed542fc493d9cdbddb0806a1eea880c3d07b82335fc15b569648858c.
+- `production_manifest.json` fb1b643f…: request_sha256 b6bf588612ac0e230e37bc0db38d16817332397aa5df5e779961f5e9a1207a87.
 - Pieces: 9f22cb263e1f358175c364c9ebcb8937bb65285591bd9b3cf00e1a28f28baf7d (43.8 MB, outside Dropbox).
 - max_pixels 2.2704e9.
 
@@ -131,10 +144,10 @@ At the pilot rates (1 s + 2.0–3.2e-6 s per cell) the full plan totals about 1.
 
 | stage | manifest sha256 (file) | request_sha256 | pieces sha256 | n | conc | batch | calls cap | wall s | outer s |
 |---|---|---|---|---|---|---|---|---|---|
-| S1_sequential | 84da17c4… | 66e9ed9f22ed8f578e791ebd92f5a35b398f013ce09352222dc95b5406a2ec0d | 41a938fb2d33cfdfe73fd252c0256a41996c29d21649ac0fb112432a822538cf | 12 | 1 | 1 | 26 | 900 | 1200 |
-| S2_concurrency4 | 4da38ac2… | b60bdad23322303d225f5846401e0020eed8b7652e2da47ba50286314731021d | 42510e915e7e9ff2b3a3ea47962dba758e5cb1acd3dd0338ad747294b266b549 | 16 | 4 | 1 | 34 | 600 | 900 |
-| S3_batching | dc418f2a… | 2890a3220956daefc76b5c9f80583ed6f3a8d208956ea877a339b88e2a9e6563 | c16db67db0fe3796b653fe06b4ad6036d3188978d4d682b56c0f95d003697d46 | 8 | 1 | 4 | 6 | 300 | 600 |
-| S3_single | ac4bab3f… | 4324fdc7d825b5199916980b74a9aeda1cf9c5e76db30c99f2962a204159e38f | c16db67db0fe3796b653fe06b4ad6036d3188978d4d682b56c0f95d003697d46 | 8 | 1 | 1 | 18 | 300 | 600 |
+| S1_sequential | 84da17c4… | 5774339c45141ca233adc2f845a37bf76145d0b785f4d87d5b15c6b49183097d | 41a938fb2d33cfdfe73fd252c0256a41996c29d21649ac0fb112432a822538cf | 12 | 1 | 1 | 26 | 900 | 1200 |
+| S2_concurrency4 | 4da38ac2… | 68e40655f2dbcc3930442760e9e581beb4659add0f3d023f8f4e237f870775cb | 42510e915e7e9ff2b3a3ea47962dba758e5cb1acd3dd0338ad747294b266b549 | 16 | 4 | 1 | 34 | 600 | 900 |
+| S3_batching | dc418f2a… | eb580b24e36bdeb337da983d2c4241062554512cfdc0b7efcbe49cd90d01e512 | c16db67db0fe3796b653fe06b4ad6036d3188978d4d682b56c0f95d003697d46 | 8 | 1 | 4 | 6 | 300 | 600 |
+| S3_single | ac4bab3f… | eae40c1cd1d28f516ef82b83e5d8b2cf03887c1c4a9a46dc21a5b8980b4abb6e | c16db67db0fe3796b653fe06b4ad6036d3188978d4d682b56c0f95d003697d46 | 8 | 1 | 1 | 18 | 300 | 600 |
 
 All four stages share these settings:
 - deadline 120 s;

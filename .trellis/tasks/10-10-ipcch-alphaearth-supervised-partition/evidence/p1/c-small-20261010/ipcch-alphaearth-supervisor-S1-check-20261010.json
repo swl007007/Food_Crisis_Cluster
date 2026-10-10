@@ -1,0 +1,106 @@
+{
+  "stage": "S1",
+  "pass": true,
+  "n_pieces": 12,
+  "calls": 14,
+  "max_piece_seconds": 45.955,
+  "max_rank_relative_error": 2.518398510504175e-16,
+  "records": [
+    {
+      "piece": "4084|w000_007",
+      "seconds": 2.126,
+      "area": 24357436.078431375,
+      "count": 243543,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.00016446165734186613
+    },
+    {
+      "piece": "238|w004_005",
+      "seconds": 26.117,
+      "area": 1599980875.6862745,
+      "count": 15999807,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.0003009621488404019
+    },
+    {
+      "piece": "100027|w000_001",
+      "seconds": 17.073,
+      "area": 849074622.3529412,
+      "count": 8490784,
+      "rank_sum_relative_error": 1.4039907260498552e-16,
+      "minimum_variance": 0.0003546403311443999
+    },
+    {
+      "piece": "362|w001_001",
+      "seconds": 17.059,
+      "area": 752064605.8823531,
+      "count": 7520662,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.0006161110498655077
+    },
+    {
+      "piece": "3020|w000_001",
+      "seconds": 13.764,
+      "area": 617297885.882353,
+      "count": 6173244,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.00046782473763747924
+    },
+    {
+      "piece": "256|w002_002",
+      "seconds": 27.045,
+      "area": 1599932566.666667,
+      "count": 15999337,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.000404944480653761
+    },
+    {
+      "piece": "1267|w000_000",
+      "seconds": 15.559,
+      "area": 473353558.03921574,
+      "count": 4733616,
+      "rank_sum_relative_error": 2.518398510504175e-16,
+      "minimum_variance": 0.0012369764895544316
+    },
+    {
+      "piece": "1574|w003_005",
+      "seconds": 29.527,
+      "area": 1600000000,
+      "count": 16000000,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.0002706720810927371
+    },
+    {
+      "piece": "1705|w003_005",
+      "seconds": 31.249,
+      "area": 1215276701.960784,
+      "count": 12152594,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.00022823439152955998
+    },
+    {
+      "piece": "1679|w004_007",
+      "seconds": 45.955,
+      "area": 1600000000,
+      "count": 16000000,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.0005835162222380969
+    },
+    {
+      "piece": "101267|w000_000",
+      "seconds": 11.738,
+      "area": 224953968.6274509,
+      "count": 2249569,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": 0.0009021458539994853
+    },
+    {
+      "piece": "1266|w001_000",
+      "seconds": 0.57,
+      "area": 9.019607843137255,
+      "count": 0,
+      "rank_sum_relative_error": 0.0,
+      "minimum_variance": -1.3877787807814457e-17
+    }
+  ]
+}

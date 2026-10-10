@@ -1,0 +1,4 @@
+initialize (may issue >1 HTTP request)
+projection equivalence check
+batch[1352|w003_005..+3]
+batch[2425|w000_002..+3]

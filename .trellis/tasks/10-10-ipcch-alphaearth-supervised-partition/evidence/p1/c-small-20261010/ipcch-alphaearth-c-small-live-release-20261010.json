@@ -1,0 +1,119 @@
+{
+  "release_id": "codex-C-small-20261010",
+  "implementation_commit": "96613c16ef92b6dfbec9860b3a59ffae9ac16962",
+  "authority": "Existing user EE computation/download authorization; supervisor checkpoint release under execution-handoff",
+  "source_sha256": {
+    "scripts/ee_metadata.py": "982e3640d156acef8f69f0fce0fb494eac8656ff2e640ca6c9b3f633ff200bfc",
+    "scripts/ee_pilot_c.py": "bfec9e1bd158e5f50e3be11ade32d26165e943da94e739de1697e09227a76e1c",
+    "scripts/build_c_production.py": "b9007cfa2e0d6d5e69a8d885451b782ccbac0e4914cdbd9a89d07cf2047be715",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+    "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+    "tests/test_c_production.py": "70c2f27688463ff1cef68978f302313e8375c2c449da6a202e778b30cfc6126e"
+  },
+  "stages_in_order": [
+    {
+      "stage": "S1_sequential",
+      "manifest": "/tmp/ipcch-alphaearth-c-small-live-release-20261010/S1_sequential_manifest.json",
+      "body_sha256": "5774339c45141ca233adc2f845a37bf76145d0b785f4d87d5b15c6b49183097d",
+      "pieces_sha256": "41a938fb2d33cfdfe73fd252c0256a41996c29d21649ac0fb112432a822538cf",
+      "requests": 12,
+      "limits": {
+        "tile_scale": 4,
+        "deadline_ms": 120000,
+        "sdk_retries": 0,
+        "budget_retries": 1,
+        "concurrency": 1,
+        "batch_size": 1,
+        "max_high_level_calls": 26,
+        "wall_budget_s": 900,
+        "outer_timeout_s": 1200,
+        "max_consecutive_failures": 2,
+        "max_failure_fraction": 0.25,
+        "min_attempts_for_fraction": 4,
+        "max_pixels": 2270400000
+      },
+      "fresh_output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-c-small-20261010/S1_sequential"
+    },
+    {
+      "stage": "S2_concurrency4",
+      "manifest": "/tmp/ipcch-alphaearth-c-small-live-release-20261010/S2_concurrency4_manifest.json",
+      "body_sha256": "68e40655f2dbcc3930442760e9e581beb4659add0f3d023f8f4e237f870775cb",
+      "pieces_sha256": "42510e915e7e9ff2b3a3ea47962dba758e5cb1acd3dd0338ad747294b266b549",
+      "requests": 16,
+      "limits": {
+        "tile_scale": 4,
+        "deadline_ms": 120000,
+        "sdk_retries": 0,
+        "budget_retries": 1,
+        "concurrency": 4,
+        "batch_size": 1,
+        "max_high_level_calls": 34,
+        "wall_budget_s": 600,
+        "outer_timeout_s": 900,
+        "max_consecutive_failures": 2,
+        "max_failure_fraction": 0.25,
+        "min_attempts_for_fraction": 4,
+        "max_pixels": 2270400000
+      },
+      "fresh_output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-c-small-20261010/S2_concurrency4"
+    },
+    {
+      "stage": "S3_batching",
+      "manifest": "/tmp/ipcch-alphaearth-c-small-live-release-20261010/S3_batching_manifest.json",
+      "body_sha256": "eb580b24e36bdeb337da983d2c4241062554512cfdc0b7efcbe49cd90d01e512",
+      "pieces_sha256": "c16db67db0fe3796b653fe06b4ad6036d3188978d4d682b56c0f95d003697d46",
+      "requests": 8,
+      "limits": {
+        "tile_scale": 4,
+        "deadline_ms": 120000,
+        "sdk_retries": 0,
+        "budget_retries": 1,
+        "concurrency": 1,
+        "batch_size": 4,
+        "max_high_level_calls": 6,
+        "wall_budget_s": 300,
+        "outer_timeout_s": 600,
+        "max_consecutive_failures": 2,
+        "max_failure_fraction": 0.25,
+        "min_attempts_for_fraction": 4,
+        "max_pixels": 2270400000
+      },
+      "fresh_output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-c-small-20261010/S3_batching"
+    },
+    {
+      "stage": "S3_single",
+      "manifest": "/tmp/ipcch-alphaearth-c-small-live-release-20261010/S3_single_manifest.json",
+      "body_sha256": "eae40c1cd1d28f516ef82b83e5d8b2cf03887c1c4a9a46dc21a5b8980b4abb6e",
+      "pieces_sha256": "c16db67db0fe3796b653fe06b4ad6036d3188978d4d682b56c0f95d003697d46",
+      "requests": 8,
+      "limits": {
+        "tile_scale": 4,
+        "deadline_ms": 120000,
+        "sdk_retries": 0,
+        "budget_retries": 1,
+        "concurrency": 1,
+        "batch_size": 1,
+        "max_high_level_calls": 18,
+        "wall_budget_s": 300,
+        "outer_timeout_s": 600,
+        "max_consecutive_failures": 2,
+        "max_failure_fraction": 0.25,
+        "min_attempts_for_fraction": 4,
+        "max_pixels": 2270400000
+      },
+      "fresh_output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-c-small-20261010/S3_single"
+    }
+  ],
+  "total_high_level_call_ceiling": 84,
+  "gates": [
+    "Run stages sequentially, only after previous stage passes; no automatic bulk release",
+    "Before S2: S1 complete with zero failed/halted pieces; projection <=0.001m; every piece <90s; rank-area relative discrepancy <=1e-9; count <=bbox; all129 moments finite; subcell piece count0or1",
+    "Before S3: S2 complete zero failed/halted; numerical/projection invariants same as S1; wall<=600s",
+    "S3 batch then singles complete; compare all moments/counts keyed; report differences without normalization; timing is order/cache-conditioned",
+    "Fatal/auth/quota/permission, timeout gate, null/nonfinite, identity mismatch: preserve evidence, stop later stages, report"
+  ],
+  "boundary": "Only 36 distinct pieces (44 results), local return; no GCS/Drive writes, IAM/billing/resource changes, full extraction, project fits or lifecycle operations",
+  "documentation_correction": "C-PRODUCTION-OFFLINE.md and checkpoint message quote pre-outer-timeout body hashes. Actual committed and local sample files match; this receipt pins the verified current bodies. Refresh docs/report hash fields from those files; no need to regenerate geometry."
+}

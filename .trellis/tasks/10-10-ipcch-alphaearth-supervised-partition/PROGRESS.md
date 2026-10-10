@@ -67,3 +67,11 @@
   hashes. Tests: 16 focused / 105 full OK. Enumeration: 57,801 pieces for 6,227 admins, 4.67e11 cells, 0 zero-source
   admins. Full manifest is a DRAFT and held. Small-live S1–S3 proposal (36 pieces, ≤ 84 calls):
   evidence/p1/c-production-offline/C-PRODUCTION-OFFLINE.md.
+- 2026-10-10 C small-live (release codex-C-small-20261010) executed and all gates PASS:
+  - S1 14/26 calls, 12 pieces, max 45.96 s; S2 18/34 calls, 16 pieces, 75.1 s wall at concurrency 4 (3.5x);
+    S3 batch 4/6 and single 10/18 calls. Total 46/84 calls, 0 failures.
+  - Invariants hold on all 44 records. Batch vs single: counts identical; sums differ by ≤ 3.1e-16 relative
+    (summation order).
+  - Rate t ≈ 4.0 s + 1.65e-6 s/cell gives ≈ 279 request-hours for the full plan (≈ 80 h at concurrency 4).
+  - Full extraction and fits remain held. Evidence: evidence/p1/c-small-20261010/C-SMALL-result.md. The offline doc's
+    request-sha table was corrected to the receipt's body hashes (documentation only).

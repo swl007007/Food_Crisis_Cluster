@@ -1,0 +1,106 @@
+{
+  "status": "ACCEPT sampled local-return extraction; not full extraction or model fit release",
+  "total_calls": 46,
+  "stages": [
+    {
+      "stage": "S1_sequential",
+      "pieces": 12,
+      "calls": 14,
+      "seconds": 238.974,
+      "gate_file_sha256": "e56e92839a759881de9a0e51bcb1dc17a20e03cf21e229c84106408eb2a9591e"
+    },
+    {
+      "stage": "S2_concurrency4",
+      "pieces": 16,
+      "calls": 18,
+      "seconds": 75.106,
+      "gate_file_sha256": "e525e3e3e981fba448a133d9652abb0586635e397ef02727a8cfb4ffdddb3471"
+    },
+    {
+      "stage": "S3_batching",
+      "pieces": 8,
+      "calls": 4,
+      "seconds": 8.941,
+      "gate_file_sha256": "a1836ae4005e54ada7670ff5d278651cfda244f1a8ec1f662831b3af5ceac97c"
+    },
+    {
+      "stage": "S3_single",
+      "pieces": 8,
+      "calls": 10,
+      "seconds": 11.311,
+      "gate_file_sha256": "4e6dd7729c8af06f357ae7fc23aa5864d26b5037c6c900f5721caf0af69dddbc"
+    }
+  ],
+  "independent_checks": "All44 result records matched requested piece sets/manifest/response digests;129 finite moments; rank area reconciliation<=1e-9; count<=bbox; reconstructed variances>=-1e-12",
+  "batch_comparison": [
+    {
+      "piece": "1953|w001_000",
+      "response_exact_equal": false,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 9.313225746154785e-10,
+      "max_abs_mean_difference": 5.551115123125783e-17,
+      "max_abs_sd_difference": 6.175615574477433e-16
+    },
+    {
+      "piece": "2351|w000_000",
+      "response_exact_equal": false,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 9.313225746154785e-10,
+      "max_abs_mean_difference": 5.551115123125783e-17,
+      "max_abs_sd_difference": 2.914335439641036e-16
+    },
+    {
+      "piece": "1352|w003_005",
+      "response_exact_equal": true,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 0.0,
+      "max_abs_mean_difference": 0.0,
+      "max_abs_sd_difference": 0.0
+    },
+    {
+      "piece": "3957|w001_001",
+      "response_exact_equal": true,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 0.0,
+      "max_abs_mean_difference": 0.0,
+      "max_abs_sd_difference": 0.0
+    },
+    {
+      "piece": "2425|w000_002",
+      "response_exact_equal": false,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 0.0,
+      "max_abs_mean_difference": 0.0,
+      "max_abs_sd_difference": 0.0
+    },
+    {
+      "piece": "100594|w000_002",
+      "response_exact_equal": true,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 0.0,
+      "max_abs_mean_difference": 0.0,
+      "max_abs_sd_difference": 0.0
+    },
+    {
+      "piece": "2280|w005_006",
+      "response_exact_equal": false,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 4.656612873077393e-10,
+      "max_abs_mean_difference": 5.551115123125783e-17,
+      "max_abs_sd_difference": 6.418476861114186e-16
+    },
+    {
+      "piece": "100052|w000_002",
+      "response_exact_equal": true,
+      "area_and_count_equal": true,
+      "max_abs_SQ_difference": 0.0,
+      "max_abs_mean_difference": 0.0,
+      "max_abs_sd_difference": 0.0
+    }
+  ],
+  "limitations": [
+    "Batch vs single not bit-exact: floating reductions differ, raw values retained",
+    "Timing is cache/order-conditioned, small sample only",
+    "Full cohort coverage/EECU cost unmeasured"
+  ]
+}

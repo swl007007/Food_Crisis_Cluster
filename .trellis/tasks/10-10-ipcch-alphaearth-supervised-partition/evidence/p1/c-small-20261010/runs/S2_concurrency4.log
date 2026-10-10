@@ -1,0 +1,20 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 1, "utc": "2026-10-10T23:40:27Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 1.11, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T23:40:27Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.15, "response_bytes": 140}
+{"n": 6, "utc": "2026-10-10T23:40:39Z", "purpose": "1053|w002_004", "attempt": 1, "status": "ok", "seconds": 11.43, "response_bytes": 3827}
+{"n": 7, "utc": "2026-10-10T23:40:40Z", "purpose": "1180|w000_001", "attempt": 1, "status": "ok", "seconds": 12.98, "response_bytes": 3807}
+{"n": 8, "utc": "2026-10-10T23:40:45Z", "purpose": "2047|w004_001", "attempt": 1, "status": "ok", "seconds": 4.35, "response_bytes": 3828}
+{"n": 9, "utc": "2026-10-10T23:40:46Z", "purpose": "1543|w004_001", "attempt": 1, "status": "ok", "seconds": 7.08, "response_bytes": 3837}
+{"n": 10, "utc": "2026-10-10T23:40:52Z", "purpose": "715|w001_000", "attempt": 1, "status": "ok", "seconds": 24.71, "response_bytes": 3853}
+{"n": 11, "utc": "2026-10-10T23:40:55Z", "purpose": "2904|w001_001", "attempt": 1, "status": "ok", "seconds": 10.13, "response_bytes": 3848}
+{"n": 12, "utc": "2026-10-10T23:40:57Z", "purpose": "369|w009_007", "attempt": 1, "status": "ok", "seconds": 29.45, "response_bytes": 3831}
+{"n": 13, "utc": "2026-10-10T23:40:57Z", "purpose": "4086|w008_007", "attempt": 1, "status": "ok", "seconds": 2.45, "response_bytes": 3829}
+{"n": 14, "utc": "2026-10-10T23:41:00Z", "purpose": "3689|w001_002", "attempt": 1, "status": "ok", "seconds": 14.53, "response_bytes": 3846}
+{"n": 15, "utc": "2026-10-10T23:41:13Z", "purpose": "4028|w000_000", "attempt": 1, "status": "ok", "seconds": 20.76, "response_bytes": 3836}
+{"n": 16, "utc": "2026-10-10T23:41:16Z", "purpose": "4764|w001_003", "attempt": 1, "status": "ok", "seconds": 18.95, "response_bytes": 3868}
+{"n": 17, "utc": "2026-10-10T23:41:18Z", "purpose": "4962|w003_001", "attempt": 1, "status": "ok", "seconds": 17.55, "response_bytes": 3818}
+{"n": 18, "utc": "2026-10-10T23:41:27Z", "purpose": "101151|w000_002", "attempt": 1, "status": "ok", "seconds": 10.72, "response_bytes": 3880}
+{"n": 18, "utc": "2026-10-10T23:41:29Z", "purpose": "4530|w002_002", "attempt": 1, "status": "ok", "seconds": 32.11, "response_bytes": 3818}
+{"n": 18, "utc": "2026-10-10T23:41:36Z", "purpose": "100484|w003_003", "attempt": 1, "status": "ok", "seconds": 23.1, "response_bytes": 3816}
+{"n": 18, "utc": "2026-10-10T23:41:41Z", "purpose": "101316|w008_008", "attempt": 1, "status": "ok", "seconds": 22.94, "response_bytes": 3846}
+{"calls_used": 18, "done": 16, "remaining": 0, "complete": true, "stopped": null}
