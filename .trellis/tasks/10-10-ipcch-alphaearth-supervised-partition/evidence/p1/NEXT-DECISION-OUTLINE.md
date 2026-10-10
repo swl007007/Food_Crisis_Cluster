@@ -2,13 +2,16 @@
 
 ## 1. Ownership (specification decision required; not executed)
 
-Measured: first-owner discards 39.2% valid coverage on a sampled cross-zone piece. Options for review (none adopted):
-(a) keep first-owner and accept biased/lowered coverage (D25 .80 would route more cross-zone admins to NaN);
-(b) mask-aware deterministic priority: per pixel, the first asset in lexicographic order whose 64-band mask is valid
-    — single counting kept, outcome independent; operationally each asset's piece = admin ∩ footprint_k ∩
-    valid_k ∩ ¬(valid_1 ∪ … ∪ valid_{k−1}) evaluated on asset k's native grid with nearest-resampled earlier masks
-    (the diagnostic above already exercises this machinery);
-(c) quantify cohort extent first: the same 4-class mask query on a bounded sample of cross-zone admins.
+Measured on one sampled cross-zone piece: first-footprint ownership excluded 39.2% of area the next tile reports valid
+(cohort extent unknown). Options (details and counterexamples in OWNERSHIP-AMENDMENT-PROPOSAL.md; none adopted):
+(a) keep first-footprint and accept the excluded coverage (more cross-zone admins may fall below .80);
+(b) approximate native-grid ownership — first valid tile in lexicographic order judged at native pixel centres via
+    nearest-sampled earlier masks; values native; NOT exact single counting, can double count or drop strips along
+    earlier-tile mask edges; restores formerly subtracted candidates and binds prior asset IDs (inventory changes);
+(c) one fixed global equal-area 10 m grid, nearest sampling of whole 64-band vectors and masks, exact mutually
+    exclusive discrete ownership; changes the native-integration estimand; cost unmeasured;
+(d) measure cohort extent first with the 4-class mask query on a bounded sample of cross-zone admins.
+Supervisor recommendation: (c). Decision: user.
 
 ## 2. Minimum batching/scaling check (proposal for a later release; caps illustrative)
 

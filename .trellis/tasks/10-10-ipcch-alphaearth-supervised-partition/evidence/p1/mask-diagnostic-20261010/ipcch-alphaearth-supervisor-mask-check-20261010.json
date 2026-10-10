@@ -1,0 +1,27 @@
+{
+  "scope": "sampled mask diagnostic only",
+  "run": "/home/swl007007/ipcch-alphaearth-runs/p1-mask-diagnostic-20261010",
+  "checks": [
+    {
+      "reference": "x6bdj6bnb7dgiukef",
+      "sum_m2": 223553661.83610135,
+      "relative_area_error": 3.232764104144081e-05,
+      "owner_coverage": 0.607996259089011,
+      "union_coverage": 1.0000323276410414,
+      "donor_only_km2": 87.63826555824481,
+      "donor_only_fraction": 0.3920360685520305
+    },
+    {
+      "reference": "xt0jtdcoxb1sp5b7v",
+      "sum_m2": 223537461.64410648,
+      "relative_area_error": -4.0141383065850356e-05,
+      "owner_coverage": 0.6078872917226166,
+      "union_coverage": 0.9999392239040117,
+      "donor_only_km2": 87.64181181603713,
+      "donor_only_fraction": 0.3920519321813951
+    }
+  ],
+  "calls_used": 3,
+  "summary_sha256": "b553154f0a369caadddd696fa597c6f57fb20a9b0e534f35dfc926e16bfa9d92",
+  "conclusion": "First-footprint masking loses about 87.64 km2 on this sampled piece; no whole-admin or cohort estimate. Agreement between two reference-grid aggregate areas is not a bound on gross overlap/gap error for mixed-native-grid ownership. No model fit or recipe amendment released."
+}

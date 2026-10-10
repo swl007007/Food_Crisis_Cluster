@@ -17,8 +17,8 @@ non-reference mask nearest-resampled (diagnostic only).
 | total | 223,553,661.84 (+0.0032% vs local area) | 223,537,461.64 (−0.0040%) |
 
 Reconciliation: owner valid (owner_only+both) on its own grid = 135,915,396 m² = B1 owner valid area exactly; donor
-valid on its own grid = 91,554,125 m² = B1 donor valid area exactly; cross-grid nearest resampling changes class
-areas by ≤ 0.018%.
+valid on its own grid = 91,554,125 m² = B1 donor valid area exactly; cross-grid nearest resampling changes these
+aggregate class areas by ≤ 0.018% on this piece (not a bound on gross gaps/double counting or cohort error).
 
 Conclusion (bounded): on this sampled piece the two tiles' valid sets are nearly disjoint (1.75% overlap); their union
 covers ~100% while the frozen first-owner rule keeps 60.8% and discards 39.2% (≈ 87.6 km²) of otherwise valid

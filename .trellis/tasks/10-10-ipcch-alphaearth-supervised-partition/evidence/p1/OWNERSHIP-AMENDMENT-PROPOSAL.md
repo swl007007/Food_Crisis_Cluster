@@ -1,59 +1,62 @@
-# Proposed extraction-rule amendment: first VALID tile in lexicographic order (not implemented; for user decision)
+# Proposed extraction-rule amendment options (not implemented; for user decision)
 
-Trigger (measured, bounded): on one sampled cross-zone piece the frozen first-footprint rule kept 60.8% and discarded
-39.2% of otherwise valid coverage (mask diagnostic). Extent over the cohort is unknown; this proposal does not assume it.
+Trigger (measured, bounded): on one sampled cross-zone piece (admin 1722, 223.55 km²) the frozen first-footprint rule
+kept 60.8% and excluded 39.2% of area that the next tile reports as valid (mask diagnostic). Extent over admins and the
+cohort is unknown; neither option below assumes it. Both are amendments to the D16/D26 operationalization; the
+statistical recipe (64 area-weighted means + 64 SDs, .80 coverage, frozen local geodesic denominator) is unchanged.
 
-## Recipe B — smallest amendment (native value grids)
+## Option B — approximate native-grid ownership: first valid tile in lexicographic order
 
-For admin polygon P (frozen geometry) and the assets whose footprints intersect P, sorted lexicographically by asset
-id a_1 < … < a_n (outcome-independent, unchanged order):
+For admin polygon P and the assets whose footprints intersect P, sorted lexicographically a_1 < … < a_n:
 
-1. Geometric part per asset: G_k = P ∩ F_k (footprint of a_k). Unlike the frozen rule, earlier footprints are NOT
-   subtracted geometrically.
-2. Validity per asset on its own grid: V_k = all 64 bands unmasked AND finite (|x| < 1e300), 0 outside the footprint
-   (unchanged definition).
-3. Prior-valid mask on a_k's native grid: Prior_k = max_{j<k, F_j ∩ G_k ≠ ∅} reproject(V_j → grid of a_k) using
-   EE's default nearest-neighbour resampling of the 0/1 mask (V_j evaluated at the a_j pixel nearest to each a_k
-   pixel centre). Only earlier assets whose footprint meets G_k enter (small sets in practice).
-4. Contribution weight on a_k's native 10 m grid: W_k = V_k AND NOT Prior_k, times EE's fractional pixel-in-G_k
-   weights (as now). A_k = Σ W_k·pixelArea, S_kj = Σ W_k·pixelArea·e_j, Q_kj = Σ W_k·pixelArea·e_j² — values
-   always from a_k's own native pixels (no value resampling, no fill, no new grid).
-5. Merge and decide exactly as now: A = Σ_k A_k, S = Σ_k S_k, Q = Σ_k Q_k → 64 means/SDs; coverage = A / area(P)
-   (frozen local geodesic denominator); usable iff coverage ≥ 0.80 and 128 finite moments.
+1. Candidate part per asset G_k = P ∩ F_k. Earlier footprints are NOT subtracted geometrically, so assets whose parts
+   were formerly removed by footprint subtraction become candidates again (work inventory grows; see below).
+2. V_k = all 64 bands unmasked AND |x| < 1e300 on a_k's native grid; 0 outside its footprint (unchanged definition).
+3. Prior_k on a_k's native grid = max over earlier assets j < k whose footprint meets G_k of V_j sampled at each a_k
+   pixel centre by EE default nearest neighbour.
+4. W_k = V_k AND NOT Prior_k (× EE fractional pixel-in-G_k weights). A_k, S_k, Q_k summed from a_k's own native
+   values only (no value resampling, no fill).
+5. Merge A/S/Q over k exactly as now; coverage = A / area(P); usable iff ≥ .80 and 128 finite moments.
 
-Properties: deterministic and label-free; reduces to the frozen rule wherever earlier tiles are valid across the
-overlap; equals the union of valid coverage where masks are disjoint; never fills masked pixels of one asset from
-another's values; per-piece ledger keeps (admin, asset, prior asset list).
+What B is and is not: deterministic, label-free, values from native pixels, and identical to the frozen rule where an
+earlier tile is valid across the whole overlap. It is NOT exact single counting and does NOT guarantee the union of
+valid coverage: ownership is decided at a_k pixel centres against a differently aligned (and differently oriented)
+lattice. Counterexample (1-D, 10 m cells): owner cell x ∈ [0,10] valid, owner invalid beyond 10. A donor cell
+[6,16] has centre 11 (owner invalid there) and is admitted, so [6,10] (4 m) is counted twice; a donor cell [4,14]
+has centre 9 (owner valid) and is rejected, so [10,14] (4 m) is lost. Gross double counting and gaps therefore occur
+along every earlier-tile valid-mask edge inside overlaps; no rigorous per-edge bound is claimed here. The ≤ 0.018%
+reference-grid difference observed in the diagnostic compares one pair of aggregate class areas on one piece; it is
+not a bound on gross gaps/double counting nor on cohort-level error.
 
-## Cross-UTM mapping, edge and double-count approximation
+Inventory/binding changes under B: the piece plan keeps every candidate part G_k (including formerly subtracted ones)
+and binds, per piece, the ordered list of prior asset IDs used in Prior_k; export/replay validation must check that
+list; pieces with W_k ≡ 0 return genuine zeros under the frozen mask contract (never dropped).
 
-Masks of earlier assets are compared at a_k's pixel centres via nearest neighbour across different UTM grids (pixel
-lattices rotated and offset). Consequences are confined to pixels on the boundary of an earlier asset's valid region
-inside overlaps: a location can be counted twice (earlier pixel partly valid and counted in a_j, but its nearest
-sample at the a_k centre says invalid) or missed (the reverse). The error band is about one pixel wide along valid-mask
-edges in overlaps: per edge length L, at most ~L × 10 m. Empirical bound from the diagnostic: class areas differ by
-≤ 0.018% between the two reference grids, and the mutual 'both' area was 1.75% of the piece. Boundary weights versus
-P remain EE's documented ~1/256 approximation (unchanged).
+## Option C — one fixed global equal-area 10 m grid with exact discrete ownership
 
-## Tests before any extraction (offline, then a bounded pilot)
+1. One global equal-area lattice with 10 m × 10 m cells (a single named equal-area projection and origin, fixed in the
+   contract before extraction; e.g. an EPSG equal-area CRS with a 10 m affine anchored at a frozen origin).
+2. For every common cell c, sample each candidate asset's ENTIRE 64-band vector and its common 64-band validity at the
+   cell centre by nearest neighbour (no bilinear or any value mixing).
+3. Ownership: c belongs to the first asset in lexicographic order that is valid at c (exact, mutually exclusive,
+   discrete); cells with no valid asset are uncovered.
+4. A = Σ over cells of (cell area × EE fractional weight of c in P), S_j, Q_j likewise with the owned vector; merge and
+   decide exactly as now. Coverage keeps the frozen local geodesic denominator.
 
-- Synthetic two-grid fixture (numpy): two 10 m lattices offset/rotated, known masks → B counts each location once
-  except within one pixel of mask edges; equals frozen rule when the earlier tile is fully valid; equals union when
-  masks are disjoint; all-masked → A = S = Q = 0; deterministic for permuted input order.
-- Moment additivity unchanged (merge A/S/Q, never SDs); plan/ledger binding includes prior asset lists.
-- Bounded EE pilot: admin-1722 owned piece re-extracted under B — donor contribution must equal the diagnostic's
-  donor_only (87.64 km² on the donor grid) within ≤ 0.02%, owner contribution = 135.92 km², total ≤ area(P)(1 + 1e-3);
-  plus one single-zone admin (3447) whose result must equal A2 exactly.
-- Cost: requests read prior masks (64 bands each) only in overlap zones; the pilot measures the overhead.
+What C is and is not: every common cell has a unique weight and at most one owner, so there is no double counting or
+ownership gap at the common-grid level. It changes the estimand from integration over native 10 m pixels to
+integration over nearest-sampled native vectors on a common lattice: native pixels can be duplicated or skipped by
+the nearest sampling (lattice phase/rotation), so per-admin means/SDs differ from native integration by an amount not
+yet measured. Cost relative to the native recipe is not measured.
 
-## Recipe C — one fixed common 10 m grid (comparison only)
+## Tests required before either option is used
 
-Resample every asset's 64 bands to a single common 10 m grid (e.g. per-admin local UTM or a global equal-area
-lattice), mosaic by first valid, then reduce once. Single counting is exact by construction and masks are trivial.
-But embedding values are resampled (nearest duplicates/drops native pixels; bilinear mixes unit-norm vectors and
-changes the SD descriptors), area weights come from a non-native projection, every pixel is reprojected (higher
-EE cost), and it departs from D26's native-grid aggregation more than B. Recommendation: B, which changes only which
-native pixels are admitted, not their values.
+- Synthetic two-lattice fixture (numpy, offset and rotated): B — reproduce the counterexample cases (double count
+  and loss), reduction to the frozen rule when the earlier tile is fully valid, all-masked zeros, order-permutation
+  determinism, prior-ID binding; C — unique ownership per common cell, no double count, nearest sampling of whole
+  vectors, sensitivity of means/SDs to lattice phase.
+- Moment additivity unchanged (merge A/S/Q, never SDs); plan/export/replay binding of the new inventory fields.
+- Bounded EE pilot under the chosen option: admin-1722 piece (compare with the diagnostic classes and report gross
+  differences, not only totals) and single-zone admin 3447 (B must equal A2 exactly; C reports its change vs A2).
 
-Both are scientific extraction-rule amendments to D16/D26 operationalization and require the user's decision; the
-statistical recipe (64 means + 64 SDs, .80 coverage, local denominator) is unchanged under either.
+Supervisor recommendation recorded: C, for clean unique weights. Decision: user.
