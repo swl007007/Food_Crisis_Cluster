@@ -12,3 +12,6 @@
 {"n": 12, "utc": "2026-10-10T21:21:52Z", "purpose": "listImages page 900", "attempt": 1, "status": "ok", "seconds": 6.34, "response_bytes": 5269488}
 {"n": 13, "utc": "2026-10-10T21:21:55Z", "purpose": "listImages page 1200", "attempt": 1, "status": "ok", "seconds": 2.98, "response_bytes": 5262952}
 {"n": 14, "utc": "2026-10-10T21:21:56Z", "purpose": "listImages page 1500", "attempt": 1, "status": "ok", "seconds": 1.56, "response_bytes": 3211740}
+{"n": 15, "utc": "2026-10-10T21:45:20Z", "purpose": "GCS buckets.list project manuel-remote-sensing (read-only; OAuth refresh may add one HTTP exchange)", "attempt": 1, "status": "ok", "seconds": 0.26, "response_bytes": 714}
+{"n": 16, "utc": "2026-10-10T21:45:20Z", "purpose": "GCS objects.list top-level prefixes of manuel-remote-sensing-oct-delivery-debug (delimiter '/', names only)", "attempt": 1, "status": "ok", "seconds": 0.17, "response_bytes": 149}
+{"n": 17, "utc": "2026-10-10T21:45:44Z", "purpose": "GCS objects.list top-level prefixes of manuel-remote-sensing-rasters-645415198431 (names only)", "attempt": 1, "status": "ok", "seconds": 0.26, "response_bytes": 30}

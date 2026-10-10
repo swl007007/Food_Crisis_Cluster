@@ -1,0 +1,32 @@
+{
+ "items": [
+  {
+   "name": "manuel-remote-sensing-oct-delivery-debug",
+   "location": "US-CENTRAL1",
+   "storageClass": "STANDARD",
+   "timeCreated": "2026-10-08T12:02:26.121Z",
+   "locationType": "region"
+  },
+  {
+   "name": "manuel-remote-sensing-oct-delivery-requests",
+   "location": "US-CENTRAL1",
+   "storageClass": "STANDARD",
+   "timeCreated": "2026-10-08T16:28:23.910Z",
+   "locationType": "region"
+  },
+  {
+   "name": "manuel-remote-sensing-rasters-645415198431",
+   "location": "US",
+   "storageClass": "STANDARD",
+   "timeCreated": "2026-09-12T02:24:21.003Z",
+   "locationType": "multi-region"
+  },
+  {
+   "name": "manuel-remote-sensing_cloudbuild",
+   "location": "US",
+   "storageClass": "STANDARD",
+   "timeCreated": "2026-10-08T12:10:42.719Z",
+   "locationType": "multi-region"
+  }
+ ]
+}

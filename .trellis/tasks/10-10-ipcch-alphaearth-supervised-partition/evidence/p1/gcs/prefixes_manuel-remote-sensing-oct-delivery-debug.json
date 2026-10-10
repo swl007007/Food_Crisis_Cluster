@@ -1,0 +1,13 @@
+{
+ "prefixes": [
+  "assets/",
+  "build-sources/",
+  "deliveries/",
+  "delivery-inputs/",
+  "oct-staging/",
+  "prepare_requests/",
+  "prepared/",
+  "runs/",
+  "staging/"
+ ]
+}
