@@ -1,0 +1,17 @@
+..............{"n": 1, "utc": "2026-10-10T22:50:42Z", "purpose": "p", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Projection: The CRS of a map projection could not be parsed."}
+...................................{"n": 1, "utc": "2026-10-10T22:51:59Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-10T22:51:59Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+{"n": 2, "utc": "2026-10-10T22:51:59Z", "purpose": "probe", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+.{"n": 1, "utc": "2026-10-10T22:51:59Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000."}
+........./home/swl007007/.venvs/ipcch-geo/lib/python3.12/site-packages/xgboost/core.py:751: UserWarning: [18:52:00] WARNING: /__w/xgboost/xgboost/src/common/error_msg.cc:56: Empty dataset at worker: 0
+  return func(**kwargs)
+..............................
+----------------------------------------------------------------------
+Ran 89 tests in 271.326s
+
+OK
+submitted 2 pieces; ledger /tmp/tmp3s41i5k7/ledger.json
+
+real	4m42.125s
+user	85m49.344s
+sys	0m39.065s

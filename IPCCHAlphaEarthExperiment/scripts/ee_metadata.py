@@ -18,7 +18,7 @@ from pathlib import Path
 COLLECTION = "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL"
 FATAL = ("auth", "permission", "quota", "429", "403", "401", "too many requests", "rate limit", "not enabled", "billing")
 #: deterministic request-size rejections: never retried (a retry cannot succeed), reported distinctly from service errors
-NONRETRYABLE = ("too many pixels", "maxpixels")
+NONRETRYABLE = ("too many pixels", "maxpixels", "could not be parsed")
 
 
 class Stop(RuntimeError):

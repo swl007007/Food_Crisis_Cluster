@@ -1,0 +1,47 @@
+{
+  "release_id": "ipcch-alphaearth-p1-C-pilot-20261010",
+  "decision": "RELEASE_C_PILOT_ONLY",
+  "head": "e4a04d2db3826cd8a576eb25f79f4325360dfe57",
+  "spec_commit": "b0d53c2134d319675f01c3d5605d82aea8348f48",
+  "source_sha256": {
+    "IPCCHAlphaEarthExperiment/scripts/ee_pilot_c.py": "f16be55ca15c9a7de368371398017cf7fb3bcb8c1154f907025ae35689fb7d06",
+    "IPCCHAlphaEarthExperiment/scripts/ee_metadata.py": "d246a6c507debf167b88c3c28c8a87e708b2e26ccfa234aee8b0cc8661cc7360",
+    "IPCCHAlphaEarthExperiment/ipcch_alphaearth/extraction.py": "de9a3221669c31a88250b828dc9cb2ac365c5ca7bedb1214aeee9684b06d481c"
+  },
+  "request_body_sha256": "22a593eaf0e061b234c529645217022a418c9786d9c284e31622d6f858d40320",
+  "request_file": "/tmp/ipcch-alphaearth-p1-C-pilot-20261010-released-request.json",
+  "output_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-c-pilot-20261010",
+  "limits": {
+    "max_pixels": 567600518,
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "max_high_level_calls": 13,
+    "concurrency": 1,
+    "outer_timeout_s": 1200
+  },
+  "request_count": 10,
+  "authority": "User confirmed option C; bounded necessary EE query/download operations remain preauthorized. No further user question is needed for these10 local-return computations.",
+  "checks": [
+    "Script bytes match committed source and supervisor14-test snapshot",
+    "Executor full suite88pass log inspected",
+    "Overlap geometry equals old frozen mask diagnostic geometry",
+    "Six control windows union relative symmetric difference6.62e-15, pairwise intersection area0"
+  ],
+  "instructions": [
+    "Verify pinned head, sources, body before running. Fresh output dir; outer timeout1200.",
+    "Use per-request pixel caps within global ceiling; no cap enlargement or unrecorded retry.",
+    "Preserve raw responses including zero/null and incomplete attempts.",
+    "Evaluate source attribution against all6 candidates; the old2-mask diagnostic is a comparison, not an exact6-source expected result.",
+    "Report coverage, 128-descriptor changes vs A2, grouped-source area sum vs valid-area, whole-vs-window A/S/Q, all-masked behavior and timing.",
+    "Report before bulk scaling. No model fit or lifecycle change."
+  ],
+  "not_released": [
+    "GCS/Drive writes",
+    "Full extraction",
+    "Project-data model fitting",
+    "IAM or billing changes"
+  ],
+  "created_utc": "2026-10-10T22:48:56.887702+00:00"
+}

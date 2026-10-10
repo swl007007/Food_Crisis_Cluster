@@ -29,6 +29,10 @@ BANDS = [f"A{j:02d}" for j in range(64)]
 FINITE_BOUND = 1e300
 RECIPE = "D30|EPSG:6933|10,0,0,0,-10,0|nearest|first-valid-ascending-id"
 GRID = {"crs": "EPSG:6933", "crsTransform": [10, 0, 0, 0, -10, 0]}
+#: EE does not parse the authority code "EPSG:6933" (pilot 2026-10-10: "The CRS of a map projection could not be parsed").
+#: Transport the identical definition as WKT1 (pyproj EPSG:6933 WKT1_GDAL without the outer AUTHORITY tag; verified
+#: locally to equal EPSG:6933 with identical transforms) and verify EE's interpretation before any reduction.
+EE_CRS_WKT = 'PROJCS["WGS 84 / NSIDC EASE-Grid 2.0 Global",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Cylindrical_Equal_Area"],PARAMETER["standard_parallel_1",30],PARAMETER["central_meridian",0],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
 
 def digest(obj) -> str:
@@ -44,6 +48,8 @@ def load_released(path: Path) -> dict:
         raise SystemExit("C pilot manifest has no release_id: EE computation requires the explicit supervisor release")
     if req.get("recipe") != RECIPE or req.get("grid") != GRID or req.get("best_effort") is not False:
         raise SystemExit("C pilot manifest does not carry the frozen D30 recipe/grid/bestEffort=false")
+    if req.get("grid_crs_wkt") != EE_CRS_WKT or not req.get("projection_check"):
+        raise SystemExit("C pilot manifest must pin the transport WKT and its projection-equivalence check points")
     for r in req["requests"]:
         ids = r["candidates"]
         if ids != sorted(ids) or len(set(ids)) != len(ids) or not ids:
@@ -72,13 +78,20 @@ def reduction(ee, r: dict, limits: dict):
     max_pixels = float(r.get("max_pixels_band_px", limits["max_pixels"]))  # band-pixels (129-band stack); per-request cap
     if max_pixels > float(limits["max_pixels"]):
         raise ValueError(f"{r['request_id']}: per-request maxPixels exceeds the released ceiling")
-    common = dict(geometry=geom, crs=GRID["crs"], crsTransform=GRID["crsTransform"], bestEffort=False,
+    common = dict(geometry=geom, crs=EE_CRS_WKT, crsTransform=GRID["crsTransform"], bestEffort=False,
                   maxPixels=max_pixels, tileScale=int(limits["tile_scale"]))
     sums = stack.reduceRegion(reducer=ee.Reducer.sum(), **common)
     count = owned.selfMask().rename("valid_cells").reduceRegion(reducer=ee.Reducer.count().unweighted(), **common)
     by_rank = ee.Image.cat([area.rename("area"), comp.select("source_rank")]).reduceRegion(
         reducer=ee.Reducer.sum().group(groupField=1, groupName="source_rank"), **common)
     return ee.Dictionary({"sums": sums, "count": count, "area_by_rank": by_rank}).getInfo()
+
+
+def projection_check(ee, points: list) -> dict:
+    """EE's coordinates of reference lon/lat points in the transport WKT (compared with pinned pyproj values)."""
+    proj = ee.Projection(EE_CRS_WKT)
+    return ee.Dictionary({str(k): ee.Geometry.Point([p[0], p[1]]).transform(proj, 0.001).coordinates()
+                          for k, p in enumerate(points)}).getInfo()
 
 
 def main(argv=None) -> int:
@@ -99,6 +112,12 @@ def main(argv=None) -> int:
         budget.call("initialize (may issue >1 HTTP request)", lambda: ee.Initialize(project=req["project"]))
         ee.data.setMaxRetries(0)
         ee.data.setDeadline(int(limits["deadline_ms"]))
+        got = budget.call("projection equivalence check (transport WKT vs pinned pyproj EPSG:6933)",
+                          lambda: projection_check(ee, req["projection_check"]))
+        worst = max(max(abs(got[str(k)][0] - p[2]), abs(got[str(k)][1] - p[3])) for k, p in enumerate(req["projection_check"]))
+        summary["projection_check"] = {"ee": got, "max_abs_diff_m": worst}
+        if worst > 1e-3:
+            raise Stop(f"EE interprets the transport WKT differently from EPSG:6933 (max diff {worst} m); no reduction run")
         for r in req["requests"]:
             t0 = time.time()
             res = budget.call(r["request_id"], lambda r=r: reduction(ee, r, limits))

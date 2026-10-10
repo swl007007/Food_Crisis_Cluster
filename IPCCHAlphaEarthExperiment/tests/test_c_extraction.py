@@ -283,11 +283,12 @@ class BuilderStructure(unittest.TestCase):
         reductions = [k for _t, n, _a, k in Fake.log if n == "reduceRegion"]
         self.assertEqual(len(reductions), 3)
         for k in reductions:
-            self.assertEqual((k["crs"], k["crsTransform"], k["bestEffort"]), ("EPSG:6933", [10, 0, 0, 0, -10, 0], False))
+            self.assertEqual((k["crs"], k["crsTransform"], k["bestEffort"]), (epc.EE_CRS_WKT, [10, 0, 0, 0, -10, 0], False))
         self.assertEqual(out["keys"], ["area_by_rank", "count", "sums"])
 
     def test_manifest_guards(self):
         good = {"recipe": epc.RECIPE, "grid": epc.GRID, "best_effort": False, "project": "p", "limits": {},
+                "grid_crs_wkt": epc.EE_CRS_WKT, "projection_check": [[45.0, 13.0, 4341882.611290343, 1644631.1629230133]],
                 "requests": [{"request_id": "r", "candidates": ["aa1", "bb2"]}]}
         with tempfile.TemporaryDirectory() as tmp:
             def write(body, release="rel"):
@@ -296,7 +297,8 @@ class BuilderStructure(unittest.TestCase):
                 return path
             self.assertEqual(epc.load_released(write(good))["release_id"], "rel")
             for bad in ({**good, "release_id": None}, {**good, "grid": {"crs": "EPSG:4326", "crsTransform": [10, 0, 0, 0, -10, 0]}},
-                        {**good, "recipe": "native"}, {**good, "requests": [{"request_id": "r", "candidates": ["bb2", "aa1"]}]}):
+                        {**good, "recipe": "native"}, {**good, "requests": [{"request_id": "r", "candidates": ["bb2", "aa1"]}]},
+                        {**good, "grid_crs_wkt": "EPSG:6933"}, {**good, "projection_check": []}):
                 rel = bad.pop("release_id", "rel")
                 with self.assertRaises(SystemExit):
                     epc.load_released(write(bad, rel))
@@ -342,8 +344,31 @@ class ConnectedIntegration(unittest.TestCase):
         # which are not geodesics, while geodesic_area measures geodesic edges)
         self.assertAlmostEqual(sourced_area / real["polygon_area_m2"].iloc[0], 1.0, delta=1e-5)
         body = {"recipe": epc.RECIPE, "grid": epc.GRID, "best_effort": False, "project": "p", "limits": {},
+                "grid_crs_wkt": epc.EE_CRS_WKT, "projection_check": [[0.0, 0.0, 0.0, 0.0]],
                 "requests": [{"request_id": r.piece_id, "candidates": r.asset_id.split(",")} for r in real.itertuples()]}
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "m.json"
             path.write_text(json.dumps({**body, "request_sha256": epc.digest(body), "release_id": "rel"}))
             epc.load_released(path)  # every planned piece is a valid EE request
+
+
+class TransportCrs(unittest.TestCase):
+    def test_wkt_equals_epsg6933_and_parse_error_is_nonretryable(self):
+        from pyproj import CRS, Transformer
+
+        c = CRS.from_wkt(epc.EE_CRS_WKT)
+        self.assertTrue(c.equals(CRS.from_epsg(6933), ignore_axis_order=True))
+        self.assertNotIn('AUTHORITY["EPSG","6933"]', epc.EE_CRS_WKT)
+        a, b = Transformer.from_crs(4326, 6933, always_xy=True), Transformer.from_crs(CRS.from_epsg(4326), c, always_xy=True)
+        for p in ((0, 0), (45.0, 13.0), (-92.2, 38.4), (127.3, -34.8)):
+            self.assertEqual(a.transform(*p), b.transform(*p))
+        import ee_metadata as em
+        with tempfile.TemporaryDirectory() as tmp:
+            budget, calls = em.Budget(4, Path(tmp) / "l.jsonl"), []
+
+            def fail():
+                calls.append(1)
+                raise RuntimeError("Projection: The CRS of a map projection could not be parsed.")
+            with self.assertRaises(em.Stop):
+                budget.call("p", fail)
+            self.assertEqual(len(calls), 1)  # deterministic parse failure is not retried

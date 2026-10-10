@@ -1,0 +1,10 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 1, "utc": "2026-10-10T22:49:19Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 1.2, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T22:49:19Z", "purpose": "C01:overlap_piece:1722", "attempt": 1, "status": "error", "seconds": 0.17, "response_bytes": 0, "error": "Projection: The CRS of a map projection could not be parsed."}
+{"n": 3, "utc": "2026-10-10T22:49:20Z", "purpose": "C01:overlap_piece:1722", "attempt": 2, "status": "error", "seconds": 0.27, "response_bytes": 0, "error": "Projection: The CRS of a map projection could not be parsed."}
+{"calls_used": 3, "done": 0, "stopped": "'C01:overlap_piece:1722' failed twice: Projection: The CRS of a map projection could not be parsed."}
+
+real	0m2.307s
+user	0m0.265s
+sys	0m0.020s
+exit=0

@@ -1,0 +1,9 @@
+{
+ "release_id": "ipcch-alphaearth-p1-C-pilot-20261010",
+ "request_sha256": "22a593eaf0e061b234c529645217022a418c9786d9c284e31622d6f858d40320",
+ "recipe": "D30|EPSG:6933|10,0,0,0,-10,0|nearest|first-valid-ascending-id",
+ "done": [],
+ "failed": [],
+ "stopped": "'C01:overlap_piece:1722' failed twice: Projection: The CRS of a map projection could not be parsed.",
+ "calls_used": 3
+}
