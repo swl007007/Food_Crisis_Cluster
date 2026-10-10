@@ -1,0 +1,13 @@
+[   44.6s] staged 21 inputs
+[   66.0s] target ledger 1219868 rows, valid 42695 / 6224 admins
+[   72.6s] interim grid 6227 areas, 2010-01..2026-04; reported-phase observations 52521
+[   75.3s] climate grid 6227 areas, 2015-01..2026-08
+[   98.4s] static29 for 6226 admins; all-missing popdensity 4918
+[  117.4s] monthly blocks built for H=[1, 3, 6, 12]
+[  161.5s] source-support perturbation passed (1864 cells)
+[  166.1s] H1: (42695, 296) assembled; history {'rows_checked': 42695, 'history_values_present': 100276}; idp {'rows_checked': 42695, 'idp_present': 34052}
+[  171.0s] H3: (42695, 296) assembled; history {'rows_checked': 42695, 'history_values_present': 99873}; idp {'rows_checked': 42695, 'idp_present': 33774}
+[  176.8s] H6: (42695, 296) assembled; history {'rows_checked': 42695, 'history_values_present': 95538}; idp {'rows_checked': 42695, 'idp_present': 33530}
+[  182.4s] H12: (42695, 296) assembled; history {'rows_checked': 42695, 'history_values_present': 88352}; idp {'rows_checked': 42695, 'idp_present': 32783}
+[  186.7s] enumeration {'B1_quartets': 38, 'B0_quartets': 23, 'quartets': 61, 'scalar_fits': 244, 'bridge_slots': 22, 'empty_backbone_pools': [], 'empty_correction_pools': []}; cohorts {'1': 17322, '3': 16919, '6': 16413, '12': 14087} / supplement {'1': 4092, '3': 4092, '6': 4092, '12': 4092}
+[  186.8s] prepare COMPLETE

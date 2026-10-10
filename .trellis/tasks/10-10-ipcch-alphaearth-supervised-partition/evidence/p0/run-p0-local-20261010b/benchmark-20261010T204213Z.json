@@ -1,0 +1,75 @@
+{
+  "note": "synthetic data only; estimates are not measured production costs",
+  "blas_threads": 16,
+  "search": [
+    {
+      "rows": 15700,
+      "admins": 4430,
+      "months": 60,
+      "seconds_per_path": 0.51,
+      "leaves_reached": 2,
+      "candidates_scored": 3456,
+      "supported_candidates": 3456,
+      "peak_rss_gb": 0.38,
+      "ledger_bytes_csv_estimate": 794880
+    },
+    {
+      "rows": 3700,
+      "admins": 2065,
+      "months": 13,
+      "seconds_per_path": 0.3,
+      "leaves_reached": 2,
+      "candidates_scored": 3456,
+      "supported_candidates": 2944,
+      "peak_rss_gb": 0.38,
+      "ledger_bytes_csv_estimate": 794880
+    }
+  ],
+  "xgb": [
+    {
+      "rows": 38603,
+      "features": 424,
+      "seconds": {
+        "q2": 46.87,
+        "q3": 12.28,
+        "q4": 43.48,
+        "q5": 46.21
+      },
+      "ubj_bytes": {
+        "q2": 11135087,
+        "q3": 1700210,
+        "q4": 9981790,
+        "q5": 10470309
+      },
+      "quartet_seconds": 148.84,
+      "peak_rss_gb": 3.69
+    },
+    {
+      "rows": 10000,
+      "features": 424,
+      "seconds": {
+        "q2": 27.59,
+        "q3": 3.84,
+        "q4": 26.45,
+        "q5": 20.13
+      },
+      "ubj_bytes": {
+        "q2": 6428900,
+        "q3": 599619,
+        "q4": 6119295,
+        "q5": 4722276
+      },
+      "quartet_seconds": 78.01,
+      "peak_rss_gb": 3.69
+    }
+  ],
+  "estimate": {
+    "xgb_rate_seconds_per_row_quartet": 0.00385565888661503,
+    "quartets": 61,
+    "total_fit_rows": 1153625,
+    "xgb_total_hours_estimate": 1.9,
+    "store_bytes_estimate": 2030531156,
+    "search_total_hours_upper_estimate": 0.0
+  },
+  "elapsed_seconds": 228.0
+}

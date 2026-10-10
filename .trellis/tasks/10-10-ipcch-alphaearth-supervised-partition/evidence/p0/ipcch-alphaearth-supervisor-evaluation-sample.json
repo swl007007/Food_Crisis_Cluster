@@ -1,0 +1,9 @@
+{
+  "scope": "bounded evaluation synthetic probe, not full P0 acceptance",
+  "source_sha256": "a6c1e4d0dc127f31e485221a15db8918f96ccb34c1d8126d11e5f74273563236",
+  "perfect_and_missing_class_semantics": true,
+  "identity_bootstrap_20000_all_zero": true,
+  "country_multiplicity_sum": 4,
+  "undefined_replicates_preserved": 4995,
+  "negative_development_year_fallback": true
+}

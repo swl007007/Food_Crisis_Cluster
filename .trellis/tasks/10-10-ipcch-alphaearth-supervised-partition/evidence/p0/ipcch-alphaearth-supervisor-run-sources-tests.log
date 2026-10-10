@@ -1,0 +1,15 @@
+test_colliding_staged_paths_refused (test_run_sources.BundleStaging.test_colliding_staged_paths_refused) ... ok
+test_staged_shapefile_bundle_is_readable (test_run_sources.BundleStaging.test_staged_shapefile_bundle_is_readable) ... ok
+test_dropbox_run_refused (test_run_sources.ConfigDrift.test_dropbox_run_refused) ... ok
+test_kind_fixed_at_creation (test_run_sources.ConfigDrift.test_kind_fixed_at_creation) ... ok
+test_reopen_refuses_config_drift_on_every_entry_path (test_run_sources.ConfigDrift.test_reopen_refuses_config_drift_on_every_entry_path) ... ok
+test_added_input_refused (test_run_sources.SourceRequestDrift.test_added_input_refused) ... ok
+test_changed_pinned_hash_refused (test_run_sources.SourceRequestDrift.test_changed_pinned_hash_refused) ... ok
+test_changed_version_refused (test_run_sources.SourceRequestDrift.test_changed_version_refused) ... ok
+test_identical_request_reuses (test_run_sources.SourceRequestDrift.test_identical_request_reuses) ... ok
+test_tampered_staged_bytes_refused (test_run_sources.SourceRequestDrift.test_tampered_staged_bytes_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.778s
+
+OK

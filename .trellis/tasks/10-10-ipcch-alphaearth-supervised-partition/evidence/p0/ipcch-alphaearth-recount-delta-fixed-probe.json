@@ -1,0 +1,29 @@
+{
+  "scratch": "/tmp/ae-recount-delta-fixed-0hgkgcmh",
+  "baseline": true,
+  "accepted_after_mutation": {
+    "criterion_annual_signs": false,
+    "guard_item": false,
+    "bootstrap_undefined_count": false,
+    "country_diagnostic_f1": false
+  },
+  "failed_checks": {
+    "criterion_annual_signs": [
+      "decision_criteria"
+    ],
+    "guard_item": [
+      "decision_guards"
+    ],
+    "bootstrap_undefined_count": [
+      "bootstrap_regenerated"
+    ],
+    "country_diagnostic_f1": [
+      "country_diagnostics"
+    ]
+  },
+  "source_sha256": {
+    "replay.py": "cd5eeb3842d5f110294ecf5bebdaf0e6dc9ac4a344469d901e3fee63f346c906",
+    "replay_report.py": "ee1b25d9c3eb02e08eb7c7cfa7f0a5df201e1f27e767918491c7f4a2bb37d21a",
+    "report.py": "86c64fb32b2ea76a1970a3c147d79ba0cfebaa4df32cb271f6962b582044d2de"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "run_id": "p0-local-20261010b",
+  "kind": "developer",
+  "created_utc": "2026-10-10T20:20:37Z",
+  "config_sha256": {
+    "experiment-contract.json": "47a0638d34b9fb8bebc10b410891ebe4f9992fc066a305850359024d607b4cfc",
+    "inputs.json": "122a1ff120107730f1f81776536df71a76bb282c9d974f8dc08dbe806985a527",
+    "runtime-lock.json": "6bf483cf9e04ac2635a6603514ae2e56d649d010828ed4f609d3adf7dd74e1a4"
+  },
+  "code_identity": "ed81664435374589fdd5f7cd118c8502c9011f08179268eed98023797d22266d",
+  "git": {
+    "head": "50e1f228a8034e65c8883f913e4359e8bec4df39",
+    "branch": "ipcch-alphaearth-supervised-partition",
+    "status_porcelain": "?? IPCCHAlphaEarthExperiment/"
+  }
+}

@@ -1,0 +1,12 @@
+test_resumed_running_task_blocks_new_start (test_extraction_offline.Concurrency.test_resumed_running_task_blocks_new_start) ... ok
+test_unreleased_request_refused (test_extraction_offline.Concurrency.test_unreleased_request_refused) ... ok
+test_nan_and_infinities_are_not_valid_area (test_extraction_offline.FiniteMask.test_nan_and_infinities_are_not_valid_area) ... ok
+test_hole_and_multipolygon_winding_invariance (test_extraction_offline.OrientationFreeArea.test_hole_and_multipolygon_winding_invariance) ... ok
+test_complete_admin_set_including_zero_piece_admins (test_extraction_offline.PieceBindingAndCoverage.test_complete_admin_set_including_zero_piece_admins) ... ok
+test_wrong_asset_for_a_valid_piece_id_refused (test_extraction_offline.PieceBindingAndCoverage.test_wrong_asset_for_a_valid_piece_id_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.168s
+
+OK
+submitted 2 pieces; ledger /tmp/tmp1qf6x74j/ledger.json

@@ -1,0 +1,21 @@
+{
+  "checked_at_utc": "2026-10-10T20:01:03.440050+00:00",
+  "kind": "supervisor-start-identity-check",
+  "pass": true,
+  "run_id": "42ee3def6b9c4222bc769712d47ccbe4",
+  "base_sha": "50e1f228a8034e65c8883f913e4359e8bec4df39",
+  "executor": {
+    "agent": "claude",
+    "agent_session": {
+      "agent": "claude",
+      "kind": "id",
+      "source": "herdr:claude",
+      "value": "3546490e-8e08-43f2-9f1d-9c72bccda1e8"
+    },
+    "terminal_id": "term_65d7ebc256c188"
+  },
+  "native_status": "in_progress",
+  "controller_running": true,
+  "live_agent_status": "working",
+  "scope": "binding/start only; no P0 correctness or execution outcome accepted"
+}

@@ -1,0 +1,94 @@
+{
+  "note": "synthetic search supplement; production recipe, support floors and penalties unchanged",
+  "fixture": "level = .30*s0 + .20*s1 + .15*s2 and slope = .20*s0*s1 + .15*s2 on signs of descriptors 0-2; noise sd .05",
+  "original_measurement_scope": "benchmark-20261010T204213Z.json search rows stopped at 2 leaves (single-effect fixture): early-stop scope only, not an eight-leaf cost",
+  "runs": [
+    {
+      "rows": 15700,
+      "admins": 4430,
+      "months": 60,
+      "lambda_region": 0.01,
+      "seconds_per_path": 3.98,
+      "leaves_reached": 8,
+      "depth_reached": 3,
+      "candidates_scored": 18432,
+      "supported_candidates": 18432,
+      "peak_rss_gb": 0.59,
+      "ledger_bytes_csv_estimate": 4239360
+    },
+    {
+      "rows": 15700,
+      "admins": 4430,
+      "months": 60,
+      "lambda_region": 0.1,
+      "seconds_per_path": 2.93,
+      "leaves_reached": 6,
+      "depth_reached": 3,
+      "candidates_scored": 17280,
+      "supported_candidates": 17280,
+      "peak_rss_gb": 0.6,
+      "ledger_bytes_csv_estimate": 3974400
+    },
+    {
+      "rows": 15700,
+      "admins": 4430,
+      "months": 60,
+      "lambda_region": 1.0,
+      "seconds_per_path": 0.52,
+      "leaves_reached": 2,
+      "depth_reached": 1,
+      "candidates_scored": 3456,
+      "supported_candidates": 3456,
+      "peak_rss_gb": 0.6,
+      "ledger_bytes_csv_estimate": 794880
+    },
+    {
+      "rows": 3700,
+      "admins": 2065,
+      "months": 13,
+      "lambda_region": 0.01,
+      "seconds_per_path": 1.9,
+      "leaves_reached": 8,
+      "depth_reached": 3,
+      "candidates_scored": 18432,
+      "supported_candidates": 11528,
+      "peak_rss_gb": 0.6,
+      "ledger_bytes_csv_estimate": 4239360
+    },
+    {
+      "rows": 3700,
+      "admins": 2065,
+      "months": 13,
+      "lambda_region": 0.1,
+      "seconds_per_path": 1.76,
+      "leaves_reached": 6,
+      "depth_reached": 3,
+      "candidates_scored": 17280,
+      "supported_candidates": 10887,
+      "peak_rss_gb": 0.6,
+      "ledger_bytes_csv_estimate": 3974400
+    },
+    {
+      "rows": 3700,
+      "admins": 2065,
+      "months": 13,
+      "lambda_region": 1.0,
+      "seconds_per_path": 1.42,
+      "leaves_reached": 5,
+      "depth_reached": 3,
+      "candidates_scored": 14976,
+      "supported_candidates": 9606,
+      "peak_rss_gb": 0.6,
+      "ledger_bytes_csv_estimate": 3444480
+    }
+  ],
+  "full_growth_runs": 2,
+  "paths": {
+    "development": 24,
+    "final_map": 4
+  },
+  "conservative_total_seconds": 111.4,
+  "conservative_total_minutes": 1.86,
+  "replay_note": "replay re-solves accepted states only (<= 7 joint solves per path), far below a full path",
+  "peak_rss_gb": 0.6
+}

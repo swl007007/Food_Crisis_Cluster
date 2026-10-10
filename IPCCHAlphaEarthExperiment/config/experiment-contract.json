@@ -1,0 +1,90 @@
+{
+  "contract_version": "ipcch-alphaearth-contract-v1.0",
+  "authority": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/{decisions.md D1-D29, prd.md, design.md, implement.md}",
+  "note": "Frozen scientific constants. ipcch_alphaearth.contract.validate_frozen() refuses any production contract that differs; tests may pass scaled-down copies explicitly.",
+  "targets": {
+    "regressors": ["q2", "q3", "q4", "q5"],
+    "phase_threshold": "0.20",
+    "threshold_rule": ">=",
+    "projection": "bounded equal-weight least-squares decreasing isotonic then clip, 1>=q2>=q3>=q4>=q5>=0, unrounded",
+    "four_class_axis": ["1", "2", "3", "4/5"],
+    "binary_positive_phases": [3, 4, 5]
+  },
+  "target_qc": {
+    "required_observed": ["phase1_percent", "phase2_percent", "phase3_percent", "phase4_percent"],
+    "zero_fill_if_missing": ["phase5_percent"],
+    "share_bounds": ["0", "1"],
+    "sum_bounds_inclusive": ["0.90", "1.10"],
+    "population_strictly_positive": true,
+    "expected_valid_rows": 42695,
+    "expected_valid_admins": 6224
+  },
+  "calendar": {
+    "horizons_months": [1, 3, 6, 12],
+    "availability": "D29: origin O = end of month O; fit labels U <= fit origin; row inputs observation/report month <= row origin; completed season end_exclusive <= first day of O+1",
+    "first_origin": "2018-01",
+    "development_target_years": [2021, 2022],
+    "map_freeze_cutoff": "2022-12",
+    "main_first_origin": "2023-01",
+    "main_last_target": "2025-12",
+    "main_first_target": {"1": "2023-02", "3": "2023-04", "6": "2023-07", "12": "2024-01"},
+    "main_fold_counts": {"1": 35, "3": 33, "6": 30, "12": 24},
+    "main_fold_total": 122,
+    "main_expected_keys": {"1": 17322, "3": 16919, "6": 16413, "12": 14087},
+    "supplement_target_months": ["2026-01", "2026-02", "2026-03", "2026-04"],
+    "supplement_expected_keys_per_h": 4092,
+    "half_life_months": 24,
+    "bridge_slots_total": 22,
+    "fit_ceiling": {"B1_quartets": 38, "B0_quartets": 23, "quartets": 61, "scalar_fits": 244}
+  },
+  "features": {
+    "compact296_list_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+    "compact_groups": {"static": 29, "ordinary": 120, "same_month_z": 56, "stress": 28, "growing_season": 29, "identifier": 27, "history": 5, "idp": 2},
+    "alphaearth_prefix_mean": "ae2017_mean_A",
+    "alphaearth_prefix_sd": "ae2017_sd_A",
+    "alphaearth_bands": 64,
+    "missing_policy": "native XGBoost NaN; source infinities stop preparation"
+  },
+  "backbone": {
+    "recipes": {
+      "q2": {"max_depth": 11, "n_estimators": 200, "learning_rate": 0.1, "subsample": 1.0, "colsample_bytree": 0.5, "gamma": 0.0, "min_child_weight": 0.0, "reg_alpha": 0.0, "reg_lambda": 1.0},
+      "q3": {"max_depth": 9, "n_estimators": 200, "learning_rate": 0.1, "subsample": 0.5, "colsample_bytree": 0.7, "gamma": 0.1, "min_child_weight": 0.0, "reg_alpha": 0.0, "reg_lambda": 1.0},
+      "q4": {"max_depth": 11, "n_estimators": 200, "learning_rate": 0.1, "subsample": 1.0, "colsample_bytree": 0.5, "gamma": 0.0, "min_child_weight": 0.0, "reg_alpha": 0.0, "reg_lambda": 1.0},
+      "q5": {"max_depth": 11, "n_estimators": 200, "learning_rate": 0.1, "subsample": 1.0, "colsample_bytree": 0.5, "gamma": 0.0, "min_child_weight": 0.0, "reg_alpha": 0.0, "reg_lambda": 1.0}
+    },
+    "fixed": {"objective": "reg:squarederror", "tree_method": "hist", "device": "cpu", "booster": "gbtree", "seed": 42, "n_jobs": 16, "scale_pos_weight": 1.0},
+    "early_stopping": false,
+    "weights": "unnormalized 2**(-(fit_origin - U)/24)"
+  },
+  "correction": {
+    "core_inputs": ["prcp_anom_month_ensmean__ma3_at_origin", "tmean_anom_month_ensmean__ma3_at_origin", "event_count_violence__ma3_at_origin"],
+    "slots": ["intercept", "z_pred", "z_prcp", "z_tmean", "z_violence", "m_prcp", "m_tmean", "m_violence"],
+    "shared_lambda": 0.01,
+    "regional_lambdas": [0.01, 0.1, 1.0],
+    "leaf_budgets": [2, 4, 8],
+    "max_depth": 3,
+    "cuts_per_descriptor": 9,
+    "gain_tolerance_relative": 1e-12,
+    "support": {"n_eff": 200, "admins": 50, "target_months": 6},
+    "solver_residual_tolerance": 1e-9
+  },
+  "alphaearth": {
+    "collection": "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL",
+    "year": 2017,
+    "expected_dataset_version": "1.1",
+    "expected_model_version": "2.1",
+    "bands": "A00..A63",
+    "native_scale_m": 10,
+    "best_effort": false,
+    "coverage_threshold": "0.80",
+    "variance_cancellation_tolerance": 1e-12,
+    "ownership": "lexicographic asset-id order; each footprint minus previously assigned footprint area"
+  },
+  "evaluation": {
+    "main_f1_gain_minimum": "0.005",
+    "classification_guard": "0.01",
+    "projected_r2_guard": "0.02",
+    "guard_metrics": ["four_class.accuracy", "four_class.macro_f1", "binary.accuracy", "binary.precision", "binary.recall", "binary.f2"],
+    "bootstrap": {"unit": "country", "draws": 20000, "seed": 42, "generator": "numpy.random.default_rng", "lower_percentile": 1.25, "percentile_method": "linear", "family_size": 4, "min_countries": 2}
+  }
+}

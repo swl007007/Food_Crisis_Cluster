@@ -1,0 +1,14 @@
+test_depth_limit_and_both_child_support (test_correction_tree.BruteForceSearch.test_depth_limit_and_both_child_support) ... ok
+test_first_split_equals_exhaustive_reference (test_correction_tree.BruteForceSearch.test_first_split_equals_exhaustive_reference) ... ok
+test_two_split_growth_equals_independent_reference_with_ties (test_correction_tree.BruteForceSearch.test_two_split_growth_equals_independent_reference_with_ties)
+Independent best-first reference (own observed-rank thresholds, whole joint refit of every leaf by the ... ok
+test_joint_solution_matches_constrained_reference (test_correction_tree.CorrectionReference.test_joint_solution_matches_constrained_reference) ... ok
+test_nonfinite_prediction_is_technical (test_correction_tree.CorrectionReference.test_nonfinite_prediction_is_technical) ... ok
+test_normalized_loss_and_unpenalized_intercept (test_correction_tree.CorrectionReference.test_normalized_loss_and_unpenalized_intercept) ... ok
+test_single_supported_leaf_reuses_b2_and_missing_rows_keep_shared_loss (test_correction_tree.CorrectionReference.test_single_supported_leaf_reuses_b2_and_missing_rows_keep_shared_loss) ... ok
+test_unweighted_regional_penalty (test_correction_tree.CorrectionReference.test_unweighted_regional_penalty) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.069s
+
+OK

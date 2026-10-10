@@ -1,0 +1,11 @@
+# P0 pipeline connection sample
+
+Stable sampled pipeline.py SHA256 32b2b73d60a8b21a099d5df39005a6fb583eadc36a4455ac53d57cd83924cec3. Read-only synthetic path probes with stub ModelStore (no XGB fits, no project data) and supervisor source spot-check. Two concrete items within existing P0 contract:
+
+1. Empty eligible OOT correction pool currently fails rather than declaring identity correction. make_pool:132-134 throws, while _develop:199-200 and _predict:373-374 call it unconditionally. Sparse legal keys at 2014-01,2021-01,2022-01 leave all backbone fitting pools nonempty, but H1 development anchor2020-12 has no prior residuals and run_develop stops. Design section6 requires explicit B2=B1,G=B2 for zero correction rows. Add the branch across development/annual paths, persisted/replayable as identity; test it without inventing fitted transforms/labels. Probe INCOMPLETE is /tmp/alphaearth_empty_pool_h2iw_b1s/develop/INCOMPLETE.json. Actual project enumeration has no empty pools, so no observed real-data error.
+
+2. Frozen-map loader does not check the hashes already recorded. run_freeze_map:324-325 saves final_map_hNN.json file_sha256 in MAP_FREEZE.json; maps/COMPLETE.json pins MAP_FREEZE itself. load_frozen_map:333-337 directly reads the map; Workspace.require only tests COMPLETE existence. Changing a /tmp final_map_h01.json from B2/null to a two-leaf tree is accepted by actual loader, contrary to section10/13 map freeze. Verify this existing manifest chain and selection binding before predictions, with a focused changed-map refusal test. Avoid a new generic validation framework.
+
+Positive evidence: actual develop->freeze->predict synthetic orchestration generated61 quartet requests, all9 recipes in both2021/2022, unique providers and22 bridge slots. Fit/row origins and target eligibility match schedule. Two supported leaves preserve missing-AE rows on beta_G; one supported leaf or no selected partition produces exact full B2 reuse. No finding about temporal ancestry or normal annual shared scaling.
+
+These are new-module boundary samples, not reopening repaired store/search items. Repair within P0, retain evidence, and continue toward the pinned readiness checkpoint.

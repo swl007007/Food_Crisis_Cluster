@@ -1,0 +1,11 @@
+test_nonempty_pool_without_routable_rows_is_exact_b2 (test_search_store_repairs.AllUnroutable.test_nonempty_pool_without_routable_rows_is_exact_b2) ... ok
+test_partial_entry_refused_before_any_fit (test_search_store_repairs.StoreIntegrity.test_partial_entry_refused_before_any_fit) ... ok
+test_read_only_store_never_fits (test_search_store_repairs.StoreIntegrity.test_read_only_store_never_fits) ... ok
+test_reuse_verifies_record_and_digest_binding (test_search_store_repairs.StoreIntegrity.test_reuse_verifies_record_and_digest_binding) ... ok
+test_slices_must_match_identity (test_search_store_repairs.StoreIntegrity.test_slices_must_match_identity) ... ok
+test_tied_candidate_below_floor_never_selected (test_search_store_repairs.StrictGainFloor.test_tied_candidate_below_floor_never_selected) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.034s
+
+OK

@@ -1,0 +1,18 @@
+{
+  "lock_version": "ipcch-alphaearth-runtime-v1",
+  "numerical": {
+    "interpreter": "/home/swl007007/.venvs/ipcch-geo/bin/python",
+    "python": "3.12.3",
+    "platform_system": "Linux",
+    "packages": {"numpy": "2.4.4", "pandas": "3.0.3", "scikit-learn": "1.8.0", "xgboost": "3.2.0", "scipy": "1.17.1",
+                 "geopandas": "1.1.3", "shapely": "2.1.2", "pyogrio": "0.12.1", "pyproj": "3.7.2", "threadpoolctl": "3.6.0"}
+  },
+  "extraction": {
+    "interpreter": "/opt/earthengine/bin/python",
+    "python": "3.12.3",
+    "packages": {"earthengine-api": "1.7.36"},
+    "note": "separate interpreter; exchanges hashed request/response files with the numerical environment; never installed into it"
+  },
+  "tracking": {"interpreter": "/home/swl007007/.venvs/ipcch-mlflow/bin/python", "note": "existing MLflow venv, used only after result acceptance"},
+  "policy": "no environment is upgraded or mutated by this experiment; preflight records the full resolved versions"
+}

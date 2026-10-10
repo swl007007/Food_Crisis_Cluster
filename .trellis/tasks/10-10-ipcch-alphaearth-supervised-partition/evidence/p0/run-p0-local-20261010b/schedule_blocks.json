@@ -1,0 +1,633 @@
+[
+  {
+    "block_id": "h01_hist_2018",
+    "horizon": 1,
+    "role": "historical",
+    "target_lo": 24217,
+    "target_hi": 24227,
+    "fit_origin": 24216,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2018-02",
+    "target_hi_month": "2018-12",
+    "fit_origin_month": "2018-01",
+    "slots": 11
+  },
+  {
+    "block_id": "h01_hist_2019",
+    "horizon": 1,
+    "role": "historical",
+    "target_lo": 24228,
+    "target_hi": 24239,
+    "fit_origin": 24227,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2019-01",
+    "target_hi_month": "2019-12",
+    "fit_origin_month": "2018-12",
+    "slots": 12
+  },
+  {
+    "block_id": "h01_hist_2020",
+    "horizon": 1,
+    "role": "historical",
+    "target_lo": 24240,
+    "target_hi": 24251,
+    "fit_origin": 24239,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2020-01",
+    "target_hi_month": "2020-12",
+    "fit_origin_month": "2019-12",
+    "slots": 12
+  },
+  {
+    "block_id": "h01_hist_2021",
+    "horizon": 1,
+    "role": "historical",
+    "target_lo": 24252,
+    "target_hi": 24263,
+    "fit_origin": 24251,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2021,
+    "target_lo_month": "2021-01",
+    "target_hi_month": "2021-12",
+    "fit_origin_month": "2020-12",
+    "slots": 12
+  },
+  {
+    "block_id": "h01_hist_2022",
+    "horizon": 1,
+    "role": "historical",
+    "target_lo": 24264,
+    "target_hi": 24275,
+    "fit_origin": 24263,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2022,
+    "target_lo_month": "2022-01",
+    "target_hi_month": "2022-12",
+    "fit_origin_month": "2021-12",
+    "slots": 12
+  },
+  {
+    "block_id": "h01_bridge_2023",
+    "horizon": 1,
+    "role": "bridge",
+    "target_lo": 24276,
+    "target_hi": 24276,
+    "fit_origin": 24275,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-01",
+    "target_hi_month": "2023-01",
+    "fit_origin_month": "2022-12",
+    "slots": 1
+  },
+  {
+    "block_id": "h01_main_2023",
+    "horizon": 1,
+    "role": "main",
+    "target_lo": 24277,
+    "target_hi": 24287,
+    "fit_origin": 24276,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-02",
+    "target_hi_month": "2023-12",
+    "fit_origin_month": "2023-01",
+    "slots": 11
+  },
+  {
+    "block_id": "h01_main_2024",
+    "horizon": 1,
+    "role": "main",
+    "target_lo": 24288,
+    "target_hi": 24299,
+    "fit_origin": 24287,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2024-01",
+    "target_hi_month": "2024-12",
+    "fit_origin_month": "2023-12",
+    "slots": 12
+  },
+  {
+    "block_id": "h01_main_2025",
+    "horizon": 1,
+    "role": "main",
+    "target_lo": 24300,
+    "target_hi": 24311,
+    "fit_origin": 24299,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2025-01",
+    "target_hi_month": "2025-12",
+    "fit_origin_month": "2024-12",
+    "slots": 12
+  },
+  {
+    "block_id": "h01_supp_2026",
+    "horizon": 1,
+    "role": "supplement",
+    "target_lo": 24312,
+    "target_hi": 24315,
+    "fit_origin": 24311,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2026-01",
+    "target_hi_month": "2026-04",
+    "fit_origin_month": "2025-12",
+    "slots": 4
+  },
+  {
+    "block_id": "h03_hist_2018",
+    "horizon": 3,
+    "role": "historical",
+    "target_lo": 24219,
+    "target_hi": 24227,
+    "fit_origin": 24216,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2018-04",
+    "target_hi_month": "2018-12",
+    "fit_origin_month": "2018-01",
+    "slots": 9
+  },
+  {
+    "block_id": "h03_hist_2019",
+    "horizon": 3,
+    "role": "historical",
+    "target_lo": 24228,
+    "target_hi": 24239,
+    "fit_origin": 24225,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2019-01",
+    "target_hi_month": "2019-12",
+    "fit_origin_month": "2018-10",
+    "slots": 12
+  },
+  {
+    "block_id": "h03_hist_2020",
+    "horizon": 3,
+    "role": "historical",
+    "target_lo": 24240,
+    "target_hi": 24251,
+    "fit_origin": 24237,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2020-01",
+    "target_hi_month": "2020-12",
+    "fit_origin_month": "2019-10",
+    "slots": 12
+  },
+  {
+    "block_id": "h03_hist_2021",
+    "horizon": 3,
+    "role": "historical",
+    "target_lo": 24252,
+    "target_hi": 24263,
+    "fit_origin": 24249,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2021,
+    "target_lo_month": "2021-01",
+    "target_hi_month": "2021-12",
+    "fit_origin_month": "2020-10",
+    "slots": 12
+  },
+  {
+    "block_id": "h03_hist_2022",
+    "horizon": 3,
+    "role": "historical",
+    "target_lo": 24264,
+    "target_hi": 24275,
+    "fit_origin": 24261,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2022,
+    "target_lo_month": "2022-01",
+    "target_hi_month": "2022-12",
+    "fit_origin_month": "2021-10",
+    "slots": 12
+  },
+  {
+    "block_id": "h03_bridge_2023",
+    "horizon": 3,
+    "role": "bridge",
+    "target_lo": 24276,
+    "target_hi": 24278,
+    "fit_origin": 24273,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-01",
+    "target_hi_month": "2023-03",
+    "fit_origin_month": "2022-10",
+    "slots": 3
+  },
+  {
+    "block_id": "h03_main_2023",
+    "horizon": 3,
+    "role": "main",
+    "target_lo": 24279,
+    "target_hi": 24287,
+    "fit_origin": 24276,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-04",
+    "target_hi_month": "2023-12",
+    "fit_origin_month": "2023-01",
+    "slots": 9
+  },
+  {
+    "block_id": "h03_main_2024",
+    "horizon": 3,
+    "role": "main",
+    "target_lo": 24288,
+    "target_hi": 24299,
+    "fit_origin": 24285,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2024-01",
+    "target_hi_month": "2024-12",
+    "fit_origin_month": "2023-10",
+    "slots": 12
+  },
+  {
+    "block_id": "h03_main_2025",
+    "horizon": 3,
+    "role": "main",
+    "target_lo": 24300,
+    "target_hi": 24311,
+    "fit_origin": 24297,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2025-01",
+    "target_hi_month": "2025-12",
+    "fit_origin_month": "2024-10",
+    "slots": 12
+  },
+  {
+    "block_id": "h03_supp_2026",
+    "horizon": 3,
+    "role": "supplement",
+    "target_lo": 24312,
+    "target_hi": 24315,
+    "fit_origin": 24309,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2026-01",
+    "target_hi_month": "2026-04",
+    "fit_origin_month": "2025-10",
+    "slots": 4
+  },
+  {
+    "block_id": "h06_hist_2018",
+    "horizon": 6,
+    "role": "historical",
+    "target_lo": 24222,
+    "target_hi": 24227,
+    "fit_origin": 24216,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2018-07",
+    "target_hi_month": "2018-12",
+    "fit_origin_month": "2018-01",
+    "slots": 6
+  },
+  {
+    "block_id": "h06_hist_2019",
+    "horizon": 6,
+    "role": "historical",
+    "target_lo": 24228,
+    "target_hi": 24239,
+    "fit_origin": 24222,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2019-01",
+    "target_hi_month": "2019-12",
+    "fit_origin_month": "2018-07",
+    "slots": 12
+  },
+  {
+    "block_id": "h06_hist_2020",
+    "horizon": 6,
+    "role": "historical",
+    "target_lo": 24240,
+    "target_hi": 24251,
+    "fit_origin": 24234,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2020-01",
+    "target_hi_month": "2020-12",
+    "fit_origin_month": "2019-07",
+    "slots": 12
+  },
+  {
+    "block_id": "h06_hist_2021",
+    "horizon": 6,
+    "role": "historical",
+    "target_lo": 24252,
+    "target_hi": 24263,
+    "fit_origin": 24246,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2021,
+    "target_lo_month": "2021-01",
+    "target_hi_month": "2021-12",
+    "fit_origin_month": "2020-07",
+    "slots": 12
+  },
+  {
+    "block_id": "h06_hist_2022",
+    "horizon": 6,
+    "role": "historical",
+    "target_lo": 24264,
+    "target_hi": 24275,
+    "fit_origin": 24258,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2022,
+    "target_lo_month": "2022-01",
+    "target_hi_month": "2022-12",
+    "fit_origin_month": "2021-07",
+    "slots": 12
+  },
+  {
+    "block_id": "h06_bridge_2023",
+    "horizon": 6,
+    "role": "bridge",
+    "target_lo": 24276,
+    "target_hi": 24281,
+    "fit_origin": 24270,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-01",
+    "target_hi_month": "2023-06",
+    "fit_origin_month": "2022-07",
+    "slots": 6
+  },
+  {
+    "block_id": "h06_main_2023",
+    "horizon": 6,
+    "role": "main",
+    "target_lo": 24282,
+    "target_hi": 24287,
+    "fit_origin": 24276,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-07",
+    "target_hi_month": "2023-12",
+    "fit_origin_month": "2023-01",
+    "slots": 6
+  },
+  {
+    "block_id": "h06_main_2024",
+    "horizon": 6,
+    "role": "main",
+    "target_lo": 24288,
+    "target_hi": 24299,
+    "fit_origin": 24282,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2024-01",
+    "target_hi_month": "2024-12",
+    "fit_origin_month": "2023-07",
+    "slots": 12
+  },
+  {
+    "block_id": "h06_main_2025",
+    "horizon": 6,
+    "role": "main",
+    "target_lo": 24300,
+    "target_hi": 24311,
+    "fit_origin": 24294,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2025-01",
+    "target_hi_month": "2025-12",
+    "fit_origin_month": "2024-07",
+    "slots": 12
+  },
+  {
+    "block_id": "h06_supp_2026",
+    "horizon": 6,
+    "role": "supplement",
+    "target_lo": 24312,
+    "target_hi": 24315,
+    "fit_origin": 24306,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2026-01",
+    "target_hi_month": "2026-04",
+    "fit_origin_month": "2025-07",
+    "slots": 4
+  },
+  {
+    "block_id": "h12_hist_2019",
+    "horizon": 12,
+    "role": "historical",
+    "target_lo": 24228,
+    "target_hi": 24239,
+    "fit_origin": 24216,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2019-01",
+    "target_hi_month": "2019-12",
+    "fit_origin_month": "2018-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_hist_2020",
+    "horizon": 12,
+    "role": "historical",
+    "target_lo": 24240,
+    "target_hi": 24251,
+    "fit_origin": 24228,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2020-01",
+    "target_hi_month": "2020-12",
+    "fit_origin_month": "2019-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_hist_2021",
+    "horizon": 12,
+    "role": "historical",
+    "target_lo": 24252,
+    "target_hi": 24263,
+    "fit_origin": 24240,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2021,
+    "target_lo_month": "2021-01",
+    "target_hi_month": "2021-12",
+    "fit_origin_month": "2020-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_hist_2022",
+    "horizon": 12,
+    "role": "historical",
+    "target_lo": 24264,
+    "target_hi": 24275,
+    "fit_origin": 24252,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": 2022,
+    "target_lo_month": "2022-01",
+    "target_hi_month": "2022-12",
+    "fit_origin_month": "2021-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_bridge_2023",
+    "horizon": 12,
+    "role": "bridge",
+    "target_lo": 24276,
+    "target_hi": 24287,
+    "fit_origin": 24264,
+    "arms": [
+      "B1"
+    ],
+    "development_year": null,
+    "target_lo_month": "2023-01",
+    "target_hi_month": "2023-12",
+    "fit_origin_month": "2022-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_main_2024",
+    "horizon": 12,
+    "role": "main",
+    "target_lo": 24288,
+    "target_hi": 24299,
+    "fit_origin": 24276,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2024-01",
+    "target_hi_month": "2024-12",
+    "fit_origin_month": "2023-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_main_2025",
+    "horizon": 12,
+    "role": "main",
+    "target_lo": 24300,
+    "target_hi": 24311,
+    "fit_origin": 24288,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2025-01",
+    "target_hi_month": "2025-12",
+    "fit_origin_month": "2024-01",
+    "slots": 12
+  },
+  {
+    "block_id": "h12_supp_2026",
+    "horizon": 12,
+    "role": "supplement",
+    "target_lo": 24312,
+    "target_hi": 24315,
+    "fit_origin": 24300,
+    "arms": [
+      "B1",
+      "B0"
+    ],
+    "development_year": null,
+    "target_lo_month": "2026-01",
+    "target_hi_month": "2026-04",
+    "fit_origin_month": "2025-01",
+    "slots": 4
+  }
+]

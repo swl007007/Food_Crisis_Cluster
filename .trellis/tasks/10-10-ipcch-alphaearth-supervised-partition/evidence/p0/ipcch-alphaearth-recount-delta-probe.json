@@ -1,0 +1,10 @@
+{
+  "scratch": "/tmp/ae-recount-delta-6cj9no72",
+  "baseline": true,
+  "accepted_after_mutation": {
+    "criterion_annual_signs": true,
+    "guard_item": true,
+    "bootstrap_undefined_count": true,
+    "country_diagnostic_f1": true
+  }
+}

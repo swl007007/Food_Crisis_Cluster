@@ -1,0 +1,17 @@
+# P0 offline extraction sample (no EE contact)
+
+Read-only synthetic/mock probes, supervisor source spot-check. Stable samples: scripts/extract_alphaearth.py dea1b0a41aa695117796b568489fad60be411d3fa57eb2e266b2f5cf4da6f176; extraction.py f6cde3a09d2e341f7d6f39650a65b04a3a348cbd6228bc0f243e186f7dabc223; descriptors.py 2e7fee89f7e19fb34ae1a4212597644329eb30ef9c54ef1046bfb16f24c0e33d. Fixed list for these new modules; ordinary P0 repairs, not an EE release.
+
+1. Bind exported piece identities. extraction.validate_export:118-124 compares piece_id sets but ignores asset/admin correspondence to the plan; descriptor_table drops asset_id. A row with correct piece_id=1|assetA/admin1 but asset_id=OTHER_ASSET, A=S=Q=100, polygonarea100 passes and creates usable coverage1. Validate each piece's planned admin+asset and complete expected set, not only its string ID. Keep bad status/nonfinite moment refusal (currently downstream), never convert failure to missing coverage.
+
+2. Full admin denominator/table coverage. descriptors.py:36-40 iterates only polygons admins. Plan/export containing [1,2] with polygons containing only1 silently returns only1. Enforce exact declared geometry/plan admin coverage and uniqueness, preserving explicit zero-piece admins. Later model-row rejection is not sufficient to preserve extraction coverage diagnostics for all6227 geometries.
+
+3. Ring-orientation-independent full polygon denominator. extraction.geodesic_area:49-53 takes abs of a signed geometry total. Same valid holed polygon with outer[(0,0),(2,0),(2,2),(0,2)] and hole[(.5,.5),(1.5,.5),(1.5,1.5),(.5,1.5)] gets36,924,174,572.76 vs61,538,994,022.11 m2 merely reversing hole orientation. Equal-area two-component MultiPolygon yields0 with opposite component winding vs24,617,556,722.94 with aligned winding. Normalize ring orientation for area computation and aggregate component area correctly; do not rewrite/repair original geometry. Add hole/multipolygon invariance fixtures.
+
+4. Truly finite common mask. extract_alphaearth.py:84 uses bands.eq(bands), which removes NaN but retains +/-Inf. Actual reducer with numeric mock (one inf,63 finite bands, area100) retains valid_area100 and produces infinite S/Q. Use a supported finite test on all64 bands in addition to their masks and cover NaN/+Inf/-Inf. No arbitrary fill or new coarse grid. Downstream rejection currently stops the artifact, but it should not count nonfinite pixels as valid area.
+
+5. Enforce released concurrency BEFORE task.start. extract_alphaearth.py:123-130 checks after starting. Resume with one RUNNING task and max_concurrent1 emits START_NEW_TASK before WAIT/REFRESH, reaching2 active tasks. Refresh/wait for a slot before submitting each batch and test resumed-state behavior. No cloud calls needed for this regression.
+
+P1 pilot boundary, not a claimed observed EE defect: actual all-masked reduceRegion may return null/missing sums. Current script unconditionally sets status complete with raw stats and downstream NaNs fail. Confirm genuine all-masked behavior in offline server-expression fixture/pilot, normalize only proven successful zero-valid-area reductions to A/S/Q=0; never normalize failed/missing exports. Native crs=Projection retains its affine per installed API documentation, so absence of a separate crsTransform kwarg was NOT counted as a defect.
+
+P1 still needs actual metadata/grids/ownership impact/quota/destination/pilot caps. Those operational unknowns remain at the released checkpoint; do not contact EE while making these P0 fixes.

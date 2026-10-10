@@ -1,0 +1,141 @@
+{
+  "inputs_version": "ipcch-alphaearth-inputs-v1",
+  "access": "read-only; every byte is copied into <run>/sources and rehashed (multi-file bundles keep their original filenames under sources/<bundle>/); a mismatch with a pinned sha256 stops staging",
+  "known_limits": [
+    "Upstream administrative matching and boundary vintage are not verified; topology validity is not identity correctness.",
+    "Observation/report month is the availability proxy (D29); historical release vintages, static snapshots and supplier climatology samples are unverified."
+  ],
+  "inputs": {
+    "raw_panel": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/raw/IPCCH_2026_completed.csv",
+      "sha256": "ae696087c3bbb280537ae269a05924133acdb51060d31290523404fa8a717673",
+      "role": "population-derived truth (P6 QC) and target-key lat/lon identifiers",
+      "stage": true
+    },
+    "interim": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/interim/IPCCH_2026_target_corrected_nino34_wbfood.csv",
+      "sha256": "a91719e8e603e11b58e3e44c9a2f4378e4218e1ac408afe03ca54d1b50fb0484",
+      "role": "ordinary interim sources, bbg composites and reported-phase history observations",
+      "stage": true
+    },
+    "climate_monthly": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/IPCCH_shared_folder/climate_monthly_2015_2026_MODELING_READY.csv",
+      "sha256": "8082b72ea5fa5c30a7b975b89c1fbbb4530f27a9ce6c5ba4d0e1a4f923320c89",
+      "role": "monthly climate ensemble means",
+      "stage": true
+    },
+    "climate_seasonal": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/IPCCH_shared_folder/climate_2015_2026_MODELING_READY.csv",
+      "sha256": "f024a66c8979fb4a8c66fba1f04e7e69355fa75b499793d29001a146d8c2958e",
+      "role": "completed growing seasons",
+      "stage": true
+    },
+    "idp_admin0_monthly": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Processed_Dataset/IDP_DTM/output/idp_admin0_monthly.csv",
+      "sha256": "a1ebb82a8e14fc0fb8103d6086217b93da351fc4a8f7fcfbe9eaa44a9df602e1",
+      "role": "national DTM IDP stock",
+      "stage": true
+    },
+    "country_lookup": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/country_area_id_lookup.csv",
+      "sha256": "e2baf6ae9481b42b127db5ce81f3c53ad784bb08ae56dfa56cea74e416b44c90",
+      "role": "admin->ISO3 (IDP) and country_key (bootstrap unit)",
+      "stage": true
+    },
+    "compact_manifest": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/model_ready/compact_climate_weather_oracle_v1/compact_climate_weather_oracle_v1_manifest.json",
+      "sha256": "456360536a3929e1571d96ba9f16e2f0de54bc1b20019f797bbe62c0c89732ca",
+      "role": "frozen compact296 order and pinned bbg commodity members (read for definitions only)",
+      "stage": true
+    },
+    "compact_baseline_h0": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/model_ready/compact_climate_weather_oracle_v1/compact_climate_weather_oracle_v1_compact_baseline_h0.csv",
+      "sha256": "92def8b5bdef5e217abebdadaa21fce490021551a792ed225a78406f61a58012",
+      "role": "static29 source (per-admin invariant across all four tables) and H3/6/12 overlap comparison reference",
+      "stage": true
+    },
+    "compact_baseline_h3": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/model_ready/compact_climate_weather_oracle_v1/compact_climate_weather_oracle_v1_compact_baseline_h3.csv",
+      "sha256": "38cf35f7a864e8006c53468e28424c65c5399454ca5b6f1eb7b10de37d73a4c7",
+      "role": "static29 source (per-admin invariant across all four tables) and H3/6/12 overlap comparison reference",
+      "stage": true
+    },
+    "compact_baseline_h6": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/model_ready/compact_climate_weather_oracle_v1/compact_climate_weather_oracle_v1_compact_baseline_h6.csv",
+      "sha256": "38b8e6d2ee49155e2c009695e322418e4f01be9656dceb5fa4c6c3ba729b5bd8",
+      "role": "static29 source (per-admin invariant across all four tables) and H3/6/12 overlap comparison reference",
+      "stage": true
+    },
+    "compact_baseline_h12": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/1.Source Data/assembled_IPCCH/model_ready/compact_climate_weather_oracle_v1/compact_climate_weather_oracle_v1_compact_baseline_h12.csv",
+      "sha256": "e442a40d37a259f31aaaea337fcfeffaeb593d1ff7108112dc8f69313f12a811",
+      "role": "static29 source (per-admin invariant across all four tables) and H3/6/12 overlap comparison reference",
+      "stage": true
+    },
+    "geometry_shp": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.shp",
+      "sha256": "9df70f3aa719eaa2458a3ff4a92f058da1f5fe1feeb85432e0dd88e515ccfadb",
+      "role": "frozen repaired admin geometry (6,227 admins) for extraction",
+      "stage": true,
+      "bundle": "geometry"
+    },
+    "geometry_shx": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.shx",
+      "sha256": "424554aec24b86d74609a5fe59a01e498c78269c6e6b4b87765e657a4fe6fc83",
+      "role": "frozen repaired admin geometry (6,227 admins) for extraction",
+      "stage": true,
+      "bundle": "geometry"
+    },
+    "geometry_dbf": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.dbf",
+      "sha256": "964b8030e5d543fd49d112489035ac5e713a068d04076bf75b0f99c3b034a71e",
+      "role": "frozen repaired admin geometry (6,227 admins) for extraction",
+      "stage": true,
+      "bundle": "geometry"
+    },
+    "geometry_prj": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.prj",
+      "sha256": "a02a27b1d1982c8516d83398e85a3c8b1aef1713c13ef4d84d7bde17430c07c4",
+      "role": "frozen repaired admin geometry (6,227 admins) for extraction",
+      "stage": true,
+      "bundle": "geometry"
+    },
+    "geometry_cpg": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoRFExperiment/runs/ipcch-v1-20260920d/geography/ipcch_admin_geometry_repaired.cpg",
+      "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824",
+      "role": "frozen repaired admin geometry (6,227 admins) for extraction",
+      "stage": true,
+      "bundle": "geometry"
+    },
+    "p6_target_ledger_valid": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/target_ledger_valid.csv.gz",
+      "sha256": "21d7701fe60fb9ed3084c34dc7852a9ce56e312c78587238179c5ea8ef63e717",
+      "role": "saved P6 canonical key sets (comparison only, never a cohort authority)",
+      "stage": true
+    },
+    "p6_keys_h01": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h01.csv.gz",
+      "sha256": "414cba066f9953e7b70e2f586450537621ea312ad80a9fbc2b84ad367f2e49cd",
+      "role": "saved P6 canonical key sets (comparison only, never a cohort authority)",
+      "stage": true
+    },
+    "p6_keys_h03": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h03.csv.gz",
+      "sha256": "5e44eb8359a4910a5d9d94b80986d3a44faf123d89ebdf2b30e5389bf1267f7a",
+      "role": "saved P6 canonical key sets (comparison only, never a cohort authority)",
+      "stage": true
+    },
+    "p6_keys_h06": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h06.csv.gz",
+      "sha256": "d325da25a69399b496a33b1f21f3fb2fdd24f387b3074f399e5f2836444495d6",
+      "role": "saved P6 canonical key sets (comparison only, never a cohort authority)",
+      "stage": true
+    },
+    "p6_keys_h12": {
+      "path": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHGeoXGBExperiment/runs/p6-formal-20261004b/prepared/keys_h12.csv.gz",
+      "sha256": "9755df742b15d5b1556671633c2fa80908d8b9b7ffee9c9192b895aa64bba4bd",
+      "role": "saved P6 canonical key sets (comparison only, never a cohort authority)",
+      "stage": true
+    }
+  }
+}

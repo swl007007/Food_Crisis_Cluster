@@ -1,0 +1,84 @@
+test_anchors_ignore_observed_labels_and_first_partial_year (test_contracts_core.AvailabilityAndSchedule.test_anchors_ignore_observed_labels_and_first_partial_year) ... ok
+test_bridge_and_provider_uniqueness (test_contracts_core.AvailabilityAndSchedule.test_bridge_and_provider_uniqueness) ... ok
+test_completed_season_boundary_is_first_day_of_next_month (test_contracts_core.AvailabilityAndSchedule.test_completed_season_boundary_is_first_day_of_next_month) ... ok
+test_features_cut_at_each_rows_own_origin_and_h1_is_not_h0 (test_contracts_core.AvailabilityAndSchedule.test_features_cut_at_each_rows_own_origin_and_h1_is_not_h0) ... ok
+test_fold_calendar_keeps_empty_folds (test_contracts_core.AvailabilityAndSchedule.test_fold_calendar_keeps_empty_folds) ... ok
+test_label_at_fit_origin_allowed_later_refused (test_contracts_core.AvailabilityAndSchedule.test_label_at_fit_origin_allowed_later_refused) ... ok
+test_trailing_window_ends_at_origin (test_contracts_core.AvailabilityAndSchedule.test_trailing_window_ends_at_origin) ... ok
+test_identical_arms_have_zero_delta_draws (test_contracts_core.Inference.test_identical_arms_have_zero_delta_draws) ... ok
+test_per_h_decision_statuses (test_contracts_core.Inference.test_per_h_decision_statuses) ... ok
+test_selection_exact_ranking_and_fallback (test_contracts_core.Inference.test_selection_exact_ranking_and_fallback) ... ok
+test_single_country_inconclusive (test_contracts_core.Inference.test_single_country_inconclusive) ... ok
+test_undefined_draws_never_dropped (test_contracts_core.Inference.test_undefined_draws_never_dropped) ... ok
+test_coverage_threshold_inclusive_and_nan_not_zero (test_contracts_core.MomentsAndRouting.test_coverage_threshold_inclusive_and_nan_not_zero) ... ok
+test_descriptor_table_and_failed_admin (test_contracts_core.MomentsAndRouting.test_descriptor_table_and_failed_admin) ... ok
+test_merge_moments_not_average_sd (test_contracts_core.MomentsAndRouting.test_merge_moments_not_average_sd) ... ok
+test_no_data_versus_failed_export (test_contracts_core.MomentsAndRouting.test_no_data_versus_failed_export) ... ok
+test_overlap_ownership_no_double_count (test_contracts_core.MomentsAndRouting.test_overlap_ownership_no_double_count) ... ok
+test_unseen_admin_follows_frozen_thresholds (test_contracts_core.MomentsAndRouting.test_unseen_admin_follows_frozen_thresholds) ... ok
+test_variance_cancellation_tolerance (test_contracts_core.MomentsAndRouting.test_variance_cancellation_tolerance) ... ok
+test_absent_class_and_constant_truth_are_undefined (test_contracts_core.TruthAndProjection.test_absent_class_and_constant_truth_are_undefined) ... ok
+test_crossing_and_projection_before_clipping (test_contracts_core.TruthAndProjection.test_crossing_and_projection_before_clipping) ... ok
+test_inclusive_point_two_truth_boundary (test_contracts_core.TruthAndProjection.test_inclusive_point_two_truth_boundary) ... ok
+test_invalid_rows_and_p5_fill (test_contracts_core.TruthAndProjection.test_invalid_rows_and_p5_fill) ... ok
+test_prediction_decoding_inclusive (test_contracts_core.TruthAndProjection.test_prediction_decoding_inclusive) ... ok
+test_depth_limit_and_both_child_support (test_correction_tree.BruteForceSearch.test_depth_limit_and_both_child_support) ... ok
+test_first_split_equals_exhaustive_reference (test_correction_tree.BruteForceSearch.test_first_split_equals_exhaustive_reference) ... ok
+test_two_split_growth_equals_independent_reference_with_ties (test_correction_tree.BruteForceSearch.test_two_split_growth_equals_independent_reference_with_ties)
+Independent best-first reference (own observed-rank thresholds, whole joint refit of every leaf by the ... ok
+test_joint_solution_matches_constrained_reference (test_correction_tree.CorrectionReference.test_joint_solution_matches_constrained_reference) ... ok
+test_nonfinite_prediction_is_technical (test_correction_tree.CorrectionReference.test_nonfinite_prediction_is_technical) ... ok
+test_normalized_loss_and_unpenalized_intercept (test_correction_tree.CorrectionReference.test_normalized_loss_and_unpenalized_intercept) ... ok
+test_single_supported_leaf_reuses_b2_and_missing_rows_keep_shared_loss (test_correction_tree.CorrectionReference.test_single_supported_leaf_reuses_b2_and_missing_rows_keep_shared_loss) ... ok
+test_unweighted_regional_penalty (test_correction_tree.CorrectionReference.test_unweighted_regional_penalty) ... ok
+test_regional_signal_selects_a_split_and_replays (test_e2e_synthetic.SyntheticEndToEnd.test_regional_signal_selects_a_split_and_replays) ... ok
+test_unsupported_splits_give_exact_b2 (test_e2e_synthetic.SyntheticEndToEnd.test_unsupported_splits_give_exact_b2) ... ok
+test_resumed_running_task_blocks_new_start (test_extraction_offline.Concurrency.test_resumed_running_task_blocks_new_start) ... ok
+test_unreleased_request_refused (test_extraction_offline.Concurrency.test_unreleased_request_refused) ... ok
+test_nan_and_infinities_are_not_valid_area (test_extraction_offline.FiniteMask.test_nan_and_infinities_are_not_valid_area) ... ok
+test_hole_and_multipolygon_winding_invariance (test_extraction_offline.OrientationFreeArea.test_hole_and_multipolygon_winding_invariance) ... ok
+test_complete_admin_set_including_zero_piece_admins (test_extraction_offline.PieceBindingAndCoverage.test_complete_admin_set_including_zero_piece_admins) ... ok
+test_wrong_asset_for_a_valid_piece_id_refused (test_extraction_offline.PieceBindingAndCoverage.test_wrong_asset_for_a_valid_piece_id_refused) ... ok
+test_annual_context_with_empty_pool_returns_b1 (test_pipeline_boundaries.EmptyPoolIdentity.test_annual_context_with_empty_pool_returns_b1) ... ok
+test_empty_development_pool_is_declared_identity_end_to_end (test_pipeline_boundaries.EmptyPoolIdentity.test_empty_development_pool_is_declared_identity_end_to_end) ... /home/swl007007/.venvs/ipcch-geo/lib/python3.12/site-packages/xgboost/core.py:751: UserWarning: [17:08:12] WARNING: /__w/xgboost/xgboost/src/common/error_msg.cc:56: Empty dataset at worker: 0
+  return func(**kwargs)
+ok
+test_changed_final_map_refused (test_pipeline_boundaries.FreezeChain.test_changed_final_map_refused) ... ok
+test_changed_freeze_manifest_refused (test_pipeline_boundaries.FreezeChain.test_changed_freeze_manifest_refused) ... ok
+test_changed_selection_refused (test_pipeline_boundaries.FreezeChain.test_changed_selection_refused) ... ok
+test_altered_bootstrap_draws_fail (test_replay_contracts.ReplayContracts.test_altered_bootstrap_draws_fail) ... ok
+test_fabricated_report_verdict_fails (test_replay_contracts.ReplayContracts.test_fabricated_report_verdict_fails) ... ok
+test_report_retains_counts_and_na_reasons (test_replay_contracts.ReplayContracts.test_report_retains_counts_and_na_reasons) ... ok
+test_residual_emitted_fields_must_agree (test_replay_contracts.ReplayContracts.test_residual_emitted_fields_must_agree) ... ok
+test_rewritten_truth_and_keys_fail_canonical_binding (test_replay_contracts.ReplayContracts.test_rewritten_truth_and_keys_fail_canonical_binding) ... ok
+test_supplement_relabelled_main_fails (test_replay_contracts.ReplayContracts.test_supplement_relabelled_main_fails) ... ok
+test_untampered_replay_passes (test_replay_contracts.ReplayContracts.test_untampered_replay_passes) ... ok
+test_wrong_provider_identity_fails (test_replay_contracts.ReplayContracts.test_wrong_provider_identity_fails) ... ok
+test_undefined_f1_compares_as_undefined (test_replay_contracts.UndefinedStaysUndefined.test_undefined_f1_compares_as_undefined) ... ok
+test_colliding_staged_paths_refused (test_run_sources.BundleStaging.test_colliding_staged_paths_refused) ... ok
+test_staged_shapefile_bundle_is_readable (test_run_sources.BundleStaging.test_staged_shapefile_bundle_is_readable) ... ok
+test_dropbox_run_refused (test_run_sources.ConfigDrift.test_dropbox_run_refused) ... ok
+test_kind_fixed_at_creation (test_run_sources.ConfigDrift.test_kind_fixed_at_creation) ... ok
+test_reopen_refuses_config_drift_on_every_entry_path (test_run_sources.ConfigDrift.test_reopen_refuses_config_drift_on_every_entry_path) ... ok
+test_added_input_refused (test_run_sources.SourceRequestDrift.test_added_input_refused) ... ok
+test_changed_pinned_hash_refused (test_run_sources.SourceRequestDrift.test_changed_pinned_hash_refused) ... ok
+test_changed_version_refused (test_run_sources.SourceRequestDrift.test_changed_version_refused) ... ok
+test_identical_request_reuses (test_run_sources.SourceRequestDrift.test_identical_request_reuses) ... ok
+test_tampered_staged_bytes_refused (test_run_sources.SourceRequestDrift.test_tampered_staged_bytes_refused) ... ok
+test_nonempty_pool_without_routable_rows_is_exact_b2 (test_search_store_repairs.AllUnroutable.test_nonempty_pool_without_routable_rows_is_exact_b2) ... ok
+test_partial_entry_refused_before_any_fit (test_search_store_repairs.StoreIntegrity.test_partial_entry_refused_before_any_fit) ... ok
+test_read_only_store_never_fits (test_search_store_repairs.StoreIntegrity.test_read_only_store_never_fits) ... ok
+test_reuse_verifies_record_and_digest_binding (test_search_store_repairs.StoreIntegrity.test_reuse_verifies_record_and_digest_binding) ... ok
+test_slices_must_match_identity (test_search_store_repairs.StoreIntegrity.test_slices_must_match_identity) ... ok
+test_tied_candidate_below_floor_never_selected (test_search_store_repairs.StrictGainFloor.test_tied_candidate_below_floor_never_selected) ... ok
+test_labels_after_origin_change_nothing_at_or_before_it (test_temporal_ancestry.FutureLabels.test_labels_after_origin_change_nothing_at_or_before_it) ... ok
+
+----------------------------------------------------------------------
+Ran 71 tests in 271.699s
+
+OK
+submitted 2 pieces; ledger /tmp/tmpm5syueua/ledger.json
+
+real	4m39.626s
+user	86m24.260s
+sys	0m35.418s
