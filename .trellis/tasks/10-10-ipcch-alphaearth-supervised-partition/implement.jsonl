@@ -1,0 +1,11 @@
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/prd.md", "reason": "Consolidated requirements, per-H conclusions, planning and execution acceptance; no execution approval yet."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/design.md", "reason": "Authoritative final-review data, timing, models, search, evaluation and artifact contracts."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/implement.md", "reason": "Staged offline/cloud/fitting release boundaries and focused validation plan."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/research/annual-fit-calendar.md", "reason": "Exact annual anchors, unique OOT providers, 22 bridge slots and 244-scalar ceiling."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/research/source-runtime-availability.md", "reason": "Actual source paths, H1/cohort incompatibilities, runtimes and D29 vintage limitations."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/research/extraction-options.md", "reason": "Accepted native-grid EE table archive scope and provider-dependent replay limits."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/research/pooled-xgb-recipe.md", "reason": "Inherited target-specific XGB recipe evidence and unknown original tuning history."}
+{"file": ".trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/research/evaluation-criteria.md", "reason": "D22-D24/D28 per-H success, point guards, paired inference and limitations."}
+{"file": ".trellis/spec/backend/local-forecasting-experiments.md", "reason": "Isolation, keyed fitting provenance and immutable artifacts only; this task overrides ETH/FEWS-specific horizons, experts, SMOTE and NA conventions."}
+{"file": ".trellis/spec/backend/local-mlflow-import.md", "reason": "Completed-result inventory, import/verify and recovery boundaries; no live writes during planning."}
+{"file": ".trellis/spec/backend/local-mlflow-summary-catalog.md", "reason": "Compact nine-metric Summary, external model bundles and same-key/truth dataset identities."}
