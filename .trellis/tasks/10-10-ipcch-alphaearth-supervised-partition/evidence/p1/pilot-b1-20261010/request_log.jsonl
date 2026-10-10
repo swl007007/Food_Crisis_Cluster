@@ -1,0 +1,6 @@
+{"n": 1, "utc": "2026-10-10T21:42:30Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.66, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-10T21:42:41Z", "purpose": "B:piece:101208:xg60a6tyje250ifyj:05", "attempt": 1, "status": "ok", "seconds": 11.62, "response_bytes": 3886}
+{"n": 3, "utc": "2026-10-10T21:42:51Z", "purpose": "B:piece:1722:x6bdj6bnb7dgiukef:07", "attempt": 1, "status": "ok", "seconds": 10.01, "response_bytes": 3884}
+{"n": 4, "utc": "2026-10-10T21:42:54Z", "purpose": "B:overlap_other:1722:xdgzjg7396r55w0vs:09", "attempt": 1, "status": "ok", "seconds": 2.48, "response_bytes": 1742}
+{"n": 5, "utc": "2026-10-10T21:42:56Z", "purpose": "B:overlap_other:1722:xl600p8zytcdfq5u2:10", "attempt": 1, "status": "ok", "seconds": 2.23, "response_bytes": 1740}
+{"n": 6, "utc": "2026-10-10T21:43:02Z", "purpose": "B:overlap_other:1722:xt0jtdcoxb1sp5b7v:11", "attempt": 1, "status": "ok", "seconds": 6.24, "response_bytes": 3879}

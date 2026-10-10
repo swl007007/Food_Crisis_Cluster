@@ -1,0 +1,16 @@
+{
+ "release_id": "P1-PILOT-B1-20261010",
+ "request_sha256": "08b55eedf9c105c8c6dfb47365ea55bc35d0660ec4b14a65720d5154a7562e68",
+ "done": [
+  "B:piece:101208:xg60a6tyje250ifyj:05",
+  "B:piece:1722:x6bdj6bnb7dgiukef:07",
+  "B:overlap_other:1722:xdgzjg7396r55w0vs:09",
+  "B:overlap_other:1722:xl600p8zytcdfq5u2:10",
+  "B:overlap_other:1722:xt0jtdcoxb1sp5b7v:11"
+ ],
+ "skipped": {},
+ "failed": [],
+ "seconds_per_pixel_conservative": 6.311677506743541e-06,
+ "overhead_seconds": 2.228736400604248,
+ "calls_used": 6
+}
