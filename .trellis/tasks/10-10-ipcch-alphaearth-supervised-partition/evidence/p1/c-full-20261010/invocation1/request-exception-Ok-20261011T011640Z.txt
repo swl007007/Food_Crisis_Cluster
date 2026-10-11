@@ -1,0 +1,3 @@
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/request_log.jsonl:{"n": 631, "utc": "2026-10-11T01:16:40Z", "purpose": "21|w003_001", "attempt": 1, "status": "error", "seconds": 8.72, "response_bytes": 0, "error": "Ok"}
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/request_log.jsonl:{"n": 634, "utc": "2026-10-11T01:16:47Z", "purpose": "21|w003_001", "attempt": 2, "status": "ok", "seconds": 6.26, "response_bytes": 3858}
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/ledger.jsonl:{"utc": "2026-10-11T01:16:47Z", "piece_id": "21|w003_001", "status": "ok", "seconds": 14.978, "response_sha256": "ba333793cbf1ea630127d539c040810c4c2313217bb649907769678ef44d778c"}

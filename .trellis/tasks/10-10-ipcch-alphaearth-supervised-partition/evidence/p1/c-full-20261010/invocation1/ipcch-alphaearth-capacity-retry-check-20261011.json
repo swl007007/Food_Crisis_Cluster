@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "piece_id": "5|w012_009",
+  "manifest_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+  "file_sha256": "1c63d6d8768e840ef8609e0ed529f3c91b11573cd4d7cc79e31756b0d174b84e",
+  "response_sha256": "793587ec84196623fcb3bbeaf0c4f0f8ee0bd8f0db2e68432507cae9da95d897",
+  "binding_valid": true,
+  "numeric_complete": true,
+  "rank_area_relative_error": 1.784682567451117e-16,
+  "request_records": [
+    {
+      "n": 118,
+      "utc": "2026-10-11T00:10:44Z",
+      "purpose": "5|w012_009",
+      "attempt": 1,
+      "status": "error",
+      "seconds": 1.18,
+      "response_bytes": 0,
+      "error": "Earth Engine capacity exceeded."
+    },
+    {
+      "n": 123,
+      "utc": "2026-10-11T00:11:20Z",
+      "purpose": "5|w012_009",
+      "attempt": 2,
+      "status": "ok",
+      "seconds": 35.49,
+      "response_bytes": 3936
+    }
+  ],
+  "interpretation": "Single recorded capacity rejection; one authorized retry succeeded. Does not establish service reliability or absence of future capacity errors."
+}

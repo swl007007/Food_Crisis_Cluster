@@ -1,0 +1,69 @@
+{
+  "release_id": "codex-D30-c8-probe-20261011",
+  "created_utc": "2026-10-11T00:04:16.939164+00:00",
+  "authority": "User requested parallelism test; existing necessary EE query/compute/download authorization; supervisor checkpoint release",
+  "implementation_commit": "736efa95e21480c9b22bf5f4b65086c4ced96447",
+  "proposal_commit": "cb07f2657236843eb7a1b992a4e2fccbc245d240",
+  "source_sha256": {
+    "scripts/ee_metadata.py": "982e3640d156acef8f69f0fce0fb494eac8656ff2e640ca6c9b3f633ff200bfc",
+    "scripts/ee_pilot_c.py": "f5c59f9dbd4330f10b131d2787523c58312901d7d26613ffd2c391cb750f9c7e",
+    "scripts/build_c_production.py": "5ea13a301ca1a0cea67f1af5689c27c8c7f530082fc3d72d8b66be806d510af8",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+    "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+    "tests/test_c_production.py": "a6dc4473c5b1717e9858969755ca9e2961b14693a299528a426f5c1cc23f658d",
+    "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5"
+  },
+  "body_sha256": "5eab5d21a6ed256fed7c30afaebb1fb45e040ee83908f91b54eecf267ea099d4",
+  "released_manifest_file_sha256": "27e589b55b24029fb696fc353430cd2b6798fff16cd3cf49beaaaa33cc6db357",
+  "pieces_sha256": "f3c17f46ad1823961337ffedecf5008e64a1ed496624da0aa90ec573ea5bf8d5",
+  "manifest": "/tmp/ipcch-alphaearth-c8-release-20261011/C8_probe_manifest.json",
+  "fresh_run_directory": "/home/swl007007/ipcch-alphaearth-runs/p1-c8-probe-20261011",
+  "limits": {
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "concurrency": 8,
+    "batch_size": 1,
+    "max_high_level_calls": 50,
+    "wall_budget_s": 600,
+    "outer_timeout_s": 900,
+    "max_consecutive_failures": 2,
+    "max_failure_fraction": 0.25,
+    "min_attempts_for_fraction": 4,
+    "max_pixels": 2270400000
+  },
+  "max_invocations_authorized": 1,
+  "total_conservative_band_pixel_guard": 113520000000,
+  "preconditions": [
+    "Full invocation 1 has exited by its normal wall-budget stop; verify runner exit code separately from wrapper status and checker exit0 with no violations/caps/fatal conditions",
+    "No active full EE runner, no concurrent external EE extraction; acquire/hold full-run invocation.lock for duration of this probe to prevent overlap",
+    "Full invocation2 remains HELD; released full manifest/run/body/output untouched",
+    "Recheck all source/file/body hashes; use fresh output directory",
+    "Check geometry+candidate signatures of actually attempted full pieces against the24 probe pieces; if intersect, report and HOLD (no assumption of cache absence)"
+  ],
+  "scope": [
+    "One c8/b1 sample invocation with timeout900; same frozen reducer and24 exact full-plan records; local output only",
+    "On completion run local checker and numerical checks; report wall,request timing intervals,maximum overlap,effective parallelism,errors/retries,24/24 raw result identity and validation",
+    "After probe HOLD for supervisor result check/concurrency decision; no automatic c8 production switch or invocation2"
+  ],
+  "interpretation": [
+    "S2/full-prefix c4 comparisons unmatched and workload/service/cache conditioned; no unbiased speedup claim",
+    "Request IDs differ but one selected numeric request matches full plan index28892; check actual attempted requests at start",
+    "Server/shared asset caches cannot be ruled out by client evidence"
+  ],
+  "stop": [
+    "Existing fatal/auth/quota/rate/size/error-budget/time/call guards unchanged",
+    "Any manifest/source binding or numerical invariant violation",
+    "Abnormal exit/outer timeout: preserve incomplete evidence; no rerun without checkpoint"
+  ],
+  "excluded": [
+    "GCS/Drive writes/exports",
+    "IAM,billing,quota,project,bucket changes",
+    "Project-data fitting",
+    "Lifecycle changes,push,merge",
+    "Changing full run release identity or cumulative budget"
+  ]
+}

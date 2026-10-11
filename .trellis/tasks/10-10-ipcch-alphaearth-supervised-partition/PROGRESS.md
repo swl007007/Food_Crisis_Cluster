@@ -81,6 +81,10 @@
   - Limits: concurrency 4, batch 1; 20 × 6 h request-start windows; hard kill 22,200 s per invocation (≤ 123 h 20 min
     total); one invocation at a time.
   - Cumulative calls 59,576; cells ≤ 4.95e11 including re-requests; output ≤ 1 GB outside Dropbox.
+    Correction: ≤ 4.95e11 is a geometry-based estimate, not an unconditional bound. Σ lattice boxes is 7.6056e11, and
+    repeats are not limited to 1,735. The unconditional guard is call cap × the largest band-px guard = 1.35261e14
+    band-px (about 1.0485e12 cell-equivalent); see evidence/p1/c-full-20261010/ipcch-alphaearth-full-volume-accounting-20261010.json
+    and C-FULL-ENVELOPE.md. No limit changed.
   - Draft manifest body 63d0c7ab… (pieces and plan unchanged). Tests: 108 full OK; supervisor 19-test PASS.
   - Doc: evidence/p1/c-full-envelope/C-FULL-ENVELOPE.md.
 - 2026-10-11 Full D30 extraction (release codex-D30-full-20261010) invocation 1 is running.

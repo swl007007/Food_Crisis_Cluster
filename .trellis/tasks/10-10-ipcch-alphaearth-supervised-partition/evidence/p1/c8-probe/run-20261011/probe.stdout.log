@@ -1,0 +1,31 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 1, "utc": "2026-10-11T06:00:55Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.91, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T06:00:55Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.26, "response_bytes": 140}
+{"n": 10, "utc": "2026-10-11T06:00:56Z", "purpose": "2637|w003_005", "attempt": 1, "status": "error", "seconds": 0.35, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 11, "utc": "2026-10-11T06:01:13Z", "purpose": "3023|w000_001", "attempt": 1, "status": "ok", "seconds": 17.34, "response_bytes": 3834}
+{"n": 12, "utc": "2026-10-11T06:01:17Z", "purpose": "3286|w002_001", "attempt": 1, "status": "ok", "seconds": 21.2, "response_bytes": 3830}
+{"n": 13, "utc": "2026-10-11T06:01:33Z", "purpose": "3145|w004_001", "attempt": 1, "status": "ok", "seconds": 37.25, "response_bytes": 3827}
+{"n": 14, "utc": "2026-10-11T06:01:34Z", "purpose": "2788|w004_003", "attempt": 1, "status": "ok", "seconds": 38.71, "response_bytes": 3807}
+{"n": 15, "utc": "2026-10-11T06:01:37Z", "purpose": "3168|w003_003", "attempt": 1, "status": "ok", "seconds": 41.35, "response_bytes": 3850}
+{"n": 16, "utc": "2026-10-11T06:01:39Z", "purpose": "2636|w005_005", "attempt": 1, "status": "ok", "seconds": 44.16, "response_bytes": 3869}
+{"n": 17, "utc": "2026-10-11T06:01:40Z", "purpose": "4525|w007_001", "attempt": 1, "status": "error", "seconds": 0.17, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 18, "utc": "2026-10-11T06:01:40Z", "purpose": "4525|w007_001", "attempt": 2, "status": "error", "seconds": 0.64, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 19, "utc": "2026-10-11T06:01:41Z", "purpose": "4673|w005_000", "attempt": 1, "status": "error", "seconds": 0.59, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 20, "utc": "2026-10-11T06:01:42Z", "purpose": "2964|w002_001", "attempt": 1, "status": "ok", "seconds": 46.35, "response_bytes": 4098}
+{"n": 21, "utc": "2026-10-11T06:01:49Z", "purpose": "3373|w000_002", "attempt": 1, "status": "ok", "seconds": 36.41, "response_bytes": 3964}
+{"n": 22, "utc": "2026-10-11T06:01:51Z", "purpose": "3395|w001_001", "attempt": 1, "status": "ok", "seconds": 34.52, "response_bytes": 3884}
+{"n": 23, "utc": "2026-10-11T06:01:53Z", "purpose": "2637|w003_005", "attempt": 2, "status": "ok", "seconds": 57.68, "response_bytes": 4091}
+{"n": 24, "utc": "2026-10-11T06:02:08Z", "purpose": "4673|w005_000", "attempt": 2, "status": "ok", "seconds": 27.49, "response_bytes": 3864}
+{"n": 25, "utc": "2026-10-11T06:02:17Z", "purpose": "3695|w003_002", "attempt": 1, "status": "ok", "seconds": 44.24, "response_bytes": 3840}
+{"n": 26, "utc": "2026-10-11T06:02:21Z", "purpose": "4316|w003_004", "attempt": 1, "status": "ok", "seconds": 44.02, "response_bytes": 3843}
+{"n": 27, "utc": "2026-10-11T06:02:22Z", "purpose": "100002|w001_003", "attempt": 1, "status": "ok", "seconds": 32.57, "response_bytes": 3935}
+{"n": 28, "utc": "2026-10-11T06:02:22Z", "purpose": "4291|w004_003", "attempt": 1, "status": "ok", "seconds": 47.92, "response_bytes": 3941}
+{"n": 29, "utc": "2026-10-11T06:02:23Z", "purpose": "100002|w001_005", "attempt": 1, "status": "ok", "seconds": 32.02, "response_bytes": 3854}
+{"n": 29, "utc": "2026-10-11T06:02:27Z", "purpose": "100001|w001_002", "attempt": 1, "status": "ok", "seconds": 45.26, "response_bytes": 3921}
+{"n": 29, "utc": "2026-10-11T06:02:36Z", "purpose": "100228|w012_012", "attempt": 1, "status": "ok", "seconds": 42.68, "response_bytes": 3868}
+{"n": 29, "utc": "2026-10-11T06:02:45Z", "purpose": "100272|w003_000", "attempt": 1, "status": "ok", "seconds": 27.8, "response_bytes": 3855}
+{"n": 29, "utc": "2026-10-11T06:02:45Z", "purpose": "100321|w000_000", "attempt": 1, "status": "ok", "seconds": 24.05, "response_bytes": 3875}
+{"n": 29, "utc": "2026-10-11T06:02:50Z", "purpose": "100228|w019_001", "attempt": 1, "status": "ok", "seconds": 41.65, "response_bytes": 3932}
+{"n": 29, "utc": "2026-10-11T06:03:04Z", "purpose": "101246|w001_003", "attempt": 1, "status": "ok", "seconds": 42.38, "response_bytes": 3835}
+{"n": 29, "utc": "2026-10-11T06:03:05Z", "purpose": "100462|w002_001", "attempt": 1, "status": "ok", "seconds": 43.23, "response_bytes": 3918}
+{"calls_used": 29, "done": 23, "remaining": 1, "complete": false, "stopped": null}

@@ -1,0 +1,2 @@
+{"n": 118, "utc": "2026-10-11T00:10:44Z", "purpose": "5|w012_009", "attempt": 1, "status": "error", "seconds": 1.18, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 631, "utc": "2026-10-11T01:16:40Z", "purpose": "21|w003_001", "attempt": 1, "status": "error", "seconds": 8.72, "response_bytes": 0, "error": "Ok"}

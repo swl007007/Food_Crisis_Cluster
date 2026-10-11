@@ -1,0 +1,9 @@
+{
+  "observed_utc": "2026-10-11T00:09:50.540204+00:00",
+  "source": "p1-c-full-20261010/out/request_log.jsonl",
+  "successful_piece_calls": 105,
+  "sum_successful_piece_seconds": 2490.98,
+  "method": "Reconstruct client operation intervals from completion utc and elapsed seconds, trimming 1s timestamp and .01s duration rounding. Assumes negligible delay between elapsed capture and timestamp capture.",
+  "scope": "Supports four overlapping client operations (EE call plus response serialization), not direct server execution concurrency or a matched speedup estimate.",
+  "timestamp_precision_adjusted_overlap": 4
+}

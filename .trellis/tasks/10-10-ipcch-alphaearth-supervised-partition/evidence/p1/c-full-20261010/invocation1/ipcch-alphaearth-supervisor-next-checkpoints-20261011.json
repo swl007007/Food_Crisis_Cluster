@@ -1,0 +1,60 @@
+{
+  "checked_utc": "2026-10-11T00:24:26.197014+00:00",
+  "scope": "Supervisor checkpoint map, not a new specification or execution release",
+  "spec_sha256": {
+    "prd.md": "89cd2f8aed455cbe4480743b1ed96aff34beefd7171f93986e99a7da32ea9bfb",
+    "design.md": "b18d1a7fc2860dd2860c0fb9e98decc945a11f84188314640a98a851d1295a60",
+    "implement.md": "44ef48a226eeca7611679711af4e13ad4aff43d06d55886b9217b9bbde8c0c87",
+    "decisions.md": "e52f04e87c064b981eb0d8e640e3f59b70f7769a545ff6673a92f7ee13891216",
+    "execution-handoff.md": "128940720485ff5539bd1e03faaad18438372cccc4e901933e4118792359ae6c"
+  },
+  "current_stage": "P1 D30 full extraction invocation1 active; c8 sample conditionally released only after normal invocation1 exit; no model fits",
+  "completion_unproven": true,
+  "next_checkpoints": [
+    {
+      "stage": "P1 completed extraction and D30 preparation",
+      "evidence": [
+        "All57801 frozen pieces complete for6227 admins, source/grid/recipe bindings and numeric checks",
+        "Offline A/S/Q reaggregation,128 moments,raw80pct coverage and per-country/cohort routes,technical errors separate",
+        "Fresh D30 preflight/local prepare/ingest/attach; stage all consumed source bytes,full code/config/runtime/prepared inventory",
+        "Canonical42695 keys,6224 admins; main17322/16919/16413/14087 and4092 supplement each;296/424 feature order",
+        "Concrete model inventory B1 38+B0 23=61 quartets /244 scalar and accepted compute budget"
+      ],
+      "release_boundary": "No project-data fit before supervisor accepts this evidence"
+    },
+    {
+      "stage": "P2 forward development and map freeze",
+      "evidence": [
+        "HistoricalB1 19 plus developmentB0 8 quartets with actual X/y/weight/key identities",
+        "Unique honest OOT providers,all9 recipes perH,two independent2021/2022 contexts with guards before ranking",
+        "Selected recipe or exactB2 perH;final map learned only through2022-12 with immutable map/selection/membership/source identity"
+      ],
+      "release_boundary": "Record and check map freeze before main G predictions/scores"
+    },
+    {
+      "stage": "P3 annual evaluation",
+      "evidence": [
+        "Four2023bridge quartets fill only22 premain slots;actual formalB1 thereafter,one provider perkey",
+        "11main+4supplement quartets perB0/B1,annual24monthhalf-life correction updates,fixed maps,declared sparse/AE-missing routes",
+        "All122main+16supplement scheduledfolds,complete keyed raw/projected/phase and persistence lineage;61totalquartet bound"
+      ]
+    },
+    {
+      "stage": "P4 results/replay/delivery",
+      "evidence": [
+        "Each H independently:G-B2 mainF1>=.005,corrected lower>0,annualnonnegative signs;separate allguards,negative/NA/fallback results retained",
+        "20k pairedcountry draws,seed42,fixedfourH 1.25th linearpercentile,allreplicates retained",
+        "Independent zeroXGBfit replay:all saved predictions/identities/selection/metrics/bootstrap and offline descriptorreaggregation",
+        "Final inventory afterreport/replay;Chinese meetingnote mapscoverage/year effects,README reproduction andlimitations",
+        "After resultacceptance:existing MLflowfamily+Summary nine metrics+externalcomposite models+rowfree datasets;frozenplan,backup,apply,verify,no-op,historicalunchanged"
+      ],
+      "release_boundary": "No scientific-positive-result requirement; no lifecycleclose/push/merge implied"
+    }
+  ],
+  "minor_documentation_for_next_scheduled_checkpoint": [
+    "P0 execution-acceptance checkbox still unchecked despite acceptance;update administratively againstexisting evidence",
+    "PROGRESS earlier held-envelope bullet still states <=4.95e11 cells;append explicit correction/reference to retained unconditional guard receipt",
+    "implement planned extraction command predates D30 runner/ingest;document actual reproducible command spelling without changingscience"
+  ],
+  "no_code_change_requested": true
+}

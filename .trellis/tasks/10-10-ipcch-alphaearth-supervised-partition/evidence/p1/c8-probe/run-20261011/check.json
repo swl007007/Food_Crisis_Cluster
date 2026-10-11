@@ -1,0 +1,26 @@
+{
+ "manifest_sha256": "5eab5d21a6ed256fed7c30afaebb1fb45e040ee83908f91b54eecf267ea099d4",
+ "release_id": "codex-D30-c8-probe-20261011",
+ "pieces": 24,
+ "done": 23,
+ "pending": 1,
+ "done_cells": 321804491.7171401,
+ "pending_cells": 16000045.713095399,
+ "ledger_statuses": {
+  "ok": 23,
+  "failed": 1
+ },
+ "call_reservations": 29,
+ "call_cap": 50,
+ "invocations": 0,
+ "max_invocations": 1,
+ "summed_invocation_seconds": 131.5,
+ "observed_cells_per_wall_second": 2446624.2812829018,
+ "projected_remaining_wall_s": 6.53964151157107,
+ "projected_within_invocation_cap": true,
+ "piece_seconds_max": 58.043,
+ "last_stop": null,
+ "complete": false,
+ "violations": [],
+ "n_violations": 0
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "code_commit": "cb07f2657236843eb7a1b992a4e2fccbc245d240",
+  "body_sha256": "5eab5d21a6ed256fed7c30afaebb1fb45e040ee83908f91b54eecf267ea099d4",
+  "n": 24,
+  "sources_verified": 9,
+  "pieces_identical_to_full": true,
+  "piece_ids_disjoint_small": true,
+  "geometry_candidate_duplicates_with_small": [],
+  "geometry_candidate_duplicates_with_earlier_full_half": [
+    [
+      28892,
+      "2636|w003_005"
+    ]
+  ],
+  "probe_unique_geometry_candidate_count": 24,
+  "limits": {
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "concurrency": 8,
+    "batch_size": 1,
+    "max_high_level_calls": 50,
+    "wall_budget_s": 600,
+    "outer_timeout_s": 900,
+    "max_consecutive_failures": 2,
+    "max_failure_fraction": 0.25,
+    "min_attempts_for_fraction": 4,
+    "max_pixels": 2270400000
+  },
+  "total_expected_cells": 337804537.43023545,
+  "total_bbox_cells": 376356000,
+  "conditional_only": "Run after normal full invocation 1 exit and clean checker; confirm no active EE runner and no selected request already called at start."
+}

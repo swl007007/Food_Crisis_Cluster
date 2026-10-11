@@ -1,0 +1,29 @@
+{
+  "utc": "2026-10-11T02:26:15.512949+00:00",
+  "kind": "read-only interface review for possible post-probe production decision",
+  "head": "cb07f2657236843eb7a1b992a4e2fccbc245d240",
+  "sources_sha256": {
+    "scripts/ee_pilot_c.py": "f5c59f9dbd4330f10b131d2787523c58312901d7d26613ffd2c391cb750f9c7e",
+    "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b"
+  },
+  "observations": [
+    {
+      "file": "scripts/ee_pilot_c.py",
+      "lines": "347-364",
+      "fact": "Existing output directory rejects another manifest before EE calls; invocation and call budgets are per output directory."
+    },
+    {
+      "file": "ipcch_alphaearth/descriptors.py",
+      "lines": "104-144",
+      "fact": "Ingest accepts one released full-plan manifest and its complete bound outputs; partial or sampled manifests do not accumulate into an extraction stage."
+    },
+    {
+      "file": "scripts/check_c_outputs.py",
+      "lines": "60-90",
+      "fact": "Checker reports budget counts and projection, but exit status is numerical/binding violations only; checkpoint reviewer must compare counts/caps and normal runner stop separately."
+    }
+  ],
+  "decision": "Existing full/c8 releases unchanged. Run the released c8 probe only at its established boundary. Evaluate material benefit before requesting any migration implementation. Continuing c4 needs no identity migration. A different production identity cannot reuse c4 pieces by relabeling. No code changes or extra cloud work authorized by this review."
+}

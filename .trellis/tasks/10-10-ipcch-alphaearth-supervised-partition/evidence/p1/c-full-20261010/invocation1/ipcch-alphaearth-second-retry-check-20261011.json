@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "utc": "2026-10-11T01:18:06.545773+00:00",
+  "piece_id": "21|w003_001",
+  "file_sha256": "78f6289e6c9f56e2ec3fd3b7563810d99f2b4ba835ef65080d6a66c5e03767a7",
+  "response_sha256": "ba333793cbf1ea630127d539c040810c4c2313217bb649907769678ef44d778c",
+  "binding_valid": true,
+  "numeric_complete": true,
+  "rank_area_relative_error": 0.0,
+  "request_records": [
+    {
+      "n": 631,
+      "utc": "2026-10-11T01:16:40Z",
+      "purpose": "21|w003_001",
+      "attempt": 1,
+      "status": "error",
+      "seconds": 8.72,
+      "response_bytes": 0,
+      "error": "Ok"
+    },
+    {
+      "n": 634,
+      "utc": "2026-10-11T01:16:47Z",
+      "purpose": "21|w003_001",
+      "attempt": 2,
+      "status": "ok",
+      "seconds": 6.26,
+      "response_bytes": 3858
+    }
+  ],
+  "interpretation": "Error text only Ok; no inferred cause. One authorized retry succeeded; retained output passed scoped identity/numerical check."
+}

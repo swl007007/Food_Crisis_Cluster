@@ -99,10 +99,15 @@ These are the intended small CLI, **not commands to run during planning**. P0 mu
 /home/swl007007/.venvs/ipcch-geo/bin/python -m unittest discover -s tests
 /home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth preflight --run "$RUN_DIR"
 /home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth prepare --run "$RUN_DIR" --local-only
-# Cloud releases only, using separately frozen request manifests:
-/opt/earthengine/bin/python scripts/extract_alphaearth.py --request "$PILOT_REQUEST"
-/opt/earthengine/bin/python scripts/extract_alphaearth.py --request "$FULL_REQUEST"
-/home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth prepare --run "$RUN_DIR"
+# D30 plan + sha-bound manifests (local; release_id null until a supervisor release):
+PYTHONPATH=.:scripts /home/swl007007/.venvs/ipcch-geo/bin/python scripts/build_c_production.py --geometry "$GEOMETRY_SHP" --list-images "$LIST_IMAGES_JSON" --out "$PLAN_DIR"
+# Cloud releases only (direct EE computation returned locally; one invocation at a time; resumable in the same OUT_DIR):
+timeout "$OUTER_TIMEOUT_S" /opt/earthengine/bin/python scripts/ee_pilot_c.py --request "$RELEASED_MANIFEST" --out "$OUT_DIR"
+/opt/earthengine/bin/python scripts/check_c_outputs.py --request "$RELEASED_MANIFEST" --out "$OUT_DIR" --json "$CHECK_JSON"
+# After a complete, clean extraction (fresh run under the current config):
+/home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth ingest-extraction --run "$RUN_DIR" --plan "$PLAN_CSV" --manifest "$RELEASED_MANIFEST" --outputs "$OUT_DIR"
+/home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth prepare --run "$RUN_DIR"     # attach_descriptors
+# (scripts/extract_alphaearth.py and scripts/ee_pilot.py are the superseded native-grid recipe: comparison only, per D30.)
 # Project-data fitting release only:
 /home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth develop --run "$RUN_DIR"
 /home/swl007007/.venvs/ipcch-geo/bin/python -m ipcch_alphaearth freeze-map --run "$RUN_DIR"
