@@ -1,0 +1,50 @@
+{
+  "commit": "8b00a88235e6c7bd69d53480fdc4c97f318a1e4e",
+  "scope": "Read-only bounded speed-pilot checkpoint; no lifecycle audit or cloud operation",
+  "result": "HOLD for offline connected fixes",
+  "findings": [
+    {
+      "file": "IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py",
+      "line": 136,
+      "issue": "Manifest request hash and adaptive plan file SHA not validated; mutable fresh expected_cells accepted into throughput",
+      "required": "Verify existing release/body/plan/output binding before scoring; pin remaining workload"
+    },
+    {
+      "file": "IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py",
+      "line": 159,
+      "issue": "CANCELLED tasks can receive integrity PASS with correct CSV; final-validation timestamp precedes reference checks",
+      "required": "Require expected tasks COMPLETED, valid timestamps; record time after all gates"
+    },
+    {
+      "file": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py",
+      "line": 185,
+      "issue": "Fresh monitor SDK process has no explicit network deadline; a hung poll can defer 3600s cancellation indefinitely",
+      "required": "Explicit finite EE/GCS timeouts; cancel check before further polling and reserved cancellation capacity"
+    },
+    {
+      "file": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py",
+      "line": 191,
+      "issue": "SDK getTaskStatus([two IDs]) sends two HTTPGETs, counted as one grouped status call",
+      "required": "Per-request accounting or explicit high-level vs actual request distinction and adequate reserves"
+    },
+    {
+      "file": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py",
+      "line": 242,
+      "issue": "Interrupted download leaves files without durable per-object provenance; rerun refuses existing files",
+      "required": "Incremental object provenance, verify-and-skip resume, cumulative read cap"
+    }
+  ],
+  "kept_correct": [
+    "New files only; original D30 science code unchanged",
+    "Actual SDK graph constructs offline",
+    "Pin check before EE import/init on submission path",
+    "All collections size checked before first taskstart",
+    "INTENT before start and AMBIGUOUS/HOLD on error",
+    "Exact selected pilot 107 items /100fresh; freshcells4980359930.180809",
+    "Hash-check downloaded CSV; duplicate/missing/null refusal",
+    "Fresh partialadminpieces not treated as completeadmin descriptors",
+    "No startup term counted twice; observed overlap included"
+  ],
+  "independent_tests": "tests.test_speed_pilot 10 passed in scoring scout",
+  "no_cloud_calls": true
+}

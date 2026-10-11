@@ -161,3 +161,13 @@
   - Tests: 10 focused / 60 total OK.
   - Evidence: evidence/p1/whole-admin-batch/speed-pilot-offline/.
   - The pilot write still needs USER authorization.
+- 2026-10-11 Speed-pilot repair after the narrow review of 8b00a88 (offline):
+  - Validator: bound to the released manifest, MANIFEST pin, plan sha and pinned remaining workload; requires COMPLETED
+    tasks with monotonic timestamps; clock stops after all gates; exit 1 on failure.
+  - EE/GCS socket timeouts.
+  - Per-ID counted status reads (120 s, ≤ 75), cancel reserve, failure handoff; known ids cancelled even with an
+    ambiguous start; lookup removed.
+  - Resumable download with record-before-rename.
+  - Body f66a1be8… (selection and plan unchanged).
+  - Tests: 15 / 65 focused OK.
+  - Evidence: evidence/p1/whole-admin-batch/speed-pilot-offline/r2/REPAIR-8b00a88.md.

@@ -1,0 +1,393 @@
+test_partial_failure_keeps_provenance_and_resume_skips_verified_objects (tests.test_speed_pilot.Download.test_partial_failure_keeps_provenance_and_resume_skips_verified_objects) ... /mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py:275: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/tmpsexp3b_i/out/gcs_reads.log' mode='r' encoding='UTF-8'>
+  used = sum(1 for _ in open(log)) if log.exists() else 0
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_cancel_reserve_kept_when_call_budget_is_tight (tests.test_speed_pilot.Monitor.test_cancel_reserve_kept_when_call_budget_is_tight) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 3, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 4, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 5, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 6, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 7, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 8, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 9, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 10, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 11, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+ok
+test_failing_status_rounds_trigger_bounded_cancel_handoff (tests.test_speed_pilot.Monitor.test_failing_status_rounds_trigger_bounded_cancel_handoff) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 3, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 4, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 5, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 6, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 7, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 8, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 9, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+ok
+test_per_id_counted_reads_and_cancel_only_own_nonterminal_after_60_min (tests.test_speed_pilot.Monitor.test_per_id_counted_reads_and_cancel_only_own_nonterminal_after_60_min) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 3, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 4, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 5, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 6, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 7, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 8, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 9, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 10, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 11, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 12, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 13, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 14, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 15, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 16, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 17, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 18, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 19, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 20, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 36}
+{"n": 21, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 22, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 23, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 24, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 25, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 26, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 27, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 28, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 29, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 30, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 31, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 32, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 33, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 34, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 35, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 36, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 37, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 38, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 39, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 40, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 41, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 42, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 43, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 44, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 45, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 36}
+ok
+test_unknown_state_counts_as_nonterminal_and_both_cancelled_once (tests.test_speed_pilot.Monitor.test_unknown_state_counts_as_nonterminal_and_both_cancelled_once) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 3, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 4, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 5, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 6, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 7, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 8, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 9, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 10, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 11, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 12, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 13, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 14, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 15, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 16, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 17, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 18, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 19, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 20, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 21, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 22, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 23, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 24, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 25, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 26, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 27, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 28, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 29, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 30, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 31, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 32, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 33, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 34, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 35, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 36, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 37, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 38, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 39, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 40, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 41, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 42, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 43, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 44, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 45, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 46, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 47, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 48, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 49, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 50, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 51, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 52, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 53, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 54, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 55, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 56, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 57, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 58, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 59, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 60, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 61, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 62, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 63, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 64, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 65, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 66, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 36}
+{"n": 67, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 68, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 69, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 70, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 71, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 72, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 73, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+ok
+test_systematic_balanced_deterministic_and_group_maxpixels (tests.test_speed_pilot.Selection.test_systematic_balanced_deterministic_and_group_maxpixels) ... ok
+test_graph_one_sums_reduceregion_per_item_constant_group_maxpixels_and_timeout_transport (tests.test_speed_pilot.Submit.test_graph_one_sums_reduceregion_per_item_constant_group_maxpixels_and_timeout_transport) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:40:58Z", "purpose": "start ae2017d30_b76e4c60af_A_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 4, "utc": "2026-10-11T13:40:58Z", "purpose": "start ae2017d30_b76e4c60af_B_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+ok
+test_loader_refuses_unreleased_too_many_tasks_missing_limits_duplicates (tests.test_speed_pilot.Submit.test_loader_refuses_unreleased_too_many_tasks_missing_limits_duplicates) ... ok
+test_oversized_dag_refuses_before_any_start_or_intent (tests.test_speed_pilot.Submit.test_oversized_dag_refuses_before_any_start_or_intent) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+ok
+test_partial_ambiguous_start_holds_and_known_id_is_still_cancelled_at_60_min (tests.test_speed_pilot.Submit.test_partial_ambiguous_start_holds_and_known_id_is_still_cancelled_at_60_min) ... {"n": 1, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:40:58Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:40:58Z", "purpose": "start ae2017d30_b76e4c60af_A_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 4, "utc": "2026-10-11T13:40:58Z", "purpose": "start ae2017d30_b76e4c60af_B_a1", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 5, "utc": "2026-10-11T13:40:58Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 6, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 7, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 8, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 9, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 10, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 11, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 12, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 13, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 14, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 15, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 16, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 17, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 18, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 19, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 20, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 21, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 22, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 23, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 24, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 25, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 26, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 27, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 28, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 29, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 30, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 31, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 32, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 33, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 34, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 35, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 36, "utc": "2026-10-11T13:40:58Z", "purpose": "cancelTask T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 37, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 38, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 39, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 40, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 41, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 42, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 43, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 44, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 45, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 46, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 47, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 48, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 49, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 50, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 51, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 52, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 53, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 54, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 55, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 56, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 57, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 58, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 59, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 60, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 61, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 62, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 63, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 64, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 65, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 66, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 67, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 68, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 69, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 70, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 71, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 72, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 73, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 74, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 75, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 76, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 77, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 78, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 79, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 80, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+{"n": 81, "utc": "2026-10-11T13:40:58Z", "purpose": "getTaskStatus T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+ok
+test_cancelled_or_nonmonotonic_task_is_not_a_pass (tests.test_speed_pilot.Validate.test_cancelled_or_nonmonotonic_task_is_not_a_pass) ... ok
+test_failed_gate_exits_nonzero_and_keeps_report (tests.test_speed_pilot.Validate.test_failed_gate_exits_nonzero_and_keeps_report) ... /mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+ok
+test_plan_or_manifest_tamper_refused (tests.test_speed_pilot.Validate.test_plan_or_manifest_tamper_refused) ... ok
+test_rows_exactly_once_and_null_refused (tests.test_speed_pilot.Validate.test_rows_exactly_once_and_null_refused) ... /mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+ok
+test_success_passes_with_pinned_workload_and_exit_zero (tests.test_speed_pilot.Validate.test_success_passes_with_pinned_workload_and_exit_zero) ... /mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:50: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.161s
+
+OK
+{
+ "integrity": "FAIL",
+ "error": "task A did not end COMPLETED (CANCELLED)",
+ "all_gates_pass": false
+}
+{
+ "integrity": "FAIL",
+ "error": "task A timestamps are missing or not monotonic (3000, 2000, 4000)",
+ "all_gates_pass": false
+}
+{
+ "integrity": "PASS",
+ "rows": 6,
+ "gates": {
+  "5": {
+   "role": "reference",
+   "A_rel": 9.999999999177334e-07,
+   "S_rel": 9.999999998899778e-07,
+   "Q_rel": 9.999999999940612e-07,
+   "mean_abs": 0.0,
+   "sd_abs": 0.0,
+   "coverage_abs": 9.090909089959354e-07,
+   "route_new": "usable",
+   "route_ref": "usable",
+   "pass": false
+  }
+ },
+ "all_gates_pass": false,
+ "timing": {
+  "per_task": {
+   "A": {
+    "state": "COMPLETED",
+    "queue_s": 2.0,
+    "running_s": 1.0,
+    "fresh_cells": 15.0,
+    "rate": 15.0,
+    "batch_eecu_usage_seconds": null
+   },
+   "B": {
+    "state": "COMPLETED",
+    "queue_s": 2.0,
+    "running_s": 1.0,
+    "fresh_cells": 15.0,
+    "rate": 15.0,
+    "batch_eecu_usage_seconds": null
+   }
+  },
+  "overlap_s": 1.0,
+  "paired_running_wall_s": 1.0,
+  "observed_concurrency": 2.0,
+  "rate_a_paired_running": 30.0,
+  "rate_b_submit_to_validated": 1.6743631011582245e-08,
+  "rate_c_slower_individual": 15.0,
+  "projection_hours": {
+   "a": 9259.25925925926,
+   "b": 16590056098681.803,
+   "c_times_observed_concurrency": 9259.25925925926
+  },
+  "remaining_cells": 1000000000.0,
+  "target": {
+   "cells_per_s_24h": 11574.074074074075,
+   "cells_per_s_22h_compute": 12626.262626262625
+  }
+ }
+}
+{
+ "integrity": "FAIL",
+ "error": "plan bytes differ from the manifest's adaptive_plan_sha256",
+ "all_gates_pass": false
+}
+{
+ "integrity": "PASS",
+ "rows": 6,
+ "gates": {
+  "5": {
+   "role": "reference",
+   "A_rel": 0.0,
+   "S_rel": 0.0,
+   "Q_rel": 0.0,
+   "mean_abs": 0.0,
+   "sd_abs": 0.0,
+   "coverage_abs": 0.0,
+   "route_new": "usable",
+   "route_ref": "usable",
+   "pass": true
+  }
+ },
+ "all_gates_pass": true,
+ "timing": {
+  "per_task": {
+   "A": {
+    "state": "COMPLETED",
+    "queue_s": 2.0,
+    "running_s": 1.0,
+    "fresh_cells": 15.0,
+    "rate": 15.0,
+    "batch_eecu_usage_seconds": null
+   },
+   "B": {
+    "state": "COMPLETED",
+    "queue_s": 2.0,
+    "running_s": 1.0,
+    "fresh_cells": 15.0,
+    "rate": 15.0,
+    "batch_eecu_usage_seconds": null
+   }
+  },
+  "overlap_s": 1.0,
+  "paired_running_wall_s": 1.0,
+  "observed_concurrency": 2.0,
+  "rate_a_paired_running": 30.0,
+  "rate_b_submit_to_validated": 1.6743631010961863e-08,
+  "rate_c_slower_individual": 15.0,
+  "projection_hours": {
+   "a": 9259.25925925926,
+   "b": 16590056099296.494,
+   "c_times_observed_concurrency": 9259.25925925926
+  },
+  "remaining_cells": 1000000000.0,
+  "target": {
+   "cells_per_s_24h": 11574.074074074075,
+   "cells_per_s_22h_compute": 12626.262626262625
+  }
+ }
+}

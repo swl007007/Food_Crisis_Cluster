@@ -8,8 +8,13 @@ technical failure, never low coverage). Gates fixed in advance (SPEED-PILOT-PROP
 Timing (task status timestamps + local ledger/download records; fresh cells only in every rate):
   (a) paired RUNNING-wall rate, (b) submit-to-final-validation rate, (c) slower task's individual RUNNING rate, plus the
   observed overlap of the two RUNNING intervals, and remaining-work projections for each. No startup term is added.
+Before anything is processed: the released manifest is re-verified (``ee_batch_c.load_released``: body sha256, release
+id, D30 pins), bound to the output directory (MANIFEST.sha256), the plan bytes must equal ``adaptive_plan_sha256``, the
+remaining workload comes from the manifest, every expected task must be SUBMITTED with a known id and end COMPLETED with
+monotonic timestamps and no unknown state, and every downloaded object must match its recorded sha256. The
+submit-to-validated clock stops only after every check and gate. Exit 1 when integrity or any gate fails (report kept).
 Usage: PYTHONPATH=.:scripts python scripts/validate_speed_pilot.py --request M --out RUN_OUT --full-run DIR
-       --interactive-run DIR --plan ADAPTIVE_PLAN --remaining-cells 3.9887e11
+       --interactive-run DIR --plan ADAPTIVE_PLAN
 """
 
 from __future__ import annotations
@@ -27,6 +32,10 @@ from ipcch_alphaearth import aemoments
 from ipcch_alphaearth.contract import load_contract
 from ipcch_alphaearth.errors import TechnicalError
 from ipcch_alphaearth.extraction import check_piece_binding, parse_export_csv
+
+import ee_batch_c as ebc
+
+KNOWN_STATES = {"UNSUBMITTED", "READY", "RUNNING", "COMPLETED", "FAILED", "CANCEL_REQUESTED", "CANCELLED"}
 
 B = aemoments.BANDS
 VALS = ["valid_area", *[f"S_{b}" for b in B], *[f"Q_{b}" for b in B]]
@@ -65,12 +74,18 @@ def descriptor(m: dict, area: float, contract: dict) -> dict:
     return aemoments.descriptor(merged, area, ae["coverage_threshold"], float(ae["variance_cancellation_tolerance"]))
 
 
+def nan_equal_diff(x, y) -> float:
+    """Max |x - y|; NaN on both sides (below-coverage descriptors) counts as equal, NaN on one side as infinite."""
+    x, y = np.asarray(x, float), np.asarray(y, float)
+    d = np.where(np.isnan(x) & np.isnan(y), 0.0, np.abs(x - y))
+    return float(np.max(np.where(np.isnan(d), np.inf, d)))
+
+
 def compare(new: dict, ref: dict, area: float, contract: dict, gate: dict) -> dict:
     rel = lambda x, y: float(np.max(np.abs(np.asarray(x) - np.asarray(y)) / np.maximum(np.abs(np.asarray(y)), 1e-300)))
     dn, dr = descriptor(new, area, contract), descriptor(ref, area, contract)
     out = {"A_rel": rel(new["A"], ref["A"]), "S_rel": rel(new["S"], ref["S"]), "Q_rel": rel(new["Q"], ref["Q"]),
-           "mean_abs": float(np.max(np.abs(np.array(dn["mean"]) - np.array(dr["mean"])))),
-           "sd_abs": float(np.max(np.abs(np.array(dn["sd"]) - np.array(dr["sd"])))),
+           "mean_abs": nan_equal_diff(dn["mean"], dr["mean"]), "sd_abs": nan_equal_diff(dn["sd"], dr["sd"]),
            "coverage_abs": abs(dn["coverage"] - dr["coverage"]), "route_new": dn["route_reason"], "route_ref": dr["route_reason"]}
     out["pass"] = (out["A_rel"] <= gate["A"] and max(out["S_rel"], out["Q_rel"]) <= gate["SQ"]
                    and max(out["mean_abs"], out["sd_abs"]) <= gate["desc"] and out["coverage_abs"] <= gate["coverage"]
@@ -96,18 +111,42 @@ def sha(path: Path) -> str:
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def timing(req: dict, out: Path, got: pd.DataFrame, validated_epoch: float, remaining: float) -> dict:
+def task_states(req: dict, out: Path) -> dict:
+    """Every expected task SUBMITTED with a known id, final state COMPLETED, no unknown state, monotonic timestamps."""
     ledger = [json.loads(x) for x in (out / "ledger.jsonl").read_text().splitlines()]
+    if any(r["state"] in ("AMBIGUOUS", "HOLD_HANDOFF", "CANCEL_REQUESTED", "CANCEL_FAILED") for r in ledger):
+        raise TechnicalError("ledger shows an ambiguous start, a hold/handoff or a cancellation: not a successful pilot")
     sub = {r["task"]: r for r in ledger if r["state"] == "SUBMITTED"}
+    if sorted(sub) != sorted(t["name"] for t in req["tasks"]) or len({r["task_id"] for r in sub.values()}) != len(sub):
+        raise TechnicalError(f"submitted tasks {sorted(sub)} differ from the manifest's tasks")
+    ids = {r["task_id"]: t for t, r in sub.items()}
     last = {}
     for line in (out / "status.jsonl").read_text().splitlines():
-        for s in json.loads(line)["statuses"]:
-            last[s["id"]] = s
+        rec = json.loads(line)
+        if "status" not in rec:
+            continue
+        s = rec["status"]
+        if s.get("id") not in ids or s.get("state") not in KNOWN_STATES:
+            raise TechnicalError(f"status record for an unknown task or with an unknown state: {s.get('id')} {s.get('state')}")
+        last[s["id"]] = s
+    for i, t in ids.items():
+        s = last.get(i)
+        if not s or s["state"] != "COMPLETED":
+            raise TechnicalError(f"task {t} did not end COMPLETED ({s and s['state']})")
+        c, st, up = (s.get(k, 0) for k in ("creation_timestamp_ms", "start_timestamp_ms", "update_timestamp_ms"))
+        if not 0 < c <= st <= up:
+            raise TechnicalError(f"task {t} timestamps are missing or not monotonic ({c}, {st}, {up})")
+    return {"submitted": sub, "status": {ids[i]: s for i, s in last.items()}}
+
+
+def timing(req: dict, states: dict, validated_epoch: float) -> dict:
+    remaining = float(req["remaining_workload"]["cells"])
+    sub, last = states["submitted"], states["status"]
     fresh = {t["name"]: sum(it["expected_cells"] for g in t["groups"] for it in g["items"] if it["role"] == "fresh") for t in req["tasks"]}
     per, runs = {}, []
     for t in req["tasks"]:
-        s = last[sub[t["name"]]["task_id"]]
-        start, end = s.get("start_timestamp_ms", 0) / 1000.0, s.get("update_timestamp_ms", 0) / 1000.0
+        s = last[t["name"]]
+        start, end = s["start_timestamp_ms"] / 1000.0, s["update_timestamp_ms"] / 1000.0
         per[t["name"]] = {"state": s["state"], "queue_s": start - sub[t["name"]]["submitted_epoch_s"], "running_s": end - start,
                           "fresh_cells": fresh[t["name"]], "rate": fresh[t["name"]] / (end - start) if end > start else None,
                           "batch_eecu_usage_seconds": s.get("batch_eecu_usage_seconds")}
@@ -119,48 +158,61 @@ def timing(req: dict, out: Path, got: pd.DataFrame, validated_epoch: float, rema
     a = total_fresh / paired_wall
     b = total_fresh / (validated_epoch - first_submit)
     c = min(v["rate"] for v in per.values() if v["rate"])
-    concurrency = (sum(v["running_s"] for v in per.values()) / paired_wall) if paired_wall > 0 else None
+    concurrency = sum(v["running_s"] for v in per.values()) / paired_wall
     proj = lambda r: remaining / r / 3600.0
     return {"per_task": per, "overlap_s": overlap, "paired_running_wall_s": paired_wall, "observed_concurrency": concurrency,
             "rate_a_paired_running": a, "rate_b_submit_to_validated": b, "rate_c_slower_individual": c,
-            "projection_hours": {"a": proj(a), "b": proj(b), "c_times_observed_concurrency": proj(c * concurrency) if concurrency else None},
+            "projection_hours": {"a": proj(a), "b": proj(b), "c_times_observed_concurrency": proj(c * concurrency)},
+            "remaining_cells": remaining,
             "target": {"cells_per_s_24h": remaining / 86400, "cells_per_s_22h_compute": remaining / 79200}}
+
+
+def validate(req: dict, out: Path, full_run: Path, interactive_run: Path, plan_path: Path) -> dict:
+    if (out / "MANIFEST.sha256").read_text().strip() != req["request_sha256"]:
+        raise TechnicalError("output directory is not bound to this manifest")
+    if sha(plan_path) != req["adaptive_plan_sha256"] or req["remaining_workload"]["adaptive_plan_sha256"] != req["adaptive_plan_sha256"]:
+        raise TechnicalError("plan bytes differ from the manifest's adaptive_plan_sha256")
+    contract = load_contract()
+    states = task_states(req, out)
+    downloads = [json.loads(x) for x in (out / "downloads.jsonl").read_text().splitlines()]
+    for d in downloads:
+        if sha(Path(d["local"])) != d["sha256"] or not d["object"].startswith(ebc.task_prefix(req, next(t for t in req["tasks"] if t["name"] == d["task"])) + "/"):
+            raise TechnicalError(f"downloaded object {d['object']} differs from its record or lies outside its task prefix")
+    got = read_rows(req, downloads)
+    plan = pd.read_csv(plan_path, dtype={"piece_id": str, "asset_id": str, "recipe": str})
+    check_piece_binding(got, plan[plan["piece_id"].isin(set(got["piece_id"]))])
+    area = plan.groupby("admin_code")["polygon_area_m2"].first()
+    gates = {}
+    for admin, pin in req["reference_pins"]["interactive_responses"].items():
+        f = interactive_run / "out" / "responses" / pin["file"]
+        if sha(f) != pin["sha256"]:
+            raise TechnicalError(f"reference input {f} differs from its pin")
+        gates[admin] = {"role": "reference", **compare(row_moments(got, int(admin)), json_moments([f]), float(area[int(admin)]), contract, GATES["reference"])}
+    for admin, wins in req["reference_pins"]["old_windows"].items():
+        files = [full_run / "out" / "pieces" / (hashlib.sha1(w["piece_id"].encode()).hexdigest() + ".json") for w in wins]
+        for f, w in zip(files, wins):
+            if sha(f) != w["file_sha256"]:
+                raise TechnicalError(f"old window {w['piece_id']} differs from its pin")
+        gates[admin] = {"role": "reuse_validation", **compare(row_moments(got, int(admin)), json_moments(files), float(area[int(admin)]), contract, GATES["reuse_validation"])}
+    validated = time.time()  # only after every integrity check and gate
+    return {"integrity": "PASS", "rows": int(len(got)), "gates": gates, "all_gates_pass": all(g["pass"] for g in gates.values()),
+            "timing": timing(req, states, validated)}
 
 
 def main(argv=None) -> int:
     p = argparse.ArgumentParser()
     for name in ("--request", "--out", "--full-run", "--interactive-run", "--plan"):
         p.add_argument(name, required=True)
-    p.add_argument("--remaining-cells", type=float, required=True)
     a = p.parse_args(argv)
-    req = json.loads(Path(a.request).read_text())
-    out, contract = Path(a.out), load_contract()
-    downloads = json.loads((out / "downloads.json").read_text())["objects"]
-    for d in downloads:
-        if sha(Path(d["local"])) != d["sha256"]:
-            raise TechnicalError(f"downloaded object {d['local']} differs from its recorded sha256")
-    got = read_rows(req, downloads)
-    plan = pd.read_csv(a.plan, dtype={"piece_id": str, "asset_id": str, "recipe": str})
-    check_piece_binding(got, plan[plan["piece_id"].isin(set(got["piece_id"]))])
-    validated = time.time()
-    area = plan.groupby("admin_code")["polygon_area_m2"].first()
-    gates = {}
-    for admin, pin in req["reference_pins"]["interactive_responses"].items():
-        f = Path(a.interactive_run) / "out" / "responses" / pin["file"]
-        if sha(f) != pin["sha256"]:
-            raise TechnicalError(f"reference input {f} differs from its pin")
-        gates[admin] = {"role": "reference", **compare(row_moments(got, int(admin)), json_moments([f]), float(area[int(admin)]), contract, GATES["reference"])}
-    for admin, wins in req["reference_pins"]["old_windows"].items():
-        files = [Path(a.full_run) / "out" / "pieces" / (hashlib.sha1(w["piece_id"].encode()).hexdigest() + ".json") for w in wins]
-        for f, w in zip(files, wins):
-            if sha(f) != w["file_sha256"]:
-                raise TechnicalError(f"old window {w['piece_id']} differs from its pin")
-        gates[admin] = {"role": "reuse_validation", **compare(row_moments(got, int(admin)), json_moments(files), float(area[int(admin)]), contract, GATES["reuse_validation"])}
-    report = {"integrity": "PASS", "rows": int(len(got)), "gates": gates, "all_gates_pass": all(g["pass"] for g in gates.values()),
-              "timing": timing(req, out, got, validated, a.remaining_cells)}
+    req = ebc.load_released(Path(a.request))
+    out = Path(a.out)
+    try:
+        report = validate(req, out, Path(a.full_run), Path(a.interactive_run), Path(a.plan))
+    except TechnicalError as error:
+        report = {"integrity": "FAIL", "error": str(error), "all_gates_pass": False}
     (out / "validation.json").write_text(json.dumps(report, indent=1, default=float) + "\n")
     print(json.dumps(report, indent=1, default=float)[:4000])
-    return 0
+    return 0 if report["integrity"] == "PASS" and report["all_gates_pass"] else 1
 
 
 if __name__ == "__main__":

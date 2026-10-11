@@ -1,0 +1,41 @@
+{
+  "adaptive_plan": {
+    "sha256": "ae2785fe7faa97db5600b6fee064cd0bc37611f67a082e2e27dd53e71f688ab5",
+    "admins": 6227,
+    "items": 9138,
+    "whole_admin_items": 4898,
+    "split_admins": 1329,
+    "split_pieces": 4240,
+    "max_item_cells": 256017989.18963996
+  },
+  "reuse": {
+    "admins": 774,
+    "windows": 8268
+  },
+  "remaining": {
+    "admins": 5453,
+    "items": 7996,
+    "cells": 398873979414.74146
+  },
+  "fresh_pool_items": 7986,
+  "manifest_body_sha256": "f66a1be8854ef555a1fdc2abc7533da5fa51cfdf31c5c49b1ac5632bf6a57f3c",
+  "prefix": "gs://manuel-remote-sensing-rasters-645415198431/ipcch-alphaearth/speed-pilot-20261011/",
+  "task_A": {
+    "items": 53,
+    "fresh_items": 50,
+    "fresh_cells": 2418057289.2234635,
+    "nonfresh_cells": 83540027.60733362,
+    "max_item_cells": 216596380.03835133,
+    "groups": 52,
+    "inline_geometry_bytes": 687265
+  },
+  "task_B": {
+    "items": 54,
+    "fresh_items": 50,
+    "fresh_cells": 2562302640.9573455,
+    "nonfresh_cells": 245185407.7503505,
+    "max_item_cells": 254642291.3235723,
+    "groups": 52,
+    "inline_geometry_bytes": 516556
+  }
+}

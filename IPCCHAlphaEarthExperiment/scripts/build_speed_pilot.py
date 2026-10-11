@@ -119,9 +119,11 @@ def main(argv=None) -> int:
                                             "response_sha256": inv_idx.loc[i, "response_sha256"]} for i in ids]
 
     tasks = [{"name": t, "groups": group_task(chosen[chosen["task"] == t], gmap)} for t in ("A", "B")]
-    limits = {"tile_scale": 4, "deadline_ms": 120000, "sdk_retries": 0, "budget_retries": 0, "max_tasks": 2,
-              "max_body_bytes": 8_000_000, "cancel_after_s": 3600, "status_read_interval_s": 60, "max_status_reads": 75,
-              "max_cancels": 2, "max_gcs_reads": 20, "max_ee_calls": 2 + 2 + 75 + 2 + 3,
+    # EE calls: submit (init + projection + 2 starts) + monitor (init + <=75 per-ID status reads + <=2 cancels)
+    # + download (init) + 1 spare = 84; the monitor keeps the cancel reserve before every round.
+    limits = {"tile_scale": 4, "deadline_ms": 120000, "http_timeout_s": 60, "sdk_retries": 0, "budget_retries": 0,
+              "max_tasks": 2, "max_body_bytes": 8_000_000, "cancel_after_s": 3600, "status_read_interval_s": 120,
+              "max_status_reads": 75, "max_cancels": 2, "max_failed_rounds": 3, "max_gcs_reads": 20, "max_ee_calls": 84,
               "max_pixels": max(g["max_pixels_band_px"] for t in tasks for g in t["groups"])}
     body = {"kind": "batch_speed_pilot", **{k: full[k] for k in ("recipe", "grid", "grid_crs_wkt", "projection_check", "best_effort",
                                                               "project", "collection", "year")},
@@ -130,7 +132,11 @@ def main(argv=None) -> int:
             "inputs": {"geometry_shp_sha256": sha(Path(a.geometry)), "list_images_sha256": sha(Path(a.list_images)),
                        "old_manifest_body_sha256": full["request_sha256"], "old_plan_sha256": full["provenance"]["plan_sha256"],
                        "reuse_inventory_sha256": sha(Path(a.reuse_inventory))},
-            "reference_pins": pins, "limits": limits, "tasks": tasks}
+            "reference_pins": pins, "limits": limits,
+            "remaining_workload": {"admins": int(remaining["admin_code"].nunique()), "items": int(len(remaining)),
+                                   "cells": float(remaining["cells"].sum()), "adaptive_plan_sha256": plan_sha,
+                                   "reuse_admins": len(reuse_admins)},
+            "tasks": tasks}
     manifest = {**body, "request_sha256": epc.digest(body), "release_id": None}
     write_json(out / "speed_pilot_manifest.json", manifest)
 
