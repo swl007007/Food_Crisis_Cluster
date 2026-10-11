@@ -1,0 +1,4 @@
+{"utc": "2026-10-11T14:00:36Z", "task": "A", "description": "ae2017d30_f66a1be885_A_a1", "state": "INTENT", "collection_dag_bytes": 1608003, "prefix": "ipcch-alphaearth/speed-pilot-20261011/A/attempt-1"}
+{"utc": "2026-10-11T14:00:39Z", "task": "A", "description": "ae2017d30_f66a1be885_A_a1", "state": "SUBMITTED", "task_id": "PQDBYWUMO4D3GCK7ZR3JFK4M", "submitted_epoch_s": 1791727239.9559875}
+{"utc": "2026-10-11T14:00:39Z", "task": "B", "description": "ae2017d30_f66a1be885_B_a1", "state": "INTENT", "collection_dag_bytes": 1324521, "prefix": "ipcch-alphaearth/speed-pilot-20261011/B/attempt-1"}
+{"utc": "2026-10-11T14:00:43Z", "task": "B", "description": "ae2017d30_f66a1be885_B_a1", "state": "SUBMITTED", "task_id": "OM27XES4LLVSWUHW63SONSSP", "submitted_epoch_s": 1791727243.0684907}

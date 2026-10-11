@@ -1,0 +1,88 @@
+{
+  "result": "PASS: narrow cancellation-attempt checkpoint only",
+  "execution_authorized": false,
+  "full_task_or_audit_pass": false,
+  "review_utc": "2026-10-11T13:53:29.146726+00:00",
+  "repo_exact_path": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+  "base_sha": "7a4ad151eb2b52114eb347c4460f640dc1283f56",
+  "head_sha": "29eca55ffffdc7028b71b089feeba4573d8fa2ab",
+  "tree_sha": "9c7f80448e04ca734ca3f4a7e7c9460e141324d9",
+  "working_tree_clean_before_and_after": true,
+  "source_sha256": {
+    "scripts/ee_batch_c.py": "8ebe656f7a9d91e8f26767c1a94b905d6bde3b91ce340f1aec414f3fa80f2e94",
+    "scripts/validate_speed_pilot.py": "b2dac3685221fbb263b201f61a061011caf00b4a36b5781b1bfe3d17409cc4fa",
+    "tests/test_speed_pilot.py": "8c3e49394821579588d6f6d4e2c12037e9275c99b90aedf8086ff08e4e4117af",
+    "scripts/build_speed_pilot.py": "1af042e98be4fdfd1affbe98ec6b706d1eb51659d7f2280f5045dc477ebf6c48"
+  },
+  "working_sources_match_committed_blobs": true,
+  "diff_scope": [
+    "ee_batch_c.monitor cancellation-attempt accounting",
+    "validate_speed_pilot.task_states CANCEL_ATTEMPT rejection",
+    "CancelFailure offline tests"
+  ],
+  "code_evidence": {
+    "durable_reload": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py:210",
+    "reserve_before_call_and_distinct_outcomes": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py:217",
+    "handoff": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py:240",
+    "validator": "IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:117",
+    "regression_tests": "IPCCHAlphaEarthExperiment/tests/test_speed_pilot.py:260"
+  },
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/swl007007/.venvs/ipcch-geo/bin/python -m unittest tests.test_speed_pilot",
+    "exit_code": 0,
+    "count": 17,
+    "seconds": 0.141,
+    "result": "OK"
+  },
+  "independent_failure_scenario": {
+    "result": "PASS",
+    "cancel_attempts_total": 2,
+    "cancel_attempts_after_restart": 0,
+    "handoff_both_runs": true,
+    "first_calls_used": 63,
+    "restart_cumulative_calls_used": 64,
+    "socket_connect_calls": 0,
+    "fake_clients_only": true
+  },
+  "draft": {
+    "path": "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-draft-r2-20261011/speed_pilot_manifest.json",
+    "body_sha256_recomputed": "f66a1be8854ef555a1fdc2abc7533da5fa51cfdf31c5c49b1ac5632bf6a57f3c",
+    "release_id": null,
+    "bound_adaptive_plan_sha256": "ae2785fe7faa97db5600b6fee064cd0bc37611f67a082e2e27dd53e71f688ab5"
+  },
+  "prior_workload_receipt": "/tmp/ipcch-alphaearth-speed-pilot-workload-binding-20261011.json",
+  "verification_limits": {
+    "whitespace_check": "git diff --check passed",
+    "lint": "attempted; unavailable: no ruff module in frozen runtime",
+    "typecheck": "attempted; unavailable: no mypy module in frozen runtime",
+    "live_performance": "not tested",
+    "cloud_permissions": "not tested",
+    "prior_five_findings": "not re-reviewed",
+    "full_task": "not reviewed",
+    "cloud_calls_made": false,
+    "repository_edits": false
+  },
+  "findings": [],
+  "evidence": {
+    "unittest": {
+      "path": "/tmp/ipcch-alphaearth-speed-pilot-final-29eca55-tests.log",
+      "sha256": "a30e60af176679f9a1c5b2c388ed242f2cf8a902b116428ce53f00d79499ef45"
+    },
+    "scenario": {
+      "path": "/tmp/ipcch-alphaearth-speed-pilot-final-29eca55-cancel-scenario.json",
+      "sha256": "8130891b29959119f815131c2005927d56bd73938e52282dd9beb1bca7313d33"
+    },
+    "scenario_raw": {
+      "path": "/tmp/ipcch-alphaearth-speed-pilot-final-29eca55-cancel-scenario.log",
+      "sha256": "059c2c3242dc864cd437ced7404ca2eab22f0c2753f583710313ef24caf45e51"
+    },
+    "lint": {
+      "path": "/tmp/ipcch-alphaearth-speed-pilot-final-29eca55-lint.log",
+      "sha256": "b630b273a2db633ba9c6e18e4f87054fc107fbd85b8ff12ee1334158556b7852"
+    },
+    "typecheck": {
+      "path": "/tmp/ipcch-alphaearth-speed-pilot-final-29eca55-typecheck.log",
+      "sha256": "7a6e6512ce601baa117a74f18e67a738cec5929ae036a3795cd3d91b62390e5b"
+    }
+  }
+}

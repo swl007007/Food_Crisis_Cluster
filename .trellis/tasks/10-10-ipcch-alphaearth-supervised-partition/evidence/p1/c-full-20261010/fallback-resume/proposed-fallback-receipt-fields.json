@@ -1,0 +1,63 @@
+{
+ "proposed_for": "fallback exception-resume receipt (to be bound by the supervisor; NOT a release)",
+ "release_id": "codex-D30-full-20261010",
+ "head": "937ad2e7ecd090496b12def6871cb36ccbbe5a9d",
+ "source_sha256": {
+  "scripts/ee_metadata.py": "da50b46d82769ab4c541880b93dfcd2b371c177ad8780bbf5ccc15b97dc7ff2a",
+  "scripts/ee_pilot_c.py": "c18513e2b930a429693939bb036dcf8e445c4a08d13c1c89824a424158f480d0",
+  "scripts/build_c_production.py": "5ea13a301ca1a0cea67f1af5689c27c8c7f530082fc3d72d8b66be806d510af8",
+  "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+  "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+  "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+  "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+  "tests/test_c_production.py": "5b83b787d032e6276fc27fbb04290717e0b65b249e9637b4c7d4f82f5212bb41",
+  "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5"
+ },
+ "source_delta_vs_invocation4_release": {
+  "scripts/ee_pilot_c.py": "opt-in reduction_obj aggregations=='sums' branch (no production piece carries the key: 0/57801) + pilot-path Budget attempts; main_production/run_production unchanged",
+  "scripts/ee_metadata.py": "Budget(attempts=2) default = the same two-attempt loop and message; production uses the default",
+  "tests/test_c_production.py": "tests only"
+ },
+ "manifest_file_sha256": "b7acb5facf6609683cf50c994a91eb5ae89a4168dd916442dd59f9682b0ca529",
+ "body_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+ "pieces_sha256": "9f22cb263e1f358175c364c9ebcb8937bb65285591bd9b3cf00e1a28f28baf7d",
+ "plan_sha256": "bccf45c215d21955ea16b09bf17e40d0c738c583f8454fe538b39b1a01926dda",
+ "run_invocation_sha256": "cfe477d020dd7d8ab8b7b31492f7d27eec3688447f03fa002ba5e9e884f69ec6",
+ "gate_sha256": "c2573686149a602dacb8f20ed6bbab00e28304917e390f66b01a53b026d9081e",
+ "prelaunch_sha256": "0becf362ebab22c2693d6930d845dfe41f930e4664dc7ae6f084306c254f14b6",
+ "gate_fixture_sha256": "5dcac558e1e26831883875bf49ed6b40e0aeb7f5dc71950ae18fc0187a48600b",
+ "terminal_log_sha256": {
+  "out/ledger.jsonl": "fdbbc4775286340b787a3534621f7395fc939a8a442d2b19ce78aac0ffc72e26",
+  "out/request_log.jsonl": "418dbae3f705cf08f61fd1bd95498c05702c2ff9746608f42fe3634d2f2a220f",
+  "out/call_reservations.log": "e625c00f74e6eb5cbe2ef2eee2e81a8ce5cfa351053744ff5241c49884989c9a",
+  "out/invocations.log": "7d10c21d10f8081a572a5387febc865b5210c3c3570707f965da3502cc8e535f",
+  "out/run_summaries.jsonl": "7541f566838512c0a375de150434058afbd6c9abbe1ae006d75accaab460a360",
+  "invocations.exit.log": "c042b15f73aa082a7dae1ba1cef529fdc2400f7e096f4eba369ede0c8a7eea32",
+  "check-20261011T124556Z.json": "185154c3b3757924b2cc4222491f7d27255bb6cdc63e0dc6504447b3c30c0c1e"
+ },
+ "expected": {
+  "starts": 4,
+  "reservations": 8310,
+  "unique_outputs": 8280,
+  "pending": 49521
+ },
+ "accepted_summary_gaps": [
+  {
+   "invocation": 4,
+   "start_line": "start attempt-line 10 2026-10-11T10:17:32Z",
+   "exit_line": "exit 143 2026-10-11T12:45:56Z",
+   "wall_s": 8904,
+   "reason": "user emergency stop (runner killed, exit 143) before a run summary was written"
+  }
+ ],
+ "projection": {
+  "corrected_elapsed_s": 43427.9,
+  "cells_per_elapsed_s": 1573182.216961907,
+  "projected_remaining_h": 70.4,
+  "remaining_window_h": 96,
+  "calls_left": 51266,
+  "pending_plus_setup": 49553
+ },
+ "launch": "exactly once after prelaunch_inv5.py exit 0: cd RUN && setsid nohup ./run_invocation.sh (unchanged); then future resumes only via resume_check_v2.py --receipt <this receipt> exit 0 after a normal wall stop",
+ "unchanged": "manifest, plan, limits (c4/b1, 21600/22200 s, 20 starts, 59576 calls), FATAL/NONRETRYABLE/SHARED_STOP rules, run_invocation.sh"
+}

@@ -1,0 +1,47 @@
+{
+  "scope": "independent terminal runtime check; no lifecycle audit",
+  "pilot_result": "FAIL",
+  "tasks": {
+    "A": {
+      "id": "PQDBYWUMO4D3GCK7ZR3JFK4M",
+      "state": "FAILED",
+      "error": "Computation timed out.",
+      "attempt": 1,
+      "queue_s": 3.14,
+      "running_s": 1650.754,
+      "eecu_s": 512434.78125
+    },
+    "B": {
+      "id": "OM27XES4LLVSWUHW63SONSSP",
+      "state": "FAILED",
+      "error": "Computation timed out.",
+      "attempt": 1,
+      "queue_s": 3.206,
+      "running_s": 1247.064,
+      "eecu_s": 171940.703125
+    }
+  },
+  "overlap_s": 1247.064,
+  "status_reads": 27,
+  "runner_budget_calls": 32,
+  "cancel_attempts": 0,
+  "recorded_retries": 0,
+  "monitor_pid": 3512940,
+  "monitor_alive": false,
+  "monitor_exit_zero_is_not_success": true,
+  "source_pins_and_release": "checked by independent read-only scout and prior launch receipt",
+  "no_gcs_download_evidence": true,
+  "cloud_objects_absence_verified": false,
+  "throughput": null,
+  "remaining_workload_capacity": null,
+  "hashes": {
+    "out/ledger.jsonl": "5b28d4ca0f40cc4429f3f9afbfe844044a80c0ff3588ff90c2b8e4dc93313937",
+    "out/status.jsonl": "3032b5ce737d9cc390c83925704c605bc06f25166bc4329b87a1a2a15f1e42f9",
+    "out/request_log.jsonl": "9e5ea4f84b0d1f380954e5a7a89318343ac030e82a42892668cd36c22876c35d",
+    "out/call_reservations.log": "ad2eaed563a0f121b1d80e528e57c2c969964af21d9f47e0f50343f2b29fedf3",
+    "out/run_summaries.jsonl": "6f1850f1940707a0d855359b7af83455c386b123ed596db96246189f9e502382",
+    "monitor.exit": "cf4999db322a42c2162b300f8afcedbba4425fb9c1a1d6f5617cb69cca8e965b",
+    "terminal-summary.json": "4eae728af267110ad237c6153386bd8730380bc1d870892993a98e8aeb1ef93a"
+  },
+  "new_execution_authorized": false
+}

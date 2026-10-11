@@ -176,3 +176,19 @@
     after a restart); the other task is still attempted.
   - Unresolved cancels lead to HOLD_HANDOFF.
   - Tests: 17 / 67 focused OK. Manifest unchanged (f66a1be8…). release_id null.
+- 2026-10-11 Batch speed pilot (codex-D30-batch-speed-pilot-20261011) FAILED: both tasks hit server
+  "Computation timed out." (A 1,651 s / 5.12e5 EECU-s; B 1,247 s / 1.72e5 EECU-s). No download or validation.
+  - User steering: the Mexico EVI extraction is reference only, and "实在不行的话就继续原来的流程" (if nothing else
+    works, continue the original flow).
+  - Supervisor comparison: Mexico was a 30 m single-band selection rescued by smaller exports; no shortcut for ours.
+  - Decision: fall back to the original c4 window flow on the SAME run; no further batch pilot.
+  - Evidence: evidence/p1/whole-admin-batch/speed-pilot-run-20261011/.
+- 2026-10-11 Fallback-resume prelaunch checkpoint (offline; NOT launched):
+  - Verified state: 4 starts, 8,310 reservations, 8,280 outputs, 49,521 pending; latest exit 143 (user stop); checker
+    0 violations; no runner; lock free; 648 GB free.
+  - Source delta vs the invocation-4 release: only an opt-in pilot branch, a Budget(attempts) default, and tests;
+    production unchanged.
+  - External gate v2 (resume_check_v2.py c2573686…): pins the single invocation-4 summary gap (exit 143 at 12:45:56Z,
+    8,904 s) and uses corrected elapsed = summed summaries + 8,904 s, giving 70.4 h remaining vs a 96 h window.
+  - Fixture: 7 OK. prelaunch_inv5.py dry run passes. The v1 gate refuses as expected.
+  - Proposed receipt fields: evidence/p1/c-full-20261010/fallback-resume/.

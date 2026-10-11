@@ -1,0 +1,30 @@
+*** Earth Engine *** Share your feedback by taking our Annual Developer Satisfaction Survey: https://google.qualtrics.com/jfe/form/SV_9oS0DRcPvElRMNw?source=python
+{"n": 5, "utc": "2026-10-11T14:00:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.83, "response_bytes": 0}
+{"n": 6, "utc": "2026-10-11T14:00:53Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.13, "response_bytes": 356}
+{"n": 7, "utc": "2026-10-11T14:00:53Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.19, "response_bytes": 401}
+{"n": 8, "utc": "2026-10-11T14:02:53Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.24, "response_bytes": 398}
+{"n": 9, "utc": "2026-10-11T14:02:53Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.14, "response_bytes": 397}
+{"n": 10, "utc": "2026-10-11T14:04:54Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.24, "response_bytes": 398}
+{"n": 11, "utc": "2026-10-11T14:04:54Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.24, "response_bytes": 397}
+{"n": 12, "utc": "2026-10-11T14:06:54Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.21, "response_bytes": 399}
+{"n": 13, "utc": "2026-10-11T14:06:54Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.2, "response_bytes": 398}
+{"n": 14, "utc": "2026-10-11T14:08:54Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.19, "response_bytes": 398}
+{"n": 15, "utc": "2026-10-11T14:08:55Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.14, "response_bytes": 397}
+{"n": 16, "utc": "2026-10-11T14:10:55Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.14, "response_bytes": 398}
+{"n": 17, "utc": "2026-10-11T14:10:55Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.15, "response_bytes": 397}
+{"n": 18, "utc": "2026-10-11T14:12:55Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.34, "response_bytes": 398}
+{"n": 19, "utc": "2026-10-11T14:12:56Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.26, "response_bytes": 397}
+{"n": 20, "utc": "2026-10-11T14:14:56Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.22, "response_bytes": 398}
+{"n": 21, "utc": "2026-10-11T14:14:56Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.34, "response_bytes": 397}
+{"n": 22, "utc": "2026-10-11T14:16:56Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.35, "response_bytes": 398}
+{"n": 23, "utc": "2026-10-11T14:16:57Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.17, "response_bytes": 397}
+{"n": 24, "utc": "2026-10-11T14:18:57Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.19, "response_bytes": 398}
+{"n": 25, "utc": "2026-10-11T14:18:57Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.17, "response_bytes": 397}
+{"n": 26, "utc": "2026-10-11T14:20:57Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.34, "response_bytes": 398}
+{"n": 27, "utc": "2026-10-11T14:20:57Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.18, "response_bytes": 397}
+{"n": 28, "utc": "2026-10-11T14:22:58Z", "purpose": "getTaskStatus OM27XES4LLVSWUHW63SONSSP", "attempt": 1, "status": "ok", "seconds": 0.14, "response_bytes": 441}
+{"n": 29, "utc": "2026-10-11T14:22:58Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.36, "response_bytes": 397}
+{"n": 30, "utc": "2026-10-11T14:24:58Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.17, "response_bytes": 397}
+{"n": 31, "utc": "2026-10-11T14:26:58Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.18, "response_bytes": 397}
+{"n": 32, "utc": "2026-10-11T14:28:58Z", "purpose": "getTaskStatus PQDBYWUMO4D3GCK7ZR3JFK4M", "attempt": 1, "status": "ok", "seconds": 0.15, "response_bytes": 440}
+{"reads": 27, "final_states": {"OM27XES4LLVSWUHW63SONSSP": "FAILED", "PQDBYWUMO4D3GCK7ZR3JFK4M": "FAILED"}, "cancel_attempted": [], "cancel_requested": [], "cancel_unresolved": [], "ambiguous": [], "handoff": null, "calls_used": 32}

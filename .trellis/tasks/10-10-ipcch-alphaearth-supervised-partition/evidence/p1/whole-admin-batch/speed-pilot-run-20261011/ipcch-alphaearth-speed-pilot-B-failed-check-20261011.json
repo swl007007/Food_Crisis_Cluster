@@ -1,0 +1,56 @@
+{
+  "type": "speed_pilot_partial_terminal_check",
+  "recorded_epoch": 1791728731.0593,
+  "manifest_body": "f66a1be8854ef555a1fdc2abc7533da5fa51cfdf31c5c49b1ac5632bf6a57f3c",
+  "pilot_acceptance": "FAIL: expected B task is FAILED, two-COMPLETED requirement cannot be met",
+  "B": {
+    "epoch_s": 1791728578.110923,
+    "id": "OM27XES4LLVSWUHW63SONSSP",
+    "status": {
+      "state": "FAILED",
+      "description": "ae2017d30_f66a1be885_B_a1",
+      "priority": 100,
+      "creation_timestamp_ms": 1791727243049,
+      "update_timestamp_ms": 1791728493319,
+      "start_timestamp_ms": 1791727246255,
+      "task_type": "EXPORT_FEATURES",
+      "attempt": 1,
+      "batch_eecu_usage_seconds": 171940.703125,
+      "error_message": "Computation timed out.",
+      "id": "OM27XES4LLVSWUHW63SONSSP",
+      "name": "projects/manuel-remote-sensing/operations/OM27XES4LLVSWUHW63SONSSP"
+    }
+  },
+  "B_running_seconds": 1247.064,
+  "A": {
+    "epoch_s": 1791728698.6408594,
+    "id": "PQDBYWUMO4D3GCK7ZR3JFK4M",
+    "status": {
+      "state": "RUNNING",
+      "description": "ae2017d30_f66a1be885_A_a1",
+      "priority": 100,
+      "creation_timestamp_ms": 1791727239966,
+      "update_timestamp_ms": 1791728693384,
+      "start_timestamp_ms": 1791727243106,
+      "task_type": "EXPORT_FEATURES",
+      "attempt": 1,
+      "batch_eecu_usage_seconds": 512366.1875,
+      "id": "PQDBYWUMO4D3GCK7ZR3JFK4M",
+      "name": "projects/manuel-remote-sensing/operations/PQDBYWUMO4D3GCK7ZR3JFK4M"
+    }
+  },
+  "monitor_pid_3512940_alive": true,
+  "interpretation": [
+    "This is a server task FAILED status, not an HTTP status-read timeout.",
+    "Cause of server computation timeout remains unestablished.",
+    "EECU is resource usage, not completed/validated cells or a speedup measure.",
+    "A remains subject to original 3600-second own-task cancellation threshold.",
+    "No resubmission, amended numerical gate, extra export or bulk authorized."
+  ],
+  "local_only": true,
+  "snapshot_sha256": {
+    "status.jsonl": "27372a6ea7ec39d97001c28df791516e18846327a835fb777e31010c716161af",
+    "ledger.jsonl": "5b28d4ca0f40cc4429f3f9afbfe844044a80c0ff3588ff90c2b8e4dc93313937",
+    "run_summaries.jsonl": "0e7383ef6e0fad46437db55a309c699601aa120709d6febf300fa91afc4c67a5"
+  }
+}

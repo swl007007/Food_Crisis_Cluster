@@ -1,0 +1,137 @@
+{
+  "release_id": "codex-D30-batch-speed-pilot-20261011",
+  "utc": "2026-10-11T13:59:39.733737+00:00",
+  "authorization": {
+    "user_reply": "授权",
+    "scope": "Exact previously presented two-task speed pilot, GCS writes to the listed A/B attempt-1 prefixes; necessary monitoring, own-task bounded cancellation, downloads and local validation.",
+    "cloud_write_authorized": true,
+    "bulk_authorized": false
+  },
+  "repo": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster",
+  "head": "937ad2e7ecd090496b12def6871cb36ccbbe5a9d",
+  "code_commit": "29eca55ffffdc7028b71b089feeba4573d8fa2ab",
+  "executor": {
+    "pane": "w14:p2",
+    "session": "3546490e-8e08-43f2-9f1d-9c72bccda1e8",
+    "terminal": "term_65d7ebc256c188"
+  },
+  "prepared_receipt_sha256": "f1c9365eb2b95931d2c7abab74c20f2bd87f2061d62b34ea69240ea32008581b",
+  "source_sha256": {
+    "scripts/ee_batch_c.py": "8ebe656f7a9d91e8f26767c1a94b905d6bde3b91ce340f1aec414f3fa80f2e94",
+    "scripts/build_speed_pilot.py": "1af042e98be4fdfd1affbe98ec6b706d1eb51659d7f2280f5045dc477ebf6c48",
+    "scripts/validate_speed_pilot.py": "b2dac3685221fbb263b201f61a061011caf00b4a36b5781b1bfe3d17409cc4fa",
+    "tests/test_speed_pilot.py": "8c3e49394821579588d6f6d4e2c12037e9275c99b90aedf8086ff08e4e4117af",
+    "scripts/ee_pilot_c.py": "c18513e2b930a429693939bb036dcf8e445c4a08d13c1c89824a424158f480d0",
+    "scripts/ee_metadata.py": "da50b46d82769ab4c541880b93dfcd2b371c177ad8780bbf5ccc15b97dc7ff2a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/aemoments.py": "efbbdaef51f7c60760df7bc0d122d4ab90a746820678511f5f049e986e46b6fd",
+    "config/experiment-contract.json": "b75a71066f3b96b2719dc851d61516b453d2fd843805af065419fd96984f1378"
+  },
+  "manifest_path": "/tmp/ipcch-alphaearth-speed-pilot-release-20261011/speed_pilot_manifest.json",
+  "manifest_file_sha256": "7716609647efedc3b59bc30366dde15e08db2aaf216eebdd09423a85909d4f46",
+  "request_sha256": "f66a1be8854ef555a1fdc2abc7533da5fa51cfdf31c5c49b1ac5632bf6a57f3c",
+  "adaptive_plan_source": "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-draft-r2-20261011/adaptive_plan.csv.gz",
+  "adaptive_plan_sha256": "ae2785fe7faa97db5600b6fee064cd0bc37611f67a082e2e27dd53e71f688ab5",
+  "fresh_run_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011",
+  "limits": {
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "http_timeout_s": 60,
+    "sdk_retries": 0,
+    "budget_retries": 0,
+    "max_tasks": 2,
+    "max_body_bytes": 8000000,
+    "cancel_after_s": 3600,
+    "status_read_interval_s": 120,
+    "max_status_reads": 75,
+    "max_cancels": 2,
+    "max_failed_rounds": 3,
+    "max_gcs_reads": 20,
+    "max_ee_calls": 84,
+    "max_pixels": 36326400000
+  },
+  "destination": {
+    "type": "gcs",
+    "bucket": "manuel-remote-sensing-rasters-645415198431",
+    "prefix": "ipcch-alphaearth/speed-pilot-20261011"
+  },
+  "tasks": [
+    {
+      "name": "A",
+      "description": "ae2017d30_f66a1be885_A_a1",
+      "prefix": "gs://manuel-remote-sensing-rasters-645415198431/ipcch-alphaearth/speed-pilot-20261011/A/attempt-1/"
+    },
+    {
+      "name": "B",
+      "description": "ae2017d30_f66a1be885_B_a1",
+      "prefix": "gs://manuel-remote-sensing-rasters-645415198431/ipcch-alphaearth/speed-pilot-20261011/B/attempt-1/"
+    }
+  ],
+  "command_cwd": "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHAlphaEarthExperiment",
+  "commands_argv": {
+    "submit": [
+      "/opt/earthengine/bin/python",
+      "scripts/ee_batch_c.py",
+      "submit",
+      "--request",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/inputs/speed_pilot_manifest.json",
+      "--out",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/out"
+    ],
+    "monitor": [
+      "/opt/earthengine/bin/python",
+      "scripts/ee_batch_c.py",
+      "monitor",
+      "--request",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/inputs/speed_pilot_manifest.json",
+      "--out",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/out"
+    ],
+    "download": [
+      "/opt/earthengine/bin/python",
+      "scripts/ee_batch_c.py",
+      "download",
+      "--request",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/inputs/speed_pilot_manifest.json",
+      "--out",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/out"
+    ],
+    "validate": [
+      "/home/swl007007/.venvs/ipcch-geo/bin/python",
+      "scripts/validate_speed_pilot.py",
+      "--request",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/inputs/speed_pilot_manifest.json",
+      "--out",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/out",
+      "--full-run",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010",
+      "--interactive-run",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-whole-admin-pilot-20261011",
+      "--plan",
+      "/home/swl007007/ipcch-alphaearth-runs/p1-speed-pilot-20261011/inputs/adaptive_plan.csv.gz"
+    ]
+  },
+  "validator_env": {
+    "PYTHONPATH": ".:scripts",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "conditions": [
+    "Prelaunch: exact HEAD and clean tree; all nine source hashes, body, release manifest file and plan hashes equal receipt; bound executor unchanged; no other EE runner; run directory fresh.",
+    "Copy released manifest and pinned plan unchanged into fresh inputs; preserve this receipt and prepared/independent verification receipts.",
+    "Measure BOTH collection DAGs after Initialize before ANY task start; refuse either above 8 MB and report.",
+    "Exactly one submit invocation; never resubmit, even if start is ambiguous. Use ledger to monitor every known id even after partial submission. Unknown id -> report/HOLD for reconciliation; no blind task start.",
+    "Immediately run the released monitor for known submitted ids; its per-id status reads, finite timeouts, cancellation threshold, attempts and caps apply unchanged.",
+    "At 3600s request cancellation of own nonterminal tasks within max_cancels=2; record terminal status or unresolved handoff. Cancellation is not assumed instantaneous.",
+    "Only after both exact tasks are COMPLETED with no ambiguity/cancellation/handoff: bounded download then local validation. Command exit 0 alone is never accepted as success.",
+    "No autonomous cap, timeout, source, plan, science or quota change; failed permission does not authorize IAM repair.",
+    "No other export, no bulk, no old interactive-run resume, no fitting, no lifecycle closure, no push/merge.",
+    "Report actual DAG bytes, start task IDs and timestamps promptly; then report state changes/error/cancellation and final numerical gates, observed overlap and end-to-end throughput; HOLD after pilot."
+  ],
+  "known_limits": [
+    "Batch runtime, queueing and observed concurrency unmeasured.",
+    "GCS writer permission and live CSV equivalence untested.",
+    "60 min is cancellation-request threshold, not guaranteed server stop time.",
+    "Collection-DAG guard leaves headroom; it is not a full request serialization measure."
+  ],
+  "execution_authorized": true
+}

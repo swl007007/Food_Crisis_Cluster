@@ -1,0 +1,2 @@
+{"utc": "2026-10-11T14:00:43Z", "command": "submit", "result": {"projection_check_max_abs_diff_m": 2.7939677238464355e-09, "collection_dag_bytes_A": 1608003, "collection_dag_bytes_B": 1324521, "calls_used": 4}}
+{"utc": "2026-10-11T14:28:58Z", "command": "monitor", "result": {"reads": 27, "final_states": {"OM27XES4LLVSWUHW63SONSSP": "FAILED", "PQDBYWUMO4D3GCK7ZR3JFK4M": "FAILED"}, "cancel_attempted": [], "cancel_requested": [], "cancel_unresolved": [], "ambiguous": [], "handoff": null, "calls_used": 32}}

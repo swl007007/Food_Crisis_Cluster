@@ -1,0 +1,70 @@
+{
+ "last_lines": [
+  "start attempt-line 10 2026-10-11T10:17:32Z",
+  "exit 143 2026-10-11T12:45:56Z",
+  "checker exit 0 2026-10-11T12:46:05Z"
+ ],
+ "checker": {
+  "done": 8280,
+  "pending": 49521,
+  "done_cells": 68321273177.97425,
+  "pending_cells": 398791489025.44434,
+  "ledger_statuses": {
+   "ok": 8280,
+   "failed": 5
+  },
+  "call_reservations": 8310,
+  "call_cap": 59576,
+  "invocations": 4,
+  "max_invocations": 20,
+  "summed_invocation_seconds": 34523.9,
+  "observed_cells_per_wall_second": 1978953.078540561,
+  "projected_remaining_wall_s": 201516.39437532556,
+  "projected_within_invocation_cap": true,
+  "piece_seconds_max": 81.663,
+  "last_stop": "fatal service error on '572|w001_002': Too many concurrent aggregations.",
+  "complete": false,
+  "n_violations": 0
+ },
+ "request_errors_total": 18,
+ "request_errors_last": [
+  {
+   "n": 6638,
+   "utc": "2026-10-11T10:35:52Z",
+   "purpose": "597|w000_000",
+   "attempt": 1,
+   "status": "error",
+   "seconds": 2.25,
+   "response_bytes": 0,
+   "error": "Earth Engine capacity exceeded."
+  },
+  {
+   "n": 6670,
+   "utc": "2026-10-11T10:38:15Z",
+   "purpose": "602|w001_001",
+   "attempt": 1,
+   "status": "error",
+   "seconds": 15.37,
+   "response_bytes": 0,
+   "error": "Earth Engine capacity exceeded."
+  },
+  {
+   "n": 7973,
+   "utc": "2026-10-11T12:21:29Z",
+   "purpose": "746|w000_000",
+   "attempt": 1,
+   "status": "error",
+   "seconds": 9.76,
+   "response_bytes": 0,
+   "error": "Earth Engine capacity exceeded."
+  }
+ ],
+ "fails": [
+  "last runner exit not 0: ['exit 143 2026-10-11T12:45:56Z']",
+  "last invocation did not end on its wall budget: fatal service error on '572|w001_002': Too many concurrent aggregations.",
+  "source hash differs: scripts/ee_metadata.py",
+  "source hash differs: scripts/ee_pilot_c.py",
+  "source hash differs: tests/test_c_production.py"
+ ],
+ "pass": false
+}

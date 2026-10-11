@@ -1,0 +1,25 @@
+{
+ "starts": 4,
+ "reservations": 8310,
+ "unique_outputs": 8280,
+ "gate": {
+  "invocations": 4,
+  "corrected_elapsed_s": 43427.9,
+  "cells_per_elapsed_s": 1573211.5340132553,
+  "projected_remaining_s": 253488.79054308045,
+  "remaining_window_s": 345600,
+  "checker": {
+   "done": 8280,
+   "pending": 49521,
+   "call_reservations": 8310,
+   "invocations": 4,
+   "n_violations": 0
+  },
+  "fails": [
+   "the latest invocation is the pinned user-stopped one: a normal resume needs a later normal-wall invocation"
+  ],
+  "pass": false
+ },
+ "fails": [],
+ "pass": true
+}
