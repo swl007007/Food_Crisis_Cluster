@@ -134,3 +134,13 @@
   - LARGE 1050 read timeout at 120 s, not retried.
   - About 3e-6 s/cell, so fewer requests did not cut per-pixel cost; 10 m exhaustive computation dominates.
   - HOLD for the user discussion (route choice). Evidence: evidence/p1/whole-admin-pilot/WHOLE-ADMIN-PILOT-RESULT.md.
+- 2026-10-11 User chose exhaustive 10 m statistics plus whole-admin batch extraction (larger admins split, smaller
+  admins batched). Offline design proposal written (nothing implemented or submitted):
+  evidence/p1/whole-admin-batch/BATCH-DESIGN-PROPOSAL.md.
+  - D30 science and contract unchanged.
+  - Split at whole-admin lattice box > 2.56e8 (827 admins → 3,236 pieces; 8,636 items in total).
+  - Tasks ≤ 5 MB / 5e9 cells (about 96); ≤ 2 tasks at once.
+  - Existing bucket prefix gs://manuel-remote-sensing-rasters-645415198431/ipcch-alphaearth/<run-id>/.
+  - One-task pilot (658, 4711, 1050 whole, plus 4505 split into 7).
+  - Old window outputs proposed as a verification set, not reused.
+  - Cloud write awaits user authorization.

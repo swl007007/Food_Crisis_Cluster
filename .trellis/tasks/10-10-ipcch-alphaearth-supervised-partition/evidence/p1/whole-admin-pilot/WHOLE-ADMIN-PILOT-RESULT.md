@@ -30,3 +30,16 @@ Each request was one aggregation (response key `sums` only).
 - Exhaustive 10 m computation, about 4.67e11 cells, dominates the cost under either request shape.
 
 HOLD: no bulk, retry or fit; the next step is a user discussion.
+
+## Interpretation corrections (supervisor review, retained)
+
+1. **The 120 s limit.** It is this client's read deadline. LARGE 1050's timeout is not evidence that the whole-admin
+   operation cannot finish server-side, nor that Earth Engine has a universal 120 s limit.
+2. **Reuse of the completed window admins.** Near-exact equality with whole-admin output was checked for REF 658 only.
+   The other 773 completed window admins are candidates for reuse under the same recipe, not verified compatible. A
+   sampled estimator would need a separate estimand and provenance decision.
+3. **The 300–400 request-hour figure** (and the ~389 h at 3e-6 s/cell) is a rough extrapolation from two admins. It is
+   not a measured total and not billed EECU.
+
+Supervisor checks: `run-20261011/ipcch-alphaearth-whole-admin-result-check-20261011.json` and
+`run-20261011/ipcch-alphaearth-whole-admin-ref-check-20261011.json`.

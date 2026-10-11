@@ -1,0 +1,13 @@
+{
+  "ref_admin": 658,
+  "raw_area_relative_difference": -2.329047846535395e-16,
+  "raw_S_max_relative_difference": 4.368781134890961e-14,
+  "raw_Q_max_relative_difference": 1.74350593688396e-14,
+  "mean_max_abs_difference": 3.608224830031759e-15,
+  "sd_max_abs_difference": 2.491062911502695e-14,
+  "coverage_new": 0.9999174759402788,
+  "coverage_windows": 0.999917475940279,
+  "new_seconds": 30.4,
+  "window_seconds_sum": 38.563,
+  "renormalized": false
+}

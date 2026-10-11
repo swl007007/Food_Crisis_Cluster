@@ -1,0 +1,11 @@
+admins 6227 | geojson bytes total 120.6 MB; per admin q {0.0: 102, 0.5: 3107, 0.9: 50595, 0.99: 218754, 1.0: 1344996}
+distinct candidate-union sets: 2200 | candidates per admin q {0.0: 1.0, 0.5: 2.0, 0.9: 6.0, 0.99: 15.0, 1.0: 59.0}
+lattice bbox cells q {0.0: '299', 0.5: '6.56e+07', 0.9: '3.18e+08', 0.99: '1.4e+09', 1.0: '1.4e+10'}
+split side 8000 (piece box <= 6.4e+07 cells): admins split 3166 (91.9% of cells) -> pieces 17088; features total 20149; max piece cells 6.4e+07; max whole-admin cells 4.8e+07
+split side 16000 (piece box <= 2.56e+08 cells): admins split 827 (59.0% of cells) -> pieces 3236; features total 8636; max piece cells 2.56e+08; max whole-admin cells 1.79e+08
+split side 32000 (piece box <= 1.02e+09 cells): admins split 120 (24.2% of cells) -> pieces 362; features total 6469; max piece cells 1.02e+09; max whole-admin cells 7.71e+08
+pack bytes<=5MB cells<=2e+09 feats<=500: tasks 240; per task max bytes 4.99MB, max cells 2e+09, max feats 136
+pack bytes<=5MB cells<=5e+09 feats<=1000: tasks 96; per task max bytes 5.00MB, max cells 5e+09, max feats 220
+pack bytes<=8MB cells<=1e+10 feats<=2000: tasks 48; per task max bytes 7.95MB, max cells 1e+10, max feats 383
+largest admins: [(101320, '3.31e+09', 1793), (20, '3.73e+09', 81054), (100228, '6.2e+09', 302899)]
+split-admin example near q99 cells: 4505

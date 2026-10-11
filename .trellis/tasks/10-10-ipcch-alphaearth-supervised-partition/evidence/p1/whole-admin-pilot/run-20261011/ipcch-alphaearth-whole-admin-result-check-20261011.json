@@ -1,0 +1,58 @@
+{
+  "release_id": "codex-D30-whole-admin-pilot-20261011",
+  "outcome": "2 success; q75 client read timeout; no retry; HOLD",
+  "calls": 5,
+  "projection_max_abs_diff_m": 2.7939677238464355e-09,
+  "successful_admins": [
+    {
+      "admin": 658,
+      "seconds": 30.4,
+      "finite_sums": 129,
+      "coverage": 0.9999174759402788,
+      "nonnegative_variances": true,
+      "response_file_sha256": "71143b0bf616e794a137c4196e99fc6f4710146f0f63b0c1e83f7c1764c86414"
+    },
+    {
+      "admin": 4711,
+      "seconds": 98.0,
+      "finite_sums": 129,
+      "coverage": 0.9999949706341512,
+      "nonnegative_variances": true,
+      "response_file_sha256": "0ed496c6733847b9c091f20be64cd3858e52fc4c8f51392eed541f6323485021"
+    }
+  ],
+  "error": {
+    "n": 5,
+    "utc": "2026-10-11T13:02:08Z",
+    "purpose": "WA-LARGE_q75_fresh-1050",
+    "attempt": 1,
+    "status": "error",
+    "seconds": 120.11,
+    "response_bytes": 0,
+    "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"
+  },
+  "reference_comparison": {
+    "ref_admin": 658,
+    "raw_area_relative_difference": -2.329047846535395e-16,
+    "raw_S_max_relative_difference": 4.368781134890961e-14,
+    "raw_Q_max_relative_difference": 1.74350593688396e-14,
+    "mean_max_abs_difference": 3.608224830031759e-15,
+    "sd_max_abs_difference": 2.491062911502695e-14,
+    "coverage_new": 0.9999174759402788,
+    "coverage_windows": 0.999917475940279,
+    "new_seconds": 30.4,
+    "window_seconds_sum": 38.563,
+    "renormalized": false
+  },
+  "no_ee_runner": true,
+  "old_run_unchanged_counts": {
+    "starts": 4,
+    "reservations": 8310,
+    "outputs": 8280
+  },
+  "source_logs_sha256": {
+    "out/request_log.jsonl": "e2a3de4ec9c996d58586432ad0ec09460b564a6613d51d9e8130cf7d0abeb65f",
+    "out/pilot_summary.json": "5026c73e84703b7bd79823cc029e441679f819a46bf554521de79b42fd0bf180",
+    "exit": "28d3b9e880a77975493dc7e359144c0295a4f694cfe0af4f928c22307bc5c320"
+  }
+}
