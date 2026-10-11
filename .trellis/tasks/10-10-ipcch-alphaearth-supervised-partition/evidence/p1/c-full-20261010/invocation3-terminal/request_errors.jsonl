@@ -1,0 +1,15 @@
+{"n": 118, "utc": "2026-10-11T00:10:44Z", "purpose": "5|w012_009", "attempt": 1, "status": "error", "seconds": 1.18, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 631, "utc": "2026-10-11T01:16:40Z", "purpose": "21|w003_001", "attempt": 1, "status": "error", "seconds": 8.72, "response_bytes": 0, "error": "Ok"}
+{"n": 4512, "utc": "2026-10-11T07:27:12Z", "purpose": "378|w001_014", "attempt": 1, "status": "error", "seconds": 6.23, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4513, "utc": "2026-10-11T07:27:14Z", "purpose": "378|w001_014", "attempt": 2, "status": "error", "seconds": 1.5, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4551, "utc": "2026-10-11T07:41:16Z", "purpose": "378|w004_001", "attempt": 1, "status": "error", "seconds": 9.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4621, "utc": "2026-10-11T07:47:39Z", "purpose": "380|w005_006", "attempt": 1, "status": "error", "seconds": 2.55, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4622, "utc": "2026-10-11T07:47:40Z", "purpose": "380|w005_006", "attempt": 2, "status": "error", "seconds": 1.03, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4623, "utc": "2026-10-11T07:47:41Z", "purpose": "380|w005_007", "attempt": 1, "status": "error", "seconds": 3.17, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 5819, "utc": "2026-10-11T09:14:51Z", "purpose": "515|w001_002", "attempt": 1, "status": "error", "seconds": 4.31, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 6270, "utc": "2026-10-11T09:48:44Z", "purpose": "559|w001_000", "attempt": 1, "status": "error", "seconds": 0.04, "response_bytes": 0, "error": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"}
+{"n": 6363, "utc": "2026-10-11T09:58:14Z", "purpose": "565|w001_000", "attempt": 1, "status": "error", "seconds": 123.1, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}
+{"n": 6364, "utc": "2026-10-11T09:58:17Z", "purpose": "565|w001_001", "attempt": 1, "status": "error", "seconds": 123.16, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}
+{"n": 6381, "utc": "2026-10-11T10:00:17Z", "purpose": "565|w001_000", "attempt": 2, "status": "error", "seconds": 123.34, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}
+{"n": 6383, "utc": "2026-10-11T10:00:21Z", "purpose": "565|w001_001", "attempt": 2, "status": "error", "seconds": 123.27, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}
+{"n": 6397, "utc": "2026-10-11T10:01:27Z", "purpose": "572|w001_002", "attempt": 1, "status": "error", "seconds": 0.37, "response_bytes": 0, "error": "Too many concurrent aggregations."}

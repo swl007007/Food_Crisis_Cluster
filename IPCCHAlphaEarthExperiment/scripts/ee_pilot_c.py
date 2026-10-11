@@ -109,7 +109,10 @@ def reduction(ee, r: dict, limits: dict):
 
 
 def reduction_obj(ee, r: dict, limits: dict):
-    """Unevaluated per-piece reduction (sums, valid-cell count, owned area by source rank)."""
+    """Unevaluated per-piece reduction (sums, valid-cell count, owned area by source rank): three aggregations.
+
+    A request with ``"aggregations": "sums"`` returns only the 129 sums (one aggregation); the count and the per-rank
+    area are diagnostics that no descriptor uses."""
     comp = composite(ee, r["candidates"])
     owned = comp.select("source_rank").mask()
     area = ee.Image.pixelArea().updateMask(owned)
@@ -123,6 +126,8 @@ def reduction_obj(ee, r: dict, limits: dict):
     common = dict(geometry=geom, crs=EE_CRS_WKT, crsTransform=GRID["crsTransform"], bestEffort=False,
                   maxPixels=max_pixels, tileScale=int(limits["tile_scale"]))
     sums = stack.reduceRegion(reducer=ee.Reducer.sum(), **common)
+    if r.get("aggregations") == "sums":  # opt-in: ONE aggregation (valid_area, S, Q = every D30 descriptor input)
+        return ee.Dictionary({"sums": sums})
     count = owned.selfMask().rename("valid_cells").reduceRegion(reducer=ee.Reducer.count().unweighted(), **common)
     by_rank = ee.Image.cat([area.rename("area"), comp.select("source_rank")]).reduceRegion(
         reducer=ee.Reducer.sum().group(groupField=1, groupName="source_rank"), **common)
@@ -299,7 +304,7 @@ def main(argv=None) -> int:
     if req.get("kind") == "c_production":
         return main_production(req, out)
     (out / "responses").mkdir(parents=True, exist_ok=False)
-    budget = Budget(int(limits["max_high_level_calls"]), out / "request_log.jsonl")
+    budget = Budget(int(limits["max_high_level_calls"]), out / "request_log.jsonl", attempts=1 + int(limits.get("budget_retries", 1)))
     summary = {"release_id": req["release_id"], "request_sha256": req["request_sha256"], "recipe": RECIPE, "done": [], "failed": []}
     try:
         import ee

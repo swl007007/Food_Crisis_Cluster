@@ -1,0 +1,18 @@
+{
+  "utc": "2026-10-11T12:47:15.992154+00:00",
+  "reason": "explicit user stop and redirect to direct whole-admin reduceRegion",
+  "signal": "SIGTERM",
+  "pgid": 2364168,
+  "runner_pid": 2364169,
+  "local_processes_absent": true,
+  "wrapper_exit": 143,
+  "exit_utc": "2026-10-11T12:45:56Z",
+  "checker_exit": 0,
+  "checker_utc": "2026-10-11T12:46:05Z",
+  "unique_successes": 8280,
+  "reservations": 8310,
+  "invocation_starts": 4,
+  "automatic_resume_authority": "revoked by user redirect; old run held",
+  "preserve_outputs": true,
+  "server_cancellation": "not established by local termination"
+}

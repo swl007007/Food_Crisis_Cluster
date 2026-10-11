@@ -286,6 +286,18 @@ class BuilderStructure(unittest.TestCase):
             self.assertEqual((k["crs"], k["crsTransform"], k["bestEffort"]), (epc.EE_CRS_WKT, [10, 0, 0, 0, -10, 0], False))
         self.assertEqual(out["keys"], ["area_by_rank", "count", "sums"])
 
+    def test_sums_only_request_issues_one_aggregation_with_the_same_composite_and_grid(self):
+        ee = FakeEE()
+        r = {"request_id": "t", "candidates": ["aa1", "zz9"], "geometry": {"type": "Point", "coordinates": [0, 0]},
+             "aggregations": "sums"}
+        out = epc.reduction(ee, r, {"max_pixels": 1e9, "tile_scale": 4})
+        self.assertEqual(ee.mosaics, [[f"{epc.COLLECTION}/zz9", f"{epc.COLLECTION}/aa1"]])  # same descending mosaic
+        reductions = [k for _t, n, _a, k in Fake.log if n == "reduceRegion"]
+        self.assertEqual(len(reductions), 1)
+        self.assertEqual((reductions[0]["crs"], reductions[0]["crsTransform"], reductions[0]["bestEffort"]),
+                         (epc.EE_CRS_WKT, [10, 0, 0, 0, -10, 0], False))
+        self.assertEqual(out["keys"], ["sums"])
+
     def test_manifest_guards(self):
         good = {"recipe": epc.RECIPE, "grid": epc.GRID, "best_effort": False, "project": "p", "limits": {},
                 "grid_crs_wkt": epc.EE_CRS_WKT, "projection_check": [[45.0, 13.0, 4341882.611290343, 1644631.1629230133]],

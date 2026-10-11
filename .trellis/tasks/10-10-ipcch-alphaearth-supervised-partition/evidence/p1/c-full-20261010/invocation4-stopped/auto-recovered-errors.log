@@ -1,0 +1,2 @@
+2026-10-11T10:41:08Z recovered; reservations 6677->6700: {"n": 6670, "utc": "2026-10-11T10:38:15Z", "purpose": "602|w001_001", "attempt": 1, "status": "error", "seconds": 15.37, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+2026-10-11T12:24:52Z recovered; reservations 7987->8027: {"n": 7973, "utc": "2026-10-11T12:21:29Z", "purpose": "746|w000_000", "attempt": 1, "status": "error", "seconds": 9.76, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}

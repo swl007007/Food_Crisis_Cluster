@@ -34,14 +34,15 @@ class Halt(Stop):
 
 
 class Budget:
-    def __init__(self, cap: int, log_path: Path, guard=None, on_fatal=None):
+    def __init__(self, cap: int, log_path: Path, guard=None, on_fatal=None, attempts: int = 2):
         self.cap, self.used, self.log_path = cap, 0, log_path
+        self.attempts = int(attempts)  # 2 = one wrapper retry (default everywhere); 1 = no automatic retry
         self._lock = threading.Lock()  # concurrent callers share one cap and one log
         # optional shared stop control, consulted at EVERY attempt reservation (first attempts and retries alike)
         self.guard, self.on_fatal = guard, on_fatal
 
     def call(self, purpose: str, fn):
-        for attempt in (1, 2):
+        for attempt in range(1, self.attempts + 1):
             with self._lock:
                 reason = self.guard() if self.guard else None
                 if reason:
@@ -68,8 +69,9 @@ class Budget:
                     if self.on_fatal:
                         self.on_fatal(str(stop))  # deterministic rejection: shared stop published before raising
                     raise stop from error
-                if attempt == 2:
-                    raise Stop(f"'{purpose}' failed twice: {msg[:300]}") from error
+                if attempt == self.attempts:
+                    raise Stop(f"'{purpose}' failed twice: {msg[:300]}" if attempt == 2
+                               else f"'{purpose}' failed (no automatic retry): {msg[:300]}") from error
 
     def _log(self, purpose, attempt, status, seconds, size, error=None):
         rec = {"n": self.used, "utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "purpose": purpose, "attempt": attempt,

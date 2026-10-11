@@ -1,0 +1,102 @@
+{
+  "utc": "2026-10-11T10:10:52.808981+00:00",
+  "decision": "PASS output integrity and correct fatal-stop behavior; extraction INCOMPLETE; no automatic resume authority from this receipt",
+  "implementation_commit": "c72069151f0b97085fed6afb72d6e80f7c3cf825",
+  "source_sha256": {
+    "scripts/ee_metadata.py": "8e5d871d31312d6be767a026dbd805e9beee97fc1c1e82906bda1292476150d4",
+    "scripts/ee_pilot_c.py": "39fc0762bba6fafb02d31c1d593eae66f28e1ec868981db231eb025a3ec4dd6d",
+    "scripts/build_c_production.py": "5ea13a301ca1a0cea67f1af5689c27c8c7f530082fc3d72d8b66be806d510af8",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+    "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+    "tests/test_c_production.py": "c329ffc5eef3e30a67ccf2a07b267467149cd4a7921897a0236dc6407fac1a2d",
+    "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5"
+  },
+  "run_directory": "/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010",
+  "terminal_summary": {
+    "utc": "2026-10-11T10:01:45Z",
+    "release_id": "codex-D30-full-20261010",
+    "request_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+    "recipe": "D30|EPSG:6933|10,0,0,0,-10,0|nearest|first-valid-ascending-id",
+    "projection_check_max_abs_diff_m": 2.7939677238464355e-09,
+    "attempted": 1875,
+    "failed": 4,
+    "consecutive": 0,
+    "done": 1871,
+    "halted": 0,
+    "stopped": "fatal service error on '572|w001_002': Too many concurrent aggregations.",
+    "pending_at_start": 53296,
+    "remaining": 51425,
+    "complete": false,
+    "batches": 53296,
+    "calls_used": 6397,
+    "invocation_seconds": 8643.548
+  },
+  "log_sha256": {
+    "out/ledger.jsonl": "d62319635f07e385873fb260db2babc84f9ddeaf92ea791c4fd8f3af32a0c281",
+    "out/request_log.jsonl": "e1177d01279e52a2208574df1715433314136398437ada2dd45fe3401edfa1db",
+    "out/call_reservations.log": "025a863aaac0967cfa8e3798c85e4d9caf2abbf1eac2c298dab7ed5d739b283f",
+    "out/invocations.log": "ea361ff07de07e80aa792019bbc272c5d69ad065817d56ccc8262227e978b673",
+    "out/run_summaries.jsonl": "7541f566838512c0a375de150434058afbd6c9abbe1ae006d75accaab460a360",
+    "invocations.exit.log": "ffe7731c24d3c91e182331768adc23088b5bd4a92b76ca811668480f94ac3959",
+    "check-20261011T100203Z.json": "281fa39aafc88ca88122447a7633681d788f13ff7655717ac6d81c335611b844"
+  },
+  "checker": {
+    "manifest_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+    "release_id": "codex-D30-full-20261010",
+    "pieces": 57801,
+    "done": 6376,
+    "pending": 51425,
+    "done_cells": 54122007695.356964,
+    "pending_cells": 412990754508.0608,
+    "ledger_statuses": {
+      "ok": 6376,
+      "failed": 5
+    },
+    "call_reservations": 6397,
+    "call_cap": 59576,
+    "invocations": 3,
+    "max_invocations": 20,
+    "summed_invocation_seconds": 34523.9,
+    "observed_cells_per_wall_second": 1567665.6590769098,
+    "projected_remaining_wall_s": 263443.1341382081,
+    "projected_within_invocation_cap": true,
+    "piece_seconds_max": 81.663,
+    "last_stop": "fatal service error on '572|w001_002': Too many concurrent aggregations.",
+    "complete": false,
+    "violations": [],
+    "n_violations": 0
+  },
+  "verified_unique_outputs": 6376,
+  "verification": {
+    "independent_readonly_agents": [
+      "inv3_terminal_evidence",
+      "inv3_timeout_timeline"
+    ],
+    "all6376_response_hashes_and_numeric_contracts_passed": true,
+    "reserved_purpose_multiset_equals_logged_attempts": true,
+    "nine_live_source_hashes_match": true,
+    "manifest_file_matches": true,
+    "no_local_runner_at_receipt": true
+  },
+  "pending_failed": [
+    "380|w005_006",
+    "565|w001_000",
+    "565|w001_001",
+    "572|w001_002"
+  ],
+  "remaining_original_budget": {
+    "calls": 53179,
+    "starts": 17,
+    "request_start_window_s": 367200,
+    "projected_remaining_s": 263443.1341382081,
+    "unused_invocation_time_recredited": false
+  },
+  "limits": [
+    "Local evidence cannot prove server-side aggregations have ended.",
+    "Lingering work after HTTP timeout is an unproven hypothesis, not established root cause.",
+    "request_log.n is shared reservation count sampled when logging, not a unique attempt id or completion count.",
+    "Exit0 and checker0 do not establish complete extraction or normal-wall eligibility."
+  ]
+}

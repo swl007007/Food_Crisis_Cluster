@@ -1,0 +1,12 @@
+start attempt-line 1 2026-10-10T23:59:01Z
+exit 0 2026-10-11T05:59:36Z
+checker exit 0 2026-10-11T05:59:41Z
+start attempt-line 4 2026-10-11T06:16:50Z
+exit 0 2026-10-11T07:28:14Z
+checker exit 0 2026-10-11T07:28:18Z
+start attempt-line 7 2026-10-11T07:37:38Z
+exit 0 2026-10-11T10:02:03Z
+checker exit 0 2026-10-11T10:02:08Z
+start attempt-line 10 2026-10-11T10:17:32Z
+exit 143 2026-10-11T12:45:56Z
+checker exit 0 2026-10-11T12:46:05Z

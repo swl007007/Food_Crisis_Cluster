@@ -118,3 +118,13 @@
   - Tests: the new tests fail under 77aa4bf; focused 48 OK; stress 25/25. Resume is HELD for a supervisor receipt.
   - Evidence: evidence/p1/c-full-20261010/invocation2/ and stop-prefix-repair/.
 - Not changed: scripts/ee_pilot.py (superseded native pilot, comparison only) has the same substring pattern.
+- 2026-10-11 USER EMERGENCY DIRECTION: stop the extraction. The supervisor killed invocation 4 (exit 143 at 12:45:56Z;
+  checker 0).
+  - Preserved: 4 starts, 8,310 reservations, 8,280 window outputs (774 admins complete, 14.6% of cells).
+  - Old resume authority revoked.
+  - USER STANDING INSTRUCTION: whenever a decision obviously drifts from the objective, challenge it immediately and
+    return to discussion instead of incrementally optimizing or continuing it.
+  - Next: a bounded whole-admin direct reduceRegion pilot on the unchanged D30 estimand. Offline proposal: 3 admins
+    (REF 658 completed, MED 4711, LARGE 1050), ONE aggregation per admin (sums only; diagnostics dropped), sequential,
+    no automatic retry, ≤ 5 calls, body 65efd14b…; evidence/p1/whole-admin-pilot/WHOLE-ADMIN-PILOT-PROPOSAL.md.
+  - Tiny opt-in diff: sums-only reduction, Budget attempts.

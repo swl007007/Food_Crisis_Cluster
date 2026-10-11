@@ -1,0 +1,5 @@
+{"utc": "2026-10-11T07:27:14Z", "piece_id": "378|w001_014", "status": "failed", "error": "'378|w001_014' failed twice: Earth Engine capacity exceeded."}
+{"utc": "2026-10-11T07:47:40Z", "piece_id": "380|w005_006", "status": "failed", "error": "'380|w005_006' failed twice: Earth Engine capacity exceeded."}
+{"utc": "2026-10-11T10:00:17Z", "piece_id": "565|w001_000", "status": "failed", "error": "'565|w001_000' failed twice: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}
+{"utc": "2026-10-11T10:00:21Z", "piece_id": "565|w001_001", "status": "failed", "error": "'565|w001_001' failed twice: HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}
+{"utc": "2026-10-11T10:01:27Z", "piece_id": "572|w001_002", "status": "failed", "error": "fatal service error on '572|w001_002': Too many concurrent aggregations."}

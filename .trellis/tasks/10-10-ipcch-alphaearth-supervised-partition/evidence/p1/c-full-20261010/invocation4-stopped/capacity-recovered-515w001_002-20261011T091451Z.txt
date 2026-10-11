@@ -1,0 +1,3 @@
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/request_log.jsonl:{"n": 5819, "utc": "2026-10-11T09:14:51Z", "purpose": "515|w001_002", "attempt": 1, "status": "error", "seconds": 4.31, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/request_log.jsonl:{"n": 5825, "utc": "2026-10-11T09:15:21Z", "purpose": "515|w001_002", "attempt": 2, "status": "ok", "seconds": 30.02, "response_bytes": 3835}
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/ledger.jsonl:{"utc": "2026-10-11T09:15:21Z", "piece_id": "515|w001_002", "status": "ok", "seconds": 34.339, "response_sha256": "4e047334848ced44dcef9f1825263325e67fb17ecbce61648213e573a5449861"}

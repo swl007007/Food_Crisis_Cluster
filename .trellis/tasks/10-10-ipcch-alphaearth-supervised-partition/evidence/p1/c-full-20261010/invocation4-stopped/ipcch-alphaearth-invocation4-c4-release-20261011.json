@@ -1,0 +1,91 @@
+{
+  "original_release": "/tmp/ipcch-alphaearth-c-full-release-20261010/release.json",
+  "original_release_sha256": "d87071c241c276a2198fc65c5b727738c529218a68c6daee89ef346674a7d0f2",
+  "release_id": "codex-D30-full-20261010",
+  "implementation_commit": "c72069151f0b97085fed6afb72d6e80f7c3cf825",
+  "source_sha256": {
+    "scripts/ee_metadata.py": "8e5d871d31312d6be767a026dbd805e9beee97fc1c1e82906bda1292476150d4",
+    "scripts/ee_pilot_c.py": "39fc0762bba6fafb02d31c1d593eae66f28e1ec868981db231eb025a3ec4dd6d",
+    "scripts/build_c_production.py": "5ea13a301ca1a0cea67f1af5689c27c8c7f530082fc3d72d8b66be806d510af8",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+    "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+    "tests/test_c_production.py": "c329ffc5eef3e30a67ccf2a07b267467149cd4a7921897a0236dc6407fac1a2d",
+    "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5"
+  },
+  "run_directory": "/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010",
+  "manifest_file_sha256": "b7acb5facf6609683cf50c994a91eb5ae89a4168dd916442dd59f9682b0ca529",
+  "body_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+  "pieces_sha256": "9f22cb263e1f358175c364c9ebcb8937bb65285591bd9b3cf00e1a28f28baf7d",
+  "plan_sha256": "bccf45c215d21955ea16b09bf17e40d0c738c583f8454fe538b39b1a01926dda",
+  "limits_unchanged": {
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "concurrency": 4,
+    "batch_size": 1,
+    "max_invocations": 20,
+    "wall_budget_s": 21600,
+    "outer_timeout_s": 22200,
+    "max_high_level_calls": 59576,
+    "max_consecutive_failures": 5,
+    "max_failure_fraction": 0.02,
+    "min_attempts_for_fraction": 200,
+    "max_pixels": 2270400000
+  },
+  "utc": "2026-10-11T10:11:52.249315+00:00",
+  "receipt_id": "codex-D30-c4-post-concurrency-once-20261011",
+  "decision": "RELEASE one conditional invocation4 after quiet interval; same original c4 manifest/run/cumulative caps; no code repair",
+  "source_binding_receipt": "/tmp/ipcch-alphaearth-c4-continuation-c720691-20261011.json",
+  "source_binding_receipt_sha256": "baf78d440696e111f612713abc20174cb1bbf8f6a14327eda41e668ce353336a",
+  "terminal_receipt": "/tmp/ipcch-alphaearth-invocation3-terminal-supervisor-20261011.json",
+  "terminal_receipt_sha256": "b009bff3306f1c64d5f71fa67eb935e1a07fbb36fa67f26e43b978fe2a7c72c4",
+  "one_time_non_wall_resume": {
+    "next_invocation": 4,
+    "expected_previous_invocations": 3,
+    "expected_previous_calls": 6397,
+    "expected_saved_outputs": 6376,
+    "expected_pending": 51425,
+    "exact_accepted_stop": "fatal service error on '572|w001_002': Too many concurrent aggregations.",
+    "not_before_utc": "2026-10-11T10:17:00Z",
+    "last_logged_completion_utc": "2026-10-11T10:01:36Z",
+    "minimum_quiet_interval_seconds": 900,
+    "reason": "Artifact integrity and correct fatal-stop behavior independently verified. One bounded recovery after a quiet interval within existing budget; cause and server-side settlement are not established."
+  },
+  "remaining_original_budget": {
+    "calls": 53179,
+    "starts": 17,
+    "request_start_window_s": 367200,
+    "projected_remaining_s": 263443.1341382081,
+    "unused_invocation_time_recredited": false
+  },
+  "prelaunch_requirements": [
+    "Retain this receipt and terminal receipt unchanged; verify all bound hashes and exactly3starts/6397reservations.",
+    "At or after not_before_utc, verify terminal log hashes still equal terminal receipt, no local EE runner, and no invocation lock holder; unchanged run_invocation.sh provides the authoritative flock.",
+    "Run existing resume_check.py read-only. Its ONLY refusal must be the exact prior fatal non-wall stop; every source/checker/remaining-budget/projection/no-runner condition must pass. Do not edit or weaken the gate.",
+    "Check current manifest file/body/pieces/plan hashes against receipts; checker remains0violations and complete=false.",
+    "No EE/GCS request during quiet interval; no probe or standalone failed-piece retry."
+  ],
+  "authorization": [
+    "After every prelaunch condition passes, start unchanged run_invocation.sh exactly ONCE for invocation4 in the same run directory. This receipt replaces ONLY the prior-normal-wall prerequisite for this one launch.",
+    "Retain the consumed3starts and6397calls; original20starts/59576calls remain binding. No unused invocation time is credited back.",
+    "Use c4/b1 with original deadline, SDK retry0, wrapper retry1, all shared-stop/failure rules and timeout unchanged. Failed pieces are handled only by the normal pending-piece pass.",
+    "Report launch PID/PGID/flock/counters and monitor with15 historical request errors/5 historical non-ok rows; track four currently missing failed IDs separately.",
+    "Any new non-wall stop remains HOLD/report/review, including another concurrency rejection. This is not a standing override for fatal stops.",
+    "Future ordinary wall-stop resumes remain subject to the unchanged normal gate and original budget. No source/header/manifest/counter edit is requested."
+  ],
+  "limits": [
+    "A quiet interval does not prove Earth Engine server-side work has ended or prevent a new concurrency rejection.",
+    "No new numerical test or scientific/model result is claimed."
+  ],
+  "excluded": [
+    "Cloud writes including GCS/Drive export",
+    "IAM/billing/project/bucket/quota changes",
+    "Increasing concurrency/batch or changing recipe",
+    "Project-data fitting, map/scientific selection, lifecycle close/archive, push/merge",
+    "c8 promotion/retry/mixing partial c8 outputs",
+    "changing release manifest, recipe, caps or invocation counters"
+  ]
+}

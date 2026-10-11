@@ -593,5 +593,22 @@ class StopClassification(Patched):
             self.assertEqual(s["done"], 2, text)  # already issued work settled and was saved
 
 
+class NoAutomaticRetry(unittest.TestCase):
+    def test_attempts_one_means_no_retry_and_default_keeps_one_retry(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            calls = []
+
+            def timeout():
+                calls.append(1)
+                raise RuntimeError("HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out.")
+
+            with self.assertRaisesRegex(ee_metadata.Stop, "no automatic retry"):
+                ee_metadata.Budget(5, Path(tmp) / "a.jsonl", attempts=1).call("x", timeout)
+            self.assertEqual(len(calls), 1)
+            with self.assertRaisesRegex(ee_metadata.Stop, "failed twice"):
+                ee_metadata.Budget(5, Path(tmp) / "b.jsonl").call("x", timeout)
+            self.assertEqual(len(calls), 3)
+
+
 if __name__ == "__main__":
     unittest.main()

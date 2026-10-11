@@ -1,0 +1,26 @@
+{
+ "manifest_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+ "release_id": "codex-D30-full-20261010",
+ "pieces": 57801,
+ "done": 6376,
+ "pending": 51425,
+ "done_cells": 54122007695.356964,
+ "pending_cells": 412990754508.0608,
+ "ledger_statuses": {
+  "ok": 6376,
+  "failed": 5
+ },
+ "call_reservations": 6397,
+ "call_cap": 59576,
+ "invocations": 3,
+ "max_invocations": 20,
+ "summed_invocation_seconds": 34523.9,
+ "observed_cells_per_wall_second": 1567665.6590769098,
+ "projected_remaining_wall_s": 263443.1341382081,
+ "projected_within_invocation_cap": true,
+ "piece_seconds_max": 81.663,
+ "last_stop": "fatal service error on '572|w001_002': Too many concurrent aggregations.",
+ "complete": false,
+ "violations": [],
+ "n_violations": 0
+}

@@ -1,0 +1,11 @@
+{
+ "now_utc": "2026-10-11T10:17:10.641854+00:00",
+ "starts": 3,
+ "calls": 6397,
+ "saved_outputs": 6376,
+ "resume_check_fails": [
+  "last invocation did not end on its wall budget: fatal service error on '572|w001_002': Too many concurrent aggregations."
+ ],
+ "fails": [],
+ "pass": true
+}
