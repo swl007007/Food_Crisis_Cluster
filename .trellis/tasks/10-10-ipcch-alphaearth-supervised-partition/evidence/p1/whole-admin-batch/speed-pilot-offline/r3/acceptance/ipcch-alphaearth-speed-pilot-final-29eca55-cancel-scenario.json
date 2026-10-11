@@ -1,0 +1,143 @@
+{
+  "result": "PASS narrow cancellation regression only",
+  "execution_authorized": false,
+  "clock_start": 1000,
+  "clock_end": 4600.0,
+  "max_cancels": 2,
+  "cancellation_attempts_total": 2,
+  "attempted_task_ids": [
+    "T0",
+    "T1"
+  ],
+  "restart_cancellation_attempts": 0,
+  "durable_records_verified_before_each_call": [
+    {
+      "task_id": "T0",
+      "attempt_records_before_call": 1
+    },
+    {
+      "task_id": "T1",
+      "attempt_records_before_call": 2
+    }
+  ],
+  "first_monitor": {
+    "reads": 60,
+    "final_states": {
+      "T0": "RUNNING",
+      "T1": "RUNNING"
+    },
+    "cancel_attempted": [
+      "T0",
+      "T1"
+    ],
+    "cancel_requested": [],
+    "cancel_unresolved": [
+      "T0",
+      "T1"
+    ],
+    "ambiguous": [],
+    "handoff": "cancellation failed or ambiguous for the remaining own tasks",
+    "calls_used": 63
+  },
+  "restart_monitor": {
+    "reads": 60,
+    "final_states": {
+      "T0": null,
+      "T1": null
+    },
+    "cancel_attempted": [
+      "T0",
+      "T1"
+    ],
+    "cancel_requested": [],
+    "cancel_unresolved": [
+      "T0",
+      "T1"
+    ],
+    "ambiguous": [],
+    "handoff": "cancellation failed or ambiguous for the remaining own tasks",
+    "calls_used": 64
+  },
+  "ledger_state_counts": {
+    "SUBMITTED": 2,
+    "CANCEL_ATTEMPT": 2,
+    "CANCEL_FAILED": 2,
+    "HOLD_HANDOFF": 2
+  },
+  "ledger_cancellation_and_handoff": [
+    {
+      "utc": "2026-10-11T13:52:09Z",
+      "task": "A",
+      "task_id": "T0",
+      "state": "CANCEL_ATTEMPT",
+      "after_s": 3600.0,
+      "reason": "cancel_after_s reached"
+    },
+    {
+      "utc": "2026-10-11T13:52:09Z",
+      "task": "A",
+      "task_id": "T0",
+      "state": "CANCEL_FAILED",
+      "error": "'cancelTask T0' failed (no automatic retry): Read timed out while cancelling"
+    },
+    {
+      "utc": "2026-10-11T13:52:09Z",
+      "task": "B",
+      "task_id": "T1",
+      "state": "CANCEL_ATTEMPT",
+      "after_s": 3600.0,
+      "reason": "cancel_after_s reached"
+    },
+    {
+      "utc": "2026-10-11T13:52:09Z",
+      "task": "B",
+      "task_id": "T1",
+      "state": "CANCEL_FAILED",
+      "error": "'cancelTask T1' failed (no automatic retry): Read timed out while cancelling"
+    },
+    {
+      "utc": "2026-10-11T13:52:09Z",
+      "task": "*",
+      "state": "HOLD_HANDOFF",
+      "reason": "cancellation failed or ambiguous for the remaining own tasks",
+      "ambiguous": [],
+      "nonterminal": [
+        "T0",
+        "T1"
+      ],
+      "cancel_attempted": [
+        "T0",
+        "T1"
+      ],
+      "cancel_requested": [],
+      "cancel_unresolved": [
+        "T0",
+        "T1"
+      ]
+    },
+    {
+      "utc": "2026-10-11T13:52:09Z",
+      "task": "*",
+      "state": "HOLD_HANDOFF",
+      "reason": "cancellation failed or ambiguous for the remaining own tasks",
+      "ambiguous": [],
+      "nonterminal": [
+        "T0",
+        "T1"
+      ],
+      "cancel_attempted": [
+        "T0",
+        "T1"
+      ],
+      "cancel_requested": [],
+      "cancel_unresolved": [
+        "T0",
+        "T1"
+      ]
+    }
+  ],
+  "socket_connect_calls": 0,
+  "fake_clients_only": true,
+  "cloud_calls_made": false,
+  "raw_log": "/tmp/ipcch-alphaearth-speed-pilot-final-29eca55-cancel-scenario.log"
+}

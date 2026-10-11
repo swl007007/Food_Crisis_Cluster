@@ -84,6 +84,8 @@ Focused total with `test_c_production`, `test_c_extraction` and `test_extraction
 
 ## Later pilot commands (only after USER cloud-write authorization of this exact manifest with a release_id)
 
+Superseded parts: the manifest body is now f66a1be8… (r2), and the code is at 29eca55. The `lookup` subcommand was removed.
+
 ```bash
 cd IPCCHAlphaEarthExperiment; R=~/ipcch-alphaearth-runs/p1-speed-pilot-<date>   # fresh; released manifest copied unchanged
 /opt/earthengine/bin/python scripts/ee_batch_c.py submit   --request $R/inputs/speed_pilot_manifest.json --out $R/out
@@ -91,5 +93,5 @@ cd IPCCHAlphaEarthExperiment; R=~/ipcch-alphaearth-runs/p1-speed-pilot-<date>   
 /opt/earthengine/bin/python scripts/ee_batch_c.py download --request $R/inputs/speed_pilot_manifest.json --out $R/out
 PYTHONPATH=.:scripts /home/swl007007/.venvs/ipcch-geo/bin/python scripts/validate_speed_pilot.py --request $R/inputs/speed_pilot_manifest.json \
   --out $R/out --full-run ~/ipcch-alphaearth-runs/p1-c-full-20261010 --interactive-run ~/ipcch-alphaearth-runs/p1-whole-admin-pilot-20261011 \
-  --plan $R/inputs/adaptive_plan.csv.gz --remaining-cells 3.98874e11
+  --plan $R/inputs/adaptive_plan.csv.gz   # remaining workload now comes from the manifest (no --remaining-cells; see r2/REPAIR-8b00a88.md)
 ```
