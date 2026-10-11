@@ -247,8 +247,9 @@ class Runner(Patched):
         self.assertTrue(s["stopped"].startswith("fatal"))
         self.assertEqual(s["attempted"], 1)
         _, s = self.run_once(path, self.tmp / "px", FakeEE(fail={ids[0]}, error="Too many pixels in the region."))
-        self.assertEqual(s["failed"], 1)  # non-retryable: counted once, run continues
-        self.assertEqual(s["done"], len(ids) - 1)
+        self.assertEqual(s["failed"], 1)  # non-retryable: counted once, and the released rule stops the invocation
+        self.assertTrue(s["stopped"].startswith("non-retryable request-size rejection"))
+        self.assertEqual(s["done"], 0)
 
     def test_call_budget_is_cumulative_across_resumes(self):
         _, path = self.manifest(limits={"max_high_level_calls": 5})
@@ -548,6 +549,48 @@ class ConcurrencyLimitStop(Patched):
         with self.assertRaisesRegex(ee_metadata.Stop, "non-retryable"):
             budget.call("c", boom("Too many pixels in the region."))
         self.assertEqual(calls.count("Too many pixels in the region."), 1)
+
+
+class StopClassification(Patched):
+    """Production-path stop classification (invocation-2 defect 2026-10-11: "cap" substring matched "capacity")."""
+
+    def test_exhausted_transient_capacity_error_counts_one_failure_and_work_continues(self):
+        _, path = self.manifest()  # max_consecutive_failures 3, fraction 0.5 after 4
+        ids = [r["request_id"] for r in epc.load_released(path)["requests"]]
+        ee = FakeEE(script={ids[1]: [("Earth Engine capacity exceeded.", 0.0), ("Earth Engine capacity exceeded.", 0.0)]})
+        out = self.tmp / "capx"
+        _, s = self.run_once(path, out, ee)
+        self.assertIsNone(s["stopped"])
+        self.assertEqual((s["failed"], s["done"], s["remaining"]), (1, len(ids) - 1, 1))
+        self.assertEqual([c[0] for c in ee.calls].count(ids[1]), 2)  # its one bounded retry
+        self.assertIn(ids[-1], [c[0] for c in ee.calls])  # subsequent work ran
+        self.assertFalse(epc.piece_file(out, ids[1]).exists())  # failed piece stays pending, no output
+
+    def test_genuine_request_cap_still_stops_without_exceeding_reservations(self):
+        _, path = self.manifest(limits={"concurrency": 2})
+        out = self.tmp / "cap"
+        req = epc.load_released(path)
+        out.mkdir()
+        budget = ee_metadata.Budget(3, out / "request_log.jsonl")
+        s = epc.run_production(req, out, FakeEE(), budget)
+        self.assertEqual(budget.used, 3)  # never beyond the cap
+        self.assertTrue(s["stopped"].startswith("request cap 3 reached"))
+        self.assertEqual(s["done"], 3)
+        self.assertFalse(s["complete"])
+
+    def test_deterministic_size_rejection_zero_retry_shared_stop_and_inflight_settles(self):
+        _, path = self.manifest(limits={"concurrency": 3, "max_consecutive_failures": 99, "max_failure_fraction": 1.0})
+        ids = [r["request_id"] for r in epc.load_released(path)["requests"]]
+        for text in ("Too many pixels in the region.", "Found 2e9 pixels; maxPixels allows only 1e9.",
+                     "Projection: The CRS of a map projection could not be parsed."):
+            ee = FakeEE(script={ids[0]: [(text, 0.0)], ids[1]: [(None, 0.3)], ids[2]: [(None, 0.3)]}, barrier_ids=ids[:3])
+            out = self.tmp / f"size{len(list(self.tmp.glob('size*')))}"
+            _, s = self.run_once(path, out, ee)
+            submitted = [c[0] for c in ee.calls]
+            self.assertEqual(submitted.count(ids[0]), 1, text)  # zero retry
+            self.assertEqual(sorted(submitted), sorted(ids[:3]), text)  # nothing new after the shared stop
+            self.assertTrue(s["stopped"].startswith("non-retryable request-size rejection"), text)
+            self.assertEqual(s["done"], 2, text)  # already issued work settled and was saved
 
 
 if __name__ == "__main__":

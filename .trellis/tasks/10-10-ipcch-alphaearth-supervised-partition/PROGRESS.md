@@ -105,3 +105,16 @@
     non-retryable.
   - Focused 36 OK and full 110 OK; the supervisor confirmed the old classifier fails both new tests.
   - Invocation 2 stays HELD for re-release of the same c4 manifest/run.
+- 2026-10-11 Full invocation 2 ended early at 07:27:57Z (4,263 s) on an exhausted transient "Earth Engine capacity
+  exceeded." for 378|w001_014.
+  - Cause: run_production matched "cap" as a substring, so "capacity" triggered a stop. Over-conservative; no
+    numerical effect.
+  - Cumulative: 2/20 starts, 4,513/59,576 reservations, 4,505 ok, 1 failed pending, checker clean.
+  - My live "continues" report was wrong: the PID was alive and in-flight successes were still landing, which is not
+    continuation.
+  - Offline class repair:
+    - exact SHARED_STOP_PREFIXES ("fatal service error", "request cap ", "non-retryable request-size rejection");
+    - Budget publishes the shared stop before raising a non-retryable size rejection (as it already did for fatal).
+  - Tests: the new tests fail under 77aa4bf; focused 48 OK; stress 25/25. Resume is HELD for a supervisor receipt.
+  - Evidence: evidence/p1/c-full-20261010/invocation2/ and stop-prefix-repair/.
+- Not changed: scripts/ee_pilot.py (superseded native pilot, comparison only) has the same substring pattern.

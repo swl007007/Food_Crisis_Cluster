@@ -1,0 +1,111 @@
+test_deterministic_size_rejection_zero_retry_shared_stop_and_inflight_settles (tests.test_c_production.StopClassification.test_deterministic_size_rejection_zero_retry_shared_stop_and_inflight_settles) ... {"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+{"n": 4, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-11T07:31:34Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-11T07:31:34Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 14, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 14, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+FAIL
+test_exhausted_transient_capacity_error_counts_one_failure_and_work_continues (tests.test_c_production.StopClassification.test_exhausted_transient_capacity_error_counts_one_failure_and_work_continues) ... {"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+FAIL
+test_genuine_request_cap_still_stops_without_exceeding_reservations (tests.test_c_production.StopClassification.test_genuine_request_cap_still_stops_without_exceeding_reservations) ... {"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+ok
+test_stop_rules (tests.test_c_production.Runner.test_stop_rules) ... {"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 4, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 4, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_002", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 5, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_002", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 6, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 7, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 8, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+{"n": 2, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-11T07:31:34Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-11T07:31:34Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+ERROR
+test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections (tests.test_c_production.ConcurrencyLimitStop.test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections) ... {"n": 1, "utc": "2026-10-11T07:31:34Z", "purpose": "a", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "TOO MANY CONCURRENT AGGREGATIONS"}
+{"n": 2, "utc": "2026-10-11T07:31:34Z", "purpose": "b", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "b", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4, "utc": "2026-10-11T07:31:34Z", "purpose": "c", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+ok
+test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry (tests.test_c_production.ConcurrencyLimitStop.test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry) ... {"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 3, "utc": "2026-10-11T07:31:34Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+ok
+
+======================================================================
+ERROR: test_stop_rules (tests.test_c_production.Runner.test_stop_rules)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/swl007007/ipcch-alphaearth-runs/tmp-oldcheck-77aa4bf/IPCCHAlphaEarthExperiment/tests/test_c_production.py", line 251, in test_stop_rules
+    self.assertTrue(s["stopped"].startswith("non-retryable request-size rejection"))
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'startswith'
+
+======================================================================
+FAIL: test_deterministic_size_rejection_zero_retry_shared_stop_and_inflight_settles (tests.test_c_production.StopClassification.test_deterministic_size_rejection_zero_retry_shared_stop_and_inflight_settles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/swl007007/ipcch-alphaearth-runs/tmp-oldcheck-77aa4bf/IPCCHAlphaEarthExperiment/tests/test_c_production.py", line 591, in test_deterministic_size_rejection_zero_retry_shared_stop_and_inflight_settles
+    self.assertEqual(sorted(submitted), sorted(ids[:3]), text)  # nothing new after the shared stop
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['11|[34 chars]_002', '11|w001_000', '11|w001_001', '11|w001_[120 chars]001'] != ['11|[34 chars]_002']
+
+First list contains 11 additional elements.
+First extra element 3:
+'11|w001_000'
+
++ ['11|w000_000', '11|w000_001', '11|w000_002']
+- ['11|w000_000',
+-  '11|w000_001',
+-  '11|w000_002',
+-  '11|w001_000',
+-  '11|w001_001',
+-  '11|w001_002',
+-  '11|w002_000',
+-  '11|w002_001',
+-  '11|w002_002',
+-  '11|w003_000',
+-  '11|w003_001',
+-  '11|w003_002',
+-  '12|w000_000',
+-  '12|w000_001'] : Too many pixels in the region.
+
+======================================================================
+FAIL: test_exhausted_transient_capacity_error_counts_one_failure_and_work_continues (tests.test_c_production.StopClassification.test_exhausted_transient_capacity_error_counts_one_failure_and_work_continues)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/swl007007/ipcch-alphaearth-runs/tmp-oldcheck-77aa4bf/IPCCHAlphaEarthExperiment/tests/test_c_production.py", line 563, in test_exhausted_transient_capacity_error_counts_one_failure_and_work_continues
+    self.assertIsNone(s["stopped"])
+AssertionError: "'11|w000_001' failed twice: Earth Engine capacity exceeded." is not None
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.700s
+
+FAILED (failures=2, errors=1)

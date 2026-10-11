@@ -1,0 +1,26 @@
+{
+ "manifest_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+ "release_id": "codex-D30-full-20261010",
+ "pieces": 57801,
+ "done": 4505,
+ "pending": 53296,
+ "done_cells": 39954825309.248886,
+ "pending_cells": 427157936894.1714,
+ "ledger_statuses": {
+  "ok": 4505,
+  "failed": 1
+ },
+ "call_reservations": 4513,
+ "call_cap": 59576,
+ "invocations": 2,
+ "max_invocations": 20,
+ "summed_invocation_seconds": 25880.4,
+ "observed_cells_per_wall_second": 1543825.6483380815,
+ "projected_remaining_wall_s": 276687.9390519287,
+ "projected_within_invocation_cap": true,
+ "piece_seconds_max": 81.663,
+ "last_stop": "'378|w001_014' failed twice: Earth Engine capacity exceeded.",
+ "complete": false,
+ "violations": [],
+ "n_violations": 0
+}

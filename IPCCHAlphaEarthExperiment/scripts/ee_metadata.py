@@ -64,7 +64,10 @@ class Budget:
                         self.on_fatal(str(stop))  # published before raising: no worker may start a new attempt after it
                     raise stop from error
                 if any(k in msg.lower() for k in NONRETRYABLE):
-                    raise Stop(f"non-retryable request-size rejection on '{purpose}': {msg[:300]}") from error
+                    stop = Stop(f"non-retryable request-size rejection on '{purpose}': {msg[:300]}")
+                    if self.on_fatal:
+                        self.on_fatal(str(stop))  # deterministic rejection: shared stop published before raising
+                    raise stop from error
                 if attempt == 2:
                     raise Stop(f"'{purpose}' failed twice: {msg[:300]}") from error
 

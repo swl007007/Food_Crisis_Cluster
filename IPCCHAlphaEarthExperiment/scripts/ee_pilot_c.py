@@ -179,6 +179,12 @@ def write_atomic(path: Path, payload: dict) -> None:
     os.replace(tmp, path)
 
 
+#: Budget.call Stop prefixes that end the invocation immediately: published fatal service errors, the cumulative call
+#: cap, and deterministic request-size rejections. Anything else (e.g. an exhausted transient "Earth Engine capacity
+#: exceeded.") only counts toward the consecutive/fraction failure rules.
+SHARED_STOP_PREFIXES = ("fatal service error", "request cap ", "non-retryable request-size rejection")
+
+
 class Control:
     """Shared stop state of one released invocation. ``wall_budget_s`` is the INVOCATION wall budget, measured from
     before init/projection and enforced at every attempt reservation (first attempts and retries): after it, or after
@@ -242,7 +248,7 @@ def run_production(req: dict, out: Path, ee, budget: Budget, sleep=time.sleep, c
                 state["failed"] += len(group)
                 state["consecutive"] += 1
                 frac = state["failed"] / state["attempted"]
-                if msg.startswith("fatal") or "cap" in msg:
+                if msg.startswith(SHARED_STOP_PREFIXES):  # exact Budget prefixes (never a substring such as "capacity")
                     control.stop(msg)
                 elif state["consecutive"] >= int(limits["max_consecutive_failures"]):
                     control.stop(f"{state['consecutive']} consecutive failed calls")

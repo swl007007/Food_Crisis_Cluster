@@ -1,0 +1,76 @@
+{
+  "utc": "2026-10-11T06:16:01.297614+00:00",
+  "decision": "PASS delta check; RELEASE original c4 continuation",
+  "receipt_id": "codex-D30-c4-guard-continuation-20261011",
+  "original_release": "/tmp/ipcch-alphaearth-c-full-release-20261010/release.json",
+  "original_release_sha256": "d87071c241c276a2198fc65c5b727738c529218a68c6daee89ef346674a7d0f2",
+  "release_id": "codex-D30-full-20261010",
+  "implementation_commit": "77aa4bfb05d602c42ef9d8f787443a4f42019846",
+  "source_sha256": {
+    "scripts/ee_metadata.py": "f669fe5b4fdddfae14aa80efc357a267031d17db35cc9c913a5cc03973c806e9",
+    "scripts/ee_pilot_c.py": "f5c59f9dbd4330f10b131d2787523c58312901d7d26613ffd2c391cb750f9c7e",
+    "scripts/build_c_production.py": "5ea13a301ca1a0cea67f1af5689c27c8c7f530082fc3d72d8b66be806d510af8",
+    "ipcch_alphaearth/descriptors.py": "955f55fd6271f4cf53e40be528e942883c302c4f0f3980dbc683a836b9999e1a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/runinputs.py": "85db7c55d198850fd377174ff8b46ae2b20fe84660a72a2df34566dc0ecb1f0f",
+    "ipcch_alphaearth/cli.py": "4307845d63bb9ce47c13b15710e19d5abc7c5a6336d90f6b5021b09e683e8e7d",
+    "tests/test_c_production.py": "b3cb4114a78ff23296771f5df1d008d95819b8c35bce88146bcdc3bb7f8b14ea",
+    "scripts/check_c_outputs.py": "15af8d4b93f2073b82ee5e84b05af7c6a589595923084da3354375bcc5d991e5"
+  },
+  "amended_source_bindings_only": [
+    "scripts/ee_metadata.py",
+    "tests/test_c_production.py"
+  ],
+  "run_directory": "/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010",
+  "manifest_file_sha256": "b7acb5facf6609683cf50c994a91eb5ae89a4168dd916442dd59f9682b0ca529",
+  "body_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+  "pieces_sha256": "9f22cb263e1f358175c364c9ebcb8937bb65285591bd9b3cf00e1a28f28baf7d",
+  "plan_sha256": "bccf45c215d21955ea16b09bf17e40d0c738c583f8454fe538b39b1a01926dda",
+  "limits_unchanged": {
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 1,
+    "concurrency": 4,
+    "batch_size": 1,
+    "max_invocations": 20,
+    "wall_budget_s": 21600,
+    "outer_timeout_s": 22200,
+    "max_high_level_calls": 59576,
+    "max_consecutive_failures": 5,
+    "max_failure_fraction": 0.02,
+    "min_attempts_for_fraction": 200,
+    "max_pixels": 2270400000
+  },
+  "state_verified": {
+    "ok_unique_pieces": 3807,
+    "saved_response_digests_rechecked": 3807,
+    "cumulative_calls": 3811,
+    "cumulative_invocations": 1,
+    "active_ee_runners": [],
+    "normal_first_exit_and_checker": true,
+    "projection_within_remaining_envelope": true
+  },
+  "validation": {
+    "exact_package_diff_checked": true,
+    "full_suite_retained": "110 passed",
+    "focused_retained": "36 passed",
+    "supervisor_new_tests": "2 passed; both fail under old classifier (retained logs, not rerun in this delta)"
+  },
+  "authorization": [
+    "Lift invocation2 HOLD. Run the unchanged run_invocation.sh once now; same manifest, release_id, output directory and cumulative ledgers.",
+    "Further c4 invocations remain authorized only after normal wall-budget exit, clean checker, source/manifest binding intact, counters and projected completion inside the original remaining envelope. No reset or renewed20-invocation allocation.",
+    "Report each invocation delta and25/50/75 percent milestones; promptly report any exception and stop on original fatal/size/cap/abnormal/checker guards.",
+    "New concurrency-limit fatal means no retry/no new reservation after stop publication; already-issued requests may settle.",
+    "After complete extraction and accepted checks, original local preparation scope stands; no project-data fit until next preparation checkpoint."
+  ],
+  "excluded": [
+    "c8 promotion, another c8 attempt, mixing c8 partial outputs into full run",
+    "cloud writes or IAM/billing/quota/project changes",
+    "recipe/manifest/limits changes",
+    "lifecycle close, archive, push, merge"
+  ],
+  "remaining_call_allowance": 55765,
+  "remaining_invocation_starts": 19,
+  "c8": "Incomplete23/24; FAIL for promotion; retained unchanged; client overlap8, no server concurrency or unbiased speedup inference."
+}

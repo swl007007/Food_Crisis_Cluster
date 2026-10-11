@@ -1,0 +1,3 @@
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/ledger.jsonl:{"utc": "2026-10-11T07:27:14Z", "piece_id": "378|w001_014", "status": "failed", "error": "'378|w001_014' failed twice: Earth Engine capacity exceeded."}
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/request_log.jsonl:{"n": 4512, "utc": "2026-10-11T07:27:12Z", "purpose": "378|w001_014", "attempt": 1, "status": "error", "seconds": 6.23, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out/request_log.jsonl:{"n": 4513, "utc": "2026-10-11T07:27:14Z", "purpose": "378|w001_014", "attempt": 2, "status": "error", "seconds": 1.5, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
