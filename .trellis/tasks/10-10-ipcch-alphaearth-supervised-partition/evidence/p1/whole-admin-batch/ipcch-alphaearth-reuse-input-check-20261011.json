@@ -1,0 +1,22 @@
+{
+  "old_manifest_path": "/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/inputs/production_manifest.json",
+  "old_manifest_file_sha256": "b7acb5facf6609683cf50c994a91eb5ae89a4168dd916442dd59f9682b0ca529",
+  "old_request_sha256": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+  "old_plan_sha256": "bccf45c215d21955ea16b09bf17e40d0c738c583f8454fe538b39b1a01926dda",
+  "saved_outputs_verified": 8280,
+  "reusable_admins": 774,
+  "reusable_windows": 8268,
+  "partial_windows_excluded": 12,
+  "inventory_path": "/tmp/ipcch-alphaearth-reusable-output-inventory-20261011.csv",
+  "inventory_sha256": "fb109fe833b4011f06960333ebf415e9bfc66813a5b0fb5e1413db4f71d8ff4e",
+  "checks": [
+    "saved-file-name binding",
+    "original request identity",
+    "recipe",
+    "admin and ordered candidates vs original plan",
+    "response sha256",
+    "129 finite moments",
+    "exact per-admin planned piece coverage"
+  ],
+  "limitation": "Validates saved original inputs for reuse; does not prove all774 match the not-yet-run batch path."
+}

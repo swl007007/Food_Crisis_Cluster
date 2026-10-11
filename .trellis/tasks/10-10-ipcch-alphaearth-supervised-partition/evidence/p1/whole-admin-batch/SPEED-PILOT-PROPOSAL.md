@@ -21,7 +21,9 @@ Offline baseline (`ipcch-alphaearth-24h-feasibility-baseline-20261011.json`, sup
 
 ## 2. Design corrections (supervisor review, applied)
 
-- **Reuse by default.** The 774 complete admins are reused with explicit bindings:
+- **Reuse by default.** The 774 complete admins are reused with explicit bindings (supervisor inventory
+  `ipcch-alphaearth-reusable-output-inventory-20261011.csv`, sha fb109fe8…: 8,268 windows rehashed, bindings and SHAs
+  valid, all 129 values finite; 12 partial windows excluded):
   - old manifest body 63d0c7ab…, plan bccf45c2…;
   - per-window response sha256 from the old ledger and outputs.
 
@@ -65,8 +67,11 @@ BATCH-DESIGN-PROPOSAL §3, except that maxPixels is the group constant.
 **Destination:** `gs://manuel-remote-sensing-rasters-645415198431/ipcch-alphaearth/speed-pilot-<date>/{A,B}/attempt-1/`.
 
 **Calls:**
-- EE: initialize; projection check; 2 × `start()`; at most 250 status calls (1 per minute); `cancel` for both tasks if
-  not COMPLETED by 4 h after the first submission.
+- EE: initialize; projection check; 2 × `start()`; ONE grouped status read per minute for both task IDs
+  (`ee.data.getTaskStatus([idA, idB])`), at most 75 reads.
+- At **60 min after the first submission**, `cancel` only our own still-nonterminal tasks (at most 2 cancel calls), then
+  keep reading (within the 75) until terminal or until the cap. Server-side cancellation is not instantaneous; every
+  outcome is recorded and preserved.
 - GCS: at most 20 list/download reads.
 - No client resubmission. EE's own server-side retries (up to 5) are recorded, not controlled.
 
@@ -103,26 +108,30 @@ BATCH-DESIGN-PROPOSAL §3, except that maxPixels is the group constant.
 
   | projected bulk wall (see §5) | what follows |
   |---|---|
-  | ≤ 22 h at the SLOWER task's rate | propose a bulk envelope for discussion |
+  | compute projection ≤ 22 h under the conservative band (+ ≤ 2 h tail = 24 h total) | propose a bulk envelope for discussion |
   | 22–48 h | discuss options |
   | > 48 h | discuss; the one-day goal is not supported |
-  | a task not complete in 4 h | cancel; the measured rate is < 3.5e5 cells/s per task, far below target |
+  | a task not complete in 60 min | cancel. At target a ~2.5e9-cell task needs ~17 min; an incomplete 60 min pilot shows the target is not supported under the observed queue/load, not that it is mathematically impossible |
 
-## 5. Projection model (explicit, with uncertainty)
+## 5. Projection model (corrected; no double-counted overhead)
 
-Bulk wall ≈ queue_start + (N_tasks / 2) × per-task fixed overhead + R_remaining / (2 × r_task) + download/validation.
+Task RUNNING timestamps already include startup, and two tasks cannot separately identify a fixed per-task startup
+overhead, so none is added.
 
-- **Measured inputs:** per-task fixed overhead (queue plus startup); per-task execution rate r_task, taken as the slower
-  of A and B; and download/validation seconds per row.
-- **Uncertainty reported:**
-  - range [slower, faster task];
-  - only 2 tasks, from one time of day and one geographic draw;
-  - whether more or larger tasks get more workers is unknown (documented as server-managed);
-  - queue variance under EE load;
-  - largest-item risk: one item of at most 2.56e8 cells bounds the tail of its task; the pilot includes a 2.55e8-cell
-    item.
-- **Interpretation.** Two balanced tasks of about 2.5e9 cells measure the documented concurrency (2 tasks) directly. They
-  do not prove bulk throughput, which also depends on queueing over about 100+ tasks.
+**Reported:**
+- (a) paired RUNNING-wall throughput: fresh cells of A+B / wall from the first RUNNING to the last COMPLETED, with the
+  observed overlap of the two RUNNING intervals;
+- (b) submit-to-final-validation throughput: fresh cells / wall from the first submission to the last validated row;
+- (c) the slower task's individual effective rate: its fresh cells / its own RUNNING→COMPLETED wall.
+
+**Projection:** remaining 3.9887e11 cells / (a), with sensitivity bands:
+- (c) × the observed concurrency, not an assumed 2×, unless overlap was actually observed;
+- (b) as the end-to-end band, including queue.
+
+Assumptions are stated, and the uncertainty covers 2 tasks, one time of day, one geographic draw, and server-managed
+workers.
+
+**Target:** 24 h total = 22 h compute allowance + 2 h queue tail / download / validation.
 
 ## 6. Before any bulk
 
