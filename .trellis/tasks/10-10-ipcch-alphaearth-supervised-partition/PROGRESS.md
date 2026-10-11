@@ -95,3 +95,13 @@
   A bounded c8 probe manifest was prepared offline and is NOT run: 24 fresh second-half pieces, 3.378e8 cells, ≤ 50
   calls, body 5eab5d21…; see evidence/p1/c8-probe/C8-PROBE-PROPOSAL.md.
 - Full release receipt and volume-accounting receipt are retained in evidence/p1/c-full-20261010/.
+- 2026-10-11 Full invocation 1 completed normally: c4, 3,807 pieces ok, 3,811 calls, 2 recovered transient errors,
+  checker clean.
+  - c8 probe (codex-D30-c8-probe-20261011): 23/24 ok. 4 attempts were rejected "Too many concurrent aggregations." and
+    1 piece failed after retry. The stop control did not fire because the text was not in FATAL. FAIL for promotion; no
+    second attempt, no migration.
+  - Execution-guard repair: FATAL += "too many concurrent aggregations" (shared fatal stop, zero retry, no new
+    reservations after publication). "Earth Engine capacity exceeded." stays transient; maxPixels/size rejections stay
+    non-retryable.
+  - Focused 36 OK and full 110 OK; the supervisor confirmed the old classifier fails both new tests.
+  - Invocation 2 stays HELD for re-release of the same c4 manifest/run.

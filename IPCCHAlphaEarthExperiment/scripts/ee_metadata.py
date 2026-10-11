@@ -17,7 +17,10 @@ import time
 from pathlib import Path
 
 COLLECTION = "GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL"
-FATAL = ("auth", "permission", "quota", "429", "403", "401", "too many requests", "rate limit", "not enabled", "billing")
+#: service-limit / access failures: a shared stop, never retried. "too many concurrent aggregations" is EE's
+#: concurrency-limit rejection (c8 probe 2026-10-11); the distinct "Earth Engine capacity exceeded." stays transient.
+FATAL = ("auth", "permission", "quota", "429", "403", "401", "too many requests", "rate limit", "not enabled", "billing",
+         "too many concurrent aggregations")
 #: deterministic request-size rejections: never retried (a retry cannot succeed), reported distinctly from service errors
 NONRETRYABLE = ("too many pixels", "maxpixels", "could not be parsed")
 

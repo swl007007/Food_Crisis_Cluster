@@ -510,5 +510,45 @@ class EnvelopeGuards(Patched):
         self.assertEqual(check_c_outputs.main(["--request", str(path), "--out", str(out)]), 1)
 
 
+class ConcurrencyLimitStop(Patched):
+    def test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry(self):
+        _, path = self.manifest(limits={"concurrency": 3, "max_consecutive_failures": 99, "max_failure_fraction": 1.0})
+        ids = [r["request_id"] for r in epc.load_released(path)["requests"]]
+        ee = FakeEE(script={ids[0]: [("Too many concurrent aggregations.", 0.0)],
+                            ids[1]: [(None, 0.3)], ids[2]: [(None, 0.3)]},
+                    barrier_ids=ids[:3])  # three in flight before the rejection
+        out = self.tmp / "conc"
+        _, s = self.run_once(path, out, ee)
+        submitted = [c[0] for c in ee.calls]
+        self.assertEqual(submitted.count(ids[0]), 1)  # zero retry
+        self.assertEqual(sorted(submitted), sorted(ids[:3]))  # no request started after the published fatal
+        self.assertTrue(s["stopped"].startswith("fatal"))
+        self.assertEqual(s["done"], 2)  # already issued calls settled and were saved
+        self.assertFalse(s["complete"])
+        self.assertEqual(len((out / "request_log.jsonl").read_text().splitlines()), 3)
+        led = {json.loads(x)["piece_id"]: json.loads(x)["status"] for x in (out / "ledger.jsonl").read_text().splitlines()}
+        self.assertEqual(led, {ids[0]: "failed", ids[1]: "ok", ids[2]: "ok"})
+
+    def test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections(self):
+        budget = ee_metadata.Budget(10, self.tmp / "log.jsonl")
+        calls = []
+
+        def boom(msg):
+            def f():
+                calls.append(msg)
+                raise RuntimeError(msg)
+            return f
+
+        with self.assertRaisesRegex(ee_metadata.Stop, "^fatal"):
+            budget.call("a", boom("TOO MANY CONCURRENT AGGREGATIONS"))
+        self.assertEqual(calls.count("TOO MANY CONCURRENT AGGREGATIONS"), 1)
+        with self.assertRaisesRegex(ee_metadata.Stop, "failed twice"):
+            budget.call("b", boom("Earth Engine capacity exceeded."))  # transient: one bounded retry
+        self.assertEqual(calls.count("Earth Engine capacity exceeded."), 2)
+        with self.assertRaisesRegex(ee_metadata.Stop, "non-retryable"):
+            budget.call("c", boom("Too many pixels in the region."))
+        self.assertEqual(calls.count("Too many pixels in the region."), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

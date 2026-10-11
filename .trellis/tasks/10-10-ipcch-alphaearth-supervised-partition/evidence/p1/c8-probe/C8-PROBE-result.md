@@ -43,11 +43,13 @@ All passed at 06:00Z, recorded in `run-20261011/precheck.json`:
 
 `Budget.call` durations include response serialization, and the log records completion timestamps at 1 s precision.
 
-- **Overlap.** Reconstructing start = completion − duration gives at most 10 overlapping client operations (11–12 within
-  timestamp precision). That is above the hard client bound of 8 threads (`ThreadPoolExecutor(8)`; a retry runs on the
-  same thread). The excess is a reconstruction artifact: the client never had more than 8 requests outstanding.
-  Rejections occurred with an estimated 6–9 operations in flight.
-- **Throughput.** Request span 130.2 s, Σ ok seconds 870 → effective parallelism 6.7. 3.218e8 cells completed, i.e.
+- **Overlap** (corrected wording per the supervisor check `run-20261011/ipcch-alphaearth-c8-supervisor-check-20261011.json`):
+  - The guaranteed client overlap is 8 (`ThreadPoolExecutor(8)`; a retry runs on the same thread).
+  - Reconstructing start = completion − duration from 1 s timestamps gives a loose interval upper bound of 10–11. That is
+    an interval bound, not an observed overlap above 8.
+  - None of this is server concurrency.
+  - Rejections occurred with an estimated 6–8 client operations outstanding.
+- **Throughput.** Request span 130.2 s, Σ ok seconds 870 → effective client parallelism 6.7 (supervisor's span definition: 6.63). 3.218e8 cells completed, i.e.
   2.45e6 cells per invocation-second.
 - **Unmatched c4 comparators.**
   - Full invocation 1: 3.389e10 cells / 21,617 s = 1.57e6 cells/s; parallelism about 3.7; 2 recovered errors in 3,811
@@ -72,3 +74,9 @@ stop rule. More rejections also mean more re-request calls against the cumulativ
 
 On this evidence c8 is not a supported production setting, and c4 remains the validated default. This is a feasibility
 observation from one bounded probe, not a measured capacity limit of the project.
+
+Independent check (supervisor): 23 saved outputs pass all hash, binding, 129-finite, rank-area and count checks; only
+4525|w007_001 is missing; 29 calls, 4 errors, 3 retries; incomplete and FAIL for promotion.
+
+Follow-up: "too many concurrent aggregations" is now a shared fatal stop in `scripts/ee_metadata.py` FATAL
+(evidence/p1/c-full-20261010/fatal-repair/). The c8 run itself is unchanged and is not repeated.

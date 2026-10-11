@@ -1,0 +1,56 @@
+test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections (tests.test_c_production.ConcurrencyLimitStop.test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections) ... {"n": 1, "utc": "2026-10-11T06:07:00Z", "purpose": "a", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "TOO MANY CONCURRENT AGGREGATIONS"}
+{"n": 2, "utc": "2026-10-11T06:07:00Z", "purpose": "a", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "TOO MANY CONCURRENT AGGREGATIONS"}
+FAIL
+test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry (tests.test_c_production.ConcurrencyLimitStop.test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry) ... {"n": 3, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 4, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "pop from empty list"}
+{"n": 5, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 6, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 7, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 8, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 9, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 10, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 11, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 12, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 13, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 14, "utc": "2026-10-11T06:07:00Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 15, "utc": "2026-10-11T06:07:00Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 15, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 15, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+FAIL
+
+======================================================================
+FAIL: test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections (tests.test_c_production.ConcurrencyLimitStop.test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHAlphaEarthExperiment/scripts/ee_metadata.py", line 54, in call
+    out = fn()
+          ^^^^
+  File "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHAlphaEarthExperiment/tests/test_c_production.py", line 539, in f
+    raise RuntimeError(msg)
+RuntimeError: TOO MANY CONCURRENT AGGREGATIONS
+
+The above exception was the direct cause of the following exception:
+
+ee_metadata.Stop: 'a' failed twice: TOO MANY CONCURRENT AGGREGATIONS
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHAlphaEarthExperiment/tests/test_c_production.py", line 542, in test_case_insensitive_and_distinct_from_transient_capacity_and_size_rejections
+    with self.assertRaisesRegex(ee_metadata.Stop, "^fatal"):
+AssertionError: "^fatal" does not match "'a' failed twice: TOO MANY CONCURRENT AGGREGATIONS"
+
+======================================================================
+FAIL: test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry (tests.test_c_production.ConcurrencyLimitStop.test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/users/swl00/ifpri dropbox/weilun shi/google fund/analysis/2.source_code/step5_geo_rf_trial/food_crisis_cluster/IPCCHAlphaEarthExperiment/tests/test_c_production.py", line 523, in test_concurrent_aggregation_rejection_is_a_shared_fatal_stop_without_retry
+    self.assertEqual(submitted.count(ids[0]), 1)  # zero retry
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 1
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.384s
+
+FAILED (failures=2)
+COUNTERFACTUAL_OLD_CLASSIFIER: EXPECTED_TWO_FAILURES

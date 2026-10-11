@@ -1,0 +1,12 @@
+{"n": 1, "utc": "2026-10-11T06:07:00Z", "purpose": "a", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "TOO MANY CONCURRENT AGGREGATIONS"}
+{"n": 2, "utc": "2026-10-11T06:07:00Z", "purpose": "b", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 3, "utc": "2026-10-11T06:07:00Z", "purpose": "b", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4, "utc": "2026-10-11T06:07:00Z", "purpose": "c", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+.{"n": 3, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 3, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 3, "utc": "2026-10-11T06:07:00Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+.
+----------------------------------------------------------------------
+Ran 2 tests in 0.376s
+
+OK

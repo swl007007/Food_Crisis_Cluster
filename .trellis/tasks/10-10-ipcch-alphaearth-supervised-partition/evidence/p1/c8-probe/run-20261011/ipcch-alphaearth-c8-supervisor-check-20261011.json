@@ -1,0 +1,67 @@
+{
+  "utc": "2026-10-11T06:06:07.106092+00:00",
+  "manifest_sha256": "5eab5d21a6ed256fed7c30afaebb1fb45e040ee83908f91b54eecf267ea099d4",
+  "precheck_pass": true,
+  "attempted_full_before_probe": 3807,
+  "signature_overlap": [],
+  "planned": 24,
+  "ok": 23,
+  "failed": 1,
+  "missing": [
+    "4525|w007_001"
+  ],
+  "binding_hash_numeric_checks_on_saved_outputs": 23,
+  "max_rank_area_relative_error": 2.0671436973516319e-16,
+  "request_calls": 29,
+  "request_errors": [
+    {
+      "n": 10,
+      "utc": "2026-10-11T06:00:56Z",
+      "purpose": "2637|w003_005",
+      "attempt": 1,
+      "status": "error",
+      "seconds": 0.35,
+      "response_bytes": 0,
+      "error": "Too many concurrent aggregations."
+    },
+    {
+      "n": 17,
+      "utc": "2026-10-11T06:01:40Z",
+      "purpose": "4525|w007_001",
+      "attempt": 1,
+      "status": "error",
+      "seconds": 0.17,
+      "response_bytes": 0,
+      "error": "Too many concurrent aggregations."
+    },
+    {
+      "n": 18,
+      "utc": "2026-10-11T06:01:40Z",
+      "purpose": "4525|w007_001",
+      "attempt": 2,
+      "status": "error",
+      "seconds": 0.64,
+      "response_bytes": 0,
+      "error": "Too many concurrent aggregations."
+    },
+    {
+      "n": 19,
+      "utc": "2026-10-11T06:01:41Z",
+      "purpose": "4673|w005_000",
+      "attempt": 1,
+      "status": "error",
+      "seconds": 0.59,
+      "response_bytes": 0,
+      "error": "Too many concurrent aggregations."
+    }
+  ],
+  "piece_request_attempts": 27,
+  "retry_attempts": 3,
+  "client_overlap_guaranteed": 8,
+  "client_overlap_possible": 11,
+  "effective_client_parallelism": 6.629894320687296,
+  "invocation_seconds": 131.53,
+  "complete": false,
+  "promotion": "FAIL",
+  "interpretation": "23 saved outputs validate, but one remains missing after a concurrency-limit rejection. Client overlap is not EE server scheduling evidence. No unbiased speedup claim from unmatched incomplete samples. Existing classifier failed to publish shared stop for this exact error; operational repair required before new full invocation."
+}
