@@ -1,0 +1,5 @@
+{"n": 1, "utc": "2026-10-11T12:57:59Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.89, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T12:57:59Z", "purpose": "projection equivalence check (transport WKT vs pinned pyproj EPSG:6933)", "attempt": 1, "status": "ok", "seconds": 0.19, "response_bytes": 140}
+{"n": 3, "utc": "2026-10-11T12:58:29Z", "purpose": "WA-REF_completed_small-658", "attempt": 1, "status": "ok", "seconds": 30.4, "response_bytes": 3710}
+{"n": 4, "utc": "2026-10-11T13:00:08Z", "purpose": "WA-MED_median_fresh-4711", "attempt": 1, "status": "ok", "seconds": 98.0, "response_bytes": 3712}
+{"n": 5, "utc": "2026-10-11T13:02:08Z", "purpose": "WA-LARGE_q75_fresh-1050", "attempt": 1, "status": "error", "seconds": 120.11, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)"}

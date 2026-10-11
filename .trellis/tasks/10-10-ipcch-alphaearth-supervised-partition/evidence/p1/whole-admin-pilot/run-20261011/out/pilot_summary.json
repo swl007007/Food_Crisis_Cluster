@@ -1,0 +1,29 @@
+{
+ "release_id": "codex-D30-whole-admin-pilot-20261011",
+ "request_sha256": "65efd14b6d792226e6b8ea3b6c8a2ab5a33b3990b0cae84cb412c5fe23de255d",
+ "recipe": "D30|EPSG:6933|10,0,0,0,-10,0|nearest|first-valid-ascending-id",
+ "done": [
+  "WA-REF_completed_small-658",
+  "WA-MED_median_fresh-4711"
+ ],
+ "failed": [],
+ "projection_check": {
+  "ee": {
+   "0": [
+    4341882.611290343,
+    1644631.1629230147
+   ],
+   "1": [
+    -8896035.039132658,
+    4548060.477689641
+   ],
+   "2": [
+    12282703.475939127,
+    -4177655.9204573347
+   ]
+  },
+  "max_abs_diff_m": 2.7939677238464355e-09
+ },
+ "stopped": "'WA-LARGE_q75_fresh-1050' failed (no automatic retry): HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out. (read timeout=120.0)",
+ "calls_used": 5
+}

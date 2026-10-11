@@ -1,0 +1,9 @@
+REF_completed_small 658: seconds 30.4, finite True, keys ['sums'], A 1023674028.235294 m2, coverage 0.999917, usable True, route usable, cells(Σwin) 1.024e+07, s/cell 2.97e-06
+  REF vs Σ windows (2): A whole 1023674028.235294 vs win 1023674028.235294 (diff -0.000000 m2, rel 2.329e-16); S max rel 4.369e-14; Q max rel 1.744e-14
+  window seconds: [23.539, 15.024] (sum 38.6), window counts [3836605, 6400273]
+  descriptors: max |dmean| 3.608e-15, max |dSD| 2.491e-14; coverage whole 0.999917476 vs windows 0.999917476
+MED_median_fresh 4711: seconds 98.0, finite True, keys ['sums'], A 3151863144.313726 m2, coverage 0.999995, usable True, route usable, cells(Σwin) 3.152e+07, s/cell 3.11e-06
+LARGE_q75_fresh 1050: NOT COMPLETED (see stopped)
+descriptive only, at 2.97e-06 s/cell one request fits <= 4.04e+07 cells: 3542 admins (56.9%) holding 11.3% of cells
+descriptive only, at 3.11e-06 s/cell one request fits <= 3.86e+07 cells: 3456 admins (55.5%) holding 10.6% of cells
+total cells 4.671e+11; x 3e-6 s/cell = 389 request-hours if per-cell cost held (unmeasured for other admins)

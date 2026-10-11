@@ -1,0 +1,51 @@
+{
+  "release_id": "codex-D30-whole-admin-pilot-20261011",
+  "issued_utc": "2026-10-11T12:57:25.758138+00:00",
+  "authorization_basis": "User explicitly stopped window bulk and requested whole-admin direct reduceRegion pilot; necessary read-only EE computation is authorized.",
+  "commit": "b6e6074059765a3c568d38914cd4b128edeabfb0",
+  "executor": {
+    "pane": "w14:p2",
+    "session": "3546490e-8e08-43f2-9f1d-9c72bccda1e8",
+    "terminal": "term_65d7ebc256c188"
+  },
+  "released_manifest": "/tmp/ipcch-alphaearth-whole-admin-released-20261011.json",
+  "released_manifest_file_sha256": "c05ee967eaa0b8c88a1024f6510081ecc36c0c35f9b93018a29e464c8da0cfaa",
+  "request_sha256": "65efd14b6d792226e6b8ea3b6c8a2ab5a33b3990b0cae84cb412c5fe23de255d",
+  "source_hashes": {
+    "scripts/ee_pilot_c.py": "c18513e2b930a429693939bb036dcf8e445c4a08d13c1c89824a424158f480d0",
+    "scripts/ee_metadata.py": "da50b46d82769ab4c541880b93dfcd2b371c177ad8780bbf5ccc15b97dc7ff2a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "config/experiment-contract.json": "b75a71066f3b96b2719dc851d61516b453d2fd843805af065419fd96984f1378"
+  },
+  "supervisor_check": "/tmp/ipcch-alphaearth-whole-admin-supervisor-check-20261011.json",
+  "supervisor_check_sha256": "e6846de203b57e9a4b09905d7f73836e90717ed7eea6f962f96bd073f6283de8",
+  "focused_tests": {
+    "result": "4 passed",
+    "classes": [
+      "tests.test_c_extraction.BuilderStructure",
+      "tests.test_c_production.NoAutomaticRetry"
+    ],
+    "interpreter": "/home/swl007007/.venvs/ipcch-geo/bin/python"
+  },
+  "one_time_only": true,
+  "fresh_run_dir": "/home/swl007007/ipcch-alphaearth-runs/p1-whole-admin-pilot-20261011",
+  "limits": {
+    "tile_scale": 4,
+    "deadline_ms": 120000,
+    "sdk_retries": 0,
+    "budget_retries": 0,
+    "concurrency": 1,
+    "max_high_level_calls": 5,
+    "outer_timeout_s": 600,
+    "max_pixels": 21574167226
+  },
+  "order": [
+    658,
+    4711,
+    1050
+  ],
+  "stop_on_first_error": true,
+  "cloud_write_authorized": false,
+  "old_bulk_resume_authorized": false,
+  "post_pilot": "HOLD for measured-results discussion. No bulk, retry, fit, or lifecycle action."
+}

@@ -128,3 +128,9 @@
     (REF 658 completed, MED 4711, LARGE 1050), ONE aggregation per admin (sums only; diagnostics dropped), sequential,
     no automatic retry, ≤ 5 calls, body 65efd14b…; evidence/p1/whole-admin-pilot/WHOLE-ADMIN-PILOT-PROPOSAL.md.
   - Tiny opt-in diff: sums-only reduction, Budget attempts.
+- 2026-10-11 Whole-admin pilot (codex-D30-whole-admin-pilot-20261011), 5/5 calls, one aggregation per admin:
+  - REF 658 ok in 30.4 s, identical to its 2 windows (A rel 2.3e-16; S/Q ≤ 4.4e-14; descriptors ≤ 2.5e-14).
+  - MED 4711 ok in 98.0 s (coverage 0.999995).
+  - LARGE 1050 read timeout at 120 s, not retried.
+  - About 3e-6 s/cell, so fewer requests did not cut per-pixel cost; 10 m exhaustive computation dominates.
+  - HOLD for the user discussion (route choice). Evidence: evidence/p1/whole-admin-pilot/WHOLE-ADMIN-PILOT-RESULT.md.
