@@ -41,7 +41,7 @@ class Fx:
 
 
 class FakeEE:
-    def __init__(self, body_len=1000, start_error_for=(), status=None, status_error=None):
+    def __init__(self, body_len=1000, start_error_for=(), status=None, status_error=None, cancel_error_for=()):
         LOG.clear()
         self.mosaics, self.exports, self.started, self.cancelled, self.status_calls, self.inits = [], [], [], [], [], []
         self.status = status or (lambda i, n: "RUNNING")
@@ -106,6 +106,8 @@ class FakeEE:
             @staticmethod
             def cancelTask(i):
                 outer.cancelled.append(i)
+                if i in cancel_error_for:
+                    raise RuntimeError("HTTPSConnectionPool: Read timed out.")
 
         self.Image, self.ImageCollection, self.Feature, self.FeatureCollection = Image, ImageCollection, Feature, FeatureCollection
         self.Reducer = type("R", (), {"min": staticmethod(lambda: "min"), "sum": staticmethod(lambda: Fx("sum"))})
@@ -227,8 +229,8 @@ class Monitor(Base):
         self.assertEqual(ee.cancelled, ["T1"])  # T0 already COMPLETED at the cap
         self.assertEqual(r["reads"], len(ee.status_calls))
         self.assertLessEqual(r["calls_used"], 84)
-        cancel = [x for x in ebc.read_ledger(self.out) if x["state"] == "CANCEL_REQUESTED"]
-        self.assertGreaterEqual(cancel[0]["after_s"], 3600)
+        attempt = [x for x in ebc.read_ledger(self.out) if x["state"] == "CANCEL_ATTEMPT"]
+        self.assertGreaterEqual(attempt[0]["after_s"], 3600)
 
     def test_unknown_state_counts_as_nonterminal_and_both_cancelled_once(self):
         self.submitted()
@@ -253,6 +255,36 @@ class Monitor(Base):
         self.assertEqual(len(ee.status_calls), 6)  # 3 failed rounds x 2 ids, then stop polling
         self.assertEqual(sorted(ee.cancelled), ["T0", "T1"])
         self.assertIn("failing", r["handoff"])
+
+
+class CancelFailure(Base):
+    def test_failed_cancel_never_reissued_other_task_still_attempted_and_restart_safe(self):
+        self.submitted()
+        t = [1000.0]
+        run = lambda ee: ebc.monitor(self.req, self.out, ee, sleep=lambda s: t.__setitem__(0, t[0] + s), now=lambda: t[0],
+                                     make_transport=NO_TRANSPORT)
+        ee = FakeEE(cancel_error_for=("T0",), status=lambda i, n: "CANCELLED" if i == "T1" and n > 31 else "RUNNING")
+        r = run(ee)
+        self.assertEqual(sorted(ee.cancelled), ["T0", "T1"])  # each attempted exactly once; T1 still attempted after T0 failed
+        self.assertEqual((r["cancel_attempted"], r["cancel_requested"], r["cancel_unresolved"]), (["T0", "T1"], ["T1"], ["T0"]))
+        self.assertIn("cancellation failed", r["handoff"])
+        states = [x["state"] for x in ebc.read_ledger(self.out)]
+        self.assertEqual((states.count("CANCEL_ATTEMPT"), states.count("CANCEL_REQUESTED"), states.count("CANCEL_FAILED")), (2, 1, 1))
+        self.assertEqual(states[-1], "HOLD_HANDOFF")
+        self.assertLessEqual(r["calls_used"], 84)
+        again = FakeEE(cancel_error_for=("T0", "T1"))
+        r2 = run(again)  # monitor restart: attempts reloaded from the ledger, nothing reissued
+        self.assertEqual(again.cancelled, [])
+        self.assertEqual(r2["cancel_unresolved"], ["T0"])
+
+    def test_both_cancels_fail_two_calls_total_then_handoff(self):
+        self.submitted()
+        t = [1000.0]
+        ee = FakeEE(cancel_error_for=("T0", "T1"))
+        r = ebc.monitor(self.req, self.out, ee, sleep=lambda s: t.__setitem__(0, t[0] + s), now=lambda: t[0], make_transport=NO_TRANSPORT)
+        self.assertEqual(sorted(ee.cancelled), ["T0", "T1"])  # never more than max_cancels attempts (the reproduced edge made 13)
+        self.assertEqual(r["cancel_unresolved"], ["T0", "T1"])
+        self.assertIn("cancellation failed", r["handoff"])
 
 
 class Download(Base):

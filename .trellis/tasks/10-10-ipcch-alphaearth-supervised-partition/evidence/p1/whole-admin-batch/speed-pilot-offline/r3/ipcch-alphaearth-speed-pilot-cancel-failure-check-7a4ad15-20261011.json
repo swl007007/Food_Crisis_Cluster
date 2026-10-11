@@ -1,0 +1,33 @@
+{
+  "commit": "7a4ad151eb2b52114eb347c4460f640dc1283f56",
+  "offline_only": true,
+  "max_cancels": 2,
+  "actual_cancel_attempts": 13,
+  "attempted_ids": [
+    "T0",
+    "T1",
+    "T0",
+    "T1",
+    "T0",
+    "T1",
+    "T0",
+    "T1",
+    "T0",
+    "T1",
+    "T0",
+    "T1",
+    "T0"
+  ],
+  "result": {
+    "reads": 70,
+    "final_states": {
+      "T0": "RUNNING",
+      "T1": "RUNNING"
+    },
+    "cancel_requested": [],
+    "ambiguous": [],
+    "handoff": "status budget exhausted before every own task was terminal",
+    "calls_used": 84
+  },
+  "cancel_failed_rows": 14
+}

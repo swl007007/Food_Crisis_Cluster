@@ -171,3 +171,8 @@
   - Body f66a1be8… (selection and plan unchanged).
   - Tests: 15 / 65 focused OK.
   - Evidence: evidence/p1/whole-admin-batch/speed-pilot-offline/r2/REPAIR-8b00a88.md.
+- 2026-10-11 Cancel-attempt accounting repair after the delta review of 7a4ad15 (offline):
+  - Cancel attempts are reserved and recorded before the call, counted against max_cancels, and never reissued (also
+    after a restart); the other task is still attempted.
+  - Unresolved cancels lead to HOLD_HANDOFF.
+  - Tests: 17 / 67 focused OK. Manifest unchanged (f66a1be8…). release_id null.

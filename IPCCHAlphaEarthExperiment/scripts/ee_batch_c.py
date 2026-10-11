@@ -207,7 +207,8 @@ def monitor(req: dict, out: Path, ee, sleep=time.sleep, now=time.time, make_tran
     connect(ee, req, budget, make_transport)
     status_log = out / "status.jsonl"
     reads = sum(1 for _ in open(status_log)) if status_log.exists() else 0
-    cancels = {r["task_id"] for r in ledger if r["state"] == "CANCEL_REQUESTED"}
+    attempted = {r["task_id"] for r in ledger if r["state"] == "CANCEL_ATTEMPT"}  # durable: never reissued, even after restart
+    cancels = {r["task_id"] for r in ledger if r["state"] == "CANCEL_REQUESTED"}  # attempts that succeeded
     state, failed_rounds, handoff = {}, 0, None
 
     def nonterminal():
@@ -215,15 +216,20 @@ def monitor(req: dict, out: Path, ee, sleep=time.sleep, now=time.time, make_tran
 
     def cancel_own(reason):
         for i in nonterminal():
-            if i in cancels or len(cancels) >= int(lim["max_cancels"]):
+            if i in attempted or len(attempted) >= int(lim["max_cancels"]):
                 continue
+            attempted.add(i)  # reserved and recorded BEFORE the call; a failed/ambiguous cancel is never reissued
+            append_ledger(out, {"task": known[i]["task"], "task_id": i, "state": "CANCEL_ATTEMPT",
+                                "after_s": round(now() - first, 1), "reason": reason})
             try:
                 budget.call(f"cancelTask {i}", lambda i=i: ee.data.cancelTask(i))
                 cancels.add(i)
-                append_ledger(out, {"task": known[i]["task"], "task_id": i, "state": "CANCEL_REQUESTED",
-                                    "after_s": round(now() - first, 1), "reason": reason})
+                append_ledger(out, {"task": known[i]["task"], "task_id": i, "state": "CANCEL_REQUESTED"})
             except Stop as stop:
                 append_ledger(out, {"task": known[i]["task"], "task_id": i, "state": "CANCEL_FAILED", "error": str(stop)[:300]})
+
+    def unresolved():
+        return [i for i in nonterminal() if i in attempted and i not in cancels]
 
     while True:
         if now() - first >= float(lim["cancel_after_s"]):
@@ -231,7 +237,10 @@ def monitor(req: dict, out: Path, ee, sleep=time.sleep, now=time.time, make_tran
         todo = nonterminal()
         if not todo:
             break
-        reserve = int(lim["max_cancels"]) - len(cancels)
+        if set(todo) <= set(unresolved()):  # only tasks whose cancel failed remain: polling cannot resolve them
+            handoff = "cancellation failed or ambiguous for the remaining own tasks"
+            break
+        reserve = int(lim["max_cancels"]) - len(attempted)
         if int(lim["max_status_reads"]) - reads < len(todo) or budget.cap - budget.used - len(todo) < reserve:
             cancel_own("read/call budget cannot cover another round plus reserved cancels")
             handoff = "status budget exhausted before every own task was terminal"
@@ -255,11 +264,13 @@ def monitor(req: dict, out: Path, ee, sleep=time.sleep, now=time.time, make_tran
             break
         if nonterminal():
             sleep(float(lim["status_read_interval_s"]))
-    if handoff or ambiguous:
-        append_ledger(out, {"task": "*", "state": "HOLD_HANDOFF", "reason": handoff or "ambiguous start unresolved",
-                            "ambiguous": ambiguous, "nonterminal": nonterminal(), "cancel_requested": sorted(cancels)})
-    return {"reads": reads, "final_states": {i: state.get(i) for i in ids}, "cancel_requested": sorted(cancels),
-            "ambiguous": ambiguous, "handoff": handoff, "calls_used": budget.used}
+    if handoff or ambiguous or unresolved():
+        append_ledger(out, {"task": "*", "state": "HOLD_HANDOFF", "reason": handoff or "ambiguous start or failed cancellation unresolved",
+                            "ambiguous": ambiguous, "nonterminal": nonterminal(), "cancel_attempted": sorted(attempted),
+                            "cancel_requested": sorted(cancels), "cancel_unresolved": unresolved()})
+    return {"reads": reads, "final_states": {i: state.get(i) for i in ids}, "cancel_attempted": sorted(attempted),
+            "cancel_requested": sorted(cancels), "cancel_unresolved": unresolved(), "ambiguous": ambiguous, "handoff": handoff,
+            "calls_used": budget.used}
 
 
 def download(req: dict, out: Path, storage) -> list:

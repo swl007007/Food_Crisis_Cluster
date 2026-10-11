@@ -1,0 +1,46 @@
+{
+  "commit": "7a4ad151eb2b52114eb347c4460f640dc1283f56",
+  "scope": "narrow offline repair delta; no lifecycle audit",
+  "result": "HOLD for one cancellation-attempt accounting correction",
+  "execution_authorized": false,
+  "cloud_write_authorized": false,
+  "manifest_body": "f66a1be8854ef555a1fdc2abc7533da5fa51cfdf31c5c49b1ac5632bf6a57f3c",
+  "manifest_file_sha256": "13705eba2c97d0140a2efd2fe2af503b88f115143160b7084853b3aa3ce8b282",
+  "plan_sha256": "ae2785fe7faa97db5600b6fee064cd0bc37611f67a082e2e27dd53e71f688ab5",
+  "source_hashes": {
+    "scripts/ee_batch_c.py": "99a0554533fca482924052d3043dc4e5fca8c44c2cfe307d9ef4811dcc106690",
+    "scripts/build_speed_pilot.py": "1af042e98be4fdfd1affbe98ec6b706d1eb51659d7f2280f5045dc477ebf6c48",
+    "scripts/validate_speed_pilot.py": "140d8e36313e7eb7fcfe92f648108b5d3547779e056e7db3a72f541c12c6c1ad",
+    "tests/test_speed_pilot.py": "aa1df6c652b1f2b1a4d687c1ddaaa0bb5b5df7581bbf386ac5f31fb0f7d9b8a2",
+    "scripts/ee_pilot_c.py": "c18513e2b930a429693939bb036dcf8e445c4a08d13c1c89824a424158f480d0",
+    "scripts/ee_metadata.py": "da50b46d82769ab4c541880b93dfcd2b371c177ad8780bbf5ccc15b97dc7ff2a",
+    "ipcch_alphaearth/extraction.py": "b7010e2859a945cc511ef319ba5bf5bfff08fa917a1938e4bc2ff545d99a8b8b",
+    "ipcch_alphaearth/aemoments.py": "efbbdaef51f7c60760df7bc0d122d4ab90a746820678511f5f049e986e46b6fd",
+    "config/experiment-contract.json": "b75a71066f3b96b2719dc851d61516b453d2fd843805af065419fd96984f1378"
+  },
+  "previous_findings_addressed": [
+    "manifest, plan and remaining-workload binding",
+    "COMPLETED task state and final timestamp",
+    "finite transports and known-id partial-submit monitoring",
+    "per-id status counting",
+    "incremental download provenance and verified resume"
+  ],
+  "independent_tests": "15 existing speed-pilot tests passed, per prior same-session tool result",
+  "new_reproduction": "/tmp/ipcch-alphaearth-speed-pilot-cancel-failure-check-7a4ad15-20261011.json",
+  "finding": {
+    "file": "IPCCHAlphaEarthExperiment/scripts/ee_batch_c.py",
+    "lines": [
+      216,
+      226
+    ],
+    "issue": "max_cancels counts only successful cancelTask calls; repeated transport failure reissues cancel requests, 13 actual calls under a max_cancels of 2 in the offline default-budget fixture",
+    "fix_scope": "Reserve/count an own-task cancellation attempt durably before the call; a failed/ambiguous cancellation must not be automatically reissued, including on monitor restart. Keep success vs attempt distinct. HOLD_HANDOFF for unresolved state, retain ability to cancel the other known task within the existing cap. Add one focused fake cancellation-error/resume regression. No new framework, scope or cap changes."
+  },
+  "limits_and_science": "unchanged; source pins and item lists verified equal to prior draft",
+  "remaining_live_unknowns": [
+    "EE batch runtime/overlap",
+    "GCS writer permission",
+    "actual task completion/cancellation",
+    "CSV equivalence"
+  ]
+}

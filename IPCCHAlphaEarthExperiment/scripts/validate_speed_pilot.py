@@ -114,7 +114,7 @@ def sha(path: Path) -> str:
 def task_states(req: dict, out: Path) -> dict:
     """Every expected task SUBMITTED with a known id, final state COMPLETED, no unknown state, monotonic timestamps."""
     ledger = [json.loads(x) for x in (out / "ledger.jsonl").read_text().splitlines()]
-    if any(r["state"] in ("AMBIGUOUS", "HOLD_HANDOFF", "CANCEL_REQUESTED", "CANCEL_FAILED") for r in ledger):
+    if any(r["state"] in ("AMBIGUOUS", "HOLD_HANDOFF", "CANCEL_ATTEMPT", "CANCEL_REQUESTED", "CANCEL_FAILED") for r in ledger):
         raise TechnicalError("ledger shows an ambiguous start, a hold/handoff or a cancellation: not a successful pilot")
     sub = {r["task"]: r for r in ledger if r["state"] == "SUBMITTED"}
     if sorted(sub) != sorted(t["name"] for t in req["tasks"]) or len({r["task_id"] for r in sub.values()}) != len(sub):
