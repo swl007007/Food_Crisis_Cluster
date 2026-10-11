@@ -1,0 +1,474 @@
+.{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "start ae2017d30_6de0391c29_A_a1", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "getTaskList", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+..{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "start ae2017d30_6de0391c29_A_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "start ae2017d30_6de0391c29_B_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+.{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+./mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+.{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 6, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 7, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 8, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 9, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 10, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 11, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 12, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 13, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 14, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 15, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 16, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 17, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 18, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 19, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 20, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 21, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 22, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 23, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 24, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 25, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 26, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 27, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 28, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 29, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 30, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 31, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 32, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 33, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 34, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 35, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 36, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 37, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 38, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 39, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 40, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 41, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 42, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 43, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 44, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 45, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 46, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 47, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 48, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 49, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 50, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 51, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 52, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 53, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 54, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 55, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 56, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 57, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 58, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 59, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 60, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 61, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 62, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 63, "utc": "2026-10-11T13:25:53Z", "purpose": "cancelTask T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 64, "utc": "2026-10-11T13:25:53Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 65, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 66, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 67, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 68, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 69, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 70, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 71, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 72, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 73, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 74, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 75, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 76, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 77, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 78, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+.{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 6, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 7, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 8, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 9, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 10, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 11, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 12, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 13, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 14, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 15, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 16, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 17, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 18, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 19, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 20, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 21, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 22, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 23, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 24, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 25, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 26, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 27, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 28, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 29, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 30, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 31, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 32, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 33, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 34, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 35, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 36, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 37, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 38, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 39, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 40, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 41, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 42, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 43, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 44, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 45, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 46, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 47, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 48, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 49, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 50, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 51, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 52, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 53, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 54, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 55, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 56, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 57, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 58, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 59, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 60, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 61, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 70}
+{"n": 62, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 70}
+{"n": 63, "utc": "2026-10-11T13:25:53Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 64, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 70}
+{"n": 65, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 72}
+.{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 6, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 7, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 8, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 9, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 10, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 11, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 12, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 13, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 14, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 15, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 16, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 17, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 18, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 19, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 20, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 21, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 22, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 23, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 24, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 25, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 26, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 27, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 28, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 29, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 30, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 31, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 32, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 33, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 34, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 35, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 36, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 37, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 38, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 39, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 40, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 41, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 42, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 43, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 44, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 45, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 46, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 47, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 48, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 49, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 50, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 51, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 52, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 53, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 54, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 55, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 56, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 57, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 58, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 59, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 60, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 61, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 62, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 63, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 64, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 65, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 66, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 67, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 68, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 69, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 70, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 71, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 72, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 73, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 74, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 75, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 76, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+..{"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "a", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "TOO MANY CONCURRENT AGGREGATIONS"}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "b", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "b", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "c", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+.{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many concurrent aggregations."}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7648}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w001_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7654}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7607}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_002..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7661}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w003_001..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7663}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 8, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 9, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 10, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 11, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 12, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 13, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 14, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 15, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+.{
+ "manifest_sha256": "998e48049f19ff1853c77165921af9cb2eaf7b6672f7793f9b17ff49e012da00",
+ "release_id": "rel-test",
+ "pieces": 14,
+ "done": 13,
+ "pending": 1,
+ "done_cells": 3647290.4497048287,
+ "pending_cells": 399313.75265711785,
+ "ledger_statuses": {
+  "failed": 1,
+  "ok": 13
+ },
+ "call_reservations": 0,
+ "call_cap": 1000,
+ "invocations": 0,
+ "max_invocations": 3,
+ "summed_invocation_seconds": 0,
+ "observed_cells_per_wall_second": null,
+ "projected_remaining_wall_s": null,
+ "projected_within_invocation_cap": true,
+ "piece_seconds_max": 0.0,
+ "last_stop": null,
+ "complete": false,
+ "violations": [
+  "11|w000_002: valid cells above the lattice box"
+ ],
+ "n_violations": 1
+}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+.{"calls_used": 4, "done": 2, "remaining": 12, "complete": false, "stopped": "request cap 4 reached before '11|w000_002'"}
+{"calls_used": 4, "done": null, "remaining": null, "complete": null, "stopped": "request cap 4 reached before 'initialize (may issue >1 HTTP request)'"}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3803}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "x", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out."}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "x", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out."}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "x", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool(host='earthengine.googleapis.com', port=443): Read timed out."}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w000_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11473}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w001_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11463}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w002_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11442}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[11|w003_000..+2]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 11489}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "batch[12|w000_000..+1]", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 7634}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+.{"calls_used": 5, "done": 3, "remaining": 11, "complete": false, "stopped": "request cap 5 reached before '11|w001_000'"}
+{"calls_used": 5, "done": null, "remaining": null, "complete": null, "stopped": "request cap 5 reached before 'initialize (may issue >1 HTTP request)'"}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 8, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 9, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 10, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 11, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 12, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 13, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 14, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 8, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 9, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 10, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 11, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 12, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 13, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 14, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 15, "utc": "2026-10-11T13:25:54Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+...{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 3, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 4, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 5, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_002", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 6, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 7, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 8, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w001_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Computation timed out."}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+.{"n": 1, "utc": "2026-10-11T13:25:54Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.08, "response_bytes": 0}
+..{"calls_used": 1, "done": null, "remaining": null, "complete": null, "stopped": "halted before 'projection equivalence check' attempt 1: invocation wall budget 0.05 s reached"}
+{"n": 2, "utc": "2026-10-11T13:25:54Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 2, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.2, "response_bytes": 0, "error": "Computation timed out."}
+.{"n": 1, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.06, "response_bytes": 0, "error": "Computation timed out."}
+.{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Too many pixels in the region."}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Found 2e9 pixels; maxPixels allows only 1e9."}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_000", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Projection: The CRS of a map projection could not be parsed."}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3839}
+{"n": 3, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.3, "response_bytes": 3816}
+.{"n": 1, "utc": "2026-10-11T13:25:55Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w000_001", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 3, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w000_001", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Earth Engine capacity exceeded."}
+{"n": 4, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+{"n": 5, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w001_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3809}
+{"n": 6, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w001_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3820}
+{"n": 7, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w001_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3834}
+{"n": 8, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w002_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3800}
+{"n": 9, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w002_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3807}
+{"n": 10, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w002_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3835}
+{"n": 11, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w003_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3826}
+{"n": 12, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w003_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 13, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w003_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3845}
+{"n": 14, "utc": "2026-10-11T13:25:56Z", "purpose": "12|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3810}
+{"n": 15, "utc": "2026-10-11T13:25:56Z", "purpose": "12|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3824}
+.{"n": 1, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w000_000", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3818}
+{"n": 2, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w000_001", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3816}
+{"n": 3, "utc": "2026-10-11T13:25:56Z", "purpose": "11|w000_002", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 3839}
+................{"n": 1, "utc": "2026-10-11T13:25:56Z", "purpose": "p", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Projection: The CRS of a map projection could not be parsed."}
+.{"n": 1, "utc": "2026-10-11T13:25:56Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "429 Too Many Requests"}
+{"n": 1, "utc": "2026-10-11T13:25:56Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+{"n": 2, "utc": "2026-10-11T13:25:56Z", "purpose": "probe", "attempt": 2, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "User memory limit exceeded."}
+.{"n": 1, "utc": "2026-10-11T13:25:56Z", "purpose": "probe", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "Image.reduceRegion: Too many pixels in the region. Found 66040811, but maxPixels allows only 2000000."}
+........
+----------------------------------------------------------------------
+Ran 60 tests in 2.447s
+
+OK
+submitted 2 pieces; ledger /tmp/tmpwm3blx9l/ledger.json

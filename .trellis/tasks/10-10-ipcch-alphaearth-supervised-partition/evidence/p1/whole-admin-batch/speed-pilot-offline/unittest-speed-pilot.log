@@ -1,0 +1,267 @@
+test_every_object_under_each_prefix_with_sha_and_read_cap (tests.test_speed_pilot.Download.test_every_object_under_each_prefix_with_sha_and_read_cap) ... ok
+test_ambiguous_start_holds_never_duplicates (tests.test_speed_pilot.Graph.test_ambiguous_start_holds_never_duplicates) ... {"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "start ae2017d30_6de0391c29_A_a1", "attempt": 1, "status": "error", "seconds": 0.0, "response_bytes": 0, "error": "HTTPSConnectionPool: Read timed out."}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "getTaskList", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 34}
+ok
+test_load_refuses_unreleased_or_duplicate_items (tests.test_speed_pilot.Graph.test_load_refuses_unreleased_or_duplicate_items) ... ok
+test_one_sums_reduceregion_per_item_same_composite_grid_constant_maxpixels_and_export (tests.test_speed_pilot.Graph.test_one_sums_reduceregion_per_item_same_composite_grid_constant_maxpixels_and_export) ... {"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "start ae2017d30_6de0391c29_A_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "start ae2017d30_6de0391c29_B_a1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+ok
+test_oversized_body_refuses_before_any_start_or_intent (tests.test_speed_pilot.Graph.test_oversized_body_refuses_before_any_start_or_intent) ... {"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "projection equivalence check", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 46}
+ok
+test_multi_object_exactly_once_and_refusals (tests.test_speed_pilot.Ingest.test_multi_object_exactly_once_and_refusals) ... /mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/scripts/validate_speed_pilot.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  frames.append(parse_export_csv(Path(d["local"])).assign(task=d["task"]))
+ok
+test_both_running_at_deadline_cancels_both_once (tests.test_speed_pilot.Monitor.test_both_running_at_deadline_cancels_both_once) ... {"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 6, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 7, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 8, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 9, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 10, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 11, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 12, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 13, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 14, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 15, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 16, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 17, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 18, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 19, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 20, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 21, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 22, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 23, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 24, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 25, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 26, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 27, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 28, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 29, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 30, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 31, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 32, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 33, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 34, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 35, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 36, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 37, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 38, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 39, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 40, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 41, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 42, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 43, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 44, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 45, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 46, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 47, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 48, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 49, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 50, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 51, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 52, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 53, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 54, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 55, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 56, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 57, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 58, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 59, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 60, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 61, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 62, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 63, "utc": "2026-10-11T13:25:53Z", "purpose": "cancelTask T0", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 64, "utc": "2026-10-11T13:25:53Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 65, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 66, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 67, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 68, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 69, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 70, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 71, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 72, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 73, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 74, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 75, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 76, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 77, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 78, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+ok
+test_grouped_reads_cancel_only_own_nonterminal_after_60_min (tests.test_speed_pilot.Monitor.test_grouped_reads_cancel_only_own_nonterminal_after_60_min) ... {"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 6, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 7, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 8, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 9, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 10, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 11, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 12, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 13, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 14, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 15, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 16, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 17, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 18, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 19, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 20, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 21, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 22, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 23, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 24, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 25, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 26, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 27, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 28, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 29, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 30, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 31, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 32, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 33, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 34, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 35, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 36, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 37, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 38, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 39, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 40, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 41, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 42, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 43, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 44, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 45, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 46, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 47, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 48, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 49, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 50, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 51, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 52, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 53, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 54, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 55, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 56, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 57, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 58, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 59, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 60, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 61, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 70}
+{"n": 62, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 70}
+{"n": 63, "utc": "2026-10-11T13:25:53Z", "purpose": "cancelTask T1", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 64, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 70}
+{"n": 65, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 72}
+ok
+test_read_cap_bounds_monitoring (tests.test_speed_pilot.Monitor.test_read_cap_bounds_monitoring) ... {"n": 1, "utc": "2026-10-11T13:25:53Z", "purpose": "initialize (may issue >1 HTTP request)", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 0}
+{"n": 2, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 3, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 4, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 5, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 6, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 7, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 8, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 9, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 10, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 11, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 12, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 13, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 14, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 15, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 16, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 17, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 18, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 19, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 20, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 21, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 22, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 23, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 24, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 25, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 26, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 27, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 28, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 29, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 30, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 31, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 32, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 33, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 34, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 35, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 36, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 37, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 38, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 39, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 40, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 41, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 42, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 43, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 44, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 45, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 46, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 47, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 48, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 49, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 50, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 51, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 52, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 53, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 54, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 55, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 56, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 57, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 58, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 59, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 60, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 61, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 62, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 63, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 64, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 65, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 66, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 67, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 68, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 69, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 70, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 71, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 72, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 73, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 74, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 75, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+{"n": 76, "utc": "2026-10-11T13:25:53Z", "purpose": "grouped getTaskStatus", "attempt": 1, "status": "ok", "seconds": 0.0, "response_bytes": 68}
+ok
+test_systematic_balanced_deterministic_and_group_maxpixels (tests.test_speed_pilot.Selection.test_systematic_balanced_deterministic_and_group_maxpixels) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.134s
+
+OK

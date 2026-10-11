@@ -152,3 +152,12 @@
     reuse-validation admins.
   - Fixed tolerance gates; ≤ 22 h projection at the slower task rate needed before bulk is discussed.
   - Supervisor baseline retained.
+- 2026-10-11 Speed pilot: offline implementation (new files only; nothing submitted):
+  - Code: scripts/ee_batch_c.py, build_speed_pilot.py, validate_speed_pilot.py; tests/test_speed_pilot.py.
+  - Exact adaptive plan: 9,138 items (1,329 admins split into 4,240 pieces); remaining 7,996 items / 3.98874e11 cells.
+  - Pilot body 7b8145b6…: A 50 fresh items / 2.418e9 cells, B 50 / 2.562e9, plus 6 pinned non-fresh admins.
+    Prefix gs://manuel-remote-sensing-rasters-645415198431/ipcch-alphaearth/speed-pilot-20261011/.
+  - Body ≤ 8 MB guard before any start; 60 min cancel.
+  - Tests: 10 focused / 60 total OK.
+  - Evidence: evidence/p1/whole-admin-batch/speed-pilot-offline/.
+  - The pilot write still needs USER authorization.
