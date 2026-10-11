@@ -144,3 +144,11 @@
   - One-task pilot (658, 4711, 1050 whole, plus 4505 split into 7).
   - Old window outputs proposed as a verification set, not reused.
   - Cloud write awaits user authorization.
+- 2026-10-11 User priority: shorten extraction to about one day. Speed-pilot proposal (offline; nothing submitted):
+  evidence/p1/whole-admin-batch/SPEED-PILOT-PROPOSAL.md.
+  - Remaining 5,453 admins / 3.9887e11 cells after reusing 774 complete admins (14.609%).
+  - Required 4.617e6 cells/s over 24 h (5.036e6 over 22 h), about 3x the interactive c4 rate.
+  - Pilot: 2 balanced batch tasks (95 fresh size-representative items, 4.99e9 cells), plus 2 references and 4
+    reuse-validation admins.
+  - Fixed tolerance gates; ≤ 22 h projection at the slower task rate needed before bulk is discussed.
+  - Supervisor baseline retained.

@@ -1,0 +1,6 @@
+task A: items 48 (whole 31, pieces 17), cells 2.567e+09, max item 2.55e+08, distinct candidate unions 46, whole-geometry bytes 1018057
+task B: items 47 (whole 23, pieces 24), cells 2.422e+09, max item 2.17e+08, distinct candidate unions 47, whole-geometry bytes 267577
+all items cells 4.988e+09; fraction of remaining 1.25%
+item cells quantiles {0.0: '4.03e+04', 0.25: '9.36e+06', 0.5: '3.06e+07', 0.75: '7.82e+07', 1.0: '2.55e+08'}
+reuse-validation old complete admins (whole-admin batch vs sum of old windows): [(0.25, 15, '2.56e+07', 5), (0.5, 117, '4.77e+07', 9), (0.75, 349, '7.75e+07', 12), (0.9, 229, '1.36e+08', 17)]
+reference rows: 658 (interactive whole 1.02e7) and 4711 (interactive whole 3.15e7)

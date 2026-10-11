@@ -1,0 +1,14 @@
+{
+  "total_admins": 6227,
+  "complete_admins": 774,
+  "total_estimated_cells": 467112762203.4208,
+  "complete_admin_estimated_cells": 68242719188.16826,
+  "complete_admin_cell_fraction": 0.1460947435181605,
+  "saved_all_window_cell_fraction": 0.14626291274016065,
+  "remaining_admins": 5453,
+  "remaining_estimated_cells": 398870043015.2525,
+  "required_cells_per_s_24h_no_overhead": 4616551.423787645,
+  "required_cells_per_s_22h_compute_budget": 5036237.916859249,
+  "relative_to_prior_observed_1_568e6_per_s": 2.9442292243543653,
+  "note": "Estimated geographic cells from frozen plan; membership based on saved output IDs and prior terminal checker. Not a fresh full hash revalidation."
+}
