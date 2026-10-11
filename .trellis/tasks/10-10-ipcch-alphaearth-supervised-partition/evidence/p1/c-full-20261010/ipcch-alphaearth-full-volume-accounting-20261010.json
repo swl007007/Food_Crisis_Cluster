@@ -1,0 +1,12 @@
+{
+  "code_commit": "736efa95e21480c9b22bf5f4b65086c4ced96447",
+  "N": 57801,
+  "sum_expected_cells": 467112762203.4208,
+  "sum_bbox_cells": 760559887492,
+  "sum_piece_band_pixel_caps": 107923448047188,
+  "max_possible_extra_piece_attempts_allowing_min2_setup_calls": 1773,
+  "total_band_pixel_cap_if_all_pieces_once_plus_worst_extras": 111948867247188,
+  "cells_equivalent_guard": 867820676334.7906,
+  "total_geom_est_cells_with_extra_max16m": 495480762203.4208,
+  "sum_each_geometry_band_total": 60257546324241.28
+}

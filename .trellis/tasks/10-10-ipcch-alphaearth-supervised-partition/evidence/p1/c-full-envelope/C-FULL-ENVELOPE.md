@@ -47,10 +47,16 @@ run. Reducer, composite, CRS transport, ordered geometry/candidate pieces and sc
 - With the per-invocation hard kill, the total runtime reservation is at most 20 × 22,200 s = 123 h 20 min.
 - Requests already issued when a window closes may finish, each bounded by the 120 s deadline.
 
-**Aggregate cells ceiling:**
-- The hashed manifest fixes the cells at 4.6711e11.
-- Re-requests are bounded by the call cap: at most 1,735 extra piece requests × ≤ 1.6e7 cells, so the aggregate is
-  ≤ 4.95e11 requested cells.
+**Volume accounting** (corrected per the supervisor receipt `ipcch-alphaearth-full-volume-accounting-20261010.json`,
+retained in `../c-full-20261010/`; prose only, no limit changed):
+- **Estimate (unchanged, an estimate):** Σ geodesic window area / 100 m² = 4.6711e11 cells. The earlier "≤ 4.95e11
+  including re-requests" adds 1,735 × 1.6e7 to that estimate. It is NOT an unconditional bound on processed cells:
+  - Σ lattice bounding boxes is 7.6056e11 cells;
+  - repeated failures before completion are not limited to 1,735 piece requests.
+- **Conservative guard (released, unconditional):** call cap 59,576 × the largest released per-call band-pixel guard
+  2.2704e9 = 1.35261e14 band-pixels, about 1.0485e12 spatial-cell equivalent. This counts even setup calls at the
+  largest guard.
+- This is a guard on request size, not an EECU or currency estimate, and it does not increase any manifest limit.
 
 **Expected:**
 - S1+S2 fit: t ≈ 4.0 s + 1.65e-6 s/cell → about 1.0e6 request-seconds.

@@ -1,0 +1,246 @@
+{
+ "plan_position_floor": 28900,
+ "excluded_small_live": 36,
+ "pieces": [
+  {
+   "group": "1",
+   "q": 0.5,
+   "plan_index": 36072,
+   "piece_id": "3286|w002_001",
+   "candidates": 1,
+   "expected_cells": 6226432.01530626,
+   "bbox_cells": 12968000,
+   "vertices": 16
+  },
+  {
+   "group": "1",
+   "q": 0.65,
+   "plan_index": 33522,
+   "piece_id": "3023|w000_001",
+   "candidates": 1,
+   "expected_cells": 9820424.414448319,
+   "bbox_cells": 14284000,
+   "vertices": 19
+  },
+  {
+   "group": "1",
+   "q": 0.8,
+   "plan_index": 55053,
+   "piece_id": "101246|w001_003",
+   "candidates": 1,
+   "expected_cells": 14442616.184206521,
+   "bbox_cells": 16000000,
+   "vertices": 9
+  },
+  {
+   "group": "1",
+   "q": 0.9,
+   "plan_index": 43386,
+   "piece_id": "4525|w007_001",
+   "candidates": 1,
+   "expected_cells": 16000045.713095399,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "1",
+   "q": 0.97,
+   "plan_index": 34607,
+   "piece_id": "3145|w004_001",
+   "candidates": 1,
+   "expected_cells": 16000061.895547561,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "1",
+   "q": 1.0,
+   "plan_index": 38281,
+   "piece_id": "3695|w003_002",
+   "candidates": 1,
+   "expected_cells": 16000322.309295822,
+   "bbox_cells": 16000000,
+   "vertices": 8
+  },
+  {
+   "group": "2",
+   "q": 0.5,
+   "plan_index": 49382,
+   "piece_id": "100321|w000_000",
+   "candidates": 2,
+   "expected_cells": 8236094.645814934,
+   "bbox_cells": 16000000,
+   "vertices": 18
+  },
+  {
+   "group": "2",
+   "q": 0.65,
+   "plan_index": 45083,
+   "piece_id": "4673|w005_000",
+   "candidates": 2,
+   "expected_cells": 11528852.763497,
+   "bbox_cells": 16000000,
+   "vertices": 37
+  },
+  {
+   "group": "2",
+   "q": 0.8,
+   "plan_index": 37016,
+   "piece_id": "3395|w001_001",
+   "candidates": 2,
+   "expected_cells": 15295304.098138327,
+   "bbox_cells": 16000000,
+   "vertices": 64
+  },
+  {
+   "group": "2",
+   "q": 0.9,
+   "plan_index": 41722,
+   "piece_id": "4316|w003_004",
+   "candidates": 2,
+   "expected_cells": 16000049.037183074,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "2",
+   "q": 0.97,
+   "plan_index": 30906,
+   "piece_id": "2788|w004_003",
+   "candidates": 2,
+   "expected_cells": 16000066.05174675,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "2",
+   "q": 1.0,
+   "plan_index": 47274,
+   "piece_id": "100002|w001_005",
+   "candidates": 2,
+   "expected_cells": 16000069.92256279,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "3-4",
+   "q": 0.5,
+   "plan_index": 49193,
+   "piece_id": "100272|w003_000",
+   "candidates": 4,
+   "expected_cells": 9946650.288598437,
+   "bbox_cells": 16000000,
+   "vertices": 11
+  },
+  {
+   "group": "3-4",
+   "q": 0.65,
+   "plan_index": 28912,
+   "piece_id": "2636|w005_005",
+   "candidates": 4,
+   "expected_cells": 12694399.357622333,
+   "bbox_cells": 16000000,
+   "vertices": 14
+  },
+  {
+   "group": "3-4",
+   "q": 0.8,
+   "plan_index": 41248,
+   "piece_id": "4291|w004_003",
+   "candidates": 4,
+   "expected_cells": 15950329.369217396,
+   "bbox_cells": 16000000,
+   "vertices": 6
+  },
+  {
+   "group": "3-4",
+   "q": 0.9,
+   "plan_index": 35010,
+   "piece_id": "3168|w003_003",
+   "candidates": 4,
+   "expected_cells": 16000063.658042297,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "3-4",
+   "q": 0.97,
+   "plan_index": 48733,
+   "piece_id": "100228|w012_012",
+   "candidates": 3,
+   "expected_cells": 16000067.100334931,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "3-4",
+   "q": 1.0,
+   "plan_index": 47272,
+   "piece_id": "100002|w001_003",
+   "candidates": 4,
+   "expected_cells": 16000069.713965321,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "5+",
+   "q": 0.5,
+   "plan_index": 32964,
+   "piece_id": "2964|w002_001",
+   "candidates": 8,
+   "expected_cells": 12119846.32649121,
+   "bbox_cells": 13104000,
+   "vertices": 5
+  },
+  {
+   "group": "5+",
+   "q": 0.65,
+   "plan_index": 36820,
+   "piece_id": "3373|w000_002",
+   "candidates": 6,
+   "expected_cells": 13542506.334674055,
+   "bbox_cells": 16000000,
+   "vertices": 20
+  },
+  {
+   "group": "5+",
+   "q": 0.8,
+   "plan_index": 48854,
+   "piece_id": "100228|w019_001",
+   "candidates": 5,
+   "expected_cells": 16000063.239640808,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "5+",
+   "q": 0.9,
+   "plan_index": 50290,
+   "piece_id": "100462|w002_001",
+   "candidates": 6,
+   "expected_cells": 16000065.284548264,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "5+",
+   "q": 0.97,
+   "plan_index": 28946,
+   "piece_id": "2637|w003_005",
+   "candidates": 8,
+   "expected_cells": 16000067.98003109,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  },
+  {
+   "group": "5+",
+   "q": 1.0,
+   "plan_index": 47248,
+   "piece_id": "100001|w001_002",
+   "candidates": 6,
+   "expected_cells": 16000069.72622652,
+   "bbox_cells": 16000000,
+   "vertices": 5
+  }
+ ]
+}

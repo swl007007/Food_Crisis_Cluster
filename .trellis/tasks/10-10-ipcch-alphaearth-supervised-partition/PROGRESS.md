@@ -83,3 +83,11 @@
   - Cumulative calls 59,576; cells ≤ 4.95e11 including re-requests; output ≤ 1 GB outside Dropbox.
   - Draft manifest body 63d0c7ab… (pieces and plan unchanged). Tests: 108 full OK; supervisor 19-test PASS.
   - Doc: evidence/p1/c-full-envelope/C-FULL-ENVELOPE.md.
+- 2026-10-11 Full D30 extraction (release codex-D30-full-20261010) invocation 1 is running.
+  - Started 2026-10-10T23:59:01Z at c4/b1 after all hash checks passed; inputs are unchanged in
+    ~/ipcch-alphaearth-runs/p1-c-full-20261010.
+  - Early prefix: 30/30 pieces ok, 1.45e6 cells/s, parallelism 3.7; projects to about 90 h (about 15 invocations).
+- The user's parallel test request (relayed) arrived after the launch, so the running invocation was not touched.
+  A bounded c8 probe manifest was prepared offline and is NOT run: 24 fresh second-half pieces, 3.378e8 cells, ≤ 50
+  calls, body 5eab5d21…; see evidence/p1/c8-probe/C8-PROBE-PROPOSAL.md.
+- Full release receipt and volume-accounting receipt are retained in evidence/p1/c-full-20261010/.
