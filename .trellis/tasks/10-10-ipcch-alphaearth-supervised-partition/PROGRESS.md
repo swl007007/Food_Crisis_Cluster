@@ -192,3 +192,29 @@
     8,904 s) and uses corrected elapsed = summed summaries + 8,904 s, giving 70.4 h remaining vs a 96 h window.
   - Fixture: 7 OK. prelaunch_inv5.py dry run passes. The v1 gate refuses as expected.
   - Proposed receipt fields: evidence/p1/c-full-20261010/fallback-resume/.
+- 2026-10-11 USER STEERING (binding): "既然回到原路线了就不用考虑一天完成。" (Since we are back on the original route,
+  completing in one day no longer matters.)
+  - The one-day target is withdrawn for the c4 window fallback. Continue the released extraction reliably.
+  - No further speed pilots. Missing the former one-day target is not reported as a limitation or failure.
+  - Ordinary progress, a planning ETA, anomalies, the release caps and the normal-wall resume gate are all unchanged;
+    no cap is enlarged or reset.
+  - Invocation 5 launched 2026-10-11T14:46:35Z under codex-D30-c4-user-fallback-20261011; supervisor launch receipt
+    retained.
+- 2026-10-11 USER STEERING: long-running task; lower the monitoring frequency to save tokens.
+  - Routine LLM status check every 30 min, at :07 and :37 local, as a session cron that expires after 7 days. It reads
+    local counters only.
+  - Run-local `watch_events.py` (polls every 120 s, no LLM) wakes the executor only on: wrapper exit (terminal), a new
+    failed/null/halted row, a request error not recovered within 300 s, no reservation for 900 s, more than 1 GB, or
+    crossing 25/50/75% of total cells. Recovered transients are only logged (monitor/auto-recovered-errors.log).
+  - Runtime fatal/consecutive/fraction/cap guards and the 6 h normal-wall resume gate are unchanged.
+- 2026-10-12 User-authorized local streaming D30 parity + speed preflight (user asleep; supervisor decides): NOT
+  VIABLE, so EE-only continues.
+  - Stage 1 (admin 3447; one pinned COG, 1.325 GB, requester-pays):
+    - the pre-registered gate failed on the selection reference C02 (A_rel 1.6e-5 vs 1e-7; centre count −23 cells);
+    - every held-out C03 window failed too;
+    - a post-hoc diagnostic showed edge densification is not the cause;
+    - EE's boundary rasterization/weighting is undocumented beyond its 0..255 levels.
+  - Stages 2/3 were not downloaded, and no hybrid was released.
+  - Indicative speed: whole-file download (32 MB/s) dominates; 2.2 s local reduce for 512k cells.
+  - The live EE invocation 8 was untouched throughout.
+  - Evidence: evidence/p1/local-stream-preflight-20261012/.

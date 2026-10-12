@@ -1,0 +1,257 @@
+{
+ "purpose": "bounded local streaming D30 parity + speed preflight (2026-10-12); requester-pays egress billed to user_project",
+ "user_project": "manuel-remote-sensing",
+ "source_evidence": {
+  "tile_sets": "/tmp/aef_admin_tile_sets.json",
+  "object_sizes": "/tmp/aef_gcs_2017_object_sizes.json"
+ },
+ "limits": {
+  "max_download_bytes": 30000000000,
+  "max_scratch_bytes": 40000000000,
+  "max_object_attempts": 2,
+  "http_timeout_s": 120
+ },
+ "objects": [
+  {
+   "stage": 1,
+   "admin": 3447,
+   "tile_index": 2771,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/x7kfwxt1zhh4tk7kr-0000008192-0000000000.tiff",
+   "generation": 1763494271186515,
+   "size": 1324750322,
+   "crs": "EPSG:32638",
+   "utm_bounds": [
+    500000.0,
+    1392640.0,
+    581920.0,
+    1474560.0
+   ],
+   "asset": "x7kfwxt1zhh4tk7kr"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2605,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/37N/x67choire103zj91p-0000008192-0000008192.tiff",
+   "generation": 1763492138037662,
+   "size": 2750977232,
+   "crs": "EPSG:32637",
+   "utm_bounds": [
+    745760.0,
+    81920.0,
+    827680.0,
+    163840.0
+   ],
+   "asset": "x67choire103zj91p"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2629,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/37N/xt0jtdcoxb1sp5b7v-0000000000-0000000000.tiff",
+   "generation": 1763491859030183,
+   "size": 207490469,
+   "crs": "EPSG:32637",
+   "utm_bounds": [
+    827680.0,
+    0.0,
+    909600.0,
+    81920.0
+   ],
+   "asset": "xt0jtdcoxb1sp5b7v"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2630,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/37N/xt0jtdcoxb1sp5b7v-0000008192-0000000000.tiff",
+   "generation": 1763490290083705,
+   "size": 219630194,
+   "crs": "EPSG:32637",
+   "utm_bounds": [
+    827680.0,
+    81920.0,
+    909600.0,
+    163840.0
+   ],
+   "asset": "xt0jtdcoxb1sp5b7v"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2646,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/x6bdj6bnb7dgiukef-0000000000-0000008192.tiff",
+   "generation": 1763492744150527,
+   "size": 205739180,
+   "crs": "EPSG:32638",
+   "utm_bounds": [
+    90400.0,
+    0.0,
+    172320.0,
+    81920.0
+   ],
+   "asset": "x6bdj6bnb7dgiukef"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2647,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/x6bdj6bnb7dgiukef-0000008192-0000008192.tiff",
+   "generation": 1763492781669150,
+   "size": 212257098,
+   "crs": "EPSG:32638",
+   "utm_bounds": [
+    90400.0,
+    81920.0,
+    172320.0,
+    163840.0
+   ],
+   "asset": "x6bdj6bnb7dgiukef"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2663,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/xjlzeorit1ry0jf60-0000000000-0000000000.tiff",
+   "generation": 1763494603968552,
+   "size": 2505629004,
+   "crs": "EPSG:32638",
+   "utm_bounds": [
+    172320.0,
+    0.0,
+    254240.0,
+    81920.0
+   ],
+   "asset": "xjlzeorit1ry0jf60"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 2664,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/xjlzeorit1ry0jf60-0000008192-0000000000.tiff",
+   "generation": 1763492238849910,
+   "size": 2638087897,
+   "crs": "EPSG:32638",
+   "utm_bounds": [
+    172320.0,
+    81920.0,
+    254240.0,
+    163840.0
+   ],
+   "asset": "xjlzeorit1ry0jf60"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 4854,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/37S/xdgzjg7396r55w0vs-0000000000-0000000000.tiff",
+   "generation": 1763487421527096,
+   "size": 865109,
+   "crs": "EPSG:32737",
+   "utm_bounds": [
+    827680.0,
+    10000000.0,
+    909600.0,
+    10081920.0
+   ],
+   "asset": "xdgzjg7396r55w0vs"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 4857,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38S/xl600p8zytcdfq5u2-0000000000-0000008192.tiff",
+   "generation": 1763495882985944,
+   "size": 857589,
+   "crs": "EPSG:32738",
+   "utm_bounds": [
+    90400.0,
+    10000000.0,
+    172320.0,
+    10081920.0
+   ],
+   "asset": "xl600p8zytcdfq5u2"
+  },
+  {
+   "stage": 2,
+   "admin": 1722,
+   "tile_index": 4860,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38S/xbcoeznd6qa5vqom3-0000000000-0000000000.tiff",
+   "generation": 1763495963111827,
+   "size": 4291279,
+   "crs": "EPSG:32738",
+   "utm_bounds": [
+    172320.0,
+    10000000.0,
+    254240.0,
+    10081920.0
+   ],
+   "asset": "xbcoeznd6qa5vqom3"
+  },
+  {
+   "stage": 3,
+   "admin": 658,
+   "tile_index": 4594,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/36S/xwdtlpvmdov220anw-0000000000-0000008192.tiff",
+   "generation": 1763420876098630,
+   "size": 2989356719,
+   "crs": "EPSG:32736",
+   "utm_bounds": [
+    581920.0,
+    8197760.0,
+    663840.0,
+    8279680.0
+   ],
+   "asset": "xwdtlpvmdov220anw"
+  },
+  {
+   "stage": 3,
+   "admin": 658,
+   "tile_index": 4595,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/36S/xwdtlpvmdov220anw-0000008192-0000008192.tiff",
+   "generation": 1763421507589585,
+   "size": 3130441319,
+   "crs": "EPSG:32736",
+   "utm_bounds": [
+    581920.0,
+    8279680.0,
+    663840.0,
+    8361600.0
+   ],
+   "asset": "xwdtlpvmdov220anw"
+  },
+  {
+   "stage": 3,
+   "admin": 658,
+   "tile_index": 4629,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/36S/xu48xwonzpy73vpkt-0000000000-0000000000.tiff",
+   "generation": 1763421259862132,
+   "size": 3119632248,
+   "crs": "EPSG:32736",
+   "utm_bounds": [
+    663840.0,
+    8197760.0,
+    745760.0,
+    8279680.0
+   ],
+   "asset": "xu48xwonzpy73vpkt"
+  },
+  {
+   "stage": 3,
+   "admin": 658,
+   "tile_index": 4630,
+   "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/36S/xu48xwonzpy73vpkt-0000008192-0000000000.tiff",
+   "generation": 1763420828983418,
+   "size": 3024578830,
+   "crs": "EPSG:32736",
+   "utm_bounds": [
+    663840.0,
+    8279680.0,
+    745760.0,
+    8361600.0
+   ],
+   "asset": "xu48xwonzpy73vpkt"
+  }
+ ],
+ "manifest_sha256": "d2c9a652ebc263d332b7aff10562a8e6768c634667d01161fe3353bcbede60e4"
+}

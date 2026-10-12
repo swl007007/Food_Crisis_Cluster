@@ -1,0 +1,9 @@
+[
+ {
+  "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/x7kfwxt1zhh4tk7kr-0000008192-0000000000.tiff",
+  "local": "/home/swl007007/ipcch-alphaearth-runs/p1-local-stream-preflight-20261012/cogs/x7kfwxt1zhh4tk7kr-0000008192-0000000000.tiff",
+  "bytes": 1324750322,
+  "seconds": 41.843,
+  "crc32c": "bcLC7Q=="
+ }
+]

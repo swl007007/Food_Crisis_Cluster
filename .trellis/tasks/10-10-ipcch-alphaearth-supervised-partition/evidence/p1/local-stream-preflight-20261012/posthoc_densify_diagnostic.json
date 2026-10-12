@@ -1,0 +1,135 @@
+{
+ "label": "POST-HOC DIAGNOSTIC ONLY (not a pass criterion): polygon edge representation vs EE",
+ "densify_1e-4deg": [
+  {
+   "id": "C02:control_whole:3447",
+   "count_diff": -23,
+   "A_rel_exact": 1.6184106434860152e-05,
+   "A_rel_round255": 1.628805274329813e-05
+  },
+  {
+   "id": "C03:window:3447:w000_000",
+   "count_diff": -6,
+   "A_rel_exact": 1.3114709689536476e-05,
+   "A_rel_round255": 1.2031896009212859e-05
+  },
+  {
+   "id": "C03:window:3447:w000_001",
+   "count_diff": 16,
+   "A_rel_exact": 7.4304310905304425e-06,
+   "A_rel_round255": 7.331690364350133e-06
+  },
+  {
+   "id": "C03:window:3447:w000_002",
+   "count_diff": -14,
+   "A_rel_exact": 2.793530377691663e-05,
+   "A_rel_round255": 2.836275533675393e-05
+  },
+  {
+   "id": "C03:window:3447:w000_003",
+   "count_diff": -6,
+   "A_rel_exact": 3.147179469717605e-05,
+   "A_rel_round255": 3.2003736573770013e-05
+  },
+  {
+   "id": "C03:window:3447:w001_000",
+   "count_diff": -2,
+   "A_rel_exact": 7.576886264907053e-06,
+   "A_rel_round255": 7.59163575289743e-06
+  },
+  {
+   "id": "C03:window:3447:w001_001",
+   "count_diff": -9,
+   "A_rel_exact": 1.297930674904108e-05,
+   "A_rel_round255": 1.3955746807483407e-05
+  }
+ ],
+ "no_densify_vertices_only": [
+  {
+   "id": "C02:control_whole:3447",
+   "count_diff": -22,
+   "A_rel_exact": 1.6288860800989395e-05,
+   "A_rel_round255": 1.639521098504088e-05
+  },
+  {
+   "id": "C03:window:3447:w000_000",
+   "count_diff": -6,
+   "A_rel_exact": 1.3096869615399726e-05,
+   "A_rel_round255": 1.1963532963558374e-05
+  },
+  {
+   "id": "C03:window:3447:w000_001",
+   "count_diff": 16,
+   "A_rel_exact": 7.105819707107675e-06,
+   "A_rel_round255": 7.122213496945094e-06
+  },
+  {
+   "id": "C03:window:3447:w000_002",
+   "count_diff": -13,
+   "A_rel_exact": 2.830469179119962e-05,
+   "A_rel_round255": 2.869807855262081e-05
+  },
+  {
+   "id": "C03:window:3447:w000_003",
+   "count_diff": -6,
+   "A_rel_exact": 3.152183463051445e-05,
+   "A_rel_round255": 3.2003736573770013e-05
+  },
+  {
+   "id": "C03:window:3447:w001_000",
+   "count_diff": -2,
+   "A_rel_exact": 7.707031526887848e-06,
+   "A_rel_round255": 7.76287565705226e-06
+  },
+  {
+   "id": "C03:window:3447:w001_001",
+   "count_diff": -9,
+   "A_rel_exact": 1.3293598682190573e-05,
+   "A_rel_round255": 1.4148239866860716e-05
+  }
+ ],
+ "densify_1e-6deg": [
+  {
+   "id": "C02:control_whole:3447",
+   "count_diff": -23,
+   "A_rel_exact": 1.6184040093836294e-05,
+   "A_rel_round255": 1.628805274329813e-05
+  },
+  {
+   "id": "C03:window:3447:w000_000",
+   "count_diff": -6,
+   "A_rel_exact": 1.311469360354959e-05,
+   "A_rel_round255": 1.2031896009212859e-05
+  },
+  {
+   "id": "C03:window:3447:w000_001",
+   "count_diff": 16,
+   "A_rel_exact": 7.430464403441156e-06,
+   "A_rel_round255": 7.331690364350133e-06
+  },
+  {
+   "id": "C03:window:3447:w000_002",
+   "count_diff": -14,
+   "A_rel_exact": 2.793513696483825e-05,
+   "A_rel_round255": 2.836275533675393e-05
+  },
+  {
+   "id": "C03:window:3447:w000_003",
+   "count_diff": -6,
+   "A_rel_exact": 3.147174564780671e-05,
+   "A_rel_round255": 3.2003736573770013e-05
+  },
+  {
+   "id": "C03:window:3447:w001_000",
+   "count_diff": -2,
+   "A_rel_exact": 7.576847476305471e-06,
+   "A_rel_round255": 7.59163575289743e-06
+  },
+  {
+   "id": "C03:window:3447:w001_001",
+   "count_diff": -9,
+   "A_rel_exact": 1.2979175413370008e-05,
+   "A_rel_round255": 1.3955746807483407e-05
+  }
+ ]
+}

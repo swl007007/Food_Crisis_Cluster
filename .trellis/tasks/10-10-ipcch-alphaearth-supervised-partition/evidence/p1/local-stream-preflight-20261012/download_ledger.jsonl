@@ -1,0 +1,2 @@
+{"utc": "2026-10-12T06:09:09Z", "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/x7kfwxt1zhh4tk7kr-0000008192-0000000000.tiff", "event": "metadata", "bytes": 0, "generation": "1763494271186515", "size": "1324750322", "crc32c": "bcLC7Q=="}
+{"utc": "2026-10-12T06:09:50Z", "path": "gs://alphaearth_foundations/satellite_embedding/v1/annual/2017/38N/x7kfwxt1zhh4tk7kr-0000008192-0000000000.tiff", "event": "download", "attempt": 1, "bytes": 1324750322, "seconds": 41.473, "error": null}
