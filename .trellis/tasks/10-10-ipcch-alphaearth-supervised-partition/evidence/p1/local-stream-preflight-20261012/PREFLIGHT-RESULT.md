@@ -23,23 +23,26 @@
   |Δmean| 1.78e-6, |ΔSD| 2.25e-6, coverage 1.62e-5.
 - Every reference fails. The selection gap is about 160× the A gate.
 
-**Diagnosis:**
-- A post-hoc diagnostic (`out/posthoc_densify_diagnostic.json`, not a pass criterion) compared no densification,
-  1e-4° densification and 1e-6° densification. The count gap stayed at −22/−23 and A_rel at about 1.6e-5, so polygon
-  edge representation is not the cause.
-- The residual is EE-internal region rasterization, boundary weighting and/or masking.
-- EE documents its overlap weights only as 0..255 levels (256), not a full rasterization/rounding algorithm. That
-  algorithm cannot be reproduced locally to 1e-7 from documented information, and the gates are not relaxed.
-- What the scales mean:
-  - A_rel 1.6e-5 corresponds to about 8 cells of area on 512k cells.
-  - S_rel is larger on bands whose S is near zero; per-band absolute differences are recorded.
-  - Mixing local and EE pieces would introduce estimator inconsistency at the ~1e-5 level, well above EE's own
-    whole-vs-window decomposition difference (about 1e-8).
+**Diagnosis** (bounded wording, per supervisor review):
+- The tested local implementation and its four pre-declared weight variants fail the fixed gates on every reference.
+- Tested edge-densification changes (none, 1e-4°, 1e-6°; `out/posthoc_densify_diagnostic.json`, post hoc, not a pass
+  criterion) did not resolve the discrepancy.
+- The precise mechanism remains unisolated. Candidates include geometry or projection handling, source sampling,
+  masking, pixelArea, and EE's internal rasterization and boundary weighting. EE documents boundary overlap only as
+  0..255 levels.
+- One C05 aggregate (4e6 cells → 4e8 m²) supports 100 m² per cell for that fully valid window. It is not a universal
+  proof.
+- C03 per-window descriptor comparisons used the full-admin denominator, which yields NaN on both routes, so those
+  descriptor "equalities" are uninformative. The raw A/S/Q failures stand. C02 supplies the informative descriptor
+  failure (|Δmean| 1.78e-6, |ΔSD| 2.25e-6).
+- Scale: A_rel 1.6e-5 corresponds to about 8 cells of area on 512k cells. EE's own whole-vs-window decomposition
+  difference is about 1e-8.
 
 **Speed (single worker, stage 1; indicative only):**
 - Download: 41.5 s for 1.32 GB (about 32 MB/s), whole-file.
 - Local reduce: 2.2 s for C02 (512k cells): 0.22 s weights, the rest values and sums. Peak RSS 780 MB.
-- End to end: about 1.2e4 cells/s, download-dominated, because a whole COG is needed for a small admin.
+- End to end: about 1.2e4 cells/s for this ONE small admin, download-dominated because a whole COG was fetched. This
+  is not a global bound on local throughput.
 - No warm-cache or parallel run was attempted after the gate failure.
 - Scaling cost: egress at the study's 7.22 TB distinct volume (55.5 TB without reuse) would be large on a
   requester-pays bucket.
@@ -48,3 +51,8 @@
 - The local route does not reproduce D30 at the fixed tolerances, so the hybrid is not released.
 - Continue the main EE task only, under its existing releases and gates.
 - The downloaded COG is retained outside Dropbox for audit (1.3 GB). It can be deleted on request.
+
+**Supervisor verification:** all seven references and metrics were reproduced exactly, and all seven fail.
+Receipts: `ipcch-alphaearth-local-preflight-supervisor-check-20261012.json` (66e76666…) and the matching replay.
+**Decision:** EE-only continuation. No stage 2/3 downloads and no hybrid integration. The audit COG (1.325 GB) is kept
+within the cap.

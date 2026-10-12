@@ -1,0 +1,45 @@
+{
+  "utc": "2026-10-12T06:16:25Z",
+  "commit": "2e7b38c45eb30711d15fdbec3be19d75256b494c",
+  "reference_binding_checks": [
+    {
+      "id": "C02:control_whole:3447",
+      "reference_sha256": "bebe4a3359689b0a2d02dcb453e8c98b7f70332881cfa3fc5faac84683b3a5ed"
+    },
+    {
+      "id": "C03:window:3447:w000_000",
+      "reference_sha256": "89ca8c4d9cb0b9e89b6d7ae4933b4f84b9b58f867a442aa26c5e9c418b85ccc0"
+    },
+    {
+      "id": "C03:window:3447:w000_001",
+      "reference_sha256": "049f847fc0b80d71d045392a7bf801ca048c3c797b0678bcdaa6308f936175c6"
+    },
+    {
+      "id": "C03:window:3447:w000_002",
+      "reference_sha256": "2169a880eb9c908bbcbe749b1e6331d9d02c8f524a8f79f535bb1c7c796ccd08"
+    },
+    {
+      "id": "C03:window:3447:w000_003",
+      "reference_sha256": "5d05926dcacf3acd84b12fed67b48af3f4199a5451cbc10d786344ef911fd76c"
+    },
+    {
+      "id": "C03:window:3447:w001_000",
+      "reference_sha256": "a17db07c5a0ea0f6cbe6bc038109fad89decc1553c32eac9767598a0d30ce8db"
+    },
+    {
+      "id": "C03:window:3447:w001_001",
+      "reference_sha256": "9b03dd60b1074899e8c69ffbe8f4ecb713f2e6bcf499483ea0dc61cbba8b0bbf"
+    }
+  ],
+  "replay_sha256": "c7d263a331790ceef7376795cfb46cbe70dd67d9eb2b597d47ca444e19f5ee23",
+  "all_comparison_metrics_match_executor_exactly": true,
+  "verdict": "LOCAL_PREFLIGHT_FAIL_CONTINUE_EE_ONLY",
+  "scope": "Tested implementation/variants fail the fixed D30 parity gates; not proof of theoretical impossibility or a definitive mechanism diagnosis.",
+  "known_limits": [
+    "C05 aggregate supports but does not prove constant100 m2 pixelArea universally",
+    "C03 per-window descriptors use full-admin denominator and are NaN; their reported descriptor equality is uninformative, raw A/S/Q comparisons remain informative",
+    "No larger-admin or parallel-throughput generalization from one small admin",
+    "Densification variants do not exclude all geometry/projection/mask causes"
+  ],
+  "live_process_check": "    PID    PPID    PGID     ELAPSED COMMAND\n4036409     533 4036409    01:50:32 bash ./run_invocation.sh\n4036415 4036409 4036415    01:50:32 timeout 22200 /opt/earthengine/bin/python scripts/ee_pilot_c.py --request /home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/inputs/production_manifest.json --out /home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out\n4036416 4036415 4036415    01:50:32 /opt/earthengine/bin/python scripts/ee_pilot_c.py --request /home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/inputs/production_manifest.json --out /home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/out\n"
+}

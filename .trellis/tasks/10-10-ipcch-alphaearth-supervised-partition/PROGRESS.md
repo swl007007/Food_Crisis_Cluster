@@ -212,9 +212,12 @@
   - Stage 1 (admin 3447; one pinned COG, 1.325 GB, requester-pays):
     - the pre-registered gate failed on the selection reference C02 (A_rel 1.6e-5 vs 1e-7; centre count −23 cells);
     - every held-out C03 window failed too;
-    - a post-hoc diagnostic showed edge densification is not the cause;
-    - EE's boundary rasterization/weighting is undocumented beyond its 0..255 levels.
+    - tested densification changes did not resolve the discrepancy; the mechanism is unisolated.
   - Stages 2/3 were not downloaded, and no hybrid was released.
   - Indicative speed: whole-file download (32 MB/s) dominates; 2.2 s local reduce for 512k cells.
   - The live EE invocation 8 was untouched throughout.
   - Evidence: evidence/p1/local-stream-preflight-20261012/.
+- 2026-10-12 Supervisor verified the local preflight (all seven references reproduced exactly, all fail).
+  - Decision: EE-only. No stage 2/3 downloads or hybrid integration; the audit COG is kept.
+  - Wording bounded: the tested variants fail the fixed gates; the mechanism is unisolated; C03 descriptor comparisons
+    are uninformative (NaN on both routes); the speed figure is for one small admin only.
