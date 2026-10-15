@@ -1,0 +1,70 @@
+{
+ "phase": "verify",
+ "checks": {
+  "receipt": {
+   "pass": true,
+   "detail": null
+  },
+  "executor": {
+   "pass": true,
+   "detail": null
+  },
+  "prior_repair_release": {
+   "pass": true,
+   "detail": null
+  },
+  "supervisor_test_log": {
+   "pass": true,
+   "detail": null
+  },
+  "analysis_code_inventory_46": {
+   "pass": true,
+   "detail": []
+  },
+  "only_replay_py_differs_from_original": {
+   "pass": true,
+   "detail": [
+    "IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py"
+   ]
+  },
+  "replay_py_new": {
+   "pass": true,
+   "detail": null
+  },
+  "regression_test_source": {
+   "pass": true,
+   "detail": null
+  },
+  "replay_diff": {
+   "pass": true,
+   "detail": null
+  },
+  "config": {
+   "pass": true,
+   "detail": null
+  },
+  "frozen_inputs_73": {
+   "pass": true,
+   "detail": []
+  },
+  "science_404": {
+   "pass": true,
+   "detail": []
+  },
+  "provider_not_in_404": {
+   "pass": true,
+   "detail": null
+  },
+  "archive_proposal": {
+   "pass": true,
+   "detail": null
+  },
+  "staged_provider": {
+   "pass": true,
+   "detail": null
+  }
+ },
+ "pass": true,
+ "moves": [],
+ "run_files": 481
+}

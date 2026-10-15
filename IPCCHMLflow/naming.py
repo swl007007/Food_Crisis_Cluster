@@ -141,6 +141,31 @@ FAMILIES = {
                         "waived by the user - not an audit pass. Exploratory: 2023-2026 had already been inspected. "
                         "Replay passed."),
     },
+    "alphaearth_partition": {
+        "slug": "alphaearth_supervised_partition", "short": "AlphaEarth supervised partition",
+        "long": ("AlphaEarth supervised partition (pooled XGB with/without 2017 AlphaEarth descriptors, shared and "
+                 "regional calibration; annual refits)"),
+        "model_type": "XGBoost + ridge calibration", "status": "supervisor_accepted",
+        "features": "compact296; compact296 + 128 AlphaEarth 2017 admin descriptors (mean and SD of 64 bands)",
+        "maps": "none selected: every lead fell back to shared calibration (regional_calibration equals shared_calibration)",
+        "training_window": ("annual refit at each block's fit origin; every eligible label from 2014-01 up to the fit "
+                            "origin; weights halve every 24 months"),
+        "periods": {"main": ("primary", STANDARD_PRIMARY), "supplement": ("holdout", HOLDOUT)}, "seeds": ("42",),
+        "what": ("Four XGBoost regressors (one per cumulative share q2..q5) predict the area's population shares, "
+                 "projected to be monotone and decoded with the 0.20 rule. pooled uses compact296; "
+                 "pooled_plus_alphaearth adds 128 AlphaEarth 2017 descriptors; shared_calibration adds a shared ridge "
+                 "calibration to pooled_plus_alphaearth; regional_calibration adds regional deviations on a "
+                 "supervised partition map. No map passed the development guards at any lead, so "
+                 "regional_calibration is the shared_calibration fallback (identical outputs)."),
+        "question": ("Do supervised, frozen AlphaEarth environmental groups improve IPCCH forecasts beyond a matched "
+                     "pooled model and shared calibration, separately at each lead?"),
+        "conclusion": ('"No qualifying horizon; every lead selected the shared-calibration fallback; '
+                       'regional_calibration equals shared_calibration (structural zero gain)." (supervisor '
+                       'acceptance, task 10-10)'),
+        "status_text": ("Supervisor accepted the formal result (task 10-10-ipcch-alphaearth-supervised-partition); "
+                        "replay 488/488 after a reviewed analysis-only amendment. Retrospective: 2023-2026 had "
+                        "already been inspected. Task not closed."),
+    },
 }
 
 # Training pool: the prepared feature matrix + key table every refit draws from (one per lead).
@@ -184,6 +209,10 @@ ARMS = {
     "yearly_geoxgb": {**_XGB, "local": ("regional_ungated", None, "diagnostic_local")},
     "mlp_fixed_map": {"base": ("global_base", None, "fresh_trained"), **_XGB,
                       "local": ("regional_ungated", None, "diagnostic_local")},
+    "alphaearth_partition": {"B0": ("pooled", None, "fresh_trained"), "B1": ("pooled_plus_alphaearth", None, "fresh_trained"),
+                             "B2": ("shared_calibration", None, "fresh_trained"),
+                             "G": ("regional_calibration", None, "fresh_trained"),
+                             "persistence": ("persistence", None, "persistence_baseline")},
     "history_window_sensitivity": {"base_global": ("pooled", "36_month", "reused_comparator"),
                                    "exp_global": ("pooled", "full_history", "fresh_trained"),
                                    "base_local": ("regional_ungated", "36_month", "reused_comparator"),
@@ -208,6 +237,14 @@ MLP_ARM_MEANING = {
     "regional_ungated": ("global_base plus the regional residual, wherever a regional residual was fitted, whatever "
                          "the gate decided. Diagnostic: scored on regional_model_fitted rows only."),
 }
+AE_ARM_MEANING = {
+    "pooled": "Pooled XGB quartet on compact296 (no AlphaEarth descriptors).",
+    "pooled_plus_alphaearth": "Pooled XGB quartet on compact296 plus 128 AlphaEarth 2017 admin descriptors.",
+    "shared_calibration": "pooled_plus_alphaearth raw outputs with one shared ridge calibration refitted each year.",
+    "regional_calibration": ("pooled_plus_alphaearth with shared plus regional calibration on a supervised partition "
+                             "map. No map was selected at any lead, so this arm equals shared_calibration exactly."),
+    "persistence": ARM_MEANING["persistence"],
+}
 WINDOW_ARM_MEANING = {
     "pooled": "One model for all areas.",
     "regional_ungated": ("Regional model fitted without a gate where the region has local support; elsewhere the "
@@ -217,7 +254,8 @@ WINDOW_ARM_MEANING = {
 # tokens used inside deltas / contrasts / comparator panels
 OPERAND = {"geo": "partitioned_gated", "pool": "pooled", "local": "regional_ungated", "base": "global_base",
            "persistence": "persistence", "p6geo": "reference_partitioned_gated", "xgbgeo": "reference_partitioned_gated",
-           "p6pool": "reference_pooled", "xgbpool": "reference_pooled"}
+           "p6pool": "reference_pooled", "xgbpool": "reference_pooled",
+           "B0": "pooled", "B1": "pooled_plus_alphaearth", "B2": "shared_calibration", "G": "regional_calibration"}
 
 # ------------------------------------------------------------------ cohorts
 
@@ -229,6 +267,8 @@ COHORTS = {"E_all": "all_scored", "all": "all_scored", "E_persist": "persistence
 GATES = {"adopted": "gate_used_regional", "gain_rejected": "gate_rejected_no_gain",
          "historical_support_rejected": "gate_rejected_too_little_validation"}
 # cohorts whose rows depend on the family's own regional fits: dataset names carry the family
+# families whose saved truth text differs from the existing datasets: every evaluation dataset name carries the family
+FAMILY_QUALIFIED_DATASETS = {"alphaearth_partition"}
 FAMILY_DEPENDENT = {"regional_model_fitted", "regional_model_fitted_and_persistence_available",
                     "regional_model_fitted_both_windows", "regional_model_fitted_full_history_only"}
 COHORT_MEANING = {
@@ -272,7 +312,8 @@ LEAF = {"n": "n_rows", "n_keys": "n_rows_reported", "q3_r2_projected": "share_ph
 _PANEL = re.compile(r"^(binary\.(accuracy|precision|recall|f1|f2|count\.(tp|fp|fn|tn))|four_class\.(accuracy|macro_f1))$")
 BOOT = {"point_delta": "delta", "ci_lower": "ci_low", "ci_upper": "ci_high", "K": "countries", "draws": "draws",
         "defined_draws": "defined_draws", "undefined_draws": "undefined_draws", "seed": "rng_seed",
-        "ci": "ci"}   # NA entry: no interval saved
+        "ci": "ci",   # NA entry: no interval saved
+        "lower_bound": "lower_bound_one_sided_98_75"}
 _SELECTED_DATE = re.compile(r"^selected_date_(\d{4}-\d{2})$")
 
 
@@ -481,7 +522,7 @@ def span_label(family: str, H: str, old_period: str, dates) -> str:
 def eval_dataset_name(family: str, H: str, old_period: str, old_cohort: str, dates) -> str:
     cohort = COHORTS[old_cohort]
     name = f"IPCCH eval | {lead_label(H)} | {span_label(family, H, old_period, dates)} | {cohort}"
-    if cohort in FAMILY_DEPENDENT:
+    if cohort in FAMILY_DEPENDENT or family in FAMILY_QUALIFIED_DATASETS:
         name += f" ({_family(family)['short']})"
     return name
 
@@ -515,10 +556,12 @@ def arm_meaning(family: str, old_arm: str) -> str:
         return MLP_ARM_MEANING[new]
     if family == "history_window_sensitivity":
         return WINDOW_ARM_MEANING[new]
+    if family == "alphaearth_partition":
+        return AE_ARM_MEANING[new]
     return ARM_MEANING[new]
 
 
-def family_description(family: str, source_run_id: str) -> str:
+def family_description(family: str, source_run_id: str, bundle_uploaded: bool = True) -> str:
     f = _family(family)
     return "\n\n".join([
         f"**{f['long']}**",
@@ -529,7 +572,11 @@ def family_description(family: str, source_run_id: str) -> str:
         f"**Truth:** {TRUTH}",
         ("**Original:** source run `" + source_run_id + "`; source files, manifests and the models.tar bundle are "
          "archived on this run. Child runs hold one arm x lead time each. Values are copied from the saved reports; "
-         "MLflow times are import times, not fit times."),
+         "MLflow times are import times, not fit times.") if bundle_uploaded else
+        ("**Original:** source run `" + source_run_id + "`; source files and manifests are archived on this run. "
+         "Model weights are not uploaded (research retention policy): manifests/models.tar.members.json lists each "
+         "file with its SHA256 in the source run folder. Child runs hold one arm x lead time each. Values are copied "
+         "from the saved reports; MLflow times are import times, not fit times."),
     ])
 
 
@@ -540,6 +587,9 @@ def compare_with(family: str, old_arm: str) -> str:
                 "regional arms only on regional_model_fitted_both_windows for a like-for-like regional comparison.")
     if new == "persistence":
         return "any model arm on persistence_available rows."
+    if family == "alphaearth_partition":
+        return ("pooled (feature effect: pooled_plus_alphaearth minus pooled), shared_calibration (regional effect, "
+                "zero here: no map selected) and persistence on persistence_available; same lead and period only.")
     out = "pooled on all_scored and persistence on persistence_available, same lead time and period only."
     if new == "pooled":
         out = "persistence on persistence_available rows, same lead time and period only."

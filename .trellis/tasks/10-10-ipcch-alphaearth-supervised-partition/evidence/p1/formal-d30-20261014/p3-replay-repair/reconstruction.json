@@ -1,0 +1,19 @@
+{
+ "original_sha256": "e454ce1590084ac2e0a9ce654b775a35ed2bf1beb11d0597b46a4144f03576d5",
+ "staged_sha256": "06eefdc6ae8b9864d7b8fe3b7fa8aea189946f747b3798826e853c2b2504413f",
+ "original_lines": 38766,
+ "staged_lines": 38766,
+ "differing_lines": [
+  38174
+ ],
+ "differing_cells": [
+  {
+   "line": 38174,
+   "column": "target_ord",
+   "original": "2431",
+   "reconstructed": "24314"
+  }
+ ],
+ "staged_text_sha256": "fb01b98d3a671a661b452c1b9448af592e59360f9dc59068d07bfc84c560f25c",
+ "original_text_sha256": "15ec8963f025df1a57258282ed7f432b530d929add8b0c4ad4aca084878e63a8"
+}

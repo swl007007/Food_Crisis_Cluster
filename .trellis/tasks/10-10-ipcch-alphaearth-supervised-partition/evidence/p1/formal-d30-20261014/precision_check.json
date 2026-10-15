@@ -1,0 +1,43 @@
+{
+ "plan_rows": 57801,
+ "float_columns": [
+  "window_area_m2",
+  "polygon_area_m2",
+  "no_source_area_m2"
+ ],
+ "plan_float_diffs": {
+  "window_area_m2": {
+   "n_differ": 8555,
+   "max_rel": 2.52744421357614e-16
+  },
+  "polygon_area_m2": {
+   "n_differ": 8003,
+   "max_rel": 2.5978179583699954e-16
+  },
+  "no_source_area_m2": {
+   "n_differ": 0,
+   "max_rel": 0.0
+  }
+ },
+ "ledger_columns": [
+  "admin_code",
+  "pieces",
+  "valid_area_m2",
+  "polygon_area_m2",
+  "coverage",
+  "usable",
+  "route_reason",
+  "negative_variance_zeroed"
+ ],
+ "coverage_columns": [
+  "coverage"
+ ],
+ "route_reason_equal": true,
+ "usable_equal": true,
+ "usable_count": 6227,
+ "descriptor_table_bitwise_equal": true,
+ "ledger_bitwise_equal": false,
+ "max_abs_diff_coverage": 3.3306690738754696e-16,
+ "n_near_80_coverage": 0,
+ "min_margin_to_80_coverage": 0.18899530083733995
+}

@@ -221,3 +221,212 @@
   - Decision: EE-only. No stage 2/3 downloads or hybrid integration; the audit COG is kept.
   - Wording bounded: the tested variants fail the fixed gates; the mechanism is unisolated; C03 descriptor comparisons
     are uninformative (NaN on both routes); the speed figure is for one small admin only.
+- 2026-10-12 User fallback preference, conditional only (relayed by the supervisor; the current run is unchanged):
+  - User idea: process the GCS AlphaEarth TIFFs directly with xarray on Cloud Run, bypassing EE, "现在就先这样就可以，如果EE额度用完了可以这么处理".
+  - Now: EE-only. No Cloud Run deployment, no resource creation, no resumed local TIFF work.
+  - Trigger: only an actual EE quota exhaustion. This is distinct from:
+    - our own manifest caps (20 starts / 59,576 calls);
+    - transient capacity or concurrency errors.
+  - Caveat: moving the same reducer to Cloud Run does not by itself fix the observed D30 numeric mismatch from the local preflight.
+  - Before any later use, either establish compatible statistics and provenance, or make an explicit estimand amendment.
+  - Cloud-native and EE outputs are never silently merged.
+  - Existing guards and normal continuation remain intact.
+- 2026-10-12 Invocation 9 capacity burst (15:39-15:40Z). Watcher burst alert; supervisor verified independently; run continued unchanged.
+  - Six pieces failed after their single retry ("Earth Engine capacity exceeded." / "memory capacity exceeded."), in admins 2598/2599/2600.
+  - Four of them were consecutive: one short of the max_consecutive_failures guard.
+  - Request processing then resumed: new success rows, and new reservations beyond the last failed retry n=28449.
+  - Resumed processing is NOT recovery of the six pieces. They stay pending for the normal next pass, with no standalone retry.
+  - Failed fraction is about 0.00135, within the released guard.
+  - This is not EE quota exhaustion, so the Cloud Run fallback is not triggered.
+  - Receipt: run receipt/ipcch-alphaearth-inv9-capacity-burst-supervisor-20261012.json (includes raw errors).
+- 2026-10-12 Invocation 9 ended at its normal wall stop (5,050 rows = 5,043 ok + 7 failed). Checker and resume_check_v2 passed.
+  - Settled unique: 28,991. Corrected remaining: 36.6 h vs a 66 h window.
+  - Invocation 10 launched at 16:31:05Z with the wrapper unchanged.
+  - Supervisor verified the checkpoint: run receipt/ipcch-alphaearth-inv9-checkpoint-supervisor-20261012.json (24531980...).
+  - All 7 inv9 failed pieces now have ok rows and saved outputs from inv10's normal pass, so all 7 are recovered.
+  - Wording: "non-ok rows" (15 at the inv9 stop) is a historical row count, not the number of pieces currently pending as failed.
+  - Received the supervisor's 50% receipt (48a122ae...); the run crossed 50% at 16:09:16Z.
+- 2026-10-12 Invocation 10 ended at its normal wall stop (5,950 ok, 0 failed). Checker and resume_check_v2 passed.
+  - Unique successes: 34,941. Corrected remaining: 27.8 h vs a 60 h window.
+  - Invocation 11 launched at 22:34:44Z with the wrapper unchanged.
+  - Supervisor verified the checkpoint: run receipt/ipcch-alphaearth-inv10-checkpoint-supervisor-20261012.json (f7783567...).
+  - Every historical failed piece has since succeeded.
+- 2026-10-13 Invocation 11 ended at its normal wall stop (5,859 ok + 1 failed). Checker and resume_check_v2 passed.
+  - Unique successes: 40,800. Corrected remaining: 21.8 h vs a 54 h window.
+  - Invocation 12 launched at 04:38:47Z with the wrapper unchanged.
+  - The failed piece 3727|w000_001 succeeded in inv12, with a saved output.
+  - Supervisor verified the checkpoint: run receipt/ipcch-alphaearth-inv11-checkpoint-supervisor-20261013.json (b77ac9d0...).
+- 2026-10-13 The 75% plan-cell milestone was reached during inv12 (first ledger crossing 08:17:39Z; 43,651 successes at the 08:19:22Z alert).
+  - Supervisor verified it: run receipt/ipcch-alphaearth-75pct-supervisor-20261013.json (c366d20e...).
+  - 4343|w006_001 (failed at 07:02Z, capacity) is pending for the normal pass.
+- 2026-10-13 Invocation 12 ended at its normal wall stop (4,919 ok + 1 failed). Checker and resume_check_v2 passed.
+  - Unique successes: 45,719. Corrected remaining: 15.0 h vs a 48 h window.
+  - Invocation 13 launched at 10:41:13Z with the wrapper unchanged.
+  - The failed piece 4343|w006_001 succeeded in inv13, with a saved output.
+  - Supervisor verified the checkpoint: run receipt/ipcch-alphaearth-inv12-checkpoint-supervisor-20261013.json (fac49874...).
+- 2026-10-13 Invocation 13 capacity burst (watcher alert at 14:37:43Z). Supervisor checked it; the run continued unchanged.
+  - Four failed pieces in large admin 100228 (13:57-14:37Z); 6 failed of 3,279 inv13 rows (~0.18%), none consecutive.
+  - Pending for the normal next pass.
+  - Receipt: run receipt/ipcch-alphaearth-inv13-capacity-burst-supervisor-20261013.json (d4b9806e...).
+- 2026-10-13 Invocation 13 ended at its normal wall stop (4,872 ok + 11 failed, all capacity). Checker and resume_check_v2 passed.
+  - Unique successes: 50,591; pending: 7,210. Corrected remaining: 9.6 h vs a 42 h window.
+  - Invocation 14 launched at 16:44:03Z with the wrapper unchanged.
+  - All 11 inv13 failures have saved successful outputs in inv14.
+  - Error trend: request errors per invocation were inv9 30, inv10 12, inv11 18, inv12 15, inv13 ~54. All were transient capacity; no quota exhaustion.
+  - Supervisor receipts:
+    - run receipt/ipcch-alphaearth-inv13-checkpoint-supervisor-20261013.json (6d78cb98...);
+    - second-burst receipt/ipcch-alphaearth-inv13-burst2-supervisor-20261013.json (a2fc82d8...).
+- 2026-10-13 Supervisor transition checklist, retained for the terminal P1 completion (offline, already authorized; no change to the live extraction or pins):
+  1. Final checker gate: complete:true, pending:0, n_violations:0 (exit 0 alone is insufficient), and a settled runner (no live EE process or lock).
+  2. Fresh WSL run: `preflight --kind formal --hash-inputs`, then `prepare --local-only` exactly ONCE.
+  3. `ingest-extraction` with the full-run inputs/production_plan.csv.gz and inputs/production_manifest.json, and the outputs argument pointing to ~/ipcch-alphaearth-runs/p1-c-full-20261010/out; then prepare to attach.
+  4. Preserve the old p0-local-20261010b; its config predates D30.
+  5. Before fits, report:
+     - descriptor, coverage and cohort counts plus hashes;
+     - proof that load_run_inputs assembles successfully without fitting;
+     - reconciliation of the 61-quartet / 244-scalar inventory.
+     The existing fit checkpoint remains.
+  6. Downstream bookkeeping: correct the README's native-grid command examples and its D1-D29 label to the implemented D30 path. implement.md lines 98-110 have the right commands.
+- 2026-10-13 Invocation 14 stopped NON-wall at 20:50:50Z: fatal "Too many concurrent aggregations." on 101076|w003_001 (the third such stop, after inv3 and inv7).
+  - Counts: 2,921 ok, 1 failed, 2 halted; 53,512 done / 4,289 pending; 53,727 reservations.
+  - Just before the fatal, two 120 s read timeouts (w002_003, w002_004) recovered on attempt 2. w002_004 completed as an in-flight request after the fatal.
+  - My HOLD report wrongly called w002_003 unresolved; I corrected it within minutes.
+  - Evidence: run monitor/inv14-terminal/.
+- 2026-10-13 Supervisor one-time release codex-D30-c4-post-concurrency-inv15-once-20261013 (0c6b89d8...), with an inv14 terminal receipt (ab10ae5d...).
+  - Not before 21:10:18Z (20 min quiet), on the unchanged c4/b1 allocation.
+  - prelaunch_inv15.py all-pass at 21:10:33Z: hashes, counters, fresh checker, no runner, lock free, and the gate's only refusal equal to the exact inv14 fatal.
+  - Invocation 15 launched once at 21:11:44Z (attempt-line 43).
+  - Future normal walls use the original fallback gate; any other stop is HOLD.
+  - Supervisor verified the inv15 launch: run receipt/ipcch-alphaearth-inv15-launch-supervisor-20261013.json (655dc229...). All three inv14 terminal pieces have saved ok outputs.
+- 2026-10-13 Invocation 15 stopped NON-wall after 652 s: the same fatal on 101089|w002_001, again ~20 s after a 120 s read timeout.
+  - Counts: 53,601 done / 4,200 pending / 53,822 reservations / 15 starts.
+  - Supervisor: HOLD; no further unchanged-c4 start. Inv15 terminal receipt 50183b33....
+  - User: "时间上没关系" (stable completion first, no speed target).
+- 2026-10-13 Offline c2 operational restriction implemented (HOLD; no launch until a reviewed supervisor receipt binds it).
+  - Runner: ee_pilot_c.py adds --concurrency-ceiling. Effective workers = min(manifest 4, N); invalid values are refused before any start, reservation or EE call.
+  - Each start is recorded in out/invocation_concurrency.jsonl, and the summary records manifest and effective concurrency.
+  - Hashes: ee_pilot_c.py c18513e2 -> d82b3e9a; test_c_production.py 5b83b787 -> 0cccdf8e.
+  - Tests: 4 new tests; full suite 136 OK.
+  - New run-local run_invocation_c2.sh 2fd621ea; the old wrapper is unchanged.
+  - Manifest, pieces, plan, outputs, counters and the gate code are untouched.
+  - Evidence and proposed receipt fields: run monitor/c2-offline-delta/.
+  - Conservative planning figure (supervisor): 13.26 h of c2 work vs 30 h of start windows.
+- 2026-10-13 Supervisor accepted the c2 delta at the reviewed hashes.
+  - Release: codex-D30-c2-operational-ceiling-continuation-20261013 (18d73373...).
+  - Supervisor evidence: 25 focused tests pass; structural review a5312659; gate review b3145cef.
+  - Uncommitted state is recorded; no repository cleanliness is claimed.
+- 2026-10-13 Invocation 16 launched once at 22:23:50Z with run_invocation_c2.sh (effective concurrency 2, manifest 4) after prelaunch_inv16 all-pass. Quiet interval: 60 min from 21:22:22Z.
+  - Initial c2 projection: 47,735 s vs a 108,000 s window.
+  - Later normal walls need c2_wall_check.py (v2 against the c2 receipt, plus 4/2 start and summary records, plus the c2 projection guard).
+  - The old c4 wrapper and releases no longer authorize starts.
+  - Supervisor verified the inv16 c2 launch: receipt/ipcch-alphaearth-inv16-launch-supervisor-20261013.json (2f769a95...). All 3 inv15 terminal pieces have saved ok outputs.
+  - Supervisor reviewed c2_wall_check.py at a2cdf511... (pinned before use; 3 offline fixtures pass): receipt/ipcch-alphaearth-c2-wall-check-review-20261013.json (6427a4ee...).
+- 2026-10-14 Invocation 16 (c2) ended at its normal wall stop (1,855 ok + 1 failed, no fatal). Done 55,456 / pending 2,345.
+  - c2_wall_check passed: observed c2 rate 724,527 cells/s (below the 897,617 planning rate); projected 37,474 s vs an 86,400 s window. Output: monitor/c2_wall_check-after-inv16.json.
+  - Invocation 17 launched at 04:27:49Z with run_invocation_c2.sh.
+  - Supervisor verified the inv16 checkpoint: receipt/ipcch-alphaearth-inv16-checkpoint-supervisor-20261014.json (03b62522...); 10.41 h remaining vs a 24 h window.
+- 2026-10-14 Invocation 17 (c2) ended at its normal wall stop (1,760 ok, 0 failed). Done 57,216 / pending 585.
+  - c2_wall_check passed: observed rate 819,290 cells/s; projected 8,994 s vs a 64,800 s window. Output: monitor/c2_wall_check-after-inv17.json.
+  - Invocation 18 launched at 10:32:05Z with run_invocation_c2.sh. It is expected to complete the extraction.
+  - Supervisor verified the inv17 checkpoint: receipt/ipcch-alphaearth-inv17-checkpoint-supervisor-20261014.json (800fe1ec...).
+- 2026-10-14 P1 D30 EXTRACTION COMPLETE. Invocation 18 (c2) did 585/585.
+  - Final checker check-20261014T123221Z.json: 57,801/57,801 done; pending 0; complete true; 0 violations.
+  - Totals: 58,037 of 59,576 reservations; 18 of 20 invocations; out/ 476 MB.
+  - Evidence: run monitor/final-complete/.
+  - No further EE starts. Next: the authorized local formal preparation/ingest checkpoint (no fits).
+- 2026-10-14 Supervisor accepted the final extraction: receipt ipcch-alphaearth-final-extraction-supervisor-20261014.json (5f491547...).
+- 2026-10-14 FORMAL D30 INPUT FREEZE complete (local only, no fits) in fresh run ~/ipcch-alphaearth-runs/p1-formal-d30-20261014.
+  - Stages, each once: preflight formal --hash-inputs (pass; 61 quartets / 244 scalar) -> prepare --local-only -> ingest-extraction (57,801 complete, 6,227 admins) -> attach (6,227 usable).
+  - Precision check (default vs round_trip plan parsing): descriptor table bitwise equal; routes unchanged; the ledger differs only at <=3.3e-16; minimum margin to .80 is 0.189.
+  - Freeze report:
+    - all 73 artifact hashes;
+    - geometry = plan = descriptors = ledger = 6,227;
+    - load_run_inputs assembles: 296/424 digests 0b8757a4/0163a677; each H has 42,695 rows / 6,224 admins;
+    - schedule 61 / 244 equals the preflight ceiling.
+  - Observations: coverage > 1 for 1,674 admins (max 1.0058); 3 admins without labels.
+  - Evidence: evidence/p1/formal-d30-20261014/.
+  - p0-local-20261010b preserved. Awaiting the supervisor's next release.
+- 2026-10-14 P2 release codex-D30-formal-P2-development-mapfreeze-20261014 (ae558aab...): pre-fit check PASS; develop launched once at 13:19:36Z (pid 3319861/3319863). Then freeze-map after ledger reconciliation; stop before predict.
+- 2026-10-14 P2 develop COMPLETE (13:19-13:31Z, exit 0): 27 quartets (19 B1 + 8 B0) / 108 scalar fits, exactly as scheduled.
+  - Development NEGATIVE at all H: 0 of 72 recipe-years pass the guards; every H falls back to B2 (D13/D23).
+  - freeze-map COMPLETE at 13:33:44Z (cutoff 2022-12): B2 for all H, no map. MAP_FREEZE 7e5778ea.
+  - STOPPED for the supervisor's map-freeze review; predict/bridge/main/supplement (34 quartets) not run.
+  - Evidence: evidence/p1/formal-d30-20261014/p2/.
+- 2026-10-14 P3 release codex-D30-formal-P3-predict-report-replay-20261014 (efceca32...): pre-predict check PASS; predict launched once at 13:51:18Z (pid 3480736/3480738).
+- 2026-10-14 P3 predict COMPLETE: 34 fits (61/244 total, exactly as scheduled); G==B2 bitwise at all H; provider ancestry clean.
+  - report COMPLETE: no qualifying horizon (all no_gain_or_reversal; G-B2 = 0).
+  - replay FAILED 16/488 checks -> HOLD. Two classes, both evidence/provenance only (no number changes):
+    - (A) 15 canonical_cohort_fields: persistence_source_month missing written as NaN vs '';
+    - (B) 1 h03 combined providers: one corrupted target_ord cell (2431 vs 24314) in predict/providers_all_h03.csv.gz. The zero-fit re-prediction is otherwise bitwise equal; cause unknown.
+  - Awaiting the supervisor's scoped decision. Meeting note not started.
+  - Evidence: evidence/p1/formal-d30-20261014/p3/.
+- 2026-10-14 Scoped offline replay repair (release codex-D30-P3-replay-evidence-scoped-repair-20261014, 7e9c5f5d...). Done for review only:
+  - replay.py prediction read now uses the canonical NA policy (cd5eeb38 -> a00067a0).
+  - 4 regression tests added; the first failed before the fix with the production signature. Replay-related suites pass: 13 + 5 + 2.
+  - 45/46 code, 73 inputs and 404 science artifacts unchanged.
+  - Staged h03 provider reconstruction 06eefdc6 differs from the original by exactly one cell (target_ord 2431 -> 24314).
+  - Archive proposal drafted. Not installed; no formal replay rerun.
+  - Evidence: evidence/p1/formal-d30-20261014/p3-replay-repair/.
+- 2026-10-14 Release codex-D30-P3-replay-amendment-install-and-recheck-20261014 (991ce446...): archive and install applied.
+  - Failed attempt 1 and the corrupt provider e454ce15 are archived under archive/replay-attempt-01-20261014T141645Z/ (ARCHIVE.json 6f9c534e, ANALYSIS_AMENDMENT.json 488d966d). The reconstructed provider 06eefdc6 is installed.
+  - Formal replay rerun ONCE: PASS 488/488, zero XGB fits (replay.json 1bbdd949, COMPLETE 48ec2a51). 404 science and 73 inputs unchanged.
+  - Next: meeting note / README / inventory / offline MLflow plan.
+- 2026-10-14 Formal result accepted (receipt codex-D30-P3-replay-recheck-acceptance-20261014, 0b050601...): no qualifying H; B2 fallback at every H; G == B2. Delivery pending.
+- 2026-10-14 Delivery work (documentation and an offline plan only; no MLflow writes):
+  - Chinese meeting note: docs/notes/2026-10-14_组会讨论稿_IPCCH_AlphaEarth监督分区.md.
+  - README: D30 commands replace the native-grid examples; formal result added.
+  - PRD/implement checkboxes reconciled with receipts, with appended status lines; the original planning text is kept.
+  - Artifact inventory: evidence/p1/formal-d30-20261014/ARTIFACT_INVENTORY.json.
+  - Offline MLflow plan: mlflow-plan.md. The target is the existing detailed + dashboard store, with an additive predecessor-fingerprint extension.
+  - All 16 AlphaEarth evaluation cohorts have keys/truth digests identical to existing dashboard datasets (delivery/mlflow_dataset_compat.json).
+  - Awaiting supervisor review of the plan; adapter code changes and live writes need a separate release.
+- 2026-10-14 Delivery plan review r1 (codex-D30-delivery-and-mlflow-plan-review-r1-20261014, 271032d1...): revision r2 prepared (docs, plan and read-only evidence only).
+  - M1: exact saved-text identity. 16/16 keys equal, 0/16 truth text equal (q3 differs <= 9.9e-17). 12 family-qualified evaluation descriptors frozen (dataset_descriptors_v2.json 2efda436); no supplement persistence dataset.
+  - M2: native AlphaEarth model-ledger contract specified (61 identities / 244 own boosters).
+  - M3: all 1,298 sha256 leaves typed. External bindings by exact path (list_images, production pieces, receipts); no generic sources/** exemption.
+  - M4: versioned inventory v2 with self-exclusion.
+  - M5: dashboard extension state machine S0-S3 with resume/backup rules.
+  - M6: 8 composite training descriptors (training_descriptors_v2.json b76c2ab2).
+  - D1: meeting-note corrections. The reviewed note is snapshotted.
+  - Plan: mlflow-plan.md r2 (r1 in mlflow-plan-history/).
+  - No adapter/store/server change.
+- 2026-10-14 MLflow offline implementation (release b9cdee29...): the five IPCCHMLflow files, tests and docs were implemented.
+  - The empty-artifact verifier fix was accepted (2c91952e...).
+  - The scratch rehearsal stopped twice: once on the empty-artifact listing, once on missing legacy Temp sources (four roots had 0 files).
+  - The surviving yearly-formal-20261007 source was preserved, SHA-verified and made read-only under ~/ipcch-legacy-source-preservation/.
+- 2026-10-14 User stop, then the user research-storage policy (supersedes the old retention/rehearsal release).
+  - B0, the scratch stores and the old models.tar files were removed by the supervisor; they are not recreated.
+  - Code delta (no live writes):
+    - model bundles are listed by member manifest and not uploaded by default (opt-in `upload_model_bundles`);
+    - bundle-mode mismatch refused;
+    - AE model descriptors carry an empty bundle URI; legacy tar tags documented as historical;
+    - `apply --extend` no longer needs a full-store backup;
+    - restore-check skips absent tars;
+    - AE extras limited to code + required inputs (no task docs/evidence/receipts).
+  - README, both specs and mlflow-plan.md updated in place.
+  - Next: review of the diff, then the live AE import + dashboard extension on explicit go-ahead.
+- 2026-10-14 Research-retention delta passed scoped review. Final config-only adjustments:
+  - AE extras are code only. list_images and production pieces are no longer copied; they stay external and SHA-pinned.
+  - extraction/{plan,pieces}.csv.gz moved to excluded (path + SHA).
+  - Dashboard guide now states that old bundle URI/SHA tags are historical and the weights were intentionally removed.
+  - Superseded B0/scratch commands were removed from mlflow-plan.md. Focused wording test: OK.
+- 2026-10-14 Live additive registration (store ~/.local/share/ipcch-mlflow, http://127.0.0.1:5000, server via manage.sh; no backup, scratch or legacy verify):
+  - AE plan: fp 4f96ff09..., upload estimate 79,281,769 bytes.
+  - AE import: created 21, 1,080 metrics, 260 artifacts. AE verify: 21 records, 79,443,114 bytes read back.
+  - Dashboard plan --extend: legacy reproduces c7abf4cd; new fp cb3db908...
+  - Dashboard apply --extend reached S3; built-in verify passed (legacy 136 rows / 100 versions / 68 registered models unchanged; detailed runs unchanged; catalog_status complete).
+  - Counts:
+    - runs: exp1 126->147, exp2 136->156, exp3/4 202/174 unchanged;
+    - registered models / versions / logged models: 180/226/226 -> 196/242/242;
+    - datasets: +20 (12 family-qualified evaluation + 8 training).
+  - Log: ~/.local/share/ipcch-mlflow/logs/alphaearth-registration-20261014.log.
+  - Task lifecycle remains open (no commit/archive).
+- 2026-10-14 Delivery accepted by the supervisor (independent read of ae-dashboard-apply.json, SQLite and health):
+  - catalog_status complete; experiments 147/156/202/174; registered models/versions/logged models 196/242/242.
+  - No AE models.tar; AE parent artifacts 79,443,114 bytes; local store about 2.25 GB; health HTTP 200.
+  - Research delivery complete. Lifecycle (commit, close/archive, audit) remains separate scope and not done.
+- 2026-10-14 Branch integration authorized by the user: commit, push, and merge into main, preserving Claude's dashboard, permissions and remote-assistant integration.
+  - Final integration checks: MLflow offline suite 81/81 passed; AlphaEarth replay/pipeline/synthetic regressions 20/20 passed; `bash -n IPCCHMLflow/manage.sh` passed.
+  - Read-only service check: local health 200, anonymous root 401; MLflow and Cloudflare services both active and enabled. WSL shutdown/reopen was not exercised in this session.
+  - Current delivery also retains model-card lookup, the assistant read-only command allowlist, and WSL-session autostart. Runtime credentials remain outside Git.
+  - Only code, documentation, tests and compact task evidence enter Git; no raw inputs, model bundles, live stores, rehearsal copies or cloud-only legacy files are added. Root AGENTS.md/CLAUDE.md remain intentionally ignored by existing repository policy.

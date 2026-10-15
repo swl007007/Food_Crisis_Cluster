@@ -1,0 +1,56 @@
+[Claude w14:p2 executor] P3 HOLD: replay failed 16 of 488 checks. predict and report are COMPLETE. No rerun, refit, repair, cleanup or code change. Both failure classes are evidence/provenance only: neither changes any reported number. Your scoped review is needed.
+
+predict (once, 13:51:18-14:12:20Z, exit 0, stderr empty, 1,196 s):
+- 34 fits: bridge B1 4; main B0 11 + B1 11; supplement B0 4 + B1 4.
+- Reconciliation (p3_reconcile.json e21e5eed):
+  - develop 27 + predict 34 = 61 unique identities; 244 scalar fits; all action=fit. The ledger equals the schedule (arm, block) and fit_origin.
+  - Rows per H 21,414 / 21,011 / 20,505 / 18,179 = main + 4,092 supplement. 0 duplicates; 0 non-finite arm outputs.
+  - G == B2 bitwise (raw, star and phase) at all H; G_route b2_reuse for every row.
+  - Provider ancestry: 0 providers fitted after the row origin; all provider and arm identities are in the ledger.
+
+report (once, 14:13:41-14:14:56Z, exit 0): qualifying_horizons [].
+- Every H: status no_gain_or_reversal; G-B2 = 0 on all metrics (defined); G routes all b2_reuse.
+- Main binary F1, point estimates only (no inference stated here):
+  - h1: B0 .7913, B1 .7899, B2 .7919 (B1-B0 -.0014; B2-B1 +.0020)
+  - h3: B0 .7750, B1 .7831, B2 .7833 (+.0081; +.0002)
+  - h6: B0 .7771, B1 .7825, B2 .7854 (+.0054; +.0029)
+  - h12: B0 .7595, B1 .7554, B2 .7565 (-.0041; +.0012)
+- Matched persistence F1 (persistence-available keys): h1 .7691, h3 .7645, h6 .7657, h12 .7525.
+- report.json 78ec269d; report/COMPLETE 367e2012.
+
+replay (once, 14:14:56-14:16:45Z, exit 1): replay.json 7e775225; replay/INCOMPLETE.json and RUN_INCOMPLETE.json written by the code.
+- 472/488 checks pass, including:
+  - 61/61 identity_recomputed;
+  - 15/15 predictions_repredicted_bitwise;
+  - 72/72 G_phase_repredicted;
+  - 140 objective_resolved; 23 pool_rebuilt;
+  - all 4 x {panels, contrasts, bootstrap_regenerated, decision_*, persistence, supplement};
+  - selection_reproduced; final_map_b2_fallback_recorded; qualifying_horizons; zero_xgb_fits (0 fits).
+
+Failure class A: 15 x {ctx}:canonical_cohort_fields (every main/supplement context).
+- Read-only diagnosis (replay_diag.json da684ae4; replay_diag2.json 66aa86c3): the ONLY differing column is persistence_source_month.
+- Every mismatch is NaN (saved predictions CSV read back with pandas defaults) vs '' (canonical from keys loaded by load_run_inputs with keep_default_na=False).
+  - Counts per H: 1,323 / 1,015 / 1,456 / 1,735. 0 other mismatches.
+- These are rows with no persistence source: missing-value representation only.
+- Classification: evidence/serialization convention between the predict writer and the replay canonical builder. No reported number changes.
+
+Failure class B: 1 x h03:combined_providers_equal_expected.
+- predict/providers_all_h03.csv.gz (e454ce15) has ONE corrupted cell: row 21721 (admin 4408 Haiti, target 2026-03, block h03_supp_2026) has target_ord written as "2431" instead of 24314. One digit is missing in the CSV text; the gzip CRC is valid.
+- A zero-fit re-prediction of that block from its stored booster (replay_diag3.json 92780e3a; read-only, no writes to the run) gives:
+  - all 4,092 rows and every other column (provider block, fit_origin, identity and all four p_q* probabilities) are bitwise equal;
+  - only that target_ord cell differs.
+- predictions_h03 carries the correct 24314 for the row. h03 historical providers, the pool_rebuilt/annual_coefficients for h03_supplement_2026 and the other H provider files all pass.
+- Classification: a provenance-artifact integrity defect, not a result change. The cause of the dropped digit is unknown; I could not determine it.
+
+Per the audit rule:
+- Neither class changes a result. Both weaken provenance/evidence only.
+- Fixing A means a replay (or writer) code change. Fixing B means rewriting one provenance file. Both are outside my current authorization.
+
+Options for you:
+(1) Scoped repair: normalize the missing-value representation in the replay canonical comparison; regenerate providers_all_h03 from the verified re-prediction (or record a pinned exception). Then rerun replay once.
+(2) Accept with documented exceptions.
+(3) Other.
+
+The meeting note/README are NOT started; they wait for your decision on the replay.
+
+Evidence: run predict/, report/, replay/. Logs in p1-formal-d30-logs (stages.log 69f66adc). Copied to .trellis/.../evidence/p1/formal-d30-20261014/p3/.

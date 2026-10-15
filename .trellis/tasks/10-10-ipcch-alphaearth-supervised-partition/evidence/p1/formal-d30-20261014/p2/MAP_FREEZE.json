@@ -1,0 +1,36 @@
+{
+  "stage": "map_freeze",
+  "cutoff": "2022-12",
+  "horizons": {
+    "1": {
+      "selected": "B2",
+      "map": null,
+      "fallback": "no eligible recipe in development (D13)",
+      "file_sha256": "56cbddf3e3016583fc19ae1d9695892897d9dc11e9085b9f627be640152b193e",
+      "selection_sha256": "a333996c6d59e73e1af23e27573ec71f548eb34ba417fbd8b1206b16a8480151"
+    },
+    "3": {
+      "selected": "B2",
+      "map": null,
+      "fallback": "no eligible recipe in development (D13)",
+      "file_sha256": "56cbddf3e3016583fc19ae1d9695892897d9dc11e9085b9f627be640152b193e",
+      "selection_sha256": "0b760bf66e83203475133fc4a0cce80aefff489dc72048c61298b34c05ff0c73"
+    },
+    "6": {
+      "selected": "B2",
+      "map": null,
+      "fallback": "no eligible recipe in development (D13)",
+      "file_sha256": "56cbddf3e3016583fc19ae1d9695892897d9dc11e9085b9f627be640152b193e",
+      "selection_sha256": "dd0b59576244211d4dd46bf544e03f718d577f32a03be0a007da22ff90e0678e"
+    },
+    "12": {
+      "selected": "B2",
+      "map": null,
+      "fallback": "no eligible recipe in development (D13)",
+      "file_sha256": "56cbddf3e3016583fc19ae1d9695892897d9dc11e9085b9f627be640152b193e",
+      "selection_sha256": "fe94beb91f0fb28dd1651a1742261a75a1793e9beb94f2fdc06bcda34b84352a"
+    }
+  },
+  "statement": "maps and recipes frozen before any main/supplement G prediction; 2023+ outcomes never redraw maps",
+  "frozen_utc": "2026-10-14T13:33:44Z"
+}

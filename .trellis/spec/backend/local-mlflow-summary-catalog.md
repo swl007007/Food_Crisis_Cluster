@@ -2,7 +2,7 @@
 
 Contract for `IPCCHMLflow/summary_catalog.py` (task 10-08-mlflow-focused-evaluation-registry
 introduced the compact Summary; task 10-09-mlflow-readable-naming replaced it with the wide
-`IPCCH - dashboard`). Builds on [local-mlflow-import.md](./local-mlflow-import.md); the detailed
+`IPCCH dashboard`). Builds on [local-mlflow-import.md](./local-mlflow-import.md); the detailed
 records are read-only input.
 
 ## 1. Scope / Trigger
@@ -19,6 +19,7 @@ records are read-only input.
 $PY IPCCHMLflow/summary_catalog.py plan                     # read-only (plan JSON under store/dashboard/)
 $PY IPCCHMLflow/summary_catalog.py inventory --out INV.json
 $PY IPCCHMLflow/summary_catalog.py apply --plan-fingerprint FP --inventory INV.json --backup BACKUP_DIR
+$PY IPCCHMLflow/summary_catalog.py apply --extend NAME --plan-fingerprint FP --inventory INV.json [--backup DIR]
 $PY IPCCHMLflow/summary_catalog.py verify --plan-fingerprint FP [--inventory INV.json]
 python.exe IPCCHMLflow/browser_probe.py --out R.json URL ...  # Windows Python with websockets; port 9714
 ```
@@ -30,7 +31,7 @@ datasets=[DatasetInput(Dataset, tags)], models=[LoggedModelInput, ...])`,
 
 ## 3. Contracts
 
-- Experiment `IPCCH - dashboard`; one run per detailed child (family x lead x arm x seed) plus
+- Experiment `IPCCH dashboard`; one run per detailed child (family x lead x arm x seed) plus
   one `seed=mean` run per MLP arm x lead (136 rows). Run name = `naming.run_name`; tags = the
   child's readable tags + `record_kind=dashboard_row`, `aggregation` (`single_run`,
   `single_seed`, `mean_of_3_seeds`), description, `zz_prov.*` links.
@@ -60,13 +61,24 @@ datasets=[DatasetInput(Dataset, tags)], models=[LoggedModelInput, ...])`,
 - Experiment tag `catalog_status` = `incomplete` during apply, `complete` after full verify;
   the experiment description is the reading guide (vocabulary, comparability, filters).
 
+- Bounded extension (`--extend NAME`, task 10-10): `sources.json` `dashboard_extensions` freezes predecessor
+  fingerprint + plan file SHA, exact addition keys/dataset digests, addition and legacy counts. The legacy
+  sub-projection (all objects except exactly the additions) must reproduce the predecessor fingerprint. States
+  S0 → S1 (intent tag, incomplete) → S2 (new fingerprint, lineage, description) → S3 (complete, intent removed);
+  each tag/journal write is a crash boundary; only experiment metadata `catalog_status`, the intent tag, the
+  fingerprint, `zz_prov.dashboard_plan_lineage` and the description may change on existing objects.
+- AlphaEarth descriptors: evaluation datasets are family-qualified with exact saved truth text
+  (`phase_truth`, `q3`); training pools are B0 `compact296` (saved X296 + keys) and the composite
+  `compact296+alphaearth128` (X296 + keys + descriptor table + admin join + ordered 424 schema; no X424 file).
+
 ## 4. Validation & Error Matrix
 
 | Condition | Result |
 |---|---|
 | recomputed plan fingerprint != `--plan-fingerprint` | `SourceConflict`, no writes |
 | rows / registered models / versions != EXPECTED (136/68/100) | `SourceConflict` at plan |
-| backup DB row counts != current store | refuse ("fresh backup") |
+| backup DB row counts != current store | refuse ("fresh backup"); full rebuild requires `--backup`, `--extend` only checks one when given (research retention) |
+| model descriptor of a family without an uploaded tar | `model_bundle_uri`/`model_bundle_sha256` empty, note says weights not uploaded; older descriptors keep their historical tar URI/SHA (not a download claim) |
 | detailed experiment differs from the pre-apply inventory (before or after) | refuse / verify fails |
 | prediction artifact SHA != family run manifest | `SourceConflict` |
 | recomputed keys hash or n != `zz_prov.cohort_keys.*` / panel n_rows | `SourceConflict` |
@@ -75,6 +87,10 @@ datasets=[DatasetInput(Dataset, tags)], models=[LoggedModelInput, ...])`,
 | incomplete seed set for a mean | `SourceConflict` |
 | two objects share a projection key; object of another plan | `SourceConflict` |
 | interrupted apply | `catalog_status=incomplete`; rerun same plan resumes, reuses IDs |
+| extension: legacy sub-projection != predecessor fp; unlisted/missing addition; dataset digest != frozen | `SourceConflict` at plan |
+| extension: foreign intent, foreign incomplete state, object outside legacy ∪ additions, legacy drift | `SourceConflict` before any write |
+| extension: same-name logged model without this extension's key | `SourceConflict` (ambiguous; no duplicate created) |
+| extension interrupted at any tag/journal/object boundary | rerun resumes own intent to S3; no duplicates (a backup is optional) |
 
 ## 5. Good / Base / Bad Cases
 

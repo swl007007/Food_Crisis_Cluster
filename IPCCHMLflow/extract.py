@@ -1,4 +1,4 @@
-"""Explicit report -> evaluation-view extraction for the six known IPCCH source schemas.
+"""Explicit report -> evaluation-view extraction for the known IPCCH source schemas (six legacy + AlphaEarth).
 
 Only already-saved values are read; nothing is recomputed from predictions
 except cohort key-set digests (sorted admin_code|target_ord), which identify
@@ -546,7 +546,73 @@ def _window_children(fam: dict, rep: dict, root: Path) -> list:
     return out
 
 
-EXTRACTORS = {"p6": _p6_children, "mlp": _mlp_children, "yearly": _yearly_children, "window": _window_children}
+AE_MODEL_ARMS = ("B0", "B1", "B2", "G")
+
+
+def _ae_panel(flat: dict, details: dict | None) -> dict:
+    """AlphaEarth panels are flat dotted dicts; counts and NA reasons live in the matching panel_details entry."""
+    out = dict(flat)
+    det = details or {}
+    if isinstance(det.get("binary_counts"), dict):
+        out["binary.counts"] = det["binary_counts"]
+    for k, why in (det.get("na_reasons") or {}).items():
+        out[f"{k}_na_reason"] = why
+    return out
+
+
+def _alphaearth_children(fam: dict, rep: dict, root: Path) -> list:
+    """AlphaEarth supervised partition report (task 10-10): main = 2023-2025, supplement = 2026-01..04.
+    Saved panels only: main E_all (B0/B1/B2/G), main E_persist (B0/B1/B2/G/persistence), supplement E_all
+    (B0/B1/B2/G). No supplement persistence panel is saved, so that cohort is an NA note, never rescored.
+    Contrasts come from the report's delta blocks; the G-B2 country bootstrap is attached to G."""
+    out = []
+    seed = fam.get("model_seed", "42")
+    for H in HORIZONS:
+        x = rep["horizons"].get(H)
+        if x is None:
+            raise SourceConflict(f"{fam['family']}: H{H} missing from report")
+        pred = read_pred(root / fam["predictions"].format(H=int(H)),
+                         ["admin_code", "target_ord", "target_month", "period", "persistence_available"])
+        main, supp = pred[pred["period"] == "main"], pred[pred["period"] == "supplement"]
+        if len(main) + len(supp) != len(pred):
+            raise SourceConflict(f"{fam['family']} H{H}: prediction periods other than main/supplement")
+        src = f"report.horizons.{H}"
+        pers, sup = x["persistence"], x["supplement_2026"]
+        for arm, kind in fam["arms"].items():
+            c = Child(fam["family"], fam["source_run_id"], H, arm, "none" if kind == "persistence_baseline" else seed, kind)
+            if arm in AE_MODEL_ARMS:
+                c.add("main.E_all.n", x.get("main_keys"), f"{src}.main_keys")
+                add_panel(c, "main.E_all", _ae_panel(x["panels"].get(arm), x["panel_details"].get(arm)), f"{src}.panels.{arm}")
+                cohort_tag(c, "main.E_all", main)
+                for cname, block in sorted(x["contrasts"].items()):
+                    a, b = cname.split("-")
+                    if a == arm:
+                        add_flat(c, f"main.E_all.delta.{a}_minus_{b}", block, f"{src}.contrasts.{cname}")
+                if arm == "G":
+                    add_boot(c, "main.E_all.contrast.G_vs_B2", x["bootstrap"], f"{src}.bootstrap")
+                    c.add("main.E_all.contrast.G_vs_B2.lower_bound", x["bootstrap"].get("lower_bound"),
+                          f"{src}.bootstrap.lower_bound")
+                c.add("supplement.E_all.n", sup.get("keys"), f"{src}.supplement_2026.keys")
+                add_panel(c, "supplement.E_all", _ae_panel(sup["panels"].get(arm), sup["panel_details"].get(arm)),
+                          f"{src}.supplement_2026.panels.{arm}")
+                cohort_tag(c, "supplement.E_all", supp)
+            else:
+                c.note("main.E_all", "persistence is only defined on persistence-available keys (E_persist)")
+                c.note("supplement.E_all", "persistence is only defined on persistence-available keys (E_persist)")
+            c.add("main.E_persist.n", pers.get("keys"), f"{src}.persistence.keys")
+            add_panel(c, "main.E_persist", _ae_panel(pers["panels"].get(arm), pers["panel_details"].get(arm)),
+                      f"{src}.persistence.panels.{arm}")
+            cohort_tag(c, "main.E_persist", main[main["persistence_available"] == 1])
+            if arm in AE_MODEL_ARMS:
+                add_flat(c, f"main.E_persist.delta.{arm}_minus_persistence", pers["model_minus_persistence"].get(arm),
+                         f"{src}.persistence.model_minus_persistence.{arm}")
+            c.note("supplement.E_persist", "no supplement persistence panel is saved in the source report (not rescored)")
+            out.append(c)
+    return out
+
+
+EXTRACTORS = {"p6": _p6_children, "mlp": _mlp_children, "yearly": _yearly_children, "window": _window_children,
+              "alphaearth": _alphaearth_children}
 
 
 def parent_metrics(fam: dict, rep: dict) -> dict:

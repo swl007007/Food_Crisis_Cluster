@@ -1,0 +1,74 @@
+{
+  "receipt_id": "codex-D30-P3-replay-recheck-acceptance-20261014",
+  "utc": "2026-10-14T15:23:37.132417+00:00",
+  "decision": "ACCEPT_SCOPED_REPLAY_RECOVERY_AND_FORMAL_SCIENTIFIC_RESULTS_DELIVERY_PENDING",
+  "executor": {
+    "pane": "w14:p2",
+    "session": "3546490e-8e08-43f2-9f1d-9c72bccda1e8",
+    "terminal": "term_65d7ebc256c188"
+  },
+  "run_directory": "/home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-20261014",
+  "installation_release_sha256": "991ce446663b530fc6d77c60c513e970575aa81d4c2a8a95d2b00de2e7e599a8",
+  "verification": {
+    "analysis_inventory": {
+      "checked": 46,
+      "mismatches": []
+    },
+    "frozen_inputs": {
+      "checked": 73,
+      "mismatches": []
+    },
+    "protected_science": {
+      "checked": 404,
+      "mismatches": []
+    },
+    "archive_moves": [
+      {
+        "to": "archive/replay-attempt-01-20261014T141645Z/replay/replay.json",
+        "sha256": "7e7752256cc8b6de4ce74049ac9bcb3be97e715fe2aa41e1e7a5c8cbbc6082a6",
+        "independently_verified": true
+      },
+      {
+        "to": "archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json",
+        "sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3",
+        "independently_verified": true
+      },
+      {
+        "to": "archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json",
+        "sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3",
+        "independently_verified": true
+      },
+      {
+        "to": "archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz",
+        "sha256": "e454ce1590084ac2e0a9ce654b775a35ed2bf1beb11d0597b46a4144f03576d5",
+        "independently_verified": true
+      }
+    ],
+    "active_provider_sha256": "06eefdc6ae8b9864d7b8fe3b7fa8aea189946f747b3798826e853c2b2504413f",
+    "replay_sha256": "1bbdd94973ff4ee417efd464f81d546728c23c663b59835f8ec13ab9ea1d7ec7",
+    "replay_complete_sha256": "48ec2a51f0e868c540b6db136db142b6487ec724b876d9a16c2ef11cc34cdc0e",
+    "replay_checks": 488,
+    "failed_checks": [],
+    "zero_xgb_fits": [
+      {
+        "check": "zero_xgb_fits",
+        "pass": true,
+        "fits": 0
+      }
+    ],
+    "root_incomplete_absent": true,
+    "analysis_amendment_sha256": "488d966defc9dac100f2bc8f68d34a09582adf69a60b10434a07c039567cc4c5",
+    "archive_manifest_sha256": "6f9c534ef4919255f589955956bdfad5f4f74de7e4e368e5c7d387bff3732110"
+  },
+  "scientific_result": {
+    "qualifying_horizons": [],
+    "selected_all_H": "B2 fallback",
+    "G_equals_B2": "all raw/projected/phase values; structural zero gain",
+    "scope": "Current fixed recipes/development guards only; no general AlphaEarth futility inference."
+  },
+  "limitations": [
+    "rejected candidate splits are not individually re-solved; accepted states and ledger ordering are",
+    "raw EE pixels are never refetched"
+  ],
+  "continuation": "Continue authorized meeting note, README/PROGRESS, artifact inventory and offline MLflow plan. Live MLflow writes require reviewed concrete plan. No refits, cloud, push/merge or lifecycle close authorized by this receipt."
+}

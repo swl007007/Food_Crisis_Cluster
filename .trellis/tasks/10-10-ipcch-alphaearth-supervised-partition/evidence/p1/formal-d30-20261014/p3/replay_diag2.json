@@ -1,0 +1,50 @@
+{
+ "canonical": {
+  "1": {
+   "nan_vs_empty": 1323,
+   "other_mismatches": 0
+  },
+  "3": {
+   "nan_vs_empty": 1015,
+   "other_mismatches": 0
+  },
+  "6": {
+   "nan_vs_empty": 1456,
+   "other_mismatches": 0
+  },
+  "12": {
+   "nan_vs_empty": 1735,
+   "other_mismatches": 0
+  }
+ },
+ "h03_providers": {
+  "saved_rows": 38764,
+  "hist_rows": 15660,
+  "saved_dup_rows": 0,
+  "hist_rows_in_combined": 15660,
+  "hist_vs_combined_target_ord_ndiff": 0,
+  "hist_vs_combined_provider_block_ndiff": 0,
+  "hist_vs_combined_provider_fit_origin_ndiff": 0,
+  "hist_vs_combined_provider_identity_ndiff": 0,
+  "hist_vs_combined_p_q2_ndiff": 0,
+  "hist_vs_combined_p_q3_ndiff": 0,
+  "hist_vs_combined_p_q4_ndiff": 0,
+  "hist_vs_combined_p_q5_ndiff": 0,
+  "blocks": {
+   "h03_main_2025": 9792,
+   "h03_main_2024": 4295,
+   "h03_hist_2022": 4153,
+   "h03_hist_2020": 4111,
+   "h03_supp_2026": 4092,
+   "h03_hist_2021": 3246,
+   "h03_main_2023": 2832,
+   "h03_hist_2019": 2685,
+   "h03_bridge_2023": 2093,
+   "h03_hist_2018": 1465
+  },
+  "fit_origin_ge_target": 1
+ },
+ "h1_providers_dup_rows": 0,
+ "h6_providers_dup_rows": 0,
+ "h12_providers_dup_rows": 0
+}

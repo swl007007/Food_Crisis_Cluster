@@ -1,0 +1,1994 @@
+{
+  "pass": false,
+  "checks": [
+    {
+      "check": "map_freeze_hash_chain",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_hist_2018:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_hist_2019:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_hist_2020:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B0:h01_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B0:h01_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_bridge_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_main_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B0:h01_main_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B0:h01_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B0:h01_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B1:h01_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:B0:h01_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h01:all_scheduled_requests_present",
+      "pass": true,
+      "found": 16
+    },
+    {
+      "check": "h01:expected_provider_keys_complete",
+      "pass": true
+    },
+    {
+      "check": "h01:historical_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h01:combined_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.01:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:lam1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2021:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.01:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01_dev_2022:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h01:selection_reproduced",
+      "pass": true,
+      "saved": "B2",
+      "replayed": "B2"
+    },
+    {
+      "check": "h01:final_map_b2_fallback_recorded",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2023:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2023:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2023:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2023:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h01_main_2024:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2024:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2024:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2024:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h01_main_2025:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2025:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2025:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h01_main_2025:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h01_supplement_2026:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h01_supplement_2026:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h01_supplement_2026:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h01_supplement_2026:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h01:all_main_supplement_blocks_scored",
+      "pass": true
+    },
+    {
+      "check": "h01:projected_columns_from_raw",
+      "pass": true
+    },
+    {
+      "check": "h01:projection_independent",
+      "pass": true
+    },
+    {
+      "check": "h01:report:main_keys_countries",
+      "pass": true
+    },
+    {
+      "check": "h01:report:main_panels",
+      "pass": true
+    },
+    {
+      "check": "h01:report:contrasts",
+      "pass": true
+    },
+    {
+      "check": "h01:report:annual_panels",
+      "pass": true
+    },
+    {
+      "check": "h01:report:persistence_panels",
+      "pass": true
+    },
+    {
+      "check": "h01:report:supplement_panels",
+      "pass": true
+    },
+    {
+      "check": "h01:report:coverage_subsets",
+      "pass": true
+    },
+    {
+      "check": "h01:report:g_routes",
+      "pass": true
+    },
+    {
+      "check": "h01:report:decision_gain_annual",
+      "pass": true
+    },
+    {
+      "check": "h01:report:decision_guards",
+      "pass": true
+    },
+    {
+      "check": "h01:report:decision_criteria",
+      "pass": true
+    },
+    {
+      "check": "h01:report:decision_status",
+      "pass": true
+    },
+    {
+      "check": "h01:report:bootstrap_regenerated",
+      "pass": true
+    },
+    {
+      "check": "h01:report:country_diagnostics",
+      "pass": true
+    },
+    {
+      "check": "h01:report:concentration",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_hist_2018:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_hist_2019:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_hist_2020:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B0:h03_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B0:h03_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_bridge_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_main_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B0:h03_main_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B0:h03_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B0:h03_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B1:h03_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:B0:h03_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h03:all_scheduled_requests_present",
+      "pass": true,
+      "found": 16
+    },
+    {
+      "check": "h03:expected_provider_keys_complete",
+      "pass": true
+    },
+    {
+      "check": "h03:historical_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h03:combined_providers_equal_expected",
+      "pass": false
+    },
+    {
+      "check": "h03_dev_2021:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:lam1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2021:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam0.1:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:lam1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03_dev_2022:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h03:selection_reproduced",
+      "pass": true,
+      "saved": "B2",
+      "replayed": "B2"
+    },
+    {
+      "check": "h03:final_map_b2_fallback_recorded",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2023:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2023:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2023:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2023:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h03_main_2024:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2024:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2024:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2024:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h03_main_2025:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2025:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2025:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h03_main_2025:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h03_supplement_2026:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h03_supplement_2026:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h03_supplement_2026:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h03_supplement_2026:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h03:all_main_supplement_blocks_scored",
+      "pass": true
+    },
+    {
+      "check": "h03:projected_columns_from_raw",
+      "pass": true
+    },
+    {
+      "check": "h03:projection_independent",
+      "pass": true
+    },
+    {
+      "check": "h03:report:main_keys_countries",
+      "pass": true
+    },
+    {
+      "check": "h03:report:main_panels",
+      "pass": true
+    },
+    {
+      "check": "h03:report:contrasts",
+      "pass": true
+    },
+    {
+      "check": "h03:report:annual_panels",
+      "pass": true
+    },
+    {
+      "check": "h03:report:persistence_panels",
+      "pass": true
+    },
+    {
+      "check": "h03:report:supplement_panels",
+      "pass": true
+    },
+    {
+      "check": "h03:report:coverage_subsets",
+      "pass": true
+    },
+    {
+      "check": "h03:report:g_routes",
+      "pass": true
+    },
+    {
+      "check": "h03:report:decision_gain_annual",
+      "pass": true
+    },
+    {
+      "check": "h03:report:decision_guards",
+      "pass": true
+    },
+    {
+      "check": "h03:report:decision_criteria",
+      "pass": true
+    },
+    {
+      "check": "h03:report:decision_status",
+      "pass": true
+    },
+    {
+      "check": "h03:report:bootstrap_regenerated",
+      "pass": true
+    },
+    {
+      "check": "h03:report:country_diagnostics",
+      "pass": true
+    },
+    {
+      "check": "h03:report:concentration",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_hist_2018:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_hist_2019:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_hist_2020:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B0:h06_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B0:h06_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_bridge_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_main_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B0:h06_main_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B0:h06_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B0:h06_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B1:h06_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:B0:h06_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h06:all_scheduled_requests_present",
+      "pass": true,
+      "found": 16
+    },
+    {
+      "check": "h06:expected_provider_keys_complete",
+      "pass": true
+    },
+    {
+      "check": "h06:historical_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h06:combined_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.01:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam0.1:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:lam1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2021:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.01:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam0.1:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:lam1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06_dev_2022:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h06:selection_reproduced",
+      "pass": true,
+      "saved": "B2",
+      "replayed": "B2"
+    },
+    {
+      "check": "h06:final_map_b2_fallback_recorded",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2023:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2023:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2023:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2023:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h06_main_2024:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2024:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2024:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2024:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h06_main_2025:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2025:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2025:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h06_main_2025:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h06_supplement_2026:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h06_supplement_2026:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h06_supplement_2026:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h06_supplement_2026:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h06:all_main_supplement_blocks_scored",
+      "pass": true
+    },
+    {
+      "check": "h06:projected_columns_from_raw",
+      "pass": true
+    },
+    {
+      "check": "h06:projection_independent",
+      "pass": true
+    },
+    {
+      "check": "h06:report:main_keys_countries",
+      "pass": true
+    },
+    {
+      "check": "h06:report:main_panels",
+      "pass": true
+    },
+    {
+      "check": "h06:report:contrasts",
+      "pass": true
+    },
+    {
+      "check": "h06:report:annual_panels",
+      "pass": true
+    },
+    {
+      "check": "h06:report:persistence_panels",
+      "pass": true
+    },
+    {
+      "check": "h06:report:supplement_panels",
+      "pass": true
+    },
+    {
+      "check": "h06:report:coverage_subsets",
+      "pass": true
+    },
+    {
+      "check": "h06:report:g_routes",
+      "pass": true
+    },
+    {
+      "check": "h06:report:decision_gain_annual",
+      "pass": true
+    },
+    {
+      "check": "h06:report:decision_guards",
+      "pass": true
+    },
+    {
+      "check": "h06:report:decision_criteria",
+      "pass": true
+    },
+    {
+      "check": "h06:report:decision_status",
+      "pass": true
+    },
+    {
+      "check": "h06:report:bootstrap_regenerated",
+      "pass": true
+    },
+    {
+      "check": "h06:report:country_diagnostics",
+      "pass": true
+    },
+    {
+      "check": "h06:report:concentration",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_hist_2019:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_hist_2020:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B0:h12_hist_2021:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B0:h12_hist_2022:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_bridge_2023:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B0:h12_main_2024:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B0:h12_main_2025:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B1:h12_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:B0:h12_supp_2026:identity_recomputed",
+      "pass": true
+    },
+    {
+      "check": "h12:all_scheduled_requests_present",
+      "pass": true,
+      "found": 13
+    },
+    {
+      "check": "h12:expected_provider_keys_complete",
+      "pass": true
+    },
+    {
+      "check": "h12:historical_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h12:combined_providers_equal_expected",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.01:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2021:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:dev_canonical_keys",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:dev_backbone_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:transform_b2_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.01:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K2_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K4_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K8_lam0.01:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step6:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam0.1:step7:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K2_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K4_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K8_lam0.1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam1:accepted_splits_rederived",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam1:step1:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam1:step2:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam1:step3:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam1:step4:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:lam1:step5:objective_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K2_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K4_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12_dev_2022:K8_lam1:G_phase_repredicted",
+      "pass": true
+    },
+    {
+      "check": "h12:selection_reproduced",
+      "pass": true,
+      "saved": "B2",
+      "replayed": "B2"
+    },
+    {
+      "check": "h12:final_map_b2_fallback_recorded",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2024:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2024:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2024:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2024:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h12_main_2025:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2025:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2025:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h12_main_2025:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h12_supplement_2026:pool_rebuilt",
+      "pass": true
+    },
+    {
+      "check": "h12_supplement_2026:annual_coefficients_resolved",
+      "pass": true
+    },
+    {
+      "check": "h12_supplement_2026:predictions_repredicted_bitwise",
+      "pass": true
+    },
+    {
+      "check": "h12_supplement_2026:canonical_cohort_fields",
+      "pass": false
+    },
+    {
+      "check": "h12:all_main_supplement_blocks_scored",
+      "pass": true
+    },
+    {
+      "check": "h12:projected_columns_from_raw",
+      "pass": true
+    },
+    {
+      "check": "h12:projection_independent",
+      "pass": true
+    },
+    {
+      "check": "h12:report:main_keys_countries",
+      "pass": true
+    },
+    {
+      "check": "h12:report:main_panels",
+      "pass": true
+    },
+    {
+      "check": "h12:report:contrasts",
+      "pass": true
+    },
+    {
+      "check": "h12:report:annual_panels",
+      "pass": true
+    },
+    {
+      "check": "h12:report:persistence_panels",
+      "pass": true
+    },
+    {
+      "check": "h12:report:supplement_panels",
+      "pass": true
+    },
+    {
+      "check": "h12:report:coverage_subsets",
+      "pass": true
+    },
+    {
+      "check": "h12:report:g_routes",
+      "pass": true
+    },
+    {
+      "check": "h12:report:decision_gain_annual",
+      "pass": true
+    },
+    {
+      "check": "h12:report:decision_guards",
+      "pass": true
+    },
+    {
+      "check": "h12:report:decision_criteria",
+      "pass": true
+    },
+    {
+      "check": "h12:report:decision_status",
+      "pass": true
+    },
+    {
+      "check": "h12:report:bootstrap_regenerated",
+      "pass": true
+    },
+    {
+      "check": "h12:report:country_diagnostics",
+      "pass": true
+    },
+    {
+      "check": "h12:report:concentration",
+      "pass": true
+    },
+    {
+      "check": "report:qualifying_horizons",
+      "pass": true
+    },
+    {
+      "check": "zero_xgb_fits",
+      "pass": true,
+      "fits": 0
+    }
+  ],
+  "n_checks": 488,
+  "failed": [
+    "h01_main_2023:canonical_cohort_fields",
+    "h01_main_2024:canonical_cohort_fields",
+    "h01_main_2025:canonical_cohort_fields",
+    "h01_supplement_2026:canonical_cohort_fields",
+    "h03:combined_providers_equal_expected",
+    "h03_main_2023:canonical_cohort_fields",
+    "h03_main_2024:canonical_cohort_fields",
+    "h03_main_2025:canonical_cohort_fields",
+    "h03_supplement_2026:canonical_cohort_fields",
+    "h06_main_2023:canonical_cohort_fields",
+    "h06_main_2024:canonical_cohort_fields",
+    "h06_main_2025:canonical_cohort_fields",
+    "h06_supplement_2026:canonical_cohort_fields",
+    "h12_main_2024:canonical_cohort_fields",
+    "h12_main_2025:canonical_cohort_fields",
+    "h12_supplement_2026:canonical_cohort_fields"
+  ],
+  "elapsed_seconds": 34.4,
+  "limitations": [
+    "rejected candidate splits are not individually re-solved; accepted states and ledger ordering are",
+    "raw EE pixels are never refetched"
+  ]
+}

@@ -1,0 +1,13 @@
+--- /home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-logs/replay-repair/replay.py.orig	2026-10-10 16:53:07.549886100 -0400
++++ ipcch_alphaearth/replay.py	2026-10-14 10:45:44.948753600 -0400
+@@ -216,7 +216,9 @@
+         else:
+             checks.add(f"h{h:02d}:final_map_b2_fallback_recorded", sel_saved["selected"] == "B2")
+         # ---------------- predict
+-        pred = pd.read_csv(run_dir / "predict" / f"predictions_h{h:02d}.csv.gz", float_precision="round_trip")
++        # same NA policy as the canonical keys (runinputs): an empty source month stays "", empty numeric cells are NaN
++        pred = pd.read_csv(run_dir / "predict" / f"predictions_h{h:02d}.csv.gz", float_precision="round_trip", keep_default_na=False,
++                           na_values={c: [""] for c in ("q2", "q3", "q4", "q5", "persistence_q3")})
+         contexts = read_json(run_dir / "predict" / f"contexts_h{h:02d}.json")
+         pmap = None if frozen["map"] is None else pt.PartitionMap.from_record(frozen["map"])
+         canonical_parts = []

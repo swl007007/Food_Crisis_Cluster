@@ -31,7 +31,7 @@ Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming
 
 ## 3. Contracts
 
-- Experiment `IPCCH - detailed runs`. Parent `record_kind=family` per source run (run name =
+- Experiment `IPCCH detailed runs`. Parent `record_kind=family` per source run (run name =
   long family title; artifacts kept once); child `record_kind=evaluation` per family x lead x
   arm x seed (run name `<family short title> | <arm> | <lead>[ | <window>][ | seed N]`),
   linked by `mlflow.parentRunId`. Persistence views use `seed=none`.
@@ -62,10 +62,28 @@ Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming
   own ledgers/manifests has an explicit decision — `required_digest_keys`, `name_keys`,
   `informational_keys`, or a scoped `exempt` (key + JSON-path regex [+ file regex] +
   reason) — plus `model_contract` (`xgb` or `mlp`).
+- Research retention (2026-10-14): model bundles are listed, not uploaded, by default. The plan still lists
+  every bundle member (path, bytes, SHA256; part of the fingerprint); `import` writes
+  `manifests/<bundle>.members.json` and tags `zz_prov.bundle.<bundle>.retention` / `.local_source`, and builds
+  no tar and no `manifests/<bundle>.tar.json`. `"upload_model_bundles": true` opts a family into the tar path.
+  The bundle mode is not part of the fingerprint: a record carrying `zz_prov.bundle.<bundle>.sha256` (imported
+  before the policy) is never resumed or verified as manifest-only, and a complete manifest-only record is never
+  verified as uploaded. The six older families' tar tags are historical references; their tars and four of
+  their source roots are gone, so their `import`/`verify` stops (no fake pass). Family `extra` holds code and
+  required inputs only, never mutable task notes, progress files or receipts. `plan` reports
+  `upload_bytes_estimate` (source + extras [+ bundle when uploaded]) in its summary.
 - Provenance tags `zz_prov.execution` and `zz_prov.mlflow_timestamps` state that MLflow times are
   import times. `status` (short), `zz_prov.source.scientific_acceptance`,
   `zz_prov.source.lifecycle_status` and `zz_prov.import_status` are separate fields; the family
   description quotes the accepted conclusion and full status wording.
+
+- Strict inventory mode (`inventory.strict_bindings`, AlphaEarth only): every `*sha256` leaf of every planned
+  JSON file, bundle record JSON included, matches exactly one scoped rule (key + file regex + JSON-path regex):
+  `own` (full SHA of the one intended planned file), `external` (full SHA of the one intended absolute file, pinned),
+  `typed` (documented non-file identity) or `historical` (exact path → value pins). Contract `alphaearth_xgb`:
+  native CSV fit ledgers ↔ schedule one-to-one (arm/horizon/block/role/fit_origin, action fit) ↔ one own bundle
+  directory each (record identity digest recomputed with canonical JSON; own q2..q5 boosters). Legacy contracts
+  and policies are unchanged.
 
 ## 4. Validation & Error Matrix
 
@@ -82,8 +100,11 @@ Pre-rebuild store: `~/ipcch-mlflow-backups/20261009-store-before-readable-naming
 | existing record has a different fingerprint (source, vocabulary or importer changed) | `import` stops; rebuild into a fresh store (old store kept whole) |
 | `--family F` | plans F plus transitive read dependencies (`shared_inputs.parent`, `inventory.reference_parents`), dependencies first; writes/verify only F; unknown family refused |
 | equal-size artifact corruption | caught by deep verify, including the repeat-import no-op |
+| record with an uploaded tar planned as manifest-only (or complete manifest-only planned as uploaded) | `SourceConflict` ("planned bundle mode differs") before any resume write |
 | second importer while one runs | refused by `import.lock` |
 | restore-check on port 5000 | refused; scratch checks use their own server |
+| strict mode: leaf with 0 or 2+ matching rules, wrong own/external target or SHA, historical value mismatch, unused rule, leaf-count drift | `SourceConflict` at plan |
+| `alphaearth_xgb`: empty/duplicate/missing/extra identity, schedule mismatch, record tamper, missing own booster (even if the bytes exist elsewhere), corrupted booster | `SourceConflict` at plan |
 
 ## 5. Good / Base / Bad Cases
 

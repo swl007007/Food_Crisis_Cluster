@@ -333,6 +333,12 @@ def planning_order(cfg: dict, families=None) -> list:
     return order
 
 
+def upload_estimate(plan: dict) -> int:
+    """Source + extras bytes (+ bundle members when uploaded); manifests and child views are small and not counted."""
+    t = plan["totals"]
+    return t["include"][1] + t["extras"][1] + (sum(b for _, b in t["bundle"].values()) if uploads_bundles(plan["config"]) else 0)
+
+
 def cmd_plan(cfg: dict, store: Path, evidence: Path | None, rehash: bool, families=None) -> dict:
     hasher = Hasher(store / "cache" / "hashes.json", rehash)
     plans = {}
@@ -345,6 +351,7 @@ def cmd_plan(cfg: dict, store: Path, evidence: Path | None, rehash: bool, famili
         hasher.save()
     selected = [k for k in plans if not families or k in families]
     summary = {"importer": IMPORTER_VERSION, "families": {k: {"fingerprint": v["fingerprint"], "totals": v["totals"],
+                                                              "upload_bytes_estimate": upload_estimate(v),
                                                               "role": "selected" if k in selected else "read dependency"}
                                                           for k, v in plans.items()},
                "records": sum(1 + plans[k]["totals"]["children"] for k in selected),
@@ -502,6 +509,26 @@ PROVENANCE_TAGS = {
     f"{PROV}mlflow_timestamps": "MLflow start/metric times are import times, not source execution times",
 }
 BUNDLE_SHA, BUNDLE_BYTES = PROV + "bundle.{}.sha256", PROV + "bundle.{}.bytes"
+BUNDLE_RETENTION, BUNDLE_LOCAL = PROV + "bundle.{}.retention", PROV + "bundle.{}.local_source"
+NOT_UPLOADED = ("not uploaded (research retention policy, 2026-10-14); member files are listed with SHA256 in "
+                "manifests/{}.members.json")
+
+
+def uploads_bundles(fam: dict) -> bool:
+    """Research retention: model bundles are described by their member manifest, not uploaded, unless a family
+    opts in with ``"upload_model_bundles": true``. Records imported before the policy carry the tar SHA tag."""
+    return bool(fam.get("upload_model_bundles"))
+
+
+def bundle_mode_check(run, plan: dict, complete: bool = True) -> None:
+    """An uploaded-tar record must not be resumed or verified as manifest-only (or, once complete, the reverse)."""
+    fam = plan["config"]
+    for name in plan["bundle"]:
+        has = bool(run.data.tags.get(BUNDLE_SHA.format(name)))
+        if has != uploads_bundles(fam) and (has or complete):
+            raise SourceConflict(f"{fam['family']}/{fam['source_run_id']}: record {'has' if has else 'lacks'} an uploaded "
+                                 f"{name} but the planned bundle mode differs (records imported before the research "
+                                 "retention policy are historical metadata) -- stop")
 
 
 def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_after: str | None = None) -> dict:
@@ -515,6 +542,7 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
         if fp != plan["fingerprint"]:
             raise SourceConflict(f"{skey}: existing record fingerprint {fp} != planned {plan['fingerprint']}; "
                                  "source or importer changed -- stop")
+        bundle_mode_check(run, plan, complete=run.data.tags.get(T_STATUS) == "complete")
         if run.data.tags.get(T_STATUS) == "complete":
             run_ids[fam["family"]] = run.info.run_id
             verify_parent(client, run, plan, deep=True)        # verified no-op: full content readback
@@ -544,7 +572,7 @@ def import_family(client, exp, plan: dict, store: Path, run_ids: dict, fail_afte
     if fail_after == "parent-manifests":
         raise Interrupt("injected interruption after parent artifacts")
     tar_info = {}
-    for name, members in plan["bundle"].items():
+    for name, members in (plan["bundle"].items() if uploads_bundles(fam) else ()):
         tags = client.get_run(rid).data.tags
         if have.get(name) is not None and tags.get(BUNDLE_SHA.format(name)):
             tar_info[name] = {"bytes": int(tags[BUNDLE_BYTES.format(name)]), "sha256": tags[BUNDLE_SHA.format(name)]}
@@ -593,7 +621,7 @@ def parent_tags(plan: dict, run_ids: dict) -> dict:
     fam = plan["config"]
     tags = {**family_tags(fam), **PROVENANCE_TAGS, "record_kind": "family",
             "periods": naming.periods_text(fam["family"]),
-            NOTE: naming.family_description(fam["family"], fam["source_run_id"]),
+            NOTE: naming.family_description(fam["family"], fam["source_run_id"], uploads_bundles(fam) or not plan["bundle"]),
             T_KEY: f"{fam['family']}/{fam['source_run_id']}", T_FP: plan["fingerprint"],
             T_STATUS: "in_progress", f"{PROV}importer_version": IMPORTER_VERSION}
     si = fam.get("shared_inputs")
@@ -601,6 +629,10 @@ def parent_tags(plan: dict, run_ids: dict) -> dict:
         tags[f"{PROV}shared_inputs_parent"] = naming.FAMILIES[si["parent"]]["slug"]
         tags[f"{PROV}shared_inputs_parent_run_id"] = run_ids.get(si["parent"], "")
         tags[f"{PROV}shared_inputs_note"] = si["note"]
+    if not uploads_bundles(fam):
+        for name, pattern in fam.get("bundle", {}).items():
+            tags[BUNDLE_RETENTION.format(name)] = NOT_UPLOADED.format(name)
+            tags[BUNDLE_LOCAL.format(name)] = f"{plan['root']}/{pattern}"
     return tags
 
 
@@ -613,7 +645,8 @@ def parent_manifests(plan: dict, tar_info: dict) -> dict:
                                          "report_sha256": plan["report_sha256"], "config": plan["config"]}}
     for name, members in plan["bundle"].items():
         m[f"manifests/{name}.members.json"] = members
-        m[f"manifests/{name}.tar.json"] = tar_info[name]
+        if name in tar_info:
+            m[f"manifests/{name}.tar.json"] = tar_info[name]
     return m
 
 
@@ -701,6 +734,7 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
     out = {"metrics": 0, "artifacts": 0, "artifact_bytes": 0, "tar_members": 0, "downloaded_bytes": 0}
     if run.data.tags.get(T_FP) != plan["fingerprint"]:
         raise SourceConflict(f"{skey}: fingerprint readback mismatch")
+    bundle_mode_check(run, plan)
     for k, v in plan["parent_metrics"].items():
         if run.data.metrics.get(k) != v:
             raise SourceConflict(f"{skey}: metric {k} readback mismatch")
@@ -716,7 +750,7 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
     have = existing_artifacts(client, rid)
     want = {f"source/{r['path']}": r for r in plan["include"]} | {r["path"]: r for r in plan["extras"]}
     tar_info = {}
-    for name, members in plan["bundle"].items():
+    for name, members in (plan["bundle"].items() if uploads_bundles(fam) else ()):
         tar_info[name] = {"bytes": int(run.data.tags[BUNDLE_BYTES.format(name)]),
                           "sha256": run.data.tags[BUNDLE_SHA.format(name)]}
         want[name] = {**tar_info[name], "members": members}
@@ -729,10 +763,16 @@ def verify_parent(client, run, plan: dict, deep: bool) -> dict:
                              f"extra={sorted(extra)[:5]}")
     with tempfile.TemporaryDirectory(prefix="ipcch-mlflow-verify-") as tmp:
         for path, r in sorted(want.items()):
-            if have[path] != r["bytes"]:
+            # MLflow 3.17 HTTP listings omit a zero file_size (FileInfo.to_proto drops falsy sizes), so a planned
+            # empty artifact lists as None; accept it only after a content readback, even when not deep.
+            unknown_empty = have[path] is None and r["bytes"] == 0
+            if have[path] != r["bytes"] and not unknown_empty:
                 raise SourceConflict(f"{skey}: {path} size {have[path]} != {r['bytes']}")
-            if deep:
+            if deep or unknown_empty:
                 local = Path(client.download_artifacts(rid, path, tmp))
+                if unknown_empty and local.stat().st_size != 0:
+                    raise SourceConflict(f"{skey}: {path} listed size unknown; readback {local.stat().st_size} "
+                                         "bytes != planned 0")
                 if _sha_file(local) != r["sha256"]:
                     raise SourceConflict(f"{skey}: {path} checksum mismatch after download")
                 if "members" in r:

@@ -1,0 +1,242 @@
+[
+ {
+  "H": 1,
+  "period": "main",
+  "cohort": "all_scored",
+  "n": 17322,
+  "span": "2023-02..2025-10",
+  "keys_sha256": "3f9f16e381b9f700a5b53e7c418bf6ad4a070228316e59425b88170f58bca304",
+  "truth_sha256": "2bd690a3f08d864c3b65ccb7bd388ca8ad15e9db5d7599877bf6fa6e5bdc9426",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 1-month | 2023-02..2025-10 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 1,
+  "period": "main",
+  "cohort": "persistence_available",
+  "n": 16002,
+  "span": "2023-02..2025-10",
+  "keys_sha256": "e2a51ff545f833beb331b182232ad59c2a12be6d2c366a7b1b13adb40b33491d",
+  "truth_sha256": "2d77f494fcb7c657bf75c763c3b083a761d232ce855e249753838878a0a10a23",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 1-month | 2023-02..2025-10 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 1,
+  "period": "supplement",
+  "cohort": "all_scored",
+  "n": 4092,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+  "truth_sha256": "761a5f2e39e520e3db1cc5715b14e1ce9c5d4edff82c1e72ebaee301d4992bb2",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 1-month | 2026-01..2026-04 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 1,
+  "period": "supplement",
+  "cohort": "persistence_available",
+  "n": 4089,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "328a8265c2f257d7062b1de1eb1fa934384982b211efd94c447d0a1b977e9b2a",
+  "truth_sha256": "1f59744af62292239f4831d45d7ac38e1c12bbb1a71b7f4f01f0c9a1feec786d",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 1-month | 2026-01..2026-04 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 3,
+  "period": "main",
+  "cohort": "all_scored",
+  "n": 16919,
+  "span": "2023-04..2025-10",
+  "keys_sha256": "c98456b1fcc5ef5d0eba214e6eb55a4de1424890d6a6c02231fdbe195050dc74",
+  "truth_sha256": "da7185d75c33d87fb9ef90ae6a9d4aaf40a6dd2d4b1c41a7fe4020cf75b0ecd8",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 3-month | 2023-04..2025-10 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 3,
+  "period": "main",
+  "cohort": "persistence_available",
+  "n": 15907,
+  "span": "2023-04..2025-10",
+  "keys_sha256": "935ede42fdd3821203282b1f30e3f647213ad6bbb87c1d8fbb1f5e3e7465be48",
+  "truth_sha256": "ae5f199fe13ced654e0a20a628eb422945c6a9ceb873f288234cb135aded0f2f",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 3-month | 2023-04..2025-10 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 3,
+  "period": "supplement",
+  "cohort": "all_scored",
+  "n": 4092,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+  "truth_sha256": "761a5f2e39e520e3db1cc5715b14e1ce9c5d4edff82c1e72ebaee301d4992bb2",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 3-month | 2026-01..2026-04 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 3,
+  "period": "supplement",
+  "cohort": "persistence_available",
+  "n": 4089,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "328a8265c2f257d7062b1de1eb1fa934384982b211efd94c447d0a1b977e9b2a",
+  "truth_sha256": "1f59744af62292239f4831d45d7ac38e1c12bbb1a71b7f4f01f0c9a1feec786d",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 3-month | 2026-01..2026-04 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 6,
+  "period": "main",
+  "cohort": "all_scored",
+  "n": 16413,
+  "span": "2023-07..2025-10",
+  "keys_sha256": "147b29ce5b934b8668599d2b23e30a136ed6918fc17a795a33a1ff28a38a2ac6",
+  "truth_sha256": "1d49e17485460be6b63586ed06ff5e4bc6f967cd3183679de0379fd29a350abc",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 6-month | 2023-07..2025-10 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 6,
+  "period": "main",
+  "cohort": "persistence_available",
+  "n": 14960,
+  "span": "2023-07..2025-10",
+  "keys_sha256": "71d8793101601c78744dfb50dca600b4bf1b5b62d29261e930ce18d642ef58f2",
+  "truth_sha256": "dc5ca5613ba9ad1658e83ef4d9fe94eaceccdf420d73facb3e57d15a048a8e85",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 6-month | 2023-07..2025-10 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 6,
+  "period": "supplement",
+  "cohort": "all_scored",
+  "n": 4092,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+  "truth_sha256": "761a5f2e39e520e3db1cc5715b14e1ce9c5d4edff82c1e72ebaee301d4992bb2",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 6-month | 2026-01..2026-04 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 6,
+  "period": "supplement",
+  "cohort": "persistence_available",
+  "n": 4089,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "328a8265c2f257d7062b1de1eb1fa934384982b211efd94c447d0a1b977e9b2a",
+  "truth_sha256": "1f59744af62292239f4831d45d7ac38e1c12bbb1a71b7f4f01f0c9a1feec786d",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 6-month | 2026-01..2026-04 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 12,
+  "period": "main",
+  "cohort": "all_scored",
+  "n": 14087,
+  "span": "2024-01..2025-10",
+  "keys_sha256": "d0c53218055e81f23b8bea4a84317a1e26fd6c1929331cc60f78b1a2d82970b8",
+  "truth_sha256": "95a4ec7e2ca03ba4fef8f06780db8734dfe101cbcd7e3f3b4556d1cc92fa4a2d",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 12-month | 2024-01..2025-10 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 12,
+  "period": "main",
+  "cohort": "persistence_available",
+  "n": 12404,
+  "span": "2024-01..2025-10",
+  "keys_sha256": "cf84a5c3a41609a2760d2e03d684a1326fac5a19e424ffe6ed67b48f1c075b1d",
+  "truth_sha256": "6d29b686a820d2e9a215426aab70bf3457f69d316be74c58718957955247008e",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 12-month | 2024-01..2025-10 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 12,
+  "period": "supplement",
+  "cohort": "all_scored",
+  "n": 4092,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+  "truth_sha256": "761a5f2e39e520e3db1cc5715b14e1ce9c5d4edff82c1e72ebaee301d4992bb2",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 12-month | 2026-01..2026-04 | all_scored"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ },
+ {
+  "H": 12,
+  "period": "supplement",
+  "cohort": "persistence_available",
+  "n": 4040,
+  "span": "2026-01..2026-04",
+  "keys_sha256": "9e37b42ccaf4746ae9de85e0296518a9ec7cb846ce6057642001fd08829ffcb4",
+  "truth_sha256": "b1b39817cb4575963e5cf55774c149f423fb24114de5df711bde0a168e50e6f6",
+  "same_keys_truth_as_existing": [
+   "IPCCH eval | 12-month | 2026-01..2026-04 | persistence_available"
+  ],
+  "generated_name_exists": true,
+  "existing_same_name_keys_equal": true,
+  "existing_same_name_truth_equal": true
+ }
+]

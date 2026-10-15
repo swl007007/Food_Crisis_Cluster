@@ -612,3 +612,116 @@ class NoAutomaticRetry(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProbeEE(FakeEE):
+    """FakeEE that measures the peak number of simultaneously in-flight reductions and whether the invocation's
+    concurrency evidence line already existed when ``Initialize`` (the first EE call) ran."""
+
+    def __init__(self, delay=0.05, out=None, **kw):
+        super().__init__(**kw)
+        self.active = self.peak = 0
+        self.out, self.initialized, self.evidence_before_init = out, False, None
+        inner, outer = self.Dictionary, self
+
+        class Dictionary(inner):
+            def getInfo(self):
+                import time as _t
+
+                with outer.lock:
+                    outer.active += 1
+                    outer.peak = max(outer.peak, outer.active)
+                try:
+                    _t.sleep(delay)
+                    return super().getInfo()
+                finally:
+                    with outer.lock:
+                        outer.active -= 1
+
+        self.Dictionary = Dictionary
+
+    def Initialize(self, project):
+        self.initialized = True
+        if self.out is not None:
+            self.evidence_before_init = (Path(self.out) / "invocation_concurrency.jsonl").exists()
+
+
+class ConcurrencyCeiling(Patched):
+    def summary(self, out):
+        return json.loads((Path(out) / "run_summaries.jsonl").read_text().splitlines()[-1])
+
+    def test_ceiling_bounds_in_flight_requests_and_default_keeps_manifest_concurrency(self):
+        _, path = self.manifest(limits={"concurrency": 4})
+        ids = [r["request_id"] for r in epc.load_released(path)["requests"]]
+        out2, out4 = self.tmp / "c2", self.tmp / "c4"
+        ee2 = ProbeEE(out=out2, barrier_ids=ids[:2])  # two in flight together: the ceiling is reached, not undershot
+        self.assertEqual(epc.main_production(epc.load_released(path), out2, ee=ee2, concurrency_ceiling=2), 0)
+        self.assertEqual(ee2.peak, 2)
+        self.assertTrue(ee2.evidence_before_init)
+        s2 = self.summary(out2)
+        self.assertEqual((s2["manifest_concurrency"], s2["effective_concurrency"], s2["complete"]), (4, 2, True))
+        ev = [json.loads(x) for x in (out2 / "invocation_concurrency.jsonl").read_text().splitlines()]
+        self.assertEqual([(e["manifest_concurrency"], e["effective_concurrency"]) for e in ev], [(4, 2)])
+        ee4 = ProbeEE(barrier_ids=ids[:4])  # omission: the manifest's four workers, as before
+        self.assertEqual(epc.main_production(epc.load_released(path), out4, ee=ee4), 0)
+        self.assertEqual(ee4.peak, 4)
+        self.assertEqual((self.summary(out4)["effective_concurrency"], self.summary(out4)["complete"]), (4, True))
+        resp = lambda out: {p.name: json.loads(p.read_text())["response"] for p in sorted((out / "pieces").glob("*.json"))}
+        self.assertEqual(resp(out2), resp(out4))  # same reductions, same saved responses
+
+    def test_resume_under_ceiling_skips_saved_c4_outputs_and_keeps_counters_cumulative(self):
+        _, path = self.manifest(limits={"concurrency": 4})
+        ids = [r["request_id"] for r in epc.load_released(path)["requests"]]
+        out = self.tmp / "resume"
+        self.assertEqual(epc.main_production(epc.load_released(path), out, ee=FakeEE(fail={ids[3], ids[7]})), 0)
+        before = self.outputs(out)
+        pin = (out / "MANIFEST.sha256").read_text()
+        n = lambda name: len((out / name).read_text().splitlines())
+        res0, inv0, led0 = n("call_reservations.log"), n("invocations.log"), n("ledger.jsonl")
+        self.assertEqual(len(before), len(ids) - 2)
+        ee = ProbeEE()
+        self.assertEqual(epc.main_production(epc.load_released(path), out, ee=ee, concurrency_ceiling=2), 0)
+        self.assertEqual(sorted(c[0] for c in ee.calls), sorted([ids[3], ids[7]]))  # only the pending pieces are sent
+        after = self.outputs(out)
+        self.assertEqual({k: after[k] for k in before}, before)  # saved c4 outputs accepted byte-for-byte, never rewritten
+        self.assertEqual((out / "MANIFEST.sha256").read_text(), pin)
+        self.assertEqual(n("call_reservations.log"), res0 + 2 + 2)  # init + projection + two pieces, on top of history
+        self.assertEqual((n("invocations.log"), n("ledger.jsonl")), (inv0 + 1, led0 + 2))
+        self.assertEqual(self.summary(out)["calls_used"], res0 + 4)
+        rep = check_c_outputs.check(path, out)
+        self.assertEqual((rep["complete"], rep["n_violations"], rep["invocations"]), (True, 0, 2))
+
+    def test_invalid_ceiling_rejected_before_any_start_reservation_or_ee_call(self):
+        _, path = self.manifest(limits={"concurrency": 4})
+        out = self.tmp / "bad"
+        self.assertEqual(epc.main_production(epc.load_released(path), out, ee=FakeEE()), 0)  # an existing history
+        snap = {f: (out / f).read_bytes() for f in ("invocations.log", "call_reservations.log", "request_log.jsonl",
+                                                    "ledger.jsonl", "run_summaries.jsonl", "invocation_concurrency.jsonl")}
+        for bad in (0, -1, 5, True, 2.0, "2", None.__class__):
+            ee = ProbeEE()
+            with self.assertRaises(SystemExit):
+                epc.main_production(epc.load_released(path), out, ee=ee, concurrency_ceiling=bad)
+            self.assertFalse(ee.initialized)
+            self.assertEqual(ee.calls, [])
+        for bad in ("0", "5", "2.5", "abc", "-1", " 2", "+2", ""):
+            with self.assertRaises(SystemExit):
+                epc.main(["--request", str(path), "--out", str(out), "--concurrency-ceiling", bad])
+        self.assertEqual({f: (out / f).read_bytes() for f in snap}, snap)  # no start record, reservation or log line added
+        with self.assertRaises(SystemExit):
+            epc.main(["--request", str(path), "--out", str(self.tmp / "fresh"), "--concurrency-ceiling", "9"])
+        self.assertFalse((self.tmp / "fresh").exists())
+
+    def test_fatal_stop_under_ceiling_stays_bounded(self):
+        _, path = self.manifest(limits={"concurrency": 4, "max_consecutive_failures": 99, "max_failure_fraction": 1.0})
+        ids = [r["request_id"] for r in epc.load_released(path)["requests"]]
+        ee = FakeEE(script={ids[0]: [("Too many concurrent aggregations.", 0.0)], ids[1]: [(None, 0.3)]},
+                    barrier_ids=ids[:2])  # both permitted workers in flight before the rejection
+        out = self.tmp / "fatal_c2"
+        self.assertEqual(epc.main_production(epc.load_released(path), out, ee=ee, concurrency_ceiling=2), 0)
+        submitted = [c[0] for c in ee.calls]
+        self.assertEqual(sorted(submitted), sorted(ids[:2]))  # zero retry, no third request, no start after the fatal
+        s = self.summary(out)
+        self.assertTrue(s["stopped"].startswith("fatal"))
+        self.assertEqual((s["done"], s["effective_concurrency"], s["complete"]), (1, 2, False))  # the in-flight call settled
+        led = {json.loads(x)["piece_id"]: json.loads(x)["status"] for x in (out / "ledger.jsonl").read_text().splitlines()}
+        self.assertEqual(led, {ids[0]: "failed", ids[1]: "ok"})

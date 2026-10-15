@@ -1,6 +1,6 @@
 {
  "schema_version": "ipcch-mlflow-sources-v1",
- "experiment": "IPCCH - detailed runs",
+ "experiment": "IPCCH detailed runs",
  "repo_root": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster",
  "temp_root": "/mnt/c/Users/swl00/AppData/Local/Temp",
  "families": [
@@ -562,6 +562,739 @@
     ],
     "model_contract": "xgb"
    }
+  },
+  {
+   "family": "alphaearth_partition",
+   "source_run_id": "p1-formal-d30-20261014",
+   "format": "alphaearth",
+   "root": "/home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-20261014",
+   "report": "report/report.json",
+   "predictions": "predict/predictions_h{H:02d}.csv.gz",
+   "arms": {
+    "B0": "fresh_trained",
+    "B1": "fresh_trained",
+    "B2": "fresh_trained",
+    "G": "fresh_trained",
+    "persistence": "persistence_baseline"
+   },
+   "model_seed": "42",
+   "include": [
+    "run.json",
+    "preflight/*.json",
+    "prepared/COMPLETE.json",
+    "prepared/prepared-manifest.json",
+    "prepared/*.csv.gz",
+    "prepared/schedule_blocks.json",
+    "extraction/COMPLETE.json",
+    "extraction/manifest.json",
+    "descriptors/**",
+    "develop/**",
+    "maps/**",
+    "predict/**",
+    "report/**",
+    "replay/**",
+    "archive/replay-attempt-01-20261014T141645Z/**"
+   ],
+   "bundle": {
+    "models.tar": "models/**"
+   },
+   "exclude": {
+    "prepared/X296_h01.npy": "large prepared feature matrix; referenced by path and SHA256",
+    "prepared/X296_h03.npy": "large prepared feature matrix; referenced by path and SHA256",
+    "prepared/X296_h06.npy": "large prepared feature matrix; referenced by path and SHA256",
+    "prepared/X296_h12.npy": "large prepared feature matrix; referenced by path and SHA256",
+    "sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/country_lookup__country_area_id_lookup.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/geometry/ipcch_admin_geometry_repaired.cpg": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/geometry/ipcch_admin_geometry_repaired.dbf": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/geometry/ipcch_admin_geometry_repaired.prj": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/geometry/ipcch_admin_geometry_repaired.shp": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/geometry/ipcch_admin_geometry_repaired.shx": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/idp_admin0_monthly__idp_admin0_monthly.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/p6_keys_h01__keys_h01.csv.gz": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/p6_keys_h03__keys_h03.csv.gz": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/p6_keys_h06__keys_h06.csv.gz": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/p6_keys_h12__keys_h12.csv.gz": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/p6_target_ledger_valid__target_ledger_valid.csv.gz": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/raw_panel__IPCCH_2026_completed.csv": "staged external source input; referenced by path and SHA256 (pinned in sources/source-manifest.json)",
+    "sources/source-manifest.json": "staged source manifest; referenced by path and SHA256 (397dfd6f...)",
+    "extraction/plan.csv.gz": "extraction ledger kept in the run folder; referenced by path and SHA256 (not copied)",
+    "extraction/pieces.csv.gz": "extraction ledger kept in the run folder; referenced by path and SHA256 (not copied)"
+   },
+   "extra": [
+    {
+     "base": "{repo}",
+     "paths": [
+      "IPCCHAlphaEarthExperiment/ipcch_alphaearth/*.py",
+      "IPCCHAlphaEarthExperiment/config/*.json",
+      "IPCCHAlphaEarthExperiment/scripts/*.py",
+      "IPCCHAlphaEarthExperiment/tests/*.py"
+     ],
+     "prefix": "source_code"
+    }
+   ],
+   "tags": {
+    "code_commit": "uncommitted; frozen code inventory 57ca2ef1, analysis amendment 385a8db8 (replay.py only); source in source_code/",
+    "package": "IPCCHAlphaEarthExperiment",
+    "scientific_acceptance": "supervisor accepted (codex-D30-P3-replay-recheck-acceptance-20261014)",
+    "truth": "population-share-derived phase, q>=0.20 after bounded isotonic projection",
+    "fit_protocol": "annual refit, all labels up to the fit origin, 24-month half-life weights",
+    "features": "compact296; compact296+alphaearth128",
+    "maps": "none selected (shared-calibration fallback at every lead)",
+    "periods": "main 2023-2025 (lead-specific starts); supplement 2026-01..04",
+    "storage": "research retention: model weights listed by member manifest (not uploaded); task docs, evidence and receipts stay in the task folder (not imported)"
+   },
+   "inventory": {
+    "strict_bindings": true,
+    "scan_bundle_json": true,
+    "expected_leaves": 1298,
+    "bindings": [
+     {
+      "kind": "own",
+      "key": "artifacts_sha256",
+      "file": "prepared/prepared\\-manifest\\.json",
+      "path": "\\.artifacts_sha256\\.(.+)",
+      "target": "prepared/{0}"
+     },
+     {
+      "kind": "own",
+      "key": "source_manifest_sha256",
+      "file": "prepared/prepared\\-manifest\\.json",
+      "path": "\\.source_manifest_sha256",
+      "target": "sources/source-manifest.json"
+     },
+     {
+      "kind": "own",
+      "key": "booster_sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.targets\\.(q[2-5])\\.booster_sha256",
+      "target": "{dir}/{0}.ubj"
+     },
+     {
+      "kind": "own",
+      "key": "descriptor_table_sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.identity\\.source\\.descriptor_table_sha256",
+      "target": "descriptors/descriptor_table.csv.gz"
+     },
+     {
+      "kind": "own",
+      "key": "prepared_manifest_sha256",
+      "file": "(?:descriptors/COMPLETE\\.json|prepared/COMPLETE\\.json|models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json)",
+      "path": "(?:\\.identity\\.source)?\\.prepared_manifest_sha256",
+      "target": "prepared/prepared-manifest.json"
+     },
+     {
+      "kind": "own",
+      "key": "extraction_complete_sha256",
+      "file": "descriptors/COMPLETE\\.json",
+      "path": "\\.extraction_complete_sha256",
+      "target": "extraction/COMPLETE.json"
+     },
+     {
+      "kind": "own",
+      "key": "plan_sha256",
+      "file": "(?:descriptors/COMPLETE|extraction/COMPLETE|extraction/manifest)\\.json",
+      "path": "(?:\\.provenance)?\\.plan_sha256",
+      "target": "extraction/plan.csv.gz"
+     },
+     {
+      "kind": "own",
+      "key": "geometry_sha256",
+      "file": "(?:descriptors/COMPLETE|extraction/COMPLETE|extraction/manifest)\\.json",
+      "path": "\\.provenance\\.geometry_sha256\\.\\.(cpg|dbf|prj|shp|shx)",
+      "target": "sources/geometry/ipcch_admin_geometry_repaired.{0}"
+     },
+     {
+      "kind": "own",
+      "key": "file_sha256",
+      "file": "maps/MAP_FREEZE\\.json",
+      "path": "\\.horizons\\.(\\d+)\\.file_sha256",
+      "target": "maps/final_map_h{0:02d}.json"
+     },
+     {
+      "kind": "own",
+      "key": "selection_sha256",
+      "file": "maps/MAP_FREEZE\\.json",
+      "path": "\\.horizons\\.(\\d+)\\.selection_sha256",
+      "target": "develop/selection_h{0:02d}.json"
+     },
+     {
+      "kind": "own",
+      "key": "map_freeze_sha256",
+      "file": "maps/COMPLETE\\.json",
+      "path": "\\.map_freeze_sha256",
+      "target": "maps/MAP_FREEZE.json"
+     },
+     {
+      "kind": "own",
+      "key": "report_sha256",
+      "file": "report/COMPLETE\\.json",
+      "path": "\\.report_sha256",
+      "target": "report/report.json"
+     },
+     {
+      "kind": "own",
+      "key": "replay_sha256",
+      "file": "replay/COMPLETE\\.json",
+      "path": "\\.replay_sha256",
+      "target": "replay/replay.json"
+     },
+     {
+      "kind": "own",
+      "key": "pinned_sha256",
+      "file": "sources/source\\-manifest\\.json",
+      "path": "\\.inputs\\.(\\w+)\\.pinned_sha256",
+      "target_map": {
+       "raw_panel": "sources/raw_panel__IPCCH_2026_completed.csv",
+       "interim": "sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv",
+       "climate_monthly": "sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv",
+       "climate_seasonal": "sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv",
+       "idp_admin0_monthly": "sources/idp_admin0_monthly__idp_admin0_monthly.csv",
+       "country_lookup": "sources/country_lookup__country_area_id_lookup.csv",
+       "compact_manifest": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+       "compact_baseline_h0": "sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv",
+       "compact_baseline_h3": "sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv",
+       "compact_baseline_h6": "sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv",
+       "compact_baseline_h12": "sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv",
+       "geometry_shp": "sources/geometry/ipcch_admin_geometry_repaired.shp",
+       "geometry_shx": "sources/geometry/ipcch_admin_geometry_repaired.shx",
+       "geometry_dbf": "sources/geometry/ipcch_admin_geometry_repaired.dbf",
+       "geometry_prj": "sources/geometry/ipcch_admin_geometry_repaired.prj",
+       "geometry_cpg": "sources/geometry/ipcch_admin_geometry_repaired.cpg",
+       "p6_target_ledger_valid": "sources/p6_target_ledger_valid__target_ledger_valid.csv.gz",
+       "p6_keys_h01": "sources/p6_keys_h01__keys_h01.csv.gz",
+       "p6_keys_h03": "sources/p6_keys_h03__keys_h03.csv.gz",
+       "p6_keys_h06": "sources/p6_keys_h06__keys_h06.csv.gz",
+       "p6_keys_h12": "sources/p6_keys_h12__keys_h12.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "preflight/preflight-\\d{8}T\\d{6}Z\\.json",
+      "path": "\\.inputs\\.(\\w+)\\.sha256",
+      "target_map": {
+       "raw_panel": "sources/raw_panel__IPCCH_2026_completed.csv",
+       "interim": "sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv",
+       "climate_monthly": "sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv",
+       "climate_seasonal": "sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv",
+       "idp_admin0_monthly": "sources/idp_admin0_monthly__idp_admin0_monthly.csv",
+       "country_lookup": "sources/country_lookup__country_area_id_lookup.csv",
+       "compact_manifest": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+       "compact_baseline_h0": "sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv",
+       "compact_baseline_h3": "sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv",
+       "compact_baseline_h6": "sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv",
+       "compact_baseline_h12": "sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv",
+       "geometry_shp": "sources/geometry/ipcch_admin_geometry_repaired.shp",
+       "geometry_shx": "sources/geometry/ipcch_admin_geometry_repaired.shx",
+       "geometry_dbf": "sources/geometry/ipcch_admin_geometry_repaired.dbf",
+       "geometry_prj": "sources/geometry/ipcch_admin_geometry_repaired.prj",
+       "geometry_cpg": "sources/geometry/ipcch_admin_geometry_repaired.cpg",
+       "p6_target_ledger_valid": "sources/p6_target_ledger_valid__target_ledger_valid.csv.gz",
+       "p6_keys_h01": "sources/p6_keys_h01__keys_h01.csv.gz",
+       "p6_keys_h03": "sources/p6_keys_h03__keys_h03.csv.gz",
+       "p6_keys_h06": "sources/p6_keys_h06__keys_h06.csv.gz",
+       "p6_keys_h12": "sources/p6_keys_h12__keys_h12.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "sources/source\\-manifest\\.json",
+      "path": "\\.inputs\\.(\\w+)\\.sha256",
+      "target_map": {
+       "raw_panel": "sources/raw_panel__IPCCH_2026_completed.csv",
+       "interim": "sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv",
+       "climate_monthly": "sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv",
+       "climate_seasonal": "sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv",
+       "idp_admin0_monthly": "sources/idp_admin0_monthly__idp_admin0_monthly.csv",
+       "country_lookup": "sources/country_lookup__country_area_id_lookup.csv",
+       "compact_manifest": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+       "compact_baseline_h0": "sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv",
+       "compact_baseline_h3": "sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv",
+       "compact_baseline_h6": "sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv",
+       "compact_baseline_h12": "sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv",
+       "geometry_shp": "sources/geometry/ipcch_admin_geometry_repaired.shp",
+       "geometry_shx": "sources/geometry/ipcch_admin_geometry_repaired.shx",
+       "geometry_dbf": "sources/geometry/ipcch_admin_geometry_repaired.dbf",
+       "geometry_prj": "sources/geometry/ipcch_admin_geometry_repaired.prj",
+       "geometry_cpg": "sources/geometry/ipcch_admin_geometry_repaired.cpg",
+       "p6_target_ledger_valid": "sources/p6_target_ledger_valid__target_ledger_valid.csv.gz",
+       "p6_keys_h01": "sources/p6_keys_h01__keys_h01.csv.gz",
+       "p6_keys_h03": "sources/p6_keys_h03__keys_h03.csv.gz",
+       "p6_keys_h06": "sources/p6_keys_h06__keys_h06.csv.gz",
+       "p6_keys_h12": "sources/p6_keys_h12__keys_h12.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "sources/source\\-manifest\\.json",
+      "path": "\\.request_identity\\.entries\\.(\\w+)\\.sha256",
+      "target_map": {
+       "raw_panel": "sources/raw_panel__IPCCH_2026_completed.csv",
+       "interim": "sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv",
+       "climate_monthly": "sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv",
+       "climate_seasonal": "sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv",
+       "idp_admin0_monthly": "sources/idp_admin0_monthly__idp_admin0_monthly.csv",
+       "country_lookup": "sources/country_lookup__country_area_id_lookup.csv",
+       "compact_manifest": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+       "compact_baseline_h0": "sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv",
+       "compact_baseline_h3": "sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv",
+       "compact_baseline_h6": "sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv",
+       "compact_baseline_h12": "sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv",
+       "geometry_shp": "sources/geometry/ipcch_admin_geometry_repaired.shp",
+       "geometry_shx": "sources/geometry/ipcch_admin_geometry_repaired.shx",
+       "geometry_dbf": "sources/geometry/ipcch_admin_geometry_repaired.dbf",
+       "geometry_prj": "sources/geometry/ipcch_admin_geometry_repaired.prj",
+       "geometry_cpg": "sources/geometry/ipcch_admin_geometry_repaired.cpg",
+       "p6_target_ledger_valid": "sources/p6_target_ledger_valid__target_ledger_valid.csv.gz",
+       "p6_keys_h01": "sources/p6_keys_h01__keys_h01.csv.gz",
+       "p6_keys_h03": "sources/p6_keys_h03__keys_h03.csv.gz",
+       "p6_keys_h06": "sources/p6_keys_h06__keys_h06.csv.gz",
+       "p6_keys_h12": "sources/p6_keys_h12__keys_h12.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "\\.horizons\\.(\\d+)\\.arms\\.compact_baseline\\.dataset\\.sha256",
+      "target": "sources/compact_baseline_h{0}__compact_climate_weather_oracle_v1_compact_baseline_h{0}.csv"
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "\\.sources\\.(interim|climate_monthly|climate_seasonal)\\.sha256",
+      "target_map": {
+       "raw_panel": "sources/raw_panel__IPCCH_2026_completed.csv",
+       "interim": "sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv",
+       "climate_monthly": "sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv",
+       "climate_seasonal": "sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv",
+       "idp_admin0_monthly": "sources/idp_admin0_monthly__idp_admin0_monthly.csv",
+       "country_lookup": "sources/country_lookup__country_area_id_lookup.csv",
+       "compact_manifest": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+       "compact_baseline_h0": "sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv",
+       "compact_baseline_h3": "sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv",
+       "compact_baseline_h6": "sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv",
+       "compact_baseline_h12": "sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv",
+       "geometry_shp": "sources/geometry/ipcch_admin_geometry_repaired.shp",
+       "geometry_shx": "sources/geometry/ipcch_admin_geometry_repaired.shx",
+       "geometry_dbf": "sources/geometry/ipcch_admin_geometry_repaired.dbf",
+       "geometry_prj": "sources/geometry/ipcch_admin_geometry_repaired.prj",
+       "geometry_cpg": "sources/geometry/ipcch_admin_geometry_repaired.cpg",
+       "p6_target_ledger_valid": "sources/p6_target_ledger_valid__target_ledger_valid.csv.gz",
+       "p6_keys_h01": "sources/p6_keys_h01__keys_h01.csv.gz",
+       "p6_keys_h03": "sources/p6_keys_h03__keys_h03.csv.gz",
+       "p6_keys_h06": "sources/p6_keys_h06__keys_h06.csv.gz",
+       "p6_keys_h12": "sources/p6_keys_h12__keys_h12.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ARCHIVE\\.json",
+      "path": "\\.moves\\[(\\d)\\]\\.sha256",
+      "target_map": {
+       "0": "archive/replay-attempt-01-20261014T141645Z/replay/replay.json",
+       "1": "archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json",
+       "2": "archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json",
+       "3": "archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "after_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ARCHIVE\\.json",
+      "path": "\\.moves\\[(\\d)\\]\\.after_sha256",
+      "target_map": {
+       "0": "archive/replay-attempt-01-20261014T141645Z/replay/replay.json",
+       "1": "archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json",
+       "2": "archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json",
+       "3": "archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz"
+      }
+     },
+     {
+      "kind": "own",
+      "key": "sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ARCHIVE\\.json",
+      "path": "\\.install\\.sha256",
+      "target": "predict/providers_all_h03.csv.gz"
+     },
+     {
+      "kind": "own",
+      "key": "after_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ARCHIVE\\.json",
+      "path": "\\.install\\.after_sha256",
+      "target": "predict/providers_all_h03.csv.gz"
+     },
+     {
+      "kind": "own",
+      "key": "reconstructed_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ANALYSIS_AMENDMENT\\.json",
+      "path": "\\.provider\\.reconstructed_sha256",
+      "target": "predict/providers_all_h03.csv.gz"
+     },
+     {
+      "kind": "own",
+      "key": "original_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ANALYSIS_AMENDMENT\\.json",
+      "path": "\\.provider\\.original_sha256",
+      "target": "archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz"
+     },
+     {
+      "kind": "external",
+      "key": "pieces_sha256",
+      "file": "extraction/manifest\\.json",
+      "path": "\\.pieces_sha256",
+      "target": "/home/swl007007/ipcch-alphaearth-runs/p1-c-full-20261010/inputs/production_pieces.jsonl.gz",
+      "sha256": "9f22cb263e1f358175c364c9ebcb8937bb65285591bd9b3cf00e1a28f28baf7d"
+     },
+     {
+      "kind": "external",
+      "key": "list_images_sha256",
+      "file": "(?:extraction/manifest|extraction/COMPLETE|descriptors/COMPLETE)\\.json",
+      "path": "\\.provenance\\.list_images_sha256",
+      "target": "/home/swl007007/ipcch-alphaearth-runs/p1-metadata-20261010/ee/list_images.json",
+      "sha256": "b233255bdf3a7d8d9cb042b9f50ed04a00501fcd5652442e663f488c2783b6ad"
+     },
+     {
+      "kind": "external",
+      "key": "receipt_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ARCHIVE\\.json",
+      "path": "\\.receipt_sha256",
+      "target": "/home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-logs/receipts/ipcch-alphaearth-replay-install-recheck-release-20261014.json",
+      "sha256": "991ce446663b530fc6d77c60c513e970575aa81d4c2a8a95d2b00de2e7e599a8"
+     },
+     {
+      "kind": "external",
+      "key": "replay_diff_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ANALYSIS_AMENDMENT\\.json",
+      "path": "\\.replay_diff_sha256",
+      "target": "/home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-logs/replay-repair/replay.py.diff",
+      "sha256": "4c0fc9649818c19563234225d1827c9031af8477c330885d1639d1ffb40d3755"
+     },
+     {
+      "kind": "external",
+      "key": "supervisor_test_log_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ANALYSIS_AMENDMENT\\.json",
+      "path": "\\.supervisor_test_log_sha256",
+      "target": "/home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-logs/receipts/ipcch-alphaearth-replay-repair-supervisor-tests-20261014.log",
+      "sha256": "fc21c10b5147d92f21cc5f8698da8a93fcdfde20d657f1515597d0d83451ca1a"
+     },
+     {
+      "kind": "external",
+      "key": "regression_test_source_sha256",
+      "file": "archive/replay\\-attempt\\-01\\-20261014T141645Z/ANALYSIS_AMENDMENT\\.json",
+      "path": "\\.regression_test_source_sha256",
+      "target": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/tests/test_replay_contracts.py",
+      "sha256": "3639bf4ecf3811d7e5802be444802b62de6b826d71951337960c15e02cc5b355"
+     },
+     {
+      "kind": "external",
+      "key": "config_sha256",
+      "file": "(?:run|descriptors/COMPLETE|prepared/prepared-manifest|preflight/preflight-\\d{8}T\\d{6}Z)\\.json",
+      "path": "(?:\\.run)?\\.config_sha256\\.([\\w\\-]+\\.json)",
+      "target_map": {
+       "experiment-contract.json": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/config/experiment-contract.json",
+       "inputs.json": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/config/inputs.json",
+       "runtime-lock.json": "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/config/runtime-lock.json"
+      },
+      "sha256_map": {
+       "experiment-contract.json": "b75a71066f3b96b2719dc851d61516b453d2fd843805af065419fd96984f1378",
+       "inputs.json": "122a1ff120107730f1f81776536df71a76bb282c9d974f8dc08dbe806985a527",
+       "runtime-lock.json": "6bf483cf9e04ac2635a6603514ae2e56d649d010828ed4f609d3adf7dd74e1a4"
+      }
+     },
+     {
+      "kind": "typed",
+      "key": "X_sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.identity\\.X_sha256",
+      "type": "array_digest",
+      "reason": "array_digest(float64 X fitting slice): sha256 of 'dtype|shape|' + C-order bytes (ipcch_alphaearth/artifacts.py:40-46); in-memory, no file"
+     },
+     {
+      "kind": "typed",
+      "key": "y_sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.identity\\.y_sha256\\.q[2-5]",
+      "type": "array_digest",
+      "reason": "array_digest of each target column of the fitting slice (backbone.fit_identity); no file"
+     },
+     {
+      "kind": "typed",
+      "key": "sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.identity\\.weights\\.sha256",
+      "type": "array_digest",
+      "reason": "array_digest of the float64 decay weights of the fitting slice (backbone.fit_identity); no file"
+     },
+     {
+      "kind": "typed",
+      "key": "features_sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.identity\\.features_sha256",
+      "type": "canonical_json",
+      "reason": "artifacts.digest(ordered feature-name list): canonical JSON; no file"
+     },
+     {
+      "kind": "typed",
+      "key": "resolved_config_sha256",
+      "file": "models/[0-9a-f]{2}/[0-9a-f]{64}/record\\.json",
+      "path": "\\.targets\\.q[2-5]\\.resolved_config_sha256",
+      "type": "config_digest",
+      "reason": "digest of the resolved XGB configuration dict of that target; no file"
+     },
+     {
+      "kind": "typed",
+      "key": "compact296_list_sha256",
+      "file": "prepared/prepared\\-manifest\\.json",
+      "path": "\\.compact296_list_sha256",
+      "type": "newline_list",
+      "reason": "list_sha256(ordered compact296 names): newline-joined UTF-8; no file"
+     },
+     {
+      "kind": "typed",
+      "key": "request_sha256",
+      "file": "extraction/manifest\\.json",
+      "path": "\\.request_sha256",
+      "type": "request_body",
+      "value": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+      "reason": "canonical digest of the extraction request BODY; not the manifest file SHA (b7acb5fa...)"
+     },
+     {
+      "kind": "typed",
+      "key": "manifest_sha256",
+      "file": "extraction/COMPLETE\\.json",
+      "path": "\\.manifest_sha256",
+      "type": "request_body",
+      "value": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+      "reason": "the same canonical request BODY digest as extraction/manifest.json request_sha256; not a file SHA"
+     },
+     {
+      "kind": "historical",
+      "key": "code_sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.code_sha256\\.scripts/preprocessing/build_compact_climate_weather_oracle_inputs\\.py|\\.code_sha256\\.src/ipcch/climate2015_features\\.py|\\.code_sha256\\.src/ipcch/compact_features\\.py|\\.code_sha256\\.src/ipcch/origin_safe\\.py|\\.code_sha256\\.src/ipcch/retained_feature_recipes\\.py|\\.code_sha256\\.src/ipcch/weather_oracle\\.py)",
+      "values": {
+       ".code_sha256.scripts/preprocessing/build_compact_climate_weather_oracle_inputs.py": "fa10cee75402477e6f0f190c0881935a2891449ddbd6d3c3e5fe55c7419c1171",
+       ".code_sha256.src/ipcch/compact_features.py": "923cae26335f9994043c178a0920a7736e7e80dc9c51a5fffa8d406f07fdf324",
+       ".code_sha256.src/ipcch/climate2015_features.py": "e8da9de9224b1f5c42706d50fccd12f2173886079c4c7a711f152f900e9c22d5",
+       ".code_sha256.src/ipcch/retained_feature_recipes.py": "cf1557e405d0aef3a62ee9af4286680465e8fae3f7661c959d321870423465ed",
+       ".code_sha256.src/ipcch/weather_oracle.py": "65a93d45ec0f738ec9c6e8092e4c355f88149310054e4e1969ae24c2ffc55d81",
+       ".code_sha256.src/ipcch/origin_safe.py": "629936a8de4973399a3dfa798b4a212bb8fefe9838d16a032c072c446101ea03"
+      },
+      "reason": "upstream sibling IPCCH source file recorded by the compact source manifest"
+     },
+     {
+      "kind": "historical",
+      "key": "eval_keys_sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.cohort\\.eval_keys_sha256)",
+      "values": {
+       ".cohort.eval_keys_sha256": "f0193c1402d0609556755844b476227b7188f9671323d21317336d7ef58d2e0f"
+      },
+      "reason": "key-set identity of upstream evaluation keys"
+     },
+     {
+      "kind": "historical",
+      "key": "feature_sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.horizons\\.0\\.arms\\.compact_baseline\\.feature_sha256|\\.horizons\\.12\\.arms\\.compact_baseline\\.feature_sha256|\\.horizons\\.12\\.arms\\.compact_weather_oracle\\.feature_sha256|\\.horizons\\.3\\.arms\\.compact_baseline\\.feature_sha256|\\.horizons\\.3\\.arms\\.compact_weather_oracle\\.feature_sha256|\\.horizons\\.6\\.arms\\.compact_baseline\\.feature_sha256|\\.horizons\\.6\\.arms\\.compact_weather_oracle\\.feature_sha256)",
+      "values": {
+       ".horizons.0.arms.compact_baseline.feature_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".horizons.3.arms.compact_baseline.feature_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".horizons.3.arms.compact_weather_oracle.feature_sha256": "ce99f6a8af46278f6faf9e60f8a631efae6c5a55e6be025dd0bcfadb1b959e9a",
+       ".horizons.6.arms.compact_baseline.feature_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".horizons.6.arms.compact_weather_oracle.feature_sha256": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e",
+       ".horizons.12.arms.compact_baseline.feature_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".horizons.12.arms.compact_weather_oracle.feature_sha256": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e"
+      },
+      "reason": "ordered feature-name identity per upstream arm/horizon"
+     },
+     {
+      "kind": "historical",
+      "key": "features_by_run_sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.contract\\.features_by_run_sha256\\.compact_baseline/0m|\\.contract\\.features_by_run_sha256\\.compact_baseline/12m|\\.contract\\.features_by_run_sha256\\.compact_baseline/3m|\\.contract\\.features_by_run_sha256\\.compact_baseline/6m|\\.contract\\.features_by_run_sha256\\.compact_weather_oracle/12m|\\.contract\\.features_by_run_sha256\\.compact_weather_oracle/3m|\\.contract\\.features_by_run_sha256\\.compact_weather_oracle/6m)",
+      "values": {
+       ".contract.features_by_run_sha256.compact_baseline/0m": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".contract.features_by_run_sha256.compact_baseline/3m": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".contract.features_by_run_sha256.compact_baseline/6m": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".contract.features_by_run_sha256.compact_baseline/12m": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+       ".contract.features_by_run_sha256.compact_weather_oracle/3m": "ce99f6a8af46278f6faf9e60f8a631efae6c5a55e6be025dd0bcfadb1b959e9a",
+       ".contract.features_by_run_sha256.compact_weather_oracle/6m": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e",
+       ".contract.features_by_run_sha256.compact_weather_oracle/12m": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e"
+      },
+      "reason": "ordered feature-name identity per upstream run (newline convention, e.g. e97388...)"
+     },
+     {
+      "kind": "historical",
+      "key": "label_keys_sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.cohort\\.label_keys_sha256)",
+      "values": {
+       ".cohort.label_keys_sha256": "fe69b08b8324eca2af5ef5b47e0046a7cb0ef9924d8251e9f4cc0dbca93be7e7"
+      },
+      "reason": "key-set identity of upstream label keys"
+     },
+     {
+      "kind": "historical",
+      "key": "sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.cohort\\.sha256|\\.contract\\.approved_source\\.execution_approval\\.sha256|\\.contract\\.approved_source\\.sha256\\.expected_feature_contract\\.csv|\\.contract\\.approved_source\\.sha256\\.expected_feature_contract_metadata\\.json|\\.contract\\.approved_source\\.sha256\\.expected_run_index\\.csv|\\.contract\\.files\\.expected_feature_contract\\.csv\\.sha256|\\.contract\\.files\\.expected_feature_contract_metadata\\.json\\.sha256|\\.contract\\.files\\.expected_run_index\\.csv\\.sha256|\\.horizons\\.0\\.history_ledger\\.sha256|\\.horizons\\.0\\.idp_ledger\\.sha256|\\.horizons\\.0\\.parent_dataset\\.sha256|\\.horizons\\.0\\.season_ledger\\.sha256|\\.horizons\\.12\\.arms\\.compact_weather_oracle\\.dataset\\.sha256|\\.horizons\\.12\\.history_ledger\\.sha256|\\.horizons\\.12\\.idp_ledger\\.sha256|\\.horizons\\.12\\.oracle_ledger\\.sha256|\\.horizons\\.12\\.parent_dataset\\.sha256|\\.horizons\\.12\\.season_ledger\\.sha256|\\.horizons\\.3\\.arms\\.compact_weather_oracle\\.dataset\\.sha256|\\.horizons\\.3\\.history_ledger\\.sha256|\\.horizons\\.3\\.idp_ledger\\.sha256|\\.horizons\\.3\\.oracle_ledger\\.sha256|\\.horizons\\.3\\.parent_dataset\\.sha256|\\.horizons\\.3\\.season_ledger\\.sha256|\\.horizons\\.6\\.arms\\.compact_weather_oracle\\.dataset\\.sha256|\\.horizons\\.6\\.history_ledger\\.sha256|\\.horizons\\.6\\.idp_ledger\\.sha256|\\.horizons\\.6\\.oracle_ledger\\.sha256|\\.horizons\\.6\\.parent_dataset\\.sha256|\\.horizons\\.6\\.season_ledger\\.sha256|\\.parent_manifest\\.sha256)",
+      "values": {
+       ".parent_manifest.sha256": "3b479c80498e9f2d6d20b88936fce468f297d2e0ccd6f0cb32c61a7470a209bf",
+       ".contract.files.expected_feature_contract.csv.sha256": "a2d1960bf75811a391ec4bd0549b4aaddccb1ce57ca9a08f3a3c28d2fb313bc8",
+       ".contract.files.expected_feature_contract_metadata.json.sha256": "8f3964364f89b866fc40f31524d38312aaab3202ca02f3886b5b64ade33e1260",
+       ".contract.files.expected_run_index.csv.sha256": "fdd65bc2005016f721995c173a28bcea59ec4580b42c70a43bbf7632b3a4097d",
+       ".contract.approved_source.sha256.expected_feature_contract.csv": "a2d1960bf75811a391ec4bd0549b4aaddccb1ce57ca9a08f3a3c28d2fb313bc8",
+       ".contract.approved_source.sha256.expected_feature_contract_metadata.json": "8f3964364f89b866fc40f31524d38312aaab3202ca02f3886b5b64ade33e1260",
+       ".contract.approved_source.sha256.expected_run_index.csv": "fdd65bc2005016f721995c173a28bcea59ec4580b42c70a43bbf7632b3a4097d",
+       ".contract.approved_source.execution_approval.sha256": "4eaa0d8c21821da97c74a79aac01871a0964e9126c4ed94ebb30f1f05a0405c1",
+       ".cohort.sha256": "136095f1070a30f41f6011ad85d8170618043e6f8a109a6452fd474593a21ec3",
+       ".horizons.0.parent_dataset.sha256": "ffe0c61d8cb29f997ce4d84b2c01b07bbf70a4bbb766c1d30cb3754d4a2b3cc6",
+       ".horizons.0.history_ledger.sha256": "389e8ab3d03e4c0cd289b6fd93d0dc281da609e3aa5a7b4d12b841677cdb1e99",
+       ".horizons.0.idp_ledger.sha256": "a29eb57aacb0a45fdd96cdff5ddc4c04b10299f02c1ce23b69f8b5889d9ba36c",
+       ".horizons.0.season_ledger.sha256": "71e27a2836321a8a3a102a9b6efa0130a6092a219b0e64e960fecae5d09666b5",
+       ".horizons.3.parent_dataset.sha256": "04032f3ba44f8d83108f95d30b6cb7c8dee513ab0882d94791d05649912f5811",
+       ".horizons.3.history_ledger.sha256": "e901260d0636a6309fd0d28b9535a94df627d45e244d4f7b17fcb2f98b4cf19a",
+       ".horizons.3.idp_ledger.sha256": "68897dd9c63980aede8a701c17b66848701ca1aabf7403b94199a252f65d0614",
+       ".horizons.3.season_ledger.sha256": "babb00511d98aa6355da2b694ff8d53560d38917724aefcfc537396ae2d1c5d1",
+       ".horizons.3.oracle_ledger.sha256": "531ce9ae0df9ea23909f6704bb11f582edb8cf909ac4ea353e0e416434af3375",
+       ".horizons.3.arms.compact_weather_oracle.dataset.sha256": "01802606985c8188e1f96932865e488a10e5f871202a6a6230736bf95c7380bb",
+       ".horizons.6.parent_dataset.sha256": "6344e5afcbb23dd5e5dec678d7e4ff331c42ae464b93f8f83c0c58c6a8e40fc7",
+       ".horizons.6.history_ledger.sha256": "a732045ec7d3d7b73b5a98e1e47c126323142abbe3ab3498238fe2d62a2bce3e",
+       ".horizons.6.idp_ledger.sha256": "dfd15b0078abcb22c71697cbfaa9ee4492afd27c1c65a71fc95ea810a41b486e",
+       ".horizons.6.season_ledger.sha256": "eb4b1efca7ad71161b6647d66be8786d4c566119d49d9dca35634cb27453b56f",
+       ".horizons.6.oracle_ledger.sha256": "519dfe19f1a1b80fcce5676f1447f415b4404f5ac9f7c2d717198e57c89d63f0",
+       ".horizons.6.arms.compact_weather_oracle.dataset.sha256": "fd31cf0f505fa3172d2c09b7823b1970194e8ea7d8c86de8fded2b1ecf58c636",
+       ".horizons.12.parent_dataset.sha256": "49236fc3a5f4a350885b82fbf481d0cd1c67a69192c03db1ab85806803bcf608",
+       ".horizons.12.history_ledger.sha256": "1f3b91ff5b727e1fd2585a1940dfa621acea9ef391c3f8867046b33a49d84874",
+       ".horizons.12.idp_ledger.sha256": "3f9fbf6613348e0609c4627b0a3370d5318c12f73cd1b27a6660e2ce82325a08",
+       ".horizons.12.season_ledger.sha256": "49259ed988f2c444552c97793f885496156b451785e577cddeb11b0f2619219c",
+       ".horizons.12.oracle_ledger.sha256": "1cde2434f0878fd3eacd7d2138112d2deace717b20a3e5948aa794fbd3ab7559",
+       ".horizons.12.arms.compact_weather_oracle.dataset.sha256": "aa7f299ca6c89d5243b91c6b1e045fc9dafeed386a9d89f390edc78d7502229d"
+      },
+      "reason": "upstream compact-run outputs, parent manifest, cohort and contract/approval documents (sibling IPCCH run); not retained"
+     },
+     {
+      "kind": "historical",
+      "key": "spec_sha256",
+      "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest\\.json",
+      "path": "(?:\\.contract\\.spec_sha256\\.design\\.md|\\.contract\\.spec_sha256\\.implement\\.md|\\.contract\\.spec_sha256\\.prd\\.md|\\.contract\\.spec_sha256\\.rollback\\.md)",
+      "values": {
+       ".contract.spec_sha256.prd.md": "f516c30a02954a673c3641c366aa3b425b298bfe8b2479fc81671667d8295aed",
+       ".contract.spec_sha256.design.md": "680214c8544be77b3f9ed9e27c975e49bed14ef4a1a17781988b025ead42a7f5",
+       ".contract.spec_sha256.implement.md": "ad2102fd192bf37f7b63af31686c1c781b394ab2a6a5b23eb65ec350c4387258",
+       ".contract.spec_sha256.rollback.md": "37936290977a11d1865d3e6172247a0e64c677b02cfcbafca0cb66135b1de1c8"
+      },
+      "reason": "upstream compact contract spec documents (prd/design/implement/rollback)"
+     }
+    ],
+    "model_contract": "alphaearth_xgb",
+    "model_ledgers": [
+     "develop/request_ledger.csv.gz",
+     "predict/request_ledger.csv.gz"
+    ],
+    "model_schedule": "prepared/schedule_requests.csv.gz",
+    "model_root": "models",
+    "expected_identities": 61,
+    "expected_boosters": 244,
+    "note": "digest roles enumerated in mlflow-plan-r2/digest_roles_v2*.json; historical pins read from the compact manifest itself"
+   }
   }
- ]
+ ],
+ "dashboard_extensions": {
+  "alphaearth_partition": {
+   "predecessor_fingerprint": "c7abf4cdc2f5abe8f85300ad41fcf08085ceb14f170b81121e5f1605365158dc",
+   "predecessor_plan": "/home/swl007007/.local/share/ipcch-mlflow/dashboard/plan-c7abf4cdc2f5abe8.json",
+   "predecessor_plan_sha256": "cd5a2cbd61262f42bc61a86a3c03f8202ec482604170398b9eff06488bf76e9b",
+   "rows": [
+    "alphaearth_supervised_partition/lead01/persistence/seednone",
+    "alphaearth_supervised_partition/lead01/pooled/seed42",
+    "alphaearth_supervised_partition/lead01/pooled_plus_alphaearth/seed42",
+    "alphaearth_supervised_partition/lead01/regional_calibration/seed42",
+    "alphaearth_supervised_partition/lead01/shared_calibration/seed42",
+    "alphaearth_supervised_partition/lead03/persistence/seednone",
+    "alphaearth_supervised_partition/lead03/pooled/seed42",
+    "alphaearth_supervised_partition/lead03/pooled_plus_alphaearth/seed42",
+    "alphaearth_supervised_partition/lead03/regional_calibration/seed42",
+    "alphaearth_supervised_partition/lead03/shared_calibration/seed42",
+    "alphaearth_supervised_partition/lead06/persistence/seednone",
+    "alphaearth_supervised_partition/lead06/pooled/seed42",
+    "alphaearth_supervised_partition/lead06/pooled_plus_alphaearth/seed42",
+    "alphaearth_supervised_partition/lead06/regional_calibration/seed42",
+    "alphaearth_supervised_partition/lead06/shared_calibration/seed42",
+    "alphaearth_supervised_partition/lead12/persistence/seednone",
+    "alphaearth_supervised_partition/lead12/pooled/seed42",
+    "alphaearth_supervised_partition/lead12/pooled_plus_alphaearth/seed42",
+    "alphaearth_supervised_partition/lead12/regional_calibration/seed42",
+    "alphaearth_supervised_partition/lead12/shared_calibration/seed42"
+   ],
+   "models": [
+    "alphaearth_partition/p1-formal-d30-20261014/H1/B0/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H1/B1/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H1/B2/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H1/G/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H12/B0/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H12/B1/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H12/B2/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H12/G/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H3/B0/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H3/B1/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H3/B2/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H3/G/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H6/B0/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H6/B1/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H6/B2/seed42",
+    "alphaearth_partition/p1-formal-d30-20261014/H6/G/seed42"
+   ],
+   "datasets": {
+    "IPCCH eval | 1-month | 2023-02..2025-10 | all_scored (AlphaEarth supervised partition)": "cfbfabdfeb39eba538d88c325f61019c65d118f9766f0e8c1ab71f708a346d8e",
+    "IPCCH eval | 1-month | 2023-02..2025-10 | persistence_available (AlphaEarth supervised partition)": "3736c330fc340b7fa91933e2dbcbc7e355fab31072f2cf146a16d7c5efbfe115",
+    "IPCCH eval | 1-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)": "ec4e0006d930683a1c43e83e2f81ff9be5baa404ed4dfdc4ee97a0e32c0d7a24",
+    "IPCCH eval | 12-month | 2024-01..2025-10 | all_scored (AlphaEarth supervised partition)": "42ce408f2bcae0b87363fdad47c3b9876075f844cb515767892ad1b584e326b6",
+    "IPCCH eval | 12-month | 2024-01..2025-10 | persistence_available (AlphaEarth supervised partition)": "485078fd3ae09b64c18c2d7c59805444f1af3b785bdc8ff250e1112150b730e5",
+    "IPCCH eval | 12-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)": "c82dea4b6d7248fbb2c45e2b98541dee1bd72b1e9cf6a45296367bf2309425ef",
+    "IPCCH eval | 3-month | 2023-04..2025-10 | all_scored (AlphaEarth supervised partition)": "9867bdfe4035ab0d239ecbdc443416007a069afdbca101b27d0f2018f0a85c65",
+    "IPCCH eval | 3-month | 2023-04..2025-10 | persistence_available (AlphaEarth supervised partition)": "d63959bd991fcc6c2ddefb7c89732221e1227aead15ffc54c64b8fcdf9628bb5",
+    "IPCCH eval | 3-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)": "8ea94dfd743b4dfc3646aa998758e18a764645e5098cd46d10aed172e82a0138",
+    "IPCCH eval | 6-month | 2023-07..2025-10 | all_scored (AlphaEarth supervised partition)": "dcd709cd4c14f95a063dd409bcf7bacccfa3efa9f42c48d9b1031be77b4846c5",
+    "IPCCH eval | 6-month | 2023-07..2025-10 | persistence_available (AlphaEarth supervised partition)": "fd20048877e829b48b9574c2c77cf792c39c874cc215b4860220c314458bae82",
+    "IPCCH eval | 6-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)": "91d2162f13963acab22aa1cdb3a710083e0e18550fae3e220a8f0496a8c47c97",
+    "IPCCH training pool | compact296 | 1-month": "008e493ad70f7ce5fc240cb0c0388e263778142a49941124a0784fbd6b88c455",
+    "IPCCH training pool | compact296 | 12-month": "e128bbb09d4b56577bf695c3862453e6f32b99b82bf20319386391252399f522",
+    "IPCCH training pool | compact296 | 3-month": "cba4f18726b903068a4383cd9231529a7c41e23be48d1f7ddf9375a60f2bec08",
+    "IPCCH training pool | compact296 | 6-month": "75469770ea3b6eaca588e97bd045479e51c91ad80c764a9fa1d5b5251c9bd571",
+    "IPCCH training pool | compact296+alphaearth128 (composite) | 1-month": "37a204b71d31cb6d309a0b366208c34f69093f403f5ad33f4ba2e40517ce8504",
+    "IPCCH training pool | compact296+alphaearth128 (composite) | 12-month": "91c2ad38465a4bf58d7bb5ef02393e54942f04ee2fad6b994649112e83f48ca2",
+    "IPCCH training pool | compact296+alphaearth128 (composite) | 3-month": "c743ba3527e64e57b87d6440456d9552d86132a5ef2abe8c0cc541682edbe185",
+    "IPCCH training pool | compact296+alphaearth128 (composite) | 6-month": "e22856cb10cdc6c9da74a1bac3c11855808c2fc1aa71bb960930ca28bf2e5954"
+   },
+   "counts": {
+    "rows": 20,
+    "model_versions": 16,
+    "registered_models": 16,
+    "evaluation_datasets": 12,
+    "training_datasets": 8
+   },
+   "legacy_counts": {
+    "rows": 136,
+    "model_versions": 100,
+    "registered_models": 68
+   },
+   "release": "codex-D30-mlflow-r2-offline-implementation-rehearsal-20261014"
+  }
+ }
 }

@@ -1,0 +1,27 @@
+{
+  "stage": "develop",
+  "selections": {
+    "1": "B2",
+    "3": "B2",
+    "6": "B2",
+    "12": "B2"
+  },
+  "summary": {
+    "1": {
+      "selected": "B2",
+      "providers": 15708
+    },
+    "3": {
+      "selected": "B2",
+      "providers": 15660
+    },
+    "6": {
+      "selected": "B2",
+      "providers": 15555
+    },
+    "12": {
+      "selected": "B2",
+      "providers": 14195
+    }
+  }
+}

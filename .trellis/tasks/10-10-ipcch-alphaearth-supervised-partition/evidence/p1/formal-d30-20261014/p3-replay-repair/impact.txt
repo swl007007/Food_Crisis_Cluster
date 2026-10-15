@@ -1,0 +1,1 @@
+manual impact: _replay <- run_replay (replay.py:73) <- cli.py:94 (replay command); tests: test_replay_contracts.py:49,60 + new class, test_pipeline_boundaries.py:51, test_e2e_synthetic.py:26. GitNexus impact(_replay, upstream) 2026-10-14: 'Target not found' (index stale), risk UNKNOWN. No fit/predict/report path touched.

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/__main__.py", line 3, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/cli.py", line 94, in main
+    result = replay.run_replay(inputs, contract, run_dir, run_dir / "models")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py", line 73, in run_replay
+    return _replay(inputs, contract, run_dir, out, store_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py", line 289, in _replay
+    raise ContractError(f"replay failed {len(result['failed'])} checks: {result['failed'][:8]}")
+ipcch_alphaearth.errors.ContractError: replay failed 16 checks: ['h01_main_2023:canonical_cohort_fields', 'h01_main_2024:canonical_cohort_fields', 'h01_main_2025:canonical_cohort_fields', 'h01_supplement_2026:canonical_cohort_fields', 'h03:combined_providers_equal_expected', 'h03_main_2023:canonical_cohort_fields', 'h03_main_2024:canonical_cohort_fields', 'h03_main_2025:canonical_cohort_fields']

@@ -1,0 +1,19 @@
+{
+  "status": "incomplete",
+  "stage": "replay",
+  "context": {
+    "stage": "replay"
+  },
+  "error_type": "ContractError",
+  "error": "replay failed 16 checks: ['h01_main_2023:canonical_cohort_fields', 'h01_main_2024:canonical_cohort_fields', 'h01_main_2025:canonical_cohort_fields', 'h01_supplement_2026:canonical_cohort_fields', 'h03:combined_providers_equal_expected', 'h03_main_2023:canonical_cohort_fields', 'h03_main_2024:canonical_cohort_fields', 'h03_main_2025:canonical_cohort_fields']",
+  "traceback": [
+    "Traceback (most recent call last):\n",
+    "  File \"/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py\", line 73, in run_replay\n    return _replay(inputs, contract, run_dir, out, store_root)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py\", line 289, in _replay\n    raise ContractError(f\"replay failed {len(result['failed'])} checks: {result['failed'][:8]}\")\n",
+    "ipcch_alphaearth.errors.ContractError: replay failed 16 checks: ['h01_main_2023:canonical_cohort_fields', 'h01_main_2024:canonical_cohort_fields', 'h01_main_2025:canonical_cohort_fields', 'h01_supplement_2026:canonical_cohort_fields', 'h03:combined_providers_equal_expected', 'h03_main_2023:canonical_cohort_fields', 'h03_main_2024:canonical_cohort_fields', 'h03_main_2025:canonical_cohort_fields']\n"
+  ],
+  "partial_evidence": [
+    "replay/replay.json"
+  ],
+  "recorded_utc": "2026-10-14T14:16:37Z"
+}

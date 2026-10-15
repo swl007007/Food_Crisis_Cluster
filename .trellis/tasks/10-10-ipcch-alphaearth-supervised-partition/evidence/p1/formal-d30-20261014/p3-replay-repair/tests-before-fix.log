@@ -1,0 +1,23 @@
+test_changed_provider_target_ordinal_still_fails (test_replay_contracts.UnavailablePersistenceReplay.test_changed_provider_target_ordinal_still_fails) ... ok
+test_changed_valid_source_month_still_fails (test_replay_contracts.UnavailablePersistenceReplay.test_changed_valid_source_month_still_fails) ... ok
+test_na_looking_text_is_not_an_empty_source_month (test_replay_contracts.UnavailablePersistenceReplay.test_na_looking_text_is_not_an_empty_source_month) ... ok
+test_unavailable_persistence_rows_replay_canonically (test_replay_contracts.UnavailablePersistenceReplay.test_unavailable_persistence_rows_replay_canonically) ... ERROR
+
+======================================================================
+ERROR: test_unavailable_persistence_rows_replay_canonically (test_replay_contracts.UnavailablePersistenceReplay.test_unavailable_persistence_rows_replay_canonically)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/tests/test_replay_contracts.py", line 192, in test_unavailable_persistence_rows_replay_canonically
+    self.assertTrue(replay.run_replay(self.inputs, self.contract, run, run / "models")["pass"])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py", line 73, in run_replay
+    return _replay(inputs, contract, run_dir, out, store_root)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/c/Users/swl00/IFPRI Dropbox/Weilun Shi/Google fund/Analysis/2.source_code/Step5_Geo_RF_trial/Food_Crisis_Cluster/IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py", line 289, in _replay
+    raise ContractError(f"replay failed {len(result['failed'])} checks: {result['failed'][:8]}")
+ipcch_alphaearth.errors.ContractError: replay failed 4 checks: ['h01_supplement_2026:canonical_cohort_fields', 'h03_supplement_2026:canonical_cohort_fields', 'h06_supplement_2026:canonical_cohort_fields', 'h12_supplement_2026:canonical_cohort_fields']
+
+----------------------------------------------------------------------
+Ran 4 tests in 72.725s
+
+FAILED (errors=1)

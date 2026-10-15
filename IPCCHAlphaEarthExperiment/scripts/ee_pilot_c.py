@@ -24,6 +24,11 @@ so a rerun never gets a fresh budget. Invocation wall budget (``wall_budget_s``,
 timeout (``outer_timeout_s``, hard kill) are distinct; the manifest must state both. A full (non-sample) manifest must
 also state ``max_invocations`` (counted at invocation start). A null/nonfinite response is never a done output: it is
 kept under ``failed_responses/``, counted as a failure, and the piece stays pending for a resume.
+An optional production-only ``--concurrency-ceiling N`` restricts the worker count to min(manifest concurrency, N) for one
+invocation without touching the hash-bound manifest; N must be a positive integer not above the manifest concurrency and
+is checked before any invocation start, reservation or EE call. Omitted, the manifest concurrency applies unchanged. Each
+invocation start appends its manifest and effective concurrency to ``<out>/invocation_concurrency.jsonl`` (before init),
+and the run summary records both.
 """
 
 from __future__ import annotations
@@ -213,8 +218,22 @@ class Control:
             return self.stopped
 
 
-def run_production(req: dict, out: Path, ee, budget: Budget, sleep=time.sleep, control: Control | None = None) -> dict:
+def effective_concurrency(limits: dict, ceiling=None) -> int:
+    """Worker count: the manifest concurrency, or min(manifest, ceiling) for a positive integer ceiling not above it."""
+    cap = max(1, int(limits["concurrency"]))
+    if ceiling is None:
+        return cap
+    if isinstance(ceiling, bool) or not isinstance(ceiling, int) or ceiling < 1:
+        raise SystemExit(f"concurrency ceiling must be a positive integer, got {ceiling!r}; no invocation started")
+    if ceiling > cap:
+        raise SystemExit(f"concurrency ceiling {ceiling} above the manifest concurrency {cap}; no invocation started")
+    return ceiling
+
+
+def run_production(req: dict, out: Path, ee, budget: Budget, sleep=time.sleep, control: Control | None = None,
+                   workers: int | None = None) -> dict:
     limits = req["limits"]
+    workers = effective_concurrency(limits, workers)
     out = Path(out)
     control = control or Control(limits["wall_budget_s"])
     budget.guard, budget.on_fatal = control.reason, control.stop
@@ -285,7 +304,7 @@ def run_production(req: dict, out: Path, ee, budget: Budget, sleep=time.sleep, c
             elif n_bad and state["attempted"] >= int(limits["min_attempts_for_fraction"]) and frac > float(limits["max_failure_fraction"]):
                 control.stop(f"failure fraction {frac:.4f} above limit")
 
-    with ThreadPoolExecutor(max_workers=max(1, int(limits["concurrency"]))) as pool:
+    with ThreadPoolExecutor(max_workers=workers) as pool:
         list(pool.map(work, groups))
     remaining = [r["request_id"] for r in req["requests"] if not valid_output(req, r, piece_file(out, r["request_id"]))]
     return {**state, "stopped": control.stopped, "pending_at_start": len(todo), "remaining": len(remaining),
@@ -297,12 +316,20 @@ def main(argv=None) -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--request", required=True)
     p.add_argument("--out", required=True)
+    p.add_argument("--concurrency-ceiling", default=None)
     a = p.parse_args(argv)
+    ceiling = None
+    if a.concurrency_ceiling is not None:
+        if not (a.concurrency_ceiling.isascii() and a.concurrency_ceiling.isdigit()):
+            raise SystemExit(f"concurrency ceiling must be a positive integer, got {a.concurrency_ceiling!r}; no invocation started")
+        ceiling = int(a.concurrency_ceiling)
     req = load_released(Path(a.request))
     limits = req["limits"]
     out = Path(a.out)
     if req.get("kind") == "c_production":
-        return main_production(req, out)
+        return main_production(req, out, concurrency_ceiling=ceiling)
+    if ceiling is not None:
+        raise SystemExit("--concurrency-ceiling applies to production manifests only")
     (out / "responses").mkdir(parents=True, exist_ok=False)
     budget = Budget(int(limits["max_high_level_calls"]), out / "request_log.jsonl", attempts=1 + int(limits.get("budget_retries", 1)))
     summary = {"release_id": req["release_id"], "request_sha256": req["request_sha256"], "recipe": RECIPE, "done": [], "failed": []}
@@ -355,8 +382,9 @@ class CumulativeBudget(Budget):
         return super().call(purpose, reserved)
 
 
-def main_production(req: dict, out: Path, ee=None) -> int:
+def main_production(req: dict, out: Path, ee=None, concurrency_ceiling: int | None = None) -> int:
     limits = req["limits"]
+    workers = effective_concurrency(limits, concurrency_ceiling)  # before any file, start record or EE call
     out.mkdir(parents=True, exist_ok=True)
     pin = out / "MANIFEST.sha256"
     if pin.exists() and pin.read_text().strip() != req["request_sha256"]:
@@ -371,10 +399,14 @@ def main_production(req: dict, out: Path, ee=None) -> int:
             raise SystemExit(f"invocation cap {limits['max_invocations']} reached for this output directory; no EE call made")
         with open(log, "a", encoding="utf-8") as h:
             h.write(time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()) + "\n")
+    with open(out / "invocation_concurrency.jsonl", "a", encoding="utf-8") as h:  # durable start evidence, before init
+        h.write(json.dumps({"utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "manifest_concurrency": int(limits["concurrency"]),
+                            "effective_concurrency": workers}) + "\n")
     control = Control(limits["wall_budget_s"])  # invocation wall clock starts before init/projection
     budget = CumulativeBudget(int(limits["max_high_level_calls"]), out)
     budget.guard, budget.on_fatal = control.reason, control.stop
-    summary = {"release_id": req["release_id"], "request_sha256": req["request_sha256"], "recipe": RECIPE}
+    summary = {"release_id": req["release_id"], "request_sha256": req["request_sha256"], "recipe": RECIPE,
+               "manifest_concurrency": int(limits["concurrency"]), "effective_concurrency": workers}
     try:
         if ee is None:
             import ee as ee  # noqa: PLC0415,PLW0127
@@ -388,7 +420,7 @@ def main_production(req: dict, out: Path, ee=None) -> int:
         summary["projection_check_max_abs_diff_m"] = worst
         if worst > 1e-3:
             raise Stop(f"EE interprets the transport WKT differently (max diff {worst} m); no reduction run")
-        summary.update(run_production(req, out, ee, budget, control=control))
+        summary.update(run_production(req, out, ee, budget, control=control, workers=workers))
     except Stop as stop:
         summary["stopped"] = str(stop)
     summary["calls_used"] = budget.used

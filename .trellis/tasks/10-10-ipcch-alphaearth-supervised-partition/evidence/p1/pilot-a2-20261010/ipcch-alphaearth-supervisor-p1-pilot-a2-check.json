@@ -1,0 +1,51 @@
+{
+  "pass": true,
+  "scope": "retained raw response and moments checks; no new cloud queries",
+  "responses": [
+    {
+      "request": "A:all_masked_fixture:None:xzki2wh0491tllh8g:01",
+      "file": "A__all_masked_fixture__None__xzki2wh0491tllh8g__01.json",
+      "sha256": "f5453b25c03119b4eda2e724da0ec94df51dd6818f1cd016a046615206db8ed0",
+      "seconds": 0.84,
+      "valid_pixels": 0,
+      "valid_area_m2": 0,
+      "projection": {
+        "type": "Projection",
+        "crs": "EPSG:32637",
+        "transform": [
+          10,
+          0,
+          336160,
+          0,
+          10,
+          2129920
+        ]
+      },
+      "genuine_zero": true
+    },
+    {
+      "request": "A:piece:3447:x7kfwxt1zhh4tk7kr:00",
+      "file": "A__piece__3447__x7kfwxt1zhh4tk7kr__00.json",
+      "sha256": "2e971c2dfa39d3c91a4eb06809c86843bf559a32368956d3e881685f7bda89c9",
+      "seconds": 7.87,
+      "valid_pixels": 511951,
+      "valid_area_m2": 51234569.35970997,
+      "projection": {
+        "type": "Projection",
+        "crs": "EPSG:32638",
+        "transform": [
+          10,
+          0,
+          500000,
+          0,
+          10,
+          1310720
+        ]
+      },
+      "coverage": 0.9999844736248901,
+      "negative_variance_count": 0,
+      "mean_norm": 0.8768002984904614,
+      "mean_pixel_norm_squared": 1.0001945308586555
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "pass": true,
+  "runtime_matches_lock": true,
+  "fit_ceiling": {
+    "B1_quartets": 38,
+    "B0_quartets": 23,
+    "quartets": 61,
+    "scalar_fits": 244,
+    "bridge_slots": 22
+  }
+}

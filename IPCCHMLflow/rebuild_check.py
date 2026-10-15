@@ -27,7 +27,7 @@ import naming  # noqa: E402
 from summary_catalog import COHORTS, contrast_values  # noqa: E402
 
 OLD_DETAIL, OLD_SUMMARY = "IPCCH", "IPCCH Summary"
-NEW_DETAIL, NEW_DASHBOARD = "IPCCH - detailed runs", "IPCCH - dashboard"
+NEW_DETAIL, NEW_DASHBOARD = "IPCCH detailed runs", "IPCCH dashboard"
 SUMMARY_LEAF = {"q3_r2_projected": "share_phase3plus_r2", "n": "n_rows"}
 
 

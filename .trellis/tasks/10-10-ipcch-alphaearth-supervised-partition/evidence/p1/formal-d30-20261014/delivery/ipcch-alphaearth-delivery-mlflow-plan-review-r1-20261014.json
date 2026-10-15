@@ -1,0 +1,89 @@
+{
+  "receipt_id": "codex-D30-delivery-and-mlflow-plan-review-r1-20261014",
+  "utc": "2026-10-14T15:50:43.892361+00:00",
+  "decision": "REVISE_OFFLINE_PLAN_EVIDENCE_AND_DOCS_BEFORE_ADAPTER_RELEASE",
+  "executor": {
+    "pane": "w14:p2",
+    "session": "3546490e-8e08-43f2-9f1d-9c72bccda1e8",
+    "terminal": "term_65d7ebc256c188"
+  },
+  "pins": {
+    "mlflow_plan": "c0aa7a02390605b45178d685d3b61037c455270e384ff6452ce30f838d6202ec",
+    "meeting_note": "2efc1ab52beee9742c4a6d1113d2c087b6f44eb80996b9cf9ad1dc7fd4b6ddec",
+    "inventory": "0d3666062bd0c2910c93a7373bf73f0556fc9acdbbaefa32a742d306d054d300"
+  },
+  "formal_result_acceptance_unchanged": "0b050601f32cbc7bb6887b5cad4830f7ce372f71c1bc1c7c700f43e1e994ee10",
+  "findings": [
+    {
+      "id": "M1",
+      "class": "MLflow exact dataset identity",
+      "evidence": [
+        "delivery/mlflow_dataset_compat.py:15-30",
+        "IPCCHMLflow/summary_catalog.py:103-116,185-192"
+      ],
+      "finding": "Compatibility probe loses saved truth precision. All16 key hashes match but all16 saved-text truth hashes differ from prior datasets. Example H1 main admin2145 target24278 q3 AE0.40404040404040403 vs P6 0.404040404040404; differences <=9.9e-17. Existing catalog binds exact saved text, not float-normalized values.",
+      "required": "Preserve originals and old descriptors. Correct probe to dtype=str/keep_default_na=False and full descriptor comparison. Bind family-qualified AlphaEarth evaluation dataset names and exact truth. Import only saved metric cohorts: main all + main persistence + supplement all =12 eval datasets; no supplementary persistence scores are saved, so leave those absent/NA rather than rescore. Freeze complete descriptors and updated counts."
+    },
+    {
+      "id": "M2",
+      "class": "model inventory cannot be vacuous",
+      "evidence": [
+        "IPCCHMLflow/inventory.py:88-89,180-225",
+        "formal models/**/record.json + develop/predict request_ledger.csv.gz"
+      ],
+      "finding": "Existing xgb contract scans model_requests*.jsonl; none exists in this run. Bundle record.json is not scanned, so61/244 models could be reported0/0 pass.",
+      "required": "Add minimal AlphaEarth-specific native ledger/record adapter in inventory.py. Bind both CSV ledgers to exact61 identities and schedule, each own record and q2-q5 booster hashes; require244. Refuse missing/extra identity, missing own booster even if hash exists elsewhere, tamper and empty ledger. Do not globally relax legacy model contracts."
+    },
+    {
+      "id": "M3",
+      "class": "digest policy and file scope",
+      "evidence": [
+        "mlflow-plan.md:50-80",
+        "IPCCHMLflow/inventory.py:60-124",
+        "IPCCHAlphaEarthExperiment/ipcch_alphaearth/artifacts.py:40-46",
+        "backbone.py:75-80"
+      ],
+      "finding": "X/y/weights are ndarray identities, not serialized-file hashes; sources/geometry files are present in excluded inventory and often need no exemption. Missing planned metadata: extraction COMPLETE/manifest/plan, preflight JSON and run.json. manifest body SHA differs from file SHA; external production_pieces JSONL differs from ingested pieces table. Several source/receipt digest classes omitted or mislabeled.",
+      "required": "Enumerate exact files and every digest role, include missing metadata. X/y/list/config/weights/body digests must have accurate typed explanations; generic sha256 exceptions restricted to exact file+JSON path. Keep real file refs required when retained, including relevant replay test/diff/receipt evidence. Verify required-path existence, no broad sources/** exemptions. Distinguish active/archived hashes and external inputs."
+    },
+    {
+      "id": "M4",
+      "class": "artifact inventory self reference",
+      "evidence": [
+        "build_inventory.py:17,28,37",
+        "ARTIFACT_INVENTORY.json:1958-1960,3130-3132"
+      ],
+      "finding": "Inventory includes its own logs/evidence copies, one recorded empty and another previous hash. Additional checkpoint reports were appended after enumeration. Formal486 path/size map and73/404 protected pin maps themselves match.",
+      "required": "Preserve attempt1 inventory and rebuild a versioned inventory with exact self-output paths excluded. Write outside enumerated roots then copy, hash final manifest separately. State snapshot scope/time and include all completed checkpoint outputs; do not attempt recursive self hashing."
+    },
+    {
+      "id": "M5",
+      "class": "extension state and resume",
+      "evidence": [
+        "mlflow-plan.md:143-155",
+        "IPCCHMLflow/summary_catalog.py:511-520,555-557,703-706,797-813"
+      ],
+      "finding": "Start gate requires predecessor fp+complete, but interrupted extend and commit/finalize boundaries are not specified. Existing apply sets incomplete and backup row-count checks can fail on partially added objects.",
+      "required": "Specify initial/resume/completed states with durable same-extension journal and predecessor/new pins. Validate legacy projection excluding only this bound addition set. Mark catalog incomplete while partial; allow resume only for own pinned extension, reject foreign incomplete. Handle before/after fp swap and final status/description transitions; same-plan completed no-op must deep verify. Permit only named experiment metadata changes including transient catalog_status. Preserve all legacy object fp tags, IDs, inputs and metric histories. Rehearsal tests interrupt after initial intent/status, partial models/rows, before/after fp commit, before complete; retain initial backup and specify fresh resume backup/verification without bypass."
+    },
+    {
+      "id": "D1",
+      "class": "delivery wording",
+      "evidence": [
+        "meeting note:14,47,60,87,92-99"
+      ],
+      "required": "Fix means+SD not variance;61quartets=four-target groups not quantiles;18 invocation starts not18 EE calls. Add actual H12 2024-2025 span, other H spans and non-contiguous calendar, matched persistence age caveat. Describe observed metric tradeoff without unsupported calibration mechanism/c2-causality claims; coverage>1 explanation as compatible, not individually established. Use 1.25th percentile / one-sided98.75% per H. P6 F1 values may remain as same-key/same-phase descriptive classification comparison; remove exact full-dataset identity claim and avoid q3 regression comparability claim."
+    },
+    {
+      "id": "M6",
+      "class": "training pool identities",
+      "evidence": [
+        "mlflow-plan.md:112",
+        "IPCCHMLflow/summary_catalog.py:195-206",
+        "IPCCHAlphaEarthExperiment/ipcch_alphaearth/pipeline.py:54"
+      ],
+      "required": "Freeze8 full training descriptors. B0 binds saved X296+keys; B1/B2/G bind X296, descriptor table, canonical admin join and ordered feature schema as an honest composite pool. Do not invent a saved X424 file/hash, rewrite frozen run, or materialize science outputs merely for tracking. Old8 training descriptors remain unchanged."
+    }
+  ],
+  "scope": "Executor may correct docs, plan and read-only evidence scripts/reports; preserve previous snapshots. No MLflow adapter edit, live/scratch store write, server start, refit, report/replay rerun, cloud or lifecycle action in this receipt. Return revised concrete plan and evidence, then supervisor will release bounded offline implementation without another user question."
+}

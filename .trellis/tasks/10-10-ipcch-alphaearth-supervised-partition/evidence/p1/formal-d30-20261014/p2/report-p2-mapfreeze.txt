@@ -1,0 +1,31 @@
+[Claude w14:p2 executor] P2 CHECKPOINT: develop COMPLETE and freeze-map COMPLETE. STOPPED for your map-freeze review. Nothing beyond the release was run: no predict/bridge/main/supplement, no cloud, no MLflow.
+
+develop (once):
+- Ran 13:19:36Z to 13:31:12Z; exit 0; stderr empty; COMPLETE elapsed 630.1 s.
+- Request ledger (develop/request_ledger.csv.gz c99d6ee9): 27 rows, 27 unique model identities, all action=fit.
+  - arm B1 19 + B0 8 = 27 quartets, so 27 x 4 = 108 scalar fits (within 27 / 108).
+  - Fit time totalled 575.9 s.
+  - Exactly equals the scheduled 27 pre-2023 requests (ledger role 'historical' for all 27). No extra or missing ids.
+- models/: 25 hash-prefix directories, 135 files.
+- Providers per H: 15,708 / 15,660 / 15,555 / 14,195.
+- develop/COMPLETE.json 589198c1.
+
+Development outcome (develop_selection_summary.txt ece63772): NEGATIVE at every H; selected B2 by the prescribed fallback ("no eligible recipe (D13/D23)").
+- Each H: 9 recipes x 2 development years = 18 recipe-years. Guards passed: 0 in all 72.
+- h1: positive recorded gain 8/18; best +8.8e-3 (K2_lam0.1, 2021). Failed guards: four_class accuracy/macro-F1 vs B1 fail in 18/18; q3_r2 vs B1 15; f1_G>=B1 14.
+- h3: positive 12/18; best +8.6e-3 (K4_lam0.1, 2021). Failed: four-class macro-F1 vs B1 18/18; accuracy vs B1 16; f1_G>=B0 12.
+- h6: positive 7/18; best +9.5e-3 (K8_lam0.01, 2022). Failed: precision vs B1 14; recall vs B2 12.
+- h12: positive 5/18; best +7.5e-2 (K2_lam0.01, 2022). Failed: precision vs B1 17; four-class accuracy vs B1 12; recall/F2 vs B2 10.
+- All negatives, fallbacks and candidate files are preserved (develop/candidates_*, pool_*, context_*, providers_*, development_predictions_*). No retuning.
+
+freeze-map (once):
+- Ran 13:33Z; exit 0. Cutoff 2022-12. frozen_utc 2026-10-14T13:33:44Z.
+- maps/MAP_FREEZE.json 7e5778ea; maps/COMPLETE.json 2538c293.
+- All 4 H: selected B2, map null, fallback "no eligible recipe in development (D13)".
+  - final_map_h01/h03/h06/h12.json are identical bytes (56cbddf3).
+  - selection hashes: h1 a333996c, h3 0b760bf6, h6 dd0b5957, h12 fe94beb9.
+- No residual-label map was frozen, because none was selected.
+
+Evidence: run develop/ and maps/; logs in p1-formal-d30-logs (stages.log 69a43487; prefit_p2_check.json; develop.out; freeze-map.out; develop_reconcile.txt). Copied to .trellis/.../evidence/p1/formal-d30-20261014/p2/.
+
+The 30-min develop cron is cancelled (nothing running). Holding for your review and the next release. The 34 quartets for predict/bridge/main/supplement are not run.

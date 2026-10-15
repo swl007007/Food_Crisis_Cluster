@@ -1,0 +1,47 @@
+{
+ "rows_saved": 4092,
+ "rows_expected": 4092,
+ "rows_equal": true,
+ "row": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "target_ord": {
+  "n_differ": 1,
+  "examples": [
+   [
+    21721,
+    "np.int64(2431)",
+    "np.int64(24314)"
+   ]
+  ]
+ },
+ "provider_block": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "provider_fit_origin": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "provider_identity": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "p_q2": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "p_q3": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "p_q4": {
+  "n_differ": 0,
+  "examples": []
+ },
+ "p_q5": {
+  "n_differ": 0,
+  "examples": []
+ }
+}

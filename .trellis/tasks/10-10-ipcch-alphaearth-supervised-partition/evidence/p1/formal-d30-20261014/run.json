@@ -1,0 +1,16 @@
+{
+  "run_id": "p1-formal-d30-20261014",
+  "kind": "formal",
+  "created_utc": "2026-10-14T12:36:01Z",
+  "config_sha256": {
+    "experiment-contract.json": "b75a71066f3b96b2719dc851d61516b453d2fd843805af065419fd96984f1378",
+    "inputs.json": "122a1ff120107730f1f81776536df71a76bb282c9d974f8dc08dbe806985a527",
+    "runtime-lock.json": "6bf483cf9e04ac2635a6603514ae2e56d649d010828ed4f609d3adf7dd74e1a4"
+  },
+  "code_identity": "57ca2ef183dde10c35c284492f9f1c5f1e9c9a88e627d5626cb43ceca73d63df",
+  "git": {
+    "head": "47b0902d3d1075b46f3cdc871fe2743918cb7030",
+    "branch": "ipcch-alphaearth-supervised-partition",
+    "status_porcelain": "M IPCCHAlphaEarthExperiment/scripts/ee_pilot_c.py\n M IPCCHAlphaEarthExperiment/tests/test_c_production.py"
+  }
+}

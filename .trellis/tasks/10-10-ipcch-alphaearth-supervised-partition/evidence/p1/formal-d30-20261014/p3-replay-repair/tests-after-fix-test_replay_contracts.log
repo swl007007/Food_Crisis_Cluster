@@ -1,0 +1,18 @@
+test_altered_bootstrap_draws_fail (test_replay_contracts.ReplayContracts.test_altered_bootstrap_draws_fail) ... ok
+test_fabricated_report_verdict_fails (test_replay_contracts.ReplayContracts.test_fabricated_report_verdict_fails) ... ok
+test_report_retains_counts_and_na_reasons (test_replay_contracts.ReplayContracts.test_report_retains_counts_and_na_reasons) ... ok
+test_residual_emitted_fields_must_agree (test_replay_contracts.ReplayContracts.test_residual_emitted_fields_must_agree) ... ok
+test_rewritten_truth_and_keys_fail_canonical_binding (test_replay_contracts.ReplayContracts.test_rewritten_truth_and_keys_fail_canonical_binding) ... ok
+test_supplement_relabelled_main_fails (test_replay_contracts.ReplayContracts.test_supplement_relabelled_main_fails) ... ok
+test_untampered_replay_passes (test_replay_contracts.ReplayContracts.test_untampered_replay_passes) ... ok
+test_wrong_provider_identity_fails (test_replay_contracts.ReplayContracts.test_wrong_provider_identity_fails) ... ok
+test_changed_provider_target_ordinal_still_fails (test_replay_contracts.UnavailablePersistenceReplay.test_changed_provider_target_ordinal_still_fails) ... ok
+test_changed_valid_source_month_still_fails (test_replay_contracts.UnavailablePersistenceReplay.test_changed_valid_source_month_still_fails) ... ok
+test_na_looking_text_is_not_an_empty_source_month (test_replay_contracts.UnavailablePersistenceReplay.test_na_looking_text_is_not_an_empty_source_month) ... ok
+test_unavailable_persistence_rows_replay_canonically (test_replay_contracts.UnavailablePersistenceReplay.test_unavailable_persistence_rows_replay_canonically) ... ok
+test_undefined_f1_compares_as_undefined (test_replay_contracts.UndefinedStaysUndefined.test_undefined_f1_compares_as_undefined) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 190.288s
+
+OK

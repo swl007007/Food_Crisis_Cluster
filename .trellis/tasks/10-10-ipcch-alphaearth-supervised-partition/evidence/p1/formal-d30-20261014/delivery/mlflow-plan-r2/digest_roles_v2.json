@@ -1,0 +1,5100 @@
+{
+ "n_leaves": 1298,
+ "classes": [
+  {
+   "key": "X_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.X_sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:array_digest(float64 X fitting slice): sha256 of dtype|shape| + C bytes (artifacts.py:40-46); in-memory ndarray, no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "3e8d71efc438b0d5",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "f69f50537f7b752a",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "after_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+   "json_path_class": ".install.after_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs+run": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "06eefdc6ae8b9864",
+     "resolved": [
+      "run:predict/providers_all_h03.csv.gz",
+      "logs:replay-repair/staged/providers_all_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "after_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+   "json_path_class": ".moves[].after_sha256",
+   "occurrences": 4,
+   "roles": {
+    "file:repo_task_evidence_p1+run_archived": 3,
+    "file:run_archived": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "7e7752256cc8b6de",
+     "resolved": [
+      "run:archive/replay-attempt-01-20261014T141645Z/replay/replay.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p3/replay.json"
+     ]
+    },
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "35efbbd1d47d91eb",
+     "resolved": [
+      "run:archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json",
+      "run:archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.X296_h01.npy",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "e8af47d49f2c2e85",
+     "resolved": [
+      "run:prepared/X296_h01.npy"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.X296_h03.npy",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "18918612af752bf4",
+     "resolved": [
+      "run:prepared/X296_h03.npy"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.X296_h06.npy",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "a26de37b2107bc8e",
+     "resolved": [
+      "run:prepared/X296_h06.npy"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.X296_h12.npy",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "cd46960d0af33ab0",
+     "resolved": [
+      "run:prepared/X296_h12.npy"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.compact_overlap_comparison.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "30d4528c5a885342",
+     "resolved": [
+      "run:prepared/compact_overlap_comparison.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.feature_missingness_h01.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "2c9d51d57a439e42",
+     "resolved": [
+      "run:prepared/feature_missingness_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.feature_missingness_h03.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "81769bbcd23d481e",
+     "resolved": [
+      "run:prepared/feature_missingness_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.feature_missingness_h06.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "57d4d18a1326237e",
+     "resolved": [
+      "run:prepared/feature_missingness_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.feature_missingness_h12.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "05eb501f4aaa2643",
+     "resolved": [
+      "run:prepared/feature_missingness_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.feature_order_296.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "da372921515b4e2b",
+     "resolved": [
+      "run:prepared/feature_order_296.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.fold_calendar.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "e098ef58eaeebbf5",
+     "resolved": [
+      "run:prepared/fold_calendar.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.history_ledger_h01.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "408a3a0fe7d58b69",
+     "resolved": [
+      "run:prepared/history_ledger_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.history_ledger_h03.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "fd4ae9399096849e",
+     "resolved": [
+      "run:prepared/history_ledger_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.history_ledger_h06.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "ad3c92efc17b1551",
+     "resolved": [
+      "run:prepared/history_ledger_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.history_ledger_h12.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "00d14b795222cddc",
+     "resolved": [
+      "run:prepared/history_ledger_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.idp_ledger_h01.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "5a72b40e890b7158",
+     "resolved": [
+      "run:prepared/idp_ledger_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.idp_ledger_h03.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "9faa3d8e7aacf644",
+     "resolved": [
+      "run:prepared/idp_ledger_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.idp_ledger_h06.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "b3f8281b6e39efe7",
+     "resolved": [
+      "run:prepared/idp_ledger_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.idp_ledger_h12.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "ef43aa15dcf2bfb0",
+     "resolved": [
+      "run:prepared/idp_ledger_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.keys_absent_from_old_compact.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "8e90366708ec6e8c",
+     "resolved": [
+      "run:prepared/keys_absent_from_old_compact.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.keys_h01.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "5f95f3759c622740",
+     "resolved": [
+      "run:prepared/keys_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.keys_h03.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "1470c4c6652cdfb5",
+     "resolved": [
+      "run:prepared/keys_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.keys_h06.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "85c7cea3da09538a",
+     "resolved": [
+      "run:prepared/keys_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.keys_h12.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "0c1bba40dd98c268",
+     "resolved": [
+      "run:prepared/keys_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.providers_h01.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "9c69bc45b7fccb52",
+     "resolved": [
+      "run:prepared/providers_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.providers_h03.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "3dde59e0ef7adbe7",
+     "resolved": [
+      "run:prepared/providers_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.providers_h06.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "0e52fd508147d21b",
+     "resolved": [
+      "run:prepared/providers_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.providers_h12.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "3a7b0e25f2b91d63",
+     "resolved": [
+      "run:prepared/providers_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.schedule_blocks.json",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "9e78f0a5e1d07896",
+     "resolved": [
+      "run:prepared/schedule_blocks.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.schedule_corrections.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "b33433f0bad1700b",
+     "resolved": [
+      "run:prepared/schedule_corrections.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.schedule_requests.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "0cee63cb6a63bc1e",
+     "resolved": [
+      "run:prepared/schedule_requests.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.season_ledger_h01.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "7293ffdcd980545f",
+     "resolved": [
+      "run:prepared/season_ledger_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.season_ledger_h03.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "196bd9cd3ff00e6b",
+     "resolved": [
+      "run:prepared/season_ledger_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.season_ledger_h06.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "8401e3f2b2d98bf8",
+     "resolved": [
+      "run:prepared/season_ledger_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.season_ledger_h12.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "a1936c703edc75ce",
+     "resolved": [
+      "run:prepared/season_ledger_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.source_support.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "3dafad24a6f17a05",
+     "resolved": [
+      "run:prepared/source_support.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.static29_by_admin.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "229d593ef8fc96b3",
+     "resolved": [
+      "run:prepared/static29_by_admin.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.target_ledger.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "57c6ec90119252d8",
+     "resolved": [
+      "run:prepared/target_ledger.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.target_ledger_valid.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "06cc9eb3a9e51714",
+     "resolved": [
+      "run:prepared/target_ledger_valid.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "artifacts_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".artifacts_sha256.value_at_origin_check.csv.gz",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "9b6a7c4f6dd33602",
+     "resolved": [
+      "run:prepared/value_at_origin_check.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "booster_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q2.booster_sha256",
+   "occurrences": 61,
+   "roles": {
+    "file:run": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "c897db4ba7c05dbf",
+     "resolved": [
+      "run:models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/q2.ubj"
+     ]
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "4275ca58f7b96e76",
+     "resolved": [
+      "run:models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/q2.ubj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "booster_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q3.booster_sha256",
+   "occurrences": 61,
+   "roles": {
+    "file:run": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "cf4d08a328b13a28",
+     "resolved": [
+      "run:models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/q3.ubj"
+     ]
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "39bb86dba7af9d5b",
+     "resolved": [
+      "run:models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/q3.ubj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "booster_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q4.booster_sha256",
+   "occurrences": 61,
+   "roles": {
+    "file:run": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "c5224f8b357c91b7",
+     "resolved": [
+      "run:models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/q4.ubj"
+     ]
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "1b03165b2d8474bb",
+     "resolved": [
+      "run:models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/q4.ubj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "booster_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q5.booster_sha256",
+   "occurrences": 61,
+   "roles": {
+    "file:run": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "394818b90f6bc679",
+     "resolved": [
+      "run:models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/q5.ubj"
+     ]
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "6095f15d239e8599",
+     "resolved": [
+      "run:models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/q5.ubj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "code_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".code_sha256.scripts/preprocessing/build_compact_climate_weather_oracle_inputs.py",
+   "occurrences": 1,
+   "roles": {
+    "file:sibling_IPCCH_scripts": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "fa10cee75402477e",
+     "resolved": [
+      "sibling_IPCCH_scripts:preprocessing/build_compact_climate_weather_oracle_inputs.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "code_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".code_sha256.src/ipcch/climate2015_features.py",
+   "occurrences": 1,
+   "roles": {
+    "file:sibling_IPCCH_src": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e8da9de9224b1f5c",
+     "resolved": [
+      "sibling_IPCCH_src:ipcch/climate2015_features.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "code_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".code_sha256.src/ipcch/compact_features.py",
+   "occurrences": 1,
+   "roles": {
+    "file:sibling_IPCCH_src": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "923cae26335f9994",
+     "resolved": [
+      "sibling_IPCCH_src:ipcch/compact_features.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "code_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".code_sha256.src/ipcch/origin_safe.py",
+   "occurrences": 1,
+   "roles": {
+    "file:sibling_IPCCH_src": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "629936a8de497339",
+     "resolved": [
+      "sibling_IPCCH_src:ipcch/origin_safe.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "code_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".code_sha256.src/ipcch/retained_feature_recipes.py",
+   "occurrences": 1,
+   "roles": {
+    "file:sibling_IPCCH_src": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "cf1557e405d0aef3",
+     "resolved": [
+      "sibling_IPCCH_src:ipcch/retained_feature_recipes.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "code_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".code_sha256.src/ipcch/weather_oracle.py",
+   "occurrences": 1,
+   "roles": {
+    "file:sibling_IPCCH_src": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "65a93d45ec0f738e",
+     "resolved": [
+      "sibling_IPCCH_src:ipcch/weather_oracle.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "compact296_list_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".compact296_list_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:list_sha256(ordered compact296 names): newline-joined UTF-8; no file": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".config_sha256.experiment-contract.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "b75a71066f3b96b2",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:experiment-contract.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".config_sha256.inputs.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "122a1ff120107730",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:inputs.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".config_sha256.runtime-lock.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "6bf483cf9e04ac26",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:runtime-lock.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".config_sha256.experiment-contract.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "b75a71066f3b96b2",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:experiment-contract.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".config_sha256.inputs.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "122a1ff120107730",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:inputs.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".config_sha256.runtime-lock.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "6bf483cf9e04ac26",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:runtime-lock.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".run.config_sha256.experiment-contract.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "b75a71066f3b96b2",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:experiment-contract.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".run.config_sha256.inputs.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "122a1ff120107730",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:inputs.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".run.config_sha256.runtime-lock.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "6bf483cf9e04ac26",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:runtime-lock.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".config_sha256.experiment-contract.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "b75a71066f3b96b2",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:experiment-contract.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".config_sha256.inputs.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "122a1ff120107730",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:inputs.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".config_sha256.runtime-lock.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "6bf483cf9e04ac26",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:runtime-lock.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "run.json",
+   "json_path_class": ".config_sha256.experiment-contract.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "run.json",
+     "value": "b75a71066f3b96b2",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:experiment-contract.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "run.json",
+   "json_path_class": ".config_sha256.inputs.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "run.json",
+     "value": "122a1ff120107730",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:inputs.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "config_sha256",
+   "file_class": "run.json",
+   "json_path_class": ".config_sha256.runtime-lock.json",
+   "occurrences": 1,
+   "roles": {
+    "file:repo": 1
+   },
+   "examples": [
+    {
+     "file": "run.json",
+     "value": "6bf483cf9e04ac26",
+     "resolved": [
+      "repo:IPCCHAlphaEarthExperiment/config:runtime-lock.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "descriptor_table_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.source.descriptor_table_sha256",
+   "occurrences": 61,
+   "roles": {
+    "file:run": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "362c58b0f3396fd8",
+     "resolved": [
+      "run:descriptors/descriptor_table.csv.gz"
+     ]
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "362c58b0f3396fd8",
+     "resolved": [
+      "run:descriptors/descriptor_table.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "eval_keys_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".cohort.eval_keys_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "f0193c1402d06095",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "extraction_complete_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".extraction_complete_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "f6a58b347346207e",
+     "resolved": [
+      "run:extraction/COMPLETE.json",
+      "repo_task_evidence_p1:formal-d30-20261014/extraction-COMPLETE.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.0.arms.compact_baseline.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.arms.compact_baseline.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.arms.compact_weather_oracle.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "3e54c4496d92a76d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.arms.compact_baseline.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.arms.compact_weather_oracle.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "ce99f6a8af46278f",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.arms.compact_baseline.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "feature_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.arms.compact_weather_oracle.feature_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "3e54c4496d92a76d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_baseline/0m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_baseline/12m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_baseline/3m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_baseline/6m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e97388f848e7095b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_weather_oracle/12m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "3e54c4496d92a76d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_weather_oracle/3m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "ce99f6a8af46278f",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_by_run_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.features_by_run_sha256.compact_weather_oracle/6m",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "3e54c4496d92a76d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "features_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.features_sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:artifacts.digest(ordered feature-name list) = canonical-JSON hash; no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "0fbc782bcaf43c8d",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "0fbc782bcaf43c8d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "file_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.1.file_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "56cbddf3e3016583",
+     "resolved": [
+      "run:maps/final_map_h01.json",
+      "run:maps/final_map_h03.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "file_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.12.file_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "56cbddf3e3016583",
+     "resolved": [
+      "run:maps/final_map_h01.json",
+      "run:maps/final_map_h03.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "file_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.3.file_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "56cbddf3e3016583",
+     "resolved": [
+      "run:maps/final_map_h01.json",
+      "run:maps/final_map_h03.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "file_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.6.file_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "56cbddf3e3016583",
+     "resolved": [
+      "run:maps/final_map_h01.json",
+      "run:maps/final_map_h03.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..cpg",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..dbf",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..prj",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..shp",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..shx",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..cpg",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..dbf",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..prj",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..shp",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.geometry_sha256..shx",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.geometry_sha256..cpg",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.geometry_sha256..dbf",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.geometry_sha256..prj",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.geometry_sha256..shp",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "geometry_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.geometry_sha256..shx",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "label_keys_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".cohort.label_keys_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "fe69b08b8324eca2",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "list_images_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.list_images_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "b233255bdf3a7d8d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "list_images_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.list_images_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "b233255bdf3a7d8d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "list_images_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.list_images_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "b233255bdf3a7d8d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "manifest_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".manifest_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "63d0c7abc11a02a9",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "map_freeze_sha256",
+   "file_class": "maps/COMPLETE.json",
+   "json_path_class": ".map_freeze_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/COMPLETE.json",
+     "value": "7e5778ead314afa4",
+     "resolved": [
+      "run:maps/MAP_FREEZE.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p2/MAP_FREEZE.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "original_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+   "json_path_class": ".provider.original_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run_archived": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+     "value": "e454ce1590084ac2",
+     "resolved": [
+      "run:archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pieces_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".pieces_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:extraction_run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "9f22cb263e1f3581",
+     "resolved": [
+      "extraction_run:inputs/production_pieces.jsonl.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.climate_monthly.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "8082b72ea5fa5c30",
+     "resolved": [
+      "run:sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.climate_seasonal.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "f024a66c8979fb4a",
+     "resolved": [
+      "run:sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h0.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "92def8b5bdef5e21",
+     "resolved": [
+      "run:sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h12.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "e442a40d37a259f3",
+     "resolved": [
+      "run:sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h3.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "38cf35f7a864e800",
+     "resolved": [
+      "run:sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h6.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "38b8e6d2ee49155e",
+     "resolved": [
+      "run:sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_manifest.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "456360536a3929e1",
+     "resolved": [
+      "run:sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.country_lookup.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "e2baf6ae9481b42b",
+     "resolved": [
+      "run:sources/country_lookup__country_area_id_lookup.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_cpg.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_dbf.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_prj.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_shp.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_shx.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.idp_admin0_monthly.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a1ebb82a8e14fc0f",
+     "resolved": [
+      "run:sources/idp_admin0_monthly__idp_admin0_monthly.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.interim.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a91719e8e603e11b",
+     "resolved": [
+      "run:sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h01.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "414cba066f9953e7",
+     "resolved": [
+      "run:sources/p6_keys_h01__keys_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h03.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "5e44eb8359a4910a",
+     "resolved": [
+      "run:sources/p6_keys_h03__keys_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h06.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "d325da25a69399b4",
+     "resolved": [
+      "run:sources/p6_keys_h06__keys_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h12.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "9755df742b15d5b1",
+     "resolved": [
+      "run:sources/p6_keys_h12__keys_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_target_ledger_valid.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "21d7701fe60fb9ed",
+     "resolved": [
+      "run:sources/p6_target_ledger_valid__target_ledger_valid.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "pinned_sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.raw_panel.pinned_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "ae696087c3bbb280",
+     "resolved": [
+      "run:sources/raw_panel__IPCCH_2026_completed.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "plan_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".plan_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:extraction_run+run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "bccf45c215d21955",
+     "resolved": [
+      "run:extraction/plan.csv.gz",
+      "extraction_run:inputs/production_plan.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "plan_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".provenance.plan_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:extraction_run+run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "bccf45c215d21955",
+     "resolved": [
+      "run:extraction/plan.csv.gz",
+      "extraction_run:inputs/production_plan.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "plan_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".plan_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:extraction_run+run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "bccf45c215d21955",
+     "resolved": [
+      "run:extraction/plan.csv.gz",
+      "extraction_run:inputs/production_plan.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "plan_sha256",
+   "file_class": "extraction/COMPLETE.json",
+   "json_path_class": ".provenance.plan_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:extraction_run+run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/COMPLETE.json",
+     "value": "bccf45c215d21955",
+     "resolved": [
+      "run:extraction/plan.csv.gz",
+      "extraction_run:inputs/production_plan.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "plan_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".provenance.plan_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:extraction_run+run": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "bccf45c215d21955",
+     "resolved": [
+      "run:extraction/plan.csv.gz",
+      "extraction_run:inputs/production_plan.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "prepared_manifest_sha256",
+   "file_class": "descriptors/COMPLETE.json",
+   "json_path_class": ".prepared_manifest_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "descriptors/COMPLETE.json",
+     "value": "2d8a8e1f4418d5f6",
+     "resolved": [
+      "run:prepared/prepared-manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "prepared_manifest_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.source.prepared_manifest_sha256",
+   "occurrences": 61,
+   "roles": {
+    "file:run": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "2d8a8e1f4418d5f6",
+     "resolved": [
+      "run:prepared/prepared-manifest.json"
+     ]
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "2d8a8e1f4418d5f6",
+     "resolved": [
+      "run:prepared/prepared-manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "prepared_manifest_sha256",
+   "file_class": "prepared/COMPLETE.json",
+   "json_path_class": ".prepared_manifest_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/COMPLETE.json",
+     "value": "2d8a8e1f4418d5f6",
+     "resolved": [
+      "run:prepared/prepared-manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "receipt_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+   "json_path_class": ".receipt_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs+repo_task_evidence_p1": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "991ce446663b530f",
+     "resolved": [
+      "logs:receipts/ipcch-alphaearth-replay-install-recheck-release-20261014.json",
+      "repo_task_evidence_p1:formal-d30-20261014/delivery/ipcch-alphaearth-replay-install-recheck-release-20261014.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "reconstructed_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+   "json_path_class": ".provider.reconstructed_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs+run": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+     "value": "06eefdc6ae8b9864",
+     "resolved": [
+      "run:predict/providers_all_h03.csv.gz",
+      "logs:replay-repair/staged/providers_all_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "regression_test_source_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+   "json_path_class": ".regression_test_source_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs+repo": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+     "value": "3639bf4ecf3811d7",
+     "resolved": [
+      "logs:replay-repair/test_replay_contracts.py.new",
+      "repo:IPCCHAlphaEarthExperiment/tests:test_replay_contracts.py"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "replay_diff_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+   "json_path_class": ".replay_diff_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs+repo_task_evidence_p1": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+     "value": "4c0fc9649818c195",
+     "resolved": [
+      "logs:replay-repair/replay.py.diff",
+      "repo_task_evidence_p1:formal-d30-20261014/p3-replay-repair/replay.py.diff"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "replay_sha256",
+   "file_class": "replay/COMPLETE.json",
+   "json_path_class": ".replay_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "replay/COMPLETE.json",
+     "value": "1bbdd94973ff4ee4",
+     "resolved": [
+      "run:replay/replay.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p3-replay-repair/replay-attempt2.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "report_sha256",
+   "file_class": "report/COMPLETE.json",
+   "json_path_class": ".report_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "report/COMPLETE.json",
+     "value": "78ec269d1d8522c4",
+     "resolved": [
+      "run:report/report.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p3/report.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "request_sha256",
+   "file_class": "extraction/manifest.json",
+   "json_path_class": ".request_sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:canonical-JSON digest of the extraction manifest BODY (differs from the manifest file SHA)": 1
+   },
+   "examples": [
+    {
+     "file": "extraction/manifest.json",
+     "value": "63d0c7abc11a02a9",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "resolved_config_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q2.resolved_config_sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:digest of the resolved fitting configuration dict; no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "7281f83c57f90308",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "0421b076cd47c06d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "resolved_config_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q3.resolved_config_sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:digest of the resolved fitting configuration dict; no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "3678686e38831e06",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "f1a3e22dc6048b0d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "resolved_config_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q4.resolved_config_sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:digest of the resolved fitting configuration dict; no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "f36b0c4d26362c0f",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "21e674b9124997fc",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "resolved_config_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".targets.q5.resolved_config_sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:digest of the resolved fitting configuration dict; no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "3915326f9802439d",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "28c552d34ea7cac6",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "selection_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.1.selection_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "a333996c6d59e73e",
+     "resolved": [
+      "run:develop/selection_h01.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p2/selection_h01.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "selection_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.12.selection_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "fe94beb91f0fb28d",
+     "resolved": [
+      "run:develop/selection_h12.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p2/selection_h12.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "selection_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.3.selection_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "0b760bf66e832034",
+     "resolved": [
+      "run:develop/selection_h03.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p2/selection_h03.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "selection_sha256",
+   "file_class": "maps/MAP_FREEZE.json",
+   "json_path_class": ".horizons.6.selection_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:repo_task_evidence_p1+run": 1
+   },
+   "examples": [
+    {
+     "file": "maps/MAP_FREEZE.json",
+     "value": "dd0b59576244211d",
+     "resolved": [
+      "run:develop/selection_h06.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p2/selection_h06.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+   "json_path_class": ".install.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs+run": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "06eefdc6ae8b9864",
+     "resolved": [
+      "run:predict/providers_all_h03.csv.gz",
+      "logs:replay-repair/staged/providers_all_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+   "json_path_class": ".moves[].sha256",
+   "occurrences": 4,
+   "roles": {
+    "file:repo_task_evidence_p1+run_archived": 3,
+    "file:run_archived": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "7e7752256cc8b6de",
+     "resolved": [
+      "run:archive/replay-attempt-01-20261014T141645Z/replay/replay.json",
+      "repo_task_evidence_p1:formal-d30-20261014/p3/replay.json"
+     ]
+    },
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json",
+     "value": "35efbbd1d47d91eb",
+     "resolved": [
+      "run:archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json",
+      "run:archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.weights.sha256",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:context-dependent; see path": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "091fe934fa7af547",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "65e70c47c41c571e",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.climate_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "8082b72ea5fa5c30",
+     "resolved": [
+      "run:sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.climate_seasonal.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "f024a66c8979fb4a",
+     "resolved": [
+      "run:sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.compact_baseline_h0.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "92def8b5bdef5e21",
+     "resolved": [
+      "run:sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.compact_baseline_h12.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "e442a40d37a259f3",
+     "resolved": [
+      "run:sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.compact_baseline_h3.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "38cf35f7a864e800",
+     "resolved": [
+      "run:sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.compact_baseline_h6.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "38b8e6d2ee49155e",
+     "resolved": [
+      "run:sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.compact_manifest.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "456360536a3929e1",
+     "resolved": [
+      "run:sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.country_lookup.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "e2baf6ae9481b42b",
+     "resolved": [
+      "run:sources/country_lookup__country_area_id_lookup.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.geometry_cpg.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.geometry_dbf.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.geometry_prj.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.geometry_shp.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.geometry_shx.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.idp_admin0_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "a1ebb82a8e14fc0f",
+     "resolved": [
+      "run:sources/idp_admin0_monthly__idp_admin0_monthly.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.interim.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "a91719e8e603e11b",
+     "resolved": [
+      "run:sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.p6_keys_h01.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "414cba066f9953e7",
+     "resolved": [
+      "run:sources/p6_keys_h01__keys_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.p6_keys_h03.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "5e44eb8359a4910a",
+     "resolved": [
+      "run:sources/p6_keys_h03__keys_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.p6_keys_h06.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "d325da25a69399b4",
+     "resolved": [
+      "run:sources/p6_keys_h06__keys_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.p6_keys_h12.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "9755df742b15d5b1",
+     "resolved": [
+      "run:sources/p6_keys_h12__keys_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.p6_target_ledger_valid.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "21d7701fe60fb9ed",
+     "resolved": [
+      "run:sources/p6_target_ledger_valid__target_ledger_valid.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "preflight/preflight-20261014T124450Z.json",
+   "json_path_class": ".inputs.raw_panel.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "preflight/preflight-20261014T124450Z.json",
+     "value": "ae696087c3bbb280",
+     "resolved": [
+      "run:sources/raw_panel__IPCCH_2026_completed.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".cohort.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "136095f1070a30f4",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.approved_source.execution_approval.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "4eaa0d8c21821da9",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.approved_source.sha256.expected_feature_contract.csv",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "a2d1960bf75811a3",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.approved_source.sha256.expected_feature_contract_metadata.json",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "8f3964364f89b866",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.approved_source.sha256.expected_run_index.csv",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "fdd65bc2005016f7",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.files.expected_feature_contract.csv.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "a2d1960bf75811a3",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.files.expected_feature_contract_metadata.json.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "8f3964364f89b866",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.files.expected_run_index.csv.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "fdd65bc2005016f7",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.0.arms.compact_baseline.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "92def8b5bdef5e21",
+     "resolved": [
+      "run:sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.0.history_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "389e8ab3d03e4c0c",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.0.idp_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "a29eb57aacb0a45f",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.0.parent_dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "ffe0c61d8cb29f99",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.0.season_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "71e27a2836321a8a",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.arms.compact_baseline.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e442a40d37a259f3",
+     "resolved": [
+      "run:sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.arms.compact_weather_oracle.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "aa7f299ca6c89d52",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.history_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "1f3b91ff5b727e1f",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.idp_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "3f9fbf6613348e06",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.oracle_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "1cde2434f0878fd3",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.parent_dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "49236fc3a5f4a350",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.12.season_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "49259ed988f2c444",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.arms.compact_baseline.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "38cf35f7a864e800",
+     "resolved": [
+      "run:sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.arms.compact_weather_oracle.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "01802606985c8188",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.history_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "e901260d0636a630",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.idp_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "68897dd9c63980ae",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.oracle_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "531ce9ae0df9ea23",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.parent_dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "04032f3ba44f8d83",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.3.season_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "babb00511d98aa63",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.arms.compact_baseline.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "38b8e6d2ee49155e",
+     "resolved": [
+      "run:sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.arms.compact_weather_oracle.dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "fd31cf0f505fa317",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.history_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "a732045ec7d3d7b7",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.idp_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "dfd15b0078abcb22",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.oracle_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "519dfe19f1a1b80f",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.parent_dataset.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "6344e5afcbb23dd5",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".horizons.6.season_ledger.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "eb4b1efca7ad7116",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".parent_manifest.sha256",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:context-dependent; see path": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "3b479c80498e9f2d",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".sources.climate_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "8082b72ea5fa5c30",
+     "resolved": [
+      "run:sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".sources.climate_seasonal.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "f024a66c8979fb4a",
+     "resolved": [
+      "run:sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".sources.interim.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "a91719e8e603e11b",
+     "resolved": [
+      "run:sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.climate_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "8082b72ea5fa5c30",
+     "resolved": [
+      "run:sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.climate_seasonal.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "f024a66c8979fb4a",
+     "resolved": [
+      "run:sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h0.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "92def8b5bdef5e21",
+     "resolved": [
+      "run:sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h12.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "e442a40d37a259f3",
+     "resolved": [
+      "run:sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h3.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "38cf35f7a864e800",
+     "resolved": [
+      "run:sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_baseline_h6.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "38b8e6d2ee49155e",
+     "resolved": [
+      "run:sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.compact_manifest.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "456360536a3929e1",
+     "resolved": [
+      "run:sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.country_lookup.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "e2baf6ae9481b42b",
+     "resolved": [
+      "run:sources/country_lookup__country_area_id_lookup.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_cpg.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_dbf.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_prj.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_shp.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.geometry_shx.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.idp_admin0_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a1ebb82a8e14fc0f",
+     "resolved": [
+      "run:sources/idp_admin0_monthly__idp_admin0_monthly.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.interim.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a91719e8e603e11b",
+     "resolved": [
+      "run:sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h01.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "414cba066f9953e7",
+     "resolved": [
+      "run:sources/p6_keys_h01__keys_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h03.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "5e44eb8359a4910a",
+     "resolved": [
+      "run:sources/p6_keys_h03__keys_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h06.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "d325da25a69399b4",
+     "resolved": [
+      "run:sources/p6_keys_h06__keys_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_keys_h12.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "9755df742b15d5b1",
+     "resolved": [
+      "run:sources/p6_keys_h12__keys_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.p6_target_ledger_valid.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "21d7701fe60fb9ed",
+     "resolved": [
+      "run:sources/p6_target_ledger_valid__target_ledger_valid.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".inputs.raw_panel.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "ae696087c3bbb280",
+     "resolved": [
+      "run:sources/raw_panel__IPCCH_2026_completed.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.climate_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "8082b72ea5fa5c30",
+     "resolved": [
+      "run:sources/climate_monthly__climate_monthly_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.climate_seasonal.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "f024a66c8979fb4a",
+     "resolved": [
+      "run:sources/climate_seasonal__climate_2015_2026_MODELING_READY.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.compact_baseline_h0.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "92def8b5bdef5e21",
+     "resolved": [
+      "run:sources/compact_baseline_h0__compact_climate_weather_oracle_v1_compact_baseline_h0.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.compact_baseline_h12.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "e442a40d37a259f3",
+     "resolved": [
+      "run:sources/compact_baseline_h12__compact_climate_weather_oracle_v1_compact_baseline_h12.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.compact_baseline_h3.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "38cf35f7a864e800",
+     "resolved": [
+      "run:sources/compact_baseline_h3__compact_climate_weather_oracle_v1_compact_baseline_h3.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.compact_baseline_h6.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "38b8e6d2ee49155e",
+     "resolved": [
+      "run:sources/compact_baseline_h6__compact_climate_weather_oracle_v1_compact_baseline_h6.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.compact_manifest.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "456360536a3929e1",
+     "resolved": [
+      "run:sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.country_lookup.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "e2baf6ae9481b42b",
+     "resolved": [
+      "run:sources/country_lookup__country_area_id_lookup.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.geometry_cpg.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "3ad3031f5503a440",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.cpg"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.geometry_dbf.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "964b8030e5d543fd",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.dbf"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.geometry_prj.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a02a27b1d1982c85",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.prj"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.geometry_shp.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "9df70f3aa719eaa2",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shp"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.geometry_shx.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "424554aec24b86d7",
+     "resolved": [
+      "run:sources/geometry/ipcch_admin_geometry_repaired.shx"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.idp_admin0_monthly.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a1ebb82a8e14fc0f",
+     "resolved": [
+      "run:sources/idp_admin0_monthly__idp_admin0_monthly.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.interim.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "a91719e8e603e11b",
+     "resolved": [
+      "run:sources/interim__IPCCH_2026_target_corrected_nino34_wbfood.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.p6_keys_h01.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "414cba066f9953e7",
+     "resolved": [
+      "run:sources/p6_keys_h01__keys_h01.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.p6_keys_h03.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "5e44eb8359a4910a",
+     "resolved": [
+      "run:sources/p6_keys_h03__keys_h03.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.p6_keys_h06.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "d325da25a69399b4",
+     "resolved": [
+      "run:sources/p6_keys_h06__keys_h06.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.p6_keys_h12.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "9755df742b15d5b1",
+     "resolved": [
+      "run:sources/p6_keys_h12__keys_h12.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.p6_target_ledger_valid.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "21d7701fe60fb9ed",
+     "resolved": [
+      "run:sources/p6_target_ledger_valid__target_ledger_valid.csv.gz"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "sha256",
+   "file_class": "sources/source-manifest.json",
+   "json_path_class": ".request_identity.entries.raw_panel.sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "sources/source-manifest.json",
+     "value": "ae696087c3bbb280",
+     "resolved": [
+      "run:sources/raw_panel__IPCCH_2026_completed.csv"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "source_manifest_sha256",
+   "file_class": "prepared/prepared-manifest.json",
+   "json_path_class": ".source_manifest_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:run": 1
+   },
+   "examples": [
+    {
+     "file": "prepared/prepared-manifest.json",
+     "value": "397dfd6f80690fcc",
+     "resolved": [
+      "run:sources/source-manifest.json"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "spec_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.spec_sha256.design.md",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "680214c8544be77b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "spec_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.spec_sha256.implement.md",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "ad2102fd192bf37f",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "spec_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.spec_sha256.prd.md",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "f516c30a02954a67",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "spec_sha256",
+   "file_class": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "json_path_class": ".contract.spec_sha256.rollback.md",
+   "occurrences": 1,
+   "roles": {
+    "nonfile:UNRESOLVED": 1
+   },
+   "examples": [
+    {
+     "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+     "value": "37936290977a11d1",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "supervisor_test_log_sha256",
+   "file_class": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+   "json_path_class": ".supervisor_test_log_sha256",
+   "occurrences": 1,
+   "roles": {
+    "file:logs": 1
+   },
+   "examples": [
+    {
+     "file": "archive/replay-attempt-01-20261014T141645Z/ANALYSIS_AMENDMENT.json",
+     "value": "fc21c10b5147d92f",
+     "resolved": [
+      "logs:receipts/ipcch-alphaearth-replay-repair-supervisor-tests-20261014.log"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "y_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.y_sha256.q2",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:array_digest per target q2..q5 of the fitting slice (backbone.py fit_identity); no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "fc05761db6f0a310",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "2eb00dce8e496a3b",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "y_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.y_sha256.q3",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:array_digest per target q2..q5 of the fitting slice (backbone.py fit_identity); no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "b002a9a5799ffa6e",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "27ca5a31534e78ca",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "y_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.y_sha256.q4",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:array_digest per target q2..q5 of the fitting slice (backbone.py fit_identity); no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "c76ba37401bede42",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "c81de0e61429d66a",
+     "resolved": []
+    }
+   ]
+  },
+  {
+   "key": "y_sha256",
+   "file_class": "models/<p>/<id>/record.json",
+   "json_path_class": ".identity.y_sha256.q5",
+   "occurrences": 61,
+   "roles": {
+    "nonfile:array_digest per target q2..q5 of the fitting slice (backbone.py fit_identity); no file": 61
+   },
+   "examples": [
+    {
+     "file": "models/01/0110003c99356519e4676d9ca875e0c6eb5391e9dd19b79b30e4725bc0067c6a/record.json",
+     "value": "f183050156d64a98",
+     "resolved": []
+    },
+    {
+     "file": "models/04/0408cdc79f68f2bddc42384561ff9dc2be7c9bf4072b45de0abe6473793d1d3b/record.json",
+     "value": "4ebd391466853bec",
+     "resolved": []
+    }
+   ]
+  }
+ ],
+ "unresolved": [
+  {
+   "file": "descriptors/COMPLETE.json",
+   "path": ".provenance.list_images_sha256",
+   "key": "list_images_sha256",
+   "value": "b233255bdf3a7d8d9cb042b9f50ed04a00501fcd5652442e663f488c2783b6ad",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "extraction/COMPLETE.json",
+   "path": ".manifest_sha256",
+   "key": "manifest_sha256",
+   "value": "63d0c7abc11a02a974c3d5c0aca2c05b124505a6ff3d40081c8e25015f42496a",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "extraction/COMPLETE.json",
+   "path": ".provenance.list_images_sha256",
+   "key": "list_images_sha256",
+   "value": "b233255bdf3a7d8d9cb042b9f50ed04a00501fcd5652442e663f488c2783b6ad",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "extraction/manifest.json",
+   "path": ".provenance.list_images_sha256",
+   "key": "list_images_sha256",
+   "value": "b233255bdf3a7d8d9cb042b9f50ed04a00501fcd5652442e663f488c2783b6ad",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.spec_sha256.prd.md",
+   "key": "spec_sha256",
+   "value": "f516c30a02954a673c3641c366aa3b425b298bfe8b2479fc81671667d8295aed",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.spec_sha256.design.md",
+   "key": "spec_sha256",
+   "value": "680214c8544be77b3f9ed9e27c975e49bed14ef4a1a17781988b025ead42a7f5",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.spec_sha256.implement.md",
+   "key": "spec_sha256",
+   "value": "ad2102fd192bf37f7b63af31686c1c781b394ab2a6a5b23eb65ec350c4387258",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.spec_sha256.rollback.md",
+   "key": "spec_sha256",
+   "value": "37936290977a11d1865d3e6172247a0e64c677b02cfcbafca0cb66135b1de1c8",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_baseline/0m",
+   "key": "features_by_run_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_baseline/3m",
+   "key": "features_by_run_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_baseline/6m",
+   "key": "features_by_run_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_baseline/12m",
+   "key": "features_by_run_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_weather_oracle/3m",
+   "key": "features_by_run_sha256",
+   "value": "ce99f6a8af46278f6faf9e60f8a631efae6c5a55e6be025dd0bcfadb1b959e9a",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_weather_oracle/6m",
+   "key": "features_by_run_sha256",
+   "value": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".contract.features_by_run_sha256.compact_weather_oracle/12m",
+   "key": "features_by_run_sha256",
+   "value": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".cohort.label_keys_sha256",
+   "key": "label_keys_sha256",
+   "value": "fe69b08b8324eca2af5ef5b47e0046a7cb0ef9924d8251e9f4cc0dbca93be7e7",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".cohort.eval_keys_sha256",
+   "key": "eval_keys_sha256",
+   "value": "f0193c1402d0609556755844b476227b7188f9671323d21317336d7ef58d2e0f",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.0.arms.compact_baseline.feature_sha256",
+   "key": "feature_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.3.arms.compact_baseline.feature_sha256",
+   "key": "feature_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.3.arms.compact_weather_oracle.feature_sha256",
+   "key": "feature_sha256",
+   "value": "ce99f6a8af46278f6faf9e60f8a631efae6c5a55e6be025dd0bcfadb1b959e9a",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.6.arms.compact_baseline.feature_sha256",
+   "key": "feature_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.6.arms.compact_weather_oracle.feature_sha256",
+   "key": "feature_sha256",
+   "value": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.12.arms.compact_baseline.feature_sha256",
+   "key": "feature_sha256",
+   "value": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  },
+  {
+   "file": "sources/compact_manifest__compact_climate_weather_oracle_v1_manifest.json",
+   "path": ".horizons.12.arms.compact_weather_oracle.feature_sha256",
+   "key": "feature_sha256",
+   "value": "3e54c4496d92a76df4f99246a5e9117eccce8ee80a9e3eb8d2d9778c817a2a3e",
+   "role": "nonfile:UNRESOLVED",
+   "resolved": []
+  }
+ ],
+ "n_unresolved": 24
+}

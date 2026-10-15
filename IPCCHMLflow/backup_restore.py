@@ -120,7 +120,8 @@ def download_checks(uri: str, man: dict, experiment: str) -> dict:
             continue
         base = r.info.artifact_uri.split("mlflow-artifacts:/", 1)[-1].lstrip("/")
         targets.append((r, "manifests/plan-summary.json", f"{base}/manifests/plan-summary.json"))
-        targets.append((r, "models.tar", f"{base}/models.tar"))
+        if f"{base}/models.tar" in man["artifacts"]:          # model bundles may be absent (research retention)
+            targets.append((r, "models.tar", f"{base}/models.tar"))
     tars = sorted((t for t in targets if t[1] == "models.tar"), key=lambda t: man["artifacts"].get(t[2], {}).get("bytes", 1 << 62))
     targets = [t for t in targets if t[1] != "models.tar"] + tars[:1]
     checked = []
@@ -138,7 +139,7 @@ def download_checks(uri: str, man: dict, experiment: str) -> dict:
     return {"ipcch_runs_by_kind": kinds, "downloaded": checked}
 
 
-def restore_check(backup_dir: Path, scratch: Path, port: int = 5001, experiment: str = "IPCCH - detailed runs") -> dict:
+def restore_check(backup_dir: Path, scratch: Path, port: int = 5001, experiment: str = "IPCCH detailed runs") -> dict:
     if scratch.exists():
         raise SystemExit(f"scratch restore root exists: {scratch}")
     man = json.loads((backup_dir / "backup-manifest.json").read_text())
@@ -171,7 +172,7 @@ def main(argv=None) -> int:
     ap.add_argument("--dest", required=True, help="backup dir (backup) or scratch root (restore-check)")
     ap.add_argument("--backup", help="backup dir to restore from (restore-check)")
     ap.add_argument("--port", type=int, default=5001, help="scratch server port (restore-check; never 5000)")
-    ap.add_argument("--experiment", default="IPCCH - detailed runs")
+    ap.add_argument("--experiment", default="IPCCH detailed runs")
     ap.add_argument("--out", default=None)
     a = ap.parse_args(argv)
     res = backup(Path(a.store), Path(a.dest)) if a.command == "backup" else \

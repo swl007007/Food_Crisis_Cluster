@@ -1,0 +1,87 @@
+--- /home/swl007007/ipcch-alphaearth-runs/p1-formal-d30-logs/replay-repair/test_replay_contracts.py.orig	2026-10-10 16:53:23.891575800 -0400
++++ tests/test_replay_contracts.py	2026-10-14 10:43:18.134954900 -0400
+@@ -145,6 +145,84 @@
+         self.assertTrue({"G_tp", "G_fp", "G_fn", "G_tn", "B2_tp"} <= set(diag.columns))
+ 
+ 
++
++class UnavailablePersistenceReplay(unittest.TestCase):
++    """Main/supplement rows without a persistence source (empty source month, NaN persistence_q3) as written by the real
++    prepared keys: the saved predictions must replay against the canonical cohort, while real tampering still fails."""
++
++    @classmethod
++    def setUpClass(cls):
++        cls.contract = small_contract(**{"correction.support": {"n_eff": 30, "admins": 10, "target_months": 3},
++                                         "evaluation.bootstrap.draws": 200})
++        cls.inputs = synthetic.make_inputs(cls.contract, n_admin=150, seed=5)
++        for hi in cls.inputs.horizons.values():  # latest 40 targets become unavailable, exactly as prepare.persistence writes them
++            idx = np.argsort(hi.target, kind="mergesort")[-40:]
++            k = hi.keys
++            k.loc[idx, "persistence_available"], k.loc[idx, "persistence_phase"] = 0, 0
++            k.loc[idx, "persistence_q3"], k.loc[idx, "persistence_source_month"] = np.nan, ""
++            k.loc[idx, "persistence_age_months"] = -1
++        cls.tmp = tempfile.TemporaryDirectory()
++        cls.base = Path(cls.tmp.name) / "base"
++        ws, store = pipeline.Workspace(cls.base), backbone.ModelStore(cls.base / "models")
++        pipeline.run_develop(cls.inputs, cls.contract, ws, store, {})
++        pipeline.run_freeze_map(cls.inputs, cls.contract, ws)
++        pipeline.run_predict(cls.inputs, cls.contract, ws, store, {})
++        report.run_report(cls.base, cls.contract, sorted(cls.inputs.horizons))
++
++    @classmethod
++    def tearDownClass(cls):
++        cls.tmp.cleanup()
++
++    copy, replay_failures, rewrite_csv, regenerate_report = (ReplayContracts.copy, ReplayContracts.replay_failures,
++                                                             ReplayContracts.rewrite_csv, ReplayContracts.regenerate_report)
++
++    def raw_rewrite(self, path, fn):
++        """Rewrite a saved CSV as text cells (empty stays empty, no NA inference) so only ``fn``'s edit changes."""
++        frame = pd.read_csv(path, dtype=str, keep_default_na=False)
++        frame = fn(frame)
++        path.unlink()
++        write_csv_gz(path, frame)
++
++    def test_unavailable_persistence_rows_replay_canonically(self):
++        pred = pd.read_csv(self.base / "predict" / "predictions_h01.csv.gz", dtype=str, keep_default_na=False)
++        blank = pred["persistence_source_month"] == ""
++        self.assertGreater(int(blank.sum()), 0)  # the scenario reaches the scored main/supplement cohort
++        self.assertTrue((pred.loc[blank, "persistence_q3"] == "").all())
++        run = self.copy("unavailable_clean")
++        self.assertTrue(replay.run_replay(self.inputs, self.contract, run, run / "models")["pass"])
++
++    def test_changed_valid_source_month_still_fails(self):
++        run = self.copy("unavailable_month")
++
++        def tamper(f):
++            i = f.index[(f["period"] == "main") & (f["persistence_source_month"] != "")][0]
++            f.loc[i, "persistence_source_month"] = "2000-01"
++            return f
++        self.raw_rewrite(run / "predict" / "predictions_h01.csv.gz", tamper)
++        self.regenerate_report(run)
++        self.assertIn("h01_main", " ".join(f for f in self.replay_failures(run) if f.endswith("canonical_cohort_fields")))
++
++    def test_na_looking_text_is_not_an_empty_source_month(self):
++        run = self.copy("unavailable_na_text")
++
++        def tamper(f):
++            i = f.index[f["persistence_source_month"] == ""][0]
++            f.loc[i, "persistence_source_month"] = "NA"
++            return f
++        self.raw_rewrite(run / "predict" / "predictions_h01.csv.gz", tamper)
++        self.regenerate_report(run)
++        self.assertTrue(any(f.endswith("canonical_cohort_fields") for f in self.replay_failures(run)))
++
++    def test_changed_provider_target_ordinal_still_fails(self):
++        run = self.copy("unavailable_provider_ord")
++
++        def tamper(f):
++            f.loc[f.index[-1], "target_ord"] = str(int(f.loc[f.index[-1], "target_ord"]) // 10)  # a dropped last digit
++            return f
++        self.raw_rewrite(run / "predict" / "providers_all_h03.csv.gz", tamper)
++        self.assertIn("h03:combined_providers_equal_expected", self.replay_failures(run))
++
++
+ class UndefinedStaysUndefined(unittest.TestCase):
+     def test_undefined_f1_compares_as_undefined(self):
+         s = rr.scores([1, 2, 1], [1, 1, 2], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1], [0.1, 0.1, 0.1])

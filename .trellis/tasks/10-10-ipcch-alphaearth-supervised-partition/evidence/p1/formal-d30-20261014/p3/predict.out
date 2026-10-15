@@ -1,0 +1,21 @@
+{
+  "stage": "predict",
+  "summary": {
+    "1": {
+      "rows": 21414,
+      "contexts": 4
+    },
+    "3": {
+      "rows": 21011,
+      "contexts": 4
+    },
+    "6": {
+      "rows": 20505,
+      "contexts": 4
+    },
+    "12": {
+      "rows": 18179,
+      "contexts": 3
+    }
+  }
+}

@@ -216,7 +216,9 @@ def _replay(inputs: Inputs, contract: dict, run_dir: Path, out: Path, store_root
         else:
             checks.add(f"h{h:02d}:final_map_b2_fallback_recorded", sel_saved["selected"] == "B2")
         # ---------------- predict
-        pred = pd.read_csv(run_dir / "predict" / f"predictions_h{h:02d}.csv.gz", float_precision="round_trip")
+        # same NA policy as the canonical keys (runinputs): an empty source month stays "", empty numeric cells are NaN
+        pred = pd.read_csv(run_dir / "predict" / f"predictions_h{h:02d}.csv.gz", float_precision="round_trip", keep_default_na=False,
+                           na_values={c: [""] for c in ("q2", "q3", "q4", "q5", "persistence_q3")})
         contexts = read_json(run_dir / "predict" / f"contexts_h{h:02d}.json")
         pmap = None if frozen["map"] is None else pt.PartitionMap.from_record(frozen["map"])
         canonical_parts = []

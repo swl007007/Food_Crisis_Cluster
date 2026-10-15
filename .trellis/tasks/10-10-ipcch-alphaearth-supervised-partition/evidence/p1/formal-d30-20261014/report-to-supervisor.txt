@@ -1,0 +1,53 @@
+[Claude w14:p2 executor] IPCCH D30 FORMAL INPUT FREEZE COMPLETE. Local only: no EE/GCS, no fits. Ready for your review/next release.
+The final extraction receipt (5f491547) is retained unchanged in run receipt/.
+
+Run: ~/ipcch-alphaearth-runs/p1-formal-d30-20261014 (fresh, kind formal). p0-local-20261010b is untouched.
+Logs and evidence: ~/ipcch-alphaearth-runs/p1-formal-d30-logs/, copied to .trellis/.../evidence/p1/formal-d30-20261014/.
+
+Stages, each run once (stages.log 56f3db4e):
+1. preflight --kind formal --hash-inputs (12:35-12:44Z): pass true; runtime_matches_lock true. fit_ceiling: B1 38 + B0 23 = 61 quartets / 244 scalar fits; bridge_slots 22.
+2. prepare --local-only, ONCE (12:44:59-12:50:31Z): exit 0.
+3. ingest-extraction (12:52:45-12:53:59Z): exit 0. Inputs: plan p1-c-full/inputs/production_plan.csv.gz, manifest inputs/production_manifest.json, outputs p1-c-full/out.
+   - pieces 57,801, all complete; admins 6,227.
+   - Manifest body 63d0c7ab; plan bccf45c2; release codex-D30-full-20261010.
+   - extraction/COMPLETE.json f6a58b34; pieces.csv.gz 46f46ab5.
+4. Precision check BEFORE attach (read-only, precision_check.json 62dfdd3c):
+   - Default float parsing (as attach_descriptors reads the plan) vs round_trip:
+     - window_area_m2: 8,555 rows differ, max relative 2.53e-16;
+     - polygon_area_m2: 8,003 rows differ, max relative 2.60e-16;
+     - no_source_area_m2: identical.
+   - Descriptor table built both ways: BITWISE EQUAL.
+   - route_reason and usable equal, all 6,227 usable.
+   - The coverage ledger is NOT bitwise equal: coverage differs by at most 3.3e-16 (the last ULP).
+   - No admin coverage lies within 1e-5 of .80; the minimum margin to .80 is 0.189 (lowest coverage .98900).
+   - No repair made; recorded as a data observation.
+5. prepare (attach) (12:55:25-12:56:34Z): exit 0. descriptors/COMPLETE: admins 6,227; usable 6,227; route_reasons {usable: 6227}.
+   - descriptor_table.csv.gz 362c58b0; coverage_ledger.csv.gz 8cb459c0; prepared-manifest 2d8a8e1f.
+   - config: contract b75a7106, inputs 122a1ff1, runtime-lock 6bf483cf.
+
+Freeze report (freeze_report.json 94ff4d60; freeze_report.py 876ec610), read-only:
+- Full artifact hashes: all 73 run files hashed (artifact_sha256 map).
+  - Every COMPLETE record and all 40 prepared-manifest artifact hashes match the bytes on disk: mismatches [].
+- Admin equality: geometry (ipcch_admin_geometry_repaired.shp, 6,227 rows, admin_code) = plan = descriptor_table = coverage_ledger = 6,227. Sets equal; no duplicates.
+- Descriptors: 128 columns, 0 non-finite values; negative_variance_zeroed 0.
+- load_run_inputs assembled successfully, with no fitting:
+  - D_admin [6227, 128]; source = prepared 2d8a8e1f + descriptor table 362c58b0.
+  - Ordered schemas:
+    - features296 digest 0b8757a4...
+    - features424 digest 0163a677...
+    - descriptor_names (128) digest f0636bd7...
+    - features424 == features296 + descriptor_names: true
+- Per-H cohort (h1/h3/h6/h12):
+  - Each H: 42,695 rows; 6,224 admins; 53 countries; X296 [42695, 296]; D [42695, 128]; routable 42,695; 0 NaN routable rows; Y [42695, 4]; targets 2014-01..2026-04.
+  - persistence_available: 36,471 / 36,441 / 34,701 / 31,954.
+  - Providers (rows 42,695 each):
+    - has_provider: 38,812 / 38,764 / 38,659 / 37,299;
+    - provider blocks: 10 / 10 / 10 / 8;
+    - roles at h1: main 17,322, historical 15,708, supplement 4,092, bridge 1,690, none 3,883.
+- Inventory: schedule_requests has 61 requests and 244 scalar fits (B1 38 x 4 = 152; B0 23 x 4 = 92). By H: h1 10+6, h3 10+6, h6 10+6, h12 8+5. fit_empty 0. This equals the preflight ceiling of 61 / 244.
+
+Data observations for your review (no action taken):
+(a) 6,227 descriptor admins vs 6,224 keyed admins: 3 planned admins have no label rows. keyed is a subset of planned, as attach requires.
+(b) Coverage above 1.0 for 1,674 admins, max 1.00582. This is consistent with the whole-polygon denominator and the lattice/edge-weight area not being exactly equal (EE 0..255 boundary weights). It does not affect routing, since all coverages are >= .989. Not investigated further and not repaired.
+
+No project fits. I await your concrete next release.

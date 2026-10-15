@@ -1,0 +1,97 @@
+{
+ "fits": {
+  "develop": 27,
+  "predict": 34,
+  "total": 61,
+  "unique_identities": 61,
+  "scalar_fits": 244,
+  "predict_by_role_arm": {
+   "bridge_B1": 4,
+   "main_B0": 11,
+   "main_B1": 11,
+   "supplement_B0": 4,
+   "supplement_B1": 4
+  },
+  "actions": {
+   "fit": 61
+  }
+ },
+ "ledger_equals_schedule": true,
+ "fit_origin_matches_schedule": true,
+ "h1": {
+  "rows": 21414,
+  "periods": {
+   "main": 17322,
+   "supplement": 4092
+  },
+  "duplicate_rows": 0,
+  "routable": 21414,
+  "nonfinite_or_missing_arm_outputs": 0,
+  "G_equals_B2_all": true,
+  "G_route_values": {
+   "b2_reuse": 21414
+  },
+  "provider_rows": 38812,
+  "provider_rows_unmatched": 17398,
+  "provider_fit_origin_not_before_origin": 0,
+  "provider_identities_in_ledger": true,
+  "arm_identities_in_ledger": true
+ },
+ "h3": {
+  "rows": 21011,
+  "periods": {
+   "main": 16919,
+   "supplement": 4092
+  },
+  "duplicate_rows": 0,
+  "routable": 21011,
+  "nonfinite_or_missing_arm_outputs": 0,
+  "G_equals_B2_all": true,
+  "G_route_values": {
+   "b2_reuse": 21011
+  },
+  "provider_rows": 38764,
+  "provider_rows_unmatched": 17754,
+  "provider_fit_origin_not_before_origin": 0,
+  "provider_identities_in_ledger": true,
+  "arm_identities_in_ledger": true
+ },
+ "h6": {
+  "rows": 20505,
+  "periods": {
+   "main": 16413,
+   "supplement": 4092
+  },
+  "duplicate_rows": 0,
+  "routable": 20505,
+  "nonfinite_or_missing_arm_outputs": 0,
+  "G_equals_B2_all": true,
+  "G_route_values": {
+   "b2_reuse": 20505
+  },
+  "provider_rows": 38659,
+  "provider_rows_unmatched": 18154,
+  "provider_fit_origin_not_before_origin": 0,
+  "provider_identities_in_ledger": true,
+  "arm_identities_in_ledger": true
+ },
+ "h12": {
+  "rows": 18179,
+  "periods": {
+   "main": 14087,
+   "supplement": 4092
+  },
+  "duplicate_rows": 0,
+  "routable": 18179,
+  "nonfinite_or_missing_arm_outputs": 0,
+  "G_equals_B2_all": true,
+  "G_route_values": {
+   "b2_reuse": 18179
+  },
+  "provider_rows": 37299,
+  "provider_rows_unmatched": 19120,
+  "provider_fit_origin_not_before_origin": 0,
+  "provider_identities_in_ledger": true,
+  "arm_identities_in_ledger": true
+ }
+}

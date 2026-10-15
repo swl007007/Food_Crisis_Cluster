@@ -1,0 +1,407 @@
+{
+ "h01_main_2023": {
+  "persistence_source_month": {
+   "n": 547,
+   "len": [
+    3235,
+    3235
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h01_main_2024": {
+  "persistence_source_month": {
+   "n": 569,
+   "len": [
+    4295,
+    4295
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h01_main_2025": {
+  "persistence_source_month": {
+   "n": 204,
+   "len": [
+    9792,
+    9792
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h01_supplement_2026": {
+  "persistence_source_month": {
+   "n": 3,
+   "len": [
+    4092,
+    4092
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h03_main_2023": {
+  "persistence_source_month": {
+   "n": 231,
+   "len": [
+    2832,
+    2832
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h03_main_2024": {
+  "persistence_source_month": {
+   "n": 569,
+   "len": [
+    4295,
+    4295
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h03_main_2025": {
+  "persistence_source_month": {
+   "n": 212,
+   "len": [
+    9792,
+    9792
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h03_supplement_2026": {
+  "persistence_source_month": {
+   "n": 3,
+   "len": [
+    4092,
+    4092
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h06_main_2023": {
+  "persistence_source_month": {
+   "n": 459,
+   "len": [
+    2326,
+    2326
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h06_main_2024": {
+  "persistence_source_month": {
+   "n": 648,
+   "len": [
+    4295,
+    4295
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h06_main_2025": {
+  "persistence_source_month": {
+   "n": 346,
+   "len": [
+    9792,
+    9792
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h06_supplement_2026": {
+  "persistence_source_month": {
+   "n": 3,
+   "len": [
+    4092,
+    4092
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h12_main_2024": {
+  "persistence_source_month": {
+   "n": 1071,
+   "len": [
+    4295,
+    4295
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h12_main_2025": {
+  "persistence_source_month": {
+   "n": 612,
+   "len": [
+    9792,
+    9792
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ },
+ "h12_supplement_2026": {
+  "persistence_source_month": {
+   "n": 52,
+   "len": [
+    4092,
+    4092
+   ],
+   "dtypes": [
+    "object",
+    "object"
+   ],
+   "examples": [
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ],
+    [
+     "nan",
+     "''"
+    ]
+   ]
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+  "run": "/home/swl007007/ipcch-alphaearth-runs/p1-c-pilot2-20261010",
+  "summary_sha256": "885f1e7678f08b7ffae4e1931f0701cbc6864f293b4416227ba37a5216d6e58d",
+  "calls": 12,
+  "completed_requests": 10,
+  "server_projection_max_error_m": 2.7939677238464355e-09,
+  "null_or_nonfinite_moments": 0,
+  "overlap_coverage_of_sample_piece": 0.9999959432504635,
+  "whole_vs_windows": {
+    "area_difference_m2": 0.3921568691730499,
+    "max_abs_S_difference": 0.15055463090538979,
+    "max_abs_Q_difference": 0.05780018586665392,
+    "max_moment_difference_normalized_by_area": 7.65416024912881e-09,
+    "valid_cell_count_difference": -2
+  },
+  "control_C_vs_native_A2": {
+    "area_relative_change": -1.8742497076562614e-06,
+    "max_abs_mean_change": 0.00014430899823772436,
+    "max_abs_sd_change": 9.856743575731297e-05
+  },
+  "all_masked_explicit_zero": true,
+  "resource": {
+    "cells": 4000000,
+    "seconds": 8.06
+  },
+  "source_area_sum_max_abs_error_m2": 5.960464477539063e-08,
+  "interpretation": "Sampled pilot supports D30 extraction and near-additive weighted moments; the six-window unweighted count is2 cells lower and area differs0.392m2, so do not claim bit-exact boundary additivity. Whole-cohort coverage, scaling and monetary costs remain unmeasured; not a bulk or fit release."
+}

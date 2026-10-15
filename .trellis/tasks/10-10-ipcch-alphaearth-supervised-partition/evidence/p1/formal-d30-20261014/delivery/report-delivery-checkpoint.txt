@@ -1,0 +1,42 @@
+[Claude w14:p2 executor] DELIVERY CHECKPOINT: docs, inventory and the OFFLINE MLflow plan are ready for review. No MLflow adapter edits, no store or server writes, no lifecycle action.
+The acceptance receipt 0b050601 is retained (receipts/ and evidence/.../delivery/).
+
+1. Meeting note: docs/notes/2026-10-14_组会讨论稿_IPCCH_AlphaEarth监督分区.md (2efc1ab5).
+   - It states clearly that NO regional partition map was selected: all H are the B2 fallback, G == B2, G−B2 = 0, no qualifying H.
+   - It separates the feature (B1−B0), calibration (B2−B1) and partition (G−B2) effects, as point estimates without intervals except G−B2.
+   - Also covered: development table (72 recipe-years, 0 passed), annual zeros, matched persistence, 2026 supplement (descriptive), computational envelope.
+   - Limitations: observation-time proxy and no release/vintage reconstruction; single 2017 AlphaEarth with uncertified product/pretraining history; approximate EE boundary weights; approximate country-cluster bootstrap conditional on predictions/calendar; concentration; finite 9-recipe search; no causal reading.
+   - Earlier results: same-run arms are directly comparable. P6/yearly/MLP are compared descriptively on IDENTICAL evaluation datasets (keys and truth digests verified, see below) but different models, with no paired inference. Their geographic nulls are historical context, not repeats of this test.
+2. README (b6436f1d): the native-grid examples and the D1–D29 label are replaced by the D30 commands (build_c_production / ee_pilot_c with --concurrency-ceiling / check_c_outputs / ingest-extraction / prepare). The native scripts are marked superseded. A formal-result section was added. README is not in the 46-file inventory.
+3. PRD (f8d6230f) / implement (b19d4fca): dated execution-status lines appended; original planning text kept; boxes ticked with receipt references. Still open: R15/MLflow, P4 MLflow, delivery acceptance. Task not closed.
+4. Inventory: evidence/p1/formal-d30-20261014/ARTIFACT_INVENTORY.json (0d366606; build_inventory.py).
+   - Formal run: 486 files with sha256 and bytes each.
+   - Logs: all files.
+   - Extraction run: 203 non-piece files individually; 57,801 pieces via an ordered name/sha digest 9239b749.
+   - Repo evidence: 81 files. 39 are git-ignored JSON and need `git add -f` at the bookkeeping commit.
+   - Delivery-doc hashes.
+5. OFFLINE MLflow plan: .trellis/.../mlflow-plan.md (c0aa7a02).
+   - Target: the existing `IPCCH - detailed runs` + `IPCCH - dashboard`. A scratch store is for rehearsal only; no isolated dashboard deliverable.
+   - Baseline: your read-only counts are used (exp 1/2/3/4 = 126/136/202/174; global 180/226/226; fp c7abf4cd...). The before/after protection covers ALL four experiments and every model object; re-freeze before writes.
+   - Family `alphaearth_partition`, format `alphaearth`:
+     - include/bundle/exclude/extras;
+     - a complete inventory classification of every *sha256 key found in the run;
+     - arm vocabulary B0 pooled, B1 pooled_plus_alphaearth, B2 shared_calibration, G regional_calibration (G ≡ B2 stated);
+     - existing nine leaves and existing contrast names only. G−B2 stays in detailed records and artifacts.
+   - Frozen additions:
+     - detailed: +1 parent + 20 children (126 -> 147);
+     - dashboard: +20 rows (136 -> 156);
+     - registered models +16 (slice 68 -> 84; global 180 -> 196); versions +16 (100 -> 116; 226 -> 242); logged models +16 (226 -> 242);
+     - training datasets +8; evaluation datasets +0.
+   - Dataset evidence (delivery/mlflow_dataset_compat.json 7c9bfa87): all 16 AlphaEarth cohorts have keys and truth SHA identical to existing same-name dataset entries, so no name gets a second digest. Persistence F1 is identical too.
+   - Fingerprint lock, minimal additive change in summary_catalog.py:
+     - the plan records the predecessor fp c7abf4cd...;
+     - the legacy sub-projection must reproduce c7abf4cd... exactly;
+     - `apply --extend` verifies all legacy objects BEFORE writing and writes only additions;
+     - the only existing-object edits are the experiment fp tag (+ lineage) and the description;
+     - legacy objects keep their IDs, values and own fp tags;
+     - verify is split old/new; the repeat apply is a noop; interrupted extend resumes.
+   - Detailed import: no lock change. IMPORTER_VERSION is kept, and the six existing family import fingerprints must reproduce exactly.
+   - Rejected: re-tag legacy objects, full rebuild, isolated dashboard.
+   - Code changes needing a separate release: extract.py, naming.py, sources.json, summary_catalog.py. Focused tests and the scratch rehearsal (backup -> restore-check port 5001 -> import -> extend -> verify -> rebuild_check -> all-experiment diff) come before any live-write release.
+I am holding for your plan review. Nothing further runs until then.

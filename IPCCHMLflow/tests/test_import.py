@@ -102,7 +102,7 @@ def make_cfg(base: Path) -> dict:
         "report": "report/report.json", "predictions": "stage3/h{H:02d}/predictions.csv.gz",
         "arms": {"pool": "fresh_trained", "geo": "fresh_trained", "persistence": "persistence_baseline"},
         "model_seed": "42", "include": ["report/**", "stage3/**", "prepared/**"],
-        "bundle": {"models.tar": "models/**"},
+        "bundle": {"models.tar": "models/**"}, "upload_model_bundles": True,   # opt-in: pre-policy tar records
         "exclude": {"prepared/X_*.npy": "large matrix; referenced by hash"}, "extra": [],
         "tags": {"truth": "synthetic", "periods": "main/supplementary"},
         "inventory": {"required_digest_keys": ["booster_sha256"], "name_keys": {"identity_sha256": "dir"},
@@ -321,6 +321,60 @@ if __name__ == "__main__":
     unittest.main()
 
 
+class ResearchRetentionTest(unittest.TestCase):
+    """Default (no opt-in): model bundles are listed by their member manifest and never uploaded or staged."""
+    tearDown, write_cfg, run_cmd, client_runs = (ImporterTest.tearDown, ImporterTest.write_cfg, ImporterTest.run_cmd,
+                                                 ImporterTest.client_runs)
+
+    def setUp(self):
+        ImporterTest.setUp(self)
+        del self.cfg["families"][0]["upload_model_bundles"]
+        self.write_cfg()
+
+    def parent(self):
+        c, runs = self.client_runs()
+        return c, [x for x in runs if x.data.tags.get("record_kind") == "family"][0]
+
+    def test_default_import_lists_members_without_uploading_bundle(self):
+        r = self.run_cmd("import")
+        self.assertEqual(r["families"][0]["created"], 13)
+        c, parent = self.parent()
+        arts = import_runs.existing_artifacts(c, parent.info.run_id)
+        self.assertNotIn("models.tar", arts)
+        self.assertNotIn("manifests/models.tar.tar.json", arts)
+        members = json.loads(Path(c.download_artifacts(parent.info.run_id, "manifests/models.tar.members.json",
+                                                       str(self.base))).read_text())
+        self.assertEqual(len(members), 6)
+        t = parent.data.tags
+        self.assertNotIn("zz_prov.bundle.models.tar.sha256", t)
+        self.assertTrue(t["zz_prov.bundle.models.tar.retention"].startswith("not uploaded"))
+        self.assertEqual(t["zz_prov.bundle.models.tar.local_source"], f"{self.base}/src/models/**")
+        self.assertIn("Model weights are not uploaded", t["mlflow.note.content"])
+        self.assertFalse(list((self.store / "staging").glob("*")) if (self.store / "staging").exists() else [])
+        v = self.run_cmd("verify")["families"][0]
+        self.assertEqual((v["records"], v["tar_members"]), (13, 0))
+        again = self.run_cmd("import")["families"][0]                 # verified no-op, no duplicates
+        self.assertEqual((again["created"], again["resumed"], again["noop"]), (0, 0, 13))
+
+    def test_upload_estimate_excludes_unuploaded_bundle(self):
+        plan = import_runs.cmd_plan(self.cfg, self.store, None, False, None)["p6_geoxgb"]
+        t = plan["totals"]
+        self.assertEqual(import_runs.upload_estimate(plan), t["include"][1] + t["extras"][1])
+        plan["config"] = {**plan["config"], "upload_model_bundles": True}
+        self.assertEqual(import_runs.upload_estimate(plan), t["include"][1] + t["extras"][1] + t["bundle"]["models.tar"][1])
+
+    def test_pre_policy_tar_record_is_not_reverified_as_manifest_only(self):
+        orig = import_runs.uploads_bundles
+        import_runs.uploads_bundles = lambda fam: True              # a record imported before the policy (same config)
+        try:
+            self.run_cmd("import")
+        finally:
+            import_runs.uploads_bundles = orig
+        for cmd in ("verify", "import"):
+            with self.assertRaisesRegex(SourceConflict, "has an uploaded models.tar but the planned bundle mode differs"):
+                self.run_cmd(cmd)
+
+
 class ExtractionGuardTest(unittest.TestCase):
     def child(self):
         return extract.Child("p6_geoxgb", "run", "1", "pool", "42", "fresh_trained")
@@ -370,7 +424,7 @@ class RestoreScratchServerTest(unittest.TestCase):
             base = Path(tmp)
             make_fixture(base / "src")
             cfg = make_cfg(base)
-            cfg["experiment"] = "IPCCH - detailed runs"
+            cfg["experiment"] = "IPCCH detailed runs"
             (base / "sources.json").write_text(json.dumps(cfg))
             store = base / "store"
             (store / "artifacts").mkdir(parents=True)

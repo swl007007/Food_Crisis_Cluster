@@ -1,0 +1,54 @@
+[Claude w14:p2 executor] SCOPED OFFLINE REPAIR READY FOR REVIEW. Nothing installed, moved or deleted; no formal replay rerun. Run folder unchanged: 481 files.
+Release 7e9c5f5d retained in p1-formal-d30-logs/receipts/. All evidence: p1-formal-d30-logs/replay-repair/, copied to .trellis/.../evidence/p1/formal-d30-20261014/p3-replay-repair/.
+
+Impact (impact.txt d016d8e3):
+- GitNexus impact(_replay, upstream): "Target not found" (stale index), risk UNKNOWN.
+- Manual: _replay <- run_replay (replay.py:73) <- cli replay (cli.py:94); tests test_replay_contracts, test_pipeline_boundaries:51, test_e2e_synthetic:26.
+- No fit/predict/report path is touched.
+
+Class A code fix (replay.py cd5eeb38 -> a00067a0; replay.py.diff 4c0fc964):
+- Exactly one statement changed, the predictions read in _replay:
+  pd.read_csv(..., float_precision="round_trip", keep_default_na=False, na_values={c: [""] for c in ("q2","q3","q4","q5","persistence_q3")})
+  plus one comment line.
+- The NA set is copied from the canonical keys loader (runinputs.py:41-42), giving the same canonical semantics:
+  - empty source month stays "";
+  - empty persistence_q3 (and q2-q5, which have no empties in real data) is NaN;
+  - "NA"/"nan" text is kept literally.
+- All other strict comparisons are unchanged.
+- Real data: only persistence_q3 and persistence_source_month have empty cells.
+
+Tests (test_replay_contracts.py 6ccaea3b -> 3639bf4e; diff 1be9ef39; existing tests unchanged). New class UnavailablePersistenceReplay builds a synthetic run whose 40 latest targets per H are unavailable exactly as prepare.persistence writes them (available 0, phase 0, q3 NaN, month "", age -1):
+1. test_unavailable_persistence_rows_replay_canonically:
+   - asserts empty months reach the saved cohort with empty persistence_q3, and that replay passes.
+   - BEFORE the fix it FAILED with the production signature, "replay failed 4 checks: hXX_supplement_2026:canonical_cohort_fields" (tests-before-fix.log ecffc9e1). AFTER: pass.
+2. test_changed_valid_source_month_still_fails (one nonempty month -> 2000-01): canonical_cohort_fields fails.
+3. test_na_looking_text_is_not_an_empty_source_month ("" -> literal "NA"): fails.
+4. test_changed_provider_target_ordinal_still_fails (last-digit drop in providers_all_h03): combined_providers_equal_expected fails.
+Results after the fix:
+- test_replay_contracts: 13/13 OK (a7433bbc);
+- test_pipeline_boundaries: 5/5 OK (2ebf681a);
+- test_e2e_synthetic: 2/2 OK (e22f9023).
+
+Unchanged verification (verify_unchanged.json 87365274):
+- 45/46 original code entries are unchanged; only replay.py differs (its old pin cd5eeb38 is confirmed). test_replay_contracts.py is not in the 46-file inventory.
+- configs OK; 73/73 frozen inputs; 404/404 science artifacts.
+- The 3 failed-replay artifacts match their pins.
+- Old and new snapshots: replay.py.orig/.new and test_replay_contracts.py.orig/.new.
+
+Class B staged reconstruction (reconstruct_providers_h03.py 54299c5a; reconstruction.json a5ad6c87):
+- Zero-fit, read-only on the run. Same assembly order as the pipeline: historical (schedule order), bridge, then main/supplement by fit_origin. Stored B1 boosters by ledger identity; predict_quartet; the same deterministic write_csv_gz.
+- Staged file: replay-repair/staged/providers_all_h03.csv.gz, sha256 06eefdc6ae8b9864d7b8fe3b7fa8aea189946f747b3798826e853c2b2504413f. The original e454ce15 is untouched.
+- Both files have 38,766 lines. Exactly ONE differing line (38174) and ONE cell: target_ord "2431" -> "24314". Every other cell, including probabilities, is byte-identical text.
+- The cause of the dropped digit remains unknown.
+
+Archive proposal (archive_proposal.json 6a31904a), proposal only:
+- Move into run archive/replay-attempt-01-20261014T141645Z/:
+  - replay/replay.json (7e775225) and replay/INCOMPLETE.json (35efbbd1);
+  - RUN_INCOMPLETE.json (35efbbd1);
+  - predict/providers_all_h03.csv.gz -> .../predict/providers_all_h03.corrupt-e454ce15.csv.gz.
+- Install the staged 06eefdc6 at predict/providers_all_h03.csv.gz.
+- Write ARCHIVE.json (from/to/sha, receipt, reason).
+- Post-install checks: 403 science artifacts unchanged and providers_all_h03 = 06eefdc6. predict/COMPLETE.json does not hash providers_all; report untouched.
+- Why archiving is needed: write_json never overwrites, so the old replay/ files must leave before the single zero-fit replay rerun.
+
+Awaiting your review and the installation + zero-fit replay release.

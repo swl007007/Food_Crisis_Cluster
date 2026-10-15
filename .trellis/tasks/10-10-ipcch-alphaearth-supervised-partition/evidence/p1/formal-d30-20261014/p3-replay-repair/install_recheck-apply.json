@@ -1,0 +1,146 @@
+{
+ "phase": "apply",
+ "checks": {
+  "receipt": {
+   "pass": true,
+   "detail": null
+  },
+  "executor": {
+   "pass": true,
+   "detail": null
+  },
+  "prior_repair_release": {
+   "pass": true,
+   "detail": null
+  },
+  "supervisor_test_log": {
+   "pass": true,
+   "detail": null
+  },
+  "analysis_code_inventory_46": {
+   "pass": true,
+   "detail": []
+  },
+  "only_replay_py_differs_from_original": {
+   "pass": true,
+   "detail": [
+    "IPCCHAlphaEarthExperiment/ipcch_alphaearth/replay.py"
+   ]
+  },
+  "replay_py_new": {
+   "pass": true,
+   "detail": null
+  },
+  "regression_test_source": {
+   "pass": true,
+   "detail": null
+  },
+  "replay_diff": {
+   "pass": true,
+   "detail": null
+  },
+  "config": {
+   "pass": true,
+   "detail": null
+  },
+  "frozen_inputs_73": {
+   "pass": true,
+   "detail": []
+  },
+  "science_404": {
+   "pass": true,
+   "detail": []
+  },
+  "provider_not_in_404": {
+   "pass": true,
+   "detail": null
+  },
+  "archive_proposal": {
+   "pass": true,
+   "detail": null
+  },
+  "staged_provider": {
+   "pass": true,
+   "detail": null
+  },
+  "pre_move_hash:replay/replay.json": {
+   "pass": true,
+   "detail": null
+  },
+  "pre_move_hash:replay/INCOMPLETE.json": {
+   "pass": true,
+   "detail": null
+  },
+  "pre_move_hash:RUN_INCOMPLETE.json": {
+   "pass": true,
+   "detail": null
+  },
+  "pre_move_hash:predict/providers_all_h03.csv.gz": {
+   "pass": true,
+   "detail": null
+  },
+  "archive_root_absent": {
+   "pass": true,
+   "detail": null
+  },
+  "post_provider_06eefdc6": {
+   "pass": true,
+   "detail": null
+  },
+  "post_science_404": {
+   "pass": true,
+   "detail": []
+  },
+  "post_inputs_73": {
+   "pass": true,
+   "detail": []
+  },
+  "post_replay_dir_absent_or_empty": {
+   "pass": true,
+   "detail": null
+  },
+  "post_run_incomplete_absent": {
+   "pass": true,
+   "detail": null
+  },
+  "post_archive_hashes": {
+   "pass": true,
+   "detail": null
+  },
+  "manifests": {
+   "pass": true,
+   "detail": {
+    "ARCHIVE.json": "6f9c534ef4919255f589955956bdfad5f4f74de7e4e368e5c7d387bff3732110",
+    "ANALYSIS_AMENDMENT.json": "488d966defc9dac100f2bc8f68d34a09582adf69a60b10434a07c039567cc4c5"
+   }
+  }
+ },
+ "pass": true,
+ "moves": [
+  {
+   "from": "replay/replay.json",
+   "to": "archive/replay-attempt-01-20261014T141645Z/replay/replay.json",
+   "sha256": "7e7752256cc8b6de4ce74049ac9bcb3be97e715fe2aa41e1e7a5c8cbbc6082a6",
+   "after_sha256": "7e7752256cc8b6de4ce74049ac9bcb3be97e715fe2aa41e1e7a5c8cbbc6082a6"
+  },
+  {
+   "from": "replay/INCOMPLETE.json",
+   "to": "archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json",
+   "sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3",
+   "after_sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3"
+  },
+  {
+   "from": "RUN_INCOMPLETE.json",
+   "to": "archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json",
+   "sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3",
+   "after_sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3"
+  },
+  {
+   "from": "predict/providers_all_h03.csv.gz",
+   "to": "archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz",
+   "sha256": "e454ce1590084ac2e0a9ce654b775a35ed2bf1beb11d0597b46a4144f03576d5",
+   "after_sha256": "e454ce1590084ac2e0a9ce654b775a35ed2bf1beb11d0597b46a4144f03576d5"
+  }
+ ],
+ "run_files": 484
+}

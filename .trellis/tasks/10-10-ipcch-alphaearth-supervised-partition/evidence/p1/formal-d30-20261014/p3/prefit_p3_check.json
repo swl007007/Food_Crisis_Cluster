@@ -1,0 +1,78 @@
+{
+ "checks": {
+  "receipt_sha256": {
+   "pass": true,
+   "detail": null
+  },
+  "executor": {
+   "pass": true,
+   "detail": "w14:p2"
+  },
+  "prior_P2_release": {
+   "pass": true,
+   "detail": null
+  },
+  "config_sha256": {
+   "pass": true,
+   "detail": []
+  },
+  "code_inventory_46": {
+   "pass": true,
+   "detail": []
+  },
+  "frozen_inputs_73": {
+   "pass": true,
+   "detail": []
+  },
+  "accepted_P2_195": {
+   "pass": true,
+   "detail": []
+  },
+  "map_freeze_sha256": {
+   "pass": true,
+   "detail": null
+  },
+  "map_complete_sha256": {
+   "pass": true,
+   "detail": null
+  },
+  "develop_complete_sha256": {
+   "pass": true,
+   "detail": null
+  },
+  "development_request_ledger_sha256": {
+   "pass": true,
+   "detail": null
+  },
+  "map_freeze_content": {
+   "pass": true,
+   "detail": null
+  },
+  "no_files_beyond_inputs_and_P2": {
+   "pass": true,
+   "detail": []
+  },
+  "runtime_matches_lock": {
+   "pass": true,
+   "detail": {
+    "executable": "/home/swl007007/.venvs/ipcch-geo/bin/python",
+    "python": "3.12.3",
+    "python_build": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "thread_env": {
+     "OMP_NUM_THREADS": null,
+     "OPENBLAS_NUM_THREADS": null,
+     "MKL_NUM_THREADS": null
+    },
+    "cpu_count": 32,
+    "matches_lock": true,
+    "mismatches": []
+   }
+  },
+  "interpreter": {
+   "pass": true,
+   "detail": "/home/swl007007/.venvs/ipcch-geo/bin/python"
+  }
+ },
+ "pass": true
+}

@@ -1,0 +1,223 @@
+{
+ "training_descriptors": [
+  {
+   "name": "IPCCH training pool | compact296 | 1-month",
+   "digest": "008e493ad70f7ce5fc240cb0c0388e26",
+   "full_sha256": "008e493ad70f7ce5fc240cb0c0388e263778142a49941124a0784fbd6b88c455",
+   "arms": [
+    "B0 pooled"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 1,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "e8af47d49f2c2e85b9b10a19844d4d59ba0f2963f862830f37530a9042d6ee84",
+    "keys_sha256": "5f95f3759c62274090ceed4b37d585b0b3db4447e12c46b8b502c315da2eb907",
+    "x_path": "prepared/X296_h01.npy",
+    "keys_path": "prepared/keys_h01.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296",
+    "ordered_features_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+    "n_features": 296
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296+alphaearth128 (composite) | 1-month",
+   "digest": "37a204b71d31cb6d309a0b366208c34f",
+   "full_sha256": "37a204b71d31cb6d309a0b366208c34f69093f403f5ad33f4ba2e40517ce8504",
+   "arms": [
+    "B1 pooled_plus_alphaearth",
+    "B2 shared_calibration",
+    "G regional_calibration"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 1,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "e8af47d49f2c2e85b9b10a19844d4d59ba0f2963f862830f37530a9042d6ee84",
+    "keys_sha256": "5f95f3759c62274090ceed4b37d585b0b3db4447e12c46b8b502c315da2eb907",
+    "x_path": "prepared/X296_h01.npy",
+    "keys_path": "prepared/keys_h01.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296+alphaearth128 (composite)",
+    "composite": true,
+    "descriptor_table_sha256": "362c58b0f3396fd8ecc3bd42fe0257f979dd371780f70af6edd3a59f633e26d4",
+    "descriptor_table_path": "descriptors/descriptor_table.csv.gz",
+    "descriptors_complete_sha256": "5688fc44a333f4762d4e2f963b673cb71a311a20fe2468e529fcaa0be6da502a",
+    "join": "row admin_code -> descriptor_table.admin_code (exact int64); the 128 descriptor columns appended after the 296 in this order",
+    "ordered_features_sha256": "c00473d2a22a46b44492ad396f21ad45e3325d615daabbfdeda0beadafb20d18",
+    "n_features": 424,
+    "materialized_x424": "none (assembled in memory by runinputs.load_run_inputs; no file is created for tracking)"
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296 | 3-month",
+   "digest": "cba4f18726b903068a4383cd9231529a",
+   "full_sha256": "cba4f18726b903068a4383cd9231529a7c41e23be48d1f7ddf9375a60f2bec08",
+   "arms": [
+    "B0 pooled"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 3,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "18918612af752bf46c31b7cdfce19268d2582e99ffbe0c8d4218f9f3e7840490",
+    "keys_sha256": "1470c4c6652cdfb5cb37516a8be6f9c0643ee6ea84ab9cda345f494ab98c17ec",
+    "x_path": "prepared/X296_h03.npy",
+    "keys_path": "prepared/keys_h03.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296",
+    "ordered_features_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+    "n_features": 296
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296+alphaearth128 (composite) | 3-month",
+   "digest": "c743ba3527e64e57b87d6440456d9552",
+   "full_sha256": "c743ba3527e64e57b87d6440456d9552d86132a5ef2abe8c0cc541682edbe185",
+   "arms": [
+    "B1 pooled_plus_alphaearth",
+    "B2 shared_calibration",
+    "G regional_calibration"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 3,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "18918612af752bf46c31b7cdfce19268d2582e99ffbe0c8d4218f9f3e7840490",
+    "keys_sha256": "1470c4c6652cdfb5cb37516a8be6f9c0643ee6ea84ab9cda345f494ab98c17ec",
+    "x_path": "prepared/X296_h03.npy",
+    "keys_path": "prepared/keys_h03.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296+alphaearth128 (composite)",
+    "composite": true,
+    "descriptor_table_sha256": "362c58b0f3396fd8ecc3bd42fe0257f979dd371780f70af6edd3a59f633e26d4",
+    "descriptor_table_path": "descriptors/descriptor_table.csv.gz",
+    "descriptors_complete_sha256": "5688fc44a333f4762d4e2f963b673cb71a311a20fe2468e529fcaa0be6da502a",
+    "join": "row admin_code -> descriptor_table.admin_code (exact int64); the 128 descriptor columns appended after the 296 in this order",
+    "ordered_features_sha256": "c00473d2a22a46b44492ad396f21ad45e3325d615daabbfdeda0beadafb20d18",
+    "n_features": 424,
+    "materialized_x424": "none (assembled in memory by runinputs.load_run_inputs; no file is created for tracking)"
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296 | 6-month",
+   "digest": "75469770ea3b6eaca588e97bd045479e",
+   "full_sha256": "75469770ea3b6eaca588e97bd045479e51c91ad80c764a9fa1d5b5251c9bd571",
+   "arms": [
+    "B0 pooled"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 6,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "a26de37b2107bc8e9adcc40cecb25426f3433b12e55717bdd0dbc1866096d3f7",
+    "keys_sha256": "85c7cea3da09538af4ce9779fa5bee0c087ee2950cdf60295f6895d01258b424",
+    "x_path": "prepared/X296_h06.npy",
+    "keys_path": "prepared/keys_h06.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296",
+    "ordered_features_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+    "n_features": 296
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296+alphaearth128 (composite) | 6-month",
+   "digest": "e22856cb10cdc6c9da74a1bac3c11855",
+   "full_sha256": "e22856cb10cdc6c9da74a1bac3c11855808c2fc1aa71bb960930ca28bf2e5954",
+   "arms": [
+    "B1 pooled_plus_alphaearth",
+    "B2 shared_calibration",
+    "G regional_calibration"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 6,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "a26de37b2107bc8e9adcc40cecb25426f3433b12e55717bdd0dbc1866096d3f7",
+    "keys_sha256": "85c7cea3da09538af4ce9779fa5bee0c087ee2950cdf60295f6895d01258b424",
+    "x_path": "prepared/X296_h06.npy",
+    "keys_path": "prepared/keys_h06.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296+alphaearth128 (composite)",
+    "composite": true,
+    "descriptor_table_sha256": "362c58b0f3396fd8ecc3bd42fe0257f979dd371780f70af6edd3a59f633e26d4",
+    "descriptor_table_path": "descriptors/descriptor_table.csv.gz",
+    "descriptors_complete_sha256": "5688fc44a333f4762d4e2f963b673cb71a311a20fe2468e529fcaa0be6da502a",
+    "join": "row admin_code -> descriptor_table.admin_code (exact int64); the 128 descriptor columns appended after the 296 in this order",
+    "ordered_features_sha256": "c00473d2a22a46b44492ad396f21ad45e3325d615daabbfdeda0beadafb20d18",
+    "n_features": 424,
+    "materialized_x424": "none (assembled in memory by runinputs.load_run_inputs; no file is created for tracking)"
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296 | 12-month",
+   "digest": "e128bbb09d4b56577bf695c3862453e6",
+   "full_sha256": "e128bbb09d4b56577bf695c3862453e6f32b99b82bf20319386391252399f522",
+   "arms": [
+    "B0 pooled"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 12,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "cd46960d0af33ab0c672d6dd1eeb6df4da7d18268c453b75f332b74ac9cc792f",
+    "keys_sha256": "0c1bba40dd98c268ade6ea1fca73cec812c2946215eebea52b3cd63180762e54",
+    "x_path": "prepared/X296_h12.npy",
+    "keys_path": "prepared/keys_h12.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296",
+    "ordered_features_sha256": "e97388f848e7095bf0535f0cfee1a2d798e0c1863dee843462e60cf6a36f9909",
+    "n_features": 296
+   }
+  },
+  {
+   "name": "IPCCH training pool | compact296+alphaearth128 (composite) | 12-month",
+   "digest": "91c2ad38465a4bf58d7bb5ef02393e54",
+   "full_sha256": "91c2ad38465a4bf58d7bb5ef02393e54942f04ee2fad6b994649112e83f48ca2",
+   "arms": [
+    "B1 pooled_plus_alphaearth",
+    "B2 shared_calibration",
+    "G regional_calibration"
+   ],
+   "descriptor": {
+    "schema": "ipcch-training-pool-v1",
+    "context": "training",
+    "lead_months": 12,
+    "first_target_month": "2014-01",
+    "definition": "Candidate training rows: every QC-valid area x target month from 2014-01, with features observed at or before its own forecast origin. Each refit uses the subset allowed by the family's training window; this descriptor names the pool, not the exact rows of one refit.",
+    "x_sha256": "cd46960d0af33ab0c672d6dd1eeb6df4da7d18268c453b75f332b74ac9cc792f",
+    "keys_sha256": "0c1bba40dd98c268ade6ea1fca73cec812c2946215eebea52b3cd63180762e54",
+    "x_path": "prepared/X296_h12.npy",
+    "keys_path": "prepared/keys_h12.csv.gz",
+    "prepared_manifest_sha256": "2d8a8e1f4418d5f68872296ae503419d2670111d1aefb13804f6b46e8582362a",
+    "features": "compact296+alphaearth128 (composite)",
+    "composite": true,
+    "descriptor_table_sha256": "362c58b0f3396fd8ecc3bd42fe0257f979dd371780f70af6edd3a59f633e26d4",
+    "descriptor_table_path": "descriptors/descriptor_table.csv.gz",
+    "descriptors_complete_sha256": "5688fc44a333f4762d4e2f963b673cb71a311a20fe2468e529fcaa0be6da502a",
+    "join": "row admin_code -> descriptor_table.admin_code (exact int64); the 128 descriptor columns appended after the 296 in this order",
+    "ordered_features_sha256": "c00473d2a22a46b44492ad396f21ad45e3325d615daabbfdeda0beadafb20d18",
+    "n_features": 424,
+    "materialized_x424": "none (assembled in memory by runinputs.load_run_inputs; no file is created for tracking)"
+   }
+  }
+ ],
+ "n": 8,
+ "problems": [],
+ "descriptor_column_count": 128
+}

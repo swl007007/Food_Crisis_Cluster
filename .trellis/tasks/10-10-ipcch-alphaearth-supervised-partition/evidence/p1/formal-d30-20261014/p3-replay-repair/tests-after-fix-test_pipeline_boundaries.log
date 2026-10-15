@@ -1,0 +1,12 @@
+test_annual_context_with_empty_pool_returns_b1 (test_pipeline_boundaries.EmptyPoolIdentity.test_annual_context_with_empty_pool_returns_b1) ... ok
+test_empty_development_pool_is_declared_identity_end_to_end (test_pipeline_boundaries.EmptyPoolIdentity.test_empty_development_pool_is_declared_identity_end_to_end) ... /home/swl007007/.venvs/ipcch-geo/lib/python3.12/site-packages/xgboost/core.py:751: UserWarning: [10:50:46] WARNING: /__w/xgboost/xgboost/src/common/error_msg.cc:56: Empty dataset at worker: 0
+  return func(**kwargs)
+ok
+test_changed_final_map_refused (test_pipeline_boundaries.FreezeChain.test_changed_final_map_refused) ... ok
+test_changed_freeze_manifest_refused (test_pipeline_boundaries.FreezeChain.test_changed_freeze_manifest_refused) ... ok
+test_changed_selection_refused (test_pipeline_boundaries.FreezeChain.test_changed_selection_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 62.102s
+
+OK

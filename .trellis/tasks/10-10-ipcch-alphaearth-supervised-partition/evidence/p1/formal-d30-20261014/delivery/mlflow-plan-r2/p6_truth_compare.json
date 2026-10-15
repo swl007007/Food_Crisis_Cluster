@@ -1,0 +1,46 @@
+{
+ "1": {
+  "p6_file": "source/stage3/h01/predictions.csv.gz",
+  "ae_rows": 21414,
+  "p6_rows": 21414,
+  "both": 21414,
+  "ae_only": 0,
+  "p6_only": 0,
+  "phase_differ": 0,
+  "q3_text_differ": 3268,
+  "q3_max_abs_diff": 9.8879238130678e-17
+ },
+ "3": {
+  "p6_file": "source/stage3/h03/predictions.csv.gz",
+  "ae_rows": 21011,
+  "p6_rows": 21011,
+  "both": 21011,
+  "ae_only": 0,
+  "p6_only": 0,
+  "phase_differ": 0,
+  "q3_text_differ": 3267,
+  "q3_max_abs_diff": 9.8879238130678e-17
+ },
+ "6": {
+  "p6_file": "source/stage3/h06/predictions.csv.gz",
+  "ae_rows": 20505,
+  "p6_rows": 20505,
+  "both": 20505,
+  "ae_only": 0,
+  "p6_only": 0,
+  "phase_differ": 0,
+  "q3_text_differ": 3267,
+  "q3_max_abs_diff": 9.8879238130678e-17
+ },
+ "12": {
+  "p6_file": "source/stage3/h12/predictions.csv.gz",
+  "ae_rows": 18179,
+  "p6_rows": 18179,
+  "both": 18179,
+  "ae_only": 0,
+  "p6_only": 0,
+  "phase_differ": 0,
+  "q3_text_differ": 2688,
+  "q3_max_abs_diff": 9.8879238130678e-17
+ }
+}

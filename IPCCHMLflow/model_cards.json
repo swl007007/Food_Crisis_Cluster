@@ -1,0 +1,1042 @@
+{
+ "schema": "ipcch-model-cards-v1",
+ "families": {
+  "alphaearth_supervised_partition": {
+   "project": "IPCCH",
+   "title": "AlphaEarth supervised partition",
+   "scope": "global (IPCCH admin units, Sub-Saharan Africa)",
+   "model_type": "XGBoost regressor quartet + ridge calibration",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "accepted: no qualifying lead (regional = shared)",
+   "one_line": "Tests whether frozen 2017 AlphaEarth satellite-embedding descriptors and supervised regional calibration improve IPCCH phase-share forecasts over a matched pooled XGBoost model, separately at leads 1/3/6/12 months.",
+   "status": "Supervisor accepted (task 10-10): no qualifying lead; every lead selected the shared-calibration fallback, so regional_calibration equals shared_calibration (structural zero gain). Replay 488/488 after a reviewed analysis-only amendment. Retrospective: 2023-2026 had already been inspected.",
+   "data": "Unit: IPCCH admin area x target month (6,224 admins, 42,695 valid label rows). Labels: IPC-compatible population shares phase1..phase5 (phase5 zero-filled if missing; shares in [0,1], sum in [0.90,1.10], population > 0). Targets: cumulative shares q2..q5 (share in phase >= k). Forecast origin O = end of month O; target month = O + lead. Main evaluation: targets 2023-2025 (first target 2023-02/04/07, 2024-01 for leads 1/3/6/12; 122 main target-month folds summed over the four leads); supplement: target months 2026-01..04. Development years 2021-2022; maps frozen at 2022-12.",
+   "features": {
+    "feature_set": "compact296",
+    "n_features": 296,
+    "groups": "compact296 (296, ordered list sha e97388f8...): static (29): AEZ/geography one-hots e.g. AEZ_32000; ordinary (120): monthly predictors value/ma3/ma6/ma12 at origin e.g. GPP_mean__value_at_origin, GPP_mean__ma3_at_origin; same_month_z (56): z-score vs same calendar month history e.g. GPP_mean__hist_same_month_z_at_origin; stress (28): vegetation/climate stress share/run/months-since over 12 months e.g. GPP_mean__vegetation_stress__share12_at_origin; growing_season (29): last completed growing-season climate aggregates e.g. gs_last1__prcp_anom_gs_ensmean__at_origin; identifier (27): lat, lon, month one-hots; history (5): IPC overall-phase history e.g. overall_phase_history_1, overall_phase_history_change_1_2; idp (2): idp_admin0_latest_stock, idp_admin0_latest_age_months.",
+    "list": "compact296=runs:/9939ac69809949e9923821fa692a7b2a/source/prepared/feature_order_296.csv.gz#name"
+   },
+   "feature_engineering": "All inputs are observed at or before the forecast origin (rule D29): fit labels have target month U <= fit origin; row inputs have observation/report month <= origin; a growing season counts only if it ended before the first day of O+1. Monthly predictors are summarised at origin as current value, 3/6/12-month means, same-calendar-month z-scores and 12-month stress indicators; growing-season blocks use the last completed season. Missing values stay NaN (native XGBoost handling); infinities stop preparation. AlphaEarth descriptors (pooled_plus_alphaearth and later arms): 2017 GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL (dataset 1.1, model 2.1), 64 bands A00..A63 nearest-sampled onto a fixed equal-area 10 m grid (EPSG:6933), area-weighted (pixel area x fractional admin-boundary weight) mean and SD per admin -> 128 static columns ae2017_mean_A00..A63, ae2017_sd_A00..A63; admins with coverage < 0.80 are unusable.",
+   "architecture": "Four XGBoost regressors (q2, q3, q4, q5) per fit block predict cumulative shares; outputs are projected to 1 >= q2 >= q3 >= q4 >= q5 >= 0 (bounded equal-weight decreasing isotonic least squares, then clip); four-class phase decoded from the 0.20 rule (highest k with q_k >= 0.20); crisis = phases 3-5. Calibration arms correct the pooled_plus_alphaearth raw prediction with a ridge model on 8 slots: intercept, z_pred, z-scored 3-month precipitation anomaly, temperature anomaly and violence-event count at origin, and their missingness flags (m_prcp, m_tmean, m_violence). regional_calibration adds region-specific deviations on a supervised partition map (tree depth <= 3, leaf budgets 2/4/8, 9 cuts per AlphaEarth descriptor, support >= 200 effective rows, 50 admins, 6 target months); no map passed the development guards, so it uses the shared calibration.",
+   "settings": "XGBoost (objective reg:squarederror, tree_method hist, cpu, gbtree, seed 42, n_jobs 16, n_estimators 200, learning_rate 0.1, no early stopping, scale_pos_weight 1): q2/q4/q5 max_depth 11, subsample 1.0, colsample_bytree 0.5, gamma 0, min_child_weight 0, reg_alpha 0, reg_lambda 1; q3 max_depth 9, subsample 0.5, colsample_bytree 0.7, gamma 0.1. Sample weights 2^(-(fit_origin - U)/24) (24-month half-life), unnormalised. Annual refit at each block's fit origin on every eligible label from 2014-01 to the origin. Calibration: shared ridge lambda 0.01; regional lambdas 0.01/0.1/1.0. Phase threshold 0.20 (>=). Fit ceiling: 61 quartets (23 pooled, 38 with AlphaEarth), 244 scalar fits.",
+   "environment": "Numerical: Python 3.12.3 (/home/swl007007/.venvs/ipcch-geo), numpy 2.4.4, pandas 3.0.3, scikit-learn 1.8.0, xgboost 3.2.0, scipy 1.17.1, geopandas 1.1.3, shapely 2.1.2, pyogrio 0.12.1, pyproj 3.7.2, threadpoolctl 3.6.0; Linux WSL2 x86_64, 32 CPUs; preflight matched the runtime lock. AlphaEarth extraction: separate interpreter, earthengine-api 1.7.36. Seeds: XGBoost 42; bootstrap 42.",
+   "evaluation": "Same keys per lead for all arms. Cohorts: all_scored and persistence_available (rows where the persistence comparator exists); periods primary (main 2023-2025) and holdout (2026-01..04). Metrics: binary crisis precision/recall/F1/F2/accuracy, four-class accuracy/macro-F1, projected q3 R2. Decision rule for G vs shared_calibration: main F1 gain >= 0.005 with country-cluster bootstrap (20,000 draws, seed 42, 1.25th percentile lower bound, family of 4 leads) and guards (classification -0.01, R2 -0.02). Comparators: pooled, persistence.",
+   "sources": "formal run p1-formal-d30-20261014 (MLflow family run 9939ac69809949e9923821fa692a7b2a): source_code/IPCCHAlphaEarthExperiment/config/experiment-contract.json and runtime-lock.json; ~/ipcch-alphaearth-runs/p1-formal-d30-20261014/preflight/preflight-20261014T124450Z.json (runtime); source/prepared/feature_order_296.csv.gz; source/descriptors/descriptor_table.csv.gz; IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "pooled": {
+     "role": "baseline",
+     "meaning": "Pooled XGB quartet on compact296 (no AlphaEarth descriptors); the matched pooled comparator.",
+     "differences": "No AlphaEarth inputs, no calibration."
+    },
+    "pooled_plus_alphaearth": {
+     "role": "candidate",
+     "meaning": "Pooled XGB quartet on compact296 plus 128 AlphaEarth 2017 admin descriptors.",
+     "differences": "Adds 128 static AlphaEarth columns; no calibration.",
+     "features": {
+      "feature_set": "compact296+ae128",
+      "n_features": 424,
+      "groups": "compact296 groups (296) plus alphaearth (128): ae2017_mean_A00..A63 and ae2017_sd_A00..A63, area-weighted mean and SD of the 2017 satellite embedding per admin.",
+      "list": "compact296=runs:/9939ac69809949e9923821fa692a7b2a/source/prepared/feature_order_296.csv.gz#name ; alphaearth128=runs:/9939ac69809949e9923821fa692a7b2a/source/descriptors/descriptor_table.csv.gz#@header"
+     }
+    },
+    "shared_calibration": {
+     "role": "candidate",
+     "meaning": "pooled_plus_alphaearth raw outputs with one shared ridge calibration refitted each year.",
+     "differences": "Adds the shared 8-slot ridge calibration (lambda 0.01) on top of pooled_plus_alphaearth.",
+     "features": {
+      "feature_set": "compact296+ae128",
+      "n_features": 424,
+      "groups": "compact296 groups (296) plus alphaearth (128); calibration uses z_pred and 3 origin covariates (precipitation, temperature anomaly, violence events) with missingness flags.",
+      "list": "compact296=runs:/9939ac69809949e9923821fa692a7b2a/source/prepared/feature_order_296.csv.gz#name ; alphaearth128=runs:/9939ac69809949e9923821fa692a7b2a/source/descriptors/descriptor_table.csv.gz#@header"
+     }
+    },
+    "regional_calibration": {
+     "role": "candidate",
+     "meaning": "shared_calibration plus regional deviations on a supervised partition map; no map was selected at any lead, so outputs equal shared_calibration exactly.",
+     "differences": "Regional ridge deviations on a frozen supervised map (none selected: fallback to shared calibration).",
+     "features": {
+      "feature_set": "compact296+ae128",
+      "n_features": 424,
+      "groups": "compact296 groups (296) plus alphaearth (128); the partition map would split on AlphaEarth descriptors.",
+      "list": "compact296=runs:/9939ac69809949e9923821fa692a7b2a/source/prepared/feature_order_296.csv.gz#name ; alphaearth128=runs:/9939ac69809949e9923821fa692a7b2a/source/descriptors/descriptor_table.csv.gz#@header"
+     }
+    }
+   }
+  },
+  "geoxgb_reference": {
+   "project": "IPCCH",
+   "title": "GeoXGB reference",
+   "scope": "global (IPCCH admin units)",
+   "model_type": "GeoXGB: XGBoost regressor quartet + learned spatial partition",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "accepted: spatial layer no benefit over pooled",
+   "one_line": "Reference GeoXGB run: four cumulative-share XGBoost regressors with a spatial partition map learned on 2014-2022 target months; asks whether regional models gated per region beat one pooled model and persistence.",
+   "status": "Supervisor accepted (task 10-04): the spatial layer shows no demonstrated benefit over pooled. Against persistence, recall/F2 and continuous q3 improve while precision, binary accuracy and four-class macro F1 fall; do not describe general superiority. Close and spot audits were waived by the user (not an audit pass).",
+   "data": "Unit: IPCCH admin area x target month (raw panel IPCCH_2026_completed.csv, sha ae696087...). Labels: population shares phase1..phase5 (phase5 zero-filled if missing; shares in [0,1], sum in [0.90,1.10], population > 0); targets cumulative shares q2..q5; crisis = phases 3-5 (q3 >= 0.20). Origin = target month - lead. Maps learned on target months 2014-01..2022-12; main evaluation targets to 2025-12 (first target 2023-02/04/07, 2024-01 for leads 1/3/6/12; 122 main folds over the four leads); supplementary year 2026.",
+   "features": {
+    "feature_set": "rich561",
+    "n_features": 561,
+    "groups": "original93 (93): ACLED conflict counts/fatalities with 5/10 windows, prices (FAO, WFP, CPI, food inflation), macro (GDP, gini), EVI/GPP, rainfall/temperature, nightlights, terrain/soil, market access, AEZ one-hots, last observed label and its age, e.g. event_count_battles, WFP_Price, GPP_mean; population-share history468 (468), built from past observed IPC shares (series q2..q5, severity_index, entropy, concentration, severe_fraction): observation_levels (48) e.g. hist_q3_obs1; observation_timing (10) e.g. hist_age_obs2; changes (80) e.g. hist_q2_change_obs1_obs2; observation_trends (16) e.g. hist_q2_slope_last3; window_statistics (240): mean/std/min/max/latest_minus_mean/slope over m06/m12/m24/m36/all, e.g. hist_q2_m06_mean; window_support (29); prior_binary_states (5) e.g. hist_crisis_obs2; threshold_distance (12) e.g. hist_q3_margin_obs1; window_crisis (20) e.g. hist_crisis_m06_fraction; event_and_run (8) e.g. hist_current_run_count.",
+    "list": "rich561=runs:/bdbafe393d694439a1c35ccec4d5816a/source/prepared/feature_order.csv#name"
+   },
+   "feature_engineering": "Every value rebuilt in P1 from the new target QC (crisis = share-derived phase >= 3, q3 >= 0.20); names/order reuse the population-history rich561 recipe. Availability: observation-month end <= origin (release timing not verified). History features use only labels observed at or before the origin (observation k = k-th most recent), with window statistics over the last 6/12/24/36 months and all history. Missing values stay NaN (native XGBoost); original93 infinities -> NaN with audit; history468 infinities fail.",
+   "architecture": "Four XGBoost regressors (q2..q5) per fit; outputs projected to 1 >= q2 >= q3 >= q4 >= q5 >= 0 (bounded equal-weight decreasing isotonic, unrounded) and decoded to phase with the 0.20 rule. Global model = one pooled quartet. Spatial layer: a partition map learned in this run (scan of binary splits of the area set, member depth <= 4, <= 16 terminal regions, candidate size fraction 9/20-11/20, 3 smoothing rounds; Stage 1 gain > 0, Stage 3 gain > 0.01). Regional models continue the immutable global booster with appended shallow trees (local recipes). A historical gate (<= 6 dates) decides per region whether the regional model or the pooled model is used.",
+   "settings": "XGBoost reg:squarederror, gbtree, hist, cpu, seed 42, nthread 4, eta 0.05, gamma 0, max_bin 256, depthwise, global base_score 0.5, no early stopping, unit sample weights. Global common: min_child_weight 10, reg_lambda 10, reg_alpha 0, subsample 0.8, colsample_bytree 0.8; global recipes G1 depth 3/200 rounds, G2 3/400, G3 4/200, G4 4/400. Local common: min_child_weight 20, reg_lambda 20, reg_alpha 1, subsample 1, colsample 1; local recipes L1 depth 1 +20 rounds, L2 depth 2 +40 rounds (appended to the matching global). Recipe chosen per lead on Stage 1 absolute crisis F1. Monthly refit; 36-calendar-month training window ending at the origin. Support: local fit >= 500 keys/50 areas/6 target months.",
+   "lead_settings": {
+    "1": "selected recipe G1L2; learned map has 9 terminal regions.",
+    "3": "selected recipe G3L2; 7 terminal regions.",
+    "6": "selected recipe G4L2; 6 terminal regions.",
+    "12": "selected recipe G2L2; 9 terminal regions."
+   },
+   "environment": "Runtime lock (numerical artifacts only from this runtime): Windows Python 3.12.10 (WindowsApps python3.12.exe), numpy 2.2.6, pandas 2.2.3, xgboost 3.0.0, geopandas 1.0.1, pyogrio 0.11.0, shapely 2.1.0, pyproj 3.7.1; cpu, hist, nthread 4, seed 42.",
+   "evaluation": "Main and supplementary periods; cohorts all_scored, persistence_available and gate subsets (regional_model_fitted). Metrics: binary crisis precision/recall/F1/F2/accuracy, four-class accuracy/macro-F1, q3 R2. Country-cluster bootstrap 2,000 draws (seed 42, 2.5/97.5 percentiles). Comparators: pooled, persistence.",
+   "sources": "MLflow family run bdbafe393d694439a1c35ccec4d5816a: source_code/IPCCHGeoXGBExperiment/config/experiment-contract.json, feature-schema.json, runtime-lock.json, inputs.json; source/prepared/feature_order.csv; source/stage1/hXX/selection.json; source/report/report.json; IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "pooled": {
+     "role": "baseline",
+     "meaning": "One pooled model for all areas (the selected global recipe at this lead).",
+     "differences": "No spatial partition, no regional models."
+    },
+    "partitioned_gated": {
+     "role": "candidate",
+     "meaning": "Regional model where the historical gate accepted it for that region, pooled model elsewhere.",
+     "differences": "Uses the learned partition map, regional continuation boosters and the per-region historical gate."
+    }
+   }
+  },
+  "compact_climate_global": {
+   "project": "IPCCH forecasting",
+   "title": "Compact climate global historical",
+   "scope": "global",
+   "model_type": "XGBoost regressor quartet (annual refit)",
+   "target": "cumulative phase shares q2-q5; phase by 0.20 rule",
+   "status_tag": "historical evaluation; oracle = upper bound, not deployable",
+   "one_line": "Compact 296-input XGBoost quartet refit once per evaluation year on all areas; the weather-oracle arm adds realized future rainfall/temperature anomalies as a perfect-forecast upper bound.",
+   "status": "Historical evaluation, verified (runs 7/7, 112 models reloaded, max replay diff 0). Realized future weather is a counterfactual perfect forecast assumed available at the origin; it is not an operational forecast. Pooled 2022-2025 global differences oracle - baseline are small (e.g. 3+ accuracy +0.0094 at 3 months, +0.0114 at 12 months).",
+   "data": "Unit: area x target month of the frozen global origin-safe cohort (28,205 evaluation keys in the original snapshot, years 2022-2025; the 2026 extension adds Jan-Apr 2026). Truth: reported overall phase and normalized phase-3-or-worse share. Fit per evaluation year Y on all areas with labels <= Jan(Y) - max(H,1) (e.g. H=3: 2022 fit uses labels <= 2021-10, 19,413 rows). Input table: assembled_IPCCH/model_ready/origin_safe_climate_idp_v1 (per-lead CSVs, hashed in the preflight inventory).",
+   "features": {
+    "feature_set": "compact296",
+    "n_features": 296,
+    "groups": "compact296: Static geography (AEZ one-hots, soil, terrain) 29; ordinary monthly predictors 120 = value/MA3/MA6/MA12/SD12 of 24 sources at origin (food prices, commodity markets, economic activity, monthly climate, vegetation productivity, conflict, ENSO); same-month z 56; stress 28; two completed growing seasons + latest major dummy 29; coordinates/target calendar 27; safe IPC history 5 (e.g. overall_phase_history_change_1_3); national IDP 2 (idp_admin0_latest_stock, idp_admin0_latest_age_months). Codebook groups include Weather oracle (oracle arm only).",
+    "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/50994de27b5641a0bbbc514ec37e347e/artifacts/source.tar!reports/compact_climate_weather_oracle_v1/model_run_codebook/IPCCH_compact_climate_weather_oracle_model_run_codebook_en.csv#predictor?compact_baseline_{H}m=true"
+   },
+   "feature_engineering": "Inputs are rebuilt directly at the origin O without carrier masks (D16); each feature respects its row's own origin. Saved missingness is kept: NA handled natively by XGBoost, no external scaling, imputation or feature selection. Monthly sources are summarised at O as value, 3/6/12-month means and 12-month SD, same-calendar-month z-scores and stress indicators; growing-season blocks use the two most recent completed seasons. Static context is retrospective (historical vintage not certified). The codebook records formula, unit, source, time relative to origin and missing semantics for every predictor.",
+   "architecture": "Four XGBoost regressors (sklearn XGBRegressor, objective reg:squarederror) predict cumulative shares q2..q5 (phase 2 or worse .. phase 5); the IPC phase is the highest phase whose unrounded cumulative score is >= 0.20. One fit per evaluation year (annual blocks) on all areas; boosters saved per block (16 per lead for 2022-2025, 4 more in the 2026 extension). The weather oracle arm appends realized monthly anomalies.",
+   "settings": "XGBRegressor random_state 42; q2/q4/q5: max_depth 11, n_estimators 200, learning_rate 0.1, subsample 1, colsample_bytree 0.5, gamma 0, min_child_weight 0, scale_pos_weight 1; q3 (phase3_worse): max_depth 9, n_estimators 200, learning_rate 0.1, subsample 0.5, colsample_bytree 0.7, gamma 0.1, min_child_weight 0 (IPCCH repo configs/forecasting_hyperparameters.json and _p3.json; fit_model in scripts/modeling/run_deep_feature_weight_decay_forecasting.py). Exponential time-decay sample weights from the fit origin (half-life DEFAULT_HALF_LIFE_MONTHS; the catalog text for the origin-safe protocol states 24 months). Phase threshold 0.20.",
+   "environment": "not recorded in the archived catalog sources (run logs record per-block fit time and RSS only).",
+   "evaluation": "Frozen evaluation keys; metrics exact accuracy, 3+ accuracy/precision/recall/F2, R2 and MAE of the 3+ share, ordinal MAE; global and regions 0-8 (area_id mapping); oracle - baseline differences per year and pooled. Evaluation weights are rows.",
+   "sources": "IPCCH repo reports/compact_climate_weather_oracle_v1/report.md and model_run_codebook/*.csv (archived in MLflow family run 50994de27b5641a0bbbc514ec37e347e source.tar); importer plan compact_global_original.json; IPCCH repo IPCCHMLflow/naming.py (family text); configs/forecasting_hyperparameters*.json.",
+   "arms": {
+    "baseline": {
+     "role": "baseline",
+     "meaning": "Compact baseline inputs (296) at every lead.",
+     "differences": "No future weather."
+    },
+    "weather_oracle": {
+     "role": "oracle",
+     "meaning": "Compact inputs plus realized monthly rainfall and temperature anomalies at O+1..O+min(H,6), treated as perfect forecasts available at the origin (upper bound, not deployable).",
+     "differences": "Adds 2 x min(H,6) oracle columns (302 inputs at 3 months, 308 at 6 and 12).",
+     "features": {
+      "feature_set": {
+       "3": "compact296+oracle6",
+       "6": "compact296+oracle12",
+       "12": "compact296+oracle12"
+      },
+      "n_features": {
+       "3": 302,
+       "6": 308,
+       "12": 308
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/50994de27b5641a0bbbc514ec37e347e/artifacts/source.tar!reports/compact_climate_weather_oracle_v1/model_run_codebook/IPCCH_compact_climate_weather_oracle_model_run_codebook_en.csv#predictor?compact_weather_oracle_{H}m=true"
+     }
+    }
+   }
+  },
+  "geoxgb_yearly_refit": {
+   "project": "IPCCH",
+   "title": "GeoXGB yearly refit",
+   "scope": "global (IPCCH admin units)",
+   "model_type": "GeoXGB: XGBoost regressor quartet + learned spatial partition",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "no clear geographic gain (annual protocol)",
+   "one_line": "GeoXGB on the frozen reference maps and recipes, refit once per year on all history up to the origin with 24-month half-life weights; the historical gate is decided once per region and year.",
+   "status": "Supervisor PASS at 76fdedf (task 10-07); lifecycle close audit queued, not passed. Exploratory: 2023-2026 had already been inspected. No clear geographic gain under the annual protocol: partitioned-minus-pooled point estimates near zero at every main lead, all intervals include zero (not evidence of exact zero or equivalence). Yearly pooled is .026 lower at 1 month, within +/-.005 at 3-12 months (bundled change, not attributable to one ingredient).",
+   "data": "Unit: IPCCH admin area x target month (raw panel IPCCH_2026_completed.csv, sha ae696087...). Labels: population shares phase1..phase5 (phase5 zero-filled if missing; shares in [0,1], sum in [0.90,1.10], population > 0); targets cumulative shares q2..q5; crisis = phases 3-5 (q3 >= 0.20). Origin = target month - lead. Uses the GeoXGB reference prepared inputs and frozen maps (learned on 2014-01..2022-12); main evaluation targets to 2025-12 (first target 2023-02/04/07, 2024-01 for leads 1/3/6/12; 122 main folds over the four leads); supplementary year 2026.",
+   "features": {
+    "feature_set": "rich561",
+    "n_features": 561,
+    "groups": "original93 (93): ACLED conflict counts/fatalities with 5/10 windows, prices (FAO, WFP, CPI, food inflation), macro (GDP, gini), EVI/GPP, rainfall/temperature, nightlights, terrain/soil, market access, AEZ one-hots, last observed label and its age, e.g. event_count_battles, WFP_Price, GPP_mean; population-share history468 (468), built from past observed IPC shares (series q2..q5, severity_index, entropy, concentration, severe_fraction): observation_levels (48) e.g. hist_q3_obs1; observation_timing (10) e.g. hist_age_obs2; changes (80) e.g. hist_q2_change_obs1_obs2; observation_trends (16) e.g. hist_q2_slope_last3; window_statistics (240): mean/std/min/max/latest_minus_mean/slope over m06/m12/m24/m36/all, e.g. hist_q2_m06_mean; window_support (29); prior_binary_states (5) e.g. hist_crisis_obs2; threshold_distance (12) e.g. hist_q3_margin_obs1; window_crisis (20) e.g. hist_crisis_m06_fraction; event_and_run (8) e.g. hist_current_run_count.",
+    "list": "rich561=runs:/bdbafe393d694439a1c35ccec4d5816a/source/prepared/feature_order.csv#name"
+   },
+   "feature_engineering": "Every value rebuilt in P1 from the new target QC (crisis = share-derived phase >= 3, q3 >= 0.20); names/order reuse the population-history rich561 recipe. Availability: observation-month end <= origin (release timing not verified). History features use only labels observed at or before the origin (observation k = k-th most recent), with window statistics over the last 6/12/24/36 months and all history. Missing values stay NaN (native XGBoost); original93 infinities -> NaN with audit; history468 infinities fail.",
+   "architecture": "Same GeoXGB structure as GeoXGB reference (four cumulative-share XGBoost regressors, monotone projection, 0.20 rule) but on the FROZEN reference partition maps (learned in GeoXGB reference on 2014-01..2022-12; not relearned) with the reference per-lead recipes. Regional models continue the global booster with appended shallow trees; the historical gate (<= 6 dates) is decided once per region and year.",
+   "settings": "XGBoost as in GeoXGB reference (eta 0.05, hist, cpu, seed 42, nthread 4, global common min_child_weight 10/reg_lambda 10/subsample 0.8/colsample 0.8; local common min_child_weight 20/reg_lambda 20/reg_alpha 1). Fixed recipes per lead: 1 G1L2, 3 G3L2, 6 G4L2, 12 G2L2 (G1 depth 3/200 rounds, G2 3/400, G3 4/200, G4 4/400; L2 depth 2, +40 rounds). Annual protocol: fit pool = all prepared valid rows with target month t <= origin (no lower bound); weights w_t = 0.5**((O - t)/24), float64, unnormalised; evaluation unweighted.",
+   "lead_settings": {
+    "1": "recipe G1L2 on the reference map (9 terminal regions).",
+    "3": "recipe G3L2 (7 regions).",
+    "6": "recipe G4L2 (6 regions).",
+    "12": "recipe G2L2 (9 regions)."
+   },
+   "environment": "Runtime lock ipcch-yearly-xgb-runtime-v1 (P6 runtime, unchanged versions): Windows Python 3.12.10, numpy 2.2.6, pandas 2.2.3, xgboost 3.0.0; cpu, nthread 4, seed 42.",
+   "evaluation": "Main and supplementary periods; cohorts all_scored, persistence_available and gate subsets (regional_model_fitted). Metrics: binary crisis precision/recall/F1/F2/accuracy, four-class accuracy/macro-F1, q3 R2. Country-cluster bootstrap 2,000 draws (seed 42, 2.5/97.5 percentiles). Comparators: pooled, persistence.",
+   "sources": "MLflow family run a6dc32cda52f45a7a5f12e87a72c6749: source_code/<package>/config/experiment-contract.json (ipcch-yearly-xgb-contract-v1.0), inputs.json (reads GeoXGB reference prepared inputs), runtime-lock.json; GeoXGB reference run bdbafe393d694439a1c35ccec4d5816a for feature order and maps; IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "pooled": {
+     "role": "baseline",
+     "meaning": "One pooled model for all areas (the selected global recipe at this lead).",
+     "differences": "No spatial partition, no regional models."
+    },
+    "partitioned_gated": {
+     "role": "candidate",
+     "meaning": "Regional model where the historical gate accepted it for that region, pooled model elsewhere.",
+     "differences": "Uses the learned partition map, regional continuation boosters and the per-region historical gate."
+    },
+    "regional_ungated": {
+     "role": "diagnostic",
+     "meaning": "The regional model's own prediction wherever a regional model was fitted, whatever the gate decided; scored on regional_model_fitted rows only.",
+     "differences": "Regional continuation boosters on the map without the historical gate."
+    }
+   }
+  },
+  "geoxgb_climate_swap": {
+   "project": "IPCCH",
+   "title": "GeoXGB climate swap",
+   "scope": "global (IPCCH admin units)",
+   "model_type": "GeoXGB: XGBoost regressor quartet + learned spatial partition",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "no change beyond noise; spatial layer adds nothing",
+   "one_line": "GeoXGB reference design with the monthly climate inputs replaced by shared-folder monthly and growing-season climate features (rich601); partition maps relearned on these features.",
+   "status": "Exploratory (task 10-05; 2023-2026 already inspected; no audit). Replacing the monthly climate inputs and adding growing-season features does not change main-period crisis F1 beyond country-sampling noise (pooled delta -0.0007 to +0.0063, every interval includes zero); partitioned-minus-pooled stays within +/-0.0006 at every lead.",
+   "data": "Unit: IPCCH admin area x target month (raw panel IPCCH_2026_completed.csv, sha ae696087...). Labels: population shares phase1..phase5 (phase5 zero-filled if missing; shares in [0,1], sum in [0.90,1.10], population > 0); targets cumulative shares q2..q5; crisis = phases 3-5 (q3 >= 0.20). Origin = target month - lead. Maps learned on target months 2014-01..2022-12; main evaluation targets to 2025-12 (first target 2023-02/04/07, 2024-01 for leads 1/3/6/12; 122 main folds over the four leads); supplementary year 2026.",
+   "features": {
+    "feature_set": "rich601",
+    "n_features": 601,
+    "groups": "original (103): rich561's original block with EVI_mean/GPP_mean/Rainf_f_tavg_mean/Tair_f_tavg_mean (and EVI lags) replaced by 14 IPCCH shared-folder *_month_ensmean columns at origin (lags on evi_anom_month_ensmean), e.g. distance_to_nearest_acled; growing_season (30): s1/s2 = latest growing seasons ending in a month <= origin, 14 *_gs_ensmean + age, e.g. gs_s1_prcp_anom_ensmean, gs_s1_rainy_days_ensmean; population-share history468 (468) as in GeoXGB reference: observation_levels 48, observation_timing 10, changes 80, observation_trends 16, window_statistics 240, window_support 29, prior_binary_states 5, threshold_distance 12, window_crisis 20, event_and_run 8.",
+    "list": "rich601=runs:/0d829cbc36114d2b922bbd0b2ea41ccd/source/prepared/feature_order.csv#name"
+   },
+   "feature_engineering": "Every value rebuilt in P1 from the new target QC (crisis = share-derived phase >= 3, q3 >= 0.20); names/order reuse the population-history rich561 recipe. Availability: observation-month end <= origin (release timing not verified). History features use only labels observed at or before the origin (observation k = k-th most recent), with window statistics over the last 6/12/24/36 months and all history. Missing values stay NaN (native XGBoost); original93 infinities -> NaN with audit; history468 infinities fail. Climate swap: shared-folder climate values before 2015-01 or absent stay NaN; growing-season columns use only seasons that ended at or before the origin month.",
+   "architecture": "Same GeoXGB structure as GeoXGB reference (four cumulative-share XGBoost regressors, monotone projection, 0.20 rule, learned partition map, regional continuation boosters, per-region historical gate), with the partition maps RELEARNED in this run on rich601, target months 2014-01..2022-12.",
+   "settings": "XGBoost reg:squarederror, gbtree, hist, cpu, seed 42, nthread 4, eta 0.05, gamma 0, max_bin 256, depthwise, global base_score 0.5, no early stopping, unit sample weights. Global common: min_child_weight 10, reg_lambda 10, reg_alpha 0, subsample 0.8, colsample_bytree 0.8; global recipes G1 depth 3/200 rounds, G2 3/400, G3 4/200, G4 4/400. Local common: min_child_weight 20, reg_lambda 20, reg_alpha 1, subsample 1, colsample 1; local recipes L1 depth 1 +20 rounds, L2 depth 2 +40 rounds (appended to the matching global). Recipe chosen per lead on Stage 1 absolute crisis F1. Monthly refit; 36-calendar-month training window ending at the origin. Support: local fit >= 500 keys/50 areas/6 target months.",
+   "lead_settings": {
+    "1": "selected recipe G1L2.",
+    "3": "selected recipe G1L2.",
+    "6": "selected recipe G4L2.",
+    "12": "selected recipe G1L2."
+   },
+   "environment": "Runtime lock (numerical artifacts only from this runtime): Windows Python 3.12.10 (WindowsApps python3.12.exe), numpy 2.2.6, pandas 2.2.3, xgboost 3.0.0, geopandas 1.0.1, pyogrio 0.11.0, shapely 2.1.0, pyproj 3.7.1; cpu, hist, nthread 4, seed 42.",
+   "evaluation": "Main and supplementary periods; cohorts all_scored, persistence_available and gate subsets (regional_model_fitted). Metrics: binary crisis precision/recall/F1/F2/accuracy, four-class accuracy/macro-F1, q3 R2. Country-cluster bootstrap 2,000 draws (seed 42, 2.5/97.5 percentiles). Comparators: pooled, persistence.",
+   "sources": "MLflow family run 0d829cbc36114d2b922bbd0b2ea41ccd: source_code/<package>/config/experiment-contract.json (ipcch-climate-geoxgb-contract-v1.0: all scientific constants unchanged from GeoXGB reference), feature-schema.json (rich601), runtime-lock.json; source/prepared/feature_order.csv; source/stage1/hXX/selection.json; IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "pooled": {
+     "role": "baseline",
+     "meaning": "One pooled model for all areas (the selected global recipe at this lead).",
+     "differences": "No spatial partition, no regional models."
+    },
+    "partitioned_gated": {
+     "role": "candidate",
+     "meaning": "Regional model where the historical gate accepted it for that region, pooled model elsewhere.",
+     "differences": "Uses the learned partition map, regional continuation boosters and the per-region historical gate."
+    }
+   }
+  },
+  "geoxgb_window_probe": {
+   "project": "IPCCH",
+   "title": "GeoXGB window probe",
+   "scope": "global (IPCCH admin units)",
+   "model_type": "GeoXGB: XGBoost regressor quartet + learned spatial partition",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "exploratory: full history no general gain",
+   "one_line": "Diagnostic on a few selected target months: with the reference maps and recipes fixed, pooled and ungated regional models are fit once on a 36-month window and once on all history from 2014-01 (tag window).",
+   "status": "Exploratory read-only diagnostic on selected months; no significance test; no Trellis task; no supervisor sign-off. With the recipes fixed, full history did not generally improve pooled F1 and did not recover the geographic increment; the gate was not recomputed or applied, so this is not a full deployed-GeoXGB result.",
+   "data": "Same inputs as GeoXGB reference (rich561, frozen reference maps). Selected target months (max mapped keys per lead and main year): 1/3/6-month leads 2023-09, 2024-09, 2025-09; 12-month lead 2024-09, 2025-01 (plan.json). Window: 36_month = 36 calendar months ending at the origin; full_history = all labels from 2014-01 to the origin.",
+   "features": {
+    "feature_set": "rich561",
+    "n_features": 561,
+    "groups": "original93 (93): ACLED conflict counts/fatalities with 5/10 windows, prices (FAO, WFP, CPI, food inflation), macro (GDP, gini), EVI/GPP, rainfall/temperature, nightlights, terrain/soil, market access, AEZ one-hots, last observed label and its age, e.g. event_count_battles, WFP_Price, GPP_mean; population-share history468 (468), built from past observed IPC shares (series q2..q5, severity_index, entropy, concentration, severe_fraction): observation_levels (48) e.g. hist_q3_obs1; observation_timing (10) e.g. hist_age_obs2; changes (80) e.g. hist_q2_change_obs1_obs2; observation_trends (16) e.g. hist_q2_slope_last3; window_statistics (240): mean/std/min/max/latest_minus_mean/slope over m06/m12/m24/m36/all, e.g. hist_q2_m06_mean; window_support (29); prior_binary_states (5) e.g. hist_crisis_obs2; threshold_distance (12) e.g. hist_q3_margin_obs1; window_crisis (20) e.g. hist_crisis_m06_fraction; event_and_run (8) e.g. hist_current_run_count.",
+    "list": "rich561=runs:/bdbafe393d694439a1c35ccec4d5816a/source/prepared/feature_order.csv#name"
+   },
+   "feature_engineering": "Every value rebuilt in P1 from the new target QC (crisis = share-derived phase >= 3, q3 >= 0.20); names/order reuse the population-history rich561 recipe. Availability: observation-month end <= origin (release timing not verified). History features use only labels observed at or before the origin (observation k = k-th most recent), with window statistics over the last 6/12/24/36 months and all history. Missing values stay NaN (native XGBoost); original93 infinities -> NaN with audit; history468 infinities fail.",
+   "architecture": "Reference GeoXGB recipes and frozen reference maps. pooled = one global quartet; regional_ungated = regional continuation boosters where the region has local support, otherwise the pooled arm of the same window. The historical gate is NOT recomputed or applied.",
+   "settings": "Recipes and XGBoost settings exactly as GeoXGB reference (per lead 1 G1L2, 3 G3L2, 6 G4L2, 12 G2L2; eta 0.05, hist, cpu, seed 42). Training window per model tag `window`: 36_month or full_history (from 2014-01). Unit weights.",
+   "lead_settings": {
+    "1": "recipe G1L2.",
+    "3": "recipe G3L2.",
+    "6": "recipe G4L2.",
+    "12": "recipe G2L2."
+   },
+   "environment": "Not recorded in the archived run files beyond the reused GeoXGB reference runtime (see that family's card).",
+   "evaluation": "Selected months only; crisis precision/recall/F1 per window and arm; no bootstrap or significance test.",
+   "sources": "MLflow family run e9cfa99f94dd4a67b0e3b6ed511708ad: source/plan.json (selection rule, selected months, regions), source/fit-ledger.json, source/predictions_hXX_YYYY-MM.csv.gz; GeoXGB reference run bdbafe393d694439a1c35ccec4d5816a; IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "pooled": {
+     "role": "comparison (window tag: 36_month baseline, full_history candidate)",
+     "meaning": "One pooled model for all areas, fit on the window named by the model's window tag.",
+     "differences": "Same recipe; only the training window differs between the two pooled models."
+    },
+    "regional_ungated": {
+     "role": "comparison (window tag: 36_month baseline, full_history candidate)",
+     "meaning": "Regional model fitted without a gate where the region has local support; elsewhere the pooled arm of the same window.",
+     "differences": "Ungated regional continuation; window per tag."
+    }
+   }
+  },
+  "geoxgb_maps_2024": {
+   "project": "IPCCH",
+   "title": "GeoXGB maps to 2024",
+   "scope": "global (IPCCH admin units)",
+   "model_type": "GeoXGB: XGBoost regressor quartet + learned spatial partition",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "exploratory: no partitioned gain",
+   "one_line": "GeoXGB reference design with the partition maps relearned on target months 2014-01..2024-12 and evaluation from 2025 (post-hoc robustness check).",
+   "status": "Exploratory post-hoc robustness check, user-approved, no Trellis task; 2025-2026 had already been seen; replay passed (29,848 checks). More development data and wider map coverage still did not recover a partitioned-over-pooled F1 gain; at 12 months pooled also rose from 0.7747 to 0.7870, so the gain cannot be credited to the geographic layer.",
+   "data": "Unit: IPCCH admin area x target month (raw panel IPCCH_2026_completed.csv, sha ae696087...). Labels: population shares phase1..phase5 (phase5 zero-filled if missing; shares in [0,1], sum in [0.90,1.10], population > 0); targets cumulative shares q2..q5; crisis = phases 3-5 (q3 >= 0.20). Origin = target month - lead. Maps relearned on target months 2014-01..2024-12; primary period = 2025 only (empty at the 12-month lead); holdout 2026; year_2025/year_2026/combined come from a separately recomputed report that agrees with primary/holdout to floating-point precision.",
+   "features": {
+    "feature_set": "rich561",
+    "n_features": 561,
+    "groups": "original93 (93): ACLED conflict counts/fatalities with 5/10 windows, prices (FAO, WFP, CPI, food inflation), macro (GDP, gini), EVI/GPP, rainfall/temperature, nightlights, terrain/soil, market access, AEZ one-hots, last observed label and its age, e.g. event_count_battles, WFP_Price, GPP_mean; population-share history468 (468), built from past observed IPC shares (series q2..q5, severity_index, entropy, concentration, severe_fraction): observation_levels (48) e.g. hist_q3_obs1; observation_timing (10) e.g. hist_age_obs2; changes (80) e.g. hist_q2_change_obs1_obs2; observation_trends (16) e.g. hist_q2_slope_last3; window_statistics (240): mean/std/min/max/latest_minus_mean/slope over m06/m12/m24/m36/all, e.g. hist_q2_m06_mean; window_support (29); prior_binary_states (5) e.g. hist_crisis_obs2; threshold_distance (12) e.g. hist_q3_margin_obs1; window_crisis (20) e.g. hist_crisis_m06_fraction; event_and_run (8) e.g. hist_current_run_count.",
+    "list": "rich561=runs:/9dcddedc0e8e4bc38fd24cb4ce29298f/source/IPCCHGeoXGBExperiment/runs/split2024-20261005/prepared/feature_order.csv#name"
+   },
+   "feature_engineering": "Every value rebuilt in P1 from the new target QC (crisis = share-derived phase >= 3, q3 >= 0.20); names/order reuse the population-history rich561 recipe. Availability: observation-month end <= origin (release timing not verified). History features use only labels observed at or before the origin (observation k = k-th most recent), with window statistics over the last 6/12/24/36 months and all history. Missing values stay NaN (native XGBoost); original93 infinities -> NaN with audit; history468 infinities fail.",
+   "architecture": "Same GeoXGB structure as GeoXGB reference (calendar-only patch: development end moved to 2024-12), with the partition map relearned on 2014-01..2024-12.",
+   "settings": "XGBoost reg:squarederror, gbtree, hist, cpu, seed 42, nthread 4, eta 0.05, gamma 0, max_bin 256, depthwise, global base_score 0.5, no early stopping, unit sample weights. Global common: min_child_weight 10, reg_lambda 10, reg_alpha 0, subsample 0.8, colsample_bytree 0.8; global recipes G1 depth 3/200 rounds, G2 3/400, G3 4/200, G4 4/400. Local common: min_child_weight 20, reg_lambda 20, reg_alpha 1, subsample 1, colsample 1; local recipes L1 depth 1 +20 rounds, L2 depth 2 +40 rounds (appended to the matching global). Recipe chosen per lead on Stage 1 absolute crisis F1. Monthly refit; 36-calendar-month training window ending at the origin. Support: local fit >= 500 keys/50 areas/6 target months.",
+   "lead_settings": {
+    "1": "selected recipe G2L2.",
+    "3": "selected recipe G2L2.",
+    "6": "selected recipe G2L2.",
+    "12": "selected recipe G1L2."
+   },
+   "environment": "Runtime lock (numerical artifacts only from this runtime): Windows Python 3.12.10 (WindowsApps python3.12.exe), numpy 2.2.6, pandas 2.2.3, xgboost 3.0.0, geopandas 1.0.1, pyogrio 0.11.0, shapely 2.1.0, pyproj 3.7.1; cpu, hist, nthread 4, seed 42.",
+   "evaluation": "Main and supplementary periods; cohorts all_scored, persistence_available and gate subsets (regional_model_fitted). Metrics: binary crisis precision/recall/F1/F2/accuracy, four-class accuracy/macro-F1, q3 R2. Country-cluster bootstrap 2,000 draws (seed 42, 2.5/97.5 percentiles). Comparators: pooled, persistence.",
+   "sources": "MLflow family run 9dcddedc0e8e4bc38fd24cb4ce29298f: source/plan.json, source/calendar-only.patch, source/IPCCHGeoXGBExperiment/config/* and runs/split2024-20261005/prepared/feature_order.csv, stage1/hXX/selection.json, combined-and-matched-report.json; IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "pooled": {
+     "role": "baseline",
+     "meaning": "One pooled model for all areas (the selected global recipe at this lead).",
+     "differences": "No spatial partition, no regional models."
+    },
+    "partitioned_gated": {
+     "role": "candidate",
+     "meaning": "Regional model where the historical gate accepted it for that region, pooled model elsewhere.",
+     "differences": "Uses the learned partition map, regional continuation boosters and the per-region historical gate."
+    }
+   }
+  },
+  "mlp_residual_fixed_maps": {
+   "project": "IPCCH",
+   "title": "MLP residual on fixed maps",
+   "scope": "global (IPCCH admin units)",
+   "model_type": "MLP (PyTorch) + residual MLP on fixed maps",
+   "target": "cumulative phase shares q2-q5; crisis = q3 >= 0.20",
+   "status_tag": "accepted: MLP below XGB and persistence",
+   "one_line": "A global MLP predicts the cumulative phase shares; pooled and regional residual MLPs on the frozen GeoXGB reference maps correct it; three seeds (42/43/44).",
+   "status": "Completed under user supervision (user acted as supervisor); Trellis audit waived by the user, not an audit pass. Exploratory: 2023-2026 already inspected; replay passed. The MLP learner is weaker than XGB: pooled MLP is .021-.057 crisis F1 below the matched pooled XGB; regional residual correction adds nothing measurable on the fixed XGB maps; the MLP system is below persistence.",
+   "data": "Unit: IPCCH admin area x target month (raw panel IPCCH_2026_completed.csv, sha ae696087...). Labels: population shares phase1..phase5 (phase5 zero-filled if missing; shares in [0,1], sum in [0.90,1.10], population > 0); targets cumulative shares q2..q5; crisis = phases 3-5 (q3 >= 0.20). Origin = target month - lead. Frozen reference maps (GeoXGB reference, 2014-01..2022-12; 3,264 mapped areas); main evaluation targets to 2025-12 (first target 2023-02/04/07, 2024-01 for leads 1/3/6/12; 122 main folds over the four leads); supplementary year 2026. Development: 8,561 fit keys, 9,558 validation keys. Scored folds per lead: 1: 36, 3: 34, 6: 31, 12: 25.",
+   "features": {
+    "feature_set": "rich561+mask561",
+    "n_features": 1122,
+    "groups": "rich561 (561) exactly as GeoXGB reference (original93 + population-share history468; see that card) plus one missingness flag per feature (561), giving 1,122 MLP inputs; e.g. event_count_battles, hist_q3_obs1, hist_q2_m06_mean (+ their missingness indicators).",
+    "list": "rich561=runs:/bdbafe393d694439a1c35ccec4d5816a/source/prepared/feature_order.csv#name ; missingness_flag_for_each_rich561_feature=runs:/bdbafe393d694439a1c35ccec4d5816a/source/prepared/feature_order.csv#name"
+   },
+   "feature_engineering": "Every value rebuilt in P1 from the new target QC (crisis = share-derived phase >= 3, q3 >= 0.20); names/order reuse the population-history rich561 recipe. Availability: observation-month end <= origin (release timing not verified). History features use only labels observed at or before the origin (observation k = k-th most recent), with window statistics over the last 6/12/24/36 months and all history. Missing values stay NaN (native XGBoost); original93 infinities -> NaN with audit; history468 infinities fail. MLP inputs: each of the 561 features is paired with a missingness indicator (1,122 inputs); values are float32.",
+   "architecture": "global_base: MLP with ReLU hidden layers and dropout 0.1 predicting q2..q5 (candidates G1 = [64, 32] hidden units, 73,985 parameters; G2 = [128, 64], 152,065). Residual MLPs (R1 = [16], 17,985 parameters; R2 = [32], 35,969; output layer zero-initialised) add a correction to global_base: pooled = one residual for all areas; regional_ungated = a residual per region of the frozen reference map; partitioned_gated uses the regional residual where the historical gate (<= 6 dates) passed, else pooled. Predictions decoded with the 0.20 rule.",
+   "settings": "Loss MSE; AdamW lr 0.001, betas (0.9, 0.999), eps 1e-8, weight_decay 0.01 on weight matrices only; batch 256; global 100 epochs, residual 40 epochs; no early stopping recorded; float32; deterministic algorithms, cudnn benchmark off, TF32 off, 4 CPU threads. Monthly refit; 36-calendar-month window ending at the origin; unit weights. Seeds 42/43/44 (one logged model per seed). Recipe chosen per lead on development crisis F1 averaged over seeds.",
+   "lead_settings": {
+    "1": "selected G2R2 (global [128,64], residual [32]); map with 9 regions.",
+    "3": "selected G2R1 (global [128,64], residual [16]); 7 regions.",
+    "6": "selected G2R2; 6 regions.",
+    "12": "selected G1R1 (global [64,32], residual [16]); 9 regions."
+   },
+   "environment": "Isolated Windows venv (ipcch-mlp): Python 3.12.10, numpy 2.2.6, pandas 2.2.3, torch 2.6.0+cu124 (CUDA 12.4, cuDNN 90100), NVIDIA GeForce RTX 4070; Windows 11 10.0.26200; preflight matched the runtime lock.",
+   "evaluation": "Main and supplementary periods; cohorts all_scored, persistence_available and regional_model_fitted (ungated diagnostic). Metrics: binary crisis precision/recall/F1/F2/accuracy, four-class accuracy/macro-F1, q3 R2; MLP rows per seed plus a mean-of-3-seeds dashboard row. Country-cluster bootstrap 2,000 draws (seed 42). Comparators: matched pooled XGB, persistence.",
+   "sources": "MLflow family run 744b0d2512824623bd2cf58217c95d18: source_code/<package>/config/experiment-mlp.json (ipcch-mlp-contract-v1.0), runtime-lock.json, inputs.json; source/preflight/preflight.json (runtime); source/develop/frozen_recipes.json; GeoXGB reference run bdbafe393d694439a1c35ccec4d5816a (feature order, maps); IPCCHMLflow/naming.py (status).",
+   "arms": {
+    "global_base": {
+     "role": "candidate",
+     "meaning": "The global MLP alone, without a residual model.",
+     "differences": "No residual correction."
+    },
+    "pooled": {
+     "role": "baseline",
+     "meaning": "global_base plus one pooled residual model for all areas.",
+     "differences": "Pooled residual MLP."
+    },
+    "partitioned_gated": {
+     "role": "candidate",
+     "meaning": "global_base plus the regional residual where the historical gate passed for that region, pooled elsewhere.",
+     "differences": "Regional residuals on the frozen reference map with the historical gate."
+    },
+    "regional_ungated": {
+     "role": "diagnostic",
+     "meaning": "global_base plus the regional residual wherever one was fitted, whatever the gate decided; scored on regional_model_fitted rows only.",
+     "differences": "Regional residuals without the gate."
+    }
+   }
+  },
+  "compact_climate_somalia": {
+   "project": "IPCCH forecasting",
+   "title": "Compact climate Somalia-local historical",
+   "scope": "somalia_local",
+   "model_type": "XGBoost regressor quartet (annual refit)",
+   "target": "cumulative phase shares q2-q5; phase by 0.20 rule",
+   "status_tag": "historical evaluation (Somalia-local); oracle = upper bound",
+   "one_line": "Same compact recipes as the global compact family but every model refit on Somalia (iso3 SOM) rows only; weather-oracle arm adds realized future rainfall/temperature anomalies.",
+   "status": "Historical evaluation, verified by an independent replay (original 2022-2025 and January-April 2026 extension snapshots). Realized future weather is a counterfactual perfect forecast assumed available at the origin; it is not an operational forecast.",
+   "data": "Unit: Somalia area x target month. Canonical membership iso3 == SOM (905 areas). Evaluation keys: frozen parent cohort intersected with SOM, 4,933 rows over 905 areas in 2022-2025 (1129/1217/711/1876 per year); the 2026 extension adds 905 keys (January-April 2026; 904 in April). Every model is fitted on Somalia rows only with labels <= Jan(Y) - max(H,1). Truth: reported overall phase and normalized phase-3-or-worse share of the frozen Somalia-local cohort.",
+   "features": {
+    "feature_set": "compact296",
+    "n_features": 296,
+    "groups": "compact296: Static geography (AEZ one-hots, soil, terrain) 29; ordinary monthly predictors 120 = value/MA3/MA6/MA12/SD12 of 24 sources at origin (food prices, commodity markets, economic activity, monthly climate, vegetation productivity, conflict, ENSO); same-month z 56; stress 28; two completed growing seasons + latest major dummy 29; coordinates/target calendar 27; safe IPC history 5 (e.g. overall_phase_history_change_1_3); national IDP 2 (idp_admin0_latest_stock, idp_admin0_latest_age_months). Codebook groups include Weather oracle (oracle arm only).",
+    "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/2e08142e9c7d4ba88f805ec1c7672746/artifacts/source.tar!reports/compact_climate_weather_oracle_v1_somalia_local/model_run_codebook/IPCCH_compact_climate_weather_oracle_somalia_local_model_run_codebook_en.csv#predictor?compact_baseline_{H}m=true"
+   },
+   "feature_engineering": "Inputs are rebuilt directly at the origin O without carrier masks (D16); each feature respects its row's own origin. Saved missingness is kept: NA handled natively by XGBoost, no external scaling, imputation or feature selection. Monthly sources are summarised at O as value, 3/6/12-month means and 12-month SD, same-calendar-month z-scores and stress indicators; growing-season blocks use the two most recent completed seasons. Static context is retrospective (historical vintage not certified). The codebook records formula, unit, source, time relative to origin and missing semantics for every predictor.",
+   "architecture": "Four XGBoost regressors (sklearn XGBRegressor, objective reg:squarederror) predict cumulative shares q2..q5 (phase 2 or worse .. phase 5); the IPC phase is the highest phase whose unrounded cumulative score is >= 0.20. One fit per evaluation year (annual blocks) on Somalia areas only; boosters saved per block (16 per lead for 2022-2025, 4 more in the 2026 extension). The weather oracle arm appends realized monthly anomalies.",
+   "settings": "XGBRegressor random_state 42; q2/q4/q5: max_depth 11, n_estimators 200, learning_rate 0.1, subsample 1, colsample_bytree 0.5, gamma 0, min_child_weight 0, scale_pos_weight 1; q3 (phase3_worse): max_depth 9, n_estimators 200, learning_rate 0.1, subsample 0.5, colsample_bytree 0.7, gamma 0.1, min_child_weight 0 (IPCCH repo configs/forecasting_hyperparameters.json and _p3.json; fit_model in scripts/modeling/run_deep_feature_weight_decay_forecasting.py). Exponential time-decay sample weights from the fit origin (half-life DEFAULT_HALF_LIFE_MONTHS; the catalog text for the origin-safe protocol states 24 months). Phase threshold 0.20.",
+   "environment": "not recorded in the archived catalog sources (run logs record per-block fit time and RSS only).",
+   "evaluation": "Frozen evaluation keys; metrics exact accuracy, 3+ accuracy/precision/recall/F2, R2 and MAE of the 3+ share, ordinal MAE; global and regions 0-8 (area_id mapping); oracle - baseline differences per year and pooled. Evaluation weights are rows.",
+   "sources": "IPCCH repo reports/compact_climate_weather_oracle_v1_somalia_local/report.md and model_run_codebook/*.csv (archived in MLflow family run 2e08142e9c7d4ba88f805ec1c7672746 source.tar); 2026 extension report (run f2fab83539454a69a5d4dfc447ee5a94); importer plans compact_somalia_original.json / compact_somalia_2026_extension.json; IPCCH repo IPCCHMLflow/naming.py; configs/forecasting_hyperparameters*.json.",
+   "arms": {
+    "baseline": {
+     "role": "baseline",
+     "meaning": "Compact baseline inputs (296) at every lead.",
+     "differences": "No future weather."
+    },
+    "weather_oracle": {
+     "role": "oracle",
+     "meaning": "Compact inputs plus realized monthly rainfall and temperature anomalies at O+1..O+min(H,6), treated as perfect forecasts available at the origin (upper bound, not deployable).",
+     "differences": "Adds 2 x min(H,6) oracle columns (302 inputs at 3 months, 308 at 6 and 12).",
+     "features": {
+      "feature_set": {
+       "3": "compact296+oracle6",
+       "6": "compact296+oracle12",
+       "12": "compact296+oracle12"
+      },
+      "n_features": {
+       "3": 302,
+       "6": 308,
+       "12": 308
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/2e08142e9c7d4ba88f805ec1c7672746/artifacts/source.tar!reports/compact_climate_weather_oracle_v1_somalia_local/model_run_codebook/IPCCH_compact_climate_weather_oracle_somalia_local_model_run_codebook_en.csv#predictor?compact_weather_oracle_{H}m=true"
+     }
+    }
+   }
+  },
+  "compact_launch_global": {
+   "project": "IPCCH forecasting",
+   "title": "Compact climate global launch",
+   "scope": "global",
+   "model_type": "XGBoost regressor quartet (launch fit)",
+   "target": "cumulative phase shares q2-q5; phase by 0.20 rule",
+   "status_tag": "launch: prediction summaries only, no scoring",
+   "one_line": "Compact climate global launch: compact XGBoost quartet fitted on all labels before April 2026 and applied at origin 2026-04 to targets 2026-04 (0 m), 2026-10 (6 m), 2027-04 (12 m); the CDS arm uses ECMWF April-2026 seasonal forecasts at inference.",
+   "status": "Launch run: saved prediction summaries only; no actual-label scoring, bootstrap or SHAP, and this catalog computes no scores. Verification of the launch artifacts passed. Global P3+ share predicted 0.2324 (2026-04), baseline vs CDS 0.2150 vs 0.2170 (2026-10), 0.2598 vs 0.2454 (2027-04).",
+   "data": "Origin O = 2026-04; targets 2026-04 (H0, one shared fit for both arms), 2026-10 (H6), 2027-04 (H12). Fit on all labels before April 2026; applied to the April 2026 inference population. Population tables use a fixed April 2026 population with the legacy country cap (raw > 110% of the 2025 reference -> 95%) and reporting-only repaired disjoint shares; the canonical class is the highest phase with unrounded cumulative score >= 0.2.",
+   "features": {
+    "feature_set": "compact296",
+    "n_features": 296,
+    "groups": "compact296: Static geography (AEZ one-hots, soil, terrain) 29; ordinary monthly predictors 120 = value/MA3/MA6/MA12/SD12 of 24 sources at origin (food prices, commodity markets, economic activity, monthly climate, vegetation productivity, conflict, ENSO); same-month z 56; stress 28; two completed growing seasons + latest major dummy 29; coordinates/target calendar 27; safe IPC history 5 (e.g. overall_phase_history_change_1_3); national IDP 2 (idp_admin0_latest_stock, idp_admin0_latest_age_months). Codebook groups include Weather oracle (oracle arm only).",
+    "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/cacfb63a15314089bdda91d1070f3bd3/artifacts/source.tar!reports/launch/nowcasting_2026_04_compact_cds_v1/model_run_codebook_en.csv#predictor?compact_baseline_{H}m=true"
+   },
+   "feature_engineering": "Inputs are rebuilt directly at the origin O without carrier masks (D16); each feature respects its row's own origin. Saved missingness is kept: NA handled natively by XGBoost, no external scaling, imputation or feature selection. Monthly sources are summarised at O as value, 3/6/12-month means and 12-month SD, same-calendar-month z-scores and stress indicators; growing-season blocks use the two most recent completed seasons. Static context is retrospective (historical vintage not certified). The codebook records formula, unit, source, time relative to origin and missing semantics for every predictor.",
+   "architecture": "Four XGBoost regressors (sklearn XGBRegressor, objective reg:squarederror) predict cumulative shares q2..q5 (phase 2 or worse .. phase 5); the IPC phase is the highest phase whose unrounded cumulative score is >= 0.20. One fit per evaluation year (annual blocks) on all areas; boosters saved per block (16 per lead for 2022-2025, 4 more in the 2026 extension). The weather oracle arm appends realized monthly anomalies.",
+   "settings": "XGBRegressor random_state 42; q2/q4/q5: max_depth 11, n_estimators 200, learning_rate 0.1, subsample 1, colsample_bytree 0.5, gamma 0, min_child_weight 0, scale_pos_weight 1; q3 (phase3_worse): max_depth 9, n_estimators 200, learning_rate 0.1, subsample 0.5, colsample_bytree 0.7, gamma 0.1, min_child_weight 0 (IPCCH repo configs/forecasting_hyperparameters.json and _p3.json; fit_model in scripts/modeling/run_deep_feature_weight_decay_forecasting.py). Exponential time-decay sample weights from the fit origin (half-life DEFAULT_HALF_LIFE_MONTHS; the catalog text for the origin-safe protocol states 24 months). Phase threshold 0.20.",
+   "environment": "not recorded in the archived catalog sources (run logs record per-block fit time and RSS only).",
+   "evaluation": "None (prediction summaries: predicted P3+/P4+ shares and people per arm and lead, CDS weather minus baseline differences, maps).",
+   "sources": "IPCCH repo launch summary and model_run_codebook_en.csv (archived in MLflow family run cacfb63a15314089bdda91d1070f3bd3 source.tar); importer plan; IPCCH repo IPCCHMLflow/naming.py; configs/forecasting_hyperparameters*.json.",
+   "arms": {
+    "baseline": {
+     "role": "baseline",
+     "meaning": "Compact baseline inputs (296).",
+     "differences": "No weather anomalies."
+    },
+    "cds_weather": {
+     "role": "candidate",
+     "meaning": "Compact inputs plus monthly weather anomalies: realized anomalies in training, ECMWF April-2026 seasonal forecast anomalies (SEAS5 system51) at inference.",
+     "differences": "Adds 12 weather-anomaly columns (308 inputs at 6 and 12 months); H0 shares the baseline fit.",
+     "features": {
+      "feature_set": "compact296+cds12",
+      "n_features": {
+       "6": 308,
+       "12": 308
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/cacfb63a15314089bdda91d1070f3bd3/artifacts/source.tar!reports/launch/nowcasting_2026_04_compact_cds_v1/model_run_codebook_en.csv#predictor?compact_cds_weather_{H}m=true"
+     }
+    }
+   }
+  },
+  "compact_launch_somalia": {
+   "project": "IPCCH forecasting",
+   "title": "Compact climate Somalia-local launch",
+   "scope": "somalia_local",
+   "model_type": "XGBoost regressor quartet (launch fit)",
+   "target": "cumulative phase shares q2-q5; phase by 0.20 rule",
+   "status_tag": "launch: prediction summaries only, no scoring",
+   "one_line": "Compact climate Somalia-local launch: compact XGBoost quartet fitted on all labels before April 2026 and applied at origin 2026-04 to targets 2026-04 (0 m), 2026-10 (6 m), 2027-04 (12 m); the CDS arm uses ECMWF April-2026 seasonal forecasts at inference.",
+   "status": "Launch run: saved prediction summaries only; no actual-label scoring, bootstrap or SHAP, and this catalog computes no scores. Verification of the launch artifacts passed. All 20 models refit on 5,835 Somalia observations with labels before April 2026; inference covers 904 of 905 areas (area 3146 has no April 2026 row).",
+   "data": "Origin O = 2026-04; targets 2026-04 (H0, one shared fit for both arms), 2026-10 (H6), 2027-04 (H12). Fit on all labels before April 2026; applied to the April 2026 inference population. Population tables use a fixed April 2026 population with the legacy country cap (raw > 110% of the 2025 reference -> 95%) and reporting-only repaired disjoint shares; the canonical class is the highest phase with unrounded cumulative score >= 0.2.",
+   "features": {
+    "feature_set": "compact296",
+    "n_features": 296,
+    "groups": "compact296: Static geography (AEZ one-hots, soil, terrain) 29; ordinary monthly predictors 120 = value/MA3/MA6/MA12/SD12 of 24 sources at origin (food prices, commodity markets, economic activity, monthly climate, vegetation productivity, conflict, ENSO); same-month z 56; stress 28; two completed growing seasons + latest major dummy 29; coordinates/target calendar 27; safe IPC history 5 (e.g. overall_phase_history_change_1_3); national IDP 2 (idp_admin0_latest_stock, idp_admin0_latest_age_months). Codebook groups include Weather oracle (oracle arm only).",
+    "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/a825dfab346e46d5b37325121bda8943/artifacts/source.tar!reports/launch/nowcasting_2026_04_compact_cds_v1_somalia_local/model_run_codebook_en.csv#predictor?compact_baseline_{H}m=true"
+   },
+   "feature_engineering": "Inputs are rebuilt directly at the origin O without carrier masks (D16); each feature respects its row's own origin. Saved missingness is kept: NA handled natively by XGBoost, no external scaling, imputation or feature selection. Monthly sources are summarised at O as value, 3/6/12-month means and 12-month SD, same-calendar-month z-scores and stress indicators; growing-season blocks use the two most recent completed seasons. Static context is retrospective (historical vintage not certified). The codebook records formula, unit, source, time relative to origin and missing semantics for every predictor.",
+   "architecture": "Four XGBoost regressors (sklearn XGBRegressor, objective reg:squarederror) predict cumulative shares q2..q5 (phase 2 or worse .. phase 5); the IPC phase is the highest phase whose unrounded cumulative score is >= 0.20. One fit per evaluation year (annual blocks) on all areas; boosters saved per block (16 per lead for 2022-2025, 4 more in the 2026 extension). The weather oracle arm appends realized monthly anomalies.",
+   "settings": "XGBRegressor random_state 42; q2/q4/q5: max_depth 11, n_estimators 200, learning_rate 0.1, subsample 1, colsample_bytree 0.5, gamma 0, min_child_weight 0, scale_pos_weight 1; q3 (phase3_worse): max_depth 9, n_estimators 200, learning_rate 0.1, subsample 0.5, colsample_bytree 0.7, gamma 0.1, min_child_weight 0 (IPCCH repo configs/forecasting_hyperparameters.json and _p3.json; fit_model in scripts/modeling/run_deep_feature_weight_decay_forecasting.py). Exponential time-decay sample weights from the fit origin (half-life DEFAULT_HALF_LIFE_MONTHS; the catalog text for the origin-safe protocol states 24 months). Phase threshold 0.20.",
+   "environment": "not recorded in the archived catalog sources (run logs record per-block fit time and RSS only).",
+   "evaluation": "None (prediction summaries: predicted P3+/P4+ shares and people per arm and lead, CDS weather minus baseline differences, maps).",
+   "sources": "IPCCH repo launch summary and model_run_codebook_en.csv (archived in MLflow family run a825dfab346e46d5b37325121bda8943 source.tar); importer plan; IPCCH repo IPCCHMLflow/naming.py; configs/forecasting_hyperparameters*.json.",
+   "arms": {
+    "baseline": {
+     "role": "baseline",
+     "meaning": "Compact baseline inputs (296).",
+     "differences": "No weather anomalies."
+    },
+    "cds_weather": {
+     "role": "candidate",
+     "meaning": "Compact inputs plus monthly weather anomalies: realized anomalies in training, ECMWF April-2026 seasonal forecast anomalies (SEAS5 system51) at inference.",
+     "differences": "Adds 12 weather-anomaly columns (308 inputs at 6 and 12 months); H0 shares the baseline fit.",
+     "features": {
+      "feature_set": "compact296+cds12",
+      "n_features": {
+       "6": 308,
+       "12": 308
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/a825dfab346e46d5b37325121bda8943/artifacts/source.tar!reports/launch/nowcasting_2026_04_compact_cds_v1_somalia_local/model_run_codebook_en.csv#predictor?compact_cds_weather_{H}m=true"
+     }
+    }
+   }
+  },
+  "origin_safe_climate_global": {
+   "project": "IPCCH forecasting",
+   "title": "Origin-safe climate global historical",
+   "scope": "global",
+   "model_type": "XGBoost regressor quartet (annual refit)",
+   "target": "cumulative phase shares q2-q5; phase by 0.20 rule",
+   "status_tag": "historical evaluation",
+   "one_line": "Global XGBoost quartet refit once per evaluation year with 24-month decay weights on origin-safe inputs (shared monthly climate, completed growing seasons); arms add safe IPC history and national IDP.",
+   "status": "Historical evaluation on the frozen global origin-safe cohort (2022-2025); saved models and predictions were verified and later reused unchanged as the oracle-free reference of the origin-safe weather family.",
+   "data": "Unit: area x target month of the frozen global origin-safe cohort (28,205 evaluation keys, 2022-2025). One fit per evaluation year on all areas with labels up to the strictest origin of that year (<= Jan(Y) - max(H,1)) and 24-month decay weights; every feature respects its row's own forecast origin. Truth: reported overall phase and normalized phase-3-or-worse share.",
+   "features": {
+    "feature_set": {
+     "0": "origin_safe863",
+     "3": "origin_safe863",
+     "6": "origin_safe863",
+     "12": "origin_safe647"
+    },
+    "n_features": {
+     "0": 863,
+     "3": 863,
+     "6": 863,
+     "12": 647
+    },
+    "groups": "Codebook groups (union over arms/leads): Monthly climate (shared-folder ensemble means and anomalies, lags), Food prices (+ stress), Growing-season climate (completed seasons), Conflict (+ stress), Commodity markets, Vegetation productivity (+ stress), Economic activity, Static geography (29), ENSO (+ stress), Coordinates and calendar (27), Interactions, Spatial spillovers, Autoregressive history (safe IPC history, 5), Displacement (national IDP, 2). Fewer inputs at 12 months (lag availability).",
+    "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/1f4f29ce78054398bc216f014b55fd72/artifacts/source.tar!reports/origin_safe_weather_oracle_v1/model_run_codebook/IPCCH_climate_weather_oracle_model_run_codebook_en.csv#predictor?climate_no_history=true&horizons_months~{H}"
+   },
+   "feature_engineering": "Origin-safe rule: every feature uses only information observed at or before its row's forecast origin O (row origin O = T - H); completed growing seasons only; safe IPC history = the latest three reported phases visible at the origin; national IDP reports as available at O. NA handled natively by XGBoost; no scaling, imputation or feature selection. The codebook records formula, unit, source, time relative to origin and missing semantics per predictor.",
+   "architecture": "Four XGBoost regressors (XGBRegressor, reg:squarederror) predict cumulative shares q2..q5; IPC phase = highest phase whose unrounded cumulative score is >= 0.20. One global fit per evaluation year (annual blocks); arms differ only in input sets.",
+   "settings": "XGBRegressor random_state 42; q2/q4/q5: max_depth 11, n_estimators 200, learning_rate 0.1, subsample 1, colsample_bytree 0.5, gamma 0, min_child_weight 0, scale_pos_weight 1; q3 (phase3_worse): max_depth 9, n_estimators 200, learning_rate 0.1, subsample 0.5, colsample_bytree 0.7, gamma 0.1, min_child_weight 0 (IPCCH repo configs/forecasting_hyperparameters.json and _p3.json; fit_model in scripts/modeling/run_deep_feature_weight_decay_forecasting.py). Exponential time-decay sample weights from the fit origin (24-month half-life per the catalog family text). Phase threshold 0.20.",
+   "environment": "not recorded in the archived catalog sources (run logs record per-block fit time and RSS only).",
+   "evaluation": "Frozen global keys 2022-2025; exact-phase accuracy, phase 3+ accuracy/precision/recall/F2, R2 and MAE of the 3+ share, ordinal MAE; observation-row weighting.",
+   "sources": "IPCCH repo origin_safe_climate_idp_v1 results (MLflow family run 83af3ce7b185426ea05a72c2594a1174 source.tar; no cited report) and the origin-safe weather oracle codebook (run 1f4f29ce78054398bc216f014b55fd72) listing every predictor per arm; importer plan origin_safe_climate_idp_v1.json; IPCCH repo IPCCHMLflow/naming.py; configs/forecasting_hyperparameters*.json.",
+   "arms": {
+    "no_ipc_history": {
+     "role": "baseline",
+     "meaning": "Origin-safe inputs without IPC history.",
+     "differences": "No safe IPC history, no IDP."
+    },
+    "safe_ipc_history": {
+     "role": "candidate",
+     "meaning": "Origin-safe inputs plus the latest three reported phases visible at the origin.",
+     "differences": "Adds 5 safe IPC history features.",
+     "features": {
+      "feature_set": {
+       "0": "origin_safe868",
+       "3": "origin_safe868",
+       "6": "origin_safe868",
+       "12": "origin_safe652"
+      },
+      "n_features": {
+       "0": 868,
+       "3": 868,
+       "6": 868,
+       "12": 652
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/1f4f29ce78054398bc216f014b55fd72/artifacts/source.tar!reports/origin_safe_weather_oracle_v1/model_run_codebook/IPCCH_climate_weather_oracle_model_run_codebook_en.csv#predictor?climate_safe_history=true&horizons_months~{H}"
+     }
+    },
+    "safe_ipc_history_idp": {
+     "role": "candidate",
+     "meaning": "Safe IPC history plus national IDP reports.",
+     "differences": "Adds 2 national IDP features to safe_ipc_history.",
+     "features": {
+      "feature_set": {
+       "0": "origin_safe870",
+       "3": "origin_safe870",
+       "6": "origin_safe870",
+       "12": "origin_safe654"
+      },
+      "n_features": {
+       "0": 870,
+       "3": 870,
+       "6": 870,
+       "12": 654
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/1f4f29ce78054398bc216f014b55fd72/artifacts/source.tar!reports/origin_safe_weather_oracle_v1/model_run_codebook/IPCCH_climate_weather_oracle_model_run_codebook_en.csv#predictor?climate_safe_history_idp=true&horizons_months~{H}"
+     }
+    }
+   }
+  },
+  "origin_safe_weather_global": {
+   "project": "IPCCH forecasting",
+   "title": "Origin-safe weather global historical",
+   "scope": "global",
+   "model_type": "XGBoost regressor quartet (annual refit)",
+   "target": "cumulative phase shares q2-q5; phase by 0.20 rule",
+   "status_tag": "historical; oracle = upper bound, not deployable",
+   "one_line": "Origin-safe reference (safe IPC history + IDP) plus realized rainfall/temperature anomalies after the origin as a perfect-forecast upper bound; second arm adds fixed future/past summary terms.",
+   "status": "Historical evaluation, 2022-2025. Realized future weather is a counterfactual perfect forecast assumed available at the origin; it is not an operational forecast. The oracle-free reference (safe_ipc_history_idp) was reused, not refit.",
+   "data": "Unit: area x target month of the frozen global origin-safe cohort (28,205 evaluation keys, 2022-2025). One fit per evaluation year on all areas with labels up to the strictest origin of that year (<= Jan(Y) - max(H,1)) and 24-month decay weights; every feature respects its row's own forecast origin. Truth: reported overall phase and normalized phase-3-or-worse share.",
+   "features": {
+    "feature_set": {
+     "0": "origin_safe863",
+     "3": "origin_safe863",
+     "6": "origin_safe863",
+     "12": "origin_safe647"
+    },
+    "n_features": {
+     "0": 863,
+     "3": 863,
+     "6": 863,
+     "12": 647
+    },
+    "groups": "Codebook groups (union over arms/leads): Monthly climate (shared-folder ensemble means and anomalies, lags), Food prices (+ stress), Growing-season climate (completed seasons), Conflict (+ stress), Commodity markets, Vegetation productivity (+ stress), Economic activity, Static geography (29), ENSO (+ stress), Coordinates and calendar (27), Interactions, Spatial spillovers, Autoregressive history (safe IPC history, 5), Displacement (national IDP, 2). Fewer inputs at 12 months (lag availability).",
+    "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/1f4f29ce78054398bc216f014b55fd72/artifacts/source.tar!reports/origin_safe_weather_oracle_v1/model_run_codebook/IPCCH_climate_weather_oracle_model_run_codebook_en.csv#predictor?climate_no_history=true&horizons_months~{H}"
+   },
+   "feature_engineering": "Origin-safe rule: every feature uses only information observed at or before its row's forecast origin O (row origin O = T - H); completed growing seasons only; safe IPC history = the latest three reported phases visible at the origin; national IDP reports as available at O. NA handled natively by XGBoost; no scaling, imputation or feature selection. The codebook records formula, unit, source, time relative to origin and missing semantics per predictor.",
+   "architecture": "Four XGBoost regressors (XGBRegressor, reg:squarederror) predict cumulative shares q2..q5; IPC phase = highest phase whose unrounded cumulative score is >= 0.20. One global fit per evaluation year (annual blocks); arms differ only in input sets.",
+   "settings": "XGBRegressor random_state 42; q2/q4/q5: max_depth 11, n_estimators 200, learning_rate 0.1, subsample 1, colsample_bytree 0.5, gamma 0, min_child_weight 0, scale_pos_weight 1; q3 (phase3_worse): max_depth 9, n_estimators 200, learning_rate 0.1, subsample 0.5, colsample_bytree 0.7, gamma 0.1, min_child_weight 0 (IPCCH repo configs/forecasting_hyperparameters.json and _p3.json; fit_model in scripts/modeling/run_deep_feature_weight_decay_forecasting.py). Exponential time-decay sample weights from the fit origin (24-month half-life per the catalog family text). Phase threshold 0.20.",
+   "environment": "not recorded in the archived catalog sources (run logs record per-block fit time and RSS only).",
+   "evaluation": "Frozen global keys 2022-2025; exact-phase accuracy, phase 3+ accuracy/precision/recall/F2, R2 and MAE of the 3+ share, ordinal MAE; observation-row weighting.",
+   "sources": "IPCCH repo reports/origin_safe_weather_oracle_v1/global_report.md, region3_report.md and model_run_codebook/* (archived in MLflow family run 1f4f29ce78054398bc216f014b55fd72 source.tar); importer plan origin_safe_weather_oracle_v1.json; IPCCH repo IPCCHMLflow/naming.py; configs/forecasting_hyperparameters*.json.",
+   "arms": {
+    "weather_oracle": {
+     "role": "oracle",
+     "meaning": "Reference plus realized prcp_anom_month_ensmean and tmean_anom_month_ensmean at O+1..O+min(H,6) (6/12/12 columns at 3/6/12 months), treated as perfect forecasts available at origin.",
+     "differences": "Adds oracle anomaly columns to safe_ipc_history_idp.",
+     "features": {
+      "feature_set": {
+       "3": "origin_safe870+oracle6",
+       "6": "origin_safe870+oracle12",
+       "12": "origin_safe654+oracle12"
+      },
+      "n_features": {
+       "3": 876,
+       "6": 882,
+       "12": 666
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/1f4f29ce78054398bc216f014b55fd72/artifacts/source.tar!reports/origin_safe_weather_oracle_v1/model_run_codebook/IPCCH_climate_weather_oracle_model_run_codebook_en.csv#predictor?climate_safe_history_idp_oracle=true&horizons_months~{H}"
+     }
+    },
+    "weather_oracle_with_summaries": {
+     "role": "oracle",
+     "meaning": "Weather oracle plus, per variable, the future mean F, the equal-weight past/future mean B = (R+F)/2 and the safe-history IPC3+-gated future mean Q.",
+     "differences": "Adds 6 summary terms to weather_oracle.",
+     "features": {
+      "feature_set": {
+       "3": "origin_safe870+oracle6+b6",
+       "6": "origin_safe870+oracle12+b6",
+       "12": "origin_safe654+oracle12+b6"
+      },
+      "n_features": {
+       "3": 882,
+       "6": 888,
+       "12": 672
+      },
+      "list": "codebook=/home/swl007007/.local/share/ipcch-mlflow/artifacts/3/1f4f29ce78054398bc216f014b55fd72/artifacts/source.tar!reports/origin_safe_weather_oracle_v1/model_run_codebook/IPCCH_climate_weather_oracle_model_run_codebook_en.csv#predictor?climate_safe_history_idp_oracle_b6=true&horizons_months~{H}"
+     }
+    }
+   }
+  },
+  "somalia_oracle_information": {
+   "project": "IPCCH forecasting",
+   "title": "Somalia oracle information historical",
+   "scope": "somalia_local",
+   "model_type": "Somalia-local XGBoost regressors of cumulative shares",
+   "target": "q3 share and phase (0.20 rule); crisis truth = reported phase >= 3",
+   "status_tag": "historical oracle-information ceiling (not operational)",
+   "one_line": "Somalia-local XGBoost fits with cumulative information sets (A existing predictors, B + seasonal climate, C + realized future weather, D + rich share history), 2025-2026.",
+   "status": "Interpretation: conditional empirical ceiling of this model family under ideal publication and oracle realized weather; not causal, not operational forecast skill; horizons are separate conditions, not ranked. Independent replay 646/646 checks passed. Focus: isotonic-calibrated D at H0/H3 and discrimination (AUC), not F2.",
+   "data": "Unit: Somalia area x target month (Somalia-local fits only). Truth: reported overall phase (crisis truth = reported overall phase >= 3; never a threshold on the actual q3 share) and the actual population share in phase 3 or worse (q3). Outer test years 2025 and 2026; at H > 0 the primary cohort keeps only rows whose realized weather at the oracle offsets is verified (frozen before fitting), so H3/H6 primary cohorts are small (e.g. 275 rows in 2025).",
+   "features": {
+    "feature_set": {
+     "0": "somalia_D997",
+     "3": "somalia_D1003",
+     "6": "somalia_D1009",
+     "12": "somalia_D874"
+    },
+    "n_features": {
+     "0": 997,
+     "3": 1003,
+     "6": 1009,
+     "12": 874
+    },
+    "groups": "Information sets: A existing Somalia predictors (511 inputs; 376 at 12 months); B = A + 14 seasonal climate means (525; 390); C = B + realized rainfall/temperature after the origin (weather oracle: 531/537/402 at 3/6/12 months); D = C + rich population-share history (+472: 997/1003/1009/874 at 0/3/6/12 months). The ordered column list was not archived with this snapshot.",
+    "list": ""
+   },
+   "feature_engineering": "Retrospective oracle-information design: ideal label publication and realized future weather at the oracle offsets (not operational skill). Population-share history (q2..q5 history features) uses labels visible under the ideal-publication assumption; residual formulations predict the q3 change from the latest observed share hist_q3_obs1 (direct fallback where no history). NA handled natively by XGBoost.",
+   "architecture": "Somalia-local XGBoost regressors of the cumulative shares q2..q5 (q3 = phase 3 or worse); the phase follows the 0.20 rule. Fitted only on Somalia areas. Recipes: one bundle per information set chosen by phase 3+ F2 (tie: candidate order).",
+   "settings": "Tree bundles (configs/somalia_oracle_candidates.json, objective reg:squarederror, random_state 42, hist, n_jobs 1; q3 overrides subsample 0.5, colsample 0.7, gamma 0.1): X1 depth 3/200 trees/lr 0.05; X2 5/200/0.05; X3 5/500/0.05; X4 7/200/0.05; X5 7/500/0.05 (all colsample 0.5, min_child_weight 5); X6 depth 11 (q3 9)/200/lr 0.1, min_child_weight 0. Sample weights decay with half-life 24 months from each inner or outer fit origin; phase threshold 0.20. Selection metric phase3plus_f2.",
+   "environment": "Git HEAD at run f576e690; runtime xgboost 3.2.0, numpy 2.4.4, pandas 3.0.3 (summary.md); other versions not recorded.",
+   "evaluation": "Primary cohort per test year and lead; q3 final/raw R2, RMSE/MAE/bias (pp), final AUC, within-month AUC, binary F1/precision/recall (prediction rule q3_final >= 0.20); bootstrap 2,000 draws (seed 42). Retrospective (2025/2026 outcomes already inspected in v1).",
+   "sources": "IPCCH repo summary.md and calibration_diagnostics.md (archived in MLflow family run bc5d8d39ece04492b196568324d8ba25 source.tar); importer plan somalia_oracle_v1.json; IPCCH repo configs/somalia_oracle_candidates.json; IPCCHMLflow/naming.py.",
+   "arms": {
+    "existing_predictors": {
+     "role": "baseline",
+     "meaning": "Information set A: the existing Somalia predictors.",
+     "differences": "A only.",
+     "features": {
+      "feature_set": {
+       "0": "somalia_A511",
+       "3": "somalia_A511",
+       "6": "somalia_A511",
+       "12": "somalia_A376"
+      },
+      "n_features": {
+       "0": 511,
+       "3": 511,
+       "6": 511,
+       "12": 376
+      }
+     }
+    },
+    "seasonal_climate": {
+     "role": "candidate",
+     "meaning": "Information set B: A plus fourteen seasonal climate means.",
+     "differences": "+14 seasonal climate means.",
+     "features": {
+      "feature_set": {
+       "0": "somalia_B525",
+       "3": "somalia_B525",
+       "6": "somalia_B525",
+       "12": "somalia_B390"
+      },
+      "n_features": {
+       "0": 525,
+       "3": 525,
+       "6": 525,
+       "12": 390
+      }
+     }
+    },
+    "weather_oracle": {
+     "role": "oracle",
+     "meaning": "Information set C: B plus realized rainfall and temperature after the forecast origin (weather oracle).",
+     "differences": "+ realized weather (upper bound).",
+     "features": {
+      "feature_set": {
+       "3": "somalia_C531",
+       "6": "somalia_C537",
+       "12": "somalia_C402"
+      },
+      "n_features": {
+       "3": 531,
+       "6": 537,
+       "12": 402
+      }
+     }
+    },
+    "weather_oracle_with_share_history": {
+     "role": "oracle",
+     "meaning": "Information set D: C plus rich population-share history.",
+     "differences": "+ share history (472)."
+    }
+   }
+  },
+  "somalia_q3_optimization": {
+   "project": "IPCCH forecasting",
+   "title": "Somalia q3 optimization historical",
+   "scope": "somalia_local",
+   "model_type": "Somalia-local XGBoost regressors of cumulative shares",
+   "target": "q3 share and phase (0.20 rule); crisis truth = reported phase >= 3",
+   "status_tag": "historical, retrospective (ancillary leads disclosed leakage)",
+   "one_line": "Somalia-local q3-first optimization: recipes (tree bundle x direct/residual-on-history q3 x calibration none/shift/isotonic) selected on 0-month training-period validation; 3/6/12-month refits reuse the 0-month recipe.",
+   "status": "D is the main specification, A-C baselines. H0 recipes selected by pooled held-out final-q3 RMSE on training-window chronological OOF predictions (AUC breaks ties). H3/H6/H12 are ancillary fixed-recipe refits whose recipes used labels later than their origins (disclosed leakage); not optimized or ranked. Retrospective: 2025/2026 outcomes were inspected in v1.",
+   "data": "Unit: Somalia area x target month (Somalia-local fits only). Truth: reported overall phase (crisis truth = reported overall phase >= 3; never a threshold on the actual q3 share) and the actual population share in phase 3 or worse (q3). Outer test years 2025 and 2026; at H > 0 the primary cohort keeps only rows whose realized weather at the oracle offsets is verified (frozen before fitting), so H3/H6 primary cohorts are small (e.g. 275 rows in 2025).",
+   "features": {
+    "feature_set": {
+     "0": "somalia_D997",
+     "3": "somalia_D1003",
+     "6": "somalia_D1009",
+     "12": "somalia_D874"
+    },
+    "n_features": {
+     "0": 997,
+     "3": 1003,
+     "6": 1009,
+     "12": 874
+    },
+    "groups": "Information sets: A existing Somalia predictors (511 inputs; 376 at 12 months); B = A + 14 seasonal climate means (525; 390); C = B + realized rainfall/temperature after the origin (weather oracle: 531/537/402 at 3/6/12 months); D = C + rich population-share history (+472: 997/1003/1009/874 at 0/3/6/12 months). The ordered column list was not archived with this snapshot.",
+    "list": ""
+   },
+   "feature_engineering": "Retrospective oracle-information design: ideal label publication and realized future weather at the oracle offsets (not operational skill). Population-share history (q2..q5 history features) uses labels visible under the ideal-publication assumption; residual formulations predict the q3 change from the latest observed share hist_q3_obs1 (direct fallback where no history). NA handled natively by XGBoost.",
+   "architecture": "Somalia-local XGBoost regressors of the cumulative shares q2..q5 (q3 = phase 3 or worse); the phase follows the 0.20 rule. Fitted only on Somalia areas. Calibration of the final q3: none, shift or isotonic; final values bounded to [0,1].",
+   "settings": "Tree bundles (configs/somalia_oracle_candidates.json, objective reg:squarederror, random_state 42, hist, n_jobs 1; q3 overrides subsample 0.5, colsample 0.7, gamma 0.1): X1 depth 3/200 trees/lr 0.05; X2 5/200/0.05; X3 5/500/0.05; X4 7/200/0.05; X5 7/500/0.05 (all colsample 0.5, min_child_weight 5); X6 depth 11 (q3 9)/200/lr 0.1, min_child_weight 0. Sample weights decay with half-life 24 months from each inner or outer fit origin; phase threshold 0.20. Selection: pooled unweighted final-q3 RMSE (tie tolerance 1e-12; ties by final-q3 AUC, method, bundle, formulation); 3 scoring and 3 calibration months (min 2); residual baseline hist_q3_obs1; binary q3 threshold 0.20 (configs/somalia_q3_optimization.json).",
+   "environment": "Code d75378d9; xgboost 3.2.0 (summary.md); other versions not recorded.",
+   "evaluation": "Primary cohort per test year and lead; q3 final/raw R2, RMSE/MAE/bias (pp), final AUC, within-month AUC, binary F1/precision/recall (prediction rule q3_final >= 0.20); bootstrap 2,000 draws (seed 42). Retrospective (2025/2026 outcomes already inspected in v1).",
+   "sources": "IPCCH repo summary.md (archived in MLflow family run 78e965df979f4edfb873e71c5b02d15f source.tar); importer plan somalia_oracle_v2_q3.json; IPCCH repo configs/somalia_q3_optimization.json and somalia_oracle_candidates.json; IPCCHMLflow/naming.py.",
+   "arms": {
+    "existing_predictors": {
+     "role": "baseline",
+     "meaning": "Information set A: the existing Somalia predictors.",
+     "differences": "A only.",
+     "features": {
+      "feature_set": {
+       "0": "somalia_A511",
+       "3": "somalia_A511",
+       "6": "somalia_A511",
+       "12": "somalia_A376"
+      },
+      "n_features": {
+       "0": 511,
+       "3": 511,
+       "6": 511,
+       "12": 376
+      }
+     }
+    },
+    "seasonal_climate": {
+     "role": "candidate",
+     "meaning": "Information set B: A plus fourteen seasonal climate means.",
+     "differences": "+14 seasonal climate means.",
+     "features": {
+      "feature_set": {
+       "0": "somalia_B525",
+       "3": "somalia_B525",
+       "6": "somalia_B525",
+       "12": "somalia_B390"
+      },
+      "n_features": {
+       "0": 525,
+       "3": 525,
+       "6": 525,
+       "12": 390
+      }
+     }
+    },
+    "weather_oracle": {
+     "role": "oracle",
+     "meaning": "Information set C: B plus realized rainfall and temperature after the forecast origin (weather oracle).",
+     "differences": "+ realized weather (upper bound).",
+     "features": {
+      "feature_set": {
+       "3": "somalia_C531",
+       "6": "somalia_C537",
+       "12": "somalia_C402"
+      },
+      "n_features": {
+       "3": 531,
+       "6": 537,
+       "12": 402
+      }
+     }
+    },
+    "share_history_direct": {
+     "role": "candidate",
+     "meaning": "Share-history model predicting q3 directly.",
+     "differences": "Direct formulation."
+    },
+    "share_history_residual": {
+     "role": "candidate",
+     "meaning": "Share-history model predicting the q3 change from the latest observed share (direct fallback where no history).",
+     "differences": "Residual formulation."
+    },
+    "share_history_selected": {
+     "role": "candidate",
+     "meaning": "The share-history recipe selected on 0-month training-period validation (direct or residual).",
+     "differences": "Recipe selected per fold."
+    }
+   }
+  },
+  "somalia_validity_observed": {
+   "project": "IPCCH forecasting",
+   "title": "Somalia validity observed labels only",
+   "scope": "somalia_local",
+   "model_type": "Somalia-local XGBoost regressors of cumulative shares",
+   "target": "q3 share and phase (0.20 rule); crisis truth = reported phase >= 3",
+   "status_tag": "historical, retrospective",
+   "one_line": "Somalia-local share-history (D) models: Share-history (D) recipes fitted on observed labels only.",
+   "status": "Retrospective comparison on inspected years; H3/H6/H12 are ancillary fixed-recipe refits. Report isolation removes each scoring round's source family from fitting/calibration. Question: do validity-period label copies used only in training improve the share-history model?",
+   "data": "Unit: Somalia area x target month (Somalia-local fits only). Truth: reported overall phase (crisis truth = reported overall phase >= 3; never a threshold on the actual q3 share) and the actual population share in phase 3 or worse (q3). Outer test years 2025 and 2026; at H > 0 the primary cohort keeps only rows whose realized weather at the oracle offsets is verified (frozen before fitting), so H3/H6 primary cohorts are small (e.g. 275 rows in 2025).",
+   "features": {
+    "feature_set": {
+     "0": "somalia_D997",
+     "3": "somalia_D1003",
+     "6": "somalia_D1009",
+     "12": "somalia_D874"
+    },
+    "n_features": {
+     "0": 997,
+     "3": 1003,
+     "6": 1009,
+     "12": 874
+    },
+    "groups": "Information sets: A existing Somalia predictors (511 inputs; 376 at 12 months); B = A + 14 seasonal climate means (525; 390); C = B + realized rainfall/temperature after the origin (weather oracle: 531/537/402 at 3/6/12 months); D = C + rich population-share history (+472: 997/1003/1009/874 at 0/3/6/12 months). The ordered column list was not archived with this snapshot.",
+    "list": ""
+   },
+   "feature_engineering": "Retrospective oracle-information design: ideal label publication and realized future weather at the oracle offsets (not operational skill). Population-share history (q2..q5 history features) uses labels visible under the ideal-publication assumption; residual formulations predict the q3 change from the latest observed share hist_q3_obs1 (direct fallback where no history). NA handled natively by XGBoost.",
+   "architecture": "Somalia-local XGBoost regressors of the cumulative shares q2..q5 (q3 = phase 3 or worse); the phase follows the 0.20 rule. Fitted only on Somalia areas. Branch: observed labels only.",
+   "settings": "Tree bundles (configs/somalia_oracle_candidates.json, objective reg:squarederror, random_state 42, hist, n_jobs 1; q3 overrides subsample 0.5, colsample 0.7, gamma 0.1): X1 depth 3/200 trees/lr 0.05; X2 5/200/0.05; X3 5/500/0.05; X4 7/200/0.05; X5 7/500/0.05 (all colsample 0.5, min_child_weight 5); X6 depth 11 (q3 9)/200/lr 0.1, min_child_weight 0. Sample weights decay with half-life 24 months from each inner or outer fit origin; phase threshold 0.20. Selection as in Somalia q3 optimization (pooled final-q3 RMSE over bundles x direct/residual x none/shift/isotonic), 3 selection and 3 calibration rounds (min 2); 2025-07 raw month excluded (cross-border spillover) (configs/somalia_validity_augmentation.json).",
+   "environment": "Code 1f3bfcec (summary.md); versions not recorded.",
+   "evaluation": "Primary cohort per test year and lead; q3 final/raw R2, RMSE/MAE/bias (pp), final AUC, within-month AUC, binary F1/precision/recall (prediction rule q3_final >= 0.20); bootstrap 2,000 draws (seed 42). Retrospective (2025/2026 outcomes already inspected in v1).",
+   "sources": "IPCCH repo summary.md (archived in MLflow family run 89e2e4151dc843cf9faf83da588e57f3 source.tar); importer plan somalia_oracle_v3_validity.json; IPCCH repo configs/somalia_validity_augmentation.json; IPCCHMLflow/naming.py.",
+   "arms": {
+    "share_history_direct": {
+     "role": "candidate",
+     "meaning": "Share-history model predicting q3 directly.",
+     "differences": "Direct formulation."
+    },
+    "share_history_residual": {
+     "role": "candidate",
+     "meaning": "Share-history model predicting the q3 change from the latest observed share (direct fallback where no history).",
+     "differences": "Residual formulation."
+    },
+    "share_history_selected": {
+     "role": "candidate",
+     "meaning": "The share-history recipe selected on 0-month training-period validation (direct or residual).",
+     "differences": "Recipe selected per fold."
+    }
+   }
+  },
+  "somalia_validity_augmented": {
+   "project": "IPCCH forecasting",
+   "title": "Somalia validity validity-augmented training labels",
+   "scope": "somalia_local",
+   "model_type": "Somalia-local XGBoost regressors of cumulative shares",
+   "target": "q3 share and phase (0.20 rule); crisis truth = reported phase >= 3",
+   "status_tag": "historical, retrospective",
+   "one_line": "Somalia-local share-history (D) models: Share-history (D) recipes fitted with 3,789 validity-period label copies added to training only (copies keep the original's values, source family and availability and never enter history); outer evaluation keys identical to the observed-label setting.",
+   "status": "Retrospective comparison on inspected years; H3/H6/H12 are ancillary fixed-recipe refits. Report isolation removes each scoring round's source family from fitting/calibration. Question: do validity-period label copies used only in training improve the share-history model?",
+   "data": "Unit: Somalia area x target month (Somalia-local fits only). Truth: reported overall phase (crisis truth = reported overall phase >= 3; never a threshold on the actual q3 share) and the actual population share in phase 3 or worse (q3). Outer test years 2025 and 2026; at H > 0 the primary cohort keeps only rows whose realized weather at the oracle offsets is verified (frozen before fitting), so H3/H6 primary cohorts are small (e.g. 275 rows in 2025).",
+   "features": {
+    "feature_set": {
+     "0": "somalia_D997",
+     "3": "somalia_D1003",
+     "6": "somalia_D1009",
+     "12": "somalia_D874"
+    },
+    "n_features": {
+     "0": 997,
+     "3": 1003,
+     "6": 1009,
+     "12": 874
+    },
+    "groups": "Information sets: A existing Somalia predictors (511 inputs; 376 at 12 months); B = A + 14 seasonal climate means (525; 390); C = B + realized rainfall/temperature after the origin (weather oracle: 531/537/402 at 3/6/12 months); D = C + rich population-share history (+472: 997/1003/1009/874 at 0/3/6/12 months). The ordered column list was not archived with this snapshot.",
+    "list": ""
+   },
+   "feature_engineering": "Retrospective oracle-information design: ideal label publication and realized future weather at the oracle offsets (not operational skill). Population-share history (q2..q5 history features) uses labels visible under the ideal-publication assumption; residual formulations predict the q3 change from the latest observed share hist_q3_obs1 (direct fallback where no history). NA handled natively by XGBoost.",
+   "architecture": "Somalia-local XGBoost regressors of the cumulative shares q2..q5 (q3 = phase 3 or worse); the phase follows the 0.20 rule. Fitted only on Somalia areas. Branch: validity-augmented training labels.",
+   "settings": "Tree bundles (configs/somalia_oracle_candidates.json, objective reg:squarederror, random_state 42, hist, n_jobs 1; q3 overrides subsample 0.5, colsample 0.7, gamma 0.1): X1 depth 3/200 trees/lr 0.05; X2 5/200/0.05; X3 5/500/0.05; X4 7/200/0.05; X5 7/500/0.05 (all colsample 0.5, min_child_weight 5); X6 depth 11 (q3 9)/200/lr 0.1, min_child_weight 0. Sample weights decay with half-life 24 months from each inner or outer fit origin; phase threshold 0.20. Selection as in Somalia q3 optimization (pooled final-q3 RMSE over bundles x direct/residual x none/shift/isotonic), 3 selection and 3 calibration rounds (min 2); 2025-07 raw month excluded (cross-border spillover) (configs/somalia_validity_augmentation.json).",
+   "environment": "Code 1f3bfcec (summary.md); versions not recorded.",
+   "evaluation": "Primary cohort per test year and lead; q3 final/raw R2, RMSE/MAE/bias (pp), final AUC, within-month AUC, binary F1/precision/recall (prediction rule q3_final >= 0.20); bootstrap 2,000 draws (seed 42). Retrospective (2025/2026 outcomes already inspected in v1).",
+   "sources": "IPCCH repo summary.md (archived in MLflow family run 89e2e4151dc843cf9faf83da588e57f3 source.tar); importer plan somalia_oracle_v3_validity.json; IPCCH repo configs/somalia_validity_augmentation.json; IPCCHMLflow/naming.py.",
+   "arms": {
+    "share_history_direct": {
+     "role": "candidate",
+     "meaning": "Share-history model predicting q3 directly.",
+     "differences": "Direct formulation."
+    },
+    "share_history_residual": {
+     "role": "candidate",
+     "meaning": "Share-history model predicting the q3 change from the latest observed share (direct fallback where no history).",
+     "differences": "Residual formulation."
+    },
+    "share_history_selected": {
+     "role": "candidate",
+     "meaning": "The share-history recipe selected on 0-month training-period validation (direct or residual).",
+     "differences": "Recipe selected per fold."
+    }
+   }
+  },
+  "somalia_calibrated_observed": {
+   "project": "IPCCH forecasting",
+   "title": "Somalia calibrated share-history (observed labels)",
+   "scope": "somalia_local",
+   "model_type": "Somalia-local XGBoost regressors of cumulative shares",
+   "target": "q3 share and phase (0.20 rule); crisis truth = reported phase >= 3",
+   "status_tag": "historical oracle-information ceiling (not operational)",
+   "one_line": "Per-origin selected and calibrated share-history (D) model, 2022-2026; observed raw labels in every role (fit, selection, calibration, test).",
+   "status": "Retrospective oracle-information evaluation (ideal label availability, realized future weather); not operational forecast skill. The two label scenarios are evaluated on their own populations; score differences between settings are not augmentation effects and are not ranked.",
+   "data": "Unit: Somalia area x target month (Somalia-local fits only). Truth: reported overall phase (crisis truth = reported overall phase >= 3; never a threshold on the actual q3 share) and the actual population share in phase 3 or worse (q3). Outer test years 2025 and 2026; at H > 0 the primary cohort keeps only rows whose realized weather at the oracle offsets is verified (frozen before fitting), so H3/H6 primary cohorts are small (e.g. 275 rows in 2025).",
+   "features": {
+    "feature_set": {
+     "0": "somalia_D997",
+     "3": "somalia_D1003",
+     "6": "somalia_D1009",
+     "12": "somalia_D874"
+    },
+    "n_features": {
+     "0": 997,
+     "3": 1003,
+     "6": 1009,
+     "12": 874
+    },
+    "groups": "Information sets: A existing Somalia predictors (511 inputs; 376 at 12 months); B = A + 14 seasonal climate means (525; 390); C = B + realized rainfall/temperature after the origin (weather oracle: 531/537/402 at 3/6/12 months); D = C + rich population-share history (+472: 997/1003/1009/874 at 0/3/6/12 months). The ordered column list was not archived with this snapshot.",
+    "list": ""
+   },
+   "feature_engineering": "Retrospective oracle-information design: ideal label publication and realized future weather at the oracle offsets (not operational skill). Population-share history (q2..q5 history features) uses labels visible under the ideal-publication assumption; residual formulations predict the q3 change from the latest observed share hist_q3_obs1 (direct fallback where no history). NA handled natively by XGBoost.",
+   "architecture": "Somalia-local XGBoost regressors of the cumulative shares q2..q5 (q3 = phase 3 or worse); the phase follows the 0.20 rule. Fitted only on Somalia areas. Each (setting, outer year, horizon, origin) selects its own recipe out of fold and refits.",
+   "settings": "Tree bundles (configs/somalia_oracle_candidates.json, objective reg:squarederror, random_state 42, hist, n_jobs 1; q3 overrides subsample 0.5, colsample 0.7, gamma 0.1): X1 depth 3/200 trees/lr 0.05; X2 5/200/0.05; X3 5/500/0.05; X4 7/200/0.05; X5 7/500/0.05 (all colsample 0.5, min_child_weight 5); X6 depth 11 (q3 9)/200/lr 0.1, min_child_weight 0. Sample weights decay with half-life 24 months from each inner or outer fit origin; phase threshold 0.20. Per-context grid: 6 bundles x 4 half-lives (12, 24, 48 months, none) x direct/residual x none/shift/isotonic = 144 recipes, selected by pooled training-period OOF final-q3 RMSE (AUC breaks ties) (configs/somalia_v4_calibrated_d.json).",
+   "environment": "Code a7872576; mode full (summary.md); versions not recorded.",
+   "evaluation": "Primary cohort per test year and lead; q3 final/raw R2, RMSE/MAE/bias (pp), final AUC, within-month AUC, binary F1/precision/recall (prediction rule q3_final >= 0.20); bootstrap 2,000 draws (seed 42). Retrospective (2025/2026 outcomes already inspected in v1).",
+   "sources": "IPCCH repo summary.md and results_summary.txt (archived in MLflow family run 4742de9ebfc74ae7932f20c8321c79cf source.tar); importer plan somalia_oracle_v4_calibrated_d.json; IPCCH repo configs/somalia_v4_calibrated_d.json; IPCCHMLflow/naming.py.",
+   "arms": {
+    "calibrated_share_history": {
+     "role": "candidate",
+     "meaning": "The per-origin selected and calibrated share-history recipe.",
+     "differences": "Label setting: observed labels."
+    }
+   }
+  },
+  "somalia_calibrated_augmented": {
+   "project": "IPCCH forecasting",
+   "title": "Somalia calibrated share-history (augmented labels)",
+   "scope": "somalia_local",
+   "model_type": "Somalia-local XGBoost regressors of cumulative shares",
+   "target": "q3 share and phase (0.20 rule); crisis truth = reported phase >= 3",
+   "status_tag": "historical oracle-information ceiling (not operational)",
+   "one_line": "Per-origin selected and calibrated share-history (D) model, 2022-2026; permitted validity-period copies (4,409) admitted in every role, including outer evaluation.",
+   "status": "Retrospective oracle-information evaluation (ideal label availability, realized future weather); not operational forecast skill. The two label scenarios are evaluated on their own populations; score differences between settings are not augmentation effects and are not ranked.",
+   "data": "Unit: Somalia area x target month (Somalia-local fits only). Truth: reported overall phase (crisis truth = reported overall phase >= 3; never a threshold on the actual q3 share) and the actual population share in phase 3 or worse (q3). Outer test years 2025 and 2026; at H > 0 the primary cohort keeps only rows whose realized weather at the oracle offsets is verified (frozen before fitting), so H3/H6 primary cohorts are small (e.g. 275 rows in 2025).",
+   "features": {
+    "feature_set": {
+     "0": "somalia_D997",
+     "3": "somalia_D1003",
+     "6": "somalia_D1009",
+     "12": "somalia_D874"
+    },
+    "n_features": {
+     "0": 997,
+     "3": 1003,
+     "6": 1009,
+     "12": 874
+    },
+    "groups": "Information sets: A existing Somalia predictors (511 inputs; 376 at 12 months); B = A + 14 seasonal climate means (525; 390); C = B + realized rainfall/temperature after the origin (weather oracle: 531/537/402 at 3/6/12 months); D = C + rich population-share history (+472: 997/1003/1009/874 at 0/3/6/12 months). The ordered column list was not archived with this snapshot.",
+    "list": ""
+   },
+   "feature_engineering": "Retrospective oracle-information design: ideal label publication and realized future weather at the oracle offsets (not operational skill). Population-share history (q2..q5 history features) uses labels visible under the ideal-publication assumption; residual formulations predict the q3 change from the latest observed share hist_q3_obs1 (direct fallback where no history). NA handled natively by XGBoost.",
+   "architecture": "Somalia-local XGBoost regressors of the cumulative shares q2..q5 (q3 = phase 3 or worse); the phase follows the 0.20 rule. Fitted only on Somalia areas. Each (setting, outer year, horizon, origin) selects its own recipe out of fold and refits.",
+   "settings": "Tree bundles (configs/somalia_oracle_candidates.json, objective reg:squarederror, random_state 42, hist, n_jobs 1; q3 overrides subsample 0.5, colsample 0.7, gamma 0.1): X1 depth 3/200 trees/lr 0.05; X2 5/200/0.05; X3 5/500/0.05; X4 7/200/0.05; X5 7/500/0.05 (all colsample 0.5, min_child_weight 5); X6 depth 11 (q3 9)/200/lr 0.1, min_child_weight 0. Sample weights decay with half-life 24 months from each inner or outer fit origin; phase threshold 0.20. Per-context grid: 6 bundles x 4 half-lives (12, 24, 48 months, none) x direct/residual x none/shift/isotonic = 144 recipes, selected by pooled training-period OOF final-q3 RMSE (AUC breaks ties) (configs/somalia_v4_calibrated_d.json).",
+   "environment": "Code a7872576; mode full (summary.md); versions not recorded.",
+   "evaluation": "Primary cohort per test year and lead; q3 final/raw R2, RMSE/MAE/bias (pp), final AUC, within-month AUC, binary F1/precision/recall (prediction rule q3_final >= 0.20); bootstrap 2,000 draws (seed 42). Retrospective (2025/2026 outcomes already inspected in v1).",
+   "sources": "IPCCH repo summary.md and results_summary.txt (archived in MLflow family run 4742de9ebfc74ae7932f20c8321c79cf source.tar); importer plan somalia_oracle_v4_calibrated_d.json; IPCCH repo configs/somalia_v4_calibrated_d.json; IPCCHMLflow/naming.py.",
+   "arms": {
+    "calibrated_share_history": {
+     "role": "candidate",
+     "meaning": "The per-origin selected and calibrated share-history recipe.",
+     "differences": "Label setting: augmented labels."
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,564 @@
+{
+ "comparison": [
+  {
+   "H": 1,
+   "period": "main",
+   "cohort": "all_scored",
+   "n": 17322,
+   "span": "2023-02..2025-10",
+   "keys_sha256": "3f9f16e381b9f700a5b53e7c418bf6ad4a070228316e59425b88170f58bca304",
+   "keys_phase_sha256": "2df732f2bdb12dce272d534900fe5ba2cebf8c11ec54904c2e84d5d2841744e9",
+   "truth_text_sha256": "323ede7d9e7c0ab25275a04c946b89fcf0d664daf470c154275ec4cf937e3fc9",
+   "existing_name": "IPCCH eval | 1-month | 2023-02..2025-10 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 1,
+   "period": "main",
+   "cohort": "persistence_available",
+   "n": 16002,
+   "span": "2023-02..2025-10",
+   "keys_sha256": "e2a51ff545f833beb331b182232ad59c2a12be6d2c366a7b1b13adb40b33491d",
+   "keys_phase_sha256": "0c4a2d6f57f203368f73bb2a9e73d064c91eafde25e5e49f9b56eb6c41793028",
+   "truth_text_sha256": "d12b6a13f7b81e64447416a65c17da926380830b6d6c21120ab0e0ad707131fe",
+   "existing_name": "IPCCH eval | 1-month | 2023-02..2025-10 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 1,
+   "period": "supplement",
+   "cohort": "all_scored",
+   "n": 4092,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+   "keys_phase_sha256": "ebeea2293175aa955d024971fc7129424fa70bd5592fab7d46f8ae9d76be5242",
+   "truth_text_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+   "existing_name": "IPCCH eval | 1-month | 2026-01..2026-04 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 1,
+   "period": "supplement",
+   "cohort": "persistence_available",
+   "n": 4089,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "328a8265c2f257d7062b1de1eb1fa934384982b211efd94c447d0a1b977e9b2a",
+   "keys_phase_sha256": "38760add81540578be492bdca7a238b72c01727b256c24d0835e495b700e722f",
+   "truth_text_sha256": "4ac01f6e0c3d93498503a6b1d056e816da83a95308fe9d57f0143df644cf92df",
+   "existing_name": "IPCCH eval | 1-month | 2026-01..2026-04 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": false,
+   "why_not": "no supplement persistence panel is saved in report.json; not rescored"
+  },
+  {
+   "H": 3,
+   "period": "main",
+   "cohort": "all_scored",
+   "n": 16919,
+   "span": "2023-04..2025-10",
+   "keys_sha256": "c98456b1fcc5ef5d0eba214e6eb55a4de1424890d6a6c02231fdbe195050dc74",
+   "keys_phase_sha256": "c17254d8ab77174d2c1b3f6da7451a6e6e4c734586c989f379a5ede2452279f9",
+   "truth_text_sha256": "bf1b7dc6e5a35a733bea0fbb48cd3378f424fa5ebfc9bec838bb0c17594f1879",
+   "existing_name": "IPCCH eval | 3-month | 2023-04..2025-10 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 3,
+   "period": "main",
+   "cohort": "persistence_available",
+   "n": 15907,
+   "span": "2023-04..2025-10",
+   "keys_sha256": "935ede42fdd3821203282b1f30e3f647213ad6bbb87c1d8fbb1f5e3e7465be48",
+   "keys_phase_sha256": "fd07ab8264a046b20128d8fda9c7a1c1f62fd1484ef3dca3c2474d2868fa06f9",
+   "truth_text_sha256": "e881b836547fe78973b9c2993fc15d903d0a2ca12d341f3106287c62cbe14de4",
+   "existing_name": "IPCCH eval | 3-month | 2023-04..2025-10 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 3,
+   "period": "supplement",
+   "cohort": "all_scored",
+   "n": 4092,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+   "keys_phase_sha256": "ebeea2293175aa955d024971fc7129424fa70bd5592fab7d46f8ae9d76be5242",
+   "truth_text_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+   "existing_name": "IPCCH eval | 3-month | 2026-01..2026-04 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 3,
+   "period": "supplement",
+   "cohort": "persistence_available",
+   "n": 4089,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "328a8265c2f257d7062b1de1eb1fa934384982b211efd94c447d0a1b977e9b2a",
+   "keys_phase_sha256": "38760add81540578be492bdca7a238b72c01727b256c24d0835e495b700e722f",
+   "truth_text_sha256": "4ac01f6e0c3d93498503a6b1d056e816da83a95308fe9d57f0143df644cf92df",
+   "existing_name": "IPCCH eval | 3-month | 2026-01..2026-04 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": false,
+   "why_not": "no supplement persistence panel is saved in report.json; not rescored"
+  },
+  {
+   "H": 6,
+   "period": "main",
+   "cohort": "all_scored",
+   "n": 16413,
+   "span": "2023-07..2025-10",
+   "keys_sha256": "147b29ce5b934b8668599d2b23e30a136ed6918fc17a795a33a1ff28a38a2ac6",
+   "keys_phase_sha256": "07422dd73b33f4078459cdc49830d40edad160e8b1e2fb3c09ccb18ae8b38c51",
+   "truth_text_sha256": "df451112007ed4c161f812306c8fe6c52c1c10f3f9553a8ae1f3678d8a9cba40",
+   "existing_name": "IPCCH eval | 6-month | 2023-07..2025-10 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 6,
+   "period": "main",
+   "cohort": "persistence_available",
+   "n": 14960,
+   "span": "2023-07..2025-10",
+   "keys_sha256": "71d8793101601c78744dfb50dca600b4bf1b5b62d29261e930ce18d642ef58f2",
+   "keys_phase_sha256": "be88747430b67b6ad4c5a5fe3d89d2e53b0fa515891a67757dc6a5191f04428b",
+   "truth_text_sha256": "eb4923ae8a4ec173d3fabedfa61827d4a04f95fa1453aa97fca82074b03a7f24",
+   "existing_name": "IPCCH eval | 6-month | 2023-07..2025-10 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 6,
+   "period": "supplement",
+   "cohort": "all_scored",
+   "n": 4092,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+   "keys_phase_sha256": "ebeea2293175aa955d024971fc7129424fa70bd5592fab7d46f8ae9d76be5242",
+   "truth_text_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+   "existing_name": "IPCCH eval | 6-month | 2026-01..2026-04 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 6,
+   "period": "supplement",
+   "cohort": "persistence_available",
+   "n": 4089,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "328a8265c2f257d7062b1de1eb1fa934384982b211efd94c447d0a1b977e9b2a",
+   "keys_phase_sha256": "38760add81540578be492bdca7a238b72c01727b256c24d0835e495b700e722f",
+   "truth_text_sha256": "4ac01f6e0c3d93498503a6b1d056e816da83a95308fe9d57f0143df644cf92df",
+   "existing_name": "IPCCH eval | 6-month | 2026-01..2026-04 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": false,
+   "why_not": "no supplement persistence panel is saved in report.json; not rescored"
+  },
+  {
+   "H": 12,
+   "period": "main",
+   "cohort": "all_scored",
+   "n": 14087,
+   "span": "2024-01..2025-10",
+   "keys_sha256": "d0c53218055e81f23b8bea4a84317a1e26fd6c1929331cc60f78b1a2d82970b8",
+   "keys_phase_sha256": "1477afa3783e72e4570a2155f06caa5f5f384b6b94c74b4f64573625d16d770a",
+   "truth_text_sha256": "39167e63a8187cff6aa1785f905514c9907f5ca8b4c1b24fd010b9daf3f517dd",
+   "existing_name": "IPCCH eval | 12-month | 2024-01..2025-10 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 12,
+   "period": "main",
+   "cohort": "persistence_available",
+   "n": 12404,
+   "span": "2024-01..2025-10",
+   "keys_sha256": "cf84a5c3a41609a2760d2e03d684a1326fac5a19e424ffe6ed67b48f1c075b1d",
+   "keys_phase_sha256": "594d95f2f5ed5f38fc6b630151151d4adf354608e8adba61d0a210642add467f",
+   "truth_text_sha256": "5ed2491d522ba60b1693808309f2f3465a3a284cb04f275c3bbc920b86dfdc1a",
+   "existing_name": "IPCCH eval | 12-month | 2024-01..2025-10 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 12,
+   "period": "supplement",
+   "cohort": "all_scored",
+   "n": 4092,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+   "keys_phase_sha256": "ebeea2293175aa955d024971fc7129424fa70bd5592fab7d46f8ae9d76be5242",
+   "truth_text_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+   "existing_name": "IPCCH eval | 12-month | 2026-01..2026-04 | all_scored",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": true
+  },
+  {
+   "H": 12,
+   "period": "supplement",
+   "cohort": "persistence_available",
+   "n": 4040,
+   "span": "2026-01..2026-04",
+   "keys_sha256": "9e37b42ccaf4746ae9de85e0296518a9ec7cb846ce6057642001fd08829ffcb4",
+   "keys_phase_sha256": "c4a8023ba8cafe141551ab12666d1c9a4fbbe6a85c54bdbd992ef21aa30949f6",
+   "truth_text_sha256": "2761961de9a80c3a50d7ee66ebc463d3b07b0c90a7f1055c610d823420ef8660",
+   "existing_name": "IPCCH eval | 12-month | 2026-01..2026-04 | persistence_available",
+   "existing_keys_equal": true,
+   "existing_truth_text_equal": false,
+   "registered": false,
+   "why_not": "no supplement persistence panel is saved in report.json; not rescored"
+  }
+ ],
+ "registered_descriptors": [
+  {
+   "name": "IPCCH eval | 1-month | 2023-02..2025-10 | all_scored (AlphaEarth supervised partition)",
+   "digest": "cfbfabdfeb39eba538d88c325f61019c",
+   "full_sha256": "cfbfabdfeb39eba538d88c325f61019c65d118f9766f0e8c1ab71f708a346d8e",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 1,
+    "period": "2023-02..2025-10",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 17322,
+    "keys_sha256": "3f9f16e381b9f700a5b53e7c418bf6ad4a070228316e59425b88170f58bca304",
+    "truth_sha256": "323ede7d9e7c0ab25275a04c946b89fcf0d664daf470c154275ec4cf937e3fc9",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2023-02",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.1.panels"
+  },
+  {
+   "name": "IPCCH eval | 1-month | 2023-02..2025-10 | persistence_available (AlphaEarth supervised partition)",
+   "digest": "3736c330fc340b7fa91933e2dbcbc7e3",
+   "full_sha256": "3736c330fc340b7fa91933e2dbcbc7e355fab31072f2cf146a16d7c5efbfe115",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 1,
+    "period": "2023-02..2025-10",
+    "cohort": "persistence_available",
+    "cohort_definition": "Rows whose area has at least one valid IPCCH observation at or before the forecast origin (target month minus lead). Only these rows have a persistence forecast, so every comparison with persistence uses this cohort.",
+    "num_rows": 16002,
+    "keys_sha256": "e2a51ff545f833beb331b182232ad59c2a12be6d2c366a7b1b13adb40b33491d",
+    "truth_sha256": "d12b6a13f7b81e64447416a65c17da926380830b6d6c21120ab0e0ad707131fe",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2023-02",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.1.persistence.panels"
+  },
+  {
+   "name": "IPCCH eval | 1-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)",
+   "digest": "ec4e0006d930683a1c43e83e2f81ff9b",
+   "full_sha256": "ec4e0006d930683a1c43e83e2f81ff9be5baa404ed4dfdc4ee97a0e32c0d7a24",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 1,
+    "period": "2026-01..2026-04",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 4092,
+    "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+    "truth_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2026-01",
+    "target_month_max": "2026-04",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.1.supplement_2026.panels"
+  },
+  {
+   "name": "IPCCH eval | 3-month | 2023-04..2025-10 | all_scored (AlphaEarth supervised partition)",
+   "digest": "9867bdfe4035ab0d239ecbdc44341600",
+   "full_sha256": "9867bdfe4035ab0d239ecbdc443416007a069afdbca101b27d0f2018f0a85c65",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 3,
+    "period": "2023-04..2025-10",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 16919,
+    "keys_sha256": "c98456b1fcc5ef5d0eba214e6eb55a4de1424890d6a6c02231fdbe195050dc74",
+    "truth_sha256": "bf1b7dc6e5a35a733bea0fbb48cd3378f424fa5ebfc9bec838bb0c17594f1879",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2023-04",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.3.panels"
+  },
+  {
+   "name": "IPCCH eval | 3-month | 2023-04..2025-10 | persistence_available (AlphaEarth supervised partition)",
+   "digest": "d63959bd991fcc6c2ddefb7c89732221",
+   "full_sha256": "d63959bd991fcc6c2ddefb7c89732221e1227aead15ffc54c64b8fcdf9628bb5",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 3,
+    "period": "2023-04..2025-10",
+    "cohort": "persistence_available",
+    "cohort_definition": "Rows whose area has at least one valid IPCCH observation at or before the forecast origin (target month minus lead). Only these rows have a persistence forecast, so every comparison with persistence uses this cohort.",
+    "num_rows": 15907,
+    "keys_sha256": "935ede42fdd3821203282b1f30e3f647213ad6bbb87c1d8fbb1f5e3e7465be48",
+    "truth_sha256": "e881b836547fe78973b9c2993fc15d903d0a2ca12d341f3106287c62cbe14de4",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2023-04",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.3.persistence.panels"
+  },
+  {
+   "name": "IPCCH eval | 3-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)",
+   "digest": "8ea94dfd743b4dfc3646aa998758e18a",
+   "full_sha256": "8ea94dfd743b4dfc3646aa998758e18a764645e5098cd46d10aed172e82a0138",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 3,
+    "period": "2026-01..2026-04",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 4092,
+    "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+    "truth_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2026-01",
+    "target_month_max": "2026-04",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.3.supplement_2026.panels"
+  },
+  {
+   "name": "IPCCH eval | 6-month | 2023-07..2025-10 | all_scored (AlphaEarth supervised partition)",
+   "digest": "dcd709cd4c14f95a063dd409bcf7bacc",
+   "full_sha256": "dcd709cd4c14f95a063dd409bcf7bacccfa3efa9f42c48d9b1031be77b4846c5",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 6,
+    "period": "2023-07..2025-10",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 16413,
+    "keys_sha256": "147b29ce5b934b8668599d2b23e30a136ed6918fc17a795a33a1ff28a38a2ac6",
+    "truth_sha256": "df451112007ed4c161f812306c8fe6c52c1c10f3f9553a8ae1f3678d8a9cba40",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2023-07",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.6.panels"
+  },
+  {
+   "name": "IPCCH eval | 6-month | 2023-07..2025-10 | persistence_available (AlphaEarth supervised partition)",
+   "digest": "fd20048877e829b48b9574c2c77cf792",
+   "full_sha256": "fd20048877e829b48b9574c2c77cf792c39c874cc215b4860220c314458bae82",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 6,
+    "period": "2023-07..2025-10",
+    "cohort": "persistence_available",
+    "cohort_definition": "Rows whose area has at least one valid IPCCH observation at or before the forecast origin (target month minus lead). Only these rows have a persistence forecast, so every comparison with persistence uses this cohort.",
+    "num_rows": 14960,
+    "keys_sha256": "71d8793101601c78744dfb50dca600b4bf1b5b62d29261e930ce18d642ef58f2",
+    "truth_sha256": "eb4923ae8a4ec173d3fabedfa61827d4a04f95fa1453aa97fca82074b03a7f24",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2023-07",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.6.persistence.panels"
+  },
+  {
+   "name": "IPCCH eval | 6-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)",
+   "digest": "91d2162f13963acab22aa1cdb3a71008",
+   "full_sha256": "91d2162f13963acab22aa1cdb3a710083e0e18550fae3e220a8f0496a8c47c97",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 6,
+    "period": "2026-01..2026-04",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 4092,
+    "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+    "truth_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2026-01",
+    "target_month_max": "2026-04",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.6.supplement_2026.panels"
+  },
+  {
+   "name": "IPCCH eval | 12-month | 2024-01..2025-10 | all_scored (AlphaEarth supervised partition)",
+   "digest": "42ce408f2bcae0b87363fdad47c3b987",
+   "full_sha256": "42ce408f2bcae0b87363fdad47c3b9876075f844cb515767892ad1b584e326b6",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 12,
+    "period": "2024-01..2025-10",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 14087,
+    "keys_sha256": "d0c53218055e81f23b8bea4a84317a1e26fd6c1929331cc60f78b1a2d82970b8",
+    "truth_sha256": "39167e63a8187cff6aa1785f905514c9907f5ca8b4c1b24fd010b9daf3f517dd",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2024-01",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.12.panels"
+  },
+  {
+   "name": "IPCCH eval | 12-month | 2024-01..2025-10 | persistence_available (AlphaEarth supervised partition)",
+   "digest": "485078fd3ae09b64c18c2d7c59805444",
+   "full_sha256": "485078fd3ae09b64c18c2d7c59805444f1af3b785bdc8ff250e1112150b730e5",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 12,
+    "period": "2024-01..2025-10",
+    "cohort": "persistence_available",
+    "cohort_definition": "Rows whose area has at least one valid IPCCH observation at or before the forecast origin (target month minus lead). Only these rows have a persistence forecast, so every comparison with persistence uses this cohort.",
+    "num_rows": 12404,
+    "keys_sha256": "cf84a5c3a41609a2760d2e03d684a1326fac5a19e424ffe6ed67b48f1c075b1d",
+    "truth_sha256": "5ed2491d522ba60b1693808309f2f3465a3a284cb04f275c3bbc920b86dfdc1a",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2024-01",
+    "target_month_max": "2025-10",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.12.persistence.panels"
+  },
+  {
+   "name": "IPCCH eval | 12-month | 2026-01..2026-04 | all_scored (AlphaEarth supervised partition)",
+   "digest": "c82dea4b6d7248fbb2c45e2b98541dee",
+   "full_sha256": "c82dea4b6d7248fbb2c45e2b98541dee1bd72b1e9cf6a45296367bf2309425ef",
+   "descriptor": {
+    "schema": "ipcch-evaluation-dataset-v2",
+    "context": "evaluation",
+    "lead_months": 12,
+    "period": "2026-01..2026-04",
+    "cohort": "all_scored",
+    "cohort_definition": "Every scored row: one area x one target month in the period with a valid IPCCH truth value.",
+    "num_rows": 4092,
+    "keys_sha256": "063be43e35631b2b8c005d493f3b4ab974abe97124cf5a87e83ba90751eb5e20",
+    "truth_sha256": "165b6060cc4629fbf018d085575b6becacfd9c89517c3285ffbc66e8977db9ff",
+    "truth_columns": [
+     "phase_truth",
+     "q3_truth"
+    ],
+    "truth_definition": "IPC phase decoded from the area's population shares: phase = highest p with cumulative share q_p >= 0.20 after a bounded isotonic projection; crisis = phase 3 or worse.",
+    "key_definition": "one row per admin_code|target_ord; truth text as saved in the predictions",
+    "target_month_min": "2026-01",
+    "target_month_max": "2026-04",
+    "rows_depend_on": "AlphaEarth supervised partition",
+    "truth_text_source": "predict/predictions_hXX.csv.gz columns phase_truth, q3 (saved text)"
+   },
+   "report_panel": "horizons.12.supplement_2026.panels"
+  }
+ ],
+ "counts": {
+  "compared": 16,
+  "registered": 12,
+  "keys_equal": 16,
+  "truth_text_equal": 0
+ }
+}

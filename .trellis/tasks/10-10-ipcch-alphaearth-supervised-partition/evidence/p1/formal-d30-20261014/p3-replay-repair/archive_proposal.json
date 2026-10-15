@@ -1,0 +1,18 @@
+{
+  "note": "PROPOSAL ONLY (executor draft). Nothing has been moved, deleted or installed. Unique archive under the run, with mtime-free byte moves and a manifest.",
+  "archive_root": "archive/replay-attempt-01-20261014T141645Z",
+  "moves": [
+    {"from": "replay/replay.json", "to": "archive/replay-attempt-01-20261014T141645Z/replay/replay.json", "sha256": "7e7752256cc8b6de4ce74049ac9bcb3be97e715fe2aa41e1e7a5c8cbbc6082a6"},
+    {"from": "replay/INCOMPLETE.json", "to": "archive/replay-attempt-01-20261014T141645Z/replay/INCOMPLETE.json", "sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3"},
+    {"from": "RUN_INCOMPLETE.json", "to": "archive/replay-attempt-01-20261014T141645Z/RUN_INCOMPLETE.json", "sha256": "35efbbd1d47d91eb07c6c3744d98f4ffa419236d2de267f4c60fd16bab1e7bd3"},
+    {"from": "predict/providers_all_h03.csv.gz", "to": "archive/replay-attempt-01-20261014T141645Z/predict/providers_all_h03.corrupt-e454ce15.csv.gz", "sha256": "e454ce1590084ac2e0a9ce654b775a35ed2bf1beb11d0597b46a4144f03576d5"}
+  ],
+  "install": {"from": "~/ipcch-alphaearth-runs/p1-formal-d30-logs/replay-repair/staged/providers_all_h03.csv.gz",
+              "to": "predict/providers_all_h03.csv.gz", "sha256": "06eefdc6ae8b9864d7b8fe3b7fa8aea189946f747b3798826e853c2b2504413f",
+              "proof": "reconstruction.json: 38,766 lines; exactly one differing cell, line 38174 target_ord 2431 -> 24314"},
+  "manifest": "archive/replay-attempt-01-20261014T141645Z/ARCHIVE.json listing every move (from/to/sha256), the install, the release receipt id and hashes, and the reason (class A reader NA policy; class B single dropped digit, cause unknown)",
+  "after_install_checks": ["all 404 science artifacts except predict/providers_all_h03.csv.gz still match; that one equals 06eefdc6",
+                           "predict/COMPLETE.json unchanged (it does not hash providers_all); report untouched",
+                           "replay/ absent and RUN_INCOMPLETE.json absent before the single zero-fit replay rerun"],
+  "why_archive_needed": "run_replay refuses nothing for an incomplete replay dir but write_json never overwrites, so the old replay.json/INCOMPLETE.json must leave replay/ before a rerun; RUN_INCOMPLETE.json is the run-level failed-attempt marker."
+}

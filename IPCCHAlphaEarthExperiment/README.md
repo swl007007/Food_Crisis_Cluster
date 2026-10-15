@@ -1,6 +1,6 @@
 # IPCCH AlphaEarth supervised partition experiment
 
-Task: `.trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/` (PRD, design, implement, decisions D1–D29).
+Task: `.trellis/tasks/10-10-ipcch-alphaearth-supervised-partition/` (PRD, design, implement, decisions D1–D29 plus the D30 extraction recipe).
 Question: does a supervised, frozen AlphaEarth (2017) environmental grouping add transferable predictive value to a
 strong pooled IPCCH model, separately for H = 1/3/6/12, beyond the added descriptors and a shared calibration?
 
@@ -24,10 +24,16 @@ $PY -m unittest discover -s tests                                   # full offli
 $PY -m ipcch_alphaearth preflight --run "$RUN_DIR" [--kind formal] # runtime lock, contract, inputs, no fit/EE
 $PY -m ipcch_alphaearth prepare --run "$RUN_DIR" --local-only       # P0: truth, cohorts, compact296 @ row origin, schedule
 $PY -m ipcch_alphaearth benchmark --out DIR --prepared "$RUN_DIR/prepared"   # synthetic compute benchmark
-# P1 (cloud release only; separate EE interpreter, frozen request manifests with a release id):
-/opt/earthengine/bin/python scripts/extract_alphaearth.py inventory --project P --bbox W S E N --out FILE
-/opt/earthengine/bin/python scripts/extract_alphaearth.py export --request REQ --ledger LEDGER
+# P1, D30 analysis-grid extraction. Plan + sha-bound manifest locally (release_id null until a supervisor release):
+PYTHONPATH=.:scripts $PY scripts/build_c_production.py --geometry "$GEOMETRY_SHP" --list-images "$LIST_IMAGES_JSON" --out "$PLAN_DIR"
+# cloud release only: separate EE interpreter, one invocation at a time, resumable in the same OUT_DIR
+# (optional --concurrency-ceiling N <= manifest concurrency; the hashed manifest is never edited):
+timeout "$OUTER_TIMEOUT_S" /opt/earthengine/bin/python scripts/ee_pilot_c.py --request "$RELEASED_MANIFEST" --out "$OUT_DIR"
+/opt/earthengine/bin/python scripts/check_c_outputs.py --request "$RELEASED_MANIFEST" --out "$OUT_DIR" --json "$CHECK_JSON"
+# after a COMPLETE, clean extraction (checker complete:true, pending 0, no violations), in a fresh run:
+$PY -m ipcch_alphaearth ingest-extraction --run "$RUN_DIR" --plan "$PLAN_CSV" --manifest "$RELEASED_MANIFEST" --outputs "$OUT_DIR"
 $PY -m ipcch_alphaearth prepare --run "$RUN_DIR"                    # attach descriptors (requires extraction COMPLETE)
+# scripts/extract_alphaearth.py and scripts/ee_pilot.py are the superseded native-grid recipe: comparison only (D30).
 # P2/P3/P4 (project-data fitting release only):
 $PY -m ipcch_alphaearth develop --run "$RUN_DIR"      # 19 historical B1 + 8 dev B0; 9 recipes x 2 years; selection
 $PY -m ipcch_alphaearth freeze-map --run "$RUN_DIR"   # final maps through 2022-12; MAP_FREEZE hash chain
@@ -38,6 +44,14 @@ $PY -m ipcch_alphaearth replay --run "$RUN_DIR"       # independent zero-XGB-fit
 
 Every stage checks its prerequisites and never launches another stage. Fitting commands refuse to start until the
 P1 descriptor stage exists. The fresh backbone ceiling is 61 quartets / 244 scalar XGB fits.
+
+## Formal result (2026-10-14)
+
+Run `p1-formal-d30-20261014` (local, outside Dropbox): all 57,801 D30 extraction pieces (6,227 admins, all usable);
+61 quartets / 244 scalar XGB fits. Development: 0 of 72 recipe-years passed the guards, so every H fell back to B2
+and **no regional partition map was selected** (G = B2 bitwise; G−B2 = 0; no qualifying horizon). Replay: 488/488
+checks, zero fits, after a reviewed analysis-only amendment of the replay prediction reader. Discussion note:
+`docs/notes/2026-10-14_组会讨论稿_IPCCH_AlphaEarth监督分区.md`; evidence and progress are in the task folder.
 
 ## Modules
 
